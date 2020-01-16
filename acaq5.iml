@@ -35,7 +35,6 @@
     <orderEntry type="library" name="Maven: org.scijava:scripting-javascript:0.4.4" level="project" />
     <orderEntry type="library" name="Maven: org.joml:joml:1.9.12" level="project" />
     <orderEntry type="library" name="Maven: org.ojalgo:ojalgo:45.1.1" level="project" />
-    <orderEntry type="library" name="Maven: gov.nist.math:jama:1.0.3" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-updater:0.9.3" level="project" />
     <orderEntry type="library" name="Maven: io.scif:scifio:0.37.3" level="project" />
     <orderEntry type="library" name="Maven: io.scif:scifio-jai-imageio:1.1.1" level="project" />
@@ -251,5 +250,13 @@
     <orderEntry type="library" name="Maven: batik:batik-util:1.6" level="project" />
     <orderEntry type="library" name="Maven: batik:batik-xml:1.6" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-exec:1.4.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: fr.inra.ijpb:MorphoLibJ_:1.4.1" level="project" />
+    <orderEntry type="library" name="Maven: gov.nist.math:jama:1.0.3" level="project" />
+    <orderEntry type="library" name="Maven: sc.fiji:FeatureJ_:2.0.0" level="project" />
+    <orderEntry type="library" name="Maven: sc.fiji:MTrackJ_:1.5.4" level="project" />
+    <orderEntry type="library" name="Maven: sc.fiji:RandomJ_:2.0.0" level="project" />
+    <orderEntry type="library" name="Maven: sc.fiji:imagescience:3.0.0" level="project" />
+    <orderEntry type="library" name="Maven: sc.fiji:Image_5D:2.0.2" level="project" />
+    <orderEntry type="library" name="Maven: edu.berkeley:Hough_Circle_Transform:1.0.0-RELEASE" level="project" />
   </component>
 </module>

@@ -83,6 +83,11 @@ See the LICENSE file provided with this code for the full license.
             <id>imagej.public</id>
             <url>http://maven.imagej.net/content/groups/public</url>
         </repository>
+        <repository>
+            <id>external-jars</id>
+            <name>External JAR files</name>
+            <url>file://${project.basedir}/external-dependencies</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -193,6 +198,36 @@ See the LICENSE file provided with this code for the full license.
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-exec</artifactId>
             <version>1.4.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>fr.inra.ijpb</groupId>
+            <artifactId>MorphoLibJ_</artifactId>
+            <version>1.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>sc.fiji</groupId>
+            <artifactId>FeatureJ_</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>sc.fiji</groupId>
+            <artifactId>MTrackJ_</artifactId>
+            <version>1.5.4</version>
+        </dependency>
+        <dependency>
+            <groupId>sc.fiji</groupId>
+            <artifactId>RandomJ_</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>sc.fiji</groupId>
+            <artifactId>imagescience</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.berkeley</groupId>
+            <artifactId>Hough_Circle_Transform</artifactId>
+            <version>1.0.0-RELEASE</version>
         </dependency>
     </dependencies>
 

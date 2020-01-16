@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.icepdf.os:icepdf-viewer:6.2.2">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/icepdf/os/icepdf-viewer/6.2.2/icepdf-viewer-6.2.2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/icepdf/os/icepdf-viewer/6.2.2/icepdf-viewer-6.2.2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/icepdf/os/icepdf-viewer/6.2.2/icepdf-viewer-6.2.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

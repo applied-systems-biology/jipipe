@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+		http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.scijava</groupId>
+		<artifactId>pom-scijava</artifactId>
+		<version>14.0.0</version>
+		<relativePath />
+	</parent>
+
+	<groupId>edu.berkeley</groupId>
+	<artifactId>Hough_Circle_Transform</artifactId>
+	<version>1.0.0-RELEASE</version>
+
+	<name>Local_Hough_Circle_Transform.jar</name>
+	<description>A Maven project implementing an ImageJ 1.x plugin</description>
+        <url>https://github.com/Llamero/Local_Hough_Circle</url>
+	<inceptionYear>2017</inceptionYear>
+	<organization>
+		<name>University of California, Berkeley</name>
+		<url>http://vision.berkeley.edu/</url>
+	</organization>
+	<licenses>
+		<license>
+			<name>GNU GENERAL PUBLIC LICENSE v3</name>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>llamero</id>
+			<name>Benjamin Smith</name>
+			<email>benjamin.smith@berkeley.edu</email>
+			<url>http://imagej.net/User:Llamero</url>
+			<organization>University of California, Berkeley</organization>
+			<organizationUrl>http://vision.berkeley.edu/</organizationUrl>
+			<roles>
+				<role>lead</role>
+				<role>developer</role>
+				<role>debugger</role>
+				<role>reviewer</role>
+				<role>support</role>
+				<role>maintainer</role>
+			</roles>
+			<timezone>-6</timezone>
+		</developer>
+	</developers>
+        <contributors>
+            <contributor>
+                <name>Hemerson Pistori</name>
+            </contributor>
+            <contributor>
+                <name>Eduardo Rocha Costa</name>
+            </contributor>
+            <contributor>
+                <name>Mark Schulze</name>
+            </contributor>
+        </contributors>
+        
+       	<mailingLists>
+		<mailingList>
+			<name>ImageJ Forum</name>
+			<archive>http://forum.imagej.net/</archive>
+		</mailingList>
+	</mailingLists> 
+
+	<scm>
+		<connection>scm:git:git://github.com/Llamero/Local_Hough_Circle</connection>
+		<developerConnection>scm:git:git@github.com:Llamero/Local_Hough_Circle</developerConnection>
+		<tag>HEAD</tag>
+		<url>https://github.com/Llamero/Local_Hough_Circle</url>
+	</scm>
+        <issueManagement>
+	<system>GitHub Issues</system>
+	<url>https://github.com/Llamero/Local_Hough_Circle/issues</url>
+	</issueManagement>
+	<ciManagement>
+		<system>None</system>
+	</ciManagement>
+
+	<properties>
+		<main-class>Hough_Circle</main-class>
+                <package-name>Local_Hough_Cirlce_Transform.jar</package-name>
+		<license.licenseName>GNU_3</license.licenseName>
+		<license.copyrightOwners>University of California, Berkeley</license.copyrightOwners>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>ij</artifactId>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>${main-class}</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+		 <plugin>
+		  <groupId>org.apache.maven.plugins</groupId>
+		  <artifactId>maven-compiler-plugin</artifactId>
+		  <version>2.3.2</version>
+		  <configuration>
+		   <source>1.8</source>
+		   <target>1.8</target>
+		  </configuration>
+		 </plugin>
+		</plugins>
+	</build>
+
+</project>

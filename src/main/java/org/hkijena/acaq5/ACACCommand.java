@@ -1,4 +1,4 @@
-package org.hkijena.macaq;
+package org.hkijena.acaq5;
 
 import io.scif.services.DatasetIOService;
 import net.imagej.DatasetService;
@@ -17,7 +17,7 @@ import org.scijava.ui.UIService;
 
 import javax.swing.*;
 
-@Plugin(type = Command.class, menuPath = "Plugins>mACAQ")
+@Plugin(type = Command.class, menuPath = "Plugins>ACAQ5")
 public class ACACCommand implements Command {
     @Parameter
     private OpService ops;
