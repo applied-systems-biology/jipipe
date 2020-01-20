@@ -18,7 +18,7 @@ import org.scijava.ui.UIService;
 import javax.swing.*;
 
 @Plugin(type = Command.class, menuPath = "Plugins>ACAQ5")
-public class ACACCommand implements Command {
+public class ACAQCommand implements Command {
     @Parameter
     private OpService ops;
 
@@ -94,6 +94,6 @@ public class ACACCommand implements Command {
     public static void main(final String... args) {
         final ImageJ ij = new ImageJ();
         ij.ui().showUI();
-        ij.command().run(ACACCommand.class, true);
+        ij.command().run(ACAQCommand.class, true);
     }
 }
