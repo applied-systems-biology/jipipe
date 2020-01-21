@@ -143,6 +143,11 @@ See the LICENSE file provided with this code for the full license.
             <artifactId>Hough_Circle_Transform</artifactId>
             <version>1.0.0-RELEASE</version>
         </dependency>
+        <dependency>
+            <groupId>org.swinglabs.swingx</groupId>
+            <artifactId>swingx-core</artifactId>
+            <version>1.6.5-1</version>
+        </dependency>
     </dependencies>
 
     <properties>
