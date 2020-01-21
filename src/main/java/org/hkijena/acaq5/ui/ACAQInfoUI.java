@@ -18,27 +18,28 @@ public class ACAQInfoUI extends JPanel {
         BoxLayout layout = new BoxLayout(this, BoxLayout.PAGE_AXIS);
         setLayout(layout);
 
-        addLogo();
+        add(Box.createVerticalGlue());
+        JPanel contentPanel = new JPanel();
+        contentPanel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1, true));
+        contentPanel.setSize(new Dimension(500, 400));
+        contentPanel.setMaximumSize(new Dimension(500, 400));
+        add(contentPanel);
+        add(Box.createVerticalGlue());
 
+        BoxLayout contentPanelLayout = new BoxLayout(contentPanel, BoxLayout.PAGE_AXIS);
+        contentPanel.setLayout(contentPanelLayout);
 
-        this.setBorder(BorderFactory.createLineBorder(Color.CYAN));
+        addLogo(contentPanel);
     }
 
-    private void addLogo() {
-//        JLabel logo = new JLabel();
-//        try {
-//            logo.setIcon(new ImageIcon(ImageIO.read(ResourceUtils.getPluginResource("logo.png"))));
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//        logo.setHorizontalAlignment(SwingConstants.CENTER);
+    private void addLogo(JPanel target) {
         ImageLogo logo = new ImageLogo();
+        logo.setPreferredSize(new Dimension(500, 100));
         try {
             logo.setImage(ImageIO.read(ResourceUtils.getPluginResource("logo.png")));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        logo.setAlignmentX(CENTER_ALIGNMENT);
-        add(logo);
+        target.add(logo);
     }
 }

@@ -36,6 +36,11 @@ public class ACAQWorkbenchUI extends JFrame {
     private void initializeToolbar() {
         JToolBar toolBar = new JToolBar();
 
+        // Add "New project" toolbar entry
+        JButton newProject = new JButton("New project", UIUtils.getIconFromResources("new.png"));
+        newProject.addActionListener(e -> newWindow(command));
+        toolBar.add(newProject);
+
         toolBar.add(Box.createHorizontalGlue());
         initializeToolbarHelpMenu(toolBar);
 
@@ -51,5 +56,13 @@ public class ACAQWorkbenchUI extends JFrame {
         menu.add(quickHelp);
 
         toolBar.add(helpButton);
+    }
+
+    public static void newWindow(ACAQCommand command) {
+        ACAQWorkbenchUI frame = new ACAQWorkbenchUI(command);
+        frame.pack();
+        frame.setSize(800, 600);
+        frame.setVisible(true);
+        frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
     }
 }

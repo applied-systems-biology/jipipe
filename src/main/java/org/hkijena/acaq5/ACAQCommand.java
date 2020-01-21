@@ -56,11 +56,7 @@ public class ACAQCommand implements Command {
         SwingUtilities.invokeLater(() -> {
             ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
             ToolTipManager.sharedInstance().setInitialDelay(1000);
-            ACAQWorkbenchUI frame = new ACAQWorkbenchUI(this);
-            frame.pack();
-            frame.setSize(800, 600);
-            frame.setVisible(true);
-            frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+            ACAQWorkbenchUI.newWindow(this);
         });
     }
 
