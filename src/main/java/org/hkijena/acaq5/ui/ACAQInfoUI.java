@@ -19,7 +19,7 @@ public class ACAQInfoUI extends JPanel {
         setLayout(layout);
 
         addLogo();
-        
+
 
         this.setBorder(BorderFactory.createLineBorder(Color.CYAN));
     }
