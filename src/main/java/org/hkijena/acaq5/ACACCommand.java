@@ -1,9 +1,14 @@
 package org.hkijena.acaq5;
 
+import ij.IJ;
+import ij.ImagePlus;
+import ij.WindowManager;
 import io.scif.services.DatasetIOService;
 import net.imagej.DatasetService;
 import net.imagej.ImageJ;
 import net.imagej.ops.OpService;
+import org.hkijena.acaq5.algorithms.enhancers.IlluminationCorrectionEnhancer;
+import org.hkijena.acaq5.datatypes.ACAQGreyscaleImageData;
 import org.scijava.app.StatusService;
 import org.scijava.command.Command;
 import org.scijava.command.CommandService;
@@ -57,6 +62,11 @@ public class ACACCommand implements Command {
 //            ToolTipManager.sharedInstance().setInitialDelay(1000);
 //            MISAModuleRepositoryUI.getInstance(this).setVisible(true);
 //        });
+        ImagePlus img = IJ.openImage("/data/Glomeruli/misaxx_example_data_sliced/input/example_data_small/z0000.tif");
+        IlluminationCorrectionEnhancer enhancer = new IlluminationCorrectionEnhancer();
+        enhancer.getInputSlot().setData(new ACAQGreyscaleImageData(img));
+        enhancer.run();
+        enhancer.getOutputSlot().getData().getImage().show();
     }
 
     public LogService getLogService() {
