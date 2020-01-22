@@ -2,14 +2,10 @@ package org.hkijena.acaq5.algorithms.enhancers;
 
 import ij.ImagePlus;
 import mpicbg.ij.clahe.Flat;
-import mpicbg.ij.clahe.PlugIn;
 import org.hkijena.acaq5.ACAQInputDataSlot;
 import org.hkijena.acaq5.ACAQOutputDataSlot;
 import org.hkijena.acaq5.ACAQSimpleAlgorithm;
 import org.hkijena.acaq5.datatypes.ACAQGreyscaleImageData;
-import org.hkijena.acaq5.utils.ImageJUtils;
-import org.hkijena.acaq5.utils.MacroFlag;
-import org.hkijena.acaq5.utils.MacroSetting;
 
 public class CLAHEImageEnhancer extends ACAQSimpleAlgorithm<ACAQInputDataSlot<ACAQGreyscaleImageData>,
         ACAQOutputDataSlot<ACAQGreyscaleImageData>> {

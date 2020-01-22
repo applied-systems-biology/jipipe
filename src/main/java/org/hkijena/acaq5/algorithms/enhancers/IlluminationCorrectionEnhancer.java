@@ -7,7 +7,6 @@ import org.hkijena.acaq5.ACAQOutputDataSlot;
 import org.hkijena.acaq5.ACAQSimpleAlgorithm;
 import org.hkijena.acaq5.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.utils.ImageJUtils;
-import org.hkijena.acaq5.utils.MacroFlag;
 import org.hkijena.acaq5.utils.MacroSetting;
 
 public class IlluminationCorrectionEnhancer extends ACAQSimpleAlgorithm<ACAQInputDataSlot<ACAQGreyscaleImageData>,
@@ -23,6 +22,8 @@ public class IlluminationCorrectionEnhancer extends ACAQSimpleAlgorithm<ACAQInpu
     @Override
     public void run() {
         ImagePlus img = getInputSlot().getData().getImage();
+
+        // Convert image to 32 bit
         ImageJUtils.runOnImage(img, "32-bit");
 
         // Estimate a background image

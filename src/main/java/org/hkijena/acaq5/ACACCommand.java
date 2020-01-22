@@ -8,6 +8,7 @@ import net.imagej.DatasetService;
 import net.imagej.ImageJ;
 import net.imagej.ops.OpService;
 import org.hkijena.acaq5.algorithms.enhancers.CLAHEImageEnhancer;
+import org.hkijena.acaq5.algorithms.enhancers.HessianImageEnhancer;
 import org.hkijena.acaq5.algorithms.enhancers.IlluminationCorrectionEnhancer;
 import org.hkijena.acaq5.datatypes.ACAQGreyscaleImageData;
 import org.scijava.app.StatusService;
@@ -63,12 +64,14 @@ public class ACACCommand implements Command {
 //            ToolTipManager.sharedInstance().setInitialDelay(1000);
 //            MISAModuleRepositoryUI.getInstance(this).setVisible(true);
 //        });
-        ImagePlus img = IJ.openImage("/data/Glomeruli/misaxx_example_data_sliced/input/example_data_small/z0000.tif");
+        ImagePlus img = IJ.openImage("/data/ACAQ5/example1.tif");
 //        IlluminationCorrectionEnhancer enhancer = new IlluminationCorrectionEnhancer();
-        CLAHEImageEnhancer enhancer = new CLAHEImageEnhancer();
+//        CLAHEImageEnhancer enhancer = new CLAHEImageEnhancer();
+        HessianImageEnhancer enhancer = new HessianImageEnhancer();
         enhancer.getInputSlot().setData(new ACAQGreyscaleImageData(img));
         enhancer.run();
         enhancer.getOutputSlot().getData().getImage().show();
+        IJ.saveAs("TIF", "/data/tmp/example1.tif");
     }
 
     public LogService getLogService() {
