@@ -1,16 +1,14 @@
 package org.hkijena.acaq5.algorithms.enhancers;
 
-import ij.IJ;
 import ij.ImagePlus;
-import ij.WindowManager;
 import ij.plugin.ImageCalculator;
-import ij.plugin.filter.ImageMath;
-import net.imagej.ops.Ops;
 import org.hkijena.acaq5.ACAQInputDataSlot;
 import org.hkijena.acaq5.ACAQOutputDataSlot;
 import org.hkijena.acaq5.ACAQSimpleAlgorithm;
 import org.hkijena.acaq5.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.utils.ImageJUtils;
+import org.hkijena.acaq5.utils.MacroFlag;
+import org.hkijena.acaq5.utils.MacroSetting;
 
 public class IlluminationCorrectionEnhancer extends ACAQSimpleAlgorithm<ACAQInputDataSlot<ACAQGreyscaleImageData>,
         ACAQOutputDataSlot<ACAQGreyscaleImageData>> {
@@ -28,8 +26,8 @@ public class IlluminationCorrectionEnhancer extends ACAQSimpleAlgorithm<ACAQInpu
         ImageJUtils.runOnImage(img, "32-bit");
 
         // Estimate a background image
-        ImagePlus gaussian = ImageJUtils.runOnNewImage(img, "Gaussian Blur...", "sigma=" + gaussianSigma);
-        ImageJUtils.runOnImage(gaussian, "Divide...","value=" + gaussian.getStatistics().max);
+        ImagePlus gaussian = ImageJUtils.runOnNewImage(img, "Gaussian Blur...", new MacroSetting("sigma", gaussianSigma));
+        ImageJUtils.runOnImage(gaussian, "Divide...",new MacroSetting("value", gaussian.getStatistics().max));
 
         // Divide by background
         ImageCalculator calculator = new ImageCalculator();

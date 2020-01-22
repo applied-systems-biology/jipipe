@@ -174,5 +174,6 @@
     <orderEntry type="library" name="Maven: bham.ac.uk.landini:morphology_collection:1.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.9" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-simple:1.7.9" level="project" />
+    <orderEntry type="library" name="Maven: mpicbg:mpicbg:20120621" level="project" />
   </component>
 </module>
