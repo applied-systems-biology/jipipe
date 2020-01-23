@@ -2,7 +2,6 @@ package org.hkijena.acaq5.algorithms.converters;
 
 import ij.measure.ResultsTable;
 import ij.plugin.filter.ParticleAnalyzer;
-import org.hkijena.acaq5.ACAQAlgorithm;
 import org.hkijena.acaq5.ACAQInputDataSlot;
 import org.hkijena.acaq5.ACAQOutputDataSlot;
 import org.hkijena.acaq5.ACAQSimpleAlgorithm;

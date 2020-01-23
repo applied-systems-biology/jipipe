@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.algorithms.segmenters;
 
-import org.hkijena.acaq5.ACAQAlgorithm;
 import org.hkijena.acaq5.ACAQInputDataSlot;
 import org.hkijena.acaq5.ACAQOutputDataSlot;
 import org.hkijena.acaq5.ACAQSimpleAlgorithm;

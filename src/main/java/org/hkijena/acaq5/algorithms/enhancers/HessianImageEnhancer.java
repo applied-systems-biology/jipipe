@@ -1,39 +1,32 @@
 package org.hkijena.acaq5.algorithms.enhancers;
 
-import bham.sc.uk.landini.morphology_collection.GreyscaleErode_;
-import featurej.FJ_Hessian;
-import featurej.FJ_Options;
 import ij.ImagePlus;
 import ij.Prefs;
 import ij.plugin.ImageCalculator;
 import ij.plugin.Thresholder;
-import ij.plugin.filter.Binary;
 import ij.plugin.filter.RankFilters;
 import imagescience.feature.Hessian;
 import imagescience.image.Aspects;
 import imagescience.image.FloatImage;
 import imagescience.image.Image;
-import mpicbg.ij.clahe.Flat;
-import net.imglib2.img.display.imagej.ImageJFunctions;
 import org.hkijena.acaq5.ACAQInputDataSlot;
 import org.hkijena.acaq5.ACAQOutputDataSlot;
 import org.hkijena.acaq5.ACAQSimpleAlgorithm;
 import org.hkijena.acaq5.datatypes.ACAQGreyscaleImageData;
-import org.hkijena.acaq5.utils.GreyscaleErode;
+import org.hkijena.acaq5.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.utils.ImageJUtils;
-import org.hkijena.acaq5.utils.MacroSetting;
 
 import java.util.Vector;
 
 public class HessianImageEnhancer extends ACAQSimpleAlgorithm<ACAQInputDataSlot<ACAQGreyscaleImageData>,
-        ACAQOutputDataSlot<ACAQGreyscaleImageData>> {
+        ACAQOutputDataSlot<ACAQMaskData>> {
 
     private double smoothing = 1.0;
     private double gradientRadius = 1;
 
     public HessianImageEnhancer() {
         super(new ACAQInputDataSlot<>("Input image", ACAQGreyscaleImageData.class),
-                new ACAQOutputDataSlot<>("Output image", ACAQGreyscaleImageData.class));
+                new ACAQOutputDataSlot<>("Output image", ACAQMaskData.class));
     }
 
     private ImagePlus applyHessian(ImagePlus input) {
@@ -84,6 +77,6 @@ public class HessianImageEnhancer extends ACAQSimpleAlgorithm<ACAQInputDataSlot<
         // Despeckle x2
         applyDespeckle(result, 2);
 
-        getOutputSlot().setData(new ACAQGreyscaleImageData(result));
+        getOutputSlot().setData(new ACAQMaskData(result));
     }
 }

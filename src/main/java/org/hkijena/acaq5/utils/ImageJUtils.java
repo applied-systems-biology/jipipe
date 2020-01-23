@@ -2,7 +2,6 @@ package org.hkijena.acaq5.utils;
 
 import ij.IJ;
 import ij.ImagePlus;
-import ij.plugin.Converter;
 import ij.plugin.PlugIn;
 
 import java.util.Arrays;
