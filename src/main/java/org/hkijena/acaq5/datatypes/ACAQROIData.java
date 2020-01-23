@@ -1,13 +1,8 @@
 package org.hkijena.acaq5.datatypes;
 
 import org.hkijena.acaq5.ACAQData;
+import org.hkijena.acaq5.ACAQDocumentation;
 
-public class ACAQROIData extends ACAQData {
-
-    private static final String DATATYPE_NAME = "ROI";
-    private static final String DATATYPE_DESCRIPTION = "Collection of ROI";
-
-    public ACAQROIData() {
-        super(DATATYPE_NAME, DATATYPE_DESCRIPTION);
-    }
+@ACAQDocumentation(name = "ROI", description = "Collection of ROI")
+public class ACAQROIData implements ACAQData {
 }

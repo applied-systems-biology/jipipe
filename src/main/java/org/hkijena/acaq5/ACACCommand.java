@@ -6,9 +6,12 @@ import io.scif.services.DatasetIOService;
 import net.imagej.DatasetService;
 import net.imagej.ImageJ;
 import net.imagej.ops.OpService;
+import org.hkijena.acaq5.algorithms.enhancers.CLAHEImageEnhancer;
 import org.hkijena.acaq5.algorithms.enhancers.HessianImageEnhancer;
-import org.hkijena.acaq5.algorithms.enhancers.WatershedMaskEnhancer;
+import org.hkijena.acaq5.algorithms.enhancers.IlluminationCorrectionEnhancer;
+import org.hkijena.acaq5.algorithms.segmenters.HoughSegmenter;
 import org.hkijena.acaq5.datatypes.ACAQGreyscaleImageData;
+import org.hkijena.acaq5.datatypes.ACAQMaskData;
 import org.scijava.app.StatusService;
 import org.scijava.command.Command;
 import org.scijava.command.CommandService;
@@ -60,13 +63,15 @@ public class ACACCommand implements Command {
 //            ToolTipManager.sharedInstance().setInitialDelay(1000);
 //            MISAModuleRepositoryUI.getInstance(this).setVisible(true);
 //        });
-        ImagePlus img = IJ.openImage("/data/ACAQ5/example1.tif");
-//        IlluminationCorrectionEnhancer enhancer = new IlluminationCorrectionEnhancer();
-//        CLAHEImageEnhancer enhancer = new CLAHEImageEnhancer();
+        ImagePlus img = IJ.openImage("/data/ACAQ5/example2.tif");
         HessianImageEnhancer enhancer = new HessianImageEnhancer();
         enhancer.getInputSlot().setData(new ACAQGreyscaleImageData(img));
         enhancer.run();
-        enhancer.getOutputSlot().getData().getMask().show();
+
+        HoughSegmenter segmenter = new HoughSegmenter();
+        segmenter.getInputSlot().setData(enhancer.getOutputSlot().getData());
+        segmenter.run();
+        segmenter.getOutputSlot().getData().getImage().show();
     }
 
     public LogService getLogService() {

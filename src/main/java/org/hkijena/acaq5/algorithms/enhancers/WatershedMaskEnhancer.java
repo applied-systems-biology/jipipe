@@ -5,7 +5,6 @@ import ij.plugin.filter.EDM;
 import org.hkijena.acaq5.ACAQInputDataSlot;
 import org.hkijena.acaq5.ACAQOutputDataSlot;
 import org.hkijena.acaq5.ACAQSimpleAlgorithm;
-import org.hkijena.acaq5.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.datatypes.ACAQMaskData;
 
 public class WatershedMaskEnhancer extends ACAQSimpleAlgorithm<ACAQInputDataSlot<ACAQMaskData>,
@@ -18,7 +17,7 @@ public class WatershedMaskEnhancer extends ACAQSimpleAlgorithm<ACAQInputDataSlot
 
     @Override
     public void run() {
-        ImagePlus img = getInputSlot().getData().getMask();
+        ImagePlus img = getInputSlot().getData().getImage();
 
         EDM watershed = new EDM();
         ImagePlus result = img.duplicate();
