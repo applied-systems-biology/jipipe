@@ -110,6 +110,7 @@ public class HoughSegmenter extends ACAQSimpleAlgorithm<ACAQInputDataSlot<ACAQGr
         // Draw the circles
         ResultsTable resultsTable = Analyzer.getResultsTable();
         ImagePlus result = drawCircleMask(img, resultsTable);
+
         getOutputSlot().setData(new ACAQMaskData(result));
     }
 }

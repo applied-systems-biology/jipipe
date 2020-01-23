@@ -12,4 +12,5 @@ public abstract class ACAQSimpleAlgorithm<I extends ACAQInputDataSlot, O extends
     public O getOutputSlot() {
         return (O)getOutputSlots().get(getOutputSlots().keySet().iterator().next());
     }
+
 }

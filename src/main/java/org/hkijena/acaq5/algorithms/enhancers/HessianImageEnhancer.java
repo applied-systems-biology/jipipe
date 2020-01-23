@@ -12,6 +12,7 @@ import imagescience.image.Image;
 import org.hkijena.acaq5.ACAQInputDataSlot;
 import org.hkijena.acaq5.ACAQOutputDataSlot;
 import org.hkijena.acaq5.ACAQSimpleAlgorithm;
+import org.hkijena.acaq5.algorithms.segmenters.AutoThresholdSegmenter;
 import org.hkijena.acaq5.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.utils.ImageJUtils;
@@ -23,6 +24,7 @@ public class HessianImageEnhancer extends ACAQSimpleAlgorithm<ACAQInputDataSlot<
 
     private double smoothing = 1.0;
     private double gradientRadius = 1;
+    private AutoThresholdSegmenter autoThresholdSegmenter = new AutoThresholdSegmenter();
 
     public HessianImageEnhancer() {
         super(new ACAQInputDataSlot<>("Input image", ACAQGreyscaleImageData.class),
@@ -42,7 +44,7 @@ public class HessianImageEnhancer extends ACAQSimpleAlgorithm<ACAQInputDataSlot<
         // Erode the original image
         ImagePlus eroded = img.duplicate();
         RankFilters erosionFilter = new RankFilters();
-        erosionFilter.rank(eroded.getProcessor(), gradientRadius, RankFilters.MIN);
+        erosionFilter.rank(eroded.getProcessor(), gradientRadius, RankFilters.MIN); //TODO: Set element to octagon
 
         // Apply image calculator
         ImageCalculator calculator = new ImageCalculator();
@@ -56,11 +58,6 @@ public class HessianImageEnhancer extends ACAQSimpleAlgorithm<ACAQInputDataSlot<
         }
     }
 
-    private void convertToMask(ImagePlus img) {
-        Prefs.blackBackground = true;
-        ImageJUtils.runOnImage(img, new Thresholder());
-    }
-
     @Override
     public void run() {
         ImagePlus img = getInputSlot().getData().getImage();
@@ -72,7 +69,9 @@ public class HessianImageEnhancer extends ACAQSimpleAlgorithm<ACAQInputDataSlot<
         applyInternalGradient(result);
 
         // Convert to mask
-        convertToMask(result);
+        autoThresholdSegmenter.getInputSlot().setData(new ACAQGreyscaleImageData(result));
+        autoThresholdSegmenter.run();
+        result = autoThresholdSegmenter.getOutputSlot().getData().getImage();
 
         // Despeckle x2
         applyDespeckle(result, 2);
