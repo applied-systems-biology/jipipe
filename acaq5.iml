@@ -100,7 +100,6 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.netlib:xerbla:0.8" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.netlib:blas:0.8" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.commons:commons-vfs2:2.0" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: commons-logging:commons-logging:1.2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.maven.scm:maven-scm-api:1.4" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.codehaus.plexus:plexus-utils:1.5.6" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.maven.scm:maven-scm-provider-svnexe:1.4" level="project" />
@@ -156,6 +155,7 @@
     <orderEntry type="library" name="Maven: com.github.ben-manes.caffeine:caffeine:2.4.0" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:ij:1.52i" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:scijava-log-slf4j:1.0.5" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.25" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.5" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:guava:26.0-jre" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.findbugs:jsr305:3.0.2" level="project" />
@@ -170,8 +170,30 @@
     <orderEntry type="library" name="Maven: sc.fiji:RandomJ_:2.0.0" level="project" />
     <orderEntry type="library" name="Maven: sc.fiji:imagescience:3.0.0" level="project" />
     <orderEntry type="library" name="Maven: sc.fiji:Image_5D:2.0.2" level="project" />
-    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.9" level="project" />
-    <orderEntry type="library" name="Maven: org.slf4j:slf4j-simple:1.7.9" level="project" />
-    <orderEntry type="library" name="Maven: mpicbg:mpicbg:20120621" level="project" />
+    <orderEntry type="library" name="Maven: edu.berkeley:Hough_Circle_Transform:1.0.0-RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.swinglabs.swingx:swingx-core:1.6.5-1" level="project" />
+    <orderEntry type="library" name="Maven: org.swinglabs.swingx:swingx-autocomplete:1.6.5-1" level="project" />
+    <orderEntry type="library" name="Maven: org.swinglabs.swingx:swingx-common:1.6.5-1" level="project" />
+    <orderEntry type="library" name="Maven: org.swinglabs.swingx:swingx-action:1.6.5-1" level="project" />
+    <orderEntry type="library" name="Maven: org.swinglabs.swingx:swingx-plaf:1.6.5-1" level="project" />
+    <orderEntry type="library" name="Maven: org.swinglabs.swingx:swingx-graphics:1.6.5-1" level="project" />
+    <orderEntry type="library" name="Maven: org.swinglabs.swingx:swingx-painters:1.6.5-1" level="project" />
+    <orderEntry type="library" name="Maven: com.vladsch.flexmark:flexmark:0.18.5" level="project" />
+    <orderEntry type="library" name="Maven: com.vladsch.flexmark:flexmark-ext-tables:0.18.5" level="project" />
+    <orderEntry type="library" name="Maven: com.vladsch.flexmark:flexmark-formatter:0.18.5" level="project" />
+    <orderEntry type="library" name="Maven: com.vladsch.flexmark:flexmark-ext-toc:0.18.5" level="project" />
+    <orderEntry type="library" name="Maven: com.vladsch.flexmark:flexmark-ext-autolink:0.18.5" level="project" />
+    <orderEntry type="library" name="Maven: org.nibor.autolink:autolink:0.6.0" level="project" />
+    <orderEntry type="library" name="Maven: com.vladsch.flexmark:flexmark-pdf-converter:0.18.5" level="project" />
+    <orderEntry type="library" name="Maven: org.jsoup:jsoup:1.10.2" level="project" />
+    <orderEntry type="library" name="Maven: com.openhtmltopdf:openhtmltopdf-core:0.0.1-RC9" level="project" />
+    <orderEntry type="library" name="Maven: com.openhtmltopdf:openhtmltopdf-pdfbox:0.0.1-RC9" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.pdfbox:pdfbox:2.0.4" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.pdfbox:fontbox:2.0.4" level="project" />
+    <orderEntry type="library" name="Maven: commons-logging:commons-logging:1.2" level="project" />
+    <orderEntry type="library" name="Maven: com.openhtmltopdf:openhtmltopdf-rtl-support:0.0.1-RC9" level="project" />
+    <orderEntry type="library" name="Maven: com.ibm.icu:icu4j:58.1" level="project" />
+    <orderEntry type="library" name="Maven: com.openhtmltopdf:openhtmltopdf-jsoup-dom-converter:0.0.1-RC9" level="project" />
+    <orderEntry type="library" name="Maven: com.vladsch.flexmark:flexmark-util:0.18.5" level="project" />
   </component>
 </module>
