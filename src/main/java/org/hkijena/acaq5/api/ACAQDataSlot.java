@@ -1,4 +1,4 @@
-package org.hkijena.acaq5;
+package org.hkijena.acaq5.api;
 
 public class ACAQDataSlot<T extends ACAQData> {
     private SlotType type;

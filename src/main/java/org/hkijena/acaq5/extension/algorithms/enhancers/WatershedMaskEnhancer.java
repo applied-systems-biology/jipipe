@@ -1,12 +1,12 @@
-package org.hkijena.acaq5.algorithms.enhancers;
+package org.hkijena.acaq5.extension.algorithms.enhancers;
 
 import ij.ImagePlus;
 import ij.plugin.filter.Binary;
 import ij.plugin.filter.EDM;
-import org.hkijena.acaq5.ACAQInputDataSlot;
-import org.hkijena.acaq5.ACAQOutputDataSlot;
-import org.hkijena.acaq5.ACAQSimpleAlgorithm;
-import org.hkijena.acaq5.datatypes.ACAQMaskData;
+import org.hkijena.acaq5.api.ACAQInputDataSlot;
+import org.hkijena.acaq5.api.ACAQOutputDataSlot;
+import org.hkijena.acaq5.api.ACAQSimpleAlgorithm;
+import org.hkijena.acaq5.extension.datatypes.ACAQMaskData;
 
 public class WatershedMaskEnhancer extends ACAQSimpleAlgorithm<ACAQInputDataSlot<ACAQMaskData>,
         ACAQOutputDataSlot<ACAQMaskData>> {

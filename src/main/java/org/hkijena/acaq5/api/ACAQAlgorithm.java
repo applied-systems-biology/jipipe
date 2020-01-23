@@ -1,4 +1,4 @@
-package org.hkijena.acaq5;
+package org.hkijena.acaq5.api;
 
 import java.util.Collections;
 import java.util.HashMap;

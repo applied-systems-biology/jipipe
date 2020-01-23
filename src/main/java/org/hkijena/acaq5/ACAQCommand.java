@@ -52,7 +52,7 @@ public class ACAQCommand implements Command {
 
     @Override
     public void run() {
-//        MISAImageJRegistryService.instantiate(pluginService);
+        ACAQRegistryService.instantiate(pluginService);
         SwingUtilities.invokeLater(() -> {
             ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
             ToolTipManager.sharedInstance().setInitialDelay(1000);

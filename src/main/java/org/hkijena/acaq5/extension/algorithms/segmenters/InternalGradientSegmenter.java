@@ -1,19 +1,16 @@
-package org.hkijena.acaq5.algorithms.segmenters;
+package org.hkijena.acaq5.extension.algorithms.segmenters;
 
 import ij.ImagePlus;
-import ij.Prefs;
 import ij.plugin.ImageCalculator;
-import ij.plugin.Thresholder;
 import ij.plugin.filter.Binary;
 import ij.plugin.filter.GaussianBlur;
 import ij.plugin.filter.RankFilters;
-import ij.plugin.frame.ThresholdAdjuster;
-import org.hkijena.acaq5.ACAQInputDataSlot;
-import org.hkijena.acaq5.ACAQOutputDataSlot;
-import org.hkijena.acaq5.ACAQSimpleAlgorithm;
-import org.hkijena.acaq5.algorithms.enhancers.CLAHEImageEnhancer;
-import org.hkijena.acaq5.datatypes.ACAQGreyscaleImageData;
-import org.hkijena.acaq5.datatypes.ACAQMaskData;
+import org.hkijena.acaq5.api.ACAQInputDataSlot;
+import org.hkijena.acaq5.api.ACAQOutputDataSlot;
+import org.hkijena.acaq5.api.ACAQSimpleAlgorithm;
+import org.hkijena.acaq5.extension.algorithms.enhancers.CLAHEImageEnhancer;
+import org.hkijena.acaq5.extension.datatypes.ACAQGreyscaleImageData;
+import org.hkijena.acaq5.extension.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.utils.ImageJUtils;
 
 public class InternalGradientSegmenter extends ACAQSimpleAlgorithm<ACAQInputDataSlot<ACAQGreyscaleImageData>,

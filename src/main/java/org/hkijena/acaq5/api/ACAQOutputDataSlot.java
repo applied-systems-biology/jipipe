@@ -1,4 +1,4 @@
-package org.hkijena.acaq5;
+package org.hkijena.acaq5.api;
 
 public class ACAQOutputDataSlot<T extends ACAQData> extends ACAQDataSlot<T> {
     public ACAQOutputDataSlot(String name, Class<T> acceptedDataType) {

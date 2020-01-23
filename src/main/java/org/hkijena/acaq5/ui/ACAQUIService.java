@@ -1,4 +1,6 @@
 package org.hkijena.acaq5.ui;
 
-public interface ACAQUIService {
+import org.hkijena.acaq5.api.ACAQAPIService;
+
+public interface ACAQUIService extends ACAQAPIService {
 }

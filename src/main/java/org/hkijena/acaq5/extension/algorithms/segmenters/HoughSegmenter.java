@@ -1,20 +1,16 @@
-package org.hkijena.acaq5.algorithms.segmenters;
+package org.hkijena.acaq5.extension.algorithms.segmenters;
 
 import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.measure.ResultsTable;
 import ij.plugin.filter.Analyzer;
-import ij.plugin.frame.ColorThresholder;
-import ij.process.ByteProcessor;
-import org.hkijena.acaq5.ACAQInputDataSlot;
-import org.hkijena.acaq5.ACAQOutputDataSlot;
-import org.hkijena.acaq5.ACAQSimpleAlgorithm;
-import org.hkijena.acaq5.datatypes.ACAQGreyscaleImageData;
-import org.hkijena.acaq5.datatypes.ACAQMaskData;
+import org.hkijena.acaq5.api.ACAQInputDataSlot;
+import org.hkijena.acaq5.api.ACAQOutputDataSlot;
+import org.hkijena.acaq5.api.ACAQSimpleAlgorithm;
+import org.hkijena.acaq5.extension.datatypes.ACAQGreyscaleImageData;
+import org.hkijena.acaq5.extension.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.utils.Hough_Circle;
-
-import java.awt.*;
 
 public class HoughSegmenter extends ACAQSimpleAlgorithm<ACAQInputDataSlot<ACAQGreyscaleImageData>,
         ACAQOutputDataSlot<ACAQMaskData>> {

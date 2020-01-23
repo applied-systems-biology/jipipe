@@ -1,11 +1,11 @@
-package org.hkijena.acaq5.algorithms.enhancers;
+package org.hkijena.acaq5.extension.algorithms.enhancers;
 
 import ij.ImagePlus;
 import ij.plugin.ImageCalculator;
-import org.hkijena.acaq5.ACAQInputDataSlot;
-import org.hkijena.acaq5.ACAQOutputDataSlot;
-import org.hkijena.acaq5.ACAQSimpleAlgorithm;
-import org.hkijena.acaq5.datatypes.ACAQGreyscaleImageData;
+import org.hkijena.acaq5.api.ACAQInputDataSlot;
+import org.hkijena.acaq5.api.ACAQOutputDataSlot;
+import org.hkijena.acaq5.api.ACAQSimpleAlgorithm;
+import org.hkijena.acaq5.extension.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.utils.ImageJUtils;
 import org.hkijena.acaq5.utils.MacroSetting;
 

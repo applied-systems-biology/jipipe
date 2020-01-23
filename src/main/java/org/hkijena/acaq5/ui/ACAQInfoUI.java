@@ -2,7 +2,6 @@ package org.hkijena.acaq5.ui;
 
 import org.hkijena.acaq5.ui.components.ImageLogo;
 import org.hkijena.acaq5.utils.ResourceUtils;
-import org.jdesktop.swingx.JXImageView;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -10,7 +9,11 @@ import java.awt.*;
 import java.io.IOException;
 
 public class ACAQInfoUI extends JPanel {
-    public ACAQInfoUI() {
+
+    private ACAQWorkbenchUI workbenchUI;
+
+    public ACAQInfoUI(ACAQWorkbenchUI workbenchUI) {
+        this.workbenchUI = workbenchUI;
         initialize();
     }
 
