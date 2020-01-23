@@ -10,6 +10,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.25" level="project" />
+    <orderEntry type="library" name="Maven: edu.berkeley:Hough_Circle_Transform:1.0.0-RELEASE" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej:2.0.0-rc-71" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-common:0.28.2" level="project" />
     <orderEntry type="library" name="Maven: net.imglib2:imglib2-roi:0.7.0" level="project" />
@@ -155,7 +157,6 @@
     <orderEntry type="library" name="Maven: com.github.ben-manes.caffeine:caffeine:2.4.0" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:ij:1.52i" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:scijava-log-slf4j:1.0.5" level="project" />
-    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.25" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.5" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:guava:26.0-jre" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.findbugs:jsr305:3.0.2" level="project" />
@@ -170,7 +171,9 @@
     <orderEntry type="library" name="Maven: sc.fiji:RandomJ_:2.0.0" level="project" />
     <orderEntry type="library" name="Maven: sc.fiji:imagescience:3.0.0" level="project" />
     <orderEntry type="library" name="Maven: sc.fiji:Image_5D:2.0.2" level="project" />
-    <orderEntry type="library" name="Maven: edu.berkeley:Hough_Circle_Transform:1.0.0-RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.9" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-simple:1.7.9" level="project" />
+    <orderEntry type="library" name="Maven: mpicbg:mpicbg:20120621" level="project" />
     <orderEntry type="library" name="Maven: org.swinglabs.swingx:swingx-core:1.6.5-1" level="project" />
     <orderEntry type="library" name="Maven: org.swinglabs.swingx:swingx-autocomplete:1.6.5-1" level="project" />
     <orderEntry type="library" name="Maven: org.swinglabs.swingx:swingx-common:1.6.5-1" level="project" />
