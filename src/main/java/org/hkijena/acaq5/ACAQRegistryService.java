@@ -41,7 +41,7 @@ public class ACAQRegistryService extends AbstractService implements ACAQService 
      */
     private void discover(PluginService pluginService) {
         for(PluginInfo<ACAQExtensionService> info : pluginService.getPluginsOfType(ACAQExtensionService.class)) {
-            System.out.println("Registering plugin " + info);
+            System.out.println("ACAQ5: Registering plugin " + info);
             try {
                 ACAQExtensionService service = (ACAQExtensionService)info.createInstance();
                 service.register(this);
