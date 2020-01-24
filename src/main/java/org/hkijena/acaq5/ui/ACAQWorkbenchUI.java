@@ -1,6 +1,9 @@
 package org.hkijena.acaq5.ui;
 
+import ij.IJ;
+import ij.ImagePlus;
 import org.hkijena.acaq5.ACAQCommand;
+import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -9,11 +12,13 @@ import java.awt.*;
 
 public class ACAQWorkbenchUI extends JFrame {
 
+    private ACAQProject project;
     private ACAQCommand command;
     private DocumentTabPane documentTabPane;
     private ACAQInfoUI infoUI;
 
     public ACAQWorkbenchUI(ACAQCommand command) {
+        this.project = new ACAQProject();
         this.command = command;
         initialize();
     }
@@ -28,7 +33,8 @@ public class ACAQWorkbenchUI extends JFrame {
 
         documentTabPane = new DocumentTabPane();
         documentTabPane.addSingletonTab("INTRODUCTION", "Introduction", UIUtils.getIconFromResources("info.png"), infoUI, false);
-        documentTabPane.addTab("Samples", UIUtils.getIconFromResources("sample.png"), new JPanel(), DocumentTabPane.CloseMode.withoutCloseButton, false);
+        documentTabPane.addTab("Data", UIUtils.getIconFromResources("sample.png"), new JPanel(), DocumentTabPane.CloseMode.withoutCloseButton, false);
+        documentTabPane.addTab("Analysis", UIUtils.getIconFromResources("cog.png"), new JPanel(), DocumentTabPane.CloseMode.withoutCloseButton, false);
         documentTabPane.selectSingletonTab("INTRODUCTION");
         add(documentTabPane, BorderLayout.CENTER);
 
@@ -78,6 +84,6 @@ public class ACAQWorkbenchUI extends JFrame {
         frame.pack();
         frame.setSize(800, 600);
         frame.setVisible(true);
-        frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+//        frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
     }
 }

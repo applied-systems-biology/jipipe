@@ -14,8 +14,7 @@ import org.hkijena.acaq5.utils.ImageJUtils;
 /**
  * Segmenter node that thresholds via an auto threshold
  */
-public class AutoThresholdSegmenter extends ACAQSimpleAlgorithm<ACAQInputDataSlot<ACAQGreyscaleImageData>,
-        ACAQOutputDataSlot<ACAQMaskData>> {
+public class AutoThresholdSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQMaskData> {
 
     private String method = AutoThresholder.getMethods()[0];
 

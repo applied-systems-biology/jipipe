@@ -1,5 +1,7 @@
 package org.hkijena.acaq5.api;
 
+import com.google.common.eventbus.EventBus;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,9 +10,11 @@ public abstract class ACAQAlgorithm {
 
     private Map<String, ACAQDataSlot> inputSlots = new HashMap<>();
     private Map<String, ACAQDataSlot> outputSlots = new HashMap<>();
+    private EventBus eventBus = new EventBus();
 
     public ACAQAlgorithm(ACAQDataSlot... slots) {
         for(ACAQDataSlot slot : slots) {
+            slot.setAlgorithm(this);
             switch (slot.getType()) {
                 case Input:
                     inputSlots.put(slot.getName(), slot);
@@ -32,5 +36,9 @@ public abstract class ACAQAlgorithm {
 
     public Map<String, ACAQDataSlot> getOutputSlots() {
         return Collections.unmodifiableMap(outputSlots);
+    }
+
+    public EventBus getEventBus() {
+        return eventBus;
     }
 }

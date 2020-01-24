@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.api;
 
 public class ACAQDataSlot<T extends ACAQData> {
+    private ACAQAlgorithm algorithm;
     private SlotType type;
     private String name;
     private Class<T> acceptedDataType;
@@ -36,6 +37,14 @@ public class ACAQDataSlot<T extends ACAQData> {
         if(!accepts(data))
             throw new RuntimeException("Data slot does not accept data");
         this.data = data;
+    }
+
+    public ACAQAlgorithm getAlgorithm() {
+        return algorithm;
+    }
+
+    void setAlgorithm(ACAQAlgorithm algorithm) {
+        this.algorithm = algorithm;
     }
 
     public enum SlotType {

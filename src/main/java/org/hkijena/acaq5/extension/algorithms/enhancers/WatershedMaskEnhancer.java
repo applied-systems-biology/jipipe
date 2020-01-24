@@ -8,8 +8,7 @@ import org.hkijena.acaq5.api.ACAQOutputDataSlot;
 import org.hkijena.acaq5.api.ACAQSimpleAlgorithm;
 import org.hkijena.acaq5.extension.datatypes.ACAQMaskData;
 
-public class WatershedMaskEnhancer extends ACAQSimpleAlgorithm<ACAQInputDataSlot<ACAQMaskData>,
-        ACAQOutputDataSlot<ACAQMaskData>> {
+public class WatershedMaskEnhancer extends ACAQSimpleAlgorithm<ACAQMaskData, ACAQMaskData> {
 
     private int erosionIterations = 0;
 

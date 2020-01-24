@@ -13,8 +13,7 @@ import org.hkijena.acaq5.extension.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.utils.ImageJUtils;
 
-public class InternalGradientSegmenter extends ACAQSimpleAlgorithm<ACAQInputDataSlot<ACAQGreyscaleImageData>,
-        ACAQOutputDataSlot<ACAQMaskData>> {
+public class InternalGradientSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQMaskData> {
 
     private double gaussSigma = 3;
     private int internalGradientRadius = 25;

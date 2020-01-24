@@ -7,8 +7,8 @@ import org.hkijena.acaq5.api.ACAQOutputDataSlot;
 import org.hkijena.acaq5.api.ACAQSimpleAlgorithm;
 import org.hkijena.acaq5.extension.datatypes.ACAQGreyscaleImageData;
 
-public class CLAHEImageEnhancer extends ACAQSimpleAlgorithm<ACAQInputDataSlot<ACAQGreyscaleImageData>,
-        ACAQOutputDataSlot<ACAQGreyscaleImageData>> {
+public class CLAHEImageEnhancer extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData,
+        ACAQGreyscaleImageData> {
 
     private int blocks = 127;
     private int bins = 256;

@@ -198,5 +198,7 @@
     <orderEntry type="library" name="Maven: com.ibm.icu:icu4j:58.1" level="project" />
     <orderEntry type="library" name="Maven: com.openhtmltopdf:openhtmltopdf-jsoup-dom-converter:0.0.1-RC9" level="project" />
     <orderEntry type="library" name="Maven: com.vladsch.flexmark:flexmark-util:0.18.5" level="project" />
+    <orderEntry type="library" name="Maven: org.jgrapht:jgrapht-core:1.3.1" level="project" />
+    <orderEntry type="library" name="Maven: org.jheaps:jheaps:0.10" level="project" />
   </component>
 </module>

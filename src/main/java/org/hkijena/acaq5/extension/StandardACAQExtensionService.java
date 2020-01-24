@@ -10,6 +10,7 @@ import org.hkijena.acaq5.extension.algorithms.segmenters.AutoThresholdSegmenter;
 import org.hkijena.acaq5.extension.algorithms.segmenters.BrightSpotsSegmenter;
 import org.hkijena.acaq5.extension.algorithms.segmenters.HoughSegmenter;
 import org.hkijena.acaq5.extension.algorithms.segmenters.InternalGradientSegmenter;
+import org.hkijena.acaq5.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.hkijena.acaq5.extension.datatypes.ACAQGreyscaleImageData;
@@ -23,8 +24,14 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
 
         // Register data types
         registryService.getDatatypeRegistry().register(ACAQGreyscaleImageData.class);
+        registryService.getUIDatatypeRegistry().registerIcon(ACAQGreyscaleImageData.class,
+                ResourceUtils.getPluginResource("icons/data-type-greyscale.png"));
         registryService.getDatatypeRegistry().register(ACAQMaskData.class);
+        registryService.getUIDatatypeRegistry().registerIcon(ACAQMaskData.class,
+                ResourceUtils.getPluginResource("icons/data-type-binary.png"));
         registryService.getDatatypeRegistry().register(ACAQROIData.class);
+        registryService.getUIDatatypeRegistry().registerIcon(ACAQROIData.class,
+                ResourceUtils.getPluginResource("icons/data-type-roi.png"));
 
         // Register algorithms
         registryService.getAlgorithmRegistry().register(MaskToParticleConverter.class);

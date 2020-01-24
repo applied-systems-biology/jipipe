@@ -8,8 +8,7 @@ import org.hkijena.acaq5.api.ACAQSimpleAlgorithm;
 import org.hkijena.acaq5.extension.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.datatypes.ACAQROIData;
 
-public class MaskToParticleConverter extends ACAQSimpleAlgorithm<ACAQInputDataSlot<ACAQMaskData>,
-        ACAQOutputDataSlot<ACAQROIData>> {
+public class MaskToParticleConverter extends ACAQSimpleAlgorithm<ACAQMaskData, ACAQROIData> {
     private double minParticleSize = 0;
     private double maxParticleSize = Double.MAX_VALUE;
     private double minParticleCircularity = 0;
