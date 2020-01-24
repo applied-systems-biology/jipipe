@@ -157,7 +157,6 @@
     <orderEntry type="library" name="Maven: com.github.ben-manes.caffeine:caffeine:2.4.0" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:ij:1.52i" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:scijava-log-slf4j:1.0.5" level="project" />
-    <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.5" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:guava:26.0-jre" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.findbugs:jsr305:3.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.checkerframework:checker-qual:2.5.2" level="project" />
@@ -167,6 +166,9 @@
     <orderEntry type="library" name="Maven: fr.inra.ijpb:MorphoLibJ_:1.4.1" level="project" />
     <orderEntry type="library" name="Maven: gov.nist.math:jama:1.0.3" level="project" />
     <orderEntry type="library" name="Maven: sc.fiji:FeatureJ_:2.0.0" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.7.3" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.7.3" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.7.0" level="project" />
     <orderEntry type="library" name="Maven: sc.fiji:MTrackJ_:1.5.4" level="project" />
     <orderEntry type="library" name="Maven: sc.fiji:RandomJ_:2.0.0" level="project" />
     <orderEntry type="library" name="Maven: sc.fiji:imagescience:3.0.0" level="project" />

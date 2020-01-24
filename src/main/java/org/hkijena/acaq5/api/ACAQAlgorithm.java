@@ -1,7 +1,11 @@
 package org.hkijena.acaq5.api;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.eventbus.EventBus;
 
+import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,4 +45,5 @@ public abstract class ACAQAlgorithm {
     public EventBus getEventBus() {
         return eventBus;
     }
+
 }

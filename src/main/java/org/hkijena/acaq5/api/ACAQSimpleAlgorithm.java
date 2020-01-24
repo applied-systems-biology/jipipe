@@ -1,5 +1,7 @@
 package org.hkijena.acaq5.api;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 public abstract class ACAQSimpleAlgorithm<IData extends ACAQData, OData extends ACAQData> extends ACAQAlgorithm {
     public ACAQSimpleAlgorithm(ACAQInputDataSlot<IData> inputSlot, ACAQOutputDataSlot<OData> outputSlot) {
         super(inputSlot, outputSlot);
