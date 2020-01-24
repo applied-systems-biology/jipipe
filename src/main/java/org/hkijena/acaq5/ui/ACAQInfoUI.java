@@ -1,6 +1,9 @@
 package org.hkijena.acaq5.ui;
 
+import ij.IJ;
+import ij.ImagePlus;
 import org.hkijena.acaq5.ui.components.ImageLogo;
+import org.hkijena.acaq5.ui.components.ImagePlusExternalPreviewer;
 import org.hkijena.acaq5.utils.ResourceUtils;
 
 import javax.imageio.ImageIO;
@@ -33,6 +36,18 @@ public class ACAQInfoUI extends JPanel {
         contentPanel.setLayout(contentPanelLayout);
 
         addLogo(contentPanel);
+
+        ImagePlus img0 = IJ.openImage("/data/ACAQ5/example1.tif");
+        ImagePlus img1 = IJ.openImage("/data/ACAQ5/example2.tif");
+        ImagePlusExternalPreviewer previewer = new ImagePlusExternalPreviewer();
+
+        JButton button0 = new JButton("Image0");
+        button0.addActionListener(x -> previewer.setCurrentImage(img0));
+        add(button0);
+
+        JButton button1 = new JButton("Image1");
+        button1.addActionListener(x -> previewer.setCurrentImage(img1));
+        add(button1);
     }
 
     private void addLogo(JPanel target) {
