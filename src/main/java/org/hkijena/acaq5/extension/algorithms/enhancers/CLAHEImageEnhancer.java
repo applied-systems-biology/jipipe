@@ -5,15 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import ij.ImagePlus;
 import mpicbg.ij.clahe.Flat;
-import org.hkijena.acaq5.api.ACAQInputDataSlot;
-import org.hkijena.acaq5.api.ACAQOutputDataSlot;
-import org.hkijena.acaq5.api.ACAQParameter;
-import org.hkijena.acaq5.api.ACAQSimpleAlgorithm;
+import org.hkijena.acaq5.api.*;
 import org.hkijena.acaq5.extension.datatypes.ACAQGreyscaleImageData;
 
 import java.io.File;
 import java.io.IOException;
 
+@ACAQDocumentation(name = "CLAHE enhancer")
 public class CLAHEImageEnhancer extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData,
         ACAQGreyscaleImageData> {
 

@@ -46,4 +46,19 @@ public abstract class ACAQAlgorithm {
         return eventBus;
     }
 
+    /**
+     * Returns the name of an algorithm
+     * @param klass
+     * @return
+     */
+    public static String getName(Class<? extends  ACAQAlgorithm> klass) {
+        ACAQDocumentation[] annotations = klass.getAnnotationsByType(ACAQDocumentation.class);
+        if(annotations.length > 0) {
+            return annotations[0].name();
+        }
+        else {
+            return klass.getSimpleName();
+        }
+    }
+
 }

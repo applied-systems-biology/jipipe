@@ -1,7 +1,5 @@
 package org.hkijena.acaq5.ui;
 
-import ij.IJ;
-import ij.ImagePlus;
 import org.hkijena.acaq5.ACAQCommand;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
@@ -44,7 +42,7 @@ public class ACAQWorkbenchUI extends JFrame {
                 false);
         documentTabPane.addTab("Analysis",
                 UIUtils.getIconFromResources("cog.png"),
-                new ACAQAnalysisPipelinerUI(this),
+                new ACAQAlgorithmGraphUI(this),
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
         documentTabPane.selectSingletonTab("INTRODUCTION");
