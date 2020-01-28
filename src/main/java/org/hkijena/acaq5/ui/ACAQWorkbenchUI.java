@@ -32,9 +32,21 @@ public class ACAQWorkbenchUI extends JFrame {
         infoUI = new ACAQInfoUI(this);
 
         documentTabPane = new DocumentTabPane();
-        documentTabPane.addSingletonTab("INTRODUCTION", "Introduction", UIUtils.getIconFromResources("info.png"), infoUI, false);
-        documentTabPane.addTab("Data", UIUtils.getIconFromResources("sample.png"), new JPanel(), DocumentTabPane.CloseMode.withoutCloseButton, false);
-        documentTabPane.addTab("Analysis", UIUtils.getIconFromResources("cog.png"), new JPanel(), DocumentTabPane.CloseMode.withoutCloseButton, false);
+        documentTabPane.addSingletonTab("INTRODUCTION",
+                "Introduction",
+                UIUtils.getIconFromResources("info.png"),
+                infoUI,
+                false);
+        documentTabPane.addTab("Data",
+                UIUtils.getIconFromResources("sample.png"),
+                new ACAQDataUI(this),
+                DocumentTabPane.CloseMode.withoutCloseButton,
+                false);
+        documentTabPane.addTab("Analysis",
+                UIUtils.getIconFromResources("cog.png"),
+                new ACAQAnalysisPipelinerUI(this),
+                DocumentTabPane.CloseMode.withoutCloseButton,
+                false);
         documentTabPane.selectSingletonTab("INTRODUCTION");
         add(documentTabPane, BorderLayout.CENTER);
 
@@ -77,6 +89,10 @@ public class ACAQWorkbenchUI extends JFrame {
         menu.add(quickHelp);
 
         toolBar.add(helpButton);
+    }
+
+    public DocumentTabPane getDocumentTabPane() {
+        return  documentTabPane;
     }
 
     public static void newWindow(ACAQCommand command) {

@@ -110,6 +110,12 @@ public class DocumentTabPane extends JTabbedPane {
         return addTab(title, icon, component, closeMode, false);
     }
 
+    public void switchToLastTab() {
+        if(getTabCount() > 0) {
+            setSelectedIndex(getTabCount() - 1);
+        }
+    }
+
     /**
      * Adds a tab that can be silently closed and brought up again
      * @param title
