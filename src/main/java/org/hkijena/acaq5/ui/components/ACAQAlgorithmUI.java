@@ -192,4 +192,12 @@ public class ACAQAlgorithmUI extends JPanel {
         return true;
     }
 
+    /**
+     * Get the Y location of the bottom part
+     * @return
+     */
+    public int getBottomY() {
+        return getY() + getHeight();
+    }
+
 }

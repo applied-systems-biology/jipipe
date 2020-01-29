@@ -11,15 +11,17 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel  {
 
     private ACAQAlgorithmGraphCanvasUI graphUI;
     protected  JToolBar toolBar = new JToolBar();
+    private ACAQAlgorithmGraph algorithmGraph;
 
-    public ACAQAlgorithmGraphUI(ACAQWorkbenchUI workbenchUI) {
+    public ACAQAlgorithmGraphUI(ACAQWorkbenchUI workbenchUI, ACAQAlgorithmGraph algorithmGraph) {
         super(workbenchUI);
+        this.algorithmGraph = algorithmGraph;
         initialize();
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
-        graphUI = new ACAQAlgorithmGraphCanvasUI(new ACAQAlgorithmGraph());
+        graphUI = new ACAQAlgorithmGraphCanvasUI(algorithmGraph);
         add(new JScrollPane(graphUI) {
             {
                 setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -38,4 +40,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel  {
         toolBar.add(autoLayoutButton);
     }
 
+    public ACAQAlgorithmGraph getAlgorithmGraph() {
+        return algorithmGraph;
+    }
 }

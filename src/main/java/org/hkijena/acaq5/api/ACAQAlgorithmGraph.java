@@ -10,6 +10,7 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -92,5 +93,9 @@ public class ACAQAlgorithmGraph {
 
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    public Set<ACAQAlgorithm> getNodes() {
+        return algorithms;
     }
 }

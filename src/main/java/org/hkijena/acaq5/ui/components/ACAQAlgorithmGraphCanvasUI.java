@@ -10,6 +10,11 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionListener, MouseListener {
     private ACAQAlgorithmGraph algorithmGraph;
@@ -21,6 +26,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         super(null);
         this.algorithmGraph = algorithmGraph;
         initialize();
+        addNewNodes();
     }
 
     private void initialize() {
@@ -42,6 +48,30 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
     private void tryMoveToAutoAssign() {
 
+    }
+
+    /**
+     * Removes node UIs that are not valid anymore
+     */
+    private void removeOldNodes() {
+
+    }
+
+    /**
+     * Adds node UIs that are not in the canvas yet
+     */
+    private void addNewNodes() {
+        List<ACAQAlgorithm> newNodes = algorithmGraph.getNodes().stream().filter(x -> !nodeUIs.containsKey(x)).collect(Collectors.toList());
+        for(ACAQAlgorithm algorithm : newNodes) {
+            //TODO: More auto-layout-like placement. Only use the brute force method as last measurement
+            int y = nodeUIs.values().stream().map(ACAQAlgorithmUI::getBottomY).max(Integer::compareTo).orElse(0);
+            if(y == 0)
+                y += 2 * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+            ACAQAlgorithmUI ui = new ACAQAlgorithmUI(this, algorithm);
+            add(ui);
+            ui.setLocation(ACAQAlgorithmUI.SLOT_UI_WIDTH * 4, y);
+            nodeUIs.put(algorithm, ui);
+        }
     }
 
     @Override

@@ -15,8 +15,8 @@ public class ACAQWorkbenchUI extends JFrame {
     private DocumentTabPane documentTabPane;
     private ACAQInfoUI infoUI;
 
-    public ACAQWorkbenchUI(ACAQCommand command) {
-        this.project = new ACAQProject();
+    public ACAQWorkbenchUI(ACAQCommand command, ACAQProject project) {
+        this.project = project;
         this.command = command;
         initialize();
     }
@@ -42,7 +42,7 @@ public class ACAQWorkbenchUI extends JFrame {
                 false);
         documentTabPane.addTab("Analysis",
                 UIUtils.getIconFromResources("cog.png"),
-                new ACAQAlgorithmGraphUI(this),
+                new ACAQAlgorithmGraphUI(this, project.getAnalysis()),
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
         documentTabPane.selectSingletonTab("INTRODUCTION");
@@ -56,7 +56,7 @@ public class ACAQWorkbenchUI extends JFrame {
 
         // Add "New project" toolbar entry
         JButton newProject = new JButton("New project ...", UIUtils.getIconFromResources("new.png"));
-        newProject.addActionListener(e -> newWindow(command));
+        newProject.addActionListener(e -> newWindow(command, new ACAQProject()));
         toolBar.add(newProject);
 
         // "Open project" entry
@@ -93,11 +93,17 @@ public class ACAQWorkbenchUI extends JFrame {
         return  documentTabPane;
     }
 
-    public static void newWindow(ACAQCommand command) {
-        ACAQWorkbenchUI frame = new ACAQWorkbenchUI(command);
+    public ACAQProject getProject() {
+        return project;
+    }
+
+    public static void newWindow(ACAQCommand command, ACAQProject project) {
+        ACAQWorkbenchUI frame = new ACAQWorkbenchUI(command, project);
         frame.pack();
         frame.setSize(800, 600);
         frame.setVisible(true);
 //        frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
     }
+
+
 }

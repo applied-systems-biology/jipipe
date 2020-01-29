@@ -10,8 +10,11 @@ public class ACAQProject {
     private EventBus eventBus = new EventBus();
     private ACAQIO preprocessingOutput = new ACAQIO();
     private ACAQIO analysisOutput = new ACAQIO();
+    private ACAQAlgorithmGraph analysis = new ACAQAlgorithmGraph();
 
     public ACAQProject() {
+        analysis.insertNode(preprocessingOutput);
+        analysis.insertNode(analysisOutput);
     }
 
     public EventBus getEventBus() {
@@ -24,5 +27,9 @@ public class ACAQProject {
 
     public ACAQIO getAnalysisOutput() {
         return analysisOutput;
+    }
+
+    public ACAQAlgorithmGraph getAnalysis() {
+        return analysis;
     }
 }
