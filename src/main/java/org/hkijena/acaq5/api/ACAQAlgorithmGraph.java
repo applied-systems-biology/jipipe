@@ -2,11 +2,12 @@ package org.hkijena.acaq5.api;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
-import org.jgrapht.*;
+import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
+import org.jgrapht.Graph;
 import org.jgrapht.alg.cycle.CycleDetector;
-import org.jgrapht.graph.*;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -1,7 +1,9 @@
 package org.hkijena.acaq5.ui.components;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import org.hkijena.acaq5.api.ACAQAlgorithm;
 import org.hkijena.acaq5.api.ACAQAlgorithmGraph;
-import org.hkijena.acaq5.extension.algorithms.enhancers.CLAHEImageEnhancer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,6 +15,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     private ACAQAlgorithmGraph algorithmGraph;
     private ACAQAlgorithmUI currentlyDragged;
     private Point currentlyDraggedOffset = new Point();
+    private BiMap<ACAQAlgorithm, ACAQAlgorithmUI> nodeUIs = HashBiMap.create();
 
     public ACAQAlgorithmGraphCanvasUI(ACAQAlgorithmGraph algorithmGraph) {
         super(null);
@@ -22,10 +25,6 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
     private void initialize() {
         setBackground(Color.WHITE);
-
-        ACAQAlgorithmUI algorithmUI = new ACAQAlgorithmUI(this, new CLAHEImageEnhancer());
-        add(algorithmUI);
-
         addMouseListener(this);
         addMouseMotionListener(this);
     }

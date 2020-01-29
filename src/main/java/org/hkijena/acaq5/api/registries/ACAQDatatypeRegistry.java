@@ -2,7 +2,9 @@ package org.hkijena.acaq5.api.registries;
 
 import org.hkijena.acaq5.api.ACAQData;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ACAQDatatypeRegistry {
     private Set<Class<? extends ACAQData>> registeredDataTypes = new HashSet<>();

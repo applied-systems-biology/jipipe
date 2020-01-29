@@ -10,12 +10,12 @@ import org.hkijena.acaq5.extension.algorithms.segmenters.AutoThresholdSegmenter;
 import org.hkijena.acaq5.extension.algorithms.segmenters.BrightSpotsSegmenter;
 import org.hkijena.acaq5.extension.algorithms.segmenters.HoughSegmenter;
 import org.hkijena.acaq5.extension.algorithms.segmenters.InternalGradientSegmenter;
-import org.hkijena.acaq5.utils.ResourceUtils;
-import org.scijava.plugin.Plugin;
-import org.scijava.service.AbstractService;
 import org.hkijena.acaq5.extension.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.datatypes.ACAQROIData;
+import org.hkijena.acaq5.utils.ResourceUtils;
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
 
 @Plugin(type = ACAQExtensionService.class)
 public class StandardACAQExtensionService extends AbstractService implements ACAQExtensionService {

@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.api;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 
 import java.util.Collections;

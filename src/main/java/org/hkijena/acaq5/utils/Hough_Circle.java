@@ -25,19 +25,25 @@ package org.hkijena.acaq5.utils;
 This implementation was updated to allow direct usage from within ImageJ plugins
  */
 
-import ij.*;
+import ij.IJ;
+import ij.ImagePlus;
+import ij.ImageStack;
+import ij.WindowManager;
 import ij.measure.Calibration;
-import ij.process.*;
-import java.awt.*;
-import ij.plugin.HyperStackConverter;
-import ij.plugin.frame.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import javax.swing.*;
 import ij.measure.ResultsTable;
+import ij.plugin.HyperStackConverter;
 import ij.plugin.filter.Analyzer;
-import static java.lang.System.gc;
+import ij.plugin.frame.Recorder;
+import ij.process.ImageProcessor;
+import ij.process.LUT;
+
+import javax.swing.*;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static java.lang.System.gc;
 
 /**
  *

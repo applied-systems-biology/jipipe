@@ -13,6 +13,7 @@
 package org.hkijena.acaq5.utils;
 
 import org.hkijena.acaq5.ui.components.ColorIcon;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
