@@ -4,6 +4,8 @@ import io.scif.services.DatasetIOService;
 import net.imagej.DatasetService;
 import net.imagej.ImageJ;
 import net.imagej.ops.OpService;
+import org.hkijena.acaq5.api.ACAQProject;
+import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.scijava.app.StatusService;
 import org.scijava.command.Command;
 import org.scijava.command.CommandService;
@@ -51,12 +53,12 @@ public class ACAQCommand implements Command {
 
     @Override
     public void run() {
-//        MISAImageJRegistryService.instantiate(pluginService);
-//        SwingUtilities.invokeLater(() -> {
-//            ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
-//            ToolTipManager.sharedInstance().setInitialDelay(1000);
-//            MISAModuleRepositoryUI.getInstance(this).setVisible(true);
-//        });
+        ACAQRegistryService.instantiate(pluginService);
+        SwingUtilities.invokeLater(() -> {
+            ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
+            ToolTipManager.sharedInstance().setInitialDelay(1000);
+            ACAQWorkbenchUI.newWindow(this, new ACAQProject());
+        });
     }
 
     public LogService getLogService() {
