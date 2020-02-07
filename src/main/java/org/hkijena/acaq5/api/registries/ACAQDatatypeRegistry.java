@@ -6,7 +6,9 @@ import com.google.common.collect.ImmutableBiMap;
 import org.hkijena.acaq5.api.ACAQData;
 import org.hkijena.acaq5.api.ACAQDataSlot;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ACAQDatatypeRegistry {
     private Set<Class<? extends ACAQData>> registeredDataTypes = new HashSet<>();

@@ -7,7 +7,6 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 import java.awt.*;
-import java.util.Collection;
 
 /**
  * Renders a sample in the {@link org.hkijena.acaq5.ui.ACAQSampleManagerUI}

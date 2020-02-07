@@ -1,8 +1,5 @@
 package org.hkijena.acaq5.api;
 
-import java.util.Collections;
-import java.util.Map;
-
 /**
  * An {@link ACAQAlgorithm} that generates data. It has no input slots.
  */

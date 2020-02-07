@@ -1,8 +1,6 @@
 package org.hkijena.acaq5.extension.datasources;
 
-import org.hkijena.acaq5.api.ACAQDataSource;
 import org.hkijena.acaq5.api.ACAQSimpleDataSource;
-import org.hkijena.acaq5.api.ACAQSlotConfiguration;
 import org.hkijena.acaq5.extension.dataslots.ACAQGreyscaleImageDataSlot;
 
 import java.nio.file.Path;

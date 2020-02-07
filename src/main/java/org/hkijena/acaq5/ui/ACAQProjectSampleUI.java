@@ -3,8 +3,6 @@ package org.hkijena.acaq5.ui;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQProjectSample;
 import org.hkijena.acaq5.api.events.ACAQSampleRenamedEvent;
-import org.hkijena.acaq5.ui.ACAQUIPanel;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
