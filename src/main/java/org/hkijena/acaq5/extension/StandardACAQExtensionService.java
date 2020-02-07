@@ -10,6 +10,9 @@ import org.hkijena.acaq5.extension.algorithms.segmenters.AutoThresholdSegmenter;
 import org.hkijena.acaq5.extension.algorithms.segmenters.BrightSpotsSegmenter;
 import org.hkijena.acaq5.extension.algorithms.segmenters.HoughSegmenter;
 import org.hkijena.acaq5.extension.algorithms.segmenters.InternalGradientSegmenter;
+import org.hkijena.acaq5.extension.dataslots.ACAQGreyscaleImageDataSlot;
+import org.hkijena.acaq5.extension.dataslots.ACAQMaskDataSlot;
+import org.hkijena.acaq5.extension.dataslots.ACAQROIDataSlot;
 import org.hkijena.acaq5.extension.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.datatypes.ACAQROIData;
@@ -23,13 +26,13 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
     public void register(ACAQRegistryService registryService) {
 
         // Register data types
-        registryService.getDatatypeRegistry().register(ACAQGreyscaleImageData.class);
+        registryService.getDatatypeRegistry().register(ACAQGreyscaleImageData.class, ACAQGreyscaleImageDataSlot.class);
         registryService.getUIDatatypeRegistry().registerIcon(ACAQGreyscaleImageData.class,
                 ResourceUtils.getPluginResource("icons/data-type-greyscale.png"));
-        registryService.getDatatypeRegistry().register(ACAQMaskData.class);
+        registryService.getDatatypeRegistry().register(ACAQMaskData.class, ACAQMaskDataSlot.class);
         registryService.getUIDatatypeRegistry().registerIcon(ACAQMaskData.class,
                 ResourceUtils.getPluginResource("icons/data-type-binary.png"));
-        registryService.getDatatypeRegistry().register(ACAQROIData.class);
+        registryService.getDatatypeRegistry().register(ACAQROIData.class, ACAQROIDataSlot.class);
         registryService.getUIDatatypeRegistry().registerIcon(ACAQROIData.class,
                 ResourceUtils.getPluginResource("icons/data-type-roi.png"));
 

@@ -1,16 +1,19 @@
 package org.hkijena.acaq5.api;
 
 public abstract class ACAQSimpleAlgorithm<IData extends ACAQData, OData extends ACAQData> extends ACAQAlgorithm {
-    public ACAQSimpleAlgorithm(ACAQInputDataSlot<IData> inputSlot, ACAQOutputDataSlot<OData> outputSlot) {
-        super(inputSlot, outputSlot);
+    public ACAQSimpleAlgorithm(String inputSlotName, Class<? extends ACAQDataSlot<IData>> inputSlotClass,
+                               String outputSlotName, Class<? extends ACAQDataSlot<OData>> outputSlotClass) {
+        super(new ACAQSlotConfiguration()
+                .addInputSlot(inputSlotName, inputSlotClass)
+                .addOutputSlot(outputSlotName, outputSlotClass));
     }
 
-    public ACAQInputDataSlot<IData> getInputSlot() {
-        return (ACAQInputDataSlot<IData>)getInputSlots().get(getInputSlots().keySet().iterator().next());
+    public ACAQDataSlot<IData> getInputSlot() {
+        return (ACAQDataSlot<IData>)getInputSlots().get(getInputSlots().keySet().iterator().next());
     }
 
-    public ACAQOutputDataSlot<OData> getOutputSlot() {
-        return (ACAQOutputDataSlot<OData>)getOutputSlots().get(getOutputSlots().keySet().iterator().next());
+    public ACAQDataSlot<OData> getOutputSlot() {
+        return (ACAQDataSlot<OData>)getOutputSlots().get(getOutputSlots().keySet().iterator().next());
     }
 
     public IData getInputData() {

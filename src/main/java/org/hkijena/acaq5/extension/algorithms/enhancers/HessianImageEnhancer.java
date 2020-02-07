@@ -7,10 +7,10 @@ import imagescience.feature.Hessian;
 import imagescience.image.Aspects;
 import imagescience.image.FloatImage;
 import imagescience.image.Image;
-import org.hkijena.acaq5.api.ACAQInputDataSlot;
-import org.hkijena.acaq5.api.ACAQOutputDataSlot;
 import org.hkijena.acaq5.api.ACAQSimpleAlgorithm;
 import org.hkijena.acaq5.extension.algorithms.segmenters.AutoThresholdSegmenter;
+import org.hkijena.acaq5.extension.dataslots.ACAQGreyscaleImageDataSlot;
+import org.hkijena.acaq5.extension.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.datatypes.ACAQMaskData;
 
@@ -23,8 +23,8 @@ public class HessianImageEnhancer extends ACAQSimpleAlgorithm<ACAQGreyscaleImage
     private AutoThresholdSegmenter autoThresholdSegmenter = new AutoThresholdSegmenter();
 
     public HessianImageEnhancer() {
-        super(new ACAQInputDataSlot<>("Input image", ACAQGreyscaleImageData.class),
-                new ACAQOutputDataSlot<>("Output image", ACAQMaskData.class));
+        super("Input image", ACAQGreyscaleImageDataSlot.class,
+               "Output image", ACAQMaskDataSlot.class);
     }
 
     private ImagePlus applyHessian(ImagePlus input) {

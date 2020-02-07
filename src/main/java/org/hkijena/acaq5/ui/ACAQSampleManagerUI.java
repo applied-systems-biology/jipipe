@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.ui;
 
-import org.hkijena.acaq5.api.ACAQSample;
+import org.hkijena.acaq5.api.ACAQProjectSample;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -9,7 +9,7 @@ import java.awt.*;
 
 public class ACAQSampleManagerUI extends ACAQUIPanel {
 
-    private JList<ACAQSample> sampleJList;
+    private JList<ACAQProjectSample> sampleJList;
 
     public ACAQSampleManagerUI(ACAQWorkbenchUI workbenchUI) {
         super(workbenchUI);

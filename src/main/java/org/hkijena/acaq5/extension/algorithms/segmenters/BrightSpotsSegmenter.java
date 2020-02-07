@@ -4,9 +4,9 @@ import ij.ImagePlus;
 import ij.plugin.filter.BackgroundSubtracter;
 import ij.plugin.filter.Binary;
 import ij.plugin.filter.GaussianBlur;
-import org.hkijena.acaq5.api.ACAQInputDataSlot;
-import org.hkijena.acaq5.api.ACAQOutputDataSlot;
 import org.hkijena.acaq5.api.ACAQSimpleAlgorithm;
+import org.hkijena.acaq5.extension.dataslots.ACAQGreyscaleImageDataSlot;
+import org.hkijena.acaq5.extension.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.datatypes.ACAQMaskData;
 
@@ -19,8 +19,8 @@ public class BrightSpotsSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImage
     private AutoThresholdSegmenter autoThresholdSegmenter = new AutoThresholdSegmenter();
 
     public BrightSpotsSegmenter() {
-        super(new ACAQInputDataSlot<>("Image", ACAQGreyscaleImageData.class),
-                new ACAQOutputDataSlot<>("Mask", ACAQMaskData.class));
+        super("Image", ACAQGreyscaleImageDataSlot.class,
+                "Mask", ACAQMaskDataSlot.class);
     }
 
     @Override

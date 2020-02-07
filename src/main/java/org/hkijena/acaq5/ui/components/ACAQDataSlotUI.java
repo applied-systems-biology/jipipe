@@ -33,19 +33,16 @@ public class ACAQDataSlotUI extends JPanel {
         nameLabel.setIcon(ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(slot.getAcceptedDataType()));
         add(nameLabel, BorderLayout.CENTER);
 
-        switch (slot.getType()) {
-            case Input:
-                add(assignButton, BorderLayout.WEST);
-                nameLabel.setHorizontalAlignment(JLabel.LEFT);
-                nameLabel.setHorizontalTextPosition(JLabel.RIGHT);
-                break;
-            case Output:
-                add(assignButton, BorderLayout.EAST);
-                nameLabel.setHorizontalAlignment(JLabel.RIGHT);
-                nameLabel.setHorizontalTextPosition(JLabel.LEFT);
-                break;
+        if(slot.isInput()) {
+            add(assignButton, BorderLayout.WEST);
+            nameLabel.setHorizontalAlignment(JLabel.LEFT);
+            nameLabel.setHorizontalTextPosition(JLabel.RIGHT);
         }
-
+        else if(slot.isOutput()) {
+            add(assignButton, BorderLayout.EAST);
+            nameLabel.setHorizontalAlignment(JLabel.RIGHT);
+            nameLabel.setHorizontalTextPosition(JLabel.LEFT);
+        }
     }
 
     public int calculateWidth() {

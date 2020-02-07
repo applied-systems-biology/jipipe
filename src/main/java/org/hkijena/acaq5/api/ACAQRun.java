@@ -1,14 +1,12 @@
 package org.hkijena.acaq5.api;
 
-public class ACAQSample {
+public class ACAQRun {
     private ACAQProject project;
-
-    public ACAQSample(ACAQProject project) {
+    public ACAQRun(ACAQProject project) {
         this.project = project;
     }
 
     public ACAQProject getProject() {
         return project;
     }
-
 }

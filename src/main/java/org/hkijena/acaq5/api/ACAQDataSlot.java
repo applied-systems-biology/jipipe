@@ -1,15 +1,21 @@
 package org.hkijena.acaq5.api;
 
-public class ACAQDataSlot<T extends ACAQData> {
+import org.apache.commons.lang3.reflect.ConstructorUtils;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
+public abstract class ACAQDataSlot<T extends ACAQData> {
     private ACAQAlgorithm algorithm;
-    private SlotType type;
     private String name;
     private Class<T> acceptedDataType;
     private T data;
+    private SlotType slotType;
 
-    public ACAQDataSlot(SlotType type, String name, Class<T> acceptedDataType) {
-        this.type = type;
+    public ACAQDataSlot(ACAQAlgorithm algorithm, SlotType slotType, String name, Class<T> acceptedDataType) {
+        this.algorithm = algorithm;
         this.name = name;
+        this.slotType = slotType;
         this.acceptedDataType = acceptedDataType;
     }
 
@@ -23,10 +29,6 @@ public class ACAQDataSlot<T extends ACAQData> {
 
     public String getName() {
         return name;
-    }
-
-    public SlotType getType() {
-        return type;
     }
 
     public T getData() {
@@ -43,12 +45,50 @@ public class ACAQDataSlot<T extends ACAQData> {
         return algorithm;
     }
 
-    void setAlgorithm(ACAQAlgorithm algorithm) {
-        this.algorithm = algorithm;
+    public SlotType getSlotType() {
+        return slotType;
+    }
+
+    public boolean isInput() {
+        switch(slotType) {
+            case Input:
+                return true;
+            case Output:
+                return false;
+            default:
+                throw new RuntimeException("Unknown slot type!");
+        }
+    }
+
+    public boolean isOutput() {
+        switch(slotType) {
+            case Input:
+                return false;
+            case Output:
+                return true;
+            default:
+                throw new RuntimeException("Unknown slot type!");
+        }
     }
 
     public enum SlotType {
         Input,
         Output
+    }
+
+    /**
+     * Instantiates a slot.
+     * This requires from the slot class that it has the same parameters as {@link ACAQDataSlot}, but without acceptedDataType
+     * @param algorithm
+     * @param definition
+     * @return
+     */
+    public static ACAQDataSlot<?> createInstance(ACAQAlgorithm algorithm, ACAQSlotDefinition definition) {
+        Constructor<?> constructor = ConstructorUtils.getMatchingAccessibleConstructor(definition.getSlotClass(), ACAQAlgorithm.class, SlotType.class, String.class);
+        try {
+            return (ACAQDataSlot<?>) constructor.newInstance(algorithm, definition.getSlotType(), definition.getName());
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

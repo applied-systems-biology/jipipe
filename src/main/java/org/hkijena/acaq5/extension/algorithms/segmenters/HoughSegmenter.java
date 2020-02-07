@@ -5,9 +5,9 @@ import ij.ImagePlus;
 import ij.WindowManager;
 import ij.measure.ResultsTable;
 import ij.plugin.filter.Analyzer;
-import org.hkijena.acaq5.api.ACAQInputDataSlot;
-import org.hkijena.acaq5.api.ACAQOutputDataSlot;
 import org.hkijena.acaq5.api.ACAQSimpleAlgorithm;
+import org.hkijena.acaq5.extension.dataslots.ACAQGreyscaleImageDataSlot;
+import org.hkijena.acaq5.extension.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.utils.Hough_Circle;
@@ -26,8 +26,8 @@ public class HoughSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, 
     private int localRadius = 10;
 
     public HoughSegmenter() {
-        super(new ACAQInputDataSlot<>("Image", ACAQGreyscaleImageData.class),
-                new ACAQOutputDataSlot<>("Mask", ACAQMaskData.class));
+        super("Image", ACAQGreyscaleImageDataSlot.class,
+                "Mask", ACAQMaskDataSlot.class);
     }
 
     private boolean outOfBounds(int width, int height, int y, int x) {

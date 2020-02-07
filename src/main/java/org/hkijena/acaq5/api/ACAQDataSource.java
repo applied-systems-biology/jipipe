@@ -7,13 +7,9 @@ import java.util.Map;
  * An {@link ACAQAlgorithm} that generates data. It has no input slots.
  */
 public abstract class ACAQDataSource extends ACAQAlgorithm {
-
-    public ACAQDataSource(ACAQOutputDataSlot... slots) {
-        super(slots);
-    }
-
-    @Override
-    public Map<String, ACAQDataSlot> getInputSlots() {
-        return Collections.emptyMap();
+    public ACAQDataSource(ACAQSlotConfiguration configuration) {
+        super(configuration);
+        if(configuration.hasInputSlots())
+            throw new IllegalArgumentException("Data sources cannot have input slots!");
     }
 }

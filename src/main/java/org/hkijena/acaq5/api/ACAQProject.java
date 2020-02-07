@@ -1,6 +1,12 @@
 package org.hkijena.acaq5.api;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableBiMap;
 import com.google.common.eventbus.EventBus;
+import org.hkijena.acaq5.api.events.ACAQSampleAddedEvent;
+import org.hkijena.acaq5.api.events.ACAQSampleRemovedEvent;
+import org.hkijena.acaq5.api.events.ACAQSampleRenamedEvent;
 
 /**
  * An ACAQ5 project.
@@ -8,28 +14,65 @@ import com.google.common.eventbus.EventBus;
  */
 public class ACAQProject {
     private EventBus eventBus = new EventBus();
-    private ACAQIO preprocessingOutput = new ACAQIO();
-    private ACAQIO analysisOutput = new ACAQIO();
+    private BiMap<String, ACAQProjectSample> samples = HashBiMap.create();
+    private ACAQSlotConfiguration preprocessingOutputConfiguration = new ACAQSlotConfiguration();
+    private ACAQSlotConfiguration analysisOutputConfiguration = new ACAQSlotConfiguration();
     private ACAQAlgorithmGraph analysis = new ACAQAlgorithmGraph();
 
     public ACAQProject() {
-        analysis.insertNode(preprocessingOutput);
-        analysis.insertNode(analysisOutput);
     }
 
     public EventBus getEventBus() {
         return eventBus;
     }
 
-    public ACAQIO getPreprocessingOutput() {
-        return preprocessingOutput;
-    }
-
-    public ACAQIO getAnalysisOutput() {
-        return analysisOutput;
-    }
-
     public ACAQAlgorithmGraph getAnalysis() {
         return analysis;
+    }
+
+    public ACAQSlotConfiguration getPreprocessingOutputConfiguration() {
+        return preprocessingOutputConfiguration;
+    }
+
+    public ACAQSlotConfiguration getAnalysisOutputConfiguration() {
+        return analysisOutputConfiguration;
+    }
+
+    public BiMap<String, ACAQProjectSample> getSamples() {
+        return ImmutableBiMap.copyOf(samples);
+    }
+
+    public ACAQProjectSample addSample(String sampleName) {
+        if(samples.containsKey(sampleName)) {
+            return samples.get(sampleName);
+        }
+        else {
+            ACAQProjectSample sample = new ACAQProjectSample(this);
+            samples.put(sampleName, sample);
+            eventBus.post(new ACAQSampleAddedEvent(sample));
+            return sample;
+        }
+    }
+
+    public boolean removeSample(ACAQProjectSample sample) {
+        String name = sample.getName();
+        if(samples.containsKey(name)) {
+            samples.remove(name);
+            eventBus.post(new ACAQSampleRemovedEvent(sample));
+            return true;
+        }
+        return false;
+    }
+
+    public boolean renameSample(ACAQProjectSample sample, String name) {
+        if(name == null)
+            return false;
+        name = name.trim();
+        if(name.isEmpty() || samples.containsKey(name))
+            return false;
+        samples.remove(sample.getName());
+        samples.put(name, sample);
+        eventBus.post(new ACAQSampleRenamedEvent(sample));
+        return true;
     }
 }

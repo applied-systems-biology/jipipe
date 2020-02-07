@@ -2,9 +2,9 @@ package org.hkijena.acaq5.extension.algorithms.converters;
 
 import ij.measure.ResultsTable;
 import ij.plugin.filter.ParticleAnalyzer;
-import org.hkijena.acaq5.api.ACAQInputDataSlot;
-import org.hkijena.acaq5.api.ACAQOutputDataSlot;
 import org.hkijena.acaq5.api.ACAQSimpleAlgorithm;
+import org.hkijena.acaq5.extension.dataslots.ACAQMaskDataSlot;
+import org.hkijena.acaq5.extension.dataslots.ACAQROIDataSlot;
 import org.hkijena.acaq5.extension.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.datatypes.ACAQROIData;
 
@@ -16,8 +16,8 @@ public class MaskToParticleConverter extends ACAQSimpleAlgorithm<ACAQMaskData, A
     private boolean excludeEdges = false;
 
     public MaskToParticleConverter() {
-        super(new ACAQInputDataSlot<>("Mask", ACAQMaskData.class),
-                new ACAQOutputDataSlot<>("ROI", ACAQROIData.class));
+        super("Mask", ACAQMaskDataSlot.class,
+                "ROI", ACAQROIDataSlot.class);
     }
 
     @Override

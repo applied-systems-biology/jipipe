@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ij.ImagePlus;
 import mpicbg.ij.clahe.Flat;
 import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.extension.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.datatypes.ACAQGreyscaleImageData;
 
 import java.io.File;
@@ -26,8 +27,8 @@ public class CLAHEImageEnhancer extends ACAQSimpleAlgorithm<ACAQGreyscaleImageDa
     private boolean fastMode = false;
 
     public CLAHEImageEnhancer() {
-        super(new ACAQInputDataSlot<>("Input image", ACAQGreyscaleImageData.class),
-                new ACAQOutputDataSlot<>("Output image", ACAQGreyscaleImageData.class));
+        super("Input image", ACAQGreyscaleImageDataSlot.class,
+                "Output image", ACAQGreyscaleImageDataSlot.class);
     }
 
     @Override

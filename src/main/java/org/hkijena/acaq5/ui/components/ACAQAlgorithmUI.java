@@ -132,13 +132,11 @@ public class ACAQAlgorithmUI extends JPanel {
             double maxInputSlotWidth = 0;
             double maxOutputSlotWidth = 0;
             for(ACAQDataSlotUI ui : slotUIList) {
-                switch(ui.getSlot().getType()) {
-                    case Input:
-                        maxInputSlotWidth = Math.max(maxInputSlotWidth, ui.calculateWidth());
-                        break;
-                    case Output:
-                        maxOutputSlotWidth = Math.max(maxOutputSlotWidth, ui.calculateWidth());
-                        break;
+                if(ui.getSlot().isInput()) {
+                    maxInputSlotWidth = Math.max(maxInputSlotWidth, ui.calculateWidth());
+                }
+                else if(ui.getSlot().isOutput()) {
+                    maxOutputSlotWidth = Math.max(maxOutputSlotWidth, ui.calculateWidth());
                 }
             }
 

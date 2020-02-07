@@ -5,10 +5,10 @@ import ij.plugin.ImageCalculator;
 import ij.plugin.filter.Binary;
 import ij.plugin.filter.GaussianBlur;
 import ij.plugin.filter.RankFilters;
-import org.hkijena.acaq5.api.ACAQInputDataSlot;
-import org.hkijena.acaq5.api.ACAQOutputDataSlot;
 import org.hkijena.acaq5.api.ACAQSimpleAlgorithm;
 import org.hkijena.acaq5.extension.algorithms.enhancers.CLAHEImageEnhancer;
+import org.hkijena.acaq5.extension.dataslots.ACAQGreyscaleImageDataSlot;
+import org.hkijena.acaq5.extension.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.utils.ImageJUtils;
@@ -24,8 +24,8 @@ public class InternalGradientSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscale
     private CLAHEImageEnhancer claheImageEnhancer = new CLAHEImageEnhancer();
 
     public InternalGradientSegmenter() {
-        super(new ACAQInputDataSlot<>("Image", ACAQGreyscaleImageData.class),
-                new ACAQOutputDataSlot<>("Mask", ACAQMaskData.class));
+        super("Image", ACAQGreyscaleImageDataSlot.class,
+                "Mask", ACAQMaskDataSlot.class);
     }
 
     private void applyInternalGradient(ImagePlus img) {
