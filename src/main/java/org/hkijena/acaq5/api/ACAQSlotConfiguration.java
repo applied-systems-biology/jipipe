@@ -15,9 +15,16 @@ public class ACAQSlotConfiguration {
 
     private boolean isSealed = false;
     private EventBus eventBus = new EventBus();
+    private boolean allowInputSlots;
+    private boolean allowOutputSlots;
+
+    public ACAQSlotConfiguration(boolean allowInputSlots, boolean allowOutputSlots) {
+        this.allowInputSlots = allowInputSlots;
+        this.allowOutputSlots = allowOutputSlots;
+    }
 
     public ACAQSlotConfiguration() {
-
+        this(true, true);
     }
 
     public boolean hasSlot(String name) {
@@ -25,6 +32,8 @@ public class ACAQSlotConfiguration {
     }
 
     public ACAQSlotConfiguration addInputSlot(String name, Class<? extends ACAQDataSlot<?>> klass) {
+        if(!allowInputSlots)
+            throw new RuntimeException("Slot configuration does not allow input slots");
         if(isSealed)
             throw new RuntimeException("Slot configuration is sealed!");
         if(hasSlot(name))
@@ -35,6 +44,8 @@ public class ACAQSlotConfiguration {
     }
 
     public ACAQSlotConfiguration addOutputSlot(String name, Class<? extends ACAQDataSlot<?>> klass) {
+        if(!allowOutputSlots)
+            throw new RuntimeException("Slot configuration does not allow output slots");
         if(isSealed)
             throw new RuntimeException("Slot configuration is sealed!");
         if(hasSlot(name))
@@ -56,8 +67,9 @@ public class ACAQSlotConfiguration {
         return eventBus;
     }
 
-    public void seal() {
+    public ACAQSlotConfiguration seal() {
         this.isSealed = true;
+        return this;
     }
 
     public Map<String, ACAQSlotDefinition> getSlots() {

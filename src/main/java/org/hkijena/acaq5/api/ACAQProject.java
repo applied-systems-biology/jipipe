@@ -15,8 +15,8 @@ import org.hkijena.acaq5.api.events.ACAQSampleRenamedEvent;
 public class ACAQProject {
     private EventBus eventBus = new EventBus();
     private BiMap<String, ACAQProjectSample> samples = HashBiMap.create();
-    private ACAQSlotConfiguration preprocessingOutputConfiguration = new ACAQSlotConfiguration();
-    private ACAQSlotConfiguration analysisOutputConfiguration = new ACAQSlotConfiguration();
+    private ACAQSlotConfiguration preprocessingOutputConfiguration = new ACAQSlotConfiguration(true, false);
+    private ACAQSlotConfiguration analysisOutputConfiguration = new ACAQSlotConfiguration(true, false);
     private ACAQAlgorithmGraph analysis = new ACAQAlgorithmGraph();
 
     public ACAQProject() {
