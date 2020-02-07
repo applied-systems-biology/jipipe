@@ -1,39 +1,57 @@
 package org.hkijena.acaq5.ui;
 
+import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQProjectSample;
-import org.hkijena.acaq5.ui.components.DocumentTabPane;
+import org.hkijena.acaq5.api.events.ACAQSampleAddedEvent;
+import org.hkijena.acaq5.api.events.ACAQSampleRemovedEvent;
+import org.hkijena.acaq5.api.events.ACAQSampleRenamedEvent;
+import org.hkijena.acaq5.ui.components.ACAQSampleTreeCellRenderer;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ACAQSampleManagerUI extends ACAQUIPanel {
 
-    private JList<ACAQProjectSample> sampleJList;
+    private JTree sampleTree;
 
     public ACAQSampleManagerUI(ACAQWorkbenchUI workbenchUI) {
         super(workbenchUI);
+
+        // Register events
+        getWorkbenchUI().getProject().getEventBus().register(this);
         initialize();
+
+        rebuildSampleListTree();
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
-        initializeToolbar();
 
-        sampleJList = new JList<>();
-        add(sampleJList, BorderLayout.CENTER);
+        sampleTree = new JTree();
+        sampleTree.setCellRenderer(new ACAQSampleTreeCellRenderer());
+        add(new JScrollPane(sampleTree), BorderLayout.CENTER);
+
+        initializeToolbar();
     }
 
     private void initializeToolbar() {
         JToolBar toolBar = new JToolBar();
         add(toolBar, BorderLayout.NORTH);
 
-        JButton addSingleSampleButton = new JButton("Add ...", UIUtils.getIconFromResources("add.png"));
-        toolBar.add(addSingleSampleButton);
+        JButton addSamplesButton = new JButton("Add ...", UIUtils.getIconFromResources("add.png"));
+        addSamplesButton.addActionListener(e -> addSamples());
+        toolBar.add(addSamplesButton);
 
-        JButton addMultipleSamplesButton = new JButton("Batch import ...", UIUtils.getIconFromResources("import.png"));
-        addMultipleSamplesButton.addActionListener(e -> addMultipleSamples());
-        toolBar.add(addMultipleSamplesButton);
+        JButton batchImportSamplesButton = new JButton("Batch import ...", UIUtils.getIconFromResources("import.png"));
+        batchImportSamplesButton.addActionListener(e -> batchImportSamples());
+        toolBar.add(batchImportSamplesButton);
 
         toolBar.add(Box.createHorizontalGlue());
 
@@ -41,12 +59,68 @@ public class ACAQSampleManagerUI extends ACAQUIPanel {
         toolBar.add(removeButton);
     }
 
-    private void addMultipleSamples() {
-        getWorkbenchUI().getDocumentTabPane().addTab("Sample batch import",
-                UIUtils.getIconFromResources("import.png"),
-                new ACAQSampleBatchImporterUI(getWorkbenchUI()),
-                DocumentTabPane.CloseMode.withAskOnCloseButton,
-                false);
-        getWorkbenchUI().getDocumentTabPane().switchToLastTab();
+    private void addSamples() {
+        ACAQAddSamplesDialog dialog = new ACAQAddSamplesDialog(getWorkbenchUI());
+        dialog.setModal(true);
+        dialog.pack();
+        dialog.setSize(new Dimension(500,400));
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+    }
+
+    private void batchImportSamples() {
+    }
+
+    public void rebuildSampleListTree() {
+
+        ACAQProjectSample selectedSample = null;
+        if(sampleTree.getLastSelectedPathComponent() != null) {
+            DefaultMutableTreeNode nd = (DefaultMutableTreeNode) sampleTree.getLastSelectedPathComponent();
+            if(nd.getUserObject() instanceof ACAQProjectSample) {
+                selectedSample = (ACAQProjectSample)nd.getUserObject();
+            }
+        }
+
+        DefaultMutableTreeNode toSelect = null;
+
+        String rootNodeName = "Samples";
+        if(getProject().getSamples().isEmpty()) {
+            rootNodeName = "No samples";
+        }
+        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(rootNodeName);
+        for(ACAQProjectSample sample : getProject().getSamples().values().stream().sorted().collect(Collectors.toList())) {
+            DefaultMutableTreeNode sampleNode = new DefaultMutableTreeNode(sample);
+            if(sample == selectedSample) {
+                toSelect = sampleNode;
+            }
+            rootNode.add(sampleNode);
+        }
+
+        DefaultTreeModel model = new DefaultTreeModel(rootNode);
+        sampleTree.setModel(model);
+        UIUtils.expandAllTree(sampleTree);
+        if(toSelect != null) {
+            sampleTree.setSelectionPath(new TreePath(model.getPathToRoot(toSelect)));
+        }
+
+    }
+
+    @Subscribe
+    public void onSampleAdded(ACAQSampleAddedEvent event) {
+        rebuildSampleListTree();
+    }
+
+    @Subscribe
+    public void onSampleRemoved(ACAQSampleRemovedEvent event) {
+        rebuildSampleListTree();
+    }
+
+    @Subscribe
+    public void onSampleRenamed(ACAQSampleRenamedEvent event) {
+        rebuildSampleListTree();
+    }
+
+    public JTree getSampleTree() {
+        return sampleTree;
     }
 }

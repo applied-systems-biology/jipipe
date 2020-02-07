@@ -204,4 +204,14 @@ public class UIUtils {
         return Color.getHSBColor(h, s, b);
     }
 
+    /**
+     * Expands the whole tree
+     * @param tree
+     */
+    public static void expandAllTree(JTree tree) {
+        for (int i = 0; i < tree.getRowCount(); i++) {
+            tree.expandRow(i);
+        }
+    }
+
 }

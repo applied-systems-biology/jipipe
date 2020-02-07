@@ -100,7 +100,7 @@ public class ACAQWorkbenchUI extends JFrame {
     public static void newWindow(ACAQCommand command, ACAQProject project) {
         ACAQWorkbenchUI frame = new ACAQWorkbenchUI(command, project);
         frame.pack();
-        frame.setSize(800, 600);
+        frame.setSize(1024, 768);
         frame.setVisible(true);
 //        frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
     }
