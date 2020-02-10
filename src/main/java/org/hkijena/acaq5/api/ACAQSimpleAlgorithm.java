@@ -3,7 +3,7 @@ package org.hkijena.acaq5.api;
 public abstract class ACAQSimpleAlgorithm<IData extends ACAQData, OData extends ACAQData> extends ACAQAlgorithm {
     public ACAQSimpleAlgorithm(String inputSlotName, Class<? extends ACAQDataSlot<IData>> inputSlotClass,
                                String outputSlotName, Class<? extends ACAQDataSlot<OData>> outputSlotClass) {
-        super(new ACAQSlotConfiguration()
+        super(new ACAQMutableSlotConfiguration()
                 .addInputSlot(inputSlotName, inputSlotClass)
                 .addOutputSlot(outputSlotName, outputSlotClass));
     }

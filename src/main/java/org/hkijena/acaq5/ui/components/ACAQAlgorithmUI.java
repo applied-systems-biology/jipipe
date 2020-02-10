@@ -1,7 +1,12 @@
 package org.hkijena.acaq5.ui.components;
 
+import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.ACAQAlgorithm;
+import org.hkijena.acaq5.api.ACAQData;
 import org.hkijena.acaq5.api.ACAQDataSlot;
+import org.hkijena.acaq5.api.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
+import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -87,6 +92,22 @@ public class ACAQAlgorithmUI extends JPanel {
         return algorithm;
     }
 
+    private JButton createAddSlotButton(ACAQDataSlot.SlotType slotType) {
+        JButton button = new JButton(UIUtils.getIconFromResources("add.png"));
+        button.setPreferredSize(new Dimension(25, SLOT_UI_HEIGHT));
+        UIUtils.makeFlat(button);
+
+        JPopupMenu menu = UIUtils.addPopupMenuToComponent(button);
+        for(Class<? extends ACAQData> dataClass : ACAQRegistryService.getInstance().getDatatypeRegistry().getRegisteredDataTypes()) {
+            Class<? extends ACAQDataSlot<?>> slotClass = ACAQRegistryService.getInstance().getDatatypeRegistry().getRegisteredSlotDataTypes().get(dataClass);
+            JMenuItem item = new JMenuItem(ACAQData.getName(dataClass), ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(dataClass));
+            item.addActionListener(e -> addNewSlot(slotType, slotClass));
+            menu.add(item);
+        }
+
+        return button;
+    }
+
     public void updateAlgorithmUI() {
         slotUIList.clear();
         inputSlotPanel.removeAll();
@@ -109,12 +130,69 @@ public class ACAQAlgorithmUI extends JPanel {
                 outputSlotPanel.add(ui);
             }
         }
+        if(algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
+            ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration)algorithm.getSlotConfiguration();
+            if(!slotConfiguration.isSealed()) {
+                if(slotConfiguration.allowsInputSlots()) {
+                    JButton addInputSlotButton = createAddSlotButton(ACAQDataSlot.SlotType.Input);
+                    inputSlotPanel.add(addInputSlotButton);
+                }
+                if(slotConfiguration.allowsOutputSlots()) {
+                    JButton addOutputSlotButton = createAddSlotButton(ACAQDataSlot.SlotType.Output);
+                    outputSlotPanel.add(addOutputSlotButton);
+                }
+            }
+        }
         setSize(new Dimension(calculateWidth(), calculateHeight()));
     }
 
+    private void addNewSlot(ACAQDataSlot.SlotType slotType, Class<? extends ACAQDataSlot<?>> klass) {
+        if(algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
+            ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
+            String name = null;
+            while(name == null) {
+                String newName = JOptionPane.showInputDialog(this,"Please a data slot name", slotType + " data " + (getSlotRows() + 1));
+                if(newName == null || newName.trim().isEmpty())
+                    return;
+                if(slotConfiguration.hasSlot(newName))
+                    continue;
+                name = newName;
+            }
+            switch (slotType) {
+                case Input:
+                    slotConfiguration.addInputSlot(name, klass);
+                    break;
+                case Output:
+                    slotConfiguration.addOutputSlot(name, klass);
+                    break;
+            }
+        }
+    }
+
+    /**
+     * Returns the number of rows that contain the slots
+     * @return
+     */
+    private int getSlotRows() {
+        return Math.max(algorithm.getInputSlots().size(), algorithm.getOutputSlots().size());
+    }
+
+    /**
+     * Contains the number of displayed rows. This includes the number of slot rows, and optionally additional rows for adding
+     * @return
+     */
+    private int getDisplayedRows() {
+        int rows = getSlotRows();
+        if(algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
+            if(!((ACAQMutableSlotConfiguration)algorithm.getSlotConfiguration()).isSealed()) {
+                rows += 1;
+            }
+        }
+        return rows;
+    }
+
     private int calculateHeight() {
-        return Math.max(SLOT_UI_HEIGHT, Math.max(SLOT_UI_HEIGHT * algorithm.getInputSlots().size(),
-                SLOT_UI_HEIGHT * algorithm.getOutputSlots().size()));
+        return Math.max(SLOT_UI_HEIGHT, SLOT_UI_HEIGHT * getDisplayedRows());
     }
 
     private int calculateWidth() {

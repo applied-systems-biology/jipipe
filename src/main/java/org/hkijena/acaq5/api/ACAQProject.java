@@ -15,11 +15,12 @@ import org.hkijena.acaq5.api.events.ACAQSampleRenamedEvent;
 public class ACAQProject {
     private EventBus eventBus = new EventBus();
     private BiMap<String, ACAQProjectSample> samples = HashBiMap.create();
-    private ACAQSlotConfiguration preprocessingOutputConfiguration = new ACAQSlotConfiguration(true, false);
-    private ACAQSlotConfiguration analysisOutputConfiguration = new ACAQSlotConfiguration(true, false);
+    private ACAQMutableSlotConfiguration preprocessingOutputConfiguration = new ACAQMutableSlotConfiguration(true, false);
+    private ACAQMutableSlotConfiguration analysisOutputConfiguration = new ACAQMutableSlotConfiguration(true, false);
     private ACAQAlgorithmGraph analysis = new ACAQAlgorithmGraph();
 
     public ACAQProject() {
+        analysis.insertNode(new ACAQPreprocessingOutput(new ACAQInputAsOutputSlotConfiguration(preprocessingOutputConfiguration)));
     }
 
     public EventBus getEventBus() {
@@ -30,11 +31,11 @@ public class ACAQProject {
         return analysis;
     }
 
-    public ACAQSlotConfiguration getPreprocessingOutputConfiguration() {
+    public ACAQMutableSlotConfiguration getPreprocessingOutputConfiguration() {
         return preprocessingOutputConfiguration;
     }
 
-    public ACAQSlotConfiguration getAnalysisOutputConfiguration() {
+    public ACAQMutableSlotConfiguration getAnalysisOutputConfiguration() {
         return analysisOutputConfiguration;
     }
 

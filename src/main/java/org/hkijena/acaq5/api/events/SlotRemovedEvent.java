@@ -1,17 +1,17 @@
 package org.hkijena.acaq5.api.events;
 
-import org.hkijena.acaq5.api.ACAQSlotConfiguration;
+import org.hkijena.acaq5.api.ACAQMutableSlotConfiguration;
 
 public class SlotRemovedEvent {
-    private ACAQSlotConfiguration slotConfiguration;
+    private ACAQMutableSlotConfiguration slotConfiguration;
     private String slotName;
 
-    public SlotRemovedEvent(ACAQSlotConfiguration slotConfiguration, String slotName) {
+    public SlotRemovedEvent(ACAQMutableSlotConfiguration slotConfiguration, String slotName) {
         this.slotConfiguration = slotConfiguration;
         this.slotName = slotName;
     }
 
-    public ACAQSlotConfiguration getSlotConfiguration() {
+    public ACAQMutableSlotConfiguration getSlotConfiguration() {
         return slotConfiguration;
     }
 
