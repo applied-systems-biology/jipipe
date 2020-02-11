@@ -23,7 +23,11 @@ public class ACAQInputAsOutputSlotConfiguration extends ACAQSlotConfiguration {
         Map<String, ACAQSlotDefinition> result = new HashMap<>();
         for(Map.Entry<String, ACAQSlotDefinition> kv : slotConfiguration.getSlots().entrySet()) {
             if(kv.getValue().getSlotType() == ACAQDataSlot.SlotType.Input) {
-                result.put(kv.getKey(), kv.getValue());
+                ACAQSlotDefinition sourceSlot = kv.getValue();
+                ACAQSlotDefinition slot = new ACAQSlotDefinition(sourceSlot.getSlotClass(),
+                        ACAQDataSlot.SlotType.Output,
+                        sourceSlot.getName());
+                result.put(kv.getKey(), slot);
             }
         }
         return result;

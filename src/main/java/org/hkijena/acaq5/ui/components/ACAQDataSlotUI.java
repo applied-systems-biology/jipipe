@@ -28,7 +28,8 @@ public class ACAQDataSlotUI extends JPanel {
         assignButton.setPreferredSize(new Dimension(25, SLOT_UI_HEIGHT));
         UIUtils.makeFlat(assignButton);
 
-        JLabel nameLabel = new JLabel(ACAQData.getName(slot.getAcceptedDataType()));
+        JLabel nameLabel = new JLabel(slot.getName());
+        nameLabel.setToolTipText(ACAQData.getName(slot.getAcceptedDataType()));
         nameLabel.setBorder(BorderFactory.createEmptyBorder(0,5,0,5));
         nameLabel.setIcon(ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(slot.getAcceptedDataType()));
         add(nameLabel, BorderLayout.CENTER);

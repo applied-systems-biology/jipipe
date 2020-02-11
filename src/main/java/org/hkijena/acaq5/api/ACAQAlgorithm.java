@@ -7,6 +7,7 @@ import org.hkijena.acaq5.api.events.SlotAddedEvent;
 import org.hkijena.acaq5.api.events.SlotRemovedEvent;
 import org.hkijena.acaq5.api.events.SlotRenamedEvent;
 
+import java.awt.*;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,9 +17,18 @@ public abstract class ACAQAlgorithm {
     private ACAQSlotConfiguration slotConfiguration;
     private Map<String, ACAQDataSlot<?>> slots = new HashMap<>();
     private EventBus eventBus = new EventBus();
+    private Point location;
 
     public ACAQAlgorithm(ACAQSlotConfiguration slotConfiguration) {
        this.slotConfiguration = slotConfiguration;
+       slotConfiguration.getEventBus().register(this);
+       initalize();
+    }
+
+    private void initalize() {
+        for(Map.Entry<String, ACAQSlotDefinition> kv : slotConfiguration.getSlots().entrySet()) {
+            slots.put(kv.getKey(), ACAQDataSlot.createInstance(this, kv.getValue()));
+        }
     }
 
     public abstract void run();
@@ -72,11 +82,13 @@ public abstract class ACAQAlgorithm {
     public void onSlotAdded(SlotAddedEvent event) {
         ACAQSlotDefinition definition = slotConfiguration.getSlots().get(event.getSlotName());
         slots.put(definition.getName(), ACAQDataSlot.createInstance(this, definition));
+        eventBus.post(new AlgorithmSlotsChangedEvent(this));
     }
 
     @Subscribe
     public void onSlotRemoved(SlotRemovedEvent event) {
         slots.remove(event.getSlotName());
+        eventBus.post(new AlgorithmSlotsChangedEvent(this));
     }
 
     @Subscribe
@@ -85,5 +97,17 @@ public abstract class ACAQAlgorithm {
         slots.remove(event.getOldSlotName());
         slots.put(event.getNewSlotName(), slot);
         eventBus.post(new AlgorithmSlotsChangedEvent(this));
+    }
+
+    /**
+     * Gets the location within UI representations
+     * @return
+     */
+    public Point getLocation() {
+        return location;
+    }
+
+    public void setLocation(Point location) {
+        this.location = location;
     }
 }

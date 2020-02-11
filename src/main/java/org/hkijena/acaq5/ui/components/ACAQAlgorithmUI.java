@@ -1,10 +1,12 @@
 package org.hkijena.acaq5.ui.components;
 
+import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.ACAQAlgorithm;
 import org.hkijena.acaq5.api.ACAQData;
 import org.hkijena.acaq5.api.ACAQDataSlot;
 import org.hkijena.acaq5.api.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -36,6 +38,7 @@ public class ACAQAlgorithmUI extends JPanel {
     public ACAQAlgorithmUI(ACAQAlgorithmGraphCanvasUI graphUI, ACAQAlgorithm algorithm) {
         this.graphUI = graphUI;
         this.algorithm = algorithm;
+        this.algorithm.getEventBus().register(this);
         initialize();
         updateAlgorithmUI();
     }
@@ -112,8 +115,9 @@ public class ACAQAlgorithmUI extends JPanel {
         slotUIList.clear();
         inputSlotPanel.removeAll();
         outputSlotPanel.removeAll();
+        inputSlotPanel.setLayout(new GridLayout(getDisplayedRows(), 1));
+        outputSlotPanel.setLayout(new GridLayout(getDisplayedRows(), 1));
         if(algorithm.getInputSlots().size() > 0) {
-            inputSlotPanel.setLayout(new GridLayout(algorithm.getInputSlots().size(), 1));
             for(ACAQDataSlot<?> slot : algorithm.getInputSlots().values()) {
                 ACAQDataSlotUI ui = new ACAQDataSlotUI(slot);
                 ui.setOpaque(false);
@@ -122,7 +126,6 @@ public class ACAQAlgorithmUI extends JPanel {
             }
         }
         if(algorithm.getOutputSlots().size() > 0) {
-            outputSlotPanel.setLayout(new GridLayout(algorithm.getOutputSlots().size(), 1));
             for(ACAQDataSlot<?> slot : algorithm.getOutputSlots().values()) {
                 ACAQDataSlotUI ui = new ACAQDataSlotUI(slot);
                 ui.setOpaque(false);
@@ -135,15 +138,23 @@ public class ACAQAlgorithmUI extends JPanel {
             if(!slotConfiguration.isSealed()) {
                 if(slotConfiguration.allowsInputSlots()) {
                     JButton addInputSlotButton = createAddSlotButton(ACAQDataSlot.SlotType.Input);
-                    inputSlotPanel.add(addInputSlotButton);
+                    JPanel panel = new JPanel(new BorderLayout());
+                    panel.setOpaque(false);
+                    panel.add(addInputSlotButton, BorderLayout.WEST);
+                    inputSlotPanel.add(panel);
                 }
                 if(slotConfiguration.allowsOutputSlots()) {
                     JButton addOutputSlotButton = createAddSlotButton(ACAQDataSlot.SlotType.Output);
-                    outputSlotPanel.add(addOutputSlotButton);
+                    JPanel panel = new JPanel(new BorderLayout());
+                    panel.setOpaque(false);
+                    panel.add(addOutputSlotButton, BorderLayout.EAST);
+                    outputSlotPanel.add(panel);
                 }
             }
         }
         setSize(new Dimension(calculateWidth(), calculateHeight()));
+        revalidate();
+        repaint();
     }
 
     private void addNewSlot(ACAQDataSlot.SlotType slotType, Class<? extends ACAQDataSlot<?>> klass) {
@@ -249,7 +260,17 @@ public class ACAQAlgorithmUI extends JPanel {
     public boolean trySetLocationInGrid(int x, int y) {
         y = (int)Math.rint(y * 1.0 / ACAQAlgorithmUI.SLOT_UI_HEIGHT) * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
         x = (int)Math.rint(x * 1.0 / ACAQAlgorithmUI.SLOT_UI_WIDTH) * ACAQAlgorithmUI.SLOT_UI_WIDTH;
+       return trySetLocationNoGrid(x, y);
+    }
 
+    /**
+     * Tries to move the node to the provided location
+     * A grid is applied to the input coordinates
+     * @param x
+     * @param y
+     * @return
+     */
+    public boolean trySetLocationNoGrid(int x, int y) {
         // Check for collisions
         Rectangle futureBounds = new Rectangle(x, y, getWidth(), getHeight());
         for(int i = 0; i < graphUI.getComponentCount(); ++i) {
@@ -276,4 +297,20 @@ public class ACAQAlgorithmUI extends JPanel {
         return getY() + getHeight();
     }
 
+    @Subscribe
+    public void onAlgorithmSlotsChanged(AlgorithmSlotsChangedEvent event) {
+        updateAlgorithmUI();
+    }
+
+    @Override
+    public void setLocation(int x, int y) {
+        super.setLocation(x, y);
+        algorithm.setLocation(new Point(x, y));
+    }
+
+    @Override
+    public void setLocation(Point p) {
+        super.setLocation(p);
+        algorithm.setLocation(p);
+    }
 }
