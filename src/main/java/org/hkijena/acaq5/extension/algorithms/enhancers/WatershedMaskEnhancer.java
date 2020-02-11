@@ -3,10 +3,15 @@ package org.hkijena.acaq5.extension.algorithms.enhancers;
 import ij.ImagePlus;
 import ij.plugin.filter.Binary;
 import ij.plugin.filter.EDM;
+import org.hkijena.acaq5.api.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.api.ACAQAlgorithmMetadata;
+import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQSimpleAlgorithm;
 import org.hkijena.acaq5.extension.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.datatypes.ACAQMaskData;
 
+@ACAQDocumentation(name = "Watershed enhancer")
+@ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
 public class WatershedMaskEnhancer extends ACAQSimpleAlgorithm<ACAQMaskData, ACAQMaskData> {
 
     private int erosionIterations = 0;

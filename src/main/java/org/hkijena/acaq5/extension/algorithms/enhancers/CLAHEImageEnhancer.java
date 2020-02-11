@@ -3,9 +3,7 @@ package org.hkijena.acaq5.extension.algorithms.enhancers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ij.ImagePlus;
 import mpicbg.ij.clahe.Flat;
-import org.hkijena.acaq5.api.ACAQDocumentation;
-import org.hkijena.acaq5.api.ACAQParameter;
-import org.hkijena.acaq5.api.ACAQSimpleAlgorithm;
+import org.hkijena.acaq5.api.*;
 import org.hkijena.acaq5.extension.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.datatypes.ACAQGreyscaleImageData;
 
@@ -13,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 
 @ACAQDocumentation(name = "CLAHE enhancer")
+@ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
 public class CLAHEImageEnhancer extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData,
         ACAQGreyscaleImageData> {
 

@@ -1,5 +1,7 @@
-package org.hkijena.acaq5.ui.components;
+package org.hkijena.acaq5.ui.grapheditor;
 
+import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.api.ACAQDataSlot;
 import org.hkijena.acaq5.api.ACAQProjectSample;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -8,12 +10,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 import java.awt.*;
 
-/**
- * Renders a sample in the {@link org.hkijena.acaq5.ui.ACAQSampleManagerUI}
- */
-public class ACAQSampleTreeCellRenderer extends JLabel implements TreeCellRenderer {
+public class ACAQDataSlotTreeCellRenderer extends JLabel implements TreeCellRenderer {
 
-    public ACAQSampleTreeCellRenderer() {
+    public ACAQDataSlotTreeCellRenderer() {
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
     }
@@ -25,10 +24,10 @@ public class ACAQSampleTreeCellRenderer extends JLabel implements TreeCellRender
         }
 
         Object o = ((DefaultMutableTreeNode)value).getUserObject();
-        if(o instanceof ACAQProjectSample) {
-            ACAQProjectSample sample = (ACAQProjectSample)o;
-            setText(sample.getName());
-            setIcon(UIUtils.getIconFromResources("sample.png"));
+        if(o instanceof ACAQDataSlot<?>) {
+            ACAQDataSlot<?> slot = (ACAQDataSlot<?>)o;
+            setText(slot.getName());
+            setIcon(ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(slot.getAcceptedDataType()));
         }
         else {
             setText(o.toString());

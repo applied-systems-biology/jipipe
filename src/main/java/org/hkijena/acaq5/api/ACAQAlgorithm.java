@@ -110,4 +110,12 @@ public abstract class ACAQAlgorithm {
     public void setLocation(Point location) {
         this.location = location;
     }
+
+    public static <T extends ACAQAlgorithm> T createInstance(Class<? extends T> klass) {
+        try {
+            return klass.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

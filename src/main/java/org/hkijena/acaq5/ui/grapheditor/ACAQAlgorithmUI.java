@@ -1,5 +1,6 @@
-package org.hkijena.acaq5.ui.components;
+package org.hkijena.acaq5.ui.grapheditor;
 
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.ACAQAlgorithm;
@@ -7,7 +8,7 @@ import org.hkijena.acaq5.api.ACAQData;
 import org.hkijena.acaq5.api.ACAQDataSlot;
 import org.hkijena.acaq5.api.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
-import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
+import org.hkijena.acaq5.ui.events.ACAQAlgorithmUIOpenSettingsRequested;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -16,13 +17,14 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class ACAQAlgorithmUI extends JPanel {
 
     /**
      * Height assigned for one slot
      */
-    public static final int SLOT_UI_HEIGHT = 75;
+    public static final int SLOT_UI_HEIGHT = 50;
 
     /**
      * Grid width for horizontal direction
@@ -34,6 +36,7 @@ public class ACAQAlgorithmUI extends JPanel {
     private JPanel inputSlotPanel;
     private JPanel outputSlotPanel;
     private List<ACAQDataSlotUI> slotUIList = new ArrayList<>();
+    private EventBus eventBus = new EventBus();
 
     public ACAQAlgorithmUI(ACAQAlgorithmGraphCanvasUI graphUI, ACAQAlgorithm algorithm) {
         this.graphUI = graphUI;
@@ -55,38 +58,51 @@ public class ACAQAlgorithmUI extends JPanel {
         outputSlotPanel = new JPanel();
         outputSlotPanel.setOpaque(false);
 
-//        inputSlotPanel.setBorder(BorderFactory.createLineBorder(Color.BLUE));
-//        outputSlotPanel.setBorder(BorderFactory.createLineBorder(Color.RED));
+        JLabel nameLabel = new JLabel(ACAQAlgorithm.getName(algorithm.getClass()));
+        JButton openSettingsButton = new JButton(UIUtils.getIconFromResources("wrench.png"));
+        UIUtils.makeFlat(openSettingsButton);
+        openSettingsButton.setPreferredSize(new Dimension(21,21));
+        openSettingsButton.addActionListener(e -> eventBus.post(new ACAQAlgorithmUIOpenSettingsRequested(this)));
 
         add(inputSlotPanel, new GridBagConstraints() {
             {
+                gridx = 0;
                 fill = GridBagConstraints.VERTICAL;
                 weighty = 1;
             }
         });
-
-        JPanel infoPanel = new JPanel();
-//        infoPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-        infoPanel.setOpaque(false);
-        infoPanel.setLayout(new BorderLayout());
-
-        infoPanel.add(new JLabel(ACAQAlgorithm.getName(algorithm.getClass())) {
+        addHorizontalGlue(1);
+        add(openSettingsButton, new GridBagConstraints() {
             {
-                setHorizontalAlignment(JLabel.CENTER);
+                gridx = 2;
             }
         });
-
-        add(infoPanel, new GridBagConstraints() {
+        add(nameLabel, new GridBagConstraints() {
             {
-                fill = GridBagConstraints.BOTH;
-                weighty = 1;
-                weightx = 1;
+                gridx = 3;
             }
         });
+        addHorizontalGlue(4);
         add(outputSlotPanel, new GridBagConstraints() {
             {
+                gridx = 5;
                 fill = GridBagConstraints.VERTICAL;
                 weighty = 1;
+            }
+        });
+    }
+
+    private void addHorizontalGlue(int column) {
+        add(new JPanel() {
+            {
+                setOpaque(false);
+            }
+        }, new GridBagConstraints() {
+            {
+                gridx = column;
+                fill = GridBagConstraints.VERTICAL | GridBagConstraints.HORIZONTAL;
+                weighty = 1;
+                weightx = 1;
             }
         });
     }
@@ -101,8 +117,22 @@ public class ACAQAlgorithmUI extends JPanel {
         UIUtils.makeFlat(button);
 
         JPopupMenu menu = UIUtils.addPopupMenuToComponent(button);
-        for(Class<? extends ACAQData> dataClass : ACAQRegistryService.getInstance().getDatatypeRegistry().getRegisteredDataTypes()) {
-            Class<? extends ACAQDataSlot<?>> slotClass = ACAQRegistryService.getInstance().getDatatypeRegistry().getRegisteredSlotDataTypes().get(dataClass);
+        ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration)algorithm.getSlotConfiguration();
+
+        Set<Class<? extends ACAQDataSlot<?>>> allowedSlotTypes;
+        switch(slotType) {
+            case Input:
+                allowedSlotTypes = slotConfiguration.getAllowedInputSlotTypes();
+                break;
+            case Output:
+                allowedSlotTypes = slotConfiguration.getAllowedOutputSlotTypes();
+                break;
+            default:
+                throw new RuntimeException();
+        }
+
+        for(Class<? extends ACAQDataSlot<?>> slotClass : allowedSlotTypes) {
+            Class<? extends ACAQData> dataClass = ACAQRegistryService.getInstance().getDatatypeRegistry().getRegisteredSlotDataTypes().inverse().get(slotClass);
             JMenuItem item = new JMenuItem(ACAQData.getName(dataClass), ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(dataClass));
             item.addActionListener(e -> addNewSlot(slotType, slotClass));
             menu.add(item);
@@ -135,21 +165,19 @@ public class ACAQAlgorithmUI extends JPanel {
         }
         if(algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
             ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration)algorithm.getSlotConfiguration();
-            if(!slotConfiguration.isSealed()) {
-                if(slotConfiguration.allowsInputSlots()) {
-                    JButton addInputSlotButton = createAddSlotButton(ACAQDataSlot.SlotType.Input);
-                    JPanel panel = new JPanel(new BorderLayout());
-                    panel.setOpaque(false);
-                    panel.add(addInputSlotButton, BorderLayout.WEST);
-                    inputSlotPanel.add(panel);
-                }
-                if(slotConfiguration.allowsOutputSlots()) {
-                    JButton addOutputSlotButton = createAddSlotButton(ACAQDataSlot.SlotType.Output);
-                    JPanel panel = new JPanel(new BorderLayout());
-                    panel.setOpaque(false);
-                    panel.add(addOutputSlotButton, BorderLayout.EAST);
-                    outputSlotPanel.add(panel);
-                }
+            if(slotConfiguration.allowsInputSlots() && !slotConfiguration.isInputSlotsSealed()) {
+                JButton addInputSlotButton = createAddSlotButton(ACAQDataSlot.SlotType.Input);
+                JPanel panel = new JPanel(new BorderLayout());
+                panel.setOpaque(false);
+                panel.add(addInputSlotButton, BorderLayout.WEST);
+                inputSlotPanel.add(panel);
+            }
+            if(slotConfiguration.allowsOutputSlots() && !slotConfiguration.isOutputSlotsSealed()) {
+                JButton addOutputSlotButton = createAddSlotButton(ACAQDataSlot.SlotType.Output);
+                JPanel panel = new JPanel(new BorderLayout());
+                panel.setOpaque(false);
+                panel.add(addOutputSlotButton, BorderLayout.EAST);
+                outputSlotPanel.add(panel);
             }
         }
         setSize(new Dimension(calculateWidth(), calculateHeight()));
@@ -195,7 +223,8 @@ public class ACAQAlgorithmUI extends JPanel {
     private int getDisplayedRows() {
         int rows = getSlotRows();
         if(algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
-            if(!((ACAQMutableSlotConfiguration)algorithm.getSlotConfiguration()).isSealed()) {
+            ACAQMutableSlotConfiguration configuration = (ACAQMutableSlotConfiguration)algorithm.getSlotConfiguration();
+            if(!configuration.isInputSlotsSealed() && !configuration.isOutputSlotsSealed()) {
                 rows += 1;
             }
         }
@@ -312,5 +341,9 @@ public class ACAQAlgorithmUI extends JPanel {
     public void setLocation(Point p) {
         super.setLocation(p);
         algorithm.setLocation(p);
+    }
+
+    public EventBus getEventBus() {
+        return eventBus;
     }
 }

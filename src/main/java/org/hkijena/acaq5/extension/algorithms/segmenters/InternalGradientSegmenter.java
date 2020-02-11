@@ -5,6 +5,9 @@ import ij.plugin.ImageCalculator;
 import ij.plugin.filter.Binary;
 import ij.plugin.filter.GaussianBlur;
 import ij.plugin.filter.RankFilters;
+import org.hkijena.acaq5.api.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.api.ACAQAlgorithmMetadata;
+import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQSimpleAlgorithm;
 import org.hkijena.acaq5.extension.algorithms.enhancers.CLAHEImageEnhancer;
 import org.hkijena.acaq5.extension.dataslots.ACAQGreyscaleImageDataSlot;
@@ -13,6 +16,8 @@ import org.hkijena.acaq5.extension.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.utils.ImageJUtils;
 
+@ACAQDocumentation(name = "Internal gradient segmentation")
+@ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
 public class InternalGradientSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQMaskData> {
 
     private double gaussSigma = 3;

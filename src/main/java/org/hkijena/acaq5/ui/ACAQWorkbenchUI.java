@@ -3,6 +3,7 @@ package org.hkijena.acaq5.ui;
 import org.hkijena.acaq5.ACAQCommand;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
+import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;

@@ -1,9 +1,13 @@
-package org.hkijena.acaq5.ui.components;
+package org.hkijena.acaq5.ui.grapheditor;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQAlgorithm;
 import org.hkijena.acaq5.api.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
+import org.hkijena.acaq5.ui.events.ACAQAlgorithmUIOpenSettingsRequested;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,12 +22,14 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     private ACAQAlgorithmUI currentlyDragged;
     private Point currentlyDraggedOffset = new Point();
     private BiMap<ACAQAlgorithm, ACAQAlgorithmUI> nodeUIs = HashBiMap.create();
+    private EventBus eventBus = new EventBus();
 
     public ACAQAlgorithmGraphCanvasUI(ACAQAlgorithmGraph algorithmGraph) {
         super(null);
         this.algorithmGraph = algorithmGraph;
         initialize();
         addNewNodes();
+        algorithmGraph.getEventBus().register(this);
     }
 
     private void initialize() {
@@ -65,12 +71,15 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             if(y == 0)
                 y += 2 * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
             ACAQAlgorithmUI ui = new ACAQAlgorithmUI(this, algorithm);
+            ui.getEventBus().register(this);
             add(ui);
             nodeUIs.put(algorithm, ui);
             if(algorithm.getLocation() == null || !ui.trySetLocationNoGrid(algorithm.getLocation().x, algorithm.getLocation().y)) {
                 ui.setLocation(ACAQAlgorithmUI.SLOT_UI_WIDTH * 4, y);
             }
         }
+        revalidate();
+        repaint();
     }
 
     @Override
@@ -106,6 +115,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
                         currentlyDragged = (ACAQAlgorithmUI)component;
                         currentlyDraggedOffset.x = component.getX() - mouseEvent.getX();
                         currentlyDraggedOffset.y = component.getY() - mouseEvent.getY();
+                        eventBus.post(new ACAQAlgorithmUIOpenSettingsRequested(currentlyDragged));
                         break;
                     }
                 }
@@ -139,5 +149,20 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             height = Math.max(height, component.getY() + component.getHeight());
         }
         return new Dimension(width, height);
+    }
+
+    @Subscribe
+    public void onAlgorithmGraphChanged(AlgorithmGraphChangedEvent event) {
+        addNewNodes();
+        removeOldNodes();
+    }
+
+    @Subscribe
+    public void onOpenAlgorithmSettings(ACAQAlgorithmUIOpenSettingsRequested event) {
+        eventBus.post(event);
+    }
+
+    public EventBus getEventBus() {
+        return eventBus;
     }
 }

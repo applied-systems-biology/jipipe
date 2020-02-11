@@ -5,7 +5,6 @@ import org.hkijena.acaq5.api.ACAQProjectSample;
 import org.hkijena.acaq5.api.events.ACAQSampleAddedEvent;
 import org.hkijena.acaq5.api.events.ACAQSampleRemovedEvent;
 import org.hkijena.acaq5.api.events.ACAQSampleRenamedEvent;
-import org.hkijena.acaq5.ui.components.ACAQSampleTreeCellRenderer;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -53,7 +52,8 @@ public class ACAQSampleManagerUI extends ACAQUIPanel {
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton removeButton = new JButton("Remove selected", UIUtils.getIconFromResources("delete.png"));
+        JButton removeButton = new JButton( UIUtils.getIconFromResources("delete.png"));
+        removeButton.setToolTipText("Remove selected samples");
         toolBar.add(removeButton);
     }
 

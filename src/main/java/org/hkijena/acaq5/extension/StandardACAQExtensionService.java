@@ -3,6 +3,7 @@ package org.hkijena.acaq5.extension;
 import org.hkijena.acaq5.ACAQExtensionService;
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.extension.algorithms.converters.MaskToParticleConverter;
+import org.hkijena.acaq5.extension.algorithms.converters.MultiChannelSplitterConverter;
 import org.hkijena.acaq5.extension.algorithms.enhancers.CLAHEImageEnhancer;
 import org.hkijena.acaq5.extension.algorithms.enhancers.IlluminationCorrectionEnhancer;
 import org.hkijena.acaq5.extension.algorithms.enhancers.WatershedMaskEnhancer;
@@ -12,9 +13,15 @@ import org.hkijena.acaq5.extension.algorithms.segmenters.HoughSegmenter;
 import org.hkijena.acaq5.extension.algorithms.segmenters.InternalGradientSegmenter;
 import org.hkijena.acaq5.extension.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.dataslots.ACAQMaskDataSlot;
+import org.hkijena.acaq5.extension.dataslots.ACAQMultichannelImageDataSlot;
 import org.hkijena.acaq5.extension.dataslots.ACAQROIDataSlot;
+import org.hkijena.acaq5.extension.datasources.ACAQGreyscaleImageDataFromFile;
+import org.hkijena.acaq5.extension.datasources.ACAQMaskImageDataFromFile;
+import org.hkijena.acaq5.extension.datasources.ACAQMultichannelImageDataFromFile;
+import org.hkijena.acaq5.extension.datasources.ACAQROIDataFromFile;
 import org.hkijena.acaq5.extension.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.datatypes.ACAQMaskData;
+import org.hkijena.acaq5.extension.datatypes.ACAQMultichannelImageData;
 import org.hkijena.acaq5.extension.datatypes.ACAQROIData;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
@@ -35,6 +42,9 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
         registryService.getDatatypeRegistry().register(ACAQROIData.class, ACAQROIDataSlot.class);
         registryService.getUIDatatypeRegistry().registerIcon(ACAQROIData.class,
                 ResourceUtils.getPluginResource("icons/data-type-roi.png"));
+        registryService.getDatatypeRegistry().register(ACAQMultichannelImageData.class, ACAQMultichannelImageDataSlot.class);
+        registryService.getUIDatatypeRegistry().registerIcon(ACAQMultichannelImageData.class,
+                ResourceUtils.getPluginResource("icons/data-type-multichannel.png"));
 
         // Register algorithms
         registryService.getAlgorithmRegistry().register(MaskToParticleConverter.class);
@@ -45,5 +55,12 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
         registryService.getAlgorithmRegistry().register(BrightSpotsSegmenter.class);
         registryService.getAlgorithmRegistry().register(HoughSegmenter.class);
         registryService.getAlgorithmRegistry().register(InternalGradientSegmenter.class);
+        registryService.getAlgorithmRegistry().register(MultiChannelSplitterConverter.class);
+
+        // Register data sources
+        registryService.getAlgorithmRegistry().register(ACAQGreyscaleImageDataFromFile.class);
+        registryService.getAlgorithmRegistry().register(ACAQMaskImageDataFromFile.class);
+        registryService.getAlgorithmRegistry().register(ACAQROIDataFromFile.class);
+        registryService.getAlgorithmRegistry().register(ACAQMultichannelImageDataFromFile.class);
     }
 }

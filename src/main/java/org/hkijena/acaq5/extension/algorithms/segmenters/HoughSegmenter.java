@@ -5,6 +5,9 @@ import ij.ImagePlus;
 import ij.WindowManager;
 import ij.measure.ResultsTable;
 import ij.plugin.filter.Analyzer;
+import org.hkijena.acaq5.api.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.api.ACAQAlgorithmMetadata;
+import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQSimpleAlgorithm;
 import org.hkijena.acaq5.extension.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.dataslots.ACAQMaskDataSlot;
@@ -12,6 +15,8 @@ import org.hkijena.acaq5.extension.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.utils.Hough_Circle;
 
+@ACAQDocumentation(name = "Hough segmentation")
+@ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
 public class HoughSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQMaskData> {
 
     private int minRadius = 7;

@@ -2,12 +2,17 @@ package org.hkijena.acaq5.extension.algorithms.enhancers;
 
 import ij.ImagePlus;
 import ij.plugin.ImageCalculator;
+import org.hkijena.acaq5.api.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.api.ACAQAlgorithmMetadata;
+import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQSimpleAlgorithm;
 import org.hkijena.acaq5.extension.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.utils.ImageJUtils;
 import org.hkijena.acaq5.utils.MacroSetting;
 
+@ACAQDocumentation(name = "Illumination correction enhancer")
+@ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
 public class IlluminationCorrectionEnhancer extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQGreyscaleImageData> {
 
     private int gaussianSigma = 21;

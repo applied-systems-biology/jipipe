@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.ui.components;
+package org.hkijena.acaq5.ui.grapheditor;
 
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.ACAQData;
@@ -10,8 +10,8 @@ import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 
-import static org.hkijena.acaq5.ui.components.ACAQAlgorithmUI.SLOT_UI_HEIGHT;
-import static org.hkijena.acaq5.ui.components.ACAQAlgorithmUI.SLOT_UI_WIDTH;
+import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_WIDTH;
 
 public class ACAQDataSlotUI extends JPanel {
     private ACAQDataSlot<?> slot;
