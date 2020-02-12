@@ -188,9 +188,12 @@ public class ACAQAlgorithmUI extends JPanel {
     private void addNewSlot(ACAQDataSlot.SlotType slotType, Class<? extends ACAQDataSlot<?>> klass) {
         if(algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
             ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
+
+            int existingSlots = slotType == ACAQDataSlot.SlotType.Input ? algorithm.getInputSlots().size() : algorithm.getOutputSlots().size();
+
             String name = null;
             while(name == null) {
-                String newName = JOptionPane.showInputDialog(this,"Please a data slot name", slotType + " data " + (getSlotRows() + 1));
+                String newName = JOptionPane.showInputDialog(this,"Please a data slot name", slotType + " data " + (existingSlots + 1));
                 if(newName == null || newName.trim().isEmpty())
                     return;
                 if(slotConfiguration.hasSlot(newName))
@@ -224,7 +227,8 @@ public class ACAQAlgorithmUI extends JPanel {
         int rows = getSlotRows();
         if(algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
             ACAQMutableSlotConfiguration configuration = (ACAQMutableSlotConfiguration)algorithm.getSlotConfiguration();
-            if(!configuration.isInputSlotsSealed() && !configuration.isOutputSlotsSealed()) {
+            if(configuration.canAddInputSlot() && algorithm.getInputSlots().size() > 0 ||
+                    configuration.canAddOutputSlot() && algorithm.getOutputSlots().size() > 0) {
                 rows += 1;
             }
         }
@@ -270,13 +274,11 @@ public class ACAQAlgorithmUI extends JPanel {
      * @return
      */
     public Color getAlgorithmColor() {
-        float h = Math.abs(algorithm.getClass().getCanonicalName().hashCode() % 256) / 255.0f;
-        return Color.getHSBColor(h, 0.1f, 0.9f);
+        return ACAQAlgorithm.getCategory(algorithm.getClass()).getColor(0.1f, 0.9f);
     }
 
     public Color getAlgorithmBorderColor() {
-        float h = Math.abs(algorithm.getClass().getCanonicalName().hashCode() % 256) / 255.0f;
-        return Color.getHSBColor(h, 0.1f, 0.5f);
+        return ACAQAlgorithm.getCategory(algorithm.getClass()).getColor(0.1f, 0.5f);
     }
 
     /**

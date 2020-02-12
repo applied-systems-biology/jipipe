@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class ACAQAlgorithm {
-
     private ACAQSlotConfiguration slotConfiguration;
     private Map<String, ACAQDataSlot<?>> slots = new HashMap<>();
     private EventBus eventBus = new EventBus();
@@ -49,6 +48,21 @@ public abstract class ACAQAlgorithm {
         }
         else {
             return klass.getSimpleName();
+        }
+    }
+
+    /**
+     * Returns the name of an algorithm
+     * @param klass
+     * @return
+     */
+    public static ACAQAlgorithmCategory getCategory(Class<? extends  ACAQAlgorithm> klass) {
+        ACAQAlgorithmMetadata[] annotations = klass.getAnnotationsByType(ACAQAlgorithmMetadata.class);
+        if(annotations.length > 0) {
+            return annotations[0].category();
+        }
+        else {
+            return ACAQAlgorithmCategory.Special;
         }
     }
 

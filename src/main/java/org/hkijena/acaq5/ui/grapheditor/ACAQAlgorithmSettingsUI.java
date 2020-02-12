@@ -1,12 +1,16 @@
 package org.hkijena.acaq5.ui.grapheditor;
 
+import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.ACAQAlgorithm;
+import org.hkijena.acaq5.api.ACAQParameterAccess;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ACAQAlgorithmSettingsUI extends JPanel {
     private ACAQAlgorithm algorithm;
@@ -37,7 +41,18 @@ public class ACAQAlgorithmSettingsUI extends JPanel {
     }
 
     private void initializeParameterPanel(FormPanel formPanel) {
+        Map<String, ACAQParameterAccess> parameters = ACAQParameterAccess.getParameters(algorithm.getClass());
+        for(String key : parameters.keySet().stream().sorted().collect(Collectors.toList())) {
+            ACAQParameterAccess parameterAccess = parameters.get(key);
+            ACAQParameterEditorUI ui = ACAQRegistryService.getInstance()
+                    .getUIParametertypeRegistry().createEditorFor(algorithm, parameterAccess);
 
+            if(ui.isUILabelEnabled())
+                formPanel.addToForm(ui, new JLabel(parameterAccess.getName()), null);
+            else
+                formPanel.addToForm(ui, null);
+        }
+        formPanel.addVerticalGlue();
     }
 
     public ACAQAlgorithm getAlgorithm() {

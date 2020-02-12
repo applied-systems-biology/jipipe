@@ -93,6 +93,14 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
         return outputSlotsSealed;
     }
 
+    public boolean canAddInputSlot() {
+        return allowsInputSlots() && !isInputSlotsSealed();
+    }
+
+    public boolean canAddOutputSlot() {
+        return allowsOutputSlots() && !isOutputSlotsSealed();
+    }
+
     public Set<Class<? extends ACAQDataSlot<?>>> getAllowedInputSlotTypes() {
         return allowedInputSlotTypes;
     }

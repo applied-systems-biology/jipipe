@@ -30,7 +30,8 @@ public class FormPanel extends JPanel {
         parameterHelp.loadDefaultDocument(defaultHelpDocumentPath);
         helpPanel.add(parameterHelp, BorderLayout.CENTER);
 
-        JSplitPane splitPane = new JSplitPane(documentationBelow ? JSplitPane.VERTICAL_SPLIT : JSplitPane.HORIZONTAL_SPLIT, new JScrollPane(forms), helpPanel);
+        JScrollPane scrollPane = new JScrollPane(forms);
+        JSplitPane splitPane = new JSplitPane(documentationBelow ? JSplitPane.VERTICAL_SPLIT : JSplitPane.HORIZONTAL_SPLIT, scrollPane, helpPanel);
         splitPane.setDividerSize(3);
         splitPane.setResizeWeight(0.33);
         addComponentListener(new ComponentAdapter() {
@@ -126,8 +127,8 @@ public class FormPanel extends JPanel {
                 anchor = GridBagConstraints.WEST;
                 gridx = 0;
                 gridy = numRows;
-                fill = GridBagConstraints.HORIZONTAL | GridBagConstraints.VERTICAL;
-                weightx = 1;
+                fill = GridBagConstraints.VERTICAL;
+                weightx = 0;
                 weighty = 1;
             }
         });

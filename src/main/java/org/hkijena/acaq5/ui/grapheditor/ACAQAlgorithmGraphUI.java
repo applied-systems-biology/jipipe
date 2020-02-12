@@ -130,7 +130,9 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel {
     public void onOpenAlgorithmSettings(ACAQAlgorithmUIOpenSettingsRequested event) {
         if(currentAlgorithmSettings == null || currentAlgorithmSettings.getAlgorithm() != event.getUi().getAlgorithm()) {
             currentAlgorithmSettings = new ACAQAlgorithmSettingsUI(event.getUi().getAlgorithm());
+            int dividerLocation = splitPane.getDividerLocation();
             splitPane.setRightComponent(currentAlgorithmSettings);
+            splitPane.setDividerLocation(dividerLocation);
         }
     }
 }

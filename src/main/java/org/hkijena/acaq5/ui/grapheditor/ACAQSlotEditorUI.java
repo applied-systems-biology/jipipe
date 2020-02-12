@@ -167,9 +167,10 @@ public class ACAQSlotEditorUI extends JPanel {
     private void addNewSlot(ACAQDataSlot.SlotType slotType, Class<? extends ACAQDataSlot<?>> klass) {
         if(algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
             ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
+            int existingSlots = slotType == ACAQDataSlot.SlotType.Input ? algorithm.getInputSlots().size() : algorithm.getOutputSlots().size();
             String name = null;
             while(name == null) {
-                String newName = JOptionPane.showInputDialog(this,"Please a data slot name", slotType + " data " + (algorithm.getSlotConfiguration().getRows() + 1));
+                String newName = JOptionPane.showInputDialog(this,"Please a data slot name", slotType + " data " + (existingSlots + 1));
                 if(newName == null || newName.trim().isEmpty())
                     return;
                 if(slotConfiguration.hasSlot(newName))
