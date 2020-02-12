@@ -11,20 +11,27 @@ public class ACAQParameterAccess {
     private Method getter;
     private Method setter;
     private ACAQDocumentation documentation;
+    private ACAQAlgorithm algorithm;
 
     private ACAQParameterAccess() {
 
     }
 
-    public static Map<String, ACAQParameterAccess> getParameters(Class<?> klass) {
+    /**
+     * Extracts parameters from an algorithm instance
+     * @param algorithm
+     * @return
+     */
+    public static Map<String, ACAQParameterAccess> getParameters(ACAQAlgorithm algorithm) {
         Map<String, ACAQParameterAccess> result = new HashMap<>();
-        for(Method method : klass.getMethods()) {
+        for(Method method : algorithm.getClass().getMethods()) {
             ACAQParameter[] parameterAnnotations = method.getAnnotationsByType(ACAQParameter.class);
             if(parameterAnnotations.length > 0) {
                 ACAQParameter parameterAnnotation = parameterAnnotations[0];
                 ACAQParameterAccess access = result.putIfAbsent(parameterAnnotation.value(), new ACAQParameterAccess());
                 if(access == null)
                     access = result.get(parameterAnnotation.value());
+                access.algorithm = algorithm;
                 if(method.getParameters().length == 1) {
                     // Is a setter
                     access.setter = method;
@@ -45,6 +52,18 @@ public class ACAQParameterAccess {
                 }
             }
 
+            ACAQSubAlgorithm[] subAlgorithms = method.getAnnotationsByType(ACAQSubAlgorithm.class);
+            if(subAlgorithms.length > 0) {
+                try {
+                    ACAQSubAlgorithm subAlgorithmAnnotation = subAlgorithms[0];
+                    ACAQAlgorithm subAlgorithm = (ACAQAlgorithm) method.invoke(algorithm);
+                    for(Map.Entry<String, ACAQParameterAccess> kv : getParameters(subAlgorithm).entrySet()) {
+                        result.put(subAlgorithmAnnotation.value() + "/" + kv.getKey(), kv.getValue());
+                    }
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
         return result;
     }
@@ -77,33 +96,23 @@ public class ACAQParameterAccess {
         return null;
     }
 
-    public <T> Instance<T> instantiate(ACAQAlgorithm algorithm) {
-        return new Instance<>(algorithm, this);
+    public <T> T get() {
+        try {
+            return (T)getGetter().invoke(algorithm);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public static class Instance<T> {
-        private ACAQAlgorithm algorithm;
-        private ACAQParameterAccess access;
-
-        public Instance(ACAQAlgorithm algorithm, ACAQParameterAccess access) {
-            this.algorithm = algorithm;
-            this.access = access;
+    public <T> void set(T value) {
+        try {
+            getSetter().invoke(algorithm, value);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
         }
+    }
 
-        public T get() {
-            try {
-                return (T)access.getGetter().invoke(algorithm);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        public void set(T value) {
-            try {
-                access.getSetter().invoke(algorithm, value);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException(e);
-            }
-        }
+    public ACAQAlgorithm getAlgorithm() {
+        return algorithm;
     }
 }

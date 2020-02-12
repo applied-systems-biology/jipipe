@@ -107,4 +107,9 @@ public class BrightSpotsSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImage
     public void setGaussianSigma(double gaussianSigma) {
         this.gaussianSigma = gaussianSigma;
     }
+
+    @ACAQSubAlgorithm("auto-thresholding")
+    public AutoThresholdSegmenter getAutoThresholdSegmenter() {
+        return autoThresholdSegmenter;
+    }
 }

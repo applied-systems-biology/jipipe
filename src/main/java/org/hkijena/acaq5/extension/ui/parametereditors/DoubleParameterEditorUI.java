@@ -9,11 +9,8 @@ import java.awt.*;
 
 public class DoubleParameterEditorUI extends ACAQParameterEditorUI {
 
-    private ACAQParameterAccess.Instance<Double> numberAccess;
-
-    public DoubleParameterEditorUI(ACAQAlgorithm algorithm, ACAQParameterAccess parameterAccess) {
-        super(algorithm, parameterAccess);
-        numberAccess = parameterAccess.instantiate(algorithm);
+    public DoubleParameterEditorUI(ACAQParameterAccess parameterAccess) {
+        super(parameterAccess);
         initialize();
     }
 
@@ -26,9 +23,9 @@ public class DoubleParameterEditorUI extends ACAQParameterEditorUI {
         setLayout(new BorderLayout());
         double min = -Double.MAX_VALUE;
         double max = Double.MAX_VALUE;
-        SpinnerNumberModel model = new SpinnerNumberModel((double)numberAccess.get(), min, max, 1);
+        SpinnerNumberModel model = new SpinnerNumberModel((double)getParameterAccess().get(), min, max, 1);
         JSpinner spinner = new JSpinner(model);
-        spinner.addChangeListener(e -> numberAccess.set(model.getNumber().doubleValue()));
+        spinner.addChangeListener(e -> getParameterAccess().set(model.getNumber().doubleValue()));
         spinner.setPreferredSize(new Dimension(100, spinner.getPreferredSize().height));
         add(spinner, BorderLayout.CENTER);
     }

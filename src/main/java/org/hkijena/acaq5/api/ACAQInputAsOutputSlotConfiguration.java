@@ -6,7 +6,9 @@ import org.hkijena.acaq5.api.events.SlotAddedEvent;
 import org.hkijena.acaq5.api.events.SlotRemovedEvent;
 import org.hkijena.acaq5.api.events.SlotRenamedEvent;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ACAQInputAsOutputSlotConfiguration extends ACAQSlotConfiguration {
@@ -31,6 +33,16 @@ public class ACAQInputAsOutputSlotConfiguration extends ACAQSlotConfiguration {
             }
         }
         return result;
+    }
+
+    @Override
+    public List<String> getInputSlotOrder() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<String> getOutputSlotOrder() {
+        return slotConfiguration.getInputSlotOrder();
     }
 
     @Subscribe

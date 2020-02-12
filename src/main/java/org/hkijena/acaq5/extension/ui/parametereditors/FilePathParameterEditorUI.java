@@ -10,11 +10,8 @@ import java.nio.file.Path;
 
 public class FilePathParameterEditorUI extends ACAQParameterEditorUI {
 
-    private ACAQParameterAccess.Instance<Path> filePathAccess;
-
-    public FilePathParameterEditorUI(ACAQAlgorithm algorithm, ACAQParameterAccess parameterAccess) {
-        super(algorithm, parameterAccess);
-        filePathAccess = parameterAccess.instantiate(algorithm);
+    public FilePathParameterEditorUI(ACAQParameterAccess parameterAccess) {
+        super(parameterAccess);
         initialize();
     }
 
@@ -26,8 +23,8 @@ public class FilePathParameterEditorUI extends ACAQParameterEditorUI {
     private void initialize() {
         setLayout(new BorderLayout());
         FileSelection fileSelection = new FileSelection(FileSelection.Mode.OPEN);
-        fileSelection.setPath(filePathAccess.get());
+        fileSelection.setPath(getParameterAccess().get());
         add(fileSelection, BorderLayout.CENTER);
-        fileSelection.addActionListener(e -> filePathAccess.set(fileSelection.getPath()));
+        fileSelection.addActionListener(e -> getParameterAccess().set(fileSelection.getPath()));
     }
 }

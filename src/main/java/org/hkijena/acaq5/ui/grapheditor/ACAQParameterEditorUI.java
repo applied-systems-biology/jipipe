@@ -6,16 +6,14 @@ import org.hkijena.acaq5.api.ACAQParameterAccess;
 import javax.swing.*;
 
 public abstract class ACAQParameterEditorUI extends JPanel {
-    private ACAQAlgorithm algorithm;
     private ACAQParameterAccess parameterAccess;
 
-    public ACAQParameterEditorUI(ACAQAlgorithm algorithm, ACAQParameterAccess parameterAccess) {
-        this.algorithm = algorithm;
+    public ACAQParameterEditorUI(ACAQParameterAccess parameterAccess) {
         this.parameterAccess = parameterAccess;
     }
 
     public ACAQAlgorithm getAlgorithm() {
-        return algorithm;
+        return parameterAccess.getAlgorithm();
     }
 
     public ACAQParameterAccess getParameterAccess() {

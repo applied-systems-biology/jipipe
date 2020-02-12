@@ -9,11 +9,8 @@ import java.awt.*;
 
 public class BooleanParameterEditorUI extends ACAQParameterEditorUI {
 
-    private ACAQParameterAccess.Instance<Boolean> booleanAccess;
-
-    public BooleanParameterEditorUI(ACAQAlgorithm algorithm, ACAQParameterAccess parameterAccess) {
-        super(algorithm, parameterAccess);
-        booleanAccess = parameterAccess.instantiate(algorithm);
+    public BooleanParameterEditorUI(ACAQParameterAccess parameterAccess) {
+        super(parameterAccess);
         initialize();
     }
 
@@ -24,8 +21,8 @@ public class BooleanParameterEditorUI extends ACAQParameterEditorUI {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        JCheckBox checkBox = new JCheckBox(getParameterAccess().getName(), booleanAccess.get());
+        JCheckBox checkBox = new JCheckBox(getParameterAccess().getName(), getParameterAccess().get());
         add(checkBox, BorderLayout.CENTER);
-        checkBox.addActionListener(e -> booleanAccess.set(checkBox.isSelected()));
+        checkBox.addActionListener(e -> getParameterAccess().set(checkBox.isSelected()));
     }
 }

@@ -12,11 +12,8 @@ import java.awt.*;
  */
 public class EnumParameterEditorUI extends ACAQParameterEditorUI {
 
-    private ACAQParameterAccess.Instance<Enum<?>> enumAccess;
-
-    public EnumParameterEditorUI(ACAQAlgorithm algorithm, ACAQParameterAccess parameterAccess) {
-        super(algorithm, parameterAccess);
-        enumAccess = parameterAccess.instantiate(algorithm);
+    public EnumParameterEditorUI(ACAQParameterAccess parameterAccess) {
+        super(parameterAccess);
         initialize();
     }
 
@@ -29,8 +26,8 @@ public class EnumParameterEditorUI extends ACAQParameterEditorUI {
         setLayout(new BorderLayout());
         Object[] values = getParameterAccess().getFieldClass().getEnumConstants();
         JComboBox<Object> comboBox = new JComboBox<>(values);
-        comboBox.setSelectedItem(enumAccess.get());
-        comboBox.addActionListener(e -> enumAccess.set((Enum<?>) comboBox.getSelectedItem()));
+        comboBox.setSelectedItem(getParameterAccess().get());
+        comboBox.addActionListener(e -> getParameterAccess().set(comboBox.getSelectedItem()));
         add(comboBox, BorderLayout.CENTER);
     }
 }

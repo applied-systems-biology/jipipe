@@ -11,11 +11,11 @@ public abstract class ACAQSimpleAlgorithm<IData extends ACAQData, OData extends 
     }
 
     public ACAQDataSlot<IData> getInputSlot() {
-        return (ACAQDataSlot<IData>) getInputSlots().get(getInputSlots().keySet().iterator().next());
+        return (ACAQDataSlot<IData>) getInputSlots().get(0);
     }
 
     public ACAQDataSlot<OData> getOutputSlot() {
-        return (ACAQDataSlot<OData>) getOutputSlots().get(getOutputSlots().keySet().iterator().next());
+        return (ACAQDataSlot<OData>) getOutputSlots().get(0);
     }
 
     public IData getInputData() {

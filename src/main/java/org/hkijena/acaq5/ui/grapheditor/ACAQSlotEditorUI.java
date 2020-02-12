@@ -76,7 +76,19 @@ public class ACAQSlotEditorUI extends JPanel {
             toolBar.add(addOutputButton);
         }
 
-            toolBar.add(Box.createHorizontalGlue());
+        toolBar.add(Box.createHorizontalGlue());
+
+        if(algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
+            JButton moveUpButton = new JButton(UIUtils.getIconFromResources("arrow-up.png"));
+            moveUpButton.setToolTipText("Move up");
+            moveUpButton.addActionListener(e -> moveSlotUp());
+            toolBar.add(moveUpButton);
+
+            JButton moveDownButton = new JButton(UIUtils.getIconFromResources("arrow-down.png"));
+            moveDownButton.setToolTipText("Move down");
+            moveDownButton.addActionListener(e -> moveSlotDown());
+            toolBar.add(moveDownButton);
+        }
 
         if(canModifyInputSlots() || canModifyOutputSlots()) {
             JButton removeButton = new JButton( UIUtils.getIconFromResources("delete.png"));
@@ -84,6 +96,31 @@ public class ACAQSlotEditorUI extends JPanel {
             removeButton.addActionListener(e -> removeSelectedSlots());
             toolBar.add(removeButton);
         }
+    }
+
+    private void moveSlotDown() {
+        ACAQDataSlot<?> slot = getSelectedSlot();
+        if(slot != null) {
+            ((ACAQMutableSlotConfiguration)algorithm.getSlotConfiguration()).moveDown(slot.getName());
+        }
+    }
+
+    private void moveSlotUp() {
+        ACAQDataSlot<?> slot = getSelectedSlot();
+        if(slot != null) {
+            ((ACAQMutableSlotConfiguration)algorithm.getSlotConfiguration()).moveUp(slot.getName());
+        }
+    }
+
+    public ACAQDataSlot<?> getSelectedSlot() {
+        ACAQDataSlot<?> selectedSlot = null;
+        if(slotTree.getLastSelectedPathComponent() != null) {
+            DefaultMutableTreeNode nd = (DefaultMutableTreeNode) slotTree.getLastSelectedPathComponent();
+            if(nd.getUserObject() instanceof ACAQDataSlot<?>) {
+                selectedSlot = (ACAQDataSlot<?>)nd.getUserObject();
+            }
+        }
+        return selectedSlot;
     }
 
     private boolean canModifyOutputSlots() {
@@ -121,23 +158,37 @@ public class ACAQSlotEditorUI extends JPanel {
     }
 
     public void reloadList() {
+
+        ACAQDataSlot<?> selectedSlot = getSelectedSlot();
+
         DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("Data slots");
         DefaultMutableTreeNode inputNode = new DefaultMutableTreeNode("Input");
         DefaultMutableTreeNode outputNode = new DefaultMutableTreeNode("Output");
         rootNode.add(inputNode);
         rootNode.add(outputNode);
 
-        for(Map.Entry<String, ACAQDataSlot<?>> kv : algorithm.getInputSlots().entrySet()){
-            DefaultMutableTreeNode node = new DefaultMutableTreeNode(kv.getValue());
+        DefaultMutableTreeNode toSelect = null;
+
+        for(ACAQDataSlot<?> slot : algorithm.getInputSlots()){
+            DefaultMutableTreeNode node = new DefaultMutableTreeNode(slot);
+            if(slot == selectedSlot)
+                toSelect = node;
             inputNode.add(node);
         }
-        for(Map.Entry<String, ACAQDataSlot<?>> kv : algorithm.getOutputSlots().entrySet()){
-            DefaultMutableTreeNode node = new DefaultMutableTreeNode(kv.getValue());
+        for(ACAQDataSlot<?> slot : algorithm.getOutputSlots()){
+            DefaultMutableTreeNode node = new DefaultMutableTreeNode(slot);
+            if(slot == selectedSlot)
+                toSelect = node;
             outputNode.add(node);
         }
 
-        slotTree.setModel(new DefaultTreeModel(rootNode));
+        DefaultTreeModel model = new DefaultTreeModel(rootNode);
+        slotTree.setModel(model);
         UIUtils.expandAllTree(slotTree);
+
+        if(toSelect != null) {
+            slotTree.setSelectionPath(new TreePath(model.getPathToRoot(toSelect)));
+        }
     }
 
     private void initializeAddButton(JButton button, ACAQDataSlot.SlotType slotType) {

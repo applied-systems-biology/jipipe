@@ -11,11 +11,8 @@ import java.nio.file.Path;
 
 public class IntegerParameterEditorUI extends ACAQParameterEditorUI {
 
-    private ACAQParameterAccess.Instance<Integer> numberAccess;
-
-    public IntegerParameterEditorUI(ACAQAlgorithm algorithm, ACAQParameterAccess parameterAccess) {
-        super(algorithm, parameterAccess);
-        numberAccess = parameterAccess.instantiate(algorithm);
+    public IntegerParameterEditorUI(ACAQParameterAccess parameterAccess) {
+        super(parameterAccess);
         initialize();
     }
 
@@ -28,9 +25,10 @@ public class IntegerParameterEditorUI extends ACAQParameterEditorUI {
         setLayout(new BorderLayout());
         double min = Integer.MIN_VALUE;
         double max = Integer.MAX_VALUE;
-        SpinnerNumberModel model = new SpinnerNumberModel((double)numberAccess.get(), min, max, 1);
+        Integer initialValue = getParameterAccess().get();
+        SpinnerNumberModel model = new SpinnerNumberModel(initialValue.doubleValue(), min, max, 1);
         JSpinner spinner = new JSpinner(model);
-        spinner.addChangeListener(e -> numberAccess.set(model.getNumber().intValue()));
+        spinner.addChangeListener(e -> getParameterAccess().set(model.getNumber().intValue()));
         spinner.setPreferredSize(new Dimension(100, spinner.getPreferredSize().height));
         add(spinner, BorderLayout.CENTER);
     }

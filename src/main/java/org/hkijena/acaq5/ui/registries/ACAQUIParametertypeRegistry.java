@@ -20,10 +20,10 @@ public class ACAQUIParametertypeRegistry {
         parameterTypes.put(parameterType, uiClass);
     }
 
-    public ACAQParameterEditorUI createEditorFor(ACAQAlgorithm algorithm, ACAQParameterAccess parameterAccess) {
+    public ACAQParameterEditorUI createEditorFor(ACAQParameterAccess parameterAccess) {
         Class<? extends ACAQParameterEditorUI> uiClass = parameterTypes.get(parameterAccess.getFieldClass());
         try {
-            return uiClass.getConstructor(ACAQAlgorithm.class, ACAQParameterAccess.class).newInstance(algorithm, parameterAccess);
+            return uiClass.getConstructor(ACAQParameterAccess.class).newInstance(parameterAccess);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }

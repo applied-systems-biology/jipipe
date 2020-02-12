@@ -126,4 +126,14 @@ public class InternalGradientSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscale
     public void setErosionIterations(int erosionIterations) {
         this.erosionIterations = erosionIterations;
     }
+
+    @ACAQSubAlgorithm("auto-thresholding")
+    public AutoThresholdSegmenter getAutoThresholdSegmenter() {
+        return autoThresholdSegmenter;
+    }
+
+    @ACAQSubAlgorithm("clahe-enhancing")
+    public CLAHEImageEnhancer getClaheImageEnhancer() {
+        return claheImageEnhancer;
+    }
 }

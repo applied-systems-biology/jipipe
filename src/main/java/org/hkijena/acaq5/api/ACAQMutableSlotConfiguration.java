@@ -1,7 +1,9 @@
 package org.hkijena.acaq5.api;
 
+import net.imagej.ops.Ops;
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.events.SlotAddedEvent;
+import org.hkijena.acaq5.api.events.SlotOrderChangedEvent;
 import org.hkijena.acaq5.api.events.SlotRemovedEvent;
 
 import java.util.*;
@@ -11,6 +13,8 @@ import java.util.*;
  */
 public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
     private Map<String, ACAQSlotDefinition> slots = new HashMap<>();
+    private List<String> inputSlotOrder = new ArrayList<>();
+    private List<String> outputSlotOrder = new ArrayList<>();
 
     private boolean inputSlotsSealed = false;
     private boolean outputSlotsSealed = false;
@@ -38,6 +42,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
         if(hasSlot(name))
             throw new RuntimeException("Slot already exists!");
         slots.put(name, new ACAQSlotDefinition(klass, ACAQDataSlot.SlotType.Input, name));
+        inputSlotOrder.add(name);
         getEventBus().post(new SlotAddedEvent(this, name));
     }
 
@@ -51,11 +56,14 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
         if(hasSlot(name))
             throw new RuntimeException("Slot already exists!");
         slots.put(name, new ACAQSlotDefinition(klass, ACAQDataSlot.SlotType.Output, name));
+        outputSlotOrder.add(name);
         getEventBus().post(new SlotAddedEvent(this, name));
     }
 
     public void removeSlot(String name) {
         if(slots.remove(name) != null) {
+            inputSlotOrder.remove(name);
+            outputSlotOrder.remove(name);
             getEventBus().post(new SlotRemovedEvent(this, name));
         }
     }
@@ -71,6 +79,64 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
     @Override
     public Map<String, ACAQSlotDefinition> getSlots() {
         return Collections.unmodifiableMap(slots);
+    }
+
+    @Override
+    public List<String> getInputSlotOrder() {
+        return Collections.unmodifiableList(inputSlotOrder);
+    }
+
+    @Override
+    public List<String> getOutputSlotOrder() {
+        return Collections.unmodifiableList(outputSlotOrder);
+    }
+
+    public void moveUp(String slot) {
+        ACAQDataSlot.SlotType type = slots.get(slot).getSlotType();
+        List<String> order;
+        switch(type) {
+            case Input:
+                order = inputSlotOrder;
+                break;
+            case Output:
+                order = outputSlotOrder;
+                break;
+            default:
+                throw new RuntimeException("Unknown slot type!");
+        }
+
+        int index = order.indexOf(slot);
+        if(index > 0) {
+            String other = order.get(index - 1);
+            order.set(index - 1, slot);
+            order.set(index, other);
+
+            getEventBus().post(new SlotOrderChangedEvent(this));
+        }
+    }
+
+    public void moveDown(String slot) {
+        ACAQDataSlot.SlotType type = slots.get(slot).getSlotType();
+        List<String> order;
+        switch(type) {
+            case Input:
+                order = inputSlotOrder;
+                break;
+            case Output:
+                order = outputSlotOrder;
+                break;
+            default:
+                throw new RuntimeException("Unknown slot type!");
+        }
+
+        int index = order.indexOf(slot);
+        if(index < order.size() - 1) {
+            String other = order.get(index + 1);
+            order.set(index + 1, slot);
+            order.set(index, other);
+
+            getEventBus().post(new SlotOrderChangedEvent(this));
+        }
     }
 
     public boolean allowsInputSlots() {

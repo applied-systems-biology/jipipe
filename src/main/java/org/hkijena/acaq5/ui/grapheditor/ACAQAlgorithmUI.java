@@ -148,7 +148,7 @@ public class ACAQAlgorithmUI extends JPanel {
         inputSlotPanel.setLayout(new GridLayout(getDisplayedRows(), 1));
         outputSlotPanel.setLayout(new GridLayout(getDisplayedRows(), 1));
         if(algorithm.getInputSlots().size() > 0) {
-            for(ACAQDataSlot<?> slot : algorithm.getInputSlots().values()) {
+            for(ACAQDataSlot<?> slot : algorithm.getInputSlots()) {
                 ACAQDataSlotUI ui = new ACAQDataSlotUI(slot);
                 ui.setOpaque(false);
                 slotUIList.add(ui);
@@ -156,7 +156,7 @@ public class ACAQAlgorithmUI extends JPanel {
             }
         }
         if(algorithm.getOutputSlots().size() > 0) {
-            for(ACAQDataSlot<?> slot : algorithm.getOutputSlots().values()) {
+            for(ACAQDataSlot<?> slot : algorithm.getOutputSlots()) {
                 ACAQDataSlotUI ui = new ACAQDataSlotUI(slot);
                 ui.setOpaque(false);
                 slotUIList.add(ui);

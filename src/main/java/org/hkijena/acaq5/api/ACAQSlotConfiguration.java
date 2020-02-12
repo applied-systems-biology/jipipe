@@ -3,11 +3,14 @@ package org.hkijena.acaq5.api;
 import com.google.common.eventbus.EventBus;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class ACAQSlotConfiguration {
     private EventBus eventBus = new EventBus();
     public abstract Map<String, ACAQSlotDefinition> getSlots();
+    public abstract List<String> getInputSlotOrder();
+    public abstract List<String> getOutputSlotOrder();
     public EventBus getEventBus() {
         return eventBus;
     }

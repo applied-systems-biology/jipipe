@@ -35,11 +35,6 @@ public class CLAHEImageEnhancer extends ACAQSimpleAlgorithm<ACAQGreyscaleImageDa
         getOutputSlot().setData(new ACAQGreyscaleImageData(result));
     }
 
-    public static void main(String[] args) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.writerWithDefaultPrettyPrinter().writeValue(new File("/home/rgerst/tmp/test.json"), new CLAHEImageEnhancer());
-    }
-
     @ACAQParameter("blocks")
     @ACAQDocumentation(name = "Blocks")
     public int getBlocks() {

@@ -98,4 +98,9 @@ public class HessianImageEnhancer extends ACAQSimpleAlgorithm<ACAQGreyscaleImage
     public void setGradientRadius(double gradientRadius) {
         this.gradientRadius = gradientRadius;
     }
+
+    @ACAQSubAlgorithm("auto-thresholding")
+    public AutoThresholdSegmenter getAutoThresholdSegmenter() {
+        return autoThresholdSegmenter;
+    }
 }

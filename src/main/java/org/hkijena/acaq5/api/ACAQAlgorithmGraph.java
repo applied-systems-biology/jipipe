@@ -31,12 +31,12 @@ public class ACAQAlgorithmGraph {
         algorithm.getEventBus().register(this);
 
         // Add input and output slots as vertices
-        algorithm.getInputSlots().values().stream().forEach(graph::addVertex);
-        algorithm.getOutputSlots().values().stream().forEach(graph::addVertex);
+        algorithm.getInputSlots().stream().forEach(graph::addVertex);
+        algorithm.getOutputSlots().stream().forEach(graph::addVertex);
 
         // Connect input -> output in the graph
-        for(ACAQDataSlot inputSlot : algorithm.getInputSlots().values()) {
-            for(ACAQDataSlot outputSlot : algorithm.getOutputSlots().values()) {
+        for(ACAQDataSlot inputSlot : algorithm.getInputSlots()) {
+            for(ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
                 graph.addEdge(inputSlot, outputSlot);
             }
         }
@@ -47,10 +47,10 @@ public class ACAQAlgorithmGraph {
     public void removeNode(ACAQAlgorithm algorithm) {
         algorithms.remove(algorithm);
         algorithm.getEventBus().unregister(this);
-        for(ACAQDataSlot<?> slot : algorithm.getInputSlots().values()) {
+        for(ACAQDataSlot<?> slot : algorithm.getInputSlots()) {
             graph.removeVertex(slot);
         }
-        for(ACAQDataSlot<?> slot : algorithm.getOutputSlots().values()) {
+        for(ACAQDataSlot<?> slot : algorithm.getOutputSlots()) {
             graph.removeVertex(slot);
         }
         getEventBus().post(new AlgorithmGraphChangedEvent(this));
@@ -77,8 +77,8 @@ public class ACAQAlgorithmGraph {
         Set<ACAQDataSlot<?>> toRemove = new HashSet<>();
         for(ACAQAlgorithm algorithm : algorithms) {
             for(ACAQDataSlot<?> slot : graph.vertexSet()) {
-                if(slot.getAlgorithm() == algorithm && !algorithm.getInputSlots().containsValue(slot) &&
-                        !algorithm.getInputSlots().containsValue(slot)) {
+                if(slot.getAlgorithm() == algorithm && !algorithm.getInputSlots().contains(slot) &&
+                        !algorithm.getInputSlots().contains(slot)) {
                     toRemove.add(slot);
                 }
             }
