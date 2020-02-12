@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.api;
 
-import net.imagej.ops.Ops;
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.events.SlotAddedEvent;
 import org.hkijena.acaq5.api.events.SlotOrderChangedEvent;
@@ -61,7 +60,23 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
     }
 
     public void removeSlot(String name) {
-        if(slots.remove(name) != null) {
+
+        ACAQSlotDefinition slot = slots.getOrDefault(name, null);
+        if(slot != null) {
+            switch (slot.getSlotType()) {
+                case Input:
+                    if(!canModifyInputSlots())
+                        throw new RuntimeException("Input slots can not be modified!");
+                    break;
+                case Output:
+                    if(!canModifyOutputSlots())
+                        throw new RuntimeException("Output slots can not be modified!");
+                    break;
+                default:
+                    throw new RuntimeException("Unknown slot type!");
+            }
+
+            slots.remove(name);
             inputSlotOrder.remove(name);
             outputSlotOrder.remove(name);
             getEventBus().post(new SlotRemovedEvent(this, name));
@@ -159,11 +174,11 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
         return outputSlotsSealed;
     }
 
-    public boolean canAddInputSlot() {
+    public boolean canModifyInputSlots() {
         return allowsInputSlots() && !isInputSlotsSealed();
     }
 
-    public boolean canAddOutputSlot() {
+    public boolean canModifyOutputSlots() {
         return allowsOutputSlots() && !isOutputSlotsSealed();
     }
 

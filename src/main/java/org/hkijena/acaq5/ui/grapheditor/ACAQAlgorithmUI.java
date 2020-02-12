@@ -227,8 +227,8 @@ public class ACAQAlgorithmUI extends JPanel {
         int rows = getSlotRows();
         if(algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
             ACAQMutableSlotConfiguration configuration = (ACAQMutableSlotConfiguration)algorithm.getSlotConfiguration();
-            if(configuration.canAddInputSlot() && algorithm.getInputSlots().size() > 0 ||
-                    configuration.canAddOutputSlot() && algorithm.getOutputSlots().size() > 0) {
+            if(configuration.canModifyInputSlots() && algorithm.getInputSlots().size() > 0 ||
+                    configuration.canModifyOutputSlots() && algorithm.getOutputSlots().size() > 0) {
                 rows += 1;
             }
         }
