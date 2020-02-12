@@ -9,6 +9,7 @@ import org.jgrapht.alg.cycle.CycleDetector;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -86,6 +87,46 @@ public class ACAQAlgorithmGraph {
         toRemove.forEach(graph::removeVertex);
         if(!toRemove.isEmpty())
             getEventBus().post(new AlgorithmGraphChangedEvent(this));
+    }
+
+    /**
+     * If exists, returns the output slot that provides data for the input slot
+     * Returns null if target is an output or no slot exists
+     * @return
+     */
+    public ACAQDataSlot<?> getSourceSlot(ACAQDataSlot<?> target) {
+        if(target.isInput()) {
+            Set<DefaultEdge> edges = graph.incomingEdgesOf(target);
+            if(edges.isEmpty())
+                return null;
+            if(edges.size() > 1)
+                throw new RuntimeException("Graph is illegal!");
+            return graph.getEdgeSource(edges.iterator().next());
+        }
+        return null;
+    }
+
+    /**
+     * Returns all available sources for an input slot
+     * @param target
+     * @return
+     */
+    public Set<ACAQDataSlot<?>> getAvailableSources(ACAQDataSlot<?> target) {
+        if(getSourceSlot(target) != null)
+            return Collections.emptySet();
+        Set<ACAQDataSlot<?>> result = new HashSet<>();
+        for(ACAQDataSlot<?> source : graph.vertexSet()) {
+            if(source == target)
+                continue;
+            if(!source.isOutput())
+                continue;
+            if(source.getAlgorithm() == target.getAlgorithm())
+                continue;
+            if(graph.containsEdge(source, target))
+                continue;
+            result.add(source);
+        }
+        return result;
     }
 
     @Subscribe
