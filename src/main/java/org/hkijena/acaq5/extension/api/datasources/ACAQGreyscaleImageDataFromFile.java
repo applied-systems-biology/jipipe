@@ -21,6 +21,11 @@ public class ACAQGreyscaleImageDataFromFile extends ACAQSimpleDataSource<ACAQGre
         super("Greyscale Image", ACAQGreyscaleImageDataSlot.class, ACAQGreyscaleImageData.class);
     }
 
+    public ACAQGreyscaleImageDataFromFile(ACAQGreyscaleImageDataFromFile other) {
+        this();
+        this.fileName = other.fileName;
+    }
+
     @Override
     public void run() {
         setOutputData(new ACAQGreyscaleImageData(IJ.openImage(fileName.toString())));

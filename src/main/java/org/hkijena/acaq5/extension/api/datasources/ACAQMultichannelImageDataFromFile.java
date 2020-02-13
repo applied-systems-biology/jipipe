@@ -21,6 +21,11 @@ public class ACAQMultichannelImageDataFromFile extends ACAQSimpleDataSource<ACAQ
         super("Multichannel Image", ACAQMultichannelImageDataSlot.class, ACAQMultichannelImageData.class);
     }
 
+    public ACAQMultichannelImageDataFromFile(ACAQMultichannelImageDataFromFile other) {
+        this();
+        this.fileName = other.fileName;
+    }
+
     @Override
     public void run() {
         setOutputData(new ACAQMultichannelImageData(IJ.openImage(fileName.toString())));

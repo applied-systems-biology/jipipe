@@ -18,6 +18,11 @@ public class WatershedMaskEnhancer extends ACAQSimpleAlgorithm<ACAQMaskData, ACA
             "Output image", ACAQMaskDataSlot.class);
     }
 
+    public WatershedMaskEnhancer(WatershedMaskEnhancer other) {
+        this();
+        this.erosionIterations = other.erosionIterations;
+    }
+
     @Override
     public void run() {
         ImagePlus img = getInputSlot().getData().getImage();

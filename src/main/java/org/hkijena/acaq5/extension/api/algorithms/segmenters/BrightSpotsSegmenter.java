@@ -25,6 +25,14 @@ public class BrightSpotsSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImage
                 "Mask", ACAQMaskDataSlot.class);
     }
 
+    public BrightSpotsSegmenter(BrightSpotsSegmenter other) {
+        this();
+        this.rollingBallRadius = other.rollingBallRadius;
+        this.dilationErodeSteps = other.dilationErodeSteps;
+        this.gaussianSigma = other.gaussianSigma;
+        this.autoThresholdSegmenter = new AutoThresholdSegmenter(other.autoThresholdSegmenter);
+    }
+
     @Override
     public void run() {
         ImagePlus img = getInputSlot().getData().getImage();

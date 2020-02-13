@@ -30,6 +30,16 @@ public class InternalGradientSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscale
                 "Mask", ACAQMaskDataSlot.class);
     }
 
+    public InternalGradientSegmenter(InternalGradientSegmenter other) {
+        this();
+        this.gaussSigma = other.gaussSigma;
+        this.internalGradientRadius = other.internalGradientRadius;
+        this.dilationIterations = other.dilationIterations;
+        this.erosionIterations = other.erosionIterations;
+        this.autoThresholdSegmenter = new AutoThresholdSegmenter(other.autoThresholdSegmenter);
+        this.claheImageEnhancer = new CLAHEImageEnhancer(other.claheImageEnhancer);
+    }
+
     private void applyInternalGradient(ImagePlus img) {
         // Erode the original image
         ImagePlus eroded = img.duplicate();

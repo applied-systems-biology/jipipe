@@ -32,6 +32,20 @@ public class HoughSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, 
                 "Mask", ACAQMaskDataSlot.class);
     }
 
+    public HoughSegmenter(HoughSegmenter other) {
+        this();
+        this.minRadius = other.minRadius;
+        this.maxRadius = other.maxRadius;
+        this.radiusIncrement = other.radiusIncrement;
+        this.minNumCircles = other.minNumCircles;
+        this.maxNumCircles = other.maxNumCircles;
+        this.threshold = other.threshold;
+        this.resolution = other.resolution;
+        this.ratio = other.ratio;
+        this.bandwidth = other.bandwidth;
+        this.localRadius = other.localRadius;
+    }
+
     private boolean outOfBounds(int width, int height, int y, int x) {
         if (x >= width) {
             return true;

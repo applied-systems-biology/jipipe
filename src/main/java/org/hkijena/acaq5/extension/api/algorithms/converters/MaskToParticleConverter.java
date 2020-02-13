@@ -22,6 +22,15 @@ public class MaskToParticleConverter extends ACAQSimpleAlgorithm<ACAQMaskData, A
                 "ROI", ACAQROIDataSlot.class);
     }
 
+    public MaskToParticleConverter(MaskToParticleConverter other) {
+        this();
+        this.minParticleSize = other.minParticleSize;
+        this.maxParticleSize = other.maxParticleSize;
+        this.minParticleCircularity = other.minParticleCircularity;
+        this.maxParticleCircularity = other.maxParticleCircularity;
+        this.excludeEdges = other.excludeEdges;
+    }
+
     @Override
     public void run() {
         ResultsTable resultsTable = new ResultsTable();

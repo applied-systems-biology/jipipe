@@ -21,6 +21,11 @@ public class ACAQMaskImageDataFromFile extends ACAQSimpleDataSource<ACAQMaskData
         super("Mask", ACAQMaskDataSlot.class, ACAQMaskData.class);
     }
 
+    public ACAQMaskImageDataFromFile(ACAQMaskImageDataFromFile other) {
+        this();
+        this.fileName = other.fileName;
+    }
+
     @Override
     public void run() {
         setOutputData(new ACAQMaskData(IJ.openImage(fileName.toString())));

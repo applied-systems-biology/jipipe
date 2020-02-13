@@ -29,6 +29,13 @@ public class HessianImageEnhancer extends ACAQSimpleAlgorithm<ACAQGreyscaleImage
                "Output image", ACAQMaskDataSlot.class);
     }
 
+    public HessianImageEnhancer(HessianImageEnhancer other) {
+        this();
+        this.smoothing = other.smoothing;
+        this.gradientRadius = other.gradientRadius;
+        this.autoThresholdSegmenter = other.autoThresholdSegmenter;
+    }
+
     private ImagePlus applyHessian(ImagePlus input) {
         final Image image = Image.wrap(input);
         image.aspects(new Aspects());

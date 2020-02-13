@@ -25,6 +25,11 @@ public class AutoThresholdSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleIma
                 "Mask", ACAQMaskDataSlot.class);
     }
 
+    public AutoThresholdSegmenter(AutoThresholdSegmenter other) {
+        this();
+        this.method = other.method;
+    }
+
     @Override
     public void run() {
         ImagePlus img = getInputSlot().getData().getImage();

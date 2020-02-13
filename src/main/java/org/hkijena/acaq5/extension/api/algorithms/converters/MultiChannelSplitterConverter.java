@@ -19,6 +19,10 @@ public class MultiChannelSplitterConverter extends ACAQAlgorithm {
                 .build());
     }
 
+    public MultiChannelSplitterConverter(MultiChannelSplitterConverter other) {
+        this();
+    }
+
     @Override
     public void run() {
         ACAQMultichannelImageDataSlot inputSlot = (ACAQMultichannelImageDataSlot)getInputSlots().get(0);

@@ -22,6 +22,11 @@ public class ACAQROIDataFromFile extends ACAQSimpleDataSource<ACAQROIData> {
         super("Mask", ACAQROIDataSlot.class, ACAQROIData.class);
     }
 
+    public ACAQROIDataFromFile(ACAQROIDataFromFile other) {
+        this();
+        this.fileName = other.fileName;
+    }
+
     @Override
     public void run() {
         RoiDecoder decoder = new RoiDecoder(fileName.toString());

@@ -25,6 +25,14 @@ public class CLAHEImageEnhancer extends ACAQSimpleAlgorithm<ACAQGreyscaleImageDa
                 "Output image", ACAQGreyscaleImageDataSlot.class);
     }
 
+    public CLAHEImageEnhancer(CLAHEImageEnhancer other) {
+        this();
+        this.blocks = other.blocks;
+        this.bins = other.bins;
+        this.maxSlope = other.maxSlope;
+        this.fastMode = other.fastMode;
+    }
+
     @Override
     public void run() {
         ImagePlus img = getInputSlot().getData().getImage();

@@ -19,6 +19,11 @@ public class IlluminationCorrectionEnhancer extends ACAQSimpleAlgorithm<ACAQGrey
                 "Output image", ACAQGreyscaleImageDataSlot.class);
     }
 
+    public IlluminationCorrectionEnhancer(IlluminationCorrectionEnhancer other) {
+        this();
+        this.gaussianSigma = other.gaussianSigma;
+    }
+
     @Override
     public void run() {
         ImagePlus img = getInputSlot().getData().getImage();
