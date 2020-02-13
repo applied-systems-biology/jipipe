@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.api.registries;
 
+import net.imagej.ops.Ops;
 import org.hkijena.acaq5.api.*;
 
 import java.util.Arrays;
@@ -50,5 +51,17 @@ public class ACAQAlgorithmRegistry {
             }
         }
         return result;
+    }
+
+    public Class<? extends ACAQAlgorithm> findAlgorithmClass(String canonicalName) {
+        return registeredAlgorithms.stream().filter(c -> c.getCanonicalName().equals(canonicalName)).findFirst().get();
+    }
+
+    public ACAQAlgorithm createInstanceFromClassName(String canonicalName) {
+        try {
+            return findAlgorithmClass(canonicalName).newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

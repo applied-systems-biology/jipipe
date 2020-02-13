@@ -1,7 +1,5 @@
 package org.hkijena.acaq5.api;
 
-import org.hkijena.acaq5.utils.UIUtils;
-
 import java.awt.*;
 
 /**
@@ -13,7 +11,10 @@ public enum ACAQAlgorithmCategory {
     Segmenter,
     Quantififer,
     DataSource,
-    Special;
+    /**
+     * Internal algorithms are not serialized
+     */
+    Internal;
 
     public Color getColor(float s, float v) {
         float n = ACAQAlgorithmCategory.values().length;
@@ -28,7 +29,7 @@ public enum ACAQAlgorithmCategory {
                 return Color.getHSBColor(3 / n, s, v);
             case DataSource:
                 return Color.getHSBColor(4 / n, s, v);
-            case Special:
+            case Internal:
                 return Color.getHSBColor(5 / n, s, v);
             default:
                 throw new RuntimeException("Unknown category " + this);

@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.api;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
@@ -45,6 +46,12 @@ public class ACAQInputAsOutputSlotConfiguration extends ACAQSlotConfiguration {
     @Override
     public List<String> getOutputSlotOrder() {
         return slotConfiguration.getInputSlotOrder();
+    }
+
+    @Override
+    public void fromJson(JsonNode jsonNode) {
+        // Pass to the parent configuration
+        slotConfiguration.fromJson(jsonNode);
     }
 
     @Subscribe

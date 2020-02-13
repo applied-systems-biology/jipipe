@@ -1,6 +1,8 @@
 package org.hkijena.acaq5.api;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.common.collect.ImmutableList;
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.events.SlotAddedEvent;
 import org.hkijena.acaq5.api.events.SlotOrderChangedEvent;
@@ -106,6 +108,23 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
     @Override
     public List<String> getOutputSlotOrder() {
         return Collections.unmodifiableList(outputSlotOrder);
+    }
+
+    @Override
+    public void fromJson(JsonNode node) {
+        for(Map.Entry<String, JsonNode> kv : ImmutableList.copyOf(node.fields())) {
+            if(!slots.containsKey(kv.getKey())) {
+                String name = kv.getValue().get("name").asText();
+                Class<? extends ACAQDataSlot<?>> klass = ACAQRegistryService.getInstance().getDatatypeRegistry()
+                        .findDataSlotClass(kv.getValue().get("slot-class").asText());
+                if(kv.getValue().get("slot-type").asText().equalsIgnoreCase("input")) {
+                    addInputSlot(name, klass);
+                }
+                else {
+                    addOutputSlot(name, klass);
+                }
+            }
+        }
     }
 
     public void moveUp(String slot) {

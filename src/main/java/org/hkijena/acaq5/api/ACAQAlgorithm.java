@@ -2,12 +2,14 @@ package org.hkijena.acaq5.api;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.events.*;
+import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.awt.*;
 import java.io.IOException;
@@ -73,7 +75,7 @@ public abstract class ACAQAlgorithm {
             return annotations[0].category();
         }
         else {
-            return ACAQAlgorithmCategory.Special;
+            return ACAQAlgorithmCategory.Internal;
         }
     }
 
@@ -152,6 +154,29 @@ public abstract class ACAQAlgorithm {
             return klass.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public void fromJson(JsonNode node) {
+        if(node.has("acaq:slot-configuration"))
+            slotConfiguration.fromJson(node.get("acaq:slot-configuration"));
+        if(node.has("acaq:algorithm-location-x") && node.has("acaq:algorithm-location-y")) {
+            location = new Point();
+            location.x = node.get("acaq:algorithm-location-x").asInt();
+            location.y = node.get("acaq:algorithm-location-y").asInt();
+        }
+
+        // Deserialize algorithm-specific parameters
+        for(Map.Entry<String, ACAQParameterAccess> kv : ACAQParameterAccess.getParameters(this).entrySet()) {
+            if(node.has(kv.getKey())) {
+                Object v;
+                try {
+                    v = JsonUtils.getObjectMapper().readerFor(kv.getValue().getFieldClass()).readValue(node.get(kv.getKey()));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                kv.getValue().set(v);
+            }
         }
     }
 

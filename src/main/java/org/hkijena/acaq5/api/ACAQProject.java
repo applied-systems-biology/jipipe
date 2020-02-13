@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.events.ACAQSampleAddedEvent;
 import org.hkijena.acaq5.api.events.ACAQSampleRemovedEvent;
@@ -112,6 +113,7 @@ public class ACAQProject {
             jsonGenerator.writeFieldName("algorithm");
             jsonGenerator.writeStartObject();
 
+            jsonGenerator.writeObjectField("preprocessing-output-slots", project.preprocessingOutputConfiguration);
             jsonGenerator.writeObjectField("algorithm-graph", project.analysis);
 
             jsonGenerator.writeEndObject();
@@ -131,7 +133,39 @@ public class ACAQProject {
 
         @Override
         public ACAQProject deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
-            return null;
+            ACAQProject project = new ACAQProject();
+
+            JsonNode node = jsonParser.getCodec().readTree(jsonParser);
+
+            // First load the slot configuration
+            // This is required (!) to fill the preprocessing slots!
+            {
+                JsonNode slotConfigNode = node.path("algorithm").path("preprocessing-output-slots");
+                if(!slotConfigNode.isMissingNode()) {
+                    project.preprocessingOutputConfiguration.fromJson(slotConfigNode);
+                }
+            }
+
+            if(node.has("samples"))
+                readSamples(project, node.get("samples"));
+
+            if(node.has("algorithm"))
+                readAlgorithm(project, node.get("algorithm"));
+
+            return project;
+        }
+
+        private void readAlgorithm(ACAQProject project, JsonNode node) {
+            if(node.has("algorithm-graph")) {
+                project.analysis.fromJson(node.get("algorithm-graph"));
+            }
+        }
+
+        private void readSamples(ACAQProject project, JsonNode node) {
+            for(Map.Entry<String, JsonNode> kv : ImmutableList.copyOf(node.fields())) {
+                ACAQProjectSample sample = project.addSample(kv.getKey());
+                sample.fromJson(kv.getValue());
+            }
         }
     }
 }

@@ -2,6 +2,7 @@ package org.hkijena.acaq5.api;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -49,6 +50,12 @@ public abstract class ACAQSlotConfiguration {
         return Math.max(getInputSlots().size(), getOutputSlots().size());
     }
 
+    /**
+     * Loads this configuration from JSON
+     * @param jsonNode
+     */
+    public abstract void fromJson(JsonNode jsonNode);
+
     public static class Serializer extends JsonSerializer<ACAQSlotConfiguration> {
 
         @Override
@@ -58,19 +65,12 @@ public abstract class ACAQSlotConfiguration {
             Map<String, ACAQSlotDefinition> inputSlots = slotConfiguration.getInputSlots();
             Map<String, ACAQSlotDefinition> outputSlots = slotConfiguration.getOutputSlots();
 
-            jsonGenerator.writeFieldName("input");
-            jsonGenerator.writeStartObject();
             for(String key : slotConfiguration.getInputSlotOrder()) {
                 jsonGenerator.writeObjectField(key, inputSlots.get(key));
             }
-            jsonGenerator.writeEndObject();
-
-            jsonGenerator.writeFieldName("output");
-            jsonGenerator.writeStartObject();
             for(String key : slotConfiguration.getOutputSlotOrder()) {
                 jsonGenerator.writeObjectField(key, outputSlots.get(key));
             }
-            jsonGenerator.writeEndObject();
 
             jsonGenerator.writeEndObject();
         }
