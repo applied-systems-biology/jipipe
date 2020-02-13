@@ -14,7 +14,10 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionListener, MouseListener {
@@ -57,7 +60,20 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
      * Removes node UIs that are not valid anymore
      */
     private void removeOldNodes() {
-
+        Set<ACAQAlgorithm> toRemove = new HashSet<>();
+        for(Map.Entry<ACAQAlgorithm, ACAQAlgorithmUI> kv : nodeUIs.entrySet()) {
+            if(!algorithmGraph.containsNode(kv.getKey()))
+                toRemove.add(kv.getKey());
+        }
+        for(ACAQAlgorithm algorithm : toRemove) {
+            ACAQAlgorithmUI ui = nodeUIs.get(algorithm);
+            remove(ui);
+            nodeUIs.remove(algorithm);
+        }
+        if(!toRemove.isEmpty()) {
+            revalidate();
+            repaint();
+        }
     }
 
     /**

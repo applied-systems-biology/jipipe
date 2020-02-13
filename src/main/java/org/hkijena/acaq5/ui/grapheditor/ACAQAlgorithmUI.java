@@ -58,7 +58,7 @@ public class ACAQAlgorithmUI extends JPanel {
         outputSlotPanel = new JPanel();
         outputSlotPanel.setOpaque(false);
 
-        JLabel nameLabel = new JLabel(ACAQAlgorithm.getName(algorithm.getClass()));
+        JLabel nameLabel = new JLabel(ACAQAlgorithm.getNameOf(algorithm.getClass()));
         JButton openSettingsButton = new JButton(UIUtils.getIconFromResources("wrench.png"));
         UIUtils.makeFlat(openSettingsButton);
         openSettingsButton.setPreferredSize(new Dimension(21,21));
@@ -245,7 +245,7 @@ public class ACAQAlgorithmUI extends JPanel {
 
         // Measure width of center
         {
-            TextLayout layout = new TextLayout(ACAQAlgorithm.getName(algorithm.getClass()), getFont(), frc);
+            TextLayout layout = new TextLayout(ACAQAlgorithm.getNameOf(algorithm.getClass()), getFont(), frc);
             width += layout.getBounds().getWidth();
         }
 
@@ -274,11 +274,11 @@ public class ACAQAlgorithmUI extends JPanel {
      * @return
      */
     public Color getAlgorithmColor() {
-        return ACAQAlgorithm.getCategory(algorithm.getClass()).getColor(0.1f, 0.9f);
+        return ACAQAlgorithm.getCategoryOf(algorithm.getClass()).getColor(0.1f, 0.9f);
     }
 
     public Color getAlgorithmBorderColor() {
-        return ACAQAlgorithm.getCategory(algorithm.getClass()).getColor(0.1f, 0.5f);
+        return ACAQAlgorithm.getCategoryOf(algorithm.getClass()).getColor(0.1f, 0.5f);
     }
 
     /**

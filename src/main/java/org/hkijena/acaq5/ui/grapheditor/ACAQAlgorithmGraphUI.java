@@ -90,7 +90,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel {
     private void initializeMenuForCategory(JMenu menu, ACAQAlgorithmCategory category) {
         ACAQRegistryService registryService = ACAQRegistryService.getInstance();
         for(Class<? extends ACAQAlgorithm> algorithmClass : registryService.getAlgorithmRegistry().getAlgorithmsOfCategory(category)) {
-            JMenuItem addItem = new JMenuItem(ACAQAlgorithm.getName(algorithmClass), UIUtils.getIconFromResources("cog.png"));
+            JMenuItem addItem = new JMenuItem(ACAQAlgorithm.getNameOf(algorithmClass), UIUtils.getIconFromResources("cog.png"));
             ACAQDocumentation documentation = algorithmClass.getAnnotation(ACAQDocumentation.class);
             if(!documentation.description().isEmpty())
                 addItem.setToolTipText(documentation.description());
@@ -109,7 +109,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel {
                 dataMenu.setIcon(icon);
 
                 for(Class<? extends ACAQDataSource<ACAQData>> sourceClass : dataSources) {
-                    JMenuItem addItem = new JMenuItem(ACAQAlgorithm.getName(sourceClass), icon);
+                    JMenuItem addItem = new JMenuItem(ACAQAlgorithm.getNameOf(sourceClass), icon);
                     ACAQDocumentation documentation = sourceClass.getAnnotation(ACAQDocumentation.class);
                     if(!documentation.description().isEmpty())
                         addItem.setToolTipText(documentation.description());
@@ -129,7 +129,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel {
     @Subscribe
     public void onOpenAlgorithmSettings(ACAQAlgorithmUIOpenSettingsRequested event) {
         if(currentAlgorithmSettings == null || currentAlgorithmSettings.getAlgorithm() != event.getUi().getAlgorithm()) {
-            currentAlgorithmSettings = new ACAQAlgorithmSettingsUI(event.getUi().getAlgorithm());
+            currentAlgorithmSettings = new ACAQAlgorithmSettingsUI(algorithmGraph, event.getUi().getAlgorithm());
             int dividerLocation = splitPane.getDividerLocation();
             splitPane.setRightComponent(currentAlgorithmSettings);
             splitPane.setDividerLocation(dividerLocation);

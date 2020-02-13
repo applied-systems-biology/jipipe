@@ -32,12 +32,20 @@ public abstract class ACAQAlgorithm {
         return eventBus;
     }
 
+    public String getName() {
+        return getNameOf(getClass());
+    }
+
+    public ACAQAlgorithmCategory getCategory() {
+        return getCategoryOf(getClass());
+    }
+
     /**
      * Returns the name of an algorithm
      * @param klass
      * @return
      */
-    public static String getName(Class<? extends  ACAQAlgorithm> klass) {
+    public static String getNameOf(Class<? extends  ACAQAlgorithm> klass) {
         ACAQDocumentation[] annotations = klass.getAnnotationsByType(ACAQDocumentation.class);
         if(annotations.length > 0) {
             return annotations[0].name();
@@ -52,7 +60,7 @@ public abstract class ACAQAlgorithm {
      * @param klass
      * @return
      */
-    public static ACAQAlgorithmCategory getCategory(Class<? extends  ACAQAlgorithm> klass) {
+    public static ACAQAlgorithmCategory getCategoryOf(Class<? extends  ACAQAlgorithm> klass) {
         ACAQAlgorithmMetadata[] annotations = klass.getAnnotationsByType(ACAQAlgorithmMetadata.class);
         if(annotations.length > 0) {
             return annotations[0].category();

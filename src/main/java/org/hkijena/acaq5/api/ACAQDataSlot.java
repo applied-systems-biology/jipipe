@@ -31,6 +31,10 @@ public abstract class ACAQDataSlot<T extends ACAQData> {
         return name;
     }
 
+    public String getFullName() {
+        return algorithm.getName() + " \uD83E\uDC92 " + getName();
+    }
+
     public T getData() {
         return data;
     }

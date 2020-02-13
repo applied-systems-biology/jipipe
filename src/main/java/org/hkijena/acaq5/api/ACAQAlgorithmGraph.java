@@ -30,19 +30,7 @@ public class ACAQAlgorithmGraph {
     public void insertNode(ACAQAlgorithm algorithm) {
         algorithms.add(algorithm);
         algorithm.getEventBus().register(this);
-
-        // Add input and output slots as vertices
-        algorithm.getInputSlots().stream().forEach(graph::addVertex);
-        algorithm.getOutputSlots().stream().forEach(graph::addVertex);
-
-        // Connect input -> output in the graph
-        for(ACAQDataSlot inputSlot : algorithm.getInputSlots()) {
-            for(ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
-                graph.addEdge(inputSlot, outputSlot);
-            }
-        }
-
-        getEventBus().post(new AlgorithmGraphChangedEvent(this));
+        repairGraph();
     }
 
     public void removeNode(ACAQAlgorithm algorithm) {
@@ -74,18 +62,51 @@ public class ACAQAlgorithmGraph {
     }
 
     public void repairGraph() {
+
+        boolean modified = false;
+
         // Remove deleted slots from the graph
         Set<ACAQDataSlot<?>> toRemove = new HashSet<>();
         for(ACAQAlgorithm algorithm : algorithms) {
             for(ACAQDataSlot<?> slot : graph.vertexSet()) {
                 if(slot.getAlgorithm() == algorithm && !algorithm.getInputSlots().contains(slot) &&
-                        !algorithm.getInputSlots().contains(slot)) {
+                        !algorithm.getOutputSlots().contains(slot)) {
                     toRemove.add(slot);
+                    modified = true;
                 }
             }
         }
         toRemove.forEach(graph::removeVertex);
-        if(!toRemove.isEmpty())
+
+        // Add missing slots
+        for(ACAQAlgorithm algorithm : algorithms) {
+
+            // Add vertices
+            for(ACAQDataSlot<?> inputSlot : algorithm.getInputSlots()) {
+                if(!graph.vertexSet().contains(inputSlot)) {
+                    graph.addVertex(inputSlot);
+                    modified = true;
+                }
+            }
+            for(ACAQDataSlot<?> outputSlot : algorithm.getOutputSlots()) {
+                if (!graph.vertexSet().contains(outputSlot)) {
+                    graph.addVertex(outputSlot);
+                    modified = true;
+                }
+            }
+
+            // Connect input -> output in the graph
+            for(ACAQDataSlot<?> inputSlot : algorithm.getInputSlots()) {
+                for(ACAQDataSlot<?> outputSlot : algorithm.getOutputSlots()) {
+                    if(!graph.containsEdge(inputSlot, outputSlot)) {
+                        graph.addEdge(inputSlot, outputSlot);
+                        modified = true;
+                    }
+                }
+            }
+        }
+
+        if(modified)
             getEventBus().post(new AlgorithmGraphChangedEvent(this));
     }
 
@@ -104,6 +125,24 @@ public class ACAQAlgorithmGraph {
             return graph.getEdgeSource(edges.iterator().next());
         }
         return null;
+    }
+
+    /**
+     * Returns the list of input slots that are provided by the source slot
+     * Returns an empty set if the target is an input or no slot exists
+     * @param source
+     * @return
+     */
+    public Set<ACAQDataSlot<?>> getTargetSlots(ACAQDataSlot<?> source) {
+        if(source.isOutput()) {
+            Set<DefaultEdge> edges = graph.outgoingEdgesOf(source);
+            Set<ACAQDataSlot<?>> result = new HashSet<>();
+            for(DefaultEdge edge : edges) {
+                result.add(graph.getEdgeTarget(edge));
+            }
+            return result;
+        }
+        return Collections.emptySet();
     }
 
     /**
@@ -129,6 +168,52 @@ public class ACAQAlgorithmGraph {
         return result;
     }
 
+    /**
+     * Completely disconnects a slot
+     * @param slot
+     */
+    public void disconnectAll(ACAQDataSlot<?> slot) {
+        if(slot.isInput()) {
+            ACAQDataSlot<?> source = getSourceSlot(slot);
+            if(source != null) {
+                graph.removeEdge(source, slot);
+                getEventBus().post(new AlgorithmGraphChangedEvent(this));
+            }
+        }
+        else if(slot.isOutput()) {
+            boolean modified = false;
+            for(ACAQDataSlot<?> target : getTargetSlots(slot)) {
+                graph.removeEdge(slot, target);
+                modified = true;
+            }
+            if(modified)
+                getEventBus().post(new AlgorithmGraphChangedEvent(this));
+        }
+    }
+
+    /**
+     * Returns all available target for an output slot
+     * @param source
+     * @return
+     */
+    public Set<ACAQDataSlot<?>> getAvailableTargets(ACAQDataSlot<?> source) {
+        if(source.isInput())
+            return Collections.emptySet();
+        Set<ACAQDataSlot<?>> result = new HashSet<>();
+        for(ACAQDataSlot<?> target : graph.vertexSet()) {
+            if(source == target)
+                continue;
+            if(!target.isInput())
+                continue;
+            if(target.getAlgorithm() == source.getAlgorithm())
+                continue;
+            if(graph.containsEdge(source, target))
+                continue;
+            result.add(target);
+        }
+        return result;
+    }
+
     @Subscribe
     public void onAlgorithmSlotsChanged(AlgorithmSlotsChangedEvent event) {
         repairGraph();
@@ -140,5 +225,9 @@ public class ACAQAlgorithmGraph {
 
     public Set<ACAQAlgorithm> getNodes() {
         return algorithms;
+    }
+
+    public boolean containsNode(ACAQAlgorithm algorithm) {
+        return algorithms.contains(algorithm);
     }
 }

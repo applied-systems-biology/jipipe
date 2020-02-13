@@ -1,9 +1,11 @@
 package org.hkijena.acaq5.ui.grapheditor;
 
+import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.ACAQData;
 import org.hkijena.acaq5.api.ACAQDataSlot;
+import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -25,6 +27,9 @@ public class ACAQDataSlotUI extends JPanel {
         this.slot = slot;
         initialize();
         reloadPopupMenu();
+        reloadButtonStatus();
+
+        graph.getEventBus().register(this);
     }
 
     private void reloadPopupMenu() {
@@ -33,7 +38,9 @@ public class ACAQDataSlotUI extends JPanel {
         if(slot.isInput()) {
             if(graph.getSourceSlot(slot) == null) {
                 for(ACAQDataSlot<?> source : graph.getAvailableSources(slot)) {
-                    JMenuItem connectButton = new JMenuItem(source.getName(), ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(source.getAcceptedDataType()));
+                    JMenuItem connectButton = new JMenuItem(source.getFullName(),
+                            ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(source.getAcceptedDataType()));
+                    connectButton.addActionListener(e -> connectSlot(source, slot));
                     assignButtonMenu.add(connectButton);
                 }
             }
@@ -44,17 +51,49 @@ public class ACAQDataSlotUI extends JPanel {
             }
         }
         else if(slot.isOutput()) {
+            if(graph.getTargetSlots(slot).isEmpty()) {
+                for(ACAQDataSlot<?> target : graph.getAvailableTargets(slot)) {
+                    JMenuItem connectButton = new JMenuItem(target.getFullName(),
+                            ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(target.getAcceptedDataType()));
+                    connectButton.addActionListener(e -> connectSlot(slot, target));
+                    assignButtonMenu.add(connectButton);
+                }
+            }
+            else {
+                JMenuItem disconnectButton = new JMenuItem("Disconnect all", UIUtils.getIconFromResources("remove.png"));
+                disconnectButton.addActionListener(e -> disconnectSlot());
+                assignButtonMenu.add(disconnectButton);
+            }
+        }
+    }
 
+    private void reloadButtonStatus() {
+        if(slot.isInput()) {
+            if (graph.getSourceSlot(slot) == null) {
+                assignButton.setIcon(UIUtils.getIconFromResources("chevron-right-thin.png"));
+            }
+            else {
+                assignButton.setIcon(UIUtils.getIconFromResources("chevron-right.png"));
+            }
+        }
+        else if(slot.isOutput()) {
+            if (graph.getTargetSlots(slot).isEmpty()) {
+                assignButton.setIcon(UIUtils.getIconFromResources("chevron-right-thin.png"));
+            }
+            else {
+                assignButton.setIcon(UIUtils.getIconFromResources("chevron-right.png"));
+            }
+        }
+    }
+
+    private void connectSlot(ACAQDataSlot<?> source, ACAQDataSlot<?> target) {
+        if(graph.canConnect(source, target)) {
+            graph.connect(source, target);
         }
     }
 
     private void disconnectSlot() {
-        if(slot.isInput()) {
-
-        }
-        else if(slot.isOutput()) {
-
-        }
+        graph.disconnectAll(slot);
     }
 
     private void initialize() {
@@ -92,5 +131,13 @@ public class ACAQDataSlotUI extends JPanel {
 
     public ACAQDataSlot<?> getSlot() {
         return slot;
+    }
+
+    @Subscribe
+    public void onAlgorithmGraphChanged(AlgorithmGraphChangedEvent event) {
+        if(graph.containsNode(slot.getAlgorithm())) {
+            reloadPopupMenu();
+            reloadButtonStatus();
+        }
     }
 }
