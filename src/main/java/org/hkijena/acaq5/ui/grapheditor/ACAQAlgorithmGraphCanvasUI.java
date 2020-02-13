@@ -6,6 +6,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQAlgorithm;
 import org.hkijena.acaq5.api.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.ui.events.ACAQAlgorithmUIOpenSettingsRequested;
 
@@ -14,6 +15,8 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -180,5 +183,71 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    @Override
+    protected void paintComponent(Graphics graphics) {
+        super.paintComponent(graphics);
+
+        Graphics2D g = (Graphics2D)graphics;
+        RenderingHints rh = new RenderingHints(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHints(rh);
+
+        // Draw the edges
+        graphics.setColor(Color.DARK_GRAY);
+        g.setStroke(new BasicStroke(2));
+        for(Map.Entry<ACAQDataSlot<?>, ACAQDataSlot<?>> kv : algorithmGraph.getSlotEdges()) {
+            ACAQDataSlot<?> source = kv.getKey();
+            ACAQDataSlot<?> target = kv.getValue();
+            ACAQAlgorithmUI sourceUI = nodeUIs.get(source.getAlgorithm());
+            ACAQAlgorithmUI targetUI = nodeUIs.get(target.getAlgorithm());
+
+            int sourceY = 0;
+            int targetY = 0;
+            int sourceX = 0;
+            int targetX = 0;
+
+            if(source.isInput()) {
+                sourceX = 0;
+                sourceY = source.getAlgorithm().getInputSlots().indexOf(source);
+            }
+            else if(source.isOutput()) {
+                sourceX = sourceUI.getWidth();
+                sourceY = source.getAlgorithm().getOutputSlots().indexOf(source);
+            }
+
+            if(target.isInput()) {
+                targetX = 0;
+                targetY = target.getAlgorithm().getInputSlots().indexOf(target);
+            }
+            else if(target.isOutput()) {
+                targetX = targetUI.getWidth();
+                targetY = target.getAlgorithm().getOutputSlots().indexOf(target);
+            }
+
+            // Convert into slot coordinates
+            sourceY = sourceY * ACAQAlgorithmUI.SLOT_UI_HEIGHT + ACAQAlgorithmUI.SLOT_UI_HEIGHT / 2;
+            targetY = targetY * ACAQAlgorithmUI.SLOT_UI_HEIGHT + ACAQAlgorithmUI.SLOT_UI_HEIGHT / 2;
+
+            // Convert into global coordinates
+            sourceX += sourceUI.getX();
+            sourceY += sourceUI.getY();
+            targetX += targetUI.getX();
+            targetY += targetUI.getY();
+
+            // Draw arrow
+            Path2D.Float path = new Path2D.Float();
+            path.moveTo(sourceX, sourceY);
+            float dx = targetX - sourceX;
+            path.curveTo(sourceX + 0.4f * dx, sourceY,
+                    sourceX + 0.6f * dx , targetY,
+                    targetX, targetY);
+            g.draw(path);
+//            g.drawLine(sourceX, sourceY, targetX, targetY);
+        }
+
+        g.setStroke(new BasicStroke(1));
     }
 }

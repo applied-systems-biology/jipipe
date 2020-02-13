@@ -9,10 +9,7 @@ import org.jgrapht.alg.cycle.CycleDetector;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Manages multiple {@link ACAQAlgorithm} instances as graph
@@ -229,5 +226,17 @@ public class ACAQAlgorithmGraph {
 
     public boolean containsNode(ACAQAlgorithm algorithm) {
         return algorithms.contains(algorithm);
+    }
+
+    public Set<Map.Entry<ACAQDataSlot<?>, ACAQDataSlot<?>>> getSlotEdges() {
+        Set<Map.Entry<ACAQDataSlot<?>, ACAQDataSlot<?>>> result = new HashSet<>();
+        for(DefaultEdge edge : graph.edgeSet()) {
+            ACAQDataSlot<?> source = graph.getEdgeSource(edge);
+            ACAQDataSlot<?> target = graph.getEdgeTarget(edge);
+            if(source.getAlgorithm() == target.getAlgorithm())
+                continue;
+            result.add(new AbstractMap.SimpleImmutableEntry<>(source, target));
+        }
+        return result;
     }
 }
