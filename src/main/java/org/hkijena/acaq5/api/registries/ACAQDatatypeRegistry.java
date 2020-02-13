@@ -30,4 +30,8 @@ public class ACAQDatatypeRegistry {
     public  BiMap<Class<? extends ACAQData>, Class<? extends ACAQDataSlot<?>>> getRegisteredSlotDataTypes() {
         return ImmutableBiMap.copyOf(registeredSlotDataTypes);
     }
+
+    public Class<? extends ACAQDataSlot<?>> findDataSlotClass(String canonicalName) {
+        return registeredSlotDataTypes.values().stream().filter(c -> c.getCanonicalName().equals(canonicalName)).findFirst().get();
+    }
 }

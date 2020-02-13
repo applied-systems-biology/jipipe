@@ -1,5 +1,10 @@
 package org.hkijena.acaq5.api;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
@@ -9,11 +14,13 @@ import org.jgrapht.alg.cycle.CycleDetector;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
  * Manages multiple {@link ACAQAlgorithm} instances as graph
  */
+@JsonSerialize(using = ACAQAlgorithmGraph.Serializer.class)
 public class ACAQAlgorithmGraph {
 
     private DefaultDirectedGraph<ACAQDataSlot<?>, DefaultEdge> graph = new DefaultDirectedGraph<>(DefaultEdge.class);
@@ -264,5 +271,47 @@ public class ACAQAlgorithmGraph {
             result.add(new AbstractMap.SimpleImmutableEntry<>(source, target));
         }
         return result;
+    }
+
+    public static class Serializer extends JsonSerializer<ACAQAlgorithmGraph> {
+        @Override
+        public void serialize(ACAQAlgorithmGraph algorithmGraph, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+
+            // Convert algorithm set into a list, so we can extract an index later
+            List<ACAQAlgorithm> algorithms = new ArrayList<>(algorithmGraph.algorithms);
+
+            jsonGenerator.writeStartObject();
+
+            jsonGenerator.writeFieldName("nodes");
+            jsonGenerator.writeStartObject();
+            serializeNodes(algorithms, jsonGenerator);
+            jsonGenerator.writeEndObject();
+
+            jsonGenerator.writeFieldName("edges");
+            jsonGenerator.writeStartArray();
+            serializeEdges(algorithmGraph, algorithms, jsonGenerator);
+            jsonGenerator.writeEndArray();
+
+            jsonGenerator.writeEndObject();
+        }
+
+        private void serializeNodes(List<ACAQAlgorithm> algorithms, JsonGenerator jsonGenerator) throws IOException {
+            int index = 0;
+            for(ACAQAlgorithm algorithm : algorithms) {
+                String key = "" + index++;
+                jsonGenerator.writeObjectField(key, algorithm);
+            }
+        }
+
+        private void serializeEdges(ACAQAlgorithmGraph graph, List<ACAQAlgorithm> algorithms, JsonGenerator jsonGenerator) throws IOException {
+            for(Map.Entry<ACAQDataSlot<?>, ACAQDataSlot<?>> edge : graph.getSlotEdges()) {
+                jsonGenerator.writeStartObject();
+                jsonGenerator.writeStringField("source-algorithm", "" + algorithms.indexOf(edge.getKey().getAlgorithm()));
+                jsonGenerator.writeStringField("target-algorithm", "" + algorithms.indexOf(edge.getValue().getAlgorithm()));
+                jsonGenerator.writeStringField("source-slot", edge.getKey().getName());
+                jsonGenerator.writeStringField("target-slot", edge.getValue().getName());
+                jsonGenerator.writeEndObject();
+            }
+        }
     }
 }

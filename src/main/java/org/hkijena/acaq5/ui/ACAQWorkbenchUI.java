@@ -8,6 +8,7 @@ import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 
 public class ACAQWorkbenchUI extends JFrame {
 
@@ -56,17 +57,19 @@ public class ACAQWorkbenchUI extends JFrame {
         JToolBar toolBar = new JToolBar();
 
         // Add "New project" toolbar entry
-        JButton newProject = new JButton("New project ...", UIUtils.getIconFromResources("new.png"));
-        newProject.addActionListener(e -> newWindow(command, new ACAQProject()));
-        toolBar.add(newProject);
+        JButton newProjectButton = new JButton("New project ...", UIUtils.getIconFromResources("new.png"));
+        newProjectButton.addActionListener(e -> newWindow(command, new ACAQProject()));
+        toolBar.add(newProjectButton);
 
         // "Open project" entry
-        JButton openProject = new JButton("Open project ...", UIUtils.getIconFromResources("open.png"));
-        toolBar.add(openProject);
+        JButton openProjectButton = new JButton("Open project ...", UIUtils.getIconFromResources("open.png"));
+        openProjectButton.addActionListener(e -> openProject());
+        toolBar.add(openProjectButton);
 
         // "Save project" entry
-        JButton saveProject = new JButton("Save project ...", UIUtils.getIconFromResources("save.png"));
-        toolBar.add(saveProject);
+        JButton saveProjectButton = new JButton("Save project ...", UIUtils.getIconFromResources("save.png"));
+        saveProjectButton.addActionListener(e -> saveProject());
+        toolBar.add(saveProjectButton);
 
         toolBar.add(Box.createHorizontalGlue());
 
@@ -88,6 +91,32 @@ public class ACAQWorkbenchUI extends JFrame {
         menu.add(quickHelp);
 
         toolBar.add(helpButton);
+    }
+
+    private void openProject() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setDialogTitle("Open project (*.json");
+        if(fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            try {
+                newWindow(command, ACAQProject.loadProject(fileChooser.getSelectedFile().toPath()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private void saveProject() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setDialogTitle("Save project (*.json");
+        if(fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            try {
+                getProject().saveProject(fileChooser.getSelectedFile().toPath());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     public DocumentTabPane getDocumentTabPane() {

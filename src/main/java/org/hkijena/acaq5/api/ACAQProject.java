@@ -1,5 +1,11 @@
 package org.hkijena.acaq5.api;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
@@ -7,11 +13,18 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.events.ACAQSampleAddedEvent;
 import org.hkijena.acaq5.api.events.ACAQSampleRemovedEvent;
 import org.hkijena.acaq5.api.events.ACAQSampleRenamedEvent;
+import org.hkijena.acaq5.utils.JsonUtils;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Map;
 
 /**
  * An ACAQ5 project.
  * It contains all information to setup and run an analysis
  */
+@JsonSerialize(using = ACAQProject.Serializer.class)
+@JsonDeserialize(using = ACAQProject.Deserializer.class)
 public class ACAQProject {
     private EventBus eventBus = new EventBus();
     private BiMap<String, ACAQProjectSample> samples = HashBiMap.create();
@@ -75,5 +88,50 @@ public class ACAQProject {
         samples.put(name, sample);
         eventBus.post(new ACAQSampleRenamedEvent(sample));
         return true;
+    }
+
+    public void saveProject(Path fileName) throws IOException {
+        ObjectMapper mapper = JsonUtils.getObjectMapper();
+        mapper.writerWithDefaultPrettyPrinter().writeValue(fileName.toFile(), this);
+    }
+
+    public static ACAQProject loadProject(Path fileName) throws IOException {
+        return JsonUtils.getObjectMapper().readerFor(ACAQProject.class).readValue(fileName.toFile());
+    }
+
+    public static class Serializer extends JsonSerializer<ACAQProject> {
+        @Override
+        public void serialize(ACAQProject project, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+            jsonGenerator.writeStartObject();
+            serializeSamples(project, jsonGenerator);
+            serializeAlgorithm(project, jsonGenerator);
+            jsonGenerator.writeEndObject();
+        }
+
+        private void serializeAlgorithm(ACAQProject project, JsonGenerator jsonGenerator) throws IOException {
+            jsonGenerator.writeFieldName("algorithm");
+            jsonGenerator.writeStartObject();
+
+            jsonGenerator.writeObjectField("algorithm-graph", project.analysis);
+
+            jsonGenerator.writeEndObject();
+        }
+
+        private void serializeSamples(ACAQProject project, JsonGenerator jsonGenerator) throws IOException {
+            jsonGenerator.writeFieldName("samples");
+            jsonGenerator.writeStartObject();
+            for(Map.Entry<String, ACAQProjectSample> kv : project.getSamples().entrySet()) {
+                jsonGenerator.writeObjectField(kv.getKey(), kv.getValue());
+            }
+            jsonGenerator.writeEndObject();
+        }
+    }
+
+    public static class Deserializer extends JsonDeserializer<ACAQProject> {
+
+        @Override
+        public ACAQProject deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+            return null;
+        }
     }
 }

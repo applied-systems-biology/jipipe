@@ -1,11 +1,19 @@
 package org.hkijena.acaq5.api;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.eventbus.EventBus;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@JsonSerialize(using = ACAQSlotConfiguration.Serializer.class)
 public abstract class ACAQSlotConfiguration {
     private EventBus eventBus = new EventBus();
     public abstract Map<String, ACAQSlotDefinition> getSlots();
@@ -39,5 +47,32 @@ public abstract class ACAQSlotConfiguration {
      */
     public int getRows() {
         return Math.max(getInputSlots().size(), getOutputSlots().size());
+    }
+
+    public static class Serializer extends JsonSerializer<ACAQSlotConfiguration> {
+
+        @Override
+        public void serialize(ACAQSlotConfiguration slotConfiguration, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+            jsonGenerator.writeStartObject();
+
+            Map<String, ACAQSlotDefinition> inputSlots = slotConfiguration.getInputSlots();
+            Map<String, ACAQSlotDefinition> outputSlots = slotConfiguration.getOutputSlots();
+
+            jsonGenerator.writeFieldName("input");
+            jsonGenerator.writeStartObject();
+            for(String key : slotConfiguration.getInputSlotOrder()) {
+                jsonGenerator.writeObjectField(key, inputSlots.get(key));
+            }
+            jsonGenerator.writeEndObject();
+
+            jsonGenerator.writeFieldName("output");
+            jsonGenerator.writeStartObject();
+            for(String key : slotConfiguration.getOutputSlotOrder()) {
+                jsonGenerator.writeObjectField(key, outputSlots.get(key));
+            }
+            jsonGenerator.writeEndObject();
+
+            jsonGenerator.writeEndObject();
+        }
     }
 }

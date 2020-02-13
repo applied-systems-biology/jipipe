@@ -1,13 +1,20 @@
 package org.hkijena.acaq5.api;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.events.*;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
+@JsonSerialize(using = ACAQAlgorithm.Serializer.class)
 public abstract class ACAQAlgorithm {
     private ACAQSlotConfiguration slotConfiguration;
     private Map<String, ACAQDataSlot<?>> slots = new HashMap<>();
@@ -145,6 +152,21 @@ public abstract class ACAQAlgorithm {
             return klass.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public static class Serializer extends JsonSerializer<ACAQAlgorithm> {
+        @Override
+        public void serialize(ACAQAlgorithm algorithm, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeObjectField("acaq:slot-configuration", algorithm.slotConfiguration);
+            jsonGenerator.writeObjectField("acaq:algorithm-class", algorithm.getClass().getCanonicalName());
+            jsonGenerator.writeNumberField("acaq:algorithm-location-x", algorithm.location.x);
+            jsonGenerator.writeNumberField("acaq:algorithm-location-y", algorithm.location.y);
+            for(Map.Entry<String, ACAQParameterAccess> kv : ACAQParameterAccess.getParameters(algorithm).entrySet()) {
+                jsonGenerator.writeObjectField(kv.getKey(), kv.getValue().get());
+            }
+            jsonGenerator.writeEndObject();
         }
     }
 }

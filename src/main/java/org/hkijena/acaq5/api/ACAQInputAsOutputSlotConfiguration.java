@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.api;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.events.SlotAddedEvent;
@@ -11,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@JsonSerialize(using = ACAQSlotConfiguration.Serializer.class)
 public class ACAQInputAsOutputSlotConfiguration extends ACAQSlotConfiguration {
 
     private ACAQSlotConfiguration slotConfiguration;

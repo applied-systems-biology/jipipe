@@ -1,5 +1,19 @@
 package org.hkijena.acaq5.api;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import java.io.IOException;
+
+@JsonSerialize(using = ACAQProjectSample.Serializer.class)
+@JsonDeserialize(using = ACAQProjectSample.Deserializer.class)
 public class ACAQProjectSample implements Comparable<ACAQProjectSample> {
     private ACAQProject project;
     private ACAQAlgorithmGraph preprocessingGraph;
@@ -30,5 +44,22 @@ public class ACAQProjectSample implements Comparable<ACAQProjectSample> {
 
     public ACAQAlgorithmGraph getPreprocessingGraph() {
         return preprocessingGraph;
+    }
+
+    public static class Serializer extends JsonSerializer<ACAQProjectSample> {
+        @Override
+        public void serialize(ACAQProjectSample acaqProjectSample, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeObjectField("algorithm-graph", acaqProjectSample.preprocessingGraph);
+            jsonGenerator.writeEndObject();
+        }
+    }
+
+    public static class Deserializer extends JsonDeserializer<ACAQProjectSample> {
+
+        @Override
+        public ACAQProjectSample deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+            return null;
+        }
     }
 }

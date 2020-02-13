@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.api;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.events.SlotAddedEvent;
 import org.hkijena.acaq5.api.events.SlotOrderChangedEvent;
@@ -10,6 +11,7 @@ import java.util.*;
 /**
  * A schema for slots
  */
+@JsonSerialize(using = ACAQSlotConfiguration.Serializer.class)
 public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
     private Map<String, ACAQSlotDefinition> slots = new HashMap<>();
     private List<String> inputSlotOrder = new ArrayList<>();
