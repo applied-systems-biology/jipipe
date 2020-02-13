@@ -5,7 +5,7 @@ import org.hkijena.acaq5.api.ACAQData;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 
 @ACAQDocumentation(name = "Multichannel Image")
-public class ACAQMultichannelImageData implements ACAQData {
+public class ACAQMultichannelImageData {
 
     private ImagePlus image;
 

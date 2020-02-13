@@ -42,13 +42,33 @@ public class ACAQAlgorithmGraph {
         getEventBus().post(new AlgorithmGraphChangedEvent(this));
     }
 
+    /**
+     * Slow implementation of connection checking that tests for graph cycles
+     * @param source
+     * @param target
+     * @return
+     */
     public boolean canConnect(ACAQDataSlot<?> source, ACAQDataSlot<?> target) {
-        if(!source.isOutput() || !target.isInput())
+        if(!canConnectFast(source, target))
             return false;
         Graph<ACAQDataSlot<?>, DefaultEdge> copy = (Graph<ACAQDataSlot<?>, DefaultEdge>)graph.clone();
         copy.addEdge(source, target);
         CycleDetector<ACAQDataSlot<?>, DefaultEdge> cycleDetector = new CycleDetector<>(copy);
         return !cycleDetector.detectCycles();
+    }
+
+    /**
+     * Fast implementation of connection checking without copying the graph
+     * @param source
+     * @param target
+     * @return
+     */
+    public boolean canConnectFast(ACAQDataSlot<?> source, ACAQDataSlot<?> target) {
+        if (!source.isOutput() || !target.isInput())
+            return false;
+        if (!target.getAcceptedDataType().isAssignableFrom(source.getAcceptedDataType()))
+            return false;
+        return true;
     }
 
     public void connect(ACAQDataSlot<?> source, ACAQDataSlot<?> target) {
@@ -160,6 +180,8 @@ public class ACAQAlgorithmGraph {
                 continue;
             if(graph.containsEdge(source, target))
                 continue;
+            if(!canConnectFast(source, target))
+                continue;
             result.add(source);
         }
         return result;
@@ -207,6 +229,8 @@ public class ACAQAlgorithmGraph {
             if(graph.containsEdge(source, target))
                 continue;
             if(getSourceSlot(target) != null)
+                continue;
+            if(!canConnectFast(source, target))
                 continue;
             result.add(target);
         }
