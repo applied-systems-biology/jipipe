@@ -51,18 +51,19 @@ public class ACAQDataSlotUI extends JPanel {
             }
         }
         else if(slot.isOutput()) {
-            if(graph.getTargetSlots(slot).isEmpty()) {
-                for(ACAQDataSlot<?> target : graph.getAvailableTargets(slot)) {
-                    JMenuItem connectButton = new JMenuItem(target.getFullName(),
-                            ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(target.getAcceptedDataType()));
-                    connectButton.addActionListener(e -> connectSlot(slot, target));
-                    assignButtonMenu.add(connectButton);
-                }
-            }
-            else {
+            if(!graph.getTargetSlots(slot).isEmpty()) {
                 JMenuItem disconnectButton = new JMenuItem("Disconnect all", UIUtils.getIconFromResources("remove.png"));
                 disconnectButton.addActionListener(e -> disconnectSlot());
                 assignButtonMenu.add(disconnectButton);
+
+                assignButtonMenu.addSeparator();
+            }
+
+            for(ACAQDataSlot<?> target : graph.getAvailableTargets(slot)) {
+                JMenuItem connectButton = new JMenuItem(target.getFullName(),
+                        ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(target.getAcceptedDataType()));
+                connectButton.addActionListener(e -> connectSlot(slot, target));
+                assignButtonMenu.add(connectButton);
             }
         }
     }

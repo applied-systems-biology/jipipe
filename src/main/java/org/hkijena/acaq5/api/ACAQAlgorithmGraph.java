@@ -206,6 +206,8 @@ public class ACAQAlgorithmGraph {
                 continue;
             if(graph.containsEdge(source, target))
                 continue;
+            if(getSourceSlot(target) != null)
+                continue;
             result.add(target);
         }
         return result;
