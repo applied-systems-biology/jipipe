@@ -133,7 +133,7 @@ public class ACAQAlgorithmUI extends JPanel {
 
         for(Class<? extends ACAQDataSlot<?>> slotClass : allowedSlotTypes) {
             Class<? extends ACAQData> dataClass = ACAQRegistryService.getInstance().getDatatypeRegistry().getRegisteredSlotDataTypes().inverse().get(slotClass);
-            JMenuItem item = new JMenuItem(ACAQData.getName(dataClass), ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(dataClass));
+            JMenuItem item = new JMenuItem(ACAQData.getNameOf(dataClass), ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(dataClass));
             item.addActionListener(e -> addNewSlot(slotType, slotClass));
             menu.add(item);
         }

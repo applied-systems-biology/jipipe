@@ -7,7 +7,7 @@ public interface ACAQData {
      * @param klass
      * @return
      */
-    static String getName(Class<? extends ACAQData> klass) {
+    static String getNameOf(Class<? extends ACAQData> klass) {
         ACAQDocumentation[] annotations = klass.getAnnotationsByType(ACAQDocumentation.class);
         if(annotations.length > 0) {
             return annotations[0].name();

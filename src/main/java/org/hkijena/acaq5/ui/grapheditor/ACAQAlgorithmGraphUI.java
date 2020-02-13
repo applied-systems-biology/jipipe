@@ -105,7 +105,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel {
             Set<Class<? extends ACAQDataSource<ACAQData>>> dataSources = registryService.getAlgorithmRegistry().getDataSourcesFor(dataClass);
             if(!dataSources.isEmpty()) {
                 Icon icon = registryService.getUIDatatypeRegistry().getIconFor(dataClass);
-                JMenu dataMenu = new JMenu(ACAQData.getName(dataClass));
+                JMenu dataMenu = new JMenu(ACAQData.getNameOf(dataClass));
                 dataMenu.setIcon(icon);
 
                 for(Class<? extends ACAQDataSource<ACAQData>> sourceClass : dataSources) {

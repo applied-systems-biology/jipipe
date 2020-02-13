@@ -18,7 +18,6 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -209,7 +208,7 @@ public class ACAQSlotEditorUI extends JPanel {
 
         for(Class<? extends ACAQDataSlot<?>> slotClass : allowedSlotTypes) {
             Class<? extends ACAQData> dataClass = ACAQRegistryService.getInstance().getDatatypeRegistry().getRegisteredSlotDataTypes().inverse().get(slotClass);
-            JMenuItem item = new JMenuItem(ACAQData.getName(dataClass), ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(dataClass));
+            JMenuItem item = new JMenuItem(ACAQData.getNameOf(dataClass), ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(dataClass));
             item.addActionListener(e -> addNewSlot(slotType, slotClass));
             menu.add(item);
         }

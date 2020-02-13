@@ -106,7 +106,7 @@ public class ACAQDataSlotUI extends JPanel {
         UIUtils.makeFlat(assignButton);
 
         JLabel nameLabel = new JLabel(slot.getName());
-        nameLabel.setToolTipText(ACAQData.getName(slot.getAcceptedDataType()));
+        nameLabel.setToolTipText(ACAQData.getNameOf(slot.getAcceptedDataType()));
         nameLabel.setBorder(BorderFactory.createEmptyBorder(0,5,0,5));
         nameLabel.setIcon(ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(slot.getAcceptedDataType()));
         add(nameLabel, BorderLayout.CENTER);
@@ -125,7 +125,7 @@ public class ACAQDataSlotUI extends JPanel {
 
     public int calculateWidth() {
         FontRenderContext frc = new FontRenderContext(null, false, false);
-        TextLayout layout = new TextLayout(ACAQData.getName(slot.getAcceptedDataType()), getFont(), frc);
+        TextLayout layout = new TextLayout(ACAQData.getNameOf(slot.getAcceptedDataType()), getFont(), frc);
         double w = layout.getBounds().getWidth();
         return (int)Math.ceil(w * 1.0 / SLOT_UI_WIDTH) * SLOT_UI_WIDTH + 75;
     }
