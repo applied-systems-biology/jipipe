@@ -29,7 +29,7 @@ public class ACAQROIData implements ACAQData {
     public void saveTo(Path storageFilePath, String name) {
         // Code adapted from ImageJ RoiManager class
         try {
-            ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(storageFilePath.resolve(name + ".roi").toFile())));
+            ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(storageFilePath.resolve(name + ".zip").toFile())));
             DataOutputStream out = new DataOutputStream(new BufferedOutputStream(zos));
             RoiEncoder re = new RoiEncoder(out);
             for (int i = 0; i < this.roi.size(); i++) {

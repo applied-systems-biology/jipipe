@@ -1,12 +1,16 @@
 package org.hkijena.acaq5.extension.api.algorithms.converters;
 
+import ij.ImagePlus;
 import ij.measure.ResultsTable;
 import ij.plugin.filter.ParticleAnalyzer;
+import ij.plugin.frame.RoiManager;
 import org.hkijena.acaq5.api.*;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQROIDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQROIData;
+
+import java.util.Arrays;
 
 @ACAQDocumentation(name = "Convert mask to particles")
 @ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Converter)
@@ -34,10 +38,15 @@ public class MaskToParticleConverter extends ACAQSimpleAlgorithm<ACAQMaskData, A
 
     @Override
     public void run() {
-        ResultsTable resultsTable = new ResultsTable();
-        ParticleAnalyzer analyzer = new ParticleAnalyzer(0, 0, resultsTable, minParticleSize, maxParticleSize, minParticleCircularity, maxParticleCircularity);
+        ImagePlus inputImage = getInputData().getImage();
 
-        throw new RuntimeException("Not implemented yet");
+        ResultsTable resultsTable = new ResultsTable();
+        RoiManager manager = new RoiManager(true);
+        ParticleAnalyzer.setRoiManager(manager);
+        ParticleAnalyzer analyzer = new ParticleAnalyzer(0, 0, resultsTable, minParticleSize, maxParticleSize, minParticleCircularity, maxParticleCircularity);
+        analyzer.analyze(inputImage);
+
+        setOutputData(new ACAQROIData(Arrays.asList(manager.getRoisAsArray())));
     }
 
     @ACAQParameter("min-particle-size")

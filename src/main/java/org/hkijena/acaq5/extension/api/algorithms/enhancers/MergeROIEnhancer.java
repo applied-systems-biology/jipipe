@@ -21,10 +21,10 @@ public class MergeROIEnhancer extends ACAQAlgorithm {
     public void run() {
         List<Roi> inputROI = new ArrayList<>();
         for(ACAQDataSlot<?> slot : getInputSlots()) {
-            inputROI.add(((ACAQROIDataSlot)slot).getData().getROI());
+            inputROI.addAll(((ACAQROIDataSlot)slot).getData().getROI());
         }
 
         ACAQROIDataSlot outputSlot = (ACAQROIDataSlot)getOutputSlots().get(0);
-        throw new RuntimeException("Not implemented!");
+        outputSlot.setData(new ACAQROIData(inputROI));
     }
 }
