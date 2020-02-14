@@ -13,6 +13,7 @@ import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.awt.*;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
 
@@ -22,6 +23,7 @@ public abstract class ACAQAlgorithm {
     private Map<String, ACAQDataSlot<?>> slots = new HashMap<>();
     private EventBus eventBus = new EventBus();
     private Point location;
+    private Path storagePath;
 
     public ACAQAlgorithm(ACAQSlotConfiguration slotConfiguration) {
        this.slotConfiguration = slotConfiguration;
@@ -178,6 +180,19 @@ public abstract class ACAQAlgorithm {
                 kv.getValue().set(v);
             }
         }
+    }
+
+    /**
+     * The storage path is used in {@link ACAQRun} to indicate where output data is written
+     * This is only used internally
+     * @return
+     */
+    public Path getStoragePath() {
+        return storagePath;
+    }
+
+    public void setStoragePath(Path storagePath) {
+        this.storagePath = storagePath;
     }
 
     public static class Serializer extends JsonSerializer<ACAQAlgorithm> {

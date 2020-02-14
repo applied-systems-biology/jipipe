@@ -92,6 +92,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
 
         switchPanningDirectionButton = new JToggleButton("Reverse panning direction",
                 UIUtils.getIconFromResources("cursor-arrow.png"));
+        switchPanningDirectionButton.setToolTipText("Changes the direction how panning (middle mouse button) affects the view.");
         menuBar.add(switchPanningDirectionButton);
 
         JButton autoLayoutButton = new JButton("Auto layout", UIUtils.getIconFromResources("sort.png"));

@@ -6,8 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.*;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQRegistryService;
@@ -30,21 +29,46 @@ public class ACAQAlgorithmGraph {
 
     public static final String ACAQ_ALGORITHM_KEY_PREPROCESSING_OUTPUT = "acaq:preprocessing-output";
     private DefaultDirectedGraph<ACAQDataSlot<?>, DefaultEdge> graph = new DefaultDirectedGraph<>(DefaultEdge.class);
-    private Set<ACAQAlgorithm> algorithms = new HashSet<>();
+    private BiMap<String, ACAQAlgorithm> algorithms = HashBiMap.create();
     private EventBus eventBus = new EventBus();
 
     public ACAQAlgorithmGraph() {
 
     }
 
-    public void insertNode(ACAQAlgorithm algorithm) {
-        algorithms.add(algorithm);
+    /**
+     * Inserts an algorithm into the graph
+     * @param key The unique ID
+     * @param algorithm
+     */
+    public void insertNode(String key, ACAQAlgorithm algorithm) {
+        if(algorithms.containsKey(key))
+            throw new RuntimeException("Already contains algorithm with name " + key);
+        algorithms.put(key, algorithm);
         algorithm.getEventBus().register(this);
         repairGraph();
     }
 
+    /**
+     * Inserts an algorithm into the graph.
+     * The name is automatically generated
+     * @param algorithm
+     */
+    public void insertNode(ACAQAlgorithm algorithm) {
+       String name;
+       if(algorithm instanceof ACAQPreprocessingOutput)
+           name = ACAQ_ALGORITHM_KEY_PREPROCESSING_OUTPUT;
+       else
+           name = algorithm.getName().toLowerCase().replace(' ', '-');
+       String uniqueName = name;
+       for(int i = 2; algorithms.containsKey(uniqueName); ++i) {
+           uniqueName = name + "-" + i;
+       }
+       insertNode(uniqueName, algorithm);
+    }
+
     public void removeNode(ACAQAlgorithm algorithm) {
-        algorithms.remove(algorithm);
+        algorithms.remove(algorithms.inverse().get(algorithm));
         algorithm.getEventBus().unregister(this);
         for(ACAQDataSlot<?> slot : algorithm.getInputSlots()) {
             graph.removeVertex(slot);
@@ -97,7 +121,7 @@ public class ACAQAlgorithmGraph {
 
         // Remove deleted slots from the graph
         Set<ACAQDataSlot<?>> toRemove = new HashSet<>();
-        for(ACAQAlgorithm algorithm : algorithms) {
+        for(ACAQAlgorithm algorithm : algorithms.values()) {
             for(ACAQDataSlot<?> slot : graph.vertexSet()) {
                 if(slot.getAlgorithm() == algorithm && !algorithm.getInputSlots().contains(slot) &&
                         !algorithm.getOutputSlots().contains(slot)) {
@@ -109,7 +133,7 @@ public class ACAQAlgorithmGraph {
         toRemove.forEach(graph::removeVertex);
 
         // Add missing slots
-        for(ACAQAlgorithm algorithm : algorithms) {
+        for(ACAQAlgorithm algorithm : algorithms.values()) {
 
             // Add vertices
             for(ACAQDataSlot<?> inputSlot : algorithm.getInputSlots()) {
@@ -259,12 +283,12 @@ public class ACAQAlgorithmGraph {
         return eventBus;
     }
 
-    public Set<ACAQAlgorithm> getNodes() {
-        return algorithms;
+    public Map<String, ACAQAlgorithm> getNodes() {
+        return ImmutableBiMap.copyOf(algorithms);
     }
 
     public boolean containsNode(ACAQAlgorithm algorithm) {
-        return algorithms.contains(algorithm);
+        return algorithms.containsValue(algorithm);
     }
 
     public Set<Map.Entry<ACAQDataSlot<?>, ACAQDataSlot<?>>> getSlotEdges() {
@@ -283,33 +307,24 @@ public class ACAQAlgorithmGraph {
         if(!node.has("nodes"))
             return;
 
-        // Load algorithms
-        Map<String, ACAQAlgorithm> algorithmMap = new HashMap<>();
-
-        // Add internal nodes
-        algorithmMap.put(ACAQ_ALGORITHM_KEY_PREPROCESSING_OUTPUT,
-                algorithms.stream().filter(a -> a instanceof ACAQPreprocessingOutput)
-                        .findFirst()
-                        .orElse(null));
-
         for(Map.Entry<String, JsonNode> kv : ImmutableList.copyOf(node.get("nodes").fields())) {
 
-            if(kv.getKey().equalsIgnoreCase(ACAQ_ALGORITHM_KEY_PREPROCESSING_OUTPUT)) {
-                algorithmMap.get(ACAQ_ALGORITHM_KEY_PREPROCESSING_OUTPUT).fromJson(kv.getValue());
+            if(algorithms.containsKey(kv.getKey())) {
+                // Load an existing algorithm (like the preprocessing output)
+                algorithms.get(kv.getKey()).fromJson(kv.getValue());
             }
             else {
                 String className = kv.getValue().get("acaq:algorithm-class").asText();
                 ACAQAlgorithm algorithm = ACAQRegistryService.getInstance().getAlgorithmRegistry().createInstanceFromClassName(className);
                 algorithm.fromJson(kv.getValue());
-                insertNode(algorithm);
-                algorithmMap.put(kv.getKey(), algorithm);
+                insertNode(kv.getKey(), algorithm);
             }
         }
 
         // Load edges
         for(JsonNode edgeNode : ImmutableList.copyOf(node.get("edges").elements())) {
-            ACAQAlgorithm sourceAlgorithm = algorithmMap.get(edgeNode.get("source-algorithm").asText());
-            ACAQAlgorithm targetAlgorithm = algorithmMap.get(edgeNode.get("target-algorithm").asText());
+            ACAQAlgorithm sourceAlgorithm = algorithms.get(edgeNode.get("source-algorithm").asText());
+            ACAQAlgorithm targetAlgorithm = algorithms.get(edgeNode.get("target-algorithm").asText());
             ACAQDataSlot<?> source = sourceAlgorithm.getSlots().get(edgeNode.get("source-slot").asText());
             ACAQDataSlot<?> target = targetAlgorithm.getSlots().get(edgeNode.get("target-slot").asText());
             connect(source, target);
@@ -319,51 +334,33 @@ public class ACAQAlgorithmGraph {
     public static class Serializer extends JsonSerializer<ACAQAlgorithmGraph> {
         @Override
         public void serialize(ACAQAlgorithmGraph algorithmGraph, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
-
-            // Convert algorithm set into a list, so we can extract an index later
-            List<ACAQAlgorithm> algorithms = new ArrayList<>(algorithmGraph.algorithms);
-
             jsonGenerator.writeStartObject();
 
             jsonGenerator.writeFieldName("nodes");
             jsonGenerator.writeStartObject();
-            serializeNodes(algorithms, jsonGenerator);
+            serializeNodes(algorithmGraph, jsonGenerator);
             jsonGenerator.writeEndObject();
 
             jsonGenerator.writeFieldName("edges");
             jsonGenerator.writeStartArray();
-            serializeEdges(algorithmGraph, algorithms, jsonGenerator);
+            serializeEdges(algorithmGraph, jsonGenerator);
             jsonGenerator.writeEndArray();
 
             jsonGenerator.writeEndObject();
         }
 
-        private void serializeNodes(List<ACAQAlgorithm> algorithms, JsonGenerator jsonGenerator) throws IOException {
+        private void serializeNodes(ACAQAlgorithmGraph algorithmGraph, JsonGenerator jsonGenerator) throws IOException {
             int index = 0;
-            for(ACAQAlgorithm algorithm : algorithms) {
-                String key = "" + index++;
-
-                if(algorithm instanceof ACAQPreprocessingOutput)
-                    key = ACAQ_ALGORITHM_KEY_PREPROCESSING_OUTPUT;
-
-                jsonGenerator.writeObjectField(key, algorithm);
+            for(Map.Entry<String, ACAQAlgorithm> kv : algorithmGraph.algorithms.entrySet()) {
+                jsonGenerator.writeObjectField(kv.getKey(), kv.getValue());
             }
         }
 
-        private String getIndexFor(List<ACAQAlgorithm> algorithms, ACAQAlgorithm algorithm) {
-
-            if(algorithm instanceof ACAQPreprocessingOutput) {
-                return ACAQ_ALGORITHM_KEY_PREPROCESSING_OUTPUT;
-            }
-
-            return "" + algorithms.indexOf(algorithm);
-        }
-
-        private void serializeEdges(ACAQAlgorithmGraph graph, List<ACAQAlgorithm> algorithms, JsonGenerator jsonGenerator) throws IOException {
+        private void serializeEdges(ACAQAlgorithmGraph graph, JsonGenerator jsonGenerator) throws IOException {
             for(Map.Entry<ACAQDataSlot<?>, ACAQDataSlot<?>> edge : graph.getSlotEdges()) {
                 jsonGenerator.writeStartObject();
-                jsonGenerator.writeStringField("source-algorithm", getIndexFor(algorithms, edge.getKey().getAlgorithm()));
-                jsonGenerator.writeStringField("target-algorithm", getIndexFor(algorithms, edge.getValue().getAlgorithm()));
+                jsonGenerator.writeStringField("source-algorithm", graph.algorithms.inverse().get(edge.getKey().getAlgorithm()));
+                jsonGenerator.writeStringField("target-algorithm", graph.algorithms.inverse().get(edge.getValue().getAlgorithm()));
                 jsonGenerator.writeStringField("source-slot", edge.getKey().getName());
                 jsonGenerator.writeStringField("target-slot", edge.getValue().getName());
                 jsonGenerator.writeEndObject();

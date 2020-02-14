@@ -83,7 +83,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
      * Adds node UIs that are not in the canvas yet
      */
     private void addNewNodes() {
-        List<ACAQAlgorithm> newNodes = algorithmGraph.getNodes().stream().filter(x -> !nodeUIs.containsKey(x)).collect(Collectors.toList());
+        List<ACAQAlgorithm> newNodes = algorithmGraph.getNodes().values().stream().filter(x -> !nodeUIs.containsKey(x)).collect(Collectors.toList());
         for(ACAQAlgorithm algorithm : newNodes) {
             //TODO: More auto-layout-like placement. Only use the brute force method as last measurement
             int y = nodeUIs.values().stream().map(ACAQAlgorithmUI::getBottomY).max(Integer::compareTo).orElse(0);
