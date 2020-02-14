@@ -11,17 +11,22 @@ import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+import java.awt.event.*;
 import java.util.Set;
 
-public class ACAQAlgorithmGraphUI extends ACAQUIPanel {
+public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, MouseMotionListener {
 
     private ACAQAlgorithmGraphCanvasUI graphUI;
     protected JMenuBar menuBar = new JMenuBar();
     private ACAQAlgorithmGraph algorithmGraph;
     private JSplitPane splitPane;
+    private JScrollPane scrollPane;
     private ACAQAlgorithmSettingsUI currentAlgorithmSettings;
+
+    private Point panningOffset = null;
+    private Point panningScrollbarOffset = null;
+    private boolean isPanning = false;
+    private JToggleButton switchPanningDirectionButton;
 
     public ACAQAlgorithmGraphUI(ACAQWorkbenchUI workbenchUI, ACAQAlgorithmGraph algorithmGraph) {
         super(workbenchUI);
@@ -44,12 +49,12 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel {
 
         graphUI = new ACAQAlgorithmGraphCanvasUI(algorithmGraph);
         graphUI.getEventBus().register(this);
-        splitPane.setLeftComponent(new JScrollPane(graphUI) {
-            {
-                setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-                setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-            }
-        });
+        graphUI.addMouseListener(this);
+        graphUI.addMouseMotionListener(this);
+        scrollPane = new JScrollPane(graphUI);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        splitPane.setLeftComponent(scrollPane);
         splitPane.setRightComponent(new MarkdownReader(false) {
             {
                 loadFromResource("documentation/algorithm-graph.md");
@@ -83,6 +88,12 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel {
         menuBar.add(addConverterMenu);
 
         menuBar.add(Box.createHorizontalGlue());
+
+
+        switchPanningDirectionButton = new JToggleButton("Reverse panning direction",
+                UIUtils.getIconFromResources("cursor-arrow.png"));
+        menuBar.add(switchPanningDirectionButton);
+
         JButton autoLayoutButton = new JButton("Auto layout", UIUtils.getIconFromResources("sort.png"));
         menuBar.add(autoLayoutButton);
     }
@@ -134,5 +145,64 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel {
             splitPane.setRightComponent(currentAlgorithmSettings);
             splitPane.setDividerLocation(dividerLocation);
         }
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        if(SwingUtilities.isMiddleMouseButton(e)) {
+            isPanning = true;
+            int x = e.getX() - scrollPane.getHorizontalScrollBar().getValue();
+            int y = e.getX() - scrollPane.getVerticalScrollBar().getValue();
+            panningOffset = new Point(x, y);
+            panningScrollbarOffset = new Point(scrollPane.getHorizontalScrollBar().getValue(),
+                    scrollPane.getVerticalScrollBar().getValue());
+            graphUI.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+        }
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        if(isPanning) {
+            graphUI.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        }
+        isPanning = false;
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        if(isPanning && panningOffset != null && panningScrollbarOffset != null) {
+            int x = e.getX() - scrollPane.getHorizontalScrollBar().getValue();
+            int y = e.getX() - scrollPane.getVerticalScrollBar().getValue();
+            int dx = x - panningOffset.x;
+            int dy = y - panningOffset.y;
+            if(!switchPanningDirectionButton.isSelected()) {
+                dx = -dx;
+                dy = -dy;
+            }
+            int nx = panningScrollbarOffset.x + dx;
+            int ny = panningScrollbarOffset.y + dy;
+            scrollPane.getHorizontalScrollBar().setValue(nx);
+            scrollPane.getVerticalScrollBar().setValue(ny);
+        }
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+
     }
 }

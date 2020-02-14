@@ -126,7 +126,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
     @Override
     public void mousePressed(MouseEvent mouseEvent) {
-        if(mouseEvent.getButton() == MouseEvent.BUTTON1) {
+        if(SwingUtilities.isLeftMouseButton(mouseEvent)) {
             for(int i = 0; i < getComponentCount(); ++i) {
                 Component component = getComponent(i);
                 if(component.getBounds().contains(mouseEvent.getX(), mouseEvent.getY())) {
@@ -158,14 +158,18 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
     }
 
+    public boolean isDragging() {
+        return currentlyDragged != null;
+    }
+
     @Override
     public Dimension getPreferredSize() {
         int width = 0;
         int height = 0;
         for(int i = 0; i < getComponentCount(); ++i) {
             Component component = getComponent(i);
-            width = Math.max(width, component.getX() + component.getWidth());
-            height = Math.max(height, component.getY() + component.getHeight());
+            width = Math.max(width, component.getX() + 2 * component.getWidth());
+            height = Math.max(height, component.getY() + 2 * component.getHeight());
         }
         return new Dimension(width, height);
     }
