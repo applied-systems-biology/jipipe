@@ -104,9 +104,15 @@ public class ACAQParameterAccess {
         }
     }
 
-    public <T> void set(T value) {
+    public <T> boolean set(T value) {
         try {
-            getSetter().invoke(algorithm, value);
+            Object result = getSetter().invoke(algorithm, value);
+            if(result instanceof Boolean) {
+                return (boolean)result;
+            }
+            else {
+                return true;
+            }
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }

@@ -78,8 +78,11 @@ public class MaskToParticleConverter extends ACAQSimpleAlgorithm<ACAQMaskData, A
     }
 
     @ACAQParameter("min-particle-circularity")
-    public void setMinParticleCircularity(double minParticleCircularity) {
+    public boolean setMinParticleCircularity(double minParticleCircularity) {
+        if(minParticleCircularity < 0 || minParticleCircularity > 1)
+            return false;
         this.minParticleCircularity = minParticleCircularity;
+        return true;
     }
 
     @ACAQParameter("max-particle-circularity")
@@ -89,8 +92,11 @@ public class MaskToParticleConverter extends ACAQSimpleAlgorithm<ACAQMaskData, A
     }
 
     @ACAQParameter("max-particle-circularity")
-    public void setMaxParticleCircularity(double maxParticleCircularity) {
+    public boolean setMaxParticleCircularity(double maxParticleCircularity) {
+        if(maxParticleCircularity < 0 || maxParticleCircularity > 1)
+            return false;
         this.maxParticleCircularity = maxParticleCircularity;
+        return true;
     }
 
     @ACAQParameter("exclude-edges")

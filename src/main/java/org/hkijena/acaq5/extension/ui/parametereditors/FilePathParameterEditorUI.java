@@ -25,6 +25,10 @@ public class FilePathParameterEditorUI extends ACAQParameterEditorUI {
         FileSelection fileSelection = new FileSelection(FileSelection.Mode.OPEN);
         fileSelection.setPath(getParameterAccess().get());
         add(fileSelection, BorderLayout.CENTER);
-        fileSelection.addActionListener(e -> getParameterAccess().set(fileSelection.getPath()));
+        fileSelection.addActionListener(e -> {
+            if(!getParameterAccess().set(fileSelection.getPath())) {
+                fileSelection.setPath(fileSelection.getPath());
+            }
+        });
     }
 }

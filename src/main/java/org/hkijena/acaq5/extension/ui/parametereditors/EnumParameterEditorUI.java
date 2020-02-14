@@ -27,7 +27,11 @@ public class EnumParameterEditorUI extends ACAQParameterEditorUI {
         Object[] values = getParameterAccess().getFieldClass().getEnumConstants();
         JComboBox<Object> comboBox = new JComboBox<>(values);
         comboBox.setSelectedItem(getParameterAccess().get());
-        comboBox.addActionListener(e -> getParameterAccess().set(comboBox.getSelectedItem()));
+        comboBox.addActionListener(e -> {
+            if(!getParameterAccess().set(comboBox.getSelectedItem())) {
+                comboBox.setSelectedItem(getParameterAccess().get());
+            }
+        });
         add(comboBox, BorderLayout.CENTER);
     }
 }
