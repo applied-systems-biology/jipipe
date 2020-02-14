@@ -133,7 +133,7 @@ public class ACAQRunUI extends ACAQUIPanel {
     }
 
     private void openResults() {
-        ACAQResultUI resultUI = new ACAQResultUI(run);
+        ACAQResultUI resultUI = new ACAQResultUI(getWorkbenchUI(), run);
         add(resultUI, BorderLayout.CENTER);
         buttonPanel.setVisible(false);
         revalidate();

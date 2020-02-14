@@ -8,8 +8,8 @@ import ij.gui.Roi;
 import ij.macro.Interpreter;
 import ij.plugin.frame.RoiManager;
 import org.hkijena.acaq5.api.ACAQDataSlot;
-import org.hkijena.acaq5.extension.api.dataslots.ACAQROIDataSlot;
 import org.hkijena.acaq5.extension.api.datasources.ACAQROIDataFromFile;
+import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultDataSlotResultUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -20,8 +20,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class ROIDataSlotResultUI extends ACAQDefaultDataSlotResultUI {
-    public ROIDataSlotResultUI(ACAQDataSlot<?> slot) {
-        super(slot);
+    public ROIDataSlotResultUI(ACAQWorkbenchUI workbenchUI, ACAQDataSlot<?> slot) {
+        super(workbenchUI, slot);
     }
 
     private Path findROIFile() {
