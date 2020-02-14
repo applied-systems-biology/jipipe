@@ -37,7 +37,15 @@ public class ACAQROIDataFromFile extends ACAQSimpleDataSource<ACAQROIData> {
 
     @Override
     public void run() {
+        setOutputData(new ACAQROIData(loadFromFile(fileName)));
+    }
 
+    /**
+     * Loads a set of ROI from a zip file
+     * @param fileName
+     * @return
+     */
+    public static List<Roi> loadFromFile(Path fileName) {
         // Code adapted from ImageJ RoiManager
         List<Roi> result = new ArrayList<>();
         ZipInputStream in = null;
@@ -81,8 +89,7 @@ public class ACAQROIDataFromFile extends ACAQSimpleDataSource<ACAQROIData> {
                 } catch (IOException e) {
                 }
         }
-
-        setOutputData(new ACAQROIData(result));
+        return result;
     }
 
     @ACAQParameter("file-name")

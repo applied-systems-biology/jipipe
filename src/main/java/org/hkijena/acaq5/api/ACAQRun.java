@@ -1,6 +1,8 @@
 package org.hkijena.acaq5.api;
 
 import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableBiMap;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,6 +20,7 @@ public class ACAQRun {
     ACAQAlgorithmGraph algorithmGraph;
     private Path outputPath;
     private boolean isReady = false;
+    private BiMap<String, ACAQRunSample> samples = HashBiMap.create();
 
     public ACAQRun(ACAQProject project) {
         this.project = project;
@@ -114,6 +117,8 @@ public class ACAQRun {
         for(Map.Entry<String, ACAQProjectSample> sampleEntry : project.getSamples().entrySet()) {
             String sampleName = sampleEntry.getKey();
 
+            Set<ACAQAlgorithm> runAlgorithms = new HashSet<>();
+
             // Preprocesssing graph
             for(Map.Entry<String, ACAQAlgorithm> algorithmEntry : sampleEntry.getValue().getPreprocessingGraph().getAlgorithmNodes().entrySet()) {
                 if(algorithmEntry.getValue().getCategory() == ACAQAlgorithmCategory.Internal)
@@ -122,6 +127,7 @@ public class ACAQRun {
                 ACAQAlgorithm copy = ACAQAlgorithm.clone(algorithmEntry.getValue());
                 copy.setStoragePath(Paths.get(sampleName).resolve("preprocessing").resolve(algorithmEntry.getKey()));
                 algorithmGraph.insertNode(algorithmName, copy);
+                runAlgorithms.add(copy);
             }
 
             // Analysis graph
@@ -132,7 +138,11 @@ public class ACAQRun {
                 ACAQAlgorithm copy = ACAQAlgorithm.clone(algorithmEntry.getValue());
                 copy.setStoragePath(Paths.get(sampleName).resolve("analysis").resolve(algorithmEntry.getKey()));
                 algorithmGraph.insertNode(algorithmName, copy);
+                runAlgorithms.add(copy);
             }
+
+            // Create sample in the sample list
+            samples.put(sampleEntry.getKey(), new ACAQRunSample(this, sampleEntry.getValue(), runAlgorithms));
         }
     }
 
@@ -226,6 +236,10 @@ public class ACAQRun {
 
     public ACAQAlgorithmGraph getGraph() {
         return algorithmGraph;
+    }
+
+    public BiMap<String, ACAQRunSample> getSamples() {
+        return ImmutableBiMap.copyOf(samples);
     }
 
     public static class Status {

@@ -45,6 +45,5 @@ public class ACAQROIData implements ACAQData {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 }
