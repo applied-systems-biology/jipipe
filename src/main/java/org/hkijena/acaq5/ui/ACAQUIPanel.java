@@ -1,5 +1,7 @@
 package org.hkijena.acaq5.ui;
 
+import org.hkijena.acaq5.api.ACAQProject;
+
 import javax.swing.*;
 
 public class ACAQUIPanel extends JPanel {
@@ -12,5 +14,9 @@ public class ACAQUIPanel extends JPanel {
 
     public ACAQWorkbenchUI getWorkbenchUI() {
         return workbenchUI;
+    }
+
+    public ACAQProject getProject() {
+        return workbenchUI.getProject();
     }
 }

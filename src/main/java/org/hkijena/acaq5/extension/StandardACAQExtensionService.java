@@ -1,21 +1,38 @@
 package org.hkijena.acaq5.extension;
 
+import ij.process.AutoThresholder;
 import org.hkijena.acaq5.ACAQExtensionService;
 import org.hkijena.acaq5.ACAQRegistryService;
-import org.hkijena.acaq5.extension.algorithms.converters.MaskToParticleConverter;
-import org.hkijena.acaq5.extension.algorithms.enhancers.CLAHEImageEnhancer;
-import org.hkijena.acaq5.extension.algorithms.enhancers.IlluminationCorrectionEnhancer;
-import org.hkijena.acaq5.extension.algorithms.enhancers.WatershedMaskEnhancer;
-import org.hkijena.acaq5.extension.algorithms.segmenters.AutoThresholdSegmenter;
-import org.hkijena.acaq5.extension.algorithms.segmenters.BrightSpotsSegmenter;
-import org.hkijena.acaq5.extension.algorithms.segmenters.HoughSegmenter;
-import org.hkijena.acaq5.extension.algorithms.segmenters.InternalGradientSegmenter;
-import org.hkijena.acaq5.extension.datatypes.ACAQGreyscaleImageData;
-import org.hkijena.acaq5.extension.datatypes.ACAQMaskData;
-import org.hkijena.acaq5.extension.datatypes.ACAQROIData;
+import org.hkijena.acaq5.extension.api.algorithms.converters.MaskToParticleConverter;
+import org.hkijena.acaq5.extension.api.algorithms.converters.MultiChannelSplitterConverter;
+import org.hkijena.acaq5.extension.api.algorithms.enhancers.CLAHEImageEnhancer;
+import org.hkijena.acaq5.extension.api.algorithms.enhancers.IlluminationCorrectionEnhancer;
+import org.hkijena.acaq5.extension.api.algorithms.enhancers.MergeROIEnhancer;
+import org.hkijena.acaq5.extension.api.algorithms.enhancers.WatershedMaskEnhancer;
+import org.hkijena.acaq5.extension.api.algorithms.segmenters.AutoThresholdSegmenter;
+import org.hkijena.acaq5.extension.api.algorithms.segmenters.BrightSpotsSegmenter;
+import org.hkijena.acaq5.extension.api.algorithms.segmenters.HoughSegmenter;
+import org.hkijena.acaq5.extension.api.algorithms.segmenters.InternalGradientSegmenter;
+import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
+import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
+import org.hkijena.acaq5.extension.api.dataslots.ACAQMultichannelImageDataSlot;
+import org.hkijena.acaq5.extension.api.dataslots.ACAQROIDataSlot;
+import org.hkijena.acaq5.extension.api.datasources.ACAQGreyscaleImageDataFromFile;
+import org.hkijena.acaq5.extension.api.datasources.ACAQMaskImageDataFromFile;
+import org.hkijena.acaq5.extension.api.datasources.ACAQMultichannelImageDataFromFile;
+import org.hkijena.acaq5.extension.api.datasources.ACAQROIDataFromFile;
+import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
+import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
+import org.hkijena.acaq5.extension.api.datatypes.ACAQMultichannelImageData;
+import org.hkijena.acaq5.extension.api.datatypes.ACAQROIData;
+import org.hkijena.acaq5.extension.ui.parametereditors.*;
+import org.hkijena.acaq5.extension.ui.resultanalysis.ImageDataSlotResultUI;
+import org.hkijena.acaq5.extension.ui.resultanalysis.ROIDataSlotResultUI;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
+
+import java.nio.file.Path;
 
 @Plugin(type = ACAQExtensionService.class)
 public class StandardACAQExtensionService extends AbstractService implements ACAQExtensionService {
@@ -23,15 +40,18 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
     public void register(ACAQRegistryService registryService) {
 
         // Register data types
-        registryService.getDatatypeRegistry().register(ACAQGreyscaleImageData.class);
+        registryService.getDatatypeRegistry().register(ACAQGreyscaleImageData.class, ACAQGreyscaleImageDataSlot.class);
         registryService.getUIDatatypeRegistry().registerIcon(ACAQGreyscaleImageData.class,
                 ResourceUtils.getPluginResource("icons/data-type-greyscale.png"));
-        registryService.getDatatypeRegistry().register(ACAQMaskData.class);
+        registryService.getDatatypeRegistry().register(ACAQMaskData.class, ACAQMaskDataSlot.class);
         registryService.getUIDatatypeRegistry().registerIcon(ACAQMaskData.class,
                 ResourceUtils.getPluginResource("icons/data-type-binary.png"));
-        registryService.getDatatypeRegistry().register(ACAQROIData.class);
+        registryService.getDatatypeRegistry().register(ACAQROIData.class, ACAQROIDataSlot.class);
         registryService.getUIDatatypeRegistry().registerIcon(ACAQROIData.class,
                 ResourceUtils.getPluginResource("icons/data-type-roi.png"));
+        registryService.getDatatypeRegistry().register(ACAQMultichannelImageData.class, ACAQMultichannelImageDataSlot.class);
+        registryService.getUIDatatypeRegistry().registerIcon(ACAQMultichannelImageData.class,
+                ResourceUtils.getPluginResource("icons/data-type-multichannel.png"));
 
         // Register algorithms
         registryService.getAlgorithmRegistry().register(MaskToParticleConverter.class);
@@ -42,5 +62,27 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
         registryService.getAlgorithmRegistry().register(BrightSpotsSegmenter.class);
         registryService.getAlgorithmRegistry().register(HoughSegmenter.class);
         registryService.getAlgorithmRegistry().register(InternalGradientSegmenter.class);
+        registryService.getAlgorithmRegistry().register(MultiChannelSplitterConverter.class);
+        registryService.getAlgorithmRegistry().register(MergeROIEnhancer.class);
+
+        // Register data sources
+        registryService.getAlgorithmRegistry().register(ACAQGreyscaleImageDataFromFile.class);
+        registryService.getAlgorithmRegistry().register(ACAQMaskImageDataFromFile.class);
+        registryService.getAlgorithmRegistry().register(ACAQROIDataFromFile.class);
+        registryService.getAlgorithmRegistry().register(ACAQMultichannelImageDataFromFile.class);
+
+        // Register parameter editor UIs
+        registryService.getUIParametertypeRegistry().registerParameterEditor(Path.class, FilePathParameterEditorUI.class);
+        registryService.getUIParametertypeRegistry().registerParameterEditor(int.class, IntegerParameterEditorUI.class);
+        registryService.getUIParametertypeRegistry().registerParameterEditor(double.class, DoubleParameterEditorUI.class);
+        registryService.getUIParametertypeRegistry().registerParameterEditor(float.class, FloatParameterEditorUI.class);
+        registryService.getUIParametertypeRegistry().registerParameterEditor(boolean.class, BooleanParameterEditorUI.class);
+        registryService.getUIParametertypeRegistry().registerParameterEditor(AutoThresholder.Method.class, EnumParameterEditorUI.class);
+
+        // Register result data slot UIs
+        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQMultichannelImageDataSlot.class, ImageDataSlotResultUI.class);
+        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQGreyscaleImageDataSlot.class, ImageDataSlotResultUI.class);
+        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQMaskDataSlot.class, ImageDataSlotResultUI.class);
+        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQROIDataSlot.class, ROIDataSlotResultUI.class);
     }
 }

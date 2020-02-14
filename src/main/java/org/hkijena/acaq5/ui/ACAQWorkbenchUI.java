@@ -3,10 +3,13 @@ package org.hkijena.acaq5.ui;
 import org.hkijena.acaq5.ACAQCommand;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
+import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphUI;
+import org.hkijena.acaq5.ui.running.ACAQRunUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 
 public class ACAQWorkbenchUI extends JFrame {
 
@@ -55,23 +58,26 @@ public class ACAQWorkbenchUI extends JFrame {
         JToolBar toolBar = new JToolBar();
 
         // Add "New project" toolbar entry
-        JButton newProject = new JButton("New project ...", UIUtils.getIconFromResources("new.png"));
-        newProject.addActionListener(e -> newWindow(command, new ACAQProject()));
-        toolBar.add(newProject);
+        JButton newProjectButton = new JButton("New project ...", UIUtils.getIconFromResources("new.png"));
+        newProjectButton.addActionListener(e -> newWindow(command, new ACAQProject()));
+        toolBar.add(newProjectButton);
 
         // "Open project" entry
-        JButton openProject = new JButton("Open project ...", UIUtils.getIconFromResources("open.png"));
-        toolBar.add(openProject);
+        JButton openProjectButton = new JButton("Open project ...", UIUtils.getIconFromResources("open.png"));
+        openProjectButton.addActionListener(e -> openProject());
+        toolBar.add(openProjectButton);
 
         // "Save project" entry
-        JButton saveProject = new JButton("Save project ...", UIUtils.getIconFromResources("save.png"));
-        toolBar.add(saveProject);
+        JButton saveProjectButton = new JButton("Save project ...", UIUtils.getIconFromResources("save.png"));
+        saveProjectButton.addActionListener(e -> saveProject());
+        toolBar.add(saveProjectButton);
 
         toolBar.add(Box.createHorizontalGlue());
 
         // "Run" entry
-        JButton runProject = new JButton("Run", UIUtils.getIconFromResources("run.png"));
-        toolBar.add(runProject);
+        JButton runProjectButton = new JButton("Run", UIUtils.getIconFromResources("run.png"));
+        runProjectButton.addActionListener(e -> openRunUI());
+        toolBar.add(runProjectButton);
 
         initializeToolbarHelpMenu(toolBar);
 
@@ -89,6 +95,39 @@ public class ACAQWorkbenchUI extends JFrame {
         toolBar.add(helpButton);
     }
 
+    private void openProject() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setDialogTitle("Open project (*.json");
+        if(fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            try {
+                newWindow(command, ACAQProject.loadProject(fileChooser.getSelectedFile().toPath()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private void saveProject() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setDialogTitle("Save project (*.json");
+        if(fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            try {
+                getProject().saveProject(fileChooser.getSelectedFile().toPath());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private void openRunUI() {
+        ACAQRunUI ui = new ACAQRunUI(this);
+        documentTabPane.addTab("Run", UIUtils.getIconFromResources("run.png"), ui,
+                DocumentTabPane.CloseMode.withAskOnCloseButton, false);
+        documentTabPane.switchToLastTab();
+    }
+
     public DocumentTabPane getDocumentTabPane() {
         return  documentTabPane;
     }
@@ -100,7 +139,7 @@ public class ACAQWorkbenchUI extends JFrame {
     public static void newWindow(ACAQCommand command, ACAQProject project) {
         ACAQWorkbenchUI frame = new ACAQWorkbenchUI(command, project);
         frame.pack();
-        frame.setSize(800, 600);
+        frame.setSize(1024, 768);
         frame.setVisible(true);
 //        frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
     }

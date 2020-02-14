@@ -3,6 +3,7 @@ package org.hkijena.acaq5;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
+import org.hkijena.acaq5.ui.registries.ACAQUIParametertypeRegistry;
 import org.scijava.InstantiableException;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
@@ -23,6 +24,7 @@ public class ACAQRegistryService extends AbstractService implements ACAQService 
     private ACAQAlgorithmRegistry algorithmRegistry = new ACAQAlgorithmRegistry();
     private ACAQDatatypeRegistry datatypeRegistry = new ACAQDatatypeRegistry();
     private ACAQUIDatatypeRegistry uiDatatypeRegistry = new ACAQUIDatatypeRegistry();
+    private ACAQUIParametertypeRegistry uiParametertypeRegistry = new ACAQUIParametertypeRegistry();
 
     /**
      * Instantiates the plugin service. This is done within {@link ACAQCommand}
@@ -66,5 +68,9 @@ public class ACAQRegistryService extends AbstractService implements ACAQService 
     @Override
     public ACAQUIDatatypeRegistry getUIDatatypeRegistry() {
         return uiDatatypeRegistry;
+    }
+
+    public ACAQUIParametertypeRegistry getUIParametertypeRegistry() {
+        return uiParametertypeRegistry;
     }
 }

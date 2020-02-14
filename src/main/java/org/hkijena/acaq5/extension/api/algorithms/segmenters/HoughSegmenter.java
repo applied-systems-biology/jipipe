@@ -1,0 +1,238 @@
+package org.hkijena.acaq5.extension.api.algorithms.segmenters;
+
+import ij.IJ;
+import ij.ImagePlus;
+import ij.WindowManager;
+import ij.measure.ResultsTable;
+import ij.plugin.filter.Analyzer;
+import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
+import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
+import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
+import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
+import org.hkijena.acaq5.utils.Hough_Circle;
+
+@ACAQDocumentation(name = "Hough segmentation")
+@ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
+public class HoughSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQMaskData> {
+
+    private int minRadius = 7;
+    private int maxRadius = 25;
+    private int radiusIncrement = 1;
+    private int minNumCircles = 0;
+    private int maxNumCircles = 700;
+    private double threshold = 0.6;
+    private int resolution = 113;
+    private double ratio = 1.0;
+    private int bandwidth = 10;
+    private int localRadius = 10;
+
+    public HoughSegmenter() {
+        super("Image", ACAQGreyscaleImageDataSlot.class,
+                "Mask", ACAQMaskDataSlot.class);
+    }
+
+    public HoughSegmenter(HoughSegmenter other) {
+        this();
+        this.getSlotConfiguration().setTo(other.getSlotConfiguration());
+        this.minRadius = other.minRadius;
+        this.maxRadius = other.maxRadius;
+        this.radiusIncrement = other.radiusIncrement;
+        this.minNumCircles = other.minNumCircles;
+        this.maxNumCircles = other.maxNumCircles;
+        this.threshold = other.threshold;
+        this.resolution = other.resolution;
+        this.ratio = other.ratio;
+        this.bandwidth = other.bandwidth;
+        this.localRadius = other.localRadius;
+    }
+
+    private boolean outOfBounds(int width, int height, int y, int x) {
+        if (x >= width) {
+            return true;
+        } else if (x <= 0) {
+            return true;
+        } else if (y >= height) {
+            return true;
+        } else {
+            return y <= 0;
+        }
+    }
+
+    private ImagePlus drawCircleMask(ImagePlus img, ResultsTable table) {
+
+        int nCircles = (int)table.getValue("nCircles", 0);
+        int width = img.getWidth();
+        int height = img.getHeight();
+
+        byte[] circleMaskPixels = new byte[width * height];
+        for(int l = 0; l < nCircles; ++l) {
+            int i = (int)table.getValue("X (" + img.getCalibration().getUnits() + ")", l);
+            int j = (int)table.getValue("Y (" + img.getCalibration().getUnits() + ")", l);
+            int radius = (int)table.getValue("Radius (" + img.getCalibration().getUnits() + ")", l);
+            short ID = (short)(int)table.getValue("ID", l);
+            float score = (float)(int)table.getValue("Score", l) / (float)this.resolution;
+            int rSquared = radius * radius;
+
+            for(int y = -1 * radius; y <= radius; ++y) {
+                for(int x = -1 * radius; x <= radius; ++x) {
+                    if (x * x + y * y <= rSquared) {
+                        if (!this.outOfBounds(width, height, j + y, i + x)) {
+                            circleMaskPixels[(j + y) * width + i + x] = (byte)255;
+                        }
+                    }
+                }
+            }
+        }
+
+        ImagePlus result = IJ.createImage("HoughCircles", width, height, 1, 8);
+        result.getProcessor().setPixels(circleMaskPixels);
+
+        return result;
+    }
+
+    @Override
+    public void run() {
+        ImagePlus img = getInputSlot().getData().getImage();
+
+        // Apply Hough circle transform
+        Hough_Circle hough_circle = new Hough_Circle();
+        hough_circle.setParameters(minRadius,
+                maxRadius,
+                radiusIncrement,
+                minNumCircles,
+                maxNumCircles,
+                threshold,
+                resolution,
+                ratio,
+                bandwidth,
+                localRadius,
+                true,
+                false,
+                false,
+                false,
+                true,
+                false,
+                true,
+                false);
+        WindowManager.setTempCurrentImage(img);
+        hough_circle.startTransform();
+        WindowManager.setTempCurrentImage(null);
+
+        // Draw the circles
+        ResultsTable resultsTable = Analyzer.getResultsTable();
+        ImagePlus result = drawCircleMask(img, resultsTable);
+
+        getOutputSlot().setData(new ACAQMaskData(result));
+    }
+
+    @ACAQParameter("min-radius")
+    @ACAQDocumentation(name = "Min radius")
+    public int getMinRadius() {
+        return minRadius;
+    }
+
+    @ACAQParameter("min-radius")
+    public void setMinRadius(int minRadius) {
+        this.minRadius = minRadius;
+    }
+
+    @ACAQParameter("max-radius")
+    @ACAQDocumentation(name = "Max radius")
+    public int getMaxRadius() {
+        return maxRadius;
+    }
+
+    @ACAQParameter("max-radius")
+    public void setMaxRadius(int maxRadius) {
+        this.maxRadius = maxRadius;
+    }
+
+    @ACAQParameter("radius-increment")
+    @ACAQDocumentation(name = "Radius increment")
+    public int getRadiusIncrement() {
+        return radiusIncrement;
+    }
+
+    @ACAQParameter("radius-increment")
+    public void setRadiusIncrement(int radiusIncrement) {
+        this.radiusIncrement = radiusIncrement;
+    }
+
+    @ACAQParameter("min-num-circles")
+    @ACAQDocumentation(name = "Min number of circles")
+    public int getMinNumCircles() {
+        return minNumCircles;
+    }
+
+    @ACAQParameter("min-num-circles")
+    public void setMinNumCircles(int minNumCircles) {
+        this.minNumCircles = minNumCircles;
+    }
+
+    @ACAQParameter("max-num-circles")
+    @ACAQDocumentation(name = "Max number of circles")
+    public int getMaxNumCircles() {
+        return maxNumCircles;
+    }
+
+    @ACAQParameter("max-num-circles")
+    public void setMaxNumCircles(int maxNumCircles) {
+        this.maxNumCircles = maxNumCircles;
+    }
+
+    @ACAQParameter("threshold")
+    @ACAQDocumentation(name = "Threshold")
+    public double getThreshold() {
+        return threshold;
+    }
+
+    @ACAQParameter("threshold")
+    public void setThreshold(double threshold) {
+        this.threshold = threshold;
+    }
+
+    @ACAQParameter("resolution")
+    @ACAQDocumentation(name = "Resolution")
+    public int getResolution() {
+        return resolution;
+    }
+
+    @ACAQParameter("resolution")
+    public void setResolution(int resolution) {
+        this.resolution = resolution;
+    }
+
+    @ACAQParameter("ratio")
+    @ACAQDocumentation(name = "Ratio")
+    public double getRatio() {
+        return ratio;
+    }
+
+    @ACAQParameter("ratio")
+    public void setRatio(double ratio) {
+        this.ratio = ratio;
+    }
+
+    @ACAQParameter("bandwidth")
+    @ACAQDocumentation(name = "Bandwidth")
+    public int getBandwidth() {
+        return bandwidth;
+    }
+
+    @ACAQParameter("bandwidth")
+    public void setBandwidth(int bandwidth) {
+        this.bandwidth = bandwidth;
+    }
+
+    @ACAQParameter("local-radius")
+    @ACAQDocumentation(name = "Local radius")
+    public int getLocalRadius() {
+        return localRadius;
+    }
+
+    @ACAQParameter("local-radius")
+    public void setLocalRadius(int localRadius) {
+        this.localRadius = localRadius;
+    }
+}

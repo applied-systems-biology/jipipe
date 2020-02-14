@@ -15,9 +15,14 @@ package org.hkijena.acaq5.ui.components;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Text field with a file selection
@@ -27,6 +32,7 @@ public class FileSelection extends JPanel {
     private JFileChooser jFileChooser = new JFileChooser();
     private JTextField pathEdit;
     private Mode mode;
+    private Set<ActionListener> listeners = new HashSet<>();
 
     public FileSelection() {
         this.mode = Mode.OPEN;
@@ -75,10 +81,20 @@ public class FileSelection extends JPanel {
                 }
             }
         });
+
+        pathEdit.getDocument().addDocumentListener(new DocumentChangeListener() {
+            @Override
+            public void changed(DocumentEvent documentEvent) {
+                postAction();
+            }
+        });
     }
 
     public void setPath(Path path) {
-        pathEdit.setText(path.toString());
+        if(path != null)
+            pathEdit.setText(path.toString());
+        else
+            pathEdit.setText("");
     }
 
     public Path getPath() {
@@ -87,6 +103,20 @@ public class FileSelection extends JPanel {
 
     public JFileChooser getFileChooser() {
         return jFileChooser;
+    }
+
+    private void postAction() {
+        for(ActionListener listener : listeners) {
+            listener.actionPerformed(new ActionEvent(this, 0, "text-changed"));
+        }
+    }
+
+    public void addActionListener(ActionListener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeActionListener(ActionListener listener) {
+        listeners.remove(listener);
     }
 
     public enum Mode {

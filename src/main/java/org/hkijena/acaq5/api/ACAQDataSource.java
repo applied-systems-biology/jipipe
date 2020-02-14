@@ -1,19 +1,20 @@
 package org.hkijena.acaq5.api;
 
-import java.util.Collections;
-import java.util.Map;
-
 /**
  * An {@link ACAQAlgorithm} that generates data. It has no input slots.
  */
-public abstract class ACAQDataSource extends ACAQAlgorithm {
+public abstract class ACAQDataSource<T extends ACAQData> extends ACAQAlgorithm {
 
-    public ACAQDataSource(ACAQOutputDataSlot... slots) {
-        super(slots);
+    private Class<? extends ACAQData> generatedDataClass;
+
+    public ACAQDataSource(ACAQMutableSlotConfiguration configuration, Class<? extends T> generatedDataClass) {
+        super(configuration);
+        this.generatedDataClass = generatedDataClass;
+        if(configuration.hasInputSlots())
+            throw new IllegalArgumentException("Data sources cannot have input slots!");
     }
 
-    @Override
-    public Map<String, ACAQDataSlot> getInputSlots() {
-        return Collections.emptyMap();
+    public Class<? extends ACAQData> getGeneratedDataClass() {
+        return generatedDataClass;
     }
 }
