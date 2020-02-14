@@ -54,6 +54,9 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
         scrollPane = new JScrollPane(graphUI);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.getHorizontalScrollBar().addAdjustmentListener(e -> {
+            graphUI.setNewEntryLocationX(scrollPane.getHorizontalScrollBar().getValue());
+        });
         splitPane.setLeftComponent(scrollPane);
         splitPane.setRightComponent(new MarkdownReader(false) {
             {

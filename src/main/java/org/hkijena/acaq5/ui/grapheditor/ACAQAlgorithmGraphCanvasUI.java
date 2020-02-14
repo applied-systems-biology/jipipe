@@ -29,6 +29,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     private Point currentlyDraggedOffset = new Point();
     private BiMap<ACAQAlgorithm, ACAQAlgorithmUI> nodeUIs = HashBiMap.create();
     private EventBus eventBus = new EventBus();
+    private int newEntryLocationX = ACAQAlgorithmUI.SLOT_UI_WIDTH * 4;
 
     public ACAQAlgorithmGraphCanvasUI(ACAQAlgorithmGraph algorithmGraph) {
         super(null);
@@ -87,14 +88,19 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         for(ACAQAlgorithm algorithm : newNodes) {
             //TODO: More auto-layout-like placement. Only use the brute force method as last measurement
             int y = nodeUIs.values().stream().map(ACAQAlgorithmUI::getBottomY).max(Integer::compareTo).orElse(0);
+            int x = newEntryLocationX;
             if(y == 0)
                 y += 2 * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+
+            // Align X position to grid
+            x = (int)Math.ceil(x * 1.0 / ACAQAlgorithmUI.SLOT_UI_WIDTH) * ACAQAlgorithmUI.SLOT_UI_WIDTH;
+
             ACAQAlgorithmUI ui = new ACAQAlgorithmUI(this, algorithm);
             ui.getEventBus().register(this);
             add(ui);
             nodeUIs.put(algorithm, ui);
             if(algorithm.getLocation() == null || !ui.trySetLocationNoGrid(algorithm.getLocation().x, algorithm.getLocation().y)) {
-                ui.setLocation(ACAQAlgorithmUI.SLOT_UI_WIDTH * 4, y);
+                ui.setLocation(x, y);
             }
         }
         revalidate();
@@ -253,5 +259,22 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         }
 
         g.setStroke(new BasicStroke(1));
+    }
+
+    /**
+     * Gets the X position where new entries are placed automatically
+     * @return
+     */
+    public int getNewEntryLocationX() {
+        return newEntryLocationX;
+    }
+
+    /**
+     * Sets the X position where new entries are placed automatically
+     * This can be set by parent components to for example place algorithms into the current view
+     * @param newEntryLocationX
+     */
+    public void setNewEntryLocationX(int newEntryLocationX) {
+        this.newEntryLocationX = newEntryLocationX;
     }
 }
