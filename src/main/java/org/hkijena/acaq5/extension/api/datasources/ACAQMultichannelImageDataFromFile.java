@@ -23,6 +23,7 @@ public class ACAQMultichannelImageDataFromFile extends ACAQSimpleDataSource<ACAQ
 
     public ACAQMultichannelImageDataFromFile(ACAQMultichannelImageDataFromFile other) {
         this();
+        this.getSlotConfiguration().setTo(other.getSlotConfiguration());
         this.fileName = other.fileName;
     }
 

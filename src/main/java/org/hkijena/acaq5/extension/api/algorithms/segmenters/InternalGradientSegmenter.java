@@ -32,6 +32,7 @@ public class InternalGradientSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscale
 
     public InternalGradientSegmenter(InternalGradientSegmenter other) {
         this();
+        this.getSlotConfiguration().setTo(other.getSlotConfiguration());
         this.gaussSigma = other.gaussSigma;
         this.internalGradientRadius = other.internalGradientRadius;
         this.dilationIterations = other.dilationIterations;

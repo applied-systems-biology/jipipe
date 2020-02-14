@@ -16,8 +16,13 @@ import org.jgrapht.Graph;
 import org.jgrapht.alg.cycle.CycleDetector;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.io.DOTExporter;
+import org.jgrapht.io.ExportException;
+import org.jgrapht.traverse.GraphIterator;
+import org.jgrapht.traverse.TopologicalOrderIterator;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -283,7 +288,7 @@ public class ACAQAlgorithmGraph {
         return eventBus;
     }
 
-    public Map<String, ACAQAlgorithm> getNodes() {
+    public BiMap<String, ACAQAlgorithm> getAlgorithmNodes() {
         return ImmutableBiMap.copyOf(algorithms);
     }
 
@@ -329,6 +334,37 @@ public class ACAQAlgorithmGraph {
             ACAQDataSlot<?> target = targetAlgorithm.getSlots().get(edgeNode.get("target-slot").asText());
             connect(source, target);
         }
+    }
+
+    public int getAlgorithmCount() {
+        return algorithms.size();
+    }
+
+    public int getSlotCount() {
+        return graph.vertexSet().size();
+    }
+
+    public void exportDOT(Path fileName) {
+        DOTExporter<ACAQDataSlot<?>, DefaultEdge> exporter = new DOTExporter<>();
+        try {
+            exporter.exportGraph(graph, fileName.toFile());
+        } catch (ExportException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<ACAQDataSlot<?>> traverse() {
+        GraphIterator<ACAQDataSlot<?>, DefaultEdge> iterator = new TopologicalOrderIterator<>(graph);
+        List<ACAQDataSlot<?>> result = new ArrayList<>();
+        while(iterator.hasNext()) {
+            ACAQDataSlot<?> slot = iterator.next();
+            result.add(slot);
+        }
+        return result;
+    }
+
+    public Set<ACAQDataSlot<?>> getSlotNodes() {
+        return graph.vertexSet();
     }
 
     public static class Serializer extends JsonSerializer<ACAQAlgorithmGraph> {

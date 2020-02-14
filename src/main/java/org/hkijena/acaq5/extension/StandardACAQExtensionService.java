@@ -7,6 +7,7 @@ import org.hkijena.acaq5.extension.api.algorithms.converters.MaskToParticleConve
 import org.hkijena.acaq5.extension.api.algorithms.converters.MultiChannelSplitterConverter;
 import org.hkijena.acaq5.extension.api.algorithms.enhancers.CLAHEImageEnhancer;
 import org.hkijena.acaq5.extension.api.algorithms.enhancers.IlluminationCorrectionEnhancer;
+import org.hkijena.acaq5.extension.api.algorithms.enhancers.MergeROIEnhancer;
 import org.hkijena.acaq5.extension.api.algorithms.enhancers.WatershedMaskEnhancer;
 import org.hkijena.acaq5.extension.api.algorithms.segmenters.AutoThresholdSegmenter;
 import org.hkijena.acaq5.extension.api.algorithms.segmenters.BrightSpotsSegmenter;
@@ -60,6 +61,7 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
         registryService.getAlgorithmRegistry().register(HoughSegmenter.class);
         registryService.getAlgorithmRegistry().register(InternalGradientSegmenter.class);
         registryService.getAlgorithmRegistry().register(MultiChannelSplitterConverter.class);
+        registryService.getAlgorithmRegistry().register(MergeROIEnhancer.class);
 
         // Register data sources
         registryService.getAlgorithmRegistry().register(ACAQGreyscaleImageDataFromFile.class);

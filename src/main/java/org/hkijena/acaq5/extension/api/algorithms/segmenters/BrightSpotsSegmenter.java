@@ -27,6 +27,7 @@ public class BrightSpotsSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImage
 
     public BrightSpotsSegmenter(BrightSpotsSegmenter other) {
         this();
+        this.getSlotConfiguration().setTo(other.getSlotConfiguration());
         this.rollingBallRadius = other.rollingBallRadius;
         this.dilationErodeSteps = other.dilationErodeSteps;
         this.gaussianSigma = other.gaussianSigma;

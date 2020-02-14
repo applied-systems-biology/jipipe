@@ -4,6 +4,7 @@ import org.apache.commons.lang3.reflect.ConstructorUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Path;
 
 public abstract class ACAQDataSlot<T extends ACAQData> {
     private ACAQAlgorithm algorithm;
@@ -11,6 +12,7 @@ public abstract class ACAQDataSlot<T extends ACAQData> {
     private Class<T> acceptedDataType;
     private T data;
     private SlotType slotType;
+    private Path storagePath;
 
     public ACAQDataSlot(ACAQAlgorithm algorithm, SlotType slotType, String name, Class<T> acceptedDataType) {
         this.algorithm = algorithm;
@@ -23,7 +25,7 @@ public abstract class ACAQDataSlot<T extends ACAQData> {
         return acceptedDataType;
     }
 
-    public boolean accepts(T data) {
+    public boolean accepts(ACAQData data) {
         return acceptedDataType.isAssignableFrom(data.getClass());
     }
 
@@ -39,10 +41,10 @@ public abstract class ACAQDataSlot<T extends ACAQData> {
         return data;
     }
 
-    public void setData(T data) {
+    public void setData(ACAQData data) {
         if(!accepts(data))
             throw new RuntimeException("Data slot does not accept data");
-        this.data = data;
+        this.data = (T)data;
     }
 
     public ACAQAlgorithm getAlgorithm() {
@@ -51,6 +53,17 @@ public abstract class ACAQDataSlot<T extends ACAQData> {
 
     public SlotType getSlotType() {
         return slotType;
+    }
+
+    /**
+     * Saves the stored data to the provided storage path and sets data to null
+     * Warning: Ensure that depending input slots do not use this slot, anymore!
+     */
+    public void flush() {
+        if(isOutput() && storagePath != null && data != null) {
+            data.saveTo(storagePath, getName());
+            data = null;
+        }
     }
 
     public boolean isInput() {
@@ -73,6 +86,19 @@ public abstract class ACAQDataSlot<T extends ACAQData> {
             default:
                 throw new RuntimeException("Unknown slot type!");
         }
+    }
+
+    /**
+     * Gets the storage path that is used during running the algorithm for saving the results
+     * This is not used during project creation
+     * @return
+     */
+    public Path getStoragePath() {
+        return storagePath;
+    }
+
+    public void setStoragePath(Path storagePath) {
+        this.storagePath = storagePath;
     }
 
     public enum SlotType {

@@ -27,6 +27,7 @@ public class AutoThresholdSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleIma
 
     public AutoThresholdSegmenter(AutoThresholdSegmenter other) {
         this();
+        this.getSlotConfiguration().setTo(other.getSlotConfiguration());
         this.method = other.method;
     }
 

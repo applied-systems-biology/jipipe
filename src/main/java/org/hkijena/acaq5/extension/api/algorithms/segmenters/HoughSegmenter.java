@@ -34,6 +34,7 @@ public class HoughSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, 
 
     public HoughSegmenter(HoughSegmenter other) {
         this();
+        this.getSlotConfiguration().setTo(other.getSlotConfiguration());
         this.minRadius = other.minRadius;
         this.maxRadius = other.maxRadius;
         this.radiusIncrement = other.radiusIncrement;

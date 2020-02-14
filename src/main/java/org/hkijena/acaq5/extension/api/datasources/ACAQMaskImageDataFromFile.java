@@ -23,6 +23,7 @@ public class ACAQMaskImageDataFromFile extends ACAQSimpleDataSource<ACAQMaskData
 
     public ACAQMaskImageDataFromFile(ACAQMaskImageDataFromFile other) {
         this();
+        this.getSlotConfiguration().setTo(other.getSlotConfiguration());
         this.fileName = other.fileName;
     }
 

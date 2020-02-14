@@ -8,11 +8,13 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.acaq5.api.events.*;
 import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.awt.*;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
@@ -29,6 +31,14 @@ public abstract class ACAQAlgorithm {
        this.slotConfiguration = slotConfiguration;
        slotConfiguration.getEventBus().register(this);
        initalize();
+    }
+
+    public static ACAQAlgorithm clone(ACAQAlgorithm other) {
+        try {
+            return ConstructorUtils.getMatchingAccessibleConstructor(other.getClass(), other.getClass()).newInstance(other);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void initalize() {

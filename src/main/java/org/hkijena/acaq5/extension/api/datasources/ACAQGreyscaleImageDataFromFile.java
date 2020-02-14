@@ -23,6 +23,7 @@ public class ACAQGreyscaleImageDataFromFile extends ACAQSimpleDataSource<ACAQGre
 
     public ACAQGreyscaleImageDataFromFile(ACAQGreyscaleImageDataFromFile other) {
         this();
+        this.getSlotConfiguration().setTo(other.getSlotConfiguration());
         this.fileName = other.fileName;
     }
 

@@ -4,6 +4,7 @@ import org.hkijena.acaq5.ACAQCommand;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphUI;
+import org.hkijena.acaq5.ui.running.ACAQRunUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -74,8 +75,9 @@ public class ACAQWorkbenchUI extends JFrame {
         toolBar.add(Box.createHorizontalGlue());
 
         // "Run" entry
-        JButton runProject = new JButton("Run", UIUtils.getIconFromResources("run.png"));
-        toolBar.add(runProject);
+        JButton runProjectButton = new JButton("Run", UIUtils.getIconFromResources("run.png"));
+        runProjectButton.addActionListener(e -> openRunUI());
+        toolBar.add(runProjectButton);
 
         initializeToolbarHelpMenu(toolBar);
 
@@ -117,6 +119,13 @@ public class ACAQWorkbenchUI extends JFrame {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    private void openRunUI() {
+        ACAQRunUI ui = new ACAQRunUI(this);
+        documentTabPane.addTab("Run", UIUtils.getIconFromResources("run.png"), ui,
+                DocumentTabPane.CloseMode.withAskOnCloseButton, false);
+        documentTabPane.switchToLastTab();
     }
 
     public DocumentTabPane getDocumentTabPane() {

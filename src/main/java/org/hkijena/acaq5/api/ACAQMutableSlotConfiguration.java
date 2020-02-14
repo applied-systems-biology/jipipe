@@ -9,6 +9,7 @@ import org.hkijena.acaq5.api.events.SlotOrderChangedEvent;
 import org.hkijena.acaq5.api.events.SlotRemovedEvent;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A schema for slots
@@ -108,6 +109,26 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
     @Override
     public List<String> getOutputSlotOrder() {
         return Collections.unmodifiableList(outputSlotOrder);
+    }
+
+    @Override
+    public void setTo(ACAQSlotConfiguration configuration) {
+        slots.clear();
+        List<String> newSlots = configuration.getSlots().keySet().stream().filter(s -> !slots.containsKey(s)).collect(Collectors.toList());
+        List<String> removedSlots = slots.keySet().stream().filter(s -> !configuration.getSlots().containsKey(s)).collect(Collectors.toList());
+        for(Map.Entry<String, ACAQSlotDefinition> kv : configuration.getSlots().entrySet()) {
+            slots.put(kv.getKey(), new ACAQSlotDefinition(kv.getValue().getSlotClass(), kv.getValue().getSlotType(), kv.getKey()));
+        }
+        // Update slot order
+        inputSlotOrder = new ArrayList<>(configuration.getInputSlotOrder());
+        outputSlotOrder = new ArrayList<>(configuration.getOutputSlotOrder());
+        for(String name : newSlots) {
+            getEventBus().post(new SlotAddedEvent(this, name));
+        }
+        for(String name : removedSlots) {
+            getEventBus().post(new SlotRemovedEvent(this, name));
+        }
+        getEventBus().post(new SlotOrderChangedEvent(this));
     }
 
     @Override

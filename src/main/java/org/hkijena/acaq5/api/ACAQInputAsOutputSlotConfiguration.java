@@ -49,6 +49,11 @@ public class ACAQInputAsOutputSlotConfiguration extends ACAQSlotConfiguration {
     }
 
     @Override
+    public void setTo(ACAQSlotConfiguration configuration) {
+        slotConfiguration.setTo(configuration);
+    }
+
+    @Override
     public void fromJson(JsonNode jsonNode) {
         // Pass to the parent configuration
         slotConfiguration.fromJson(jsonNode);

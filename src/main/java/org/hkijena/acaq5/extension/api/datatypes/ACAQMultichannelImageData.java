@@ -1,8 +1,11 @@
 package org.hkijena.acaq5.extension.api.datatypes;
 
+import ij.IJ;
 import ij.ImagePlus;
 import org.hkijena.acaq5.api.ACAQData;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+
+import java.nio.file.Path;
 
 @ACAQDocumentation(name = "Multichannel Image")
 public class ACAQMultichannelImageData implements ACAQData {
@@ -15,5 +18,10 @@ public class ACAQMultichannelImageData implements ACAQData {
 
     public ImagePlus getImage() {
         return image;
+    }
+
+    @Override
+    public void saveTo(Path storageFilePath, String name) {
+        IJ.saveAsTiff(image, storageFilePath.resolve(name + ".tif").toString());
     }
 }

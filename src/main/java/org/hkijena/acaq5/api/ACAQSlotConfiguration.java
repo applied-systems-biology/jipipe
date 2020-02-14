@@ -51,6 +51,12 @@ public abstract class ACAQSlotConfiguration {
     }
 
     /**
+     * Makes this slot configuration equivalent to the provided one
+     * @param configuration
+     */
+    public abstract void setTo(ACAQSlotConfiguration configuration);
+
+    /**
      * Loads this configuration from JSON
      * @param jsonNode
      */

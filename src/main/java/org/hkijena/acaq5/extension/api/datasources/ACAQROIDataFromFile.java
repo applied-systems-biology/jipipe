@@ -24,6 +24,7 @@ public class ACAQROIDataFromFile extends ACAQSimpleDataSource<ACAQROIData> {
 
     public ACAQROIDataFromFile(ACAQROIDataFromFile other) {
         this();
+        this.getSlotConfiguration().setTo(other.getSlotConfiguration());
         this.fileName = other.fileName;
     }
 
