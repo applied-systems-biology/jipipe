@@ -19,8 +19,7 @@ public class WatershedMaskEnhancer extends ACAQSimpleAlgorithm<ACAQMaskData, ACA
     }
 
     public WatershedMaskEnhancer(WatershedMaskEnhancer other) {
-        this();
-        this.getSlotConfiguration().setTo(other.getSlotConfiguration());
+        super(other);
         this.erosionIterations = other.erosionIterations;
     }
 

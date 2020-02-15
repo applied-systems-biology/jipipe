@@ -8,6 +8,16 @@ public class ACAQPreprocessingOutput extends ACAQAlgorithm {
         super(slotConfiguration);
     }
 
+    public ACAQPreprocessingOutput(ACAQPreprocessingOutput other) {
+        super(other.getSlotConfiguration());
+    }
+
+    @Override
+    protected ACAQSlotConfiguration copySlotConfiguration(ACAQAlgorithm other) {
+        // The slot configuration is global
+        return other.getSlotConfiguration();
+    }
+
     @Override
     public void run() {
 

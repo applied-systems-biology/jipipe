@@ -14,6 +14,11 @@ public abstract class ACAQDataSource<T extends ACAQData> extends ACAQAlgorithm {
             throw new IllegalArgumentException("Data sources cannot have input slots!");
     }
 
+    public ACAQDataSource(ACAQDataSource<T> other) {
+        super(other);
+        this.generatedDataClass = other.generatedDataClass;
+    }
+
     public Class<? extends ACAQData> getGeneratedDataClass() {
         return generatedDataClass;
     }

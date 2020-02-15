@@ -1,8 +1,10 @@
-package org.hkijena.acaq5.ui;
+package org.hkijena.acaq5.ui.samplemanagement;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQProjectSample;
 import org.hkijena.acaq5.api.events.ACAQSampleRenamedEvent;
+import org.hkijena.acaq5.ui.ACAQUIPanel;
+import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -38,6 +40,10 @@ public class ACAQProjectSampleUI extends ACAQUIPanel {
 
         panel.add(Box.createHorizontalGlue());
 
+        JButton duplicateButton = new JButton("Duplicate", UIUtils.getIconFromResources("copy.png"));
+        duplicateButton.addActionListener(e -> duplicateSample());
+        panel.add(duplicateButton);
+
         JButton renameButton = new JButton("Rename", UIUtils.getIconFromResources("edit.png"));
         renameButton.addActionListener(e -> renameSample());
         panel.add(renameButton);
@@ -49,9 +55,21 @@ public class ACAQProjectSampleUI extends ACAQUIPanel {
         add(panel, BorderLayout.NORTH);
     }
 
+    private void duplicateSample() {
+        String nameBase = sample.getName();
+        String name = nameBase;
+        for(int i = 1; getProject().getSamples().containsKey(name); ++i) {
+            name = nameBase + " " + i;
+        }
+        String newName = JOptionPane.showInputDialog(this,"Please input a name for the new sample", name);
+        if(newName != null && !newName.trim().isEmpty() && !getProject().getSamples().containsKey(newName)) {
+            getProject().duplicateSample(getSample().getName(), newName);
+        }
+    }
+
     private void renameSample() {
         String newName = JOptionPane.showInputDialog(this,"Please input a new name", sample.getName());
-        if(newName != null && !newName.isEmpty() && !newName.equals(sample.getName())) {
+        if(newName != null && !newName.trim().isEmpty() && !newName.equals(sample.getName())) {
             getProject().renameSample(sample, newName);
         }
     }

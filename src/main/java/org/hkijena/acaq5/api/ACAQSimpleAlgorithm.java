@@ -10,6 +10,10 @@ public abstract class ACAQSimpleAlgorithm<IData extends ACAQData, OData extends 
                 .build());
     }
 
+    public ACAQSimpleAlgorithm(ACAQSimpleAlgorithm<IData, OData> other) {
+        super(other);
+    }
+
     public ACAQDataSlot<IData> getInputSlot() {
         return (ACAQDataSlot<IData>) getInputSlots().get(0);
     }

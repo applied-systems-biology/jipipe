@@ -27,8 +27,7 @@ public class MaskToParticleConverter extends ACAQSimpleAlgorithm<ACAQMaskData, A
     }
 
     public MaskToParticleConverter(MaskToParticleConverter other) {
-        this();
-        this.getSlotConfiguration().setTo(other.getSlotConfiguration());
+        super(other);
         this.minParticleSize = other.minParticleSize;
         this.maxParticleSize = other.maxParticleSize;
         this.minParticleCircularity = other.minParticleCircularity;

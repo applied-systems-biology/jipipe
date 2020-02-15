@@ -26,8 +26,7 @@ public class CLAHEImageEnhancer extends ACAQSimpleAlgorithm<ACAQGreyscaleImageDa
     }
 
     public CLAHEImageEnhancer(CLAHEImageEnhancer other) {
-        this();
-        this.getSlotConfiguration().setTo(other.getSlotConfiguration());
+        super(other);
         this.blocks = other.blocks;
         this.bins = other.bins;
         this.maxSlope = other.maxSlope;

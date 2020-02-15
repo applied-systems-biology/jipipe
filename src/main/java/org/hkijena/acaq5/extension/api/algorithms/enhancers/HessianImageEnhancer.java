@@ -30,8 +30,7 @@ public class HessianImageEnhancer extends ACAQSimpleAlgorithm<ACAQGreyscaleImage
     }
 
     public HessianImageEnhancer(HessianImageEnhancer other) {
-        this();
-        this.getSlotConfiguration().setTo(other.getSlotConfiguration());
+        super(other);
         this.smoothing = other.smoothing;
         this.gradientRadius = other.gradientRadius;
         this.autoThresholdSegmenter = other.autoThresholdSegmenter;

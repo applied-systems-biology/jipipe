@@ -41,6 +41,26 @@ public class ACAQAlgorithmGraph {
 
     }
 
+    public ACAQAlgorithmGraph(ACAQAlgorithmGraph other) {
+        // Copy nodes
+        for(Map.Entry<String, ACAQAlgorithm> kv : other.algorithms.entrySet()) {
+            ACAQAlgorithm algorithm = ACAQAlgorithm.clone(kv.getValue());
+            algorithms.put(kv.getKey(), algorithm);
+            algorithm.getEventBus().register(this);
+        }
+        repairGraph();
+
+        // Copy edges
+        for(Map.Entry<ACAQDataSlot<?>, ACAQDataSlot<?>> edge : other.getSlotEdges()) {
+            String sourceAlgorithmName = other.algorithms.inverse().get(edge.getKey().getAlgorithm());
+            String targetAlgorithmName = other.algorithms.inverse().get(edge.getValue().getAlgorithm());
+            ACAQAlgorithm sourceAlgorithm = algorithms.get(sourceAlgorithmName);
+            ACAQAlgorithm targetAlgorithm = algorithms.get(targetAlgorithmName);
+            connect(sourceAlgorithm.getSlots().get(edge.getKey().getName()),
+                    targetAlgorithm.getSlots().get(edge.getValue().getName()));
+        }
+    }
+
     /**
      * Inserts an algorithm into the graph
      * @param key The unique ID

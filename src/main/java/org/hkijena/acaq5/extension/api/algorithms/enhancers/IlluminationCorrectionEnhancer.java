@@ -20,8 +20,7 @@ public class IlluminationCorrectionEnhancer extends ACAQSimpleAlgorithm<ACAQGrey
     }
 
     public IlluminationCorrectionEnhancer(IlluminationCorrectionEnhancer other) {
-        this();
-        this.getSlotConfiguration().setTo(other.getSlotConfiguration());
+        super(other);
         this.gaussianSigma = other.gaussianSigma;
     }
 

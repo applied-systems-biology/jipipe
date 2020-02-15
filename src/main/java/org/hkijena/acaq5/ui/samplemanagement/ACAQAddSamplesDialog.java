@@ -10,8 +10,9 @@
  * See the LICENSE file provided with this code for the full license.
  */
 
-package org.hkijena.acaq5.ui;
+package org.hkijena.acaq5.ui.samplemanagement;
 
+import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
