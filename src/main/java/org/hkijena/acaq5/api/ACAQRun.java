@@ -232,6 +232,13 @@ public class ACAQRun {
             }
             onProgress.accept(new Status(i + 1, algorithmGraph.getSlotCount(), slot.getFullName() + " done"));
         }
+
+        // Postprocessing
+        try {
+            project.saveProject(outputPath.resolve("parameters.json"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public ACAQAlgorithmGraph getGraph() {

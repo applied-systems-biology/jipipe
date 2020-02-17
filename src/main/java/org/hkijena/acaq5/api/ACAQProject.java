@@ -100,6 +100,15 @@ public class ACAQProject {
         return JsonUtils.getObjectMapper().readerFor(ACAQProject.class).readValue(fileName.toFile());
     }
 
+    public void duplicateSample(String name, String newSampleName) {
+        if(samples.containsKey(newSampleName))
+            return;
+        ACAQProjectSample original = samples.get(name);
+        ACAQProjectSample copy =  new ACAQProjectSample(original);
+        samples.put(newSampleName, copy);
+        eventBus.post(new ACAQSampleAddedEvent(copy));
+    }
+
     public static class Serializer extends JsonSerializer<ACAQProject> {
         @Override
         public void serialize(ACAQProject project, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {

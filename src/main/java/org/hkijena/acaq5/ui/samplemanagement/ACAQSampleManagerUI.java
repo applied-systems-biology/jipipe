@@ -1,10 +1,12 @@
-package org.hkijena.acaq5.ui;
+package org.hkijena.acaq5.ui.samplemanagement;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQProjectSample;
 import org.hkijena.acaq5.api.events.ACAQSampleAddedEvent;
 import org.hkijena.acaq5.api.events.ACAQSampleRemovedEvent;
 import org.hkijena.acaq5.api.events.ACAQSampleRenamedEvent;
+import org.hkijena.acaq5.ui.ACAQUIPanel;
+import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;

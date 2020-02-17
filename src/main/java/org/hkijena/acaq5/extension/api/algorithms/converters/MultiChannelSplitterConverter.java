@@ -20,8 +20,7 @@ public class MultiChannelSplitterConverter extends ACAQAlgorithm {
     }
 
     public MultiChannelSplitterConverter(MultiChannelSplitterConverter other) {
-        this();
-        this.getSlotConfiguration().setTo(other.getSlotConfiguration());
+        super(other);
     }
 
     @Override

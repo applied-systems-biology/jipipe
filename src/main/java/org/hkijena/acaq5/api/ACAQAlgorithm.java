@@ -33,6 +33,25 @@ public abstract class ACAQAlgorithm {
        initalize();
     }
 
+    public ACAQAlgorithm(ACAQAlgorithm other) {
+        this.slotConfiguration = copySlotConfiguration(other);
+        this.location = other.location;
+        slotConfiguration.getEventBus().register(this);
+        initalize();
+    }
+
+    /**
+     * Copies the slot configuration from the other algorithm to this algorithm
+     * Override this method for special configuration cases
+     * @param other
+     * @return
+     */
+    protected ACAQSlotConfiguration copySlotConfiguration(ACAQAlgorithm other) {
+        ACAQMutableSlotConfiguration configuration = ACAQMutableSlotConfiguration.builder().build();
+        configuration.setTo(other.slotConfiguration);
+        return configuration;
+    }
+
     public static ACAQAlgorithm clone(ACAQAlgorithm other) {
         try {
             return ConstructorUtils.getMatchingAccessibleConstructor(other.getClass(), other.getClass()).newInstance(other);

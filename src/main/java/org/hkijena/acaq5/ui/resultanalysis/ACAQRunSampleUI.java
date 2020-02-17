@@ -3,16 +3,19 @@ package org.hkijena.acaq5.ui.resultanalysis;
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.ACAQDataSlot;
 import org.hkijena.acaq5.api.ACAQRunSample;
+import org.hkijena.acaq5.ui.ACAQUIPanel;
+import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.FormPanel;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class ACAQRunSampleUI extends JPanel {
+public class ACAQRunSampleUI extends ACAQUIPanel {
     private ACAQRunSample sample;
     private FormPanel formPanel;
 
-    public ACAQRunSampleUI(ACAQRunSample sample) {
+    public ACAQRunSampleUI(ACAQWorkbenchUI workbenchUI, ACAQRunSample sample) {
+        super(workbenchUI);
         this.sample = sample;
         initialize();
     }
@@ -35,7 +38,7 @@ public class ACAQRunSampleUI extends JPanel {
     }
 
     private void addSlotToForm(String name, ACAQDataSlot<?> slot, String documentationPath) {
-        Component ui = ACAQRegistryService.getInstance().getUIDatatypeRegistry().getUIForResultSlot(slot);
+        Component ui = ACAQRegistryService.getInstance().getUIDatatypeRegistry().getUIForResultSlot(getWorkbenchUI(), slot);
         formPanel.addToForm(ui,
                 new JLabel(name,
                         ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(slot.getAcceptedDataType()),

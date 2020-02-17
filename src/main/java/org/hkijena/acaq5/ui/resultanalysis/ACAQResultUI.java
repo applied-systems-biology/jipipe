@@ -2,6 +2,8 @@ package org.hkijena.acaq5.ui.resultanalysis;
 
 import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.ACAQRunSample;
+import org.hkijena.acaq5.ui.ACAQUIPanel;
+import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -9,11 +11,12 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.io.IOException;
 
-public class ACAQResultUI extends JPanel {
+public class ACAQResultUI extends ACAQUIPanel {
     private ACAQRun run;
     private JSplitPane splitPane;
 
-    public ACAQResultUI(ACAQRun run) {
+    public ACAQResultUI(ACAQWorkbenchUI workbenchUI, ACAQRun run) {
+        super(workbenchUI);
         this.run = run;
         initialize();
     }
@@ -55,7 +58,7 @@ public class ACAQResultUI extends JPanel {
     }
 
     private void setCurrentDisplayed(ACAQRunSample sample) {
-        splitPane.setRightComponent(new ACAQRunSampleUI(sample));
+        splitPane.setRightComponent(new ACAQRunSampleUI(getWorkbenchUI(), sample));
     }
 
     public ACAQRun getRun() {

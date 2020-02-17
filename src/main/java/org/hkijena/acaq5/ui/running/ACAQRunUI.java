@@ -30,15 +30,20 @@ public class ACAQRunUI extends ACAQUIPanel {
 
     public ACAQRunUI(ACAQWorkbenchUI workbenchUI) {
         super(workbenchUI);
-        run = new ACAQRun(workbenchUI.getProject());
-//        validityReport = run.getValidityReport();
         initialize();
     }
 
     private void initialize() {
         setLayout(new BorderLayout(8, 8));
-        initializeButtons();
-        initializeSetupGUI();
+
+        try {
+            run = new ACAQRun(getWorkbenchUI().getProject());
+            initializeButtons();
+            initializeSetupGUI();
+        }
+        catch(Exception e) {
+            openError(e);
+        }
     }
 
     private void initializeSetupGUI() {
@@ -133,7 +138,7 @@ public class ACAQRunUI extends ACAQUIPanel {
     }
 
     private void openResults() {
-        ACAQResultUI resultUI = new ACAQResultUI(run);
+        ACAQResultUI resultUI = new ACAQResultUI(getWorkbenchUI(), run);
         add(resultUI, BorderLayout.CENTER);
         buttonPanel.setVisible(false);
         revalidate();

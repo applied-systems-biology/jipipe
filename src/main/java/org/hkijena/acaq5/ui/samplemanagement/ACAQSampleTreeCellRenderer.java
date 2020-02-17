@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.ui;
+package org.hkijena.acaq5.ui.samplemanagement;
 
 import org.hkijena.acaq5.api.ACAQProjectSample;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -9,7 +9,7 @@ import javax.swing.tree.TreeCellRenderer;
 import java.awt.*;
 
 /**
- * Renders a sample in the {@link org.hkijena.acaq5.ui.ACAQSampleManagerUI}
+ * Renders a sample in the {@link ACAQSampleManagerUI}
  */
 public class ACAQSampleTreeCellRenderer extends JLabel implements TreeCellRenderer {
 

@@ -21,6 +21,11 @@ public class ACAQProjectSample implements Comparable<ACAQProjectSample> {
         initializePreprocessingGraph();
     }
 
+    public ACAQProjectSample(ACAQProjectSample other) {
+        this.project = other.project;
+        this.preprocessingGraph = new ACAQAlgorithmGraph(other.preprocessingGraph);
+    }
+
     private void initializePreprocessingGraph() {
         preprocessingGraph.insertNode(new ACAQPreprocessingOutput(getProject().getPreprocessingOutputConfiguration()));
     }

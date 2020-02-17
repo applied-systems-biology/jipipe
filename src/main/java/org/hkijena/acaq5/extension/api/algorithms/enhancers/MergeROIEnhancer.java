@@ -17,6 +17,10 @@ public class MergeROIEnhancer extends ACAQAlgorithm {
         .sealOutput().build());
     }
 
+    public MergeROIEnhancer(MergeROIEnhancer other) {
+        super(other);
+    }
+
     @Override
     public void run() {
         List<Roi> inputROI = new ArrayList<>();

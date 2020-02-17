@@ -119,6 +119,15 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
         for(Map.Entry<String, ACAQSlotDefinition> kv : configuration.getSlots().entrySet()) {
             slots.put(kv.getKey(), new ACAQSlotDefinition(kv.getValue().getSlotClass(), kv.getValue().getSlotType(), kv.getKey()));
         }
+        if(configuration instanceof ACAQMutableSlotConfiguration) {
+            ACAQMutableSlotConfiguration other = (ACAQMutableSlotConfiguration)configuration;
+            this.allowedInputSlotTypes = new HashSet<>(other.allowedInputSlotTypes);
+            this.allowedOutputSlotTypes = new HashSet<>(other.allowedOutputSlotTypes);
+            this.allowInputSlots = other.allowInputSlots;
+            this.allowOutputSlots = other.allowOutputSlots;
+            this.inputSlotsSealed = other.inputSlotsSealed;
+            this.outputSlotsSealed = other.outputSlotsSealed;
+        }
         // Update slot order
         inputSlotOrder = new ArrayList<>(configuration.getInputSlotOrder());
         outputSlotOrder = new ArrayList<>(configuration.getOutputSlotOrder());

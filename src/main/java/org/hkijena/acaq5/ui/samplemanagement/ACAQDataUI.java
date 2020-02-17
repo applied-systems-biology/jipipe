@@ -1,6 +1,8 @@
-package org.hkijena.acaq5.ui;
+package org.hkijena.acaq5.ui.samplemanagement;
 
 import org.hkijena.acaq5.api.ACAQProjectSample;
+import org.hkijena.acaq5.ui.ACAQUIPanel;
+import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;

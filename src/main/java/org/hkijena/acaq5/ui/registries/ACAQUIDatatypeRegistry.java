@@ -3,13 +3,12 @@ package org.hkijena.acaq5.ui.registries;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.acaq5.api.ACAQData;
 import org.hkijena.acaq5.api.ACAQDataSlot;
+import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultDataSlotResultUI;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultDataSlotUI;
 import org.hkijena.acaq5.utils.ResourceUtils;
-import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.HashMap;
@@ -56,17 +55,18 @@ public class ACAQUIDatatypeRegistry {
      * @param slot
      * @return
      */
-    public ACAQResultDataSlotUI<?> getUIForResultSlot(ACAQDataSlot<?> slot) {
+    public ACAQResultDataSlotUI<?> getUIForResultSlot(ACAQWorkbenchUI workbenchUI, ACAQDataSlot<?> slot) {
         Class<? extends ACAQResultDataSlotUI<?>> uiClass = resultUIs.getOrDefault(slot.getClass(), null);
         if(uiClass != null) {
             try {
-                return ConstructorUtils.getMatchingAccessibleConstructor(uiClass, slot.getClass()).newInstance(slot);
+                return ConstructorUtils.getMatchingAccessibleConstructor(uiClass, ACAQWorkbenchUI.class, slot.getClass())
+                        .newInstance(workbenchUI, slot);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
         }
         else {
-            return new ACAQDefaultDataSlotResultUI(slot);
+            return new ACAQDefaultDataSlotResultUI(workbenchUI, slot);
         }
     }
 }
