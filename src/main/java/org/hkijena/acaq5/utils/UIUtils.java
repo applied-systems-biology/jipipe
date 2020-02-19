@@ -214,4 +214,15 @@ public class UIUtils {
         }
     }
 
+    public static int askOpenInCurrentWindow(Component parent, String title) {
+        return JOptionPane.showOptionDialog(parent,
+                "Projects can either be opened in a new window or replace the project in an existing window.",
+                title,
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                new Object[]{"This window", "New window", "Cancel"},
+                "New window");
+    }
+
 }
