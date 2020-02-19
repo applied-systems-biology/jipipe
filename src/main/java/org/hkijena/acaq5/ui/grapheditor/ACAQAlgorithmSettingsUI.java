@@ -67,15 +67,22 @@ public class ACAQAlgorithmSettingsUI extends JPanel {
 
     private void initializeParameterPanel(FormPanel formPanel) {
         Map<String, ACAQParameterAccess> parameters = ACAQParameterAccess.getParameters(algorithm);
-        for(String key : parameters.keySet().stream().sorted().collect(Collectors.toList())) {
-            ACAQParameterAccess parameterAccess = parameters.get(key);
-            ACAQParameterEditorUI ui = ACAQRegistryService.getInstance()
-                    .getUIParametertypeRegistry().createEditorFor(parameterAccess);
+        if(!parameters.isEmpty()) {
+            for(String key : parameters.keySet().stream().sorted().collect(Collectors.toList())) {
+                ACAQParameterAccess parameterAccess = parameters.get(key);
+                ACAQParameterEditorUI ui = ACAQRegistryService.getInstance()
+                        .getUIParametertypeRegistry().createEditorFor(parameterAccess);
 
-            if(ui.isUILabelEnabled())
-                formPanel.addToForm(ui, new JLabel(parameterAccess.getName()), null);
-            else
-                formPanel.addToForm(ui, null);
+                if(ui.isUILabelEnabled())
+                    formPanel.addToForm(ui, new JLabel(parameterAccess.getName()), null);
+                else
+                    formPanel.addToForm(ui, null);
+            }
+        }
+        else {
+            formPanel.addToForm(new JLabel("This algorithm has no parameters",
+                    UIUtils.getIconFromResources("info.png"), JLabel.LEFT),
+                    null);
         }
         formPanel.addVerticalGlue();
     }
