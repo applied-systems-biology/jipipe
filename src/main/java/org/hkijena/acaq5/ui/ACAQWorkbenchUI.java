@@ -59,7 +59,7 @@ public class ACAQWorkbenchUI extends JPanel {
 
         initializeMenu();
         initializeStatusBar();
-        sendStatusBarText("Welcome to AMIT5");
+        sendStatusBarText("Welcome to ACAQ5");
     }
 
     private void initializeStatusBar() {
