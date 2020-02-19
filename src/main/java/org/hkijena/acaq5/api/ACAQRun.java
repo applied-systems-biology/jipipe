@@ -19,7 +19,6 @@ public class ACAQRun {
     private ACAQProject project;
     ACAQAlgorithmGraph algorithmGraph;
     private Path outputPath;
-    private boolean isReady = false;
     private BiMap<String, ACAQRunSample> samples = HashBiMap.create();
 
     public ACAQRun(ACAQProject project) {
@@ -163,7 +162,6 @@ public class ACAQRun {
      * This function must be called before running the graph
      */
     private void prepare() {
-        isReady = true;
 
         if (!Files.exists(outputPath)) {
             try {
@@ -247,6 +245,20 @@ public class ACAQRun {
 
     public BiMap<String, ACAQRunSample> getSamples() {
         return ImmutableBiMap.copyOf(samples);
+    }
+
+    /**
+     * Loads an ACAQRun from a folder
+     * @param folder
+     * @return
+     */
+    public static ACAQRun loadFromFolder(Path folder) throws IOException {
+        Path parameterFile = folder.resolve("parameters.json");
+        ACAQProject project = ACAQProject.loadProject(parameterFile);
+        ACAQRun run = new ACAQRun(project);
+        run.outputPath = folder;
+        run.prepare();
+        return run;
     }
 
     public static class Status {

@@ -35,7 +35,7 @@ public class ACAQDefaultDataSlotResultUI extends ACAQResultDataSlotUI<ACAQDataSl
             add(mainActionButton);
         }
         if(registeredSlotActions.size() > 1) {
-            JButton menuButton = new JButton(UIUtils.getIconFromResources("magic.png"));
+            JButton menuButton = new JButton("...");
             menuButton.setToolTipText("More actions ...");
             JPopupMenu menu = UIUtils.addPopupMenuToComponent(menuButton);
             for(int i = 0; i < registeredSlotActions.size() - 1; ++i) {

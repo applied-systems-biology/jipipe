@@ -29,7 +29,7 @@ public class ACAQAddSamplesDialog extends JDialog implements WindowListener {
     private JTextArea samplesInput;
 
     public ACAQAddSamplesDialog(ACAQWorkbenchUI workbenchUI) {
-        super(workbenchUI);
+        super(workbenchUI.getWindow());
         this.workbenchUI = workbenchUI;
         initialize();
         addWindowListener(this);
