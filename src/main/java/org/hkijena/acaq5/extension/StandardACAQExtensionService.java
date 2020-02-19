@@ -42,16 +42,16 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
         // Register data types
         registryService.getDatatypeRegistry().register(ACAQGreyscaleImageData.class, ACAQGreyscaleImageDataSlot.class);
         registryService.getUIDatatypeRegistry().registerIcon(ACAQGreyscaleImageData.class,
-                ResourceUtils.getPluginResource("icons/data-type-greyscale.png"));
+                ResourceUtils.getPluginResource("icons/data-types/greyscale.png"));
         registryService.getDatatypeRegistry().register(ACAQMaskData.class, ACAQMaskDataSlot.class);
         registryService.getUIDatatypeRegistry().registerIcon(ACAQMaskData.class,
-                ResourceUtils.getPluginResource("icons/data-type-binary.png"));
+                ResourceUtils.getPluginResource("icons/data-types/binary.png"));
         registryService.getDatatypeRegistry().register(ACAQROIData.class, ACAQROIDataSlot.class);
         registryService.getUIDatatypeRegistry().registerIcon(ACAQROIData.class,
-                ResourceUtils.getPluginResource("icons/data-type-roi.png"));
+                ResourceUtils.getPluginResource("icons/data-types/roi.png"));
         registryService.getDatatypeRegistry().register(ACAQMultichannelImageData.class, ACAQMultichannelImageDataSlot.class);
         registryService.getUIDatatypeRegistry().registerIcon(ACAQMultichannelImageData.class,
-                ResourceUtils.getPluginResource("icons/data-type-multichannel.png"));
+                ResourceUtils.getPluginResource("icons/data-types/multichannel.png"));
 
         // Register algorithms
         registryService.getAlgorithmRegistry().register(MaskToParticleConverter.class);

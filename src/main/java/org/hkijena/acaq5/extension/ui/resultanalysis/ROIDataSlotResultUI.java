@@ -41,7 +41,7 @@ public class ROIDataSlotResultUI extends ACAQDefaultDataSlotResultUI {
 
         Path roiFile = findROIFile();
         if (roiFile != null) {
-            registerAction("Import into current image", UIUtils.getIconFromResources("data-type-roi.png"), e -> {
+            registerAction("Import into current image", UIUtils.getIconFromResources("data-types/roi.png"), e -> {
                 importROI(roiFile);
             });
         }

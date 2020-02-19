@@ -2,8 +2,10 @@ package org.hkijena.acaq5;
 
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
+import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.ui.registries.ACAQUIParametertypeRegistry;
+import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
 import org.scijava.InstantiableException;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
@@ -23,8 +25,10 @@ public class ACAQRegistryService extends AbstractService implements ACAQService 
 
     private ACAQAlgorithmRegistry algorithmRegistry = new ACAQAlgorithmRegistry();
     private ACAQDatatypeRegistry datatypeRegistry = new ACAQDatatypeRegistry();
+    private ACAQTraitRegistry traitRegistry = new ACAQTraitRegistry();
     private ACAQUIDatatypeRegistry uiDatatypeRegistry = new ACAQUIDatatypeRegistry();
     private ACAQUIParametertypeRegistry uiParametertypeRegistry = new ACAQUIParametertypeRegistry();
+    private ACAQUITraitRegistry acaquiTraitRegistry = new ACAQUITraitRegistry();
 
     /**
      * Instantiates the plugin service. This is done within {@link ACAQCommand}
@@ -70,7 +74,18 @@ public class ACAQRegistryService extends AbstractService implements ACAQService 
         return uiDatatypeRegistry;
     }
 
+    @Override
     public ACAQUIParametertypeRegistry getUIParametertypeRegistry() {
         return uiParametertypeRegistry;
+    }
+
+    @Override
+    public ACAQTraitRegistry getTraitRegistry() {
+        return traitRegistry;
+    }
+
+    @Override
+    public ACAQUITraitRegistry getUITraitRegistry() {
+        return acaquiTraitRegistry;
     }
 }

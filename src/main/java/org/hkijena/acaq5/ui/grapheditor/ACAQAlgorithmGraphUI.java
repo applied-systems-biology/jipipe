@@ -81,7 +81,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
         menuBar.add(addEnhancerMenu);
 
         JMenu addSegmenterMenu = new JMenu("Segment");
-        addSegmenterMenu.setIcon(UIUtils.getIconFromResources("data-type-binary.png"));
+        addSegmenterMenu.setIcon(UIUtils.getIconFromResources("data-types/binary.png"));
         initializeMenuForCategory(addSegmenterMenu, ACAQAlgorithmCategory.Segmenter);
         menuBar.add(addSegmenterMenu);
 

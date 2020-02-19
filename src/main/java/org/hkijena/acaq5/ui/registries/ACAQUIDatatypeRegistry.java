@@ -46,7 +46,7 @@ public class ACAQUIDatatypeRegistry {
      * @return
      */
     public ImageIcon getIconFor(Class<? extends ACAQData> klass) {
-        URL uri = icons.getOrDefault(klass, ResourceUtils.getPluginResource("icons/data-type-unknown.png"));
+        URL uri = icons.getOrDefault(klass, ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
         return new ImageIcon(uri);
     }
 
