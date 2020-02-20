@@ -29,9 +29,6 @@ public class HessianImageEnhancer extends ACAQSimpleAlgorithm<ACAQGreyscaleImage
     public HessianImageEnhancer() {
         super("Input image", ACAQGreyscaleImageDataSlot.class,
                "Output image", ACAQMaskDataSlot.class);
-
-        // Configure traits
-        getTraitConfiguration().transferFromAllToAll();
     }
 
     public HessianImageEnhancer(HessianImageEnhancer other) {

@@ -39,11 +39,6 @@ public class CLAHEImageEnhancer extends ACAQSimpleAlgorithm<ACAQGreyscaleImageDa
     public CLAHEImageEnhancer() {
         super("Input image", ACAQGreyscaleImageDataSlot.class,
                 "Output image", ACAQGreyscaleImageDataSlot.class);
-        // Configure traits
-        getTraitConfiguration()
-                .transferFromAllToAll()
-                .removesTrait(LowBrightnessQuality.class)
-                .removesTrait(NonUniformBrightnessQuality.class);
     }
 
     public CLAHEImageEnhancer(CLAHEImageEnhancer other) {

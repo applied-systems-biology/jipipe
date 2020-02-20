@@ -12,6 +12,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
+import org.hkijena.acaq5.api.events.TraitsChangedEvent;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.cycle.CycleDetector;
 import org.jgrapht.graph.DefaultDirectedGraph;
@@ -24,7 +25,6 @@ import org.jgrapht.traverse.TopologicalOrderIterator;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Manages multiple {@link ACAQAlgorithm} instances as graph
@@ -36,6 +36,7 @@ public class ACAQAlgorithmGraph {
     private DefaultDirectedGraph<ACAQDataSlot<?>, DefaultEdge> graph = new DefaultDirectedGraph<>(DefaultEdge.class);
     private BiMap<String, ACAQAlgorithm> algorithms = HashBiMap.create();
     private EventBus eventBus = new EventBus();
+    private  Map<ACAQDataSlot<?>, Set<Class<? extends ACAQTrait>>> algorithmTraits;
 
     public ACAQAlgorithmGraph() {
 
@@ -71,6 +72,7 @@ public class ACAQAlgorithmGraph {
             throw new RuntimeException("Already contains algorithm with name " + key);
         algorithms.put(key, algorithm);
         algorithm.getEventBus().register(this);
+        algorithm.getTraitConfiguration().getEventBus().register(this);
         repairGraph();
     }
 
@@ -95,6 +97,7 @@ public class ACAQAlgorithmGraph {
     public void removeNode(ACAQAlgorithm algorithm) {
         algorithms.remove(algorithms.inverse().get(algorithm));
         algorithm.getEventBus().unregister(this);
+        algorithm.getTraitConfiguration().getEventBus().unregister(this);
         for(ACAQDataSlot<?> slot : algorithm.getInputSlots()) {
             graph.removeVertex(slot);
         }
@@ -304,6 +307,12 @@ public class ACAQAlgorithmGraph {
         repairGraph();
     }
 
+    @Subscribe
+    public void onTraitsChanged(TraitsChangedEvent event) {
+        algorithmTraits = null;
+        eventBus.post(new AlgorithmGraphChangedEvent(this));
+    }
+
     public EventBus getEventBus() {
         return eventBus;
     }
@@ -336,32 +345,35 @@ public class ACAQAlgorithmGraph {
      * Calculates the traits of each data slot
      * @return
      */
-    public Map<ACAQDataSlot<?>, Set<Class<? extends ACAQTrait>>> getTraits() {
-        Map<ACAQDataSlot<?>, Set<Class<? extends ACAQTrait>>> result = new HashMap<>();
-        for(ACAQDataSlot<?> slot : graph.vertexSet()) {
-            result.put(slot, new HashSet<>());
-        }
-        for(ACAQDataSlot<?> slot : traverse()) {
-            Set<Class<? extends ACAQTrait>> traits = result.get(slot);
-            if(slot.isInput()) {
-                DefaultEdge incomingEdge = graph.incomingEdgesOf(slot).stream().findFirst().orElse(null);
-                if(incomingEdge != null) {
-                    ACAQDataSlot<?> source = graph.getEdgeSource(incomingEdge);
-                    result.put(slot, result.get(source)); // Copy the traits from source
+    public Map<ACAQDataSlot<?>, Set<Class<? extends ACAQTrait>>> getAlgorithmTraits() {
+        if(algorithmTraits == null) {
+            algorithmTraits = new HashMap<>();
+            for(ACAQDataSlot<?> slot : graph.vertexSet()) {
+                algorithmTraits.put(slot, new HashSet<>());
+            }
+            for(ACAQDataSlot<?> slot : traverse()) {
+                Set<Class<? extends ACAQTrait>> traits = algorithmTraits.get(slot);
+                if(slot.isInput()) {
+                    DefaultEdge incomingEdge = graph.incomingEdgesOf(slot).stream().findFirst().orElse(null);
+                    if(incomingEdge != null) {
+                        ACAQDataSlot<?> source = graph.getEdgeSource(incomingEdge);
+                        algorithmTraits.put(slot, algorithmTraits.get(source)); // Copy the traits from source
+                    }
+                }
+                else if(slot.isOutput()) {
+                    // First apply an algorithm-internal transfer operation
+                    for(ACAQDataSlot<?> sourceSlot : slot.getAlgorithm().getInputSlots()) {
+                        slot.getAlgorithm().getTraitConfiguration().transfer(sourceSlot.getName(),
+                                algorithmTraits.get(sourceSlot),
+                                slot.getName(),
+                                traits);
+                    }
+                    slot.getAlgorithm().getTraitConfiguration().modify(slot.getName(), traits);
                 }
             }
-            else if(slot.isOutput()) {
-                // First apply an algorithm-internal transfer operation
-                for(ACAQDataSlot<?> sourceSlot : slot.getAlgorithm().getInputSlots()) {
-                    slot.getAlgorithm().getTraitConfiguration().transfer(sourceSlot.getName(),
-                            result.get(sourceSlot),
-                            slot.getName(),
-                            traits);
-                }
-                slot.getAlgorithm().getTraitConfiguration().modify(slot.getName(), traits);
-            }
         }
-        return result;
+
+        return algorithmTraits;
     }
 
     public void fromJson(JsonNode node) {

@@ -38,7 +38,7 @@ public abstract class ACAQAlgorithm {
     }
 
     public ACAQAlgorithm(ACAQSlotConfiguration slotConfiguration) {
-        this(slotConfiguration, new ACAQTraitConfiguration(slotConfiguration));
+        this(slotConfiguration, new ACAQMutableTraitConfiguration(slotConfiguration));
     }
 
     public ACAQAlgorithm(ACAQAlgorithm other) {
@@ -80,19 +80,21 @@ public abstract class ACAQAlgorithm {
      * This includes applying annotation-based trait assignments
      */
     protected void initializeTraits() {
+        if (getTraitConfiguration() instanceof ACAQMutableTraitConfiguration) {
+            ACAQMutableTraitConfiguration traitConfiguration = (ACAQMutableTraitConfiguration) getTraitConfiguration();
+            // Annotation-based trait configuration
+            if (getClass().getAnnotationsByType(AutoTransferTraits.class).length > 0) {
+                traitConfiguration.transferFromAllToAll();
+            }
+            for (AddsTrait trait : getClass().getAnnotationsByType(AddsTrait.class)) {
+                traitConfiguration.addsTrait(trait.value());
+            }
+            for (RemovesTrait trait : getClass().getAnnotationsByType(RemovesTrait.class)) {
+                traitConfiguration.removesTrait(trait.value());
+            }
 
-        // Annotation-based trait configuration
-        if(getClass().getAnnotationsByType(AutoTransferTraits.class).length > 0) {
-            getTraitConfiguration().transferFromAllToAll();
+            // TODO: Registry-based trait configuration
         }
-        for(AddsTrait trait : getClass().getAnnotationsByType(AddsTrait.class)) {
-            getTraitConfiguration().addsTrait(trait.value());
-        }
-        for(RemovesTrait trait : getClass().getAnnotationsByType(RemovesTrait.class)) {
-            getTraitConfiguration().removesTrait(trait.value());
-        }
-
-        // TODO: Registry-based trait configuration
     }
 
     public abstract void run();

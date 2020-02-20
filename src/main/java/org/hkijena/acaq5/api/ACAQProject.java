@@ -31,11 +31,11 @@ public class ACAQProject {
     private BiMap<String, ACAQProjectSample> samples = HashBiMap.create();
     private ACAQMutableSlotConfiguration preprocessingOutputConfiguration = ACAQMutableSlotConfiguration.builder().withoutOutput().build();
     private ACAQMutableSlotConfiguration analysisOutputConfiguration = ACAQMutableSlotConfiguration.builder().withoutOutput().build();
-    private ACAQTraitConfiguration preprocessingTraitConfiguration;
+    private ACAQMutableTraitConfiguration preprocessingTraitConfiguration;
     private ACAQAlgorithmGraph analysis = new ACAQAlgorithmGraph();
 
     public ACAQProject() {
-        preprocessingTraitConfiguration = new ACAQTraitConfiguration(preprocessingOutputConfiguration);
+        preprocessingTraitConfiguration = new ACAQMutableTraitConfiguration(preprocessingOutputConfiguration);
         analysis.insertNode(new ACAQPreprocessingOutput(new ACAQInputAsOutputSlotConfiguration(preprocessingOutputConfiguration), preprocessingTraitConfiguration));
     }
 
@@ -111,7 +111,7 @@ public class ACAQProject {
         eventBus.post(new ACAQSampleAddedEvent(copy));
     }
 
-    public ACAQTraitConfiguration getPreprocessingTraitConfiguration() {
+    public ACAQMutableTraitConfiguration getPreprocessingTraitConfiguration() {
         return preprocessingTraitConfiguration;
     }
 
