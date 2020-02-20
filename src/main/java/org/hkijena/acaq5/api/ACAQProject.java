@@ -31,10 +31,12 @@ public class ACAQProject {
     private BiMap<String, ACAQProjectSample> samples = HashBiMap.create();
     private ACAQMutableSlotConfiguration preprocessingOutputConfiguration = ACAQMutableSlotConfiguration.builder().withoutOutput().build();
     private ACAQMutableSlotConfiguration analysisOutputConfiguration = ACAQMutableSlotConfiguration.builder().withoutOutput().build();
+    private ACAQTraitConfiguration preprocessingTraitConfiguration;
     private ACAQAlgorithmGraph analysis = new ACAQAlgorithmGraph();
 
     public ACAQProject() {
-        analysis.insertNode(new ACAQPreprocessingOutput(new ACAQInputAsOutputSlotConfiguration(preprocessingOutputConfiguration)));
+        preprocessingTraitConfiguration = new ACAQTraitConfiguration(preprocessingOutputConfiguration);
+        analysis.insertNode(new ACAQPreprocessingOutput(new ACAQInputAsOutputSlotConfiguration(preprocessingOutputConfiguration), preprocessingTraitConfiguration));
     }
 
     public EventBus getEventBus() {
@@ -107,6 +109,10 @@ public class ACAQProject {
         ACAQProjectSample copy =  new ACAQProjectSample(original);
         samples.put(newSampleName, copy);
         eventBus.post(new ACAQSampleAddedEvent(copy));
+    }
+
+    public ACAQTraitConfiguration getPreprocessingTraitConfiguration() {
+        return preprocessingTraitConfiguration;
     }
 
     public static class Serializer extends JsonSerializer<ACAQProject> {

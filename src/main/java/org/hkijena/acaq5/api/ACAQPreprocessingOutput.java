@@ -1,15 +1,24 @@
 package org.hkijena.acaq5.api;
 
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * An internal node that interfaces sample-specific processing with the analysis
+ * The preprocessing output exists both in sample graphs (with a {@link ACAQMutableSlotConfiguration} slot configuration)
+ * and in the analysis project graph (with a {@link ACAQInputAsOutputSlotConfiguration}).
+ * The preprocessing output does not pass traits like other algorithms, but instead generates traits from an
+ * {@link ACAQTraitConfiguration} that is global for each project.
+ *
+ * Note: This node is not designed to be carried into an {@link ACAQRun} and should not be registered. It should be
+ * only added by the project logic.
+ */
 @ACAQDocumentation(name="Preprocessing output")
 @ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Internal)
 public class ACAQPreprocessingOutput extends ACAQAlgorithm {
 
-    public ACAQPreprocessingOutput(ACAQSlotConfiguration slotConfiguration) {
-        super(slotConfiguration);
-    }
-
-    public ACAQPreprocessingOutput(ACAQPreprocessingOutput other) {
-        super(other.getSlotConfiguration());
+    public ACAQPreprocessingOutput(ACAQSlotConfiguration slotConfiguration, ACAQTraitConfiguration traitConfiguration) {
+        super(slotConfiguration, traitConfiguration);
     }
 
     @Override

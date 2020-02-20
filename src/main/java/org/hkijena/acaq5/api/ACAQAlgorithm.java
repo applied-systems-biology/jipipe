@@ -22,15 +22,21 @@ import java.util.List;
 @JsonSerialize(using = ACAQAlgorithm.Serializer.class)
 public abstract class ACAQAlgorithm {
     private ACAQSlotConfiguration slotConfiguration;
+    private ACAQTraitConfiguration traitConfiguration;
     private Map<String, ACAQDataSlot<?>> slots = new HashMap<>();
     private EventBus eventBus = new EventBus();
     private Point location;
     private Path storagePath;
 
-    public ACAQAlgorithm(ACAQSlotConfiguration slotConfiguration) {
+    public ACAQAlgorithm(ACAQSlotConfiguration slotConfiguration, ACAQTraitConfiguration traitConfiguration) {
        this.slotConfiguration = slotConfiguration;
+       this.traitConfiguration = traitConfiguration;
        slotConfiguration.getEventBus().register(this);
        initalize();
+    }
+
+    public ACAQAlgorithm(ACAQSlotConfiguration slotConfiguration) {
+        this(slotConfiguration, new ACAQTraitConfiguration(slotConfiguration));
     }
 
     public ACAQAlgorithm(ACAQAlgorithm other) {
@@ -222,6 +228,10 @@ public abstract class ACAQAlgorithm {
 
     public void setStoragePath(Path storagePath) {
         this.storagePath = storagePath;
+    }
+
+    public ACAQTraitConfiguration getTraitConfiguration() {
+        return traitConfiguration;
     }
 
     public static class Serializer extends JsonSerializer<ACAQAlgorithm> {

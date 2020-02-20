@@ -316,6 +316,10 @@ public class ACAQAlgorithmGraph {
         return algorithms.containsValue(algorithm);
     }
 
+    /**
+     * Returns all edges as set of edges
+     * @return
+     */
     public Set<Map.Entry<ACAQDataSlot<?>, ACAQDataSlot<?>>> getSlotEdges() {
         Set<Map.Entry<ACAQDataSlot<?>, ACAQDataSlot<?>>> result = new HashSet<>();
         for(DefaultEdge edge : graph.edgeSet()) {
@@ -324,6 +328,38 @@ public class ACAQAlgorithmGraph {
             if(source.getAlgorithm() == target.getAlgorithm())
                 continue;
             result.add(new AbstractMap.SimpleImmutableEntry<>(source, target));
+        }
+        return result;
+    }
+
+    /**
+     * Calculates the traits of each data slot
+     * @return
+     */
+    public Map<ACAQDataSlot<?>, Set<Class<? extends ACAQTrait>>> getTraits() {
+        Map<ACAQDataSlot<?>, Set<Class<? extends ACAQTrait>>> result = new HashMap<>();
+        for(ACAQDataSlot<?> slot : graph.vertexSet()) {
+            result.put(slot, new HashSet<>());
+        }
+        for(ACAQDataSlot<?> slot : traverse()) {
+            Set<Class<? extends ACAQTrait>> traits = result.get(slot);
+            if(slot.isInput()) {
+                DefaultEdge incomingEdge = graph.incomingEdgesOf(slot).stream().findFirst().orElse(null);
+                if(incomingEdge != null) {
+                    ACAQDataSlot<?> source = graph.getEdgeSource(incomingEdge);
+                    result.put(slot, result.get(source)); // Copy the traits from source
+                }
+            }
+            else if(slot.isOutput()) {
+                // First apply an algorithm-internal transfer operation
+                for(ACAQDataSlot<?> sourceSlot : slot.getAlgorithm().getInputSlots()) {
+                    slot.getAlgorithm().getTraitConfiguration().transfer(sourceSlot.getName(),
+                            result.get(sourceSlot),
+                            slot.getName(),
+                            traits);
+                }
+                slot.getAlgorithm().getTraitConfiguration().modify(slot.getName(), traits);
+            }
         }
         return result;
     }

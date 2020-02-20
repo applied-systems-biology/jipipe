@@ -1,10 +1,8 @@
 package org.hkijena.acaq5.api;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.io.IOException;
@@ -27,7 +25,8 @@ public class ACAQProjectSample implements Comparable<ACAQProjectSample> {
     }
 
     private void initializePreprocessingGraph() {
-        preprocessingGraph.insertNode(new ACAQPreprocessingOutput(getProject().getPreprocessingOutputConfiguration()));
+        preprocessingGraph.insertNode(new ACAQPreprocessingOutput(getProject().getPreprocessingOutputConfiguration(),
+                project.getPreprocessingTraitConfiguration()));
     }
 
     public ACAQProject getProject() {
