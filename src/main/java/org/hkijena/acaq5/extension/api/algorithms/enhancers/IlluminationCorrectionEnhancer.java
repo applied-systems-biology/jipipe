@@ -3,13 +3,18 @@ package org.hkijena.acaq5.extension.api.algorithms.enhancers;
 import ij.ImagePlus;
 import ij.plugin.ImageCalculator;
 import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.traits.GoodForTrait;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
+import org.hkijena.acaq5.extension.api.traits.NonUniformBrightnessQuality;
+import org.hkijena.acaq5.extension.api.traits.bioobject.UnlabeledBioObjects;
 import org.hkijena.acaq5.utils.ImageJUtils;
 import org.hkijena.acaq5.utils.MacroSetting;
 
 @ACAQDocumentation(name = "Illumination correction enhancer")
 @ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
+@GoodForTrait(UnlabeledBioObjects.class)
+@GoodForTrait(NonUniformBrightnessQuality.class)
 public class IlluminationCorrectionEnhancer extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQGreyscaleImageData> {
 
     private int gaussianSigma = 21;

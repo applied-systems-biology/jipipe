@@ -5,14 +5,17 @@ import ij.plugin.filter.BackgroundSubtracter;
 import ij.plugin.filter.Binary;
 import ij.plugin.filter.GaussianBlur;
 import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.traits.BadForTrait;
+import org.hkijena.acaq5.api.traits.GoodForTrait;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
+import org.hkijena.acaq5.extension.api.traits.NonUniformBrightnessQuality;
 
-// TODO: Suggest CLAHE
 @ACAQDocumentation(name = "Bright spots segmentation")
 @ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
+@BadForTrait(NonUniformBrightnessQuality.class)
 public class BrightSpotsSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQMaskData> {
 
     private int rollingBallRadius = 20;

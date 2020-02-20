@@ -4,14 +4,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ij.ImagePlus;
 import mpicbg.ij.clahe.Flat;
 import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.traits.GoodForTrait;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
+import org.hkijena.acaq5.extension.api.traits.LowBrightnessQuality;
+import org.hkijena.acaq5.extension.api.traits.NonUniformBrightnessQuality;
+import org.hkijena.acaq5.extension.api.traits.bioobject.LabeledBioObjects;
 
 import java.io.File;
 import java.io.IOException;
 
 @ACAQDocumentation(name = "CLAHE enhancer")
 @ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
+@GoodForTrait(LabeledBioObjects.class)
+@GoodForTrait(LowBrightnessQuality.class)
+@GoodForTrait(NonUniformBrightnessQuality.class)
 public class CLAHEImageEnhancer extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData,
         ACAQGreyscaleImageData> {
 

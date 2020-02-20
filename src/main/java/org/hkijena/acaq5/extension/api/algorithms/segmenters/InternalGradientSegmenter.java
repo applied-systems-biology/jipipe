@@ -6,15 +6,18 @@ import ij.plugin.filter.Binary;
 import ij.plugin.filter.GaussianBlur;
 import ij.plugin.filter.RankFilters;
 import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.traits.GoodForTrait;
 import org.hkijena.acaq5.extension.api.algorithms.enhancers.CLAHEImageEnhancer;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
+import org.hkijena.acaq5.extension.api.traits.bioobject.MembraneLabeledBioObjects;
 import org.hkijena.acaq5.utils.ImageJUtils;
 
 @ACAQDocumentation(name = "Internal gradient segmentation")
 @ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
+@GoodForTrait(MembraneLabeledBioObjects.class)
 public class InternalGradientSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQMaskData> {
 
     private double gaussSigma = 3;

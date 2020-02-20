@@ -5,10 +5,14 @@ import ij.Prefs;
 import ij.plugin.Thresholder;
 import ij.process.AutoThresholder;
 import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.traits.BadForTrait;
+import org.hkijena.acaq5.api.traits.GoodForTrait;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
+import org.hkijena.acaq5.extension.api.traits.NonUniformBrightnessQuality;
+import org.hkijena.acaq5.extension.api.traits.bioobject.LabeledBioObjects;
 import org.hkijena.acaq5.utils.ImageJUtils;
 
 /**
@@ -16,6 +20,8 @@ import org.hkijena.acaq5.utils.ImageJUtils;
  */
 @ACAQDocumentation(name = "Auto threshold segmentation")
 @ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
+@GoodForTrait(LabeledBioObjects.class)
+@BadForTrait(NonUniformBrightnessQuality.class)
 public class AutoThresholdSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQMaskData> {
 
     private AutoThresholder.Method method = AutoThresholder.Method.Default;

@@ -25,6 +25,9 @@ import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMultichannelImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQROIData;
+import org.hkijena.acaq5.extension.api.traits.LowBrightnessQuality;
+import org.hkijena.acaq5.extension.api.traits.NonUniformBrightnessQuality;
+import org.hkijena.acaq5.extension.api.traits.bioobject.*;
 import org.hkijena.acaq5.extension.ui.parametereditors.*;
 import org.hkijena.acaq5.extension.ui.resultanalysis.ImageDataSlotResultUI;
 import org.hkijena.acaq5.extension.ui.resultanalysis.ROIDataSlotResultUI;
@@ -39,31 +42,14 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
     @Override
     public void register(ACAQRegistryService registryService) {
 
+        // Register traits
+        registerTraits(registryService);
+
         // Register data types
-        registryService.getDatatypeRegistry().register(ACAQGreyscaleImageData.class, ACAQGreyscaleImageDataSlot.class);
-        registryService.getUIDatatypeRegistry().registerIcon(ACAQGreyscaleImageData.class,
-                ResourceUtils.getPluginResource("icons/data-types/greyscale.png"));
-        registryService.getDatatypeRegistry().register(ACAQMaskData.class, ACAQMaskDataSlot.class);
-        registryService.getUIDatatypeRegistry().registerIcon(ACAQMaskData.class,
-                ResourceUtils.getPluginResource("icons/data-types/binary.png"));
-        registryService.getDatatypeRegistry().register(ACAQROIData.class, ACAQROIDataSlot.class);
-        registryService.getUIDatatypeRegistry().registerIcon(ACAQROIData.class,
-                ResourceUtils.getPluginResource("icons/data-types/roi.png"));
-        registryService.getDatatypeRegistry().register(ACAQMultichannelImageData.class, ACAQMultichannelImageDataSlot.class);
-        registryService.getUIDatatypeRegistry().registerIcon(ACAQMultichannelImageData.class,
-                ResourceUtils.getPluginResource("icons/data-types/multichannel.png"));
+        registerDataTypes(registryService);
 
         // Register algorithms
-        registryService.getAlgorithmRegistry().register(MaskToParticleConverter.class);
-        registryService.getAlgorithmRegistry().register(CLAHEImageEnhancer.class);
-        registryService.getAlgorithmRegistry().register(IlluminationCorrectionEnhancer.class);
-        registryService.getAlgorithmRegistry().register(WatershedMaskEnhancer.class);
-        registryService.getAlgorithmRegistry().register(AutoThresholdSegmenter.class);
-        registryService.getAlgorithmRegistry().register(BrightSpotsSegmenter.class);
-        registryService.getAlgorithmRegistry().register(HoughSegmenter.class);
-        registryService.getAlgorithmRegistry().register(InternalGradientSegmenter.class);
-        registryService.getAlgorithmRegistry().register(MultiChannelSplitterConverter.class);
-        registryService.getAlgorithmRegistry().register(MergeROIEnhancer.class);
+        registerAlgorithms(registryService);
 
         // Register data sources
         registryService.getAlgorithmRegistry().register(ACAQGreyscaleImageDataFromFile.class);
@@ -84,5 +70,47 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
         registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQGreyscaleImageDataSlot.class, ImageDataSlotResultUI.class);
         registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQMaskDataSlot.class, ImageDataSlotResultUI.class);
         registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQROIDataSlot.class, ROIDataSlotResultUI.class);
+    }
+
+    private void registerTraits(ACAQRegistryService registryService) {
+        registryService.getTraitRegistry().register(LowBrightnessQuality.class);
+        registryService.getTraitRegistry().register(NonUniformBrightnessQuality.class);
+        registryService.getTraitRegistry().register(BioObjects.class);
+        registryService.getTraitRegistry().register(ClusterBioObjects.class);
+        registryService.getTraitRegistry().register(FilamentousBioObjects.class);
+        registryService.getTraitRegistry().register(LabeledBioObjects.class);
+        registryService.getTraitRegistry().register(MembraneLabeledBioObjects.class);
+        registryService.getTraitRegistry().register(RoundBioObjects.class);
+        registryService.getTraitRegistry().register(SingleBioObject.class);
+        registryService.getTraitRegistry().register(UniformlyLabeledBioObjects.class);
+        registryService.getTraitRegistry().register(UnlabeledBioObjects.class);
+    }
+
+    private void registerAlgorithms(ACAQRegistryService registryService) {
+        registryService.getAlgorithmRegistry().register(MaskToParticleConverter.class);
+        registryService.getAlgorithmRegistry().register(CLAHEImageEnhancer.class);
+        registryService.getAlgorithmRegistry().register(IlluminationCorrectionEnhancer.class);
+        registryService.getAlgorithmRegistry().register(WatershedMaskEnhancer.class);
+        registryService.getAlgorithmRegistry().register(AutoThresholdSegmenter.class);
+        registryService.getAlgorithmRegistry().register(BrightSpotsSegmenter.class);
+        registryService.getAlgorithmRegistry().register(HoughSegmenter.class);
+        registryService.getAlgorithmRegistry().register(InternalGradientSegmenter.class);
+        registryService.getAlgorithmRegistry().register(MultiChannelSplitterConverter.class);
+        registryService.getAlgorithmRegistry().register(MergeROIEnhancer.class);
+    }
+
+    private void registerDataTypes(ACAQRegistryService registryService) {
+        registryService.getDatatypeRegistry().register(ACAQGreyscaleImageData.class, ACAQGreyscaleImageDataSlot.class);
+        registryService.getUIDatatypeRegistry().registerIcon(ACAQGreyscaleImageData.class,
+                ResourceUtils.getPluginResource("icons/data-types/greyscale.png"));
+        registryService.getDatatypeRegistry().register(ACAQMaskData.class, ACAQMaskDataSlot.class);
+        registryService.getUIDatatypeRegistry().registerIcon(ACAQMaskData.class,
+                ResourceUtils.getPluginResource("icons/data-types/binary.png"));
+        registryService.getDatatypeRegistry().register(ACAQROIData.class, ACAQROIDataSlot.class);
+        registryService.getUIDatatypeRegistry().registerIcon(ACAQROIData.class,
+                ResourceUtils.getPluginResource("icons/data-types/roi.png"));
+        registryService.getDatatypeRegistry().register(ACAQMultichannelImageData.class, ACAQMultichannelImageDataSlot.class);
+        registryService.getUIDatatypeRegistry().registerIcon(ACAQMultichannelImageData.class,
+                ResourceUtils.getPluginResource("icons/data-types/multichannel.png"));
     }
 }
