@@ -63,7 +63,7 @@ public class ACAQWorkbenchWindow extends JFrame {
                     return;
                 window.projectSavePath = fileChooser.getSelectedFile().toPath();
                 window.getProjectUI().sendStatusBarText("Opened project from " + window.projectSavePath);
-                setTitle(window.projectSavePath.toString());
+                window.setTitle(window.projectSavePath.toString());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -82,7 +82,7 @@ public class ACAQWorkbenchWindow extends JFrame {
                     return;
                 window.projectSavePath = fileChooser.getSelectedFile().toPath().resolve("parameters.json");
                 window.getProjectUI().sendStatusBarText("Opened project from " + window.projectSavePath);
-                setTitle(window.projectSavePath.toString());
+                window.setTitle(window.projectSavePath.toString());
 
                 // Create a new tab
                 window.getProjectUI().getDocumentTabPane().addTab("Run",

@@ -307,6 +307,7 @@ public class ACAQAlgorithmGraph {
 
     @Subscribe
     public void onAlgorithmSlotsChanged(AlgorithmSlotsChangedEvent event) {
+        algorithmTraits = null;
         repairGraph();
     }
 
@@ -356,7 +357,10 @@ public class ACAQAlgorithmGraph {
             }
             for(ACAQDataSlot<?> slot : traverse()) {
                 Set<Class<? extends ACAQTrait>> traits = algorithmTraits.get(slot);
-                if(slot.isInput()) {
+                if(slot.getAlgorithm() instanceof ACAQPreprocessingOutput) {
+                    slot.getAlgorithm().getTraitConfiguration().modify(slot.getName(), traits);
+                }
+                else if(slot.isInput()) {
                     DefaultEdge incomingEdge = graph.incomingEdgesOf(slot).stream().findFirst().orElse(null);
                     if(incomingEdge != null) {
                         ACAQDataSlot<?> source = graph.getEdgeSource(incomingEdge);

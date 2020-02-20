@@ -30,6 +30,14 @@ import org.hkijena.acaq5.extension.api.traits.ImageQuality;
 import org.hkijena.acaq5.extension.api.traits.LowBrightnessQuality;
 import org.hkijena.acaq5.extension.api.traits.NonUniformBrightnessQuality;
 import org.hkijena.acaq5.extension.api.traits.bioobject.*;
+import org.hkijena.acaq5.extension.api.traits.bioobject.morphology.ClusterBioObjects;
+import org.hkijena.acaq5.extension.api.traits.bioobject.morphology.FilamentousBioObjects;
+import org.hkijena.acaq5.extension.api.traits.bioobject.morphology.RoundBioObjects;
+import org.hkijena.acaq5.extension.api.traits.bioobject.morphology.SingleBioObject;
+import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.LabeledBioObjects;
+import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.MembraneLabeledBioObjects;
+import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.UniformlyLabeledBioObjects;
+import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.UnlabeledBioObjects;
 import org.hkijena.acaq5.extension.ui.parametereditors.*;
 import org.hkijena.acaq5.extension.ui.resultanalysis.ImageDataSlotResultUI;
 import org.hkijena.acaq5.extension.ui.resultanalysis.ROIDataSlotResultUI;
@@ -75,19 +83,50 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
     }
 
     private void registerTraits(ACAQRegistryService registryService) {
-        registryService.getTraitRegistry().register(ImageQuality.class);
-        registryService.getTraitRegistry().register(BrightnessImageQuality.class);
+
         registryService.getTraitRegistry().register(LowBrightnessQuality.class);
+        registryService.getUITraitRegistry().registerIcon(LowBrightnessQuality.class,
+                ResourceUtils.getPluginResource("icons/traits/low-brightness.png"));
+
         registryService.getTraitRegistry().register(NonUniformBrightnessQuality.class);
+        registryService.getUITraitRegistry().registerIcon(NonUniformBrightnessQuality.class,
+                ResourceUtils.getPluginResource("icons/traits/non-uniform-brightness.png"));
+
         registryService.getTraitRegistry().register(BioObjects.class);
+        registryService.getUITraitRegistry().registerIcon(BioObjects.class,
+                ResourceUtils.getPluginResource("icons/traits/bioobject.png"));
+
         registryService.getTraitRegistry().register(ClusterBioObjects.class);
+        registryService.getUITraitRegistry().registerIcon(ClusterBioObjects.class,
+                ResourceUtils.getPluginResource("icons/traits/bioobject-cluster.png"));
+
         registryService.getTraitRegistry().register(FilamentousBioObjects.class);
+        registryService.getUITraitRegistry().registerIcon(FilamentousBioObjects.class,
+                ResourceUtils.getPluginResource("icons/traits/bioobject-filamentous.png"));
+
         registryService.getTraitRegistry().register(LabeledBioObjects.class);
+        registryService.getUITraitRegistry().registerIcon(LabeledBioObjects.class,
+                ResourceUtils.getPluginResource("icons/traits/bioobject-labeled.png"));
+
         registryService.getTraitRegistry().register(MembraneLabeledBioObjects.class);
+        registryService.getUITraitRegistry().registerIcon(MembraneLabeledBioObjects.class,
+                ResourceUtils.getPluginResource("icons/traits/bioobject-labeled-membrane.png"));
+
         registryService.getTraitRegistry().register(RoundBioObjects.class);
+        registryService.getUITraitRegistry().registerIcon(RoundBioObjects.class,
+                ResourceUtils.getPluginResource("icons/traits/bioobject-round.png"));
+
         registryService.getTraitRegistry().register(SingleBioObject.class);
+        registryService.getUITraitRegistry().registerIcon(SingleBioObject.class,
+                ResourceUtils.getPluginResource("icons/traits/bioobject.png"));
+
         registryService.getTraitRegistry().register(UniformlyLabeledBioObjects.class);
+        registryService.getUITraitRegistry().registerIcon(UniformlyLabeledBioObjects.class,
+                ResourceUtils.getPluginResource("icons/traits/bioobject-labeled-uniform.png"));
+
         registryService.getTraitRegistry().register(UnlabeledBioObjects.class);
+        registryService.getUITraitRegistry().registerIcon(UnlabeledBioObjects.class,
+                ResourceUtils.getPluginResource("icons/traits/bioobject-unlabeled.png"));
     }
 
     private void registerAlgorithms(ACAQRegistryService registryService) {

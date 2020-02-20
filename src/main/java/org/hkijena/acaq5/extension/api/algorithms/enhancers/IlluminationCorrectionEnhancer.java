@@ -13,7 +13,7 @@ import org.hkijena.acaq5.api.traits.RemovesTrait;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.traits.NonUniformBrightnessQuality;
-import org.hkijena.acaq5.extension.api.traits.bioobject.UnlabeledBioObjects;
+import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.UnlabeledBioObjects;
 import org.hkijena.acaq5.utils.ImageJUtils;
 import org.hkijena.acaq5.utils.MacroSetting;
 

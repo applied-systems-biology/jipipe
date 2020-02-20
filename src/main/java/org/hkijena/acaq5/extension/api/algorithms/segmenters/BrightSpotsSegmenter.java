@@ -10,6 +10,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.ACAQSimpleAlgorithm;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQSubAlgorithm;
+import org.hkijena.acaq5.api.traits.AddsTrait;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import org.hkijena.acaq5.api.traits.BadForTrait;
 import org.hkijena.acaq5.api.traits.RemovesTrait;
@@ -19,6 +20,8 @@ import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.traits.ImageQuality;
 import org.hkijena.acaq5.extension.api.traits.NonUniformBrightnessQuality;
+import org.hkijena.acaq5.extension.api.traits.bioobject.morphology.ClusterBioObjects;
+import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.BioObjectsPreparations;
 
 @ACAQDocumentation(name = "Bright spots segmentation")
 @ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
@@ -29,6 +32,8 @@ import org.hkijena.acaq5.extension.api.traits.NonUniformBrightnessQuality;
 // Trait configuration
 @AutoTransferTraits
 @RemovesTrait(ImageQuality.class)
+@RemovesTrait(BioObjectsPreparations.class)
+@AddsTrait(ClusterBioObjects.class)
 public class BrightSpotsSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQMaskData> {
 
     private int rollingBallRadius = 20;

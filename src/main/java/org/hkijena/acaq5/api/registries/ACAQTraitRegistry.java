@@ -2,6 +2,7 @@ package org.hkijena.acaq5.api.registries;
 
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,6 +14,11 @@ public class ACAQTraitRegistry {
     }
 
     public void register(Class<? extends ACAQTrait> klass) {
-        registeredTraits.add(klass);
+        if(!ACAQTrait.isHidden(klass))
+            registeredTraits.add(klass);
+    }
+
+    public Set<Class<? extends ACAQTrait>> getTraits() {
+        return Collections.unmodifiableSet(registeredTraits);
     }
 }

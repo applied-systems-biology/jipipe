@@ -9,17 +9,16 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.ACAQSimpleAlgorithm;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.traits.AutoTransferTraits;
-import org.hkijena.acaq5.api.traits.BadForTrait;
-import org.hkijena.acaq5.api.traits.GoodForTrait;
-import org.hkijena.acaq5.api.traits.RemovesTrait;
+import org.hkijena.acaq5.api.traits.*;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.traits.ImageQuality;
 import org.hkijena.acaq5.extension.api.traits.NonUniformBrightnessQuality;
-import org.hkijena.acaq5.extension.api.traits.bioobject.LabeledBioObjects;
+import org.hkijena.acaq5.extension.api.traits.bioobject.morphology.ClusterBioObjects;
+import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.BioObjectsPreparations;
+import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.LabeledBioObjects;
 import org.hkijena.acaq5.utils.ImageJUtils;
 
 /**
@@ -35,6 +34,8 @@ import org.hkijena.acaq5.utils.ImageJUtils;
 // Trait configuration
 @AutoTransferTraits
 @RemovesTrait(ImageQuality.class)
+@RemovesTrait(BioObjectsPreparations.class)
+@AddsTrait(ClusterBioObjects.class)
 public class AutoThresholdSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQMaskData> {
 
     private AutoThresholder.Method method = AutoThresholder.Method.Default;

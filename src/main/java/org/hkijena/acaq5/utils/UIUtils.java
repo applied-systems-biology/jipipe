@@ -164,6 +164,34 @@ public class UIUtils {
         return popupMenu;
     }
 
+    public static void addPopupPanelToComponent(AbstractButton target, JPanel panel) {
+        PopupFactory popupFactory = PopupFactory.getSharedInstance();
+
+        target.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                super.mouseClicked(mouseEvent);
+                Point l = target.getLocationOnScreen();
+                Popup popup = popupFactory.getPopup(target, panel, l.x, l.y + target.getHeight());
+                popup.show();
+            }
+        });
+        target.addActionListener(e -> {
+
+            if(MouseInfo.getPointerInfo().getLocation().x >= target.getLocationOnScreen().x
+                    && MouseInfo.getPointerInfo().getLocation().x <= target.getLocationOnScreen().x + target.getWidth()
+                    && MouseInfo.getPointerInfo().getLocation().y >= target.getLocationOnScreen().y
+                    && MouseInfo.getPointerInfo().getLocation().y <= target.getLocationOnScreen().y + target.getHeight()) {
+
+            }
+            else {
+                Point l = target.getLocationOnScreen();
+                Popup popup = popupFactory.getPopup(target, panel, l.x, l.y + target.getHeight());
+                popup.show();
+            }
+        });
+    }
+
     public static ImageIcon getIconFromResources(String iconName) {
         return new ImageIcon(ResourceUtils.getPluginResource("icons/" + iconName));
     }

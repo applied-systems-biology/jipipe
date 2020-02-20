@@ -18,7 +18,8 @@ import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.traits.ImageQuality;
-import org.hkijena.acaq5.extension.api.traits.bioobject.RoundBioObjects;
+import org.hkijena.acaq5.extension.api.traits.bioobject.morphology.RoundBioObjects;
+import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.BioObjectsPreparations;
 import org.hkijena.acaq5.utils.Hough_Circle;
 
 @ACAQDocumentation(name = "Hough segmentation")
@@ -30,6 +31,7 @@ import org.hkijena.acaq5.utils.Hough_Circle;
 // Trait configuration
 @AutoTransferTraits
 @RemovesTrait(ImageQuality.class)
+@RemovesTrait(BioObjectsPreparations.class)
 public class HoughSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQMaskData> {
 
     private int minRadius = 7;

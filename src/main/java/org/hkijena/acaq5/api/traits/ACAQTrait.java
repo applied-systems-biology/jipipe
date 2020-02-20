@@ -1,5 +1,7 @@
 package org.hkijena.acaq5.api.traits;
 
+import org.hkijena.acaq5.api.ACAQDocumentation;
+
 import java.util.Set;
 
 /**
@@ -8,4 +10,57 @@ import java.util.Set;
  * Algorithms can modify output traits by adding or removing them.
  */
 public interface ACAQTrait {
+
+    /**
+     * Returns the name of given trait
+     * @param klass
+     * @return
+     */
+    static String getNameOf(Class<? extends ACAQTrait> klass) {
+        ACAQDocumentation[] annotations = klass.getAnnotationsByType(ACAQDocumentation.class);
+        if(annotations.length > 0) {
+            return annotations[0].name();
+        }
+        else {
+            return klass.getSimpleName();
+        }
+    }
+
+    /**
+     * Returns the description of given trait
+     * @param klass
+     * @return
+     */
+    static String getDescriptionOf(Class<? extends ACAQTrait> klass) {
+        ACAQDocumentation[] annotations = klass.getAnnotationsByType(ACAQDocumentation.class);
+        if(annotations.length > 0) {
+            return annotations[0].description();
+        }
+        else {
+            return null;
+        }
+    }
+
+    /**
+     * Returns true if the trait is hidden from the user
+     * @param klass
+     * @return
+     */
+    static boolean isHidden(Class<? extends ACAQTrait> klass) {
+        return klass.getAnnotationsByType(HiddenTrait.class).length > 0;
+    }
+
+    static String getTooltipOf(Class<? extends ACAQTrait> klass) {
+        String name = getNameOf(klass);
+        String description = getDescriptionOf(klass);
+        StringBuilder builder = new StringBuilder();
+        builder.append("<html><strong>");
+        builder.append(name);
+        builder.append("</strong>");
+        if(description != null && !description.isEmpty()) {
+            builder.append("<br/>")
+                .append(description);
+        }
+        return builder.toString();
+    }
 }

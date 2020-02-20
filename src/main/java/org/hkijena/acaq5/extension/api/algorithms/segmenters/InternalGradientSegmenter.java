@@ -20,7 +20,8 @@ import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.traits.ImageQuality;
-import org.hkijena.acaq5.extension.api.traits.bioobject.MembraneLabeledBioObjects;
+import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.BioObjectsPreparations;
+import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.MembraneLabeledBioObjects;
 import org.hkijena.acaq5.utils.ImageJUtils;
 
 @ACAQDocumentation(name = "Internal gradient segmentation")
@@ -32,6 +33,7 @@ import org.hkijena.acaq5.utils.ImageJUtils;
 // Trait configuration
 @AutoTransferTraits
 @RemovesTrait(ImageQuality.class)
+@RemovesTrait(BioObjectsPreparations.class)
 public class InternalGradientSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQMaskData> {
 
     private double gaussSigma = 3;

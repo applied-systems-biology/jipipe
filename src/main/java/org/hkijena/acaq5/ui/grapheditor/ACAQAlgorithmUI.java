@@ -61,7 +61,7 @@ public class ACAQAlgorithmUI extends JPanel {
         JLabel nameLabel = new JLabel(ACAQAlgorithm.getNameOf(algorithm.getClass()));
         JButton openSettingsButton = new JButton(UIUtils.getIconFromResources("wrench.png"));
         UIUtils.makeFlat(openSettingsButton);
-        openSettingsButton.setPreferredSize(new Dimension(21,21));
+        openSettingsButton.setPreferredSize(new Dimension(25,25));
         openSettingsButton.addActionListener(e -> eventBus.post(new ACAQAlgorithmUIOpenSettingsRequested(this)));
 
         add(inputSlotPanel, new GridBagConstraints() {

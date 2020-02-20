@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
  */
 public class ACAQMutablePreprocessingTraitConfiguration extends ACAQTraitConfiguration {
     private List<ACAQMutableTraitConfiguration.ModifyTask> modifyTasks = new ArrayList<>();
-    private EventBus eventBus = new EventBus();
     private ACAQSlotConfiguration slotConfiguration;
 
     public ACAQMutablePreprocessingTraitConfiguration(ACAQSlotConfiguration slotConfiguration) {
@@ -29,10 +28,10 @@ public class ACAQMutablePreprocessingTraitConfiguration extends ACAQTraitConfigu
      * @return
      */
     public ACAQMutablePreprocessingTraitConfiguration addTraitTo(String outputSlotName, Class<? extends ACAQTrait> trait) {
-        if(getSlotConfiguration().getSlots().containsKey(outputSlotName))
+        if(!getSlotConfiguration().getSlots().containsKey(outputSlotName))
             throw new IllegalArgumentException("Slot must exist!");
         modifyTasks.add(new ACAQMutableTraitConfiguration.ModifyTask(outputSlotName, ACAQMutableTraitConfiguration.ModificationType.ADD, trait));
-        eventBus.post(new TraitsChangedEvent(this));
+        getEventBus().post(new TraitsChangedEvent(this));
         return this;
     }
 
@@ -43,10 +42,10 @@ public class ACAQMutablePreprocessingTraitConfiguration extends ACAQTraitConfigu
      * @return
      */
     public ACAQMutablePreprocessingTraitConfiguration removeTraitFrom(String outputSlotName, Class<? extends ACAQTrait> trait) {
-        if (getSlotConfiguration().getSlots().containsKey(outputSlotName))
+        if (!getSlotConfiguration().getSlots().containsKey(outputSlotName))
             throw new IllegalArgumentException("Slot must exist!");
         modifyTasks.removeIf(task -> task.getTrait().equals(trait));
-        eventBus.post(new TraitsChangedEvent(this));
+        getEventBus().post(new TraitsChangedEvent(this));
         return this;
     }
 
@@ -65,7 +64,7 @@ public class ACAQMutablePreprocessingTraitConfiguration extends ACAQTraitConfigu
      */
     public ACAQTraitConfiguration clear() {
         modifyTasks.clear();
-        eventBus.post(new TraitsChangedEvent(this));
+        getEventBus().post(new TraitsChangedEvent(this));
         return this;
     }
 

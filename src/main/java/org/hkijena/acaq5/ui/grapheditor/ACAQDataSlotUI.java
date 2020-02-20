@@ -2,6 +2,8 @@ package org.hkijena.acaq5.ui.grapheditor;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.api.ACAQPreprocessingOutput;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
@@ -115,11 +117,21 @@ public class ACAQDataSlotUI extends JPanel {
             add(assignButton, BorderLayout.WEST);
             nameLabel.setHorizontalAlignment(JLabel.LEFT);
             nameLabel.setHorizontalTextPosition(JLabel.RIGHT);
+
+            // For preprocessing output, also create traits per input
+            if(slot.getAlgorithm() instanceof ACAQPreprocessingOutput) {
+                ACAQDataSlotTraitUI traitUI = new ACAQDataSlotTraitUI(graph, slot);
+                add(traitUI, BorderLayout.EAST);
+            }
         }
         else if(slot.isOutput()) {
             add(assignButton, BorderLayout.EAST);
             nameLabel.setHorizontalAlignment(JLabel.RIGHT);
             nameLabel.setHorizontalTextPosition(JLabel.LEFT);
+
+            // Create trait UI
+            ACAQDataSlotTraitUI traitUI = new ACAQDataSlotTraitUI(graph, slot);
+            add(traitUI, BorderLayout.WEST);
         }
     }
 
