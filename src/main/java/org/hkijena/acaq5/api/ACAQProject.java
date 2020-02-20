@@ -31,11 +31,11 @@ public class ACAQProject {
     private BiMap<String, ACAQProjectSample> samples = HashBiMap.create();
     private ACAQMutableSlotConfiguration preprocessingOutputConfiguration = ACAQMutableSlotConfiguration.builder().withoutOutput().build();
     private ACAQMutableSlotConfiguration analysisOutputConfiguration = ACAQMutableSlotConfiguration.builder().withoutOutput().build();
-    private ACAQMutableTraitConfiguration preprocessingTraitConfiguration;
+    private ACAQMutablePreprocessingTraitConfiguration preprocessingTraitConfiguration;
     private ACAQAlgorithmGraph analysis = new ACAQAlgorithmGraph();
 
     public ACAQProject() {
-        preprocessingTraitConfiguration = new ACAQMutableTraitConfiguration(preprocessingOutputConfiguration);
+        preprocessingTraitConfiguration = new ACAQMutablePreprocessingTraitConfiguration(preprocessingOutputConfiguration);
         analysis.insertNode(new ACAQPreprocessingOutput(new ACAQInputAsOutputSlotConfiguration(preprocessingOutputConfiguration), preprocessingTraitConfiguration));
     }
 
@@ -53,6 +53,10 @@ public class ACAQProject {
 
     public ACAQMutableSlotConfiguration getAnalysisOutputConfiguration() {
         return analysisOutputConfiguration;
+    }
+
+    public ACAQMutablePreprocessingTraitConfiguration getPreprocessingTraitConfiguration() {
+        return preprocessingTraitConfiguration;
     }
 
     public BiMap<String, ACAQProjectSample> getSamples() {
@@ -109,10 +113,6 @@ public class ACAQProject {
         ACAQProjectSample copy =  new ACAQProjectSample(original);
         samples.put(newSampleName, copy);
         eventBus.post(new ACAQSampleAddedEvent(copy));
-    }
-
-    public ACAQMutableTraitConfiguration getPreprocessingTraitConfiguration() {
-        return preprocessingTraitConfiguration;
     }
 
     public static class Serializer extends JsonSerializer<ACAQProject> {

@@ -13,11 +13,9 @@ import java.util.Set;
  */
 public abstract class ACAQTraitConfiguration {
 
-    private final ACAQSlotConfiguration slotConfiguration;
     private EventBus eventBus = new EventBus();
 
-    public ACAQTraitConfiguration(ACAQSlotConfiguration slotConfiguration) {
-        this.slotConfiguration = slotConfiguration;
+    public ACAQTraitConfiguration() {
     }
 
     /**
@@ -37,10 +35,6 @@ public abstract class ACAQTraitConfiguration {
      * @param target Existing output slot traits
      */
     public abstract void modify(String slotName, Set<Class<? extends ACAQTrait>> target);
-
-    public ACAQSlotConfiguration getSlotConfiguration() {
-        return slotConfiguration;
-    }
 
     public EventBus getEventBus() {
         return eventBus;

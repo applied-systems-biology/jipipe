@@ -11,11 +11,12 @@ public class ACAQMutableTraitConfiguration extends ACAQTraitConfiguration {
     private List<ModifyTask> modifyTasks = new ArrayList<>();
     private List<TransferTask> transferTasks = new ArrayList<>();
     private EventBus eventBus = new EventBus();
+    private ACAQSlotConfiguration slotConfiguration;
 
     public ACAQMutableTraitConfiguration(ACAQSlotConfiguration slotConfiguration) {
-        super(slotConfiguration);
-    }
 
+        this.slotConfiguration = slotConfiguration;
+    }
 
     /**
      * Removes a trait from the specified output slot
@@ -23,7 +24,7 @@ public class ACAQMutableTraitConfiguration extends ACAQTraitConfiguration {
      * @param trait
      * @return
      */
-    public ACAQTraitConfiguration removesTraitFrom(String outputSlotName, Class<? extends ACAQTrait> trait) {
+    public ACAQMutableTraitConfiguration removesTraitFrom(String outputSlotName, Class<? extends ACAQTrait> trait) {
         if(getSlotConfiguration().getSlots().get(outputSlotName).getSlotType() != ACAQDataSlot.SlotType.Output)
             throw new IllegalArgumentException("Slot must be an output slot!");
         modifyTasks.add(new ModifyTask(outputSlotName, ModificationType.REMOVE, trait));
@@ -37,7 +38,7 @@ public class ACAQMutableTraitConfiguration extends ACAQTraitConfiguration {
      * @param trait
      * @return
      */
-    public ACAQTraitConfiguration addsTraitTo(String outputSlotName, Class<? extends ACAQTrait> trait) {
+    public ACAQMutableTraitConfiguration addsTraitTo(String outputSlotName, Class<? extends ACAQTrait> trait) {
         if(getSlotConfiguration().getSlots().get(outputSlotName).getSlotType() != ACAQDataSlot.SlotType.Output)
             throw new IllegalArgumentException("Slot must be an output slot!");
         modifyTasks.add(new ModifyTask(outputSlotName, ModificationType.ADD, trait));
@@ -50,7 +51,7 @@ public class ACAQMutableTraitConfiguration extends ACAQTraitConfiguration {
      * @param trait
      * @return
      */
-    public ACAQTraitConfiguration removesTrait(Class<? extends ACAQTrait> trait) {
+    public ACAQMutableTraitConfiguration removesTrait(Class<? extends ACAQTrait> trait) {
         modifyTasks.add(new ModifyTask(null, ModificationType.REMOVE, trait));
         eventBus.post(new TraitsChangedEvent(this));
         return this;
@@ -61,7 +62,7 @@ public class ACAQMutableTraitConfiguration extends ACAQTraitConfiguration {
      * @param trait
      * @return
      */
-    public ACAQTraitConfiguration addsTrait(Class<? extends ACAQTrait> trait) {
+    public ACAQMutableTraitConfiguration addsTrait(Class<? extends ACAQTrait> trait) {
         modifyTasks.add(new ModifyTask(null, ModificationType.ADD, trait));
         eventBus.post(new TraitsChangedEvent(this));
         return this;
@@ -73,7 +74,7 @@ public class ACAQMutableTraitConfiguration extends ACAQTraitConfiguration {
      * @param outputSlotName
      * @return
      */
-    public ACAQTraitConfiguration transferFromTo(String inputSlotName, String outputSlotName) {
+    public ACAQMutableTraitConfiguration transferFromTo(String inputSlotName, String outputSlotName) {
         if(getSlotConfiguration().getSlots().get(outputSlotName).getSlotType() != ACAQDataSlot.SlotType.Output)
             throw new IllegalArgumentException("Slot must be an output slot!");
         if(getSlotConfiguration().getSlots().get(inputSlotName).getSlotType() != ACAQDataSlot.SlotType.Input)
@@ -88,7 +89,7 @@ public class ACAQMutableTraitConfiguration extends ACAQTraitConfiguration {
      * @param outputSlotName
      * @return this
      */
-    public ACAQTraitConfiguration transferFromAllTo(String outputSlotName) {
+    public ACAQMutableTraitConfiguration transferFromAllTo(String outputSlotName) {
         if(getSlotConfiguration().getSlots().get(outputSlotName).getSlotType() != ACAQDataSlot.SlotType.Output)
             throw new IllegalArgumentException("Slot must be an output slot!");
         transferTasks.add(new TransferTask(null, outputSlotName));
@@ -99,7 +100,7 @@ public class ACAQMutableTraitConfiguration extends ACAQTraitConfiguration {
     /**
      * Transfers the union of input slot traits to all output slots
      */
-    public ACAQTraitConfiguration transferFromAllToAll() {
+    public ACAQMutableTraitConfiguration transferFromAllToAll() {
         transferTasks.clear();
         transferTasks.add(new TransferTask(null, null));
         eventBus.post(new TraitsChangedEvent(this));
@@ -109,7 +110,7 @@ public class ACAQMutableTraitConfiguration extends ACAQTraitConfiguration {
     /**
      * Removes all modifications and transfers
      */
-    public ACAQTraitConfiguration clear() {
+    public ACAQMutableTraitConfiguration clear() {
         modifyTasks.clear();
         transferTasks.clear();
         eventBus.post(new TraitsChangedEvent(this));
@@ -154,6 +155,10 @@ public class ACAQMutableTraitConfiguration extends ACAQTraitConfiguration {
                 }
             }
         }
+    }
+
+    public ACAQSlotConfiguration getSlotConfiguration() {
+        return slotConfiguration;
     }
 
     /**
