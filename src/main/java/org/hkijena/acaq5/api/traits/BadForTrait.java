@@ -1,7 +1,5 @@
 package org.hkijena.acaq5.api.traits;
 
-import org.hkijena.acaq5.api.ACAQTrait;
-
 import java.lang.annotation.*;
 
 /**

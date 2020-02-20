@@ -1,6 +1,8 @@
-package org.hkijena.acaq5.api;
+package org.hkijena.acaq5.api.traits;
 
 import com.google.common.eventbus.EventBus;
+import org.hkijena.acaq5.api.ACAQPreprocessingOutput;
+import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
 import org.hkijena.acaq5.api.events.TraitsChangedEvent;
 
 import java.util.ArrayList;

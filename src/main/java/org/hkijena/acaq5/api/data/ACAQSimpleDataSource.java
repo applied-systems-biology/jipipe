@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.api;
+package org.hkijena.acaq5.api.data;
 
 public abstract class ACAQSimpleDataSource<T extends ACAQData> extends ACAQDataSource<T> {
 

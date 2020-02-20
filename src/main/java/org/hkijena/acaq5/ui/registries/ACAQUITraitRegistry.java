@@ -1,15 +1,9 @@
 package org.hkijena.acaq5.ui.registries;
 
-import org.apache.commons.lang3.reflect.ConstructorUtils;
-import org.hkijena.acaq5.api.ACAQData;
-import org.hkijena.acaq5.api.ACAQDataSlot;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
-import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultDataSlotResultUI;
-import org.hkijena.acaq5.ui.resultanalysis.ACAQResultDataSlotUI;
+import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.utils.ResourceUtils;
 
 import javax.swing.*;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;

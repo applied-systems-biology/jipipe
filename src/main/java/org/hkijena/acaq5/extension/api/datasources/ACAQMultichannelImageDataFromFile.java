@@ -2,6 +2,11 @@ package org.hkijena.acaq5.extension.api.datasources;
 
 import ij.IJ;
 import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmMetadata;
+import org.hkijena.acaq5.api.data.ACAQGeneratesData;
+import org.hkijena.acaq5.api.data.ACAQSimpleDataSource;
+import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQMultichannelImageDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMultichannelImageData;
 
@@ -11,7 +16,7 @@ import java.nio.file.Path;
  * Loads greyscale data from a file via IJ.openFile()
  */
 @ACAQDocumentation(name = "Multichannel image from file")
-@ACAQGenerates(ACAQMultichannelImageData.class)
+@ACAQGeneratesData(ACAQMultichannelImageData.class)
 @ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
 public class ACAQMultichannelImageDataFromFile extends ACAQSimpleDataSource<ACAQMultichannelImageData> {
 

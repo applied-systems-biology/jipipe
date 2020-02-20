@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.api.registries;
 
-import org.hkijena.acaq5.api.ACAQTrait;
+import org.hkijena.acaq5.api.traits.ACAQTrait;
 
 import java.util.HashSet;
 import java.util.Set;

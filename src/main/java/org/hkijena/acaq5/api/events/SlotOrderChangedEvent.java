@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.api.events;
 
-import org.hkijena.acaq5.api.ACAQSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
 
 public class SlotOrderChangedEvent {
     private ACAQSlotConfiguration configuration;

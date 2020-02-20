@@ -1,5 +1,8 @@
 package org.hkijena.acaq5.api;
 
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.data.ACAQDataSlot;
+
 import java.util.*;
 
 public class ACAQRunSample {

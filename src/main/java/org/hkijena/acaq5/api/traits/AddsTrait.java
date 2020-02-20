@@ -1,12 +1,12 @@
 package org.hkijena.acaq5.api.traits;
 
-import org.hkijena.acaq5.api.ACAQTrait;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 
 import java.lang.annotation.*;
 
 /**
- * Annotates an {@link org.hkijena.acaq5.api.ACAQAlgorithm} to add given trait to all output slots
- * Attaching this annotation automatically runs addsTraits() in {@link org.hkijena.acaq5.api.ACAQTraitConfiguration}
+ * Annotates an {@link ACAQAlgorithm} to add given trait to all output slots
+ * Attaching this annotation automatically runs addsTraits() in {@link ACAQTraitConfiguration}
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.ui.grapheditor;
 
-import org.hkijena.acaq5.api.ACAQAlgorithm;
-import org.hkijena.acaq5.api.ACAQParameterAccess;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 
 import javax.swing.*;
 

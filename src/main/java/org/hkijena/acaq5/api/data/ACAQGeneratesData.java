@@ -1,12 +1,15 @@
-package org.hkijena.acaq5.api;
+package org.hkijena.acaq5.api.data;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Annotates a class that generates a data instance
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface ACAQAlgorithmMetadata {
-    ACAQAlgorithmCategory category();
+public @interface ACAQGeneratesData {
+    Class<?> value();
 }

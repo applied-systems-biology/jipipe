@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.api.events;
 
-import org.hkijena.acaq5.api.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 
 /**
  * Triggered when an algorithm's slots change

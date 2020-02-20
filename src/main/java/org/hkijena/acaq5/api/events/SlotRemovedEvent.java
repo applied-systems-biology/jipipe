@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.api.events;
 
-import org.hkijena.acaq5.api.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 
 public class SlotRemovedEvent {
     private ACAQMutableSlotConfiguration slotConfiguration;

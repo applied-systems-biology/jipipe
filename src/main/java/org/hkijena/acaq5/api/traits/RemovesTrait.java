@@ -1,12 +1,12 @@
 package org.hkijena.acaq5.api.traits;
 
-import org.hkijena.acaq5.api.ACAQTrait;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 
 import java.lang.annotation.*;
 
 /**
- * Annotates an {@link org.hkijena.acaq5.api.ACAQAlgorithm} to remove given trait from all output slots
- * Attaching this annotation automatically runs removesTraits() in {@link org.hkijena.acaq5.api.ACAQTraitConfiguration}
+ * Annotates an {@link ACAQAlgorithm} to remove given trait from all output slots
+ * Attaching this annotation automatically runs removesTraits() in {@link ACAQTraitConfiguration}
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

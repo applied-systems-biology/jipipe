@@ -1,7 +1,12 @@
 package org.hkijena.acaq5.api;
 
-import java.util.Map;
-import java.util.Set;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmMetadata;
+import org.hkijena.acaq5.api.data.ACAQInputAsOutputSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
+import org.hkijena.acaq5.api.traits.ACAQTraitConfiguration;
 
 /**
  * An internal node that interfaces sample-specific processing with the analysis

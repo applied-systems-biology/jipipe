@@ -1,4 +1,6 @@
-package org.hkijena.acaq5.api;
+package org.hkijena.acaq5.api.data;
+
+import org.hkijena.acaq5.api.ACAQDocumentation;
 
 import java.nio.file.Path;
 

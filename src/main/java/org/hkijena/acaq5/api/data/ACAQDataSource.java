@@ -1,4 +1,6 @@
-package org.hkijena.acaq5.api;
+package org.hkijena.acaq5.api.data;
+
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 
 /**
  * An {@link ACAQAlgorithm} that generates data. It has no input slots.

@@ -1,9 +1,7 @@
 package org.hkijena.acaq5.ui.grapheditor;
 
 import org.hkijena.acaq5.ACAQRegistryService;
-import org.hkijena.acaq5.api.ACAQDataSlot;
-import org.hkijena.acaq5.api.ACAQProjectSample;
-import org.hkijena.acaq5.utils.UIUtils;
+import org.hkijena.acaq5.api.data.ACAQDataSlot;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;

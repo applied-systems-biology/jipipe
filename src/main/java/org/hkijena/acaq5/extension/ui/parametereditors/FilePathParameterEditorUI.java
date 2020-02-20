@@ -1,12 +1,10 @@
 package org.hkijena.acaq5.extension.ui.parametereditors;
 
-import org.hkijena.acaq5.api.ACAQAlgorithm;
-import org.hkijena.acaq5.api.ACAQParameterAccess;
+import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.ui.components.FileSelection;
 import org.hkijena.acaq5.ui.grapheditor.ACAQParameterEditorUI;
 
 import java.awt.*;
-import java.nio.file.Path;
 
 public class FilePathParameterEditorUI extends ACAQParameterEditorUI {
 

@@ -2,7 +2,7 @@ package org.hkijena.acaq5.extension.ui.resultanalysis;
 
 import ij.IJ;
 import ij.ImagePlus;
-import org.hkijena.acaq5.api.ACAQDataSlot;
+import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultDataSlotResultUI;
 import org.hkijena.acaq5.utils.UIUtils;

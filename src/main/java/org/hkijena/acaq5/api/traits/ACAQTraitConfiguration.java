@@ -1,11 +1,8 @@
-package org.hkijena.acaq5.api;
+package org.hkijena.acaq5.api.traits;
 
 import com.google.common.eventbus.EventBus;
-import org.hkijena.acaq5.api.events.TraitsChangedEvent;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 /**

@@ -1,7 +1,11 @@
 package org.hkijena.acaq5.api.registries;
 
-import net.imagej.ops.Ops;
-import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmMetadata;
+import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.api.data.ACAQDataSource;
+import org.hkijena.acaq5.api.data.ACAQGeneratesData;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,7 +36,7 @@ public class ACAQAlgorithmRegistry {
     public <T extends ACAQData> Set<Class<? extends ACAQDataSource<T>>> getDataSourcesFor(Class<? extends T> dataClass) {
         Set<Class<? extends ACAQDataSource<T>>> result = new HashSet<>();
         for(Class<? extends ACAQAlgorithm> klass : registeredAlgorithms) {
-            ACAQGenerates[] annotations = klass.getAnnotationsByType(ACAQGenerates.class);
+            ACAQGeneratesData[] annotations = klass.getAnnotationsByType(ACAQGeneratesData.class);
             if(annotations.length > 0) {
                 if(Arrays.stream(annotations).anyMatch(annot -> annot.value() == dataClass))
                     result.add((Class<? extends ACAQDataSource<T>>) klass);

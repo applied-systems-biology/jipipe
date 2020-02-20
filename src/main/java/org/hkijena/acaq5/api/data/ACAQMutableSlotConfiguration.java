@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.api;
+package org.hkijena.acaq5.api.data;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;

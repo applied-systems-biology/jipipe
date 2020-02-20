@@ -1,10 +1,8 @@
 package org.hkijena.acaq5.extension.api.datatypes;
 
-import ij.IJ;
 import ij.gui.Roi;
 import ij.io.RoiEncoder;
-import ij.plugin.frame.RoiManager;
-import org.hkijena.acaq5.api.ACAQData;
+import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 
 import java.io.*;

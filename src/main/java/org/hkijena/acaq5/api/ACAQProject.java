@@ -11,9 +11,13 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.data.ACAQInputAsOutputSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.ACAQSampleAddedEvent;
 import org.hkijena.acaq5.api.events.ACAQSampleRemovedEvent;
 import org.hkijena.acaq5.api.events.ACAQSampleRenamedEvent;
+import org.hkijena.acaq5.api.traits.ACAQMutablePreprocessingTraitConfiguration;
 import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.io.IOException;
