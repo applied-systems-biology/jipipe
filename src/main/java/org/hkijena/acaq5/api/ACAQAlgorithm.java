@@ -10,6 +10,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.acaq5.api.events.*;
+import org.hkijena.acaq5.api.traits.*;
 import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.awt.*;
@@ -33,6 +34,7 @@ public abstract class ACAQAlgorithm {
        this.traitConfiguration = traitConfiguration;
        slotConfiguration.getEventBus().register(this);
        initalize();
+       initializeTraits();
     }
 
     public ACAQAlgorithm(ACAQSlotConfiguration slotConfiguration) {
@@ -44,6 +46,7 @@ public abstract class ACAQAlgorithm {
         this.location = other.location;
         slotConfiguration.getEventBus().register(this);
         initalize();
+        initializeTraits();
     }
 
     /**
@@ -72,6 +75,26 @@ public abstract class ACAQAlgorithm {
         }
     }
 
+    /**
+     * Initializes the trait configuration.
+     * This includes applying annotation-based trait assignments
+     */
+    protected void initializeTraits() {
+
+        // Annotation-based trait configuration
+        if(getClass().getAnnotationsByType(AutoTransferTraits.class).length > 0) {
+            getTraitConfiguration().transferFromAllToAll();
+        }
+        for(AddsTrait trait : getClass().getAnnotationsByType(AddsTrait.class)) {
+            getTraitConfiguration().addsTrait(trait.value());
+        }
+        for(RemovesTrait trait : getClass().getAnnotationsByType(RemovesTrait.class)) {
+            getTraitConfiguration().removesTrait(trait.value());
+        }
+
+        // TODO: Registry-based trait configuration
+    }
+
     public abstract void run();
 
     public EventBus getEventBus() {
@@ -84,6 +107,14 @@ public abstract class ACAQAlgorithm {
 
     public ACAQAlgorithmCategory getCategory() {
         return getCategoryOf(getClass());
+    }
+
+    Set<Class<? extends ACAQTrait>> getPreferredTraits() {
+        return getPreferredTraitsOf(getClass());
+    }
+
+    Set<Class<? extends ACAQTrait>> getUnwantedTraits() {
+        return getUnwantedTraitsOf(getClass());
     }
 
     /**
@@ -114,6 +145,32 @@ public abstract class ACAQAlgorithm {
         else {
             return ACAQAlgorithmCategory.Internal;
         }
+    }
+
+    /**
+     * Returns all traits marked as preferred by the algorithm
+     * @param klass
+     * @return
+     */
+    public static Set<Class<? extends ACAQTrait>> getPreferredTraitsOf(Class<? extends  ACAQAlgorithm> klass) {
+        Set<Class<? extends ACAQTrait>> result = new HashSet<>();
+        for(GoodForTrait trait : klass.getAnnotationsByType(GoodForTrait.class)) {
+            result.add(trait.value());
+        }
+        return result;
+    }
+
+    /**
+     * Returns all traits marked as unwanted by the algorithm
+     * @param klass
+     * @return
+     */
+    public static Set<Class<? extends ACAQTrait>> getUnwantedTraitsOf(Class<? extends  ACAQAlgorithm> klass) {
+        Set<Class<? extends ACAQTrait>> result = new HashSet<>();
+        for(BadForTrait trait : klass.getAnnotationsByType(BadForTrait.class)) {
+            result.add(trait.value());
+        }
+        return result;
     }
 
     public ACAQSlotConfiguration getSlotConfiguration() {

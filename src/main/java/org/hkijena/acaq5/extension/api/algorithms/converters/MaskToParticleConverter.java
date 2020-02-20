@@ -5,6 +5,7 @@ import ij.measure.ResultsTable;
 import ij.plugin.filter.ParticleAnalyzer;
 import ij.plugin.frame.RoiManager;
 import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQROIDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
@@ -14,6 +15,7 @@ import java.util.Arrays;
 
 @ACAQDocumentation(name = "Convert mask to particles")
 @ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Converter)
+@AutoTransferTraits
 public class MaskToParticleConverter extends ACAQSimpleAlgorithm<ACAQMaskData, ACAQROIData> {
     private double minParticleSize = 0;
     private double maxParticleSize = Double.MAX_VALUE;

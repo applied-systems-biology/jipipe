@@ -4,8 +4,10 @@ import ij.ImagePlus;
 import ij.plugin.filter.Binary;
 import ij.plugin.filter.EDM;
 import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import org.hkijena.acaq5.api.traits.BadForTrait;
 import org.hkijena.acaq5.api.traits.GoodForTrait;
+import org.hkijena.acaq5.api.traits.RemovesTrait;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.traits.bioobject.ClusterBioObjects;
@@ -15,10 +17,16 @@ import org.hkijena.acaq5.extension.api.traits.bioobject.UnlabeledBioObjects;
 
 @ACAQDocumentation(name = "Watershed enhancer")
 @ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
+
+// Trait matching
 @GoodForTrait(RoundBioObjects.class)
 @GoodForTrait(LabeledBioObjects.class)
 @BadForTrait(UnlabeledBioObjects.class)
 @GoodForTrait(ClusterBioObjects.class)
+
+// Trait configuration
+@AutoTransferTraits
+@RemovesTrait(ClusterBioObjects.class)
 public class WatershedMaskEnhancer extends ACAQSimpleAlgorithm<ACAQMaskData, ACAQMaskData> {
 
     private int erosionIterations = 0;

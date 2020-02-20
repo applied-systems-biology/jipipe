@@ -4,5 +4,5 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQTrait;
 
 @ACAQDocumentation(name = "Low image brightness")
-public interface LowBrightnessQuality extends ACAQTrait {
+public interface LowBrightnessQuality extends BrightnessImageQuality {
 }

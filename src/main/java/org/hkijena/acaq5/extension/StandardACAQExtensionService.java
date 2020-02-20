@@ -25,6 +25,8 @@ import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMultichannelImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQROIData;
+import org.hkijena.acaq5.extension.api.traits.BrightnessImageQuality;
+import org.hkijena.acaq5.extension.api.traits.ImageQuality;
 import org.hkijena.acaq5.extension.api.traits.LowBrightnessQuality;
 import org.hkijena.acaq5.extension.api.traits.NonUniformBrightnessQuality;
 import org.hkijena.acaq5.extension.api.traits.bioobject.*;
@@ -73,6 +75,8 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
     }
 
     private void registerTraits(ACAQRegistryService registryService) {
+        registryService.getTraitRegistry().register(ImageQuality.class);
+        registryService.getTraitRegistry().register(BrightnessImageQuality.class);
         registryService.getTraitRegistry().register(LowBrightnessQuality.class);
         registryService.getTraitRegistry().register(NonUniformBrightnessQuality.class);
         registryService.getTraitRegistry().register(BioObjects.class);

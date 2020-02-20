@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ij.ImagePlus;
 import mpicbg.ij.clahe.Flat;
 import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import org.hkijena.acaq5.api.traits.GoodForTrait;
+import org.hkijena.acaq5.api.traits.RemovesTrait;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.traits.LowBrightnessQuality;
@@ -16,9 +18,16 @@ import java.io.IOException;
 
 @ACAQDocumentation(name = "CLAHE enhancer")
 @ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
+
+// Trait matching
 @GoodForTrait(LabeledBioObjects.class)
 @GoodForTrait(LowBrightnessQuality.class)
 @GoodForTrait(NonUniformBrightnessQuality.class)
+
+// Trait configuration
+@AutoTransferTraits
+@RemovesTrait(LowBrightnessQuality.class)
+@RemovesTrait(NonUniformBrightnessQuality.class)
 public class CLAHEImageEnhancer extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData,
         ACAQGreyscaleImageData> {
 
@@ -30,6 +39,11 @@ public class CLAHEImageEnhancer extends ACAQSimpleAlgorithm<ACAQGreyscaleImageDa
     public CLAHEImageEnhancer() {
         super("Input image", ACAQGreyscaleImageDataSlot.class,
                 "Output image", ACAQGreyscaleImageDataSlot.class);
+        // Configure traits
+        getTraitConfiguration()
+                .transferFromAllToAll()
+                .removesTrait(LowBrightnessQuality.class)
+                .removesTrait(NonUniformBrightnessQuality.class);
     }
 
     public CLAHEImageEnhancer(CLAHEImageEnhancer other) {

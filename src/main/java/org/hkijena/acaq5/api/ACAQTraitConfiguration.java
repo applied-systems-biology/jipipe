@@ -28,7 +28,7 @@ public class ACAQTraitConfiguration {
     public ACAQTraitConfiguration removesTraitFrom(String outputSlotName, Class<? extends ACAQTrait> trait) {
         if(slotConfiguration.getSlots().get(outputSlotName).getSlotType() != ACAQDataSlot.SlotType.Output)
             throw new IllegalArgumentException("Slot must be an output slot!");
-        modifyTasks.add(new ModifyTask(outputSlotName, ModificationType.REMOVE, Collections.singleton(trait)));
+        modifyTasks.add(new ModifyTask(outputSlotName, ModificationType.REMOVE, trait));
         return this;
     }
 
@@ -41,7 +41,7 @@ public class ACAQTraitConfiguration {
     public ACAQTraitConfiguration addsTraitTo(String outputSlotName, Class<? extends ACAQTrait> trait) {
         if(slotConfiguration.getSlots().get(outputSlotName).getSlotType() != ACAQDataSlot.SlotType.Output)
             throw new IllegalArgumentException("Slot must be an output slot!");
-        modifyTasks.add(new ModifyTask(outputSlotName, ModificationType.ADD, Collections.singleton(trait)));
+        modifyTasks.add(new ModifyTask(outputSlotName, ModificationType.ADD, trait));
         return this;
     }
 
@@ -51,7 +51,7 @@ public class ACAQTraitConfiguration {
      * @return
      */
     public ACAQTraitConfiguration removesTrait(Class<? extends ACAQTrait> trait) {
-        modifyTasks.add(new ModifyTask(null, ModificationType.REMOVE, Collections.singleton(trait)));
+        modifyTasks.add(new ModifyTask(null, ModificationType.REMOVE, trait));
         return this;
     }
 
@@ -61,7 +61,7 @@ public class ACAQTraitConfiguration {
      * @return
      */
     public ACAQTraitConfiguration addsTrait(Class<? extends ACAQTrait> trait) {
-        modifyTasks.add(new ModifyTask(null, ModificationType.ADD, Collections.singleton(trait)));
+        modifyTasks.add(new ModifyTask(null, ModificationType.ADD, trait));
         return this;
     }
 
@@ -138,10 +138,10 @@ public class ACAQTraitConfiguration {
             if(task.slotName == null || slotName.equals(task.slotName)) {
                 switch(task.type) {
                     case ADD:
-                        target.addAll(task.traits);
+                        target.add(task.trait);
                         break;
                     case REMOVE:
-                        target.removeAll(task.traits);
+                        target.removeIf(klass -> task.trait.isAssignableFrom(klass));
                         break;
                 }
             }
@@ -159,18 +159,18 @@ public class ACAQTraitConfiguration {
     public static class ModifyTask {
         private String slotName;
         private ModificationType type;
-        private Set<Class<? extends ACAQTrait>> traits;
+        private Class<? extends ACAQTrait> trait;
 
         /**
          *
          * @param slotName The affected input slot name. If null, all output slots are affected.
          * @param type The modification type
-         * @param traits The list of traits that should be added/removed
+         * @param trait The trait that should be added/removed
          */
-        public ModifyTask(String slotName, ModificationType type, Set<Class<? extends ACAQTrait>> traits) {
+        public ModifyTask(String slotName, ModificationType type, Class<? extends ACAQTrait> trait) {
             this.slotName = slotName;
             this.type = type;
-            this.traits = traits;
+            this.trait = trait;
         }
 
         public String getSlotName() {
@@ -181,8 +181,8 @@ public class ACAQTraitConfiguration {
             return type;
         }
 
-        public Set<Class<? extends ACAQTrait>> getTraits() {
-            return traits;
+        public Class<? extends ACAQTrait> getTrait() {
+            return trait;
         }
     }
 

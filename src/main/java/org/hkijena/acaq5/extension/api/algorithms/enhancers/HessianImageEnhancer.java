@@ -8,6 +8,7 @@ import imagescience.image.Aspects;
 import imagescience.image.FloatImage;
 import imagescience.image.Image;
 import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import org.hkijena.acaq5.extension.api.algorithms.segmenters.AutoThresholdSegmenter;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
@@ -18,6 +19,7 @@ import java.util.Vector;
 
 @ACAQDocumentation(name = "Hessian enhancer")
 @ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
+@AutoTransferTraits
 public class HessianImageEnhancer extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQMaskData> {
 
     private double smoothing = 1.0;
@@ -27,6 +29,9 @@ public class HessianImageEnhancer extends ACAQSimpleAlgorithm<ACAQGreyscaleImage
     public HessianImageEnhancer() {
         super("Input image", ACAQGreyscaleImageDataSlot.class,
                "Output image", ACAQMaskDataSlot.class);
+
+        // Configure traits
+        getTraitConfiguration().transferFromAllToAll();
     }
 
     public HessianImageEnhancer(HessianImageEnhancer other) {

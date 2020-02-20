@@ -3,12 +3,14 @@ package org.hkijena.acaq5.extension.api.algorithms.converters;
 import ij.ImagePlus;
 import ij.plugin.ChannelSplitter;
 import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQMultichannelImageDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 
 @ACAQDocumentation(name = "Split multichannel image")
 @ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Converter)
+@AutoTransferTraits
 public class MultiChannelSplitterConverter extends ACAQAlgorithm {
 
     public MultiChannelSplitterConverter() {
