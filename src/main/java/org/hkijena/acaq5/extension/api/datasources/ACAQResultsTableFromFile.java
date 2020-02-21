@@ -1,39 +1,41 @@
 package org.hkijena.acaq5.extension.api.datasources;
 
-import ij.IJ;
+import ij.measure.ResultsTable;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQSimpleDataSource;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
-import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
+import org.hkijena.acaq5.extension.api.dataslots.ACAQResultsTableDataSlot;
+import org.hkijena.acaq5.extension.api.datatypes.ACAQResultsTableData;
 
+import java.io.IOException;
 import java.nio.file.Path;
 
-/**
- * Loads greyscale data from a file via IJ.openFile()
- */
-@ACAQDocumentation(name = "Greyscale image from file")
-@AlgorithmOutputSlot(ACAQGreyscaleImageDataSlot.class)
+@ACAQDocumentation(name = "Results table from file")
+@AlgorithmOutputSlot(ACAQResultsTableDataSlot.class)
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
-public class ACAQGreyscaleImageDataFromFile extends ACAQSimpleDataSource<ACAQGreyscaleImageData> {
+public class ACAQResultsTableFromFile extends ACAQSimpleDataSource<ACAQResultsTableData> {
 
     private Path fileName;
 
-    public ACAQGreyscaleImageDataFromFile() {
-        super("Greyscale Image", ACAQGreyscaleImageDataSlot.class, ACAQGreyscaleImageData.class);
+    public ACAQResultsTableFromFile() {
+        super("Results table", ACAQResultsTableDataSlot.class, ACAQResultsTableData.class);
     }
 
-    public ACAQGreyscaleImageDataFromFile(ACAQGreyscaleImageDataFromFile other) {
+    public ACAQResultsTableFromFile(ACAQResultsTableFromFile other) {
         super(other);
         this.fileName = other.fileName;
     }
 
     @Override
     public void run() {
-        setOutputData(new ACAQGreyscaleImageData(IJ.openImage(fileName.toString())));
+        try {
+            setOutputData(new ACAQResultsTableData(ResultsTable.open(fileName.toString())));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @ACAQParameter("file-name")

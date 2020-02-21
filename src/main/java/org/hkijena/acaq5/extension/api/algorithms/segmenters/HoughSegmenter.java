@@ -5,7 +5,7 @@ import ij.ImagePlus;
 import ij.WindowManager;
 import ij.measure.ResultsTable;
 import ij.plugin.filter.Analyzer;
-import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
@@ -16,9 +16,9 @@ import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.traits.bioobject.count.ClusterBioObjects;
-import org.hkijena.acaq5.extension.api.traits.quality.ImageQuality;
 import org.hkijena.acaq5.extension.api.traits.bioobject.morphology.RoundBioObjects;
 import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.BioObjectsPreparations;
+import org.hkijena.acaq5.extension.api.traits.quality.ImageQuality;
 import org.hkijena.acaq5.utils.Hough_Circle;
 
 @ACAQDocumentation(name = "Hough segmentation")

@@ -7,7 +7,7 @@ import imagescience.feature.Hessian;
 import imagescience.image.Aspects;
 import imagescience.image.FloatImage;
 import imagescience.image.Image;
-import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQSubAlgorithm;

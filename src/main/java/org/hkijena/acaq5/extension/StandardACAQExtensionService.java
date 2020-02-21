@@ -10,33 +10,25 @@ import org.hkijena.acaq5.extension.api.algorithms.enhancers.IlluminationCorrecti
 import org.hkijena.acaq5.extension.api.algorithms.enhancers.MergeROIEnhancer;
 import org.hkijena.acaq5.extension.api.algorithms.enhancers.WatershedMaskEnhancer;
 import org.hkijena.acaq5.extension.api.algorithms.segmenters.*;
-import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
-import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
-import org.hkijena.acaq5.extension.api.dataslots.ACAQMultichannelImageDataSlot;
-import org.hkijena.acaq5.extension.api.dataslots.ACAQROIDataSlot;
-import org.hkijena.acaq5.extension.api.datasources.ACAQGreyscaleImageDataFromFile;
-import org.hkijena.acaq5.extension.api.datasources.ACAQMaskImageDataFromFile;
-import org.hkijena.acaq5.extension.api.datasources.ACAQMultichannelImageDataFromFile;
-import org.hkijena.acaq5.extension.api.datasources.ACAQROIDataFromFile;
-import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
-import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
-import org.hkijena.acaq5.extension.api.datatypes.ACAQMultichannelImageData;
-import org.hkijena.acaq5.extension.api.datatypes.ACAQROIData;
-import org.hkijena.acaq5.extension.api.traits.quality.LowBrightnessQuality;
-import org.hkijena.acaq5.extension.api.traits.quality.NonUniformBrightnessQuality;
+import org.hkijena.acaq5.extension.api.dataslots.*;
+import org.hkijena.acaq5.extension.api.datasources.*;
+import org.hkijena.acaq5.extension.api.datatypes.*;
 import org.hkijena.acaq5.extension.api.traits.bioobject.count.ClusterBioObjects;
+import org.hkijena.acaq5.extension.api.traits.bioobject.count.SingleBioObject;
 import org.hkijena.acaq5.extension.api.traits.bioobject.morphology.FilamentousBioObjects;
 import org.hkijena.acaq5.extension.api.traits.bioobject.morphology.IrregularBioObjects;
 import org.hkijena.acaq5.extension.api.traits.bioobject.morphology.RoundBioObjects;
-import org.hkijena.acaq5.extension.api.traits.bioobject.count.SingleBioObject;
 import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.BioObjectsLabeling;
 import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.MembraneLabeledBioObjects;
 import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.UniformlyLabeledBioObjects;
 import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.UnlabeledBioObjects;
+import org.hkijena.acaq5.extension.api.traits.quality.LowBrightnessQuality;
+import org.hkijena.acaq5.extension.api.traits.quality.NonUniformBrightnessQuality;
 import org.hkijena.acaq5.extension.api.traits.quality.UniformBrightnessQuality;
 import org.hkijena.acaq5.extension.ui.parametereditors.*;
 import org.hkijena.acaq5.extension.ui.resultanalysis.ImageDataSlotResultUI;
 import org.hkijena.acaq5.extension.ui.resultanalysis.ROIDataSlotResultUI;
+import org.hkijena.acaq5.extension.ui.resultanalysis.ResultsTableDataSlotResultUI;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
@@ -62,6 +54,7 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
         registryService.getAlgorithmRegistry().register(ACAQMaskImageDataFromFile.class);
         registryService.getAlgorithmRegistry().register(ACAQROIDataFromFile.class);
         registryService.getAlgorithmRegistry().register(ACAQMultichannelImageDataFromFile.class);
+        registryService.getAlgorithmRegistry().register(ACAQResultsTableFromFile.class);
 
         // Register parameter editor UIs
         registryService.getUIParametertypeRegistry().registerParameterEditor(Path.class, FilePathParameterEditorUI.class);
@@ -77,6 +70,7 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
         registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQGreyscaleImageDataSlot.class, ImageDataSlotResultUI.class);
         registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQMaskDataSlot.class, ImageDataSlotResultUI.class);
         registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQROIDataSlot.class, ROIDataSlotResultUI.class);
+        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQResultsTableDataSlot.class, ResultsTableDataSlotResultUI.class);
     }
 
     private void registerTraits(ACAQRegistryService registryService) {
@@ -157,5 +151,8 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
         registryService.getDatatypeRegistry().register(ACAQMultichannelImageData.class, ACAQMultichannelImageDataSlot.class);
         registryService.getUIDatatypeRegistry().registerIcon(ACAQMultichannelImageData.class,
                 ResourceUtils.getPluginResource("icons/data-types/multichannel.png"));
+        registryService.getDatatypeRegistry().register(ACAQResultsTableData.class, ACAQResultsTableDataSlot.class);
+        registryService.getUIDatatypeRegistry().registerIcon(ACAQResultsTableData.class,
+                ResourceUtils.getPluginResource("icons/data-types/results-table.png"));
     }
 }

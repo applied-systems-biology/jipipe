@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.extension.api.algorithms.enhancers;
 
 import ij.gui.Roi;
-import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;

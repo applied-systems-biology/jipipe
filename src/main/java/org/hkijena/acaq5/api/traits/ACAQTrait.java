@@ -1,11 +1,9 @@
 package org.hkijena.acaq5.api.traits;
 
 import com.google.common.reflect.TypeToken;
-import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**

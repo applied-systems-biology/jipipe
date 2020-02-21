@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.api.traits;
 
-import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
 import org.hkijena.acaq5.api.events.TraitsChangedEvent;
 
 import java.util.ArrayList;

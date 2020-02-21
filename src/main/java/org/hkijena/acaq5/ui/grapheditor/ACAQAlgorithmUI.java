@@ -165,7 +165,7 @@ public class ACAQAlgorithmUI extends JPanel {
             List<ACAQDataSlot<?>> slots = algorithm.getInputSlots();
             for(int i = 0; i < slots.size(); ++i) {
                 int bottomBorder = 0;
-                if(i < slots.size() - 1 || createAddInputSlotButton || createAddOutputSlotButton)
+                if(i < getDisplayedRows() - 1 || createAddInputSlotButton || createAddOutputSlotButton)
                     bottomBorder = 1;
 
                 ACAQDataSlot<?> slot = slots.get(i);
@@ -180,7 +180,7 @@ public class ACAQAlgorithmUI extends JPanel {
             List<ACAQDataSlot<?>> slots = algorithm.getOutputSlots();
             for(int i = 0; i < slots.size(); ++i) {
                 int bottomBorder = 0;
-                if(i < slots.size() - 1 || createAddInputSlotButton || createAddOutputSlotButton)
+                if(i < getDisplayedRows() - 1 || createAddInputSlotButton || createAddOutputSlotButton)
                     bottomBorder = 1;
                 ACAQDataSlot<?> slot = slots.get(i);
                 ACAQDataSlotUI ui = new ACAQDataSlotUI(graphUI.getAlgorithmGraph(), slot);

@@ -1,7 +1,5 @@
 package org.hkijena.acaq5.ui.registries;
 
-import org.hkijena.acaq5.api.data.ACAQData;
-import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.utils.ResourceUtils;
 

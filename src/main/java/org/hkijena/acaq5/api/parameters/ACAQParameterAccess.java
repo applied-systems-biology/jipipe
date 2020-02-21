@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.api.parameters;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

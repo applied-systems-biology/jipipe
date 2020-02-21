@@ -4,7 +4,7 @@ import ij.ImagePlus;
 import ij.plugin.filter.BackgroundSubtracter;
 import ij.plugin.filter.Binary;
 import ij.plugin.filter.GaussianBlur;
-import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQSubAlgorithm;
@@ -16,10 +16,10 @@ import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
-import org.hkijena.acaq5.extension.api.traits.quality.ImageQuality;
-import org.hkijena.acaq5.extension.api.traits.quality.NonUniformBrightnessQuality;
 import org.hkijena.acaq5.extension.api.traits.bioobject.count.ClusterBioObjects;
 import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.BioObjectsPreparations;
+import org.hkijena.acaq5.extension.api.traits.quality.ImageQuality;
+import org.hkijena.acaq5.extension.api.traits.quality.NonUniformBrightnessQuality;
 
 @ACAQDocumentation(name = "Bright spots segmentation")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)

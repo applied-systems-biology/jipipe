@@ -2,7 +2,7 @@ package org.hkijena.acaq5.extension.api.algorithms.enhancers;
 
 import ij.ImagePlus;
 import ij.plugin.ImageCalculator;
-import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
@@ -10,8 +10,8 @@ import org.hkijena.acaq5.api.traits.GoodForTrait;
 import org.hkijena.acaq5.api.traits.RemovesTrait;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
-import org.hkijena.acaq5.extension.api.traits.quality.NonUniformBrightnessQuality;
 import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.UnlabeledBioObjects;
+import org.hkijena.acaq5.extension.api.traits.quality.NonUniformBrightnessQuality;
 import org.hkijena.acaq5.utils.ImageJUtils;
 import org.hkijena.acaq5.utils.MacroSetting;
 

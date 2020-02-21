@@ -2,10 +2,13 @@ package org.hkijena.acaq5.extension.api.datatypes;
 
 import ij.gui.Roi;
 import ij.io.RoiEncoder;
-import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.data.ACAQData;
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.zip.ZipEntry;

@@ -4,7 +4,6 @@ import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 
 public class ACAQDataSlotListCellRenderer extends JLabel implements ListCellRenderer<ACAQDataSlot<?>> {

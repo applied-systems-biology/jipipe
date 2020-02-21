@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.ui.resultanalysis;
 
+import org.hkijena.acaq5.api.ACAQRunSample;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -8,9 +9,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.List;
 
 /**
  * Provides a standard result slot UI that can be also further extended
@@ -19,8 +20,8 @@ public class ACAQDefaultDataSlotResultUI extends ACAQResultDataSlotUI<ACAQDataSl
 
     private List<SlotAction> registeredSlotActions = new ArrayList<>();
 
-    public ACAQDefaultDataSlotResultUI(ACAQWorkbenchUI workbenchUI, ACAQDataSlot<?> slot) {
-        super(workbenchUI, slot);
+    public ACAQDefaultDataSlotResultUI(ACAQWorkbenchUI workbenchUI, ACAQRunSample sample, ACAQDataSlot<?> slot) {
+        super(workbenchUI, sample, slot);
         registerActions();
         initialize();
     }

@@ -22,10 +22,6 @@ public abstract class ACAQDataSlot<T extends ACAQData> {
         this.acceptedDataType = acceptedDataType;
     }
 
-    public ACAQDataSlot(ACAQDataSlot<T> other) {
-
-    }
-
     public Class<? extends ACAQData> getAcceptedDataType() {
         return acceptedDataType;
     }

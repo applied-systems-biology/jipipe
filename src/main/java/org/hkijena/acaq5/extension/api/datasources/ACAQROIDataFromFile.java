@@ -2,7 +2,7 @@ package org.hkijena.acaq5.extension.api.datasources;
 
 import ij.gui.Roi;
 import ij.io.RoiDecoder;
-import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;

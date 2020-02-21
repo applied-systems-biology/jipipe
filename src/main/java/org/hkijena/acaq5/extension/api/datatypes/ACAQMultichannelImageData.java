@@ -2,8 +2,8 @@ package org.hkijena.acaq5.extension.api.datatypes;
 
 import ij.IJ;
 import ij.ImagePlus;
-import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.data.ACAQData;
 
 import java.nio.file.Path;
 

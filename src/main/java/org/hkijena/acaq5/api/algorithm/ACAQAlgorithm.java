@@ -10,7 +10,8 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.acaq5.ACAQRegistryService;
-import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
@@ -25,8 +26,8 @@ import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 @JsonSerialize(using = ACAQAlgorithm.Serializer.class)
 public abstract class ACAQAlgorithm {

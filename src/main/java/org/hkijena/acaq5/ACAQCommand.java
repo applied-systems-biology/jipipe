@@ -5,7 +5,6 @@ import net.imagej.DatasetService;
 import net.imagej.ImageJ;
 import net.imagej.ops.OpService;
 import org.hkijena.acaq5.api.ACAQProject;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.ACAQWorkbenchWindow;
 import org.scijava.app.StatusService;
 import org.scijava.command.Command;

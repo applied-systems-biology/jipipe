@@ -12,8 +12,6 @@ import org.jdesktop.swingx.JXStatusBar;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
-import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
