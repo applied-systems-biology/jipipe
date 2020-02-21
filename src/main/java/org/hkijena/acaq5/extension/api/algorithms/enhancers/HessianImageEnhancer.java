@@ -9,7 +9,7 @@ import imagescience.image.FloatImage;
 import imagescience.image.Image;
 import org.hkijena.acaq5.api.*;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmMetadata;
+import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.ACAQSimpleAlgorithm;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQSubAlgorithm;
@@ -23,7 +23,7 @@ import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import java.util.Vector;
 
 @ACAQDocumentation(name = "Hessian enhancer")
-@ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
 @AutoTransferTraits
 public class HessianImageEnhancer extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQMaskData> {
 

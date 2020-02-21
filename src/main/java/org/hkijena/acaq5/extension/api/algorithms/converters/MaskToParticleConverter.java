@@ -5,9 +5,7 @@ import ij.measure.ResultsTable;
 import ij.plugin.filter.ParticleAnalyzer;
 import ij.plugin.frame.RoiManager;
 import org.hkijena.acaq5.api.*;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmMetadata;
-import org.hkijena.acaq5.api.algorithm.ACAQSimpleAlgorithm;
+import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
@@ -17,8 +15,15 @@ import org.hkijena.acaq5.extension.api.datatypes.ACAQROIData;
 
 import java.util.Arrays;
 
+// Algorithm metadata
 @ACAQDocumentation(name = "Convert mask to particles")
-@ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Converter)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.Converter)
+
+// Algorithm data flow
+@AlgorithmInputSlot(value = ACAQMaskDataSlot.class, slotName = "Mask", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQROIDataSlot.class, slotName = "ROI", autoCreate = true)
+
+// Algorithm traits
 @AutoTransferTraits
 public class MaskToParticleConverter extends ACAQSimpleAlgorithm<ACAQMaskData, ACAQROIData> {
     private double minParticleSize = 0;
@@ -28,8 +33,6 @@ public class MaskToParticleConverter extends ACAQSimpleAlgorithm<ACAQMaskData, A
     private boolean excludeEdges = false;
 
     public MaskToParticleConverter() {
-        super("Mask", ACAQMaskDataSlot.class,
-                "ROI", ACAQROIDataSlot.class);
     }
 
     public MaskToParticleConverter(MaskToParticleConverter other) {

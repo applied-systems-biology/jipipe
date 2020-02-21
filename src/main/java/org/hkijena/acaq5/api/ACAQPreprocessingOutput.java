@@ -2,7 +2,7 @@ package org.hkijena.acaq5.api;
 
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmMetadata;
+import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.data.ACAQInputAsOutputSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
@@ -19,7 +19,7 @@ import org.hkijena.acaq5.api.traits.ACAQTraitConfiguration;
  * only added by the project logic.
  */
 @ACAQDocumentation(name="Preprocessing output")
-@ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Internal)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.Internal)
 public class ACAQPreprocessingOutput extends ACAQAlgorithm {
 
     public ACAQPreprocessingOutput(ACAQSlotConfiguration slotConfiguration, ACAQTraitConfiguration traitConfiguration) {

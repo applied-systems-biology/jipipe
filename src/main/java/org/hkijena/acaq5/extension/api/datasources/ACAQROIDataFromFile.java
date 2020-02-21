@@ -4,7 +4,7 @@ import ij.gui.Roi;
 import ij.io.RoiDecoder;
 import org.hkijena.acaq5.api.*;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmMetadata;
+import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.data.ACAQGeneratesData;
 import org.hkijena.acaq5.api.data.ACAQSimpleDataSource;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
@@ -25,7 +25,7 @@ import java.util.zip.ZipInputStream;
  */
 @ACAQDocumentation(name = "ROI from file")
 @ACAQGeneratesData(ACAQROIData.class)
-@ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
 public class ACAQROIDataFromFile extends ACAQSimpleDataSource<ACAQROIData> {
 
     private Path fileName;

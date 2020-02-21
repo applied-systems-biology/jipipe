@@ -3,7 +3,7 @@ package org.hkijena.acaq5.extension.api.datasources;
 import ij.IJ;
 import org.hkijena.acaq5.api.*;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmMetadata;
+import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.data.ACAQGeneratesData;
 import org.hkijena.acaq5.api.data.ACAQSimpleDataSource;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
@@ -17,7 +17,7 @@ import java.nio.file.Path;
  */
 @ACAQDocumentation(name = "Multichannel image from file")
 @ACAQGeneratesData(ACAQMultichannelImageData.class)
-@ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
 public class ACAQMultichannelImageDataFromFile extends ACAQSimpleDataSource<ACAQMultichannelImageData> {
 
     private Path fileName;

@@ -7,7 +7,7 @@ import ij.plugin.filter.GaussianBlur;
 import ij.plugin.filter.RankFilters;
 import org.hkijena.acaq5.api.*;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmMetadata;
+import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.ACAQSimpleAlgorithm;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQSubAlgorithm;
@@ -25,7 +25,7 @@ import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.Me
 import org.hkijena.acaq5.utils.ImageJUtils;
 
 @ACAQDocumentation(name = "Internal gradient segmentation")
-@ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
 
 // Trait matching
 @GoodForTrait(MembraneLabeledBioObjects.class)

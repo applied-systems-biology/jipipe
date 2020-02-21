@@ -4,7 +4,7 @@ import ij.ImagePlus;
 import mpicbg.ij.clahe.Flat;
 import org.hkijena.acaq5.api.*;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmMetadata;
+import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.ACAQSimpleAlgorithm;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
@@ -17,7 +17,7 @@ import org.hkijena.acaq5.extension.api.traits.quality.NonUniformBrightnessQualit
 import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.BioObjectsLabeling;
 
 @ACAQDocumentation(name = "CLAHE enhancer")
-@ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
 
 // Trait matching
 @GoodForTrait(BioObjectsLabeling.class)

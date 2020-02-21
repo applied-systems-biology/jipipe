@@ -2,7 +2,7 @@ package org.hkijena.acaq5.api.registries;
 
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmMetadata;
+import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSource;
 import org.hkijena.acaq5.api.data.ACAQGeneratesData;
@@ -157,7 +157,7 @@ public class ACAQAlgorithmRegistry {
     public Set<Class<? extends ACAQAlgorithm>> getAlgorithmsOfCategory(ACAQAlgorithmCategory category) {
         Set<Class<? extends ACAQAlgorithm>> result = new HashSet<>();
         for(Class<? extends ACAQAlgorithm> klass : registeredAlgorithms) {
-            ACAQAlgorithmMetadata[] metadatas = klass.getAnnotationsByType(ACAQAlgorithmMetadata.class);
+            AlgorithmMetadata[] metadatas = klass.getAnnotationsByType(AlgorithmMetadata.class);
             if(metadatas.length > 0) {
                 if(Arrays.stream(metadatas).anyMatch(annot -> annot.category() == category))
                     result.add(klass);

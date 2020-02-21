@@ -6,7 +6,7 @@ import ij.plugin.Thresholder;
 import ij.process.AutoThresholder;
 import org.hkijena.acaq5.api.*;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmMetadata;
+import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.ACAQSimpleAlgorithm;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.*;
@@ -26,7 +26,7 @@ import org.hkijena.acaq5.utils.ImageJUtils;
  * Segmenter node that thresholds via an auto threshold
  */
 @ACAQDocumentation(name = "Auto threshold segmentation")
-@ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
 
 // Trait matching
 @GoodForTrait(UniformlyLabeledBioObjects.class)

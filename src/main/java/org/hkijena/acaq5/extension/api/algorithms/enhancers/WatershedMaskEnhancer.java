@@ -5,7 +5,7 @@ import ij.plugin.filter.Binary;
 import ij.plugin.filter.EDM;
 import org.hkijena.acaq5.api.*;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmMetadata;
+import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.ACAQSimpleAlgorithm;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
@@ -20,7 +20,7 @@ import org.hkijena.acaq5.extension.api.traits.bioobject.morphology.RoundBioObjec
 import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.UnlabeledBioObjects;
 
 @ACAQDocumentation(name = "Watershed enhancer")
-@ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
 
 // Trait matching
 @GoodForTrait(RoundBioObjects.class)
