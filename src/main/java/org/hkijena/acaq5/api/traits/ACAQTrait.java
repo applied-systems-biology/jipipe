@@ -1,7 +1,10 @@
 package org.hkijena.acaq5.api.traits;
 
+import com.google.common.reflect.TypeToken;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -42,25 +45,53 @@ public interface ACAQTrait {
     }
 
     /**
+     * Returns all inherited traits marked as category
+     * @param klass
+     * @return
+     */
+    static Set<Class<? extends ACAQTrait>> getCategoriesOf(Class<? extends ACAQTrait> klass) {
+        Set<Class<? extends ACAQTrait>> result = new HashSet<>();
+        for(TypeToken<?> type : TypeToken.of(klass).getTypes().interfaces()) {
+            if(type.getRawType().getAnnotationsByType(CategoryTrait.class).length > 0) {
+                result.add((Class<? extends ACAQTrait>) type.getRawType());
+            }
+        }
+        return result;
+    }
+
+    /**
      * Returns true if the trait is hidden from the user
      * @param klass
      * @return
      */
     static boolean isHidden(Class<? extends ACAQTrait> klass) {
-        return klass.getAnnotationsByType(HiddenTrait.class).length > 0;
+        return klass.getAnnotationsByType(CategoryTrait.class).length > 0;
     }
 
     static String getTooltipOf(Class<? extends ACAQTrait> klass) {
         String name = getNameOf(klass);
         String description = getDescriptionOf(klass);
         StringBuilder builder = new StringBuilder();
-        builder.append("<html><strong>");
+        builder.append("<html><u><strong>");
         builder.append(name);
-        builder.append("</strong>");
+        builder.append("</u></strong>");
         if(description != null && !description.isEmpty()) {
             builder.append("<br/>")
                 .append(description);
         }
+
+        Set<Class<? extends ACAQTrait>> categories = getCategoriesOf(klass);
+        if(!categories.isEmpty()) {
+            builder.append("<br/><br/>");
+            builder.append("<strong>Inherited annotations</strong><br/>");
+            builder.append("<ul>");
+            for(Class<? extends ACAQTrait> trait : categories) {
+                builder.append("<li>").append(getNameOf(trait)).append("</li>");
+            }
+            builder.append("</ul>");
+        }
+        builder.append("</html>");
+
         return builder.toString();
     }
 }

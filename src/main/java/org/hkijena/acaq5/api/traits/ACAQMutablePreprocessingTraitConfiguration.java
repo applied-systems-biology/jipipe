@@ -1,10 +1,20 @@
 package org.hkijena.acaq5.api.traits;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
+import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.ACAQPreprocessingOutput;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
 import org.hkijena.acaq5.api.events.TraitsChangedEvent;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -13,6 +23,7 @@ import java.util.stream.Collectors;
 /**
  * Trait configuration designed for usage in {@link ACAQPreprocessingOutput}
  */
+@JsonSerialize(using = ACAQMutablePreprocessingTraitConfiguration.Serializer.class)
 public class ACAQMutablePreprocessingTraitConfiguration extends ACAQTraitConfiguration {
     private List<ACAQMutableTraitConfiguration.ModifyTask> modifyTasks = new ArrayList<>();
     private ACAQSlotConfiguration slotConfiguration;
@@ -103,5 +114,33 @@ public class ACAQMutablePreprocessingTraitConfiguration extends ACAQTraitConfigu
 
     public ACAQSlotConfiguration getSlotConfiguration() {
         return slotConfiguration;
+    }
+
+    public void fromJson(JsonNode node) {
+        if(node.has("traits")) {
+            for(JsonNode trait : ImmutableList.copyOf(node.get("traits").elements())) {
+                Class<? extends ACAQTrait> klass = ACAQRegistryService.getInstance().getTraitRegistry().findTraitClass(trait.get("class").asText());
+                String slotName = trait.get("slot-name").asText();
+                addTraitTo(slotName, klass);
+            }
+        }
+    }
+
+    public static class Serializer extends JsonSerializer<ACAQMutablePreprocessingTraitConfiguration> {
+
+        @Override
+        public void serialize(ACAQMutablePreprocessingTraitConfiguration configuration, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeFieldName("traits");
+            jsonGenerator.writeStartArray();
+            for(ACAQMutableTraitConfiguration.ModifyTask task : configuration.modifyTasks) {
+                jsonGenerator.writeStartObject();
+                jsonGenerator.writeStringField("class", task.getTrait().getCanonicalName());
+                jsonGenerator.writeStringField("slot-name", task.getSlotName());
+                jsonGenerator.writeEndObject();
+            }
+            jsonGenerator.writeEndArray();
+            jsonGenerator.writeEndObject();
+        }
     }
 }

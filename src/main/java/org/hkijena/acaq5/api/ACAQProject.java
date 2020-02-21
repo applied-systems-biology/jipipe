@@ -133,6 +133,7 @@ public class ACAQProject {
             jsonGenerator.writeStartObject();
 
             jsonGenerator.writeObjectField("preprocessing-output-slots", project.preprocessingOutputConfiguration);
+            jsonGenerator.writeObjectField("preprocessing-output-slot-traits", project.preprocessingTraitConfiguration);
             jsonGenerator.writeObjectField("algorithm-graph", project.analysis);
 
             jsonGenerator.writeEndObject();
@@ -177,6 +178,9 @@ public class ACAQProject {
         private void readAlgorithm(ACAQProject project, JsonNode node) {
             if(node.has("algorithm-graph")) {
                 project.analysis.fromJson(node.get("algorithm-graph"));
+            }
+            if(node.has("preprocessing-output-slot-traits")) {
+                project.preprocessingTraitConfiguration.fromJson(node.get("preprocessing-output-slot-traits"));
             }
         }
 

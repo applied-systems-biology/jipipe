@@ -11,7 +11,6 @@ import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Iterator;
 import java.util.Set;
 
 public class ACAQDataSlotTraitUI extends JPanel {
@@ -43,10 +42,10 @@ public class ACAQDataSlotTraitUI extends JPanel {
             traitButton.setPreferredSize(new Dimension(25, 25));
 
             if(canEditTraits) {
-                UIUtils.makeFlat(traitButton);
+                UIUtils.makeFlat25x25(traitButton);
             }
             else
-                UIUtils.makeFlatWithoutMargin(traitButton);
+                UIUtils.makeBorderlessWithoutMargin(traitButton);
 
             add(traitButton);
 
@@ -64,8 +63,7 @@ public class ACAQDataSlotTraitUI extends JPanel {
             JButton addTraitButton = new JButton(UIUtils.getIconFromResources("label.png"));
             addTraitButton.setToolTipText("Annotate this data");
             addTraitButton.addActionListener(e -> addTrait());
-            addTraitButton.setPreferredSize(new Dimension(25, 25));
-            UIUtils.makeFlat(addTraitButton);
+            UIUtils.makeFlat25x25(addTraitButton);
             add(addTraitButton);
         }
     }
@@ -83,7 +81,8 @@ public class ACAQDataSlotTraitUI extends JPanel {
 
     private void initialize() {
         setOpaque(false);
-        setLayout(new GridLayout(1, 6));
+//        setLayout(new GridLayout(1, 6));
+        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
     }
 
     @Subscribe

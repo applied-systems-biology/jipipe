@@ -71,7 +71,7 @@ public class DocumentTabPane extends JTabbedPane {
         if(allowRename) {
             JButton renameButton = new JButton(UIUtils.getIconFromResources("label.png"));
             renameButton.setToolTipText("Rename tab");
-            UIUtils.makeFlatWithoutMargin(renameButton);
+            UIUtils.makeBorderlessWithoutMargin(renameButton);
             renameButton.addActionListener(e -> {
                 String newName = JOptionPane.showInputDialog(this, "Rename tab '" + titleLabel.getText() + "' to ...", titleLabel.getText());
                 if(newName != null && !newName.isEmpty()) {

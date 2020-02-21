@@ -25,19 +25,18 @@ import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMultichannelImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQROIData;
-import org.hkijena.acaq5.extension.api.traits.BrightnessImageQuality;
-import org.hkijena.acaq5.extension.api.traits.ImageQuality;
-import org.hkijena.acaq5.extension.api.traits.LowBrightnessQuality;
-import org.hkijena.acaq5.extension.api.traits.NonUniformBrightnessQuality;
-import org.hkijena.acaq5.extension.api.traits.bioobject.*;
-import org.hkijena.acaq5.extension.api.traits.bioobject.morphology.ClusterBioObjects;
+import org.hkijena.acaq5.extension.api.traits.quality.LowBrightnessQuality;
+import org.hkijena.acaq5.extension.api.traits.quality.NonUniformBrightnessQuality;
+import org.hkijena.acaq5.extension.api.traits.bioobject.count.ClusterBioObjects;
 import org.hkijena.acaq5.extension.api.traits.bioobject.morphology.FilamentousBioObjects;
+import org.hkijena.acaq5.extension.api.traits.bioobject.morphology.IrregularBioObjects;
 import org.hkijena.acaq5.extension.api.traits.bioobject.morphology.RoundBioObjects;
-import org.hkijena.acaq5.extension.api.traits.bioobject.morphology.SingleBioObject;
+import org.hkijena.acaq5.extension.api.traits.bioobject.count.SingleBioObject;
 import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.LabeledBioObjects;
 import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.MembraneLabeledBioObjects;
 import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.UniformlyLabeledBioObjects;
 import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.UnlabeledBioObjects;
+import org.hkijena.acaq5.extension.api.traits.quality.UniformBrightnessQuality;
 import org.hkijena.acaq5.extension.ui.parametereditors.*;
 import org.hkijena.acaq5.extension.ui.resultanalysis.ImageDataSlotResultUI;
 import org.hkijena.acaq5.extension.ui.resultanalysis.ROIDataSlotResultUI;
@@ -92,9 +91,9 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
         registryService.getUITraitRegistry().registerIcon(NonUniformBrightnessQuality.class,
                 ResourceUtils.getPluginResource("icons/traits/non-uniform-brightness.png"));
 
-        registryService.getTraitRegistry().register(BioObjects.class);
-        registryService.getUITraitRegistry().registerIcon(BioObjects.class,
-                ResourceUtils.getPluginResource("icons/traits/bioobject.png"));
+        registryService.getTraitRegistry().register(UniformBrightnessQuality.class);
+        registryService.getUITraitRegistry().registerIcon(UniformBrightnessQuality.class,
+                ResourceUtils.getPluginResource("icons/traits/uniform-brightness.png"));
 
         registryService.getTraitRegistry().register(ClusterBioObjects.class);
         registryService.getUITraitRegistry().registerIcon(ClusterBioObjects.class,
@@ -103,6 +102,10 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
         registryService.getTraitRegistry().register(FilamentousBioObjects.class);
         registryService.getUITraitRegistry().registerIcon(FilamentousBioObjects.class,
                 ResourceUtils.getPluginResource("icons/traits/bioobject-filamentous.png"));
+
+        registryService.getTraitRegistry().register(IrregularBioObjects.class);
+        registryService.getUITraitRegistry().registerIcon(IrregularBioObjects.class,
+                ResourceUtils.getPluginResource("icons/traits/bioobject.png"));
 
         registryService.getTraitRegistry().register(LabeledBioObjects.class);
         registryService.getUITraitRegistry().registerIcon(LabeledBioObjects.class,

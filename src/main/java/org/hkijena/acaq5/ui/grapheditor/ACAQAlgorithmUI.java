@@ -12,6 +12,8 @@ import org.hkijena.acaq5.ui.events.ACAQAlgorithmUIOpenSettingsRequested;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicToolBarUI;
+import javax.swing.plaf.metal.MetalToolBarUI;
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
@@ -147,39 +149,64 @@ public class ACAQAlgorithmUI extends JPanel {
         outputSlotPanel.removeAll();
         inputSlotPanel.setLayout(new GridLayout(getDisplayedRows(), 1));
         outputSlotPanel.setLayout(new GridLayout(getDisplayedRows(), 1));
+
+        boolean createAddInputSlotButton = false;
+        boolean createAddOutputSlotButton = false;
+
+        if(algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
+            ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
+            createAddInputSlotButton = slotConfiguration.allowsInputSlots() && !slotConfiguration.isInputSlotsSealed();
+            createAddOutputSlotButton = slotConfiguration.allowsOutputSlots() && !slotConfiguration.isOutputSlotsSealed();
+        }
+
         if(algorithm.getInputSlots().size() > 0) {
-            for(ACAQDataSlot<?> slot : algorithm.getInputSlots()) {
+            List<ACAQDataSlot<?>> slots = algorithm.getInputSlots();
+            for(int i = 0; i < slots.size(); ++i) {
+                int bottomBorder = 0;
+                if(i < slots.size() - 1 || createAddInputSlotButton || createAddOutputSlotButton)
+                    bottomBorder = 1;
+
+                ACAQDataSlot<?> slot = slots.get(i);
                 ACAQDataSlotUI ui = new ACAQDataSlotUI(graphUI.getAlgorithmGraph(), slot);
-                ui.setOpaque(false);
+                ui.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,0,bottomBorder,1, getAlgorithmBorderColor()),
+                        BorderFactory.createEmptyBorder(0,0,0,4)));
                 slotUIList.add(ui);
                 inputSlotPanel.add(ui);
             }
         }
         if(algorithm.getOutputSlots().size() > 0) {
-            for(ACAQDataSlot<?> slot : algorithm.getOutputSlots()) {
+            List<ACAQDataSlot<?>> slots = algorithm.getOutputSlots();
+            for(int i = 0; i < slots.size(); ++i) {
+                int bottomBorder = 0;
+                if(i < slots.size() - 1 || createAddInputSlotButton || createAddOutputSlotButton)
+                    bottomBorder = 1;
+                ACAQDataSlot<?> slot = slots.get(i);
                 ACAQDataSlotUI ui = new ACAQDataSlotUI(graphUI.getAlgorithmGraph(), slot);
-                ui.setOpaque(false);
+                ui.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,1,bottomBorder,0, getAlgorithmBorderColor()),
+                        BorderFactory.createEmptyBorder(0,4,0,0)));
                 slotUIList.add(ui);
                 outputSlotPanel.add(ui);
             }
         }
-        if(algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
-            ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration)algorithm.getSlotConfiguration();
-            if(slotConfiguration.allowsInputSlots() && !slotConfiguration.isInputSlotsSealed()) {
-                JButton addInputSlotButton = createAddSlotButton(ACAQDataSlot.SlotType.Input);
-                JPanel panel = new JPanel(new BorderLayout());
-                panel.setOpaque(false);
-                panel.add(addInputSlotButton, BorderLayout.WEST);
-                inputSlotPanel.add(panel);
-            }
-            if(slotConfiguration.allowsOutputSlots() && !slotConfiguration.isOutputSlotsSealed()) {
-                JButton addOutputSlotButton = createAddSlotButton(ACAQDataSlot.SlotType.Output);
-                JPanel panel = new JPanel(new BorderLayout());
-                panel.setOpaque(false);
-                panel.add(addOutputSlotButton, BorderLayout.EAST);
-                outputSlotPanel.add(panel);
-            }
+
+        // Create slot for adding new output
+        if(createAddInputSlotButton) {
+            JButton addInputSlotButton = createAddSlotButton(ACAQDataSlot.SlotType.Input);
+            JPanel panel = new JPanel(new BorderLayout());
+            panel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,0,0,1, getAlgorithmBorderColor()),
+                    BorderFactory.createEmptyBorder(0,0,0,4)));
+            panel.add(addInputSlotButton, BorderLayout.WEST);
+            inputSlotPanel.add(panel);
         }
+        if(createAddOutputSlotButton) {
+            JButton addOutputSlotButton = createAddSlotButton(ACAQDataSlot.SlotType.Output);
+            JPanel panel = new JPanel(new BorderLayout());
+            panel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,1,0,0, getAlgorithmBorderColor()),
+                    BorderFactory.createEmptyBorder(0,4,0,0)));
+            panel.add(addOutputSlotButton, BorderLayout.EAST);
+            outputSlotPanel.add(panel);
+        }
+
         setSize(new Dimension(calculateWidth(), calculateHeight()));
         revalidate();
         repaint();
@@ -319,6 +346,28 @@ public class ACAQAlgorithmUI extends JPanel {
         setLocation(x, y);
         return true;
     }
+
+//    @Override
+//    protected void paintComponent(Graphics g) {
+//        super.paintComponent(g);
+//
+//        Graphics2D graphics = (Graphics2D)g;
+////        RenderingHints rh = new RenderingHints(
+////                RenderingHints.KEY_ANTIALIASING,
+////                RenderingHints.VALUE_ANTIALIAS_ON);
+////        graphics.setRenderingHints(rh);
+//        for(int x = inputSlotPanel.getWidth(); x < getWidth() - outputSlotPanel.getWidth(); ++x) {
+//            for(int y = 0; y < getHeight(); ++y) {
+//                if((x - y) % 3 == 0) {
+//                    if(y % 2 == 0)
+//                        graphics.setColor(Color.GRAY);
+//                    else
+//                        graphics.setColor(Color.WHITE);
+//                    graphics.fillRect(x, y, 1, 1);
+//                }
+//            }
+//        }
+//    }
 
     /**
      * Get the Y location of the bottom part

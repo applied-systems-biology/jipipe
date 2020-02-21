@@ -12,8 +12,8 @@ import org.hkijena.acaq5.api.traits.GoodForTrait;
 import org.hkijena.acaq5.api.traits.RemovesTrait;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
-import org.hkijena.acaq5.extension.api.traits.LowBrightnessQuality;
-import org.hkijena.acaq5.extension.api.traits.NonUniformBrightnessQuality;
+import org.hkijena.acaq5.extension.api.traits.quality.LowBrightnessQuality;
+import org.hkijena.acaq5.extension.api.traits.quality.NonUniformBrightnessQuality;
 import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.LabeledBioObjects;
 
 @ACAQDocumentation(name = "CLAHE enhancer")

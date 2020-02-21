@@ -17,7 +17,7 @@ import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
-import org.hkijena.acaq5.extension.api.traits.ImageQuality;
+import org.hkijena.acaq5.extension.api.traits.quality.ImageQuality;
 import org.hkijena.acaq5.extension.api.traits.bioobject.morphology.RoundBioObjects;
 import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.BioObjectsPreparations;
 import org.hkijena.acaq5.utils.Hough_Circle;

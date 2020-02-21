@@ -14,7 +14,7 @@ import org.hkijena.acaq5.api.traits.GoodForTrait;
 import org.hkijena.acaq5.api.traits.RemovesTrait;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
-import org.hkijena.acaq5.extension.api.traits.bioobject.morphology.ClusterBioObjects;
+import org.hkijena.acaq5.extension.api.traits.bioobject.count.ClusterBioObjects;
 import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.LabeledBioObjects;
 import org.hkijena.acaq5.extension.api.traits.bioobject.morphology.RoundBioObjects;
 import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.UnlabeledBioObjects;

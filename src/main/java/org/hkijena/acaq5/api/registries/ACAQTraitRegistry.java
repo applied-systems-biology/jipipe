@@ -21,4 +21,8 @@ public class ACAQTraitRegistry {
     public Set<Class<? extends ACAQTrait>> getTraits() {
         return Collections.unmodifiableSet(registeredTraits);
     }
+
+    public Class<? extends ACAQTrait> findTraitClass(String canonicalName) {
+        return registeredTraits.stream().filter(c -> c.getCanonicalName().equals(canonicalName)).findFirst().get();
+    }
 }

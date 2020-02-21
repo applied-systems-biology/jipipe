@@ -107,32 +107,44 @@ public class ACAQDataSlotUI extends JPanel {
         assignButtonMenu = UIUtils.addPopupMenuToComponent(assignButton);
         UIUtils.makeFlat(assignButton);
 
+        JPanel centerPanel = new JPanel();
+//        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+        centerPanel.setLayout(new GridLayout(2, 1));
+        centerPanel.setOpaque(false);
+
         JLabel nameLabel = new JLabel(slot.getName());
         nameLabel.setToolTipText(ACAQData.getNameOf(slot.getAcceptedDataType()));
         nameLabel.setBorder(BorderFactory.createEmptyBorder(0,5,0,5));
         nameLabel.setIcon(ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(slot.getAcceptedDataType()));
-        add(nameLabel, BorderLayout.CENTER);
+        centerPanel.add(nameLabel);
+//        add(nameLabel, BorderLayout.CENTER);
+
 
         if(slot.isInput()) {
             add(assignButton, BorderLayout.WEST);
             nameLabel.setHorizontalAlignment(JLabel.LEFT);
             nameLabel.setHorizontalTextPosition(JLabel.RIGHT);
 
-            // For preprocessing output, also create traits per input
-            if(slot.getAlgorithm() instanceof ACAQPreprocessingOutput) {
-                ACAQDataSlotTraitUI traitUI = new ACAQDataSlotTraitUI(graph, slot);
-                add(traitUI, BorderLayout.EAST);
-            }
+//            // For preprocessing output, also create traits per input
+//            if(slot.getAlgorithm() instanceof ACAQPreprocessingOutput) {
+//                ACAQDataSlotTraitUI traitUI = new ACAQDataSlotTraitUI(graph, slot);
+//                add(traitUI, BorderLayout.EAST);
+//            }
         }
         else if(slot.isOutput()) {
             add(assignButton, BorderLayout.EAST);
             nameLabel.setHorizontalAlignment(JLabel.RIGHT);
             nameLabel.setHorizontalTextPosition(JLabel.LEFT);
 
-            // Create trait UI
-            ACAQDataSlotTraitUI traitUI = new ACAQDataSlotTraitUI(graph, slot);
-            add(traitUI, BorderLayout.WEST);
+//            // Create trait UI
+//            ACAQDataSlotTraitUI traitUI = new ACAQDataSlotTraitUI(graph, slot);
+//            add(traitUI, BorderLayout.WEST);
         }
+
+        ACAQDataSlotTraitUI traitUI = new ACAQDataSlotTraitUI(graph, slot);
+        centerPanel.add(traitUI);
+
+        add(centerPanel, BorderLayout.CENTER);
     }
 
     public int calculateWidth() {
