@@ -33,10 +33,43 @@ import org.hkijena.acaq5.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 
+import java.net.URL;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
 
 @Plugin(type = ACAQExtensionService.class)
 public class StandardACAQExtensionService extends AbstractService implements ACAQExtensionService {
+    @Override
+    public String getName() {
+        return "ACAQ5 standard library";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Standard data types and algorithms";
+    }
+
+    @Override
+    public List<String> getAuthors() {
+        return Arrays.asList("Zoltán Cseresnyés", "Ruman Gerst");
+    }
+
+    @Override
+    public String getURL() {
+        return "https://applied-systems-biology.github.io/acaq5/";
+    }
+
+    @Override
+    public String getLicense() {
+        return "BSD-2";
+    }
+
+    @Override
+    public URL getIconURL() {
+        return ResourceUtils.getPluginResource("logo-400.png");
+    }
+
     @Override
     public void register(ACAQRegistryService registryService) {
 
