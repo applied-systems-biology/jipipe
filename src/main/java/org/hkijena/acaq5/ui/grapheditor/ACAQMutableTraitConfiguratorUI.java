@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.ui.grapheditor;
 
 import org.hkijena.acaq5.ACAQRegistryService;
-import org.hkijena.acaq5.api.traits.ACAQMutablePreprocessingTraitConfiguration;
+import org.hkijena.acaq5.api.traits.ACAQMutableTraitGenerator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -10,17 +10,15 @@ import org.jdesktop.swingx.JXTextField;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
-import java.util.*;
-import java.util.List;
 
-public class ACAQMutablePreprocessingTraitConfigurationSlotUI extends JPanel {
+public class ACAQMutableTraitConfiguratorUI extends JPanel {
 
     private String slotName;
-    private ACAQMutablePreprocessingTraitConfiguration configuration;
+    private ACAQMutableTraitGenerator configuration;
     private JXTextField searchField;
     private JPanel traitList;
 
-    public ACAQMutablePreprocessingTraitConfigurationSlotUI(String slotName, ACAQMutablePreprocessingTraitConfiguration configuration) {
+    public ACAQMutableTraitConfiguratorUI(String slotName, ACAQMutableTraitGenerator configuration) {
         this.slotName = slotName;
         this.configuration = configuration;
         initialize();
@@ -108,7 +106,7 @@ public class ACAQMutablePreprocessingTraitConfigurationSlotUI extends JPanel {
         traitList = new JPanel() {
             @Override
             public Dimension getPreferredSize() {
-                return new Dimension(ACAQMutablePreprocessingTraitConfigurationSlotUI.this.getWidth() - 16,
+                return new Dimension(ACAQMutableTraitConfiguratorUI.this.getWidth() - 16,
                         super.getPreferredSize().height);
             }
         };

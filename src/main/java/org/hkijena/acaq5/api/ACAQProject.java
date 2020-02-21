@@ -17,7 +17,7 @@ import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.ACAQSampleAddedEvent;
 import org.hkijena.acaq5.api.events.ACAQSampleRemovedEvent;
 import org.hkijena.acaq5.api.events.ACAQSampleRenamedEvent;
-import org.hkijena.acaq5.api.traits.ACAQMutablePreprocessingTraitConfiguration;
+import org.hkijena.acaq5.api.traits.ACAQMutableTraitGenerator;
 import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.io.IOException;
@@ -35,11 +35,11 @@ public class ACAQProject {
     private BiMap<String, ACAQProjectSample> samples = HashBiMap.create();
     private ACAQMutableSlotConfiguration preprocessingOutputConfiguration = ACAQMutableSlotConfiguration.builder().withoutOutput().build();
     private ACAQMutableSlotConfiguration analysisOutputConfiguration = ACAQMutableSlotConfiguration.builder().withoutOutput().build();
-    private ACAQMutablePreprocessingTraitConfiguration preprocessingTraitConfiguration;
+    private ACAQMutableTraitGenerator preprocessingTraitConfiguration;
     private ACAQAlgorithmGraph analysis = new ACAQAlgorithmGraph();
 
     public ACAQProject() {
-        preprocessingTraitConfiguration = new ACAQMutablePreprocessingTraitConfiguration(preprocessingOutputConfiguration);
+        preprocessingTraitConfiguration = new ACAQMutableTraitGenerator(preprocessingOutputConfiguration);
         analysis.insertNode(new ACAQPreprocessingOutput(new ACAQInputAsOutputSlotConfiguration(preprocessingOutputConfiguration), preprocessingTraitConfiguration));
     }
 
@@ -59,7 +59,7 @@ public class ACAQProject {
         return analysisOutputConfiguration;
     }
 
-    public ACAQMutablePreprocessingTraitConfiguration getPreprocessingTraitConfiguration() {
+    public ACAQMutableTraitGenerator getPreprocessingTraitConfiguration() {
         return preprocessingTraitConfiguration;
     }
 

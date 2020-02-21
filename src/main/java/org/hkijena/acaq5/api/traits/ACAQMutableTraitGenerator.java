@@ -5,10 +5,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
-import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.ACAQPreprocessingOutput;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
@@ -23,12 +21,12 @@ import java.util.stream.Collectors;
 /**
  * Trait configuration designed for usage in {@link ACAQPreprocessingOutput}
  */
-@JsonSerialize(using = ACAQMutablePreprocessingTraitConfiguration.Serializer.class)
-public class ACAQMutablePreprocessingTraitConfiguration extends ACAQTraitConfiguration {
-    private List<ACAQMutableTraitConfiguration.ModifyTask> modifyTasks = new ArrayList<>();
+@JsonSerialize(using = ACAQMutableTraitGenerator.Serializer.class)
+public class ACAQMutableTraitGenerator extends ACAQTraitConfiguration {
+    private List<ACAQMutableTraitModifier.ModifyTask> modifyTasks = new ArrayList<>();
     private ACAQSlotConfiguration slotConfiguration;
 
-    public ACAQMutablePreprocessingTraitConfiguration(ACAQSlotConfiguration slotConfiguration) {
+    public ACAQMutableTraitGenerator(ACAQSlotConfiguration slotConfiguration) {
         this.slotConfiguration = slotConfiguration;
     }
 
@@ -38,10 +36,10 @@ public class ACAQMutablePreprocessingTraitConfiguration extends ACAQTraitConfigu
      * @param trait
      * @return
      */
-    public ACAQMutablePreprocessingTraitConfiguration addTraitTo(String outputSlotName, Class<? extends ACAQTrait> trait) {
+    public ACAQMutableTraitGenerator addTraitTo(String outputSlotName, Class<? extends ACAQTrait> trait) {
         if(!getSlotConfiguration().getSlots().containsKey(outputSlotName))
             throw new IllegalArgumentException("Slot must exist!");
-        modifyTasks.add(new ACAQMutableTraitConfiguration.ModifyTask(outputSlotName, ACAQMutableTraitConfiguration.ModificationType.ADD, trait));
+        modifyTasks.add(new ACAQMutableTraitModifier.ModifyTask(outputSlotName, ACAQMutableTraitModifier.ModificationType.ADD, trait));
         getEventBus().post(new TraitsChangedEvent(this));
         return this;
     }
@@ -52,7 +50,7 @@ public class ACAQMutablePreprocessingTraitConfiguration extends ACAQTraitConfigu
      * @param trait
      * @return
      */
-    public ACAQMutablePreprocessingTraitConfiguration removeTraitFrom(String outputSlotName, Class<? extends ACAQTrait> trait) {
+    public ACAQMutableTraitGenerator removeTraitFrom(String outputSlotName, Class<? extends ACAQTrait> trait) {
         if (!getSlotConfiguration().getSlots().containsKey(outputSlotName))
             throw new IllegalArgumentException("Slot must exist!");
         modifyTasks.removeIf(task -> task.getTrait().equals(trait));
@@ -67,7 +65,7 @@ public class ACAQMutablePreprocessingTraitConfiguration extends ACAQTraitConfigu
      */
     public Set<Class<? extends ACAQTrait>> getTraitsOf(String slotName) {
         return modifyTasks.stream().filter(task -> task.getSlotName().equals(slotName))
-                .map(ACAQMutableTraitConfiguration.ModifyTask::getTrait).collect(Collectors.toSet());
+                .map(ACAQMutableTraitModifier.ModifyTask::getTrait).collect(Collectors.toSet());
     }
 
     /**
@@ -99,7 +97,7 @@ public class ACAQMutablePreprocessingTraitConfiguration extends ACAQTraitConfigu
      */
     @Override
     public void modify(String slotName, Set<Class<? extends ACAQTrait>> target) {
-        for(ACAQMutableTraitConfiguration.ModifyTask task : modifyTasks) {
+        for(ACAQMutableTraitModifier.ModifyTask task : modifyTasks) {
             if(task.getSlotName() == null || slotName.equals(task.getSlotName())) {
                 switch(task.getType()) {
                     case ADD:
@@ -126,14 +124,14 @@ public class ACAQMutablePreprocessingTraitConfiguration extends ACAQTraitConfigu
         }
     }
 
-    public static class Serializer extends JsonSerializer<ACAQMutablePreprocessingTraitConfiguration> {
+    public static class Serializer extends JsonSerializer<ACAQMutableTraitGenerator> {
 
         @Override
-        public void serialize(ACAQMutablePreprocessingTraitConfiguration configuration, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+        public void serialize(ACAQMutableTraitGenerator configuration, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeFieldName("traits");
             jsonGenerator.writeStartArray();
-            for(ACAQMutableTraitConfiguration.ModifyTask task : configuration.modifyTasks) {
+            for(ACAQMutableTraitModifier.ModifyTask task : configuration.modifyTasks) {
                 jsonGenerator.writeStartObject();
                 jsonGenerator.writeStringField("class", task.getTrait().getCanonicalName());
                 jsonGenerator.writeStringField("slot-name", task.getSlotName());

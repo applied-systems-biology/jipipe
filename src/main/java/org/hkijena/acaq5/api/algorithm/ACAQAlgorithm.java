@@ -45,7 +45,7 @@ public abstract class ACAQAlgorithm {
     }
 
     public ACAQAlgorithm(ACAQSlotConfiguration slotConfiguration) {
-        this(slotConfiguration, new ACAQMutableTraitConfiguration(slotConfiguration));
+        this(slotConfiguration, new ACAQMutableTraitModifier(slotConfiguration));
     }
 
     public ACAQAlgorithm(ACAQAlgorithm other) {
@@ -87,8 +87,8 @@ public abstract class ACAQAlgorithm {
      * This includes applying annotation-based trait assignments
      */
     protected void initializeTraits() {
-        if (getTraitConfiguration() instanceof ACAQMutableTraitConfiguration) {
-            ACAQMutableTraitConfiguration traitConfiguration = (ACAQMutableTraitConfiguration) getTraitConfiguration();
+        if (getTraitConfiguration() instanceof ACAQMutableTraitModifier) {
+            ACAQMutableTraitModifier traitConfiguration = (ACAQMutableTraitModifier) getTraitConfiguration();
             // Annotation-based trait configuration
             if (getClass().getAnnotationsByType(AutoTransferTraits.class).length > 0) {
                 traitConfiguration.transferFromAllToAll();
@@ -257,6 +257,9 @@ public abstract class ACAQAlgorithm {
             location.x = node.get("acaq:algorithm-location-x").asInt();
             location.y = node.get("acaq:algorithm-location-y").asInt();
         }
+        if(node.has("acaq:trait-generation") && getTraitConfiguration() instanceof ACAQMutableTraitGenerator) {
+            ((ACAQMutableTraitGenerator) getTraitConfiguration()).fromJson(node.get("acaq:trait-generation"));
+        }
 
         // Deserialize algorithm-specific parameters
         for(Map.Entry<String, ACAQParameterAccess> kv : ACAQParameterAccess.getParameters(this).entrySet()) {
@@ -299,6 +302,9 @@ public abstract class ACAQAlgorithm {
             jsonGenerator.writeNumberField("acaq:algorithm-location-y", algorithm.location.y);
             for(Map.Entry<String, ACAQParameterAccess> kv : ACAQParameterAccess.getParameters(algorithm).entrySet()) {
                 jsonGenerator.writeObjectField(kv.getKey(), kv.getValue().get());
+            }
+            if(algorithm.getTraitConfiguration() instanceof ACAQMutableTraitGenerator) {
+                jsonGenerator.writeObjectField("acaq:trait-generation", algorithm.getTraitConfiguration());
             }
             jsonGenerator.writeEndObject();
         }
