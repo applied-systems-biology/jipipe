@@ -1,11 +1,12 @@
 package org.hkijena.acaq5.api.registries;
 
+import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQDataSource;
-import org.hkijena.acaq5.api.data.ACAQGeneratesData;
 import org.hkijena.acaq5.api.traits.*;
 
 import java.util.*;
@@ -138,12 +139,13 @@ public class ACAQAlgorithmRegistry {
      * @return
      */
     public <T extends ACAQData> Set<Class<? extends ACAQDataSource<T>>> getDataSourcesFor(Class<? extends T> dataClass) {
+        Class<? extends ACAQDataSlot<?>> slotClass = ACAQRegistryService.getInstance().getDatatypeRegistry().getRegisteredSlotDataTypes().get(dataClass);
         Set<Class<? extends ACAQDataSource<T>>> result = new HashSet<>();
         for(Class<? extends ACAQAlgorithm> klass : registeredAlgorithms) {
-            ACAQGeneratesData[] annotations = klass.getAnnotationsByType(ACAQGeneratesData.class);
-            if(annotations.length > 0) {
-                if(Arrays.stream(annotations).anyMatch(annot -> annot.value() == dataClass))
+            if(ACAQDataSource.class.isAssignableFrom(klass)) {
+                if(Arrays.stream(ACAQAlgorithm.getOutputOf(klass)).anyMatch(slot -> slot.value().equals(slotClass))) {
                     result.add((Class<? extends ACAQDataSource<T>>) klass);
+                }
             }
         }
         return result;

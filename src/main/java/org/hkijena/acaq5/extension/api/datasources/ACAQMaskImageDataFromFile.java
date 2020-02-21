@@ -4,7 +4,7 @@ import ij.IJ;
 import org.hkijena.acaq5.api.*;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
-import org.hkijena.acaq5.api.data.ACAQGeneratesData;
+import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQSimpleDataSource;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
@@ -16,7 +16,7 @@ import java.nio.file.Path;
  * Loads greyscale data from a file via IJ.openFile()
  */
 @ACAQDocumentation(name = "Mask from file")
-@ACAQGeneratesData(ACAQMaskData.class)
+@AlgorithmOutputSlot(ACAQMaskDataSlot.class)
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
 public class ACAQMaskImageDataFromFile extends ACAQSimpleDataSource<ACAQMaskData> {
 
