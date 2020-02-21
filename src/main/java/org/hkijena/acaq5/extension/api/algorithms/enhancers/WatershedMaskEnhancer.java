@@ -15,7 +15,7 @@ import org.hkijena.acaq5.api.traits.RemovesTrait;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.traits.bioobject.count.ClusterBioObjects;
-import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.LabeledBioObjects;
+import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.BioObjectsLabeling;
 import org.hkijena.acaq5.extension.api.traits.bioobject.morphology.RoundBioObjects;
 import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.UnlabeledBioObjects;
 
@@ -24,7 +24,7 @@ import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.Un
 
 // Trait matching
 @GoodForTrait(RoundBioObjects.class)
-@GoodForTrait(LabeledBioObjects.class)
+@GoodForTrait(BioObjectsLabeling.class)
 @BadForTrait(UnlabeledBioObjects.class)
 @GoodForTrait(ClusterBioObjects.class)
 

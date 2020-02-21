@@ -6,9 +6,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmMetadata;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSource;
 import org.hkijena.acaq5.api.data.ACAQGeneratesData;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.api.traits.BadForTrait;
-import org.hkijena.acaq5.api.traits.GoodForTrait;
+import org.hkijena.acaq5.api.traits.*;
 
 import java.util.*;
 
@@ -19,6 +17,8 @@ public class ACAQAlgorithmRegistry {
     private Set<Class<? extends ACAQAlgorithm>> registeredAlgorithms = new HashSet<>();
     private Map<Class<? extends ACAQAlgorithm>, Set<Class<? extends ACAQTrait>>> preferredTraits = new HashMap<>();
     private Map<Class<? extends ACAQAlgorithm>, Set<Class<? extends ACAQTrait>>> unwantedTraits = new HashMap<>();
+    private Map<Class<? extends ACAQAlgorithm>, List<AddsTrait>> addedTraits = new HashMap<>();
+    private Map<Class<? extends ACAQAlgorithm>, List<RemovesTrait>> removedTraits = new HashMap<>();
 
     public ACAQAlgorithmRegistry() {
 
@@ -33,12 +33,36 @@ public class ACAQAlgorithmRegistry {
         registeredAlgorithms.add(klass);
         preferredTraits.put(klass, new HashSet<>());
         unwantedTraits.put(klass, new HashSet<>());
+        addedTraits.put(klass, new ArrayList<>());
+        removedTraits.put(klass, new ArrayList<>());
         for(GoodForTrait trait : klass.getAnnotationsByType(GoodForTrait.class)) {
             registerPreferredTraitFor(klass, trait.value());
         }
         for(BadForTrait trait : klass.getAnnotationsByType(BadForTrait.class)) {
             registerUnwantedTraitFor(klass, trait.value());
         }
+        addedTraits.get(klass).addAll(Arrays.asList(klass.getAnnotationsByType(AddsTrait.class)));
+        removedTraits.get(klass).addAll(Arrays.asList(klass.getAnnotationsByType(RemovesTrait.class)));
+    }
+
+    /**
+     * Registers that the specified algorithm adds the specified trait to all of its outputs.
+     * This is equivalent to attaching {@link AddsTrait} to the class, although autoAdd is always enabled
+     * @param klass
+     * @param trait
+     */
+    public void registerAlgorithmAddsTrait(Class<? extends ACAQAlgorithm> klass, Class<? extends ACAQTrait> trait) {
+        addedTraits.get(klass).add(new DefaultAddsTrait(trait, true));
+    }
+
+    /**
+     * Registers that the specified algorithm removes the specified trait from all of its outputs.
+     * This is equivalent to attaching {@link RemovesTrait} to the class, although autoRemove is always enabled
+     * @param klass
+     * @param trait
+     */
+    public void registerAlgorithmRemovesTrait(Class<? extends ACAQAlgorithm> klass, Class<? extends ACAQTrait> trait) {
+        removedTraits.get(klass).add(new DefaultRemovesTrait(trait, true));
     }
 
     /**
@@ -85,6 +109,26 @@ public class ACAQAlgorithmRegistry {
      */
     public Set<Class<? extends ACAQTrait>> getUnwantedTraitsOf(Class<? extends ACAQAlgorithm> klass) {
         return Collections.unmodifiableSet(unwantedTraits.getOrDefault(klass, Collections.emptySet()));
+    }
+
+    /**
+     * Returns all traits added by the algorithm. Please note that this works on algorithm-level.
+     * Algorithms can have different trait modifications per data slot.
+     * @param klass
+     * @return
+     */
+    public List<AddsTrait> getAddedTraitsOf(Class<? extends ACAQAlgorithm> klass) {
+        return Collections.unmodifiableList(addedTraits.getOrDefault(klass, Collections.emptyList()));
+    }
+
+    /**
+     * Returns all traits added by the algorithm. Please note that this works on algorithm-level.
+     * Algorithms can have different trait modifications per data slot.
+     * @param klass
+     * @return
+     */
+    public List<RemovesTrait> getRemovedTraitsOf(Class<? extends ACAQAlgorithm> klass) {
+        return Collections.unmodifiableList(removedTraits.getOrDefault(klass, Collections.emptyList()));
     }
 
     /**

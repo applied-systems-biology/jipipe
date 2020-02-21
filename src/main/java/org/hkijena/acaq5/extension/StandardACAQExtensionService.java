@@ -32,7 +32,7 @@ import org.hkijena.acaq5.extension.api.traits.bioobject.morphology.FilamentousBi
 import org.hkijena.acaq5.extension.api.traits.bioobject.morphology.IrregularBioObjects;
 import org.hkijena.acaq5.extension.api.traits.bioobject.morphology.RoundBioObjects;
 import org.hkijena.acaq5.extension.api.traits.bioobject.count.SingleBioObject;
-import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.LabeledBioObjects;
+import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.BioObjectsLabeling;
 import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.MembraneLabeledBioObjects;
 import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.UniformlyLabeledBioObjects;
 import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.UnlabeledBioObjects;
@@ -108,8 +108,8 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
         registryService.getUITraitRegistry().registerIcon(IrregularBioObjects.class,
                 ResourceUtils.getPluginResource("icons/traits/bioobject.png"));
 
-        registryService.getTraitRegistry().register(LabeledBioObjects.class);
-        registryService.getUITraitRegistry().registerIcon(LabeledBioObjects.class,
+        registryService.getTraitRegistry().register(BioObjectsLabeling.class);
+        registryService.getUITraitRegistry().registerIcon(BioObjectsLabeling.class,
                 ResourceUtils.getPluginResource("icons/traits/bioobject-labeled.png"));
 
         registryService.getTraitRegistry().register(MembraneLabeledBioObjects.class);

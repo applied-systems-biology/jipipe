@@ -6,7 +6,7 @@ import java.lang.annotation.*;
 
 /**
  * Annotates an {@link ACAQAlgorithm} to remove given trait from all output slots
- * Attaching this annotation automatically runs removesTraits() in {@link ACAQTraitConfiguration}
+ * Attaching this annotation automatically runs removesTraits() in {@link ACAQTraitConfiguration} if autoRemove is true
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
@@ -17,4 +17,10 @@ public @interface RemovesTrait {
      * @return
      */
     Class<? extends ACAQTrait> value();
+
+    /**
+     * If true, {@link ACAQAlgorithm} will automatically remove the trait from all output
+     * @return
+     */
+    boolean autoRemove() default true;
 }

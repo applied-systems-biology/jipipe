@@ -26,7 +26,7 @@ public class ACAQDataSlotListCellRenderer extends JLabel implements ListCellRend
             setIcon(ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(slot.getAcceptedDataType()));
         }
         else {
-            setText("<null>");
+            setText("<No data slot selected>");
             setIcon(null);
         }
 

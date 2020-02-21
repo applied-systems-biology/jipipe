@@ -14,11 +14,12 @@ import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
+import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.UniformlyLabeledBioObjects;
 import org.hkijena.acaq5.extension.api.traits.quality.ImageQuality;
 import org.hkijena.acaq5.extension.api.traits.quality.NonUniformBrightnessQuality;
 import org.hkijena.acaq5.extension.api.traits.bioobject.count.ClusterBioObjects;
 import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.BioObjectsPreparations;
-import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.LabeledBioObjects;
+import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.BioObjectsLabeling;
 import org.hkijena.acaq5.utils.ImageJUtils;
 
 /**
@@ -28,13 +29,14 @@ import org.hkijena.acaq5.utils.ImageJUtils;
 @ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
 
 // Trait matching
-@GoodForTrait(LabeledBioObjects.class)
+@GoodForTrait(UniformlyLabeledBioObjects.class)
 @BadForTrait(NonUniformBrightnessQuality.class)
 
 // Trait configuration
 @AutoTransferTraits
 @RemovesTrait(ImageQuality.class)
 @RemovesTrait(BioObjectsPreparations.class)
+@RemovesTrait(BioObjectsLabeling.class)
 @AddsTrait(ClusterBioObjects.class)
 public class AutoThresholdSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQMaskData> {
 

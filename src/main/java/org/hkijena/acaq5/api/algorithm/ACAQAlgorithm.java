@@ -95,14 +95,14 @@ public abstract class ACAQAlgorithm {
             if (getClass().getAnnotationsByType(AutoTransferTraits.class).length > 0) {
                 traitConfiguration.transferFromAllToAll();
             }
-            for (AddsTrait trait : getClass().getAnnotationsByType(AddsTrait.class)) {
-                traitConfiguration.addsTrait(trait.value());
+            for (AddsTrait trait : ACAQRegistryService.getInstance().getAlgorithmRegistry().getAddedTraitsOf(getClass())) {
+                if(trait.autoAdd())
+                    traitConfiguration.addsTrait(trait.value());
             }
-            for (RemovesTrait trait : getClass().getAnnotationsByType(RemovesTrait.class)) {
-                traitConfiguration.removesTrait(trait.value());
+            for (RemovesTrait trait : ACAQRegistryService.getInstance().getAlgorithmRegistry().getRemovedTraitsOf(getClass())) {
+                if(trait.autoRemove())
+                    traitConfiguration.removesTrait(trait.value());
             }
-
-            // TODO: Registry-based trait configuration
         }
     }
 

@@ -14,13 +14,13 @@ import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.traits.quality.LowBrightnessQuality;
 import org.hkijena.acaq5.extension.api.traits.quality.NonUniformBrightnessQuality;
-import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.LabeledBioObjects;
+import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.BioObjectsLabeling;
 
 @ACAQDocumentation(name = "CLAHE enhancer")
 @ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
 
 // Trait matching
-@GoodForTrait(LabeledBioObjects.class)
+@GoodForTrait(BioObjectsLabeling.class)
 @GoodForTrait(LowBrightnessQuality.class)
 @GoodForTrait(NonUniformBrightnessQuality.class)
 

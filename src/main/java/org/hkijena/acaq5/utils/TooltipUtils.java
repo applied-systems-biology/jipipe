@@ -5,8 +5,12 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
+import org.hkijena.acaq5.api.traits.AddsTrait;
+import org.hkijena.acaq5.api.traits.RemovesTrait;
 
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class TooltipUtils {
     private TooltipUtils() {
@@ -53,6 +57,10 @@ public class TooltipUtils {
 
         Set<Class<? extends ACAQTrait>> preferredTraits = ACAQRegistryService.getInstance().getAlgorithmRegistry().getPreferredTraitsOf(algorithmClass);
         Set<Class<? extends ACAQTrait>> unwantedTraits = ACAQRegistryService.getInstance().getAlgorithmRegistry().getUnwantedTraitsOf(algorithmClass);
+        Set<Class<? extends ACAQTrait>> addedTraits = ACAQRegistryService.getInstance().getAlgorithmRegistry().getAddedTraitsOf(algorithmClass)
+                .stream().map(AddsTrait::value).collect(Collectors.toSet());
+        Set<Class<? extends ACAQTrait>> removedTraits = ACAQRegistryService.getInstance().getAlgorithmRegistry().getRemovedTraitsOf(algorithmClass)
+                .stream().map(RemovesTrait::value).collect(Collectors.toSet());
 
         if(!preferredTraits.isEmpty()) {
             builder.append("<br/><br/><strong>Good for<br/>");
@@ -61,6 +69,14 @@ public class TooltipUtils {
         if(!unwantedTraits.isEmpty()) {
             builder.append("<br/><br/><strong>Bad for<br/>");
             insertTraitTable(builder, unwantedTraits);
+        }
+        if(!removedTraits.isEmpty()) {
+            builder.append("<br/><br/><strong>Removes<br/>");
+            insertTraitTable(builder, removedTraits);
+        }
+        if(!addedTraits.isEmpty()) {
+            builder.append("<br/><br/><strong>Adds<br/>");
+            insertTraitTable(builder, addedTraits);
         }
 
         builder.append("</html>");
