@@ -10,6 +10,8 @@ import org.hkijena.acaq5.api.traits.GoodForTrait;
 import org.hkijena.acaq5.api.traits.RemovesTrait;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
+import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.MembraneLabeledBioObjects;
+import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.UniformlyLabeledBioObjects;
 import org.hkijena.acaq5.extension.api.traits.quality.LowBrightnessQuality;
 import org.hkijena.acaq5.extension.api.traits.quality.NonUniformBrightnessQuality;
 import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.BioObjectsLabeling;
@@ -22,7 +24,8 @@ import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.Bi
 @AlgorithmOutputSlot(value = ACAQGreyscaleImageDataSlot.class, slotName = "Output image", autoCreate = true)
 
 // Trait matching
-@GoodForTrait(BioObjectsLabeling.class)
+@GoodForTrait(UniformlyLabeledBioObjects.class)
+@GoodForTrait(MembraneLabeledBioObjects.class)
 @GoodForTrait(LowBrightnessQuality.class)
 @GoodForTrait(NonUniformBrightnessQuality.class)
 

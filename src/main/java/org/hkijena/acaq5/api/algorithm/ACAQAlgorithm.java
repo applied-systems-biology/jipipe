@@ -75,12 +75,12 @@ public abstract class ACAQAlgorithm {
 
     /**
      * Copies the input algorithm's properties into this algorithm
-     * This will not copy traits.
      *
      * @param other
      */
     public ACAQAlgorithm(ACAQAlgorithm other) {
         this.slotConfiguration = copySlotConfiguration(other);
+        this.traitConfiguration = new ACAQMutableTraitModifier(slotConfiguration);
         this.location = other.location;
         slotConfiguration.getEventBus().register(this);
         initalize();

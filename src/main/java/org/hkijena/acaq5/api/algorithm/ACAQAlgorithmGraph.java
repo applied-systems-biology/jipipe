@@ -98,6 +98,10 @@ public class ACAQAlgorithmGraph {
     }
 
     public void removeNode(ACAQAlgorithm algorithm) {
+
+        if(algorithm instanceof ACAQPreprocessingOutput)
+            return;
+
         algorithms.remove(algorithms.inverse().get(algorithm));
         algorithm.getEventBus().unregister(this);
         algorithm.getTraitConfiguration().getEventBus().unregister(this);
@@ -107,6 +111,7 @@ public class ACAQAlgorithmGraph {
         for(ACAQDataSlot<?> slot : algorithm.getOutputSlots()) {
             graph.removeVertex(slot);
         }
+        algorithmTraits = null;
         getEventBus().post(new AlgorithmGraphChangedEvent(this));
     }
 
