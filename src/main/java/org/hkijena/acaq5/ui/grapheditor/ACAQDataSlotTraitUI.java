@@ -43,6 +43,10 @@ public class ACAQDataSlotTraitUI extends JPanel {
 
             if(canEditTraits) {
                 UIUtils.makeFlat25x25(traitButton);
+                JPopupMenu menu = UIUtils.addPopupMenuToComponent(traitButton);
+                JMenuItem removeTraitButton = new JMenuItem("Remove this annotation", UIUtils.getIconFromResources("remove.png"));
+                removeTraitButton.addActionListener(e -> removeTrait(trait));
+                menu.add(removeTraitButton);
             }
             else
                 UIUtils.makeBorderlessWithoutMargin(traitButton);
@@ -66,6 +70,11 @@ public class ACAQDataSlotTraitUI extends JPanel {
             UIUtils.makeFlat25x25(addTraitButton);
             add(addTraitButton);
         }
+    }
+
+    private void removeTrait(Class<? extends ACAQTrait> trait) {
+        ACAQMutablePreprocessingTraitConfiguration traitConfiguration = (ACAQMutablePreprocessingTraitConfiguration)slot.getAlgorithm().getTraitConfiguration();
+        traitConfiguration.removeTraitFrom(slot.getName(), trait);
     }
 
     private void addTrait() {
