@@ -166,7 +166,7 @@ public class ACAQDataSlotUI extends JPanel {
 
     @Subscribe
     public void onAlgorithmGraphChanged(AlgorithmGraphChangedEvent event) {
-        if(graph.containsNode(slot.getAlgorithm())) {
+        if(graph.containsNode(slot)) {
             reloadPopupMenu();
             reloadButtonStatus();
         }

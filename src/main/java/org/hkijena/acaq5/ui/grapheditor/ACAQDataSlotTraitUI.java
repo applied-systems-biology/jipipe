@@ -82,7 +82,9 @@ public class ACAQDataSlotTraitUI extends JPanel {
 
     @Subscribe
     public void onAlgorithmGraphChanged(AlgorithmGraphChangedEvent event) {
-        reloadButtons();
+        if(event.getAlgorithmGraph().containsNode(slot)) {
+            reloadButtons();
+        }
     }
 
     public int calculateWidth() {

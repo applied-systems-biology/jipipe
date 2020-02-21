@@ -143,6 +143,7 @@ public class ACAQAlgorithmGraph {
         if(!canConnect(source, target))
             throw new RuntimeException("Cannot connect data slots!");
         graph.addEdge(source, target);
+        algorithmTraits = null;
         getEventBus().post(new AlgorithmGraphChangedEvent(this));
     }
 
@@ -190,6 +191,9 @@ public class ACAQAlgorithmGraph {
                 }
             }
         }
+
+        // Trigger recalculation for traits
+        algorithmTraits = null;
 
         if(modified)
             getEventBus().post(new AlgorithmGraphChangedEvent(this));
@@ -264,6 +268,7 @@ public class ACAQAlgorithmGraph {
             ACAQDataSlot<?> source = getSourceSlot(slot);
             if(source != null) {
                 graph.removeEdge(source, slot);
+                algorithmTraits = null;
                 getEventBus().post(new AlgorithmGraphChangedEvent(this));
             }
         }
@@ -273,6 +278,7 @@ public class ACAQAlgorithmGraph {
                 graph.removeEdge(slot, target);
                 modified = true;
             }
+            algorithmTraits = null;
             if(modified)
                 getEventBus().post(new AlgorithmGraphChangedEvent(this));
         }
@@ -440,6 +446,10 @@ public class ACAQAlgorithmGraph {
 
     public Set<ACAQDataSlot<?>> getSlotNodes() {
         return graph.vertexSet();
+    }
+
+    public boolean containsNode(ACAQDataSlot<?> slot) {
+        return graph.vertexSet().contains(slot);
     }
 
     public static class Serializer extends JsonSerializer<ACAQAlgorithmGraph> {
