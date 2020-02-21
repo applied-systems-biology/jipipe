@@ -106,55 +106,19 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
 
         switchPanningDirectionButton = new JToggleButton("Reverse panning direction",
                 UIUtils.getIconFromResources("cursor-arrow.png"));
+        UIUtils.makeFlat(switchPanningDirectionButton);
         switchPanningDirectionButton.setToolTipText("Changes the direction how panning (middle mouse button) affects the view.");
         menuBar.add(switchPanningDirectionButton);
 
-        JButton autoLayoutButton = new JButton("Auto layout", UIUtils.getIconFromResources("sort.png"));
-        menuBar.add(autoLayoutButton);
-    }
-
-    private String createTooltipFor(Class<? extends ACAQAlgorithm> algorithmClass) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("<html>");
-        builder.append("<u><strong>").append(ACAQAlgorithm.getNameOf(algorithmClass)).append("</strong></u><br/>");
-        String description = ACAQAlgorithm.getDescriptionOf(algorithmClass);
-        if(description != null && !description.isEmpty())
-            builder.append(description).append("</br>");
-
-        Set<Class<? extends ACAQTrait>> preferredTraits = ACAQRegistryService.getInstance().getAlgorithmRegistry().getPreferredTraitsOf(algorithmClass);
-        Set<Class<? extends ACAQTrait>> unwantedTraits = ACAQRegistryService.getInstance().getAlgorithmRegistry().getUnwantedTraitsOf(algorithmClass);
-
-        if(!preferredTraits.isEmpty()) {
-            builder.append("<br/><br/><strong>Good for<br/>");
-            insertTraitTable(builder, preferredTraits);
-        }
-        if(!unwantedTraits.isEmpty()) {
-            builder.append("<br/><br/><strong>Bad for<br/>");
-            insertTraitTable(builder, unwantedTraits);
-        }
-
-        builder.append("</html>");
-        return builder.toString();
-    }
-
-    private void insertTraitTable(StringBuilder builder, Set<Class<? extends ACAQTrait>> traits) {
-        builder.append("<table>");
-        for (Class<? extends ACAQTrait> trait : traits) {
-            builder.append("<tr>");
-            builder.append("<td>").append("<img src=\"")
-                    .append(ACAQRegistryService.getInstance().getUITraitRegistry().getIconURLFor(trait))
-                    .append("\"/>").append("</td>");
-            builder.append("<td>").append(ACAQTrait.getNameOf(trait)).append("</td>");
-            builder.append("</tr>");
-        }
-        builder.append("</table>");
+//        JButton autoLayoutButton = new JButton("Auto layout", UIUtils.getIconFromResources("sort.png"));
+//        menuBar.add(autoLayoutButton);
     }
 
     private void initializeMenuForCategory(JMenu menu, ACAQAlgorithmCategory category) {
         ACAQRegistryService registryService = ACAQRegistryService.getInstance();
         for(Class<? extends ACAQAlgorithm> algorithmClass : registryService.getAlgorithmRegistry().getAlgorithmsOfCategory(category)) {
             JMenuItem addItem = new JMenuItem(ACAQAlgorithm.getNameOf(algorithmClass), UIUtils.getIconFromResources("cog.png"));
-            addItem.setToolTipText(createTooltipFor(algorithmClass));
+            addItem.setToolTipText(ACAQAlgorithm.getTooltipOf(algorithmClass));
             addItem.addActionListener(e -> algorithmGraph.insertNode(ACAQAlgorithm.createInstance(algorithmClass)));
             menu.add(addItem);
         }
@@ -171,7 +135,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
 
                 for(Class<? extends ACAQDataSource<ACAQData>> sourceClass : dataSources) {
                     JMenuItem addItem = new JMenuItem(ACAQAlgorithm.getNameOf(sourceClass), icon);
-                    addItem.setToolTipText(createTooltipFor(sourceClass));
+                    addItem.setToolTipText(ACAQAlgorithm.getTooltipOf(sourceClass));
                     addItem.addActionListener(e -> algorithmGraph.insertNode(ACAQAlgorithm.createInstance(sourceClass)));
                     dataMenu.add(addItem);
                 }

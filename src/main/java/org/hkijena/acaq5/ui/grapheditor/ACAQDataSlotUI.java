@@ -14,6 +14,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
+import java.util.Set;
 
 import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_HEIGHT;
 import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_WIDTH;
@@ -61,11 +62,18 @@ public class ACAQDataSlotUI extends JPanel {
 
                 assignButtonMenu.addSeparator();
             }
+            Set<ACAQDataSlot<?>> availableTargets = graph.getAvailableTargets(slot);
 
-            for(ACAQDataSlot<?> target : graph.getAvailableTargets(slot)) {
+            JMenuItem findAlgorithmButton = new JMenuItem("Find matching algorithm ...", UIUtils.getIconFromResources("search.png"));
+            assignButtonMenu.add(findAlgorithmButton);
+            if(!availableTargets.isEmpty())
+                assignButtonMenu.addSeparator();
+
+            for(ACAQDataSlot<?> target : availableTargets) {
                 JMenuItem connectButton = new JMenuItem(target.getFullName(),
                         ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(target.getAcceptedDataType()));
                 connectButton.addActionListener(e -> connectSlot(slot, target));
+                connectButton.setToolTipText(ACAQAlgorithm.getTooltipOf(target.getAlgorithm().getClass()));
                 assignButtonMenu.add(connectButton);
             }
         }

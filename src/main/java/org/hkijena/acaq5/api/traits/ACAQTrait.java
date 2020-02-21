@@ -100,4 +100,17 @@ public interface ACAQTrait {
 
         return builder.toString();
     }
+
+    static void insertTraitTable(StringBuilder builder, Set<Class<? extends ACAQTrait>> traits) {
+        builder.append("<table>");
+        for (Class<? extends ACAQTrait> trait : traits) {
+            builder.append("<tr>");
+            builder.append("<td>").append("<img src=\"")
+                    .append(ACAQRegistryService.getInstance().getUITraitRegistry().getIconURLFor(trait))
+                    .append("\"/>").append("</td>");
+            builder.append("<td>").append(ACAQTrait.getNameOf(trait)).append("</td>");
+            builder.append("</tr>");
+        }
+        builder.append("</table>");
+    }
 }
