@@ -61,6 +61,11 @@ public class ACAQParameterAccess {
                     ACAQSubAlgorithm subAlgorithmAnnotation = subAlgorithms[0];
                     ACAQAlgorithm subAlgorithm = (ACAQAlgorithm) method.invoke(algorithm);
                     for(Map.Entry<String, ACAQParameterAccess> kv : getParameters(subAlgorithm).entrySet()) {
+
+                        // Do not allow name parameter
+                        if(kv.getKey().equals("name"))
+                            continue;
+
                         result.put(subAlgorithmAnnotation.value() + "/" + kv.getKey(), kv.getValue());
                     }
                 } catch (IllegalAccessException | InvocationTargetException e) {
