@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.ui.grapheditor;
+package org.hkijena.acaq5.ui.grapheditor.settings;
 
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
@@ -38,6 +38,12 @@ public class ACAQAlgorithmSettingsUI extends JPanel {
         ACAQSlotEditorUI slotEditorUI = new ACAQSlotEditorUI(algorithm);
         tabbedPane.addTab("Slots", UIUtils.getIconFromResources("database.png"),
                 slotEditorUI,
+                DocumentTabPane.CloseMode.withoutCloseButton,
+                false);
+
+        ACAQTraitEditorUI traitEditorUI = new ACAQTraitEditorUI(algorithm, graph);
+        tabbedPane.addTab("Annotations", UIUtils.getIconFromResources("label.png"),
+                traitEditorUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
 

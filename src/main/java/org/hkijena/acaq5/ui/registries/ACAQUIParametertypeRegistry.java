@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.ui.registries;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.ui.grapheditor.ACAQParameterEditorUI;
+import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;

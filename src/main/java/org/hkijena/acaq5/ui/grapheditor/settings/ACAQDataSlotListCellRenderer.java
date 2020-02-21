@@ -1,34 +1,32 @@
-package org.hkijena.acaq5.ui.grapheditor;
+package org.hkijena.acaq5.ui.grapheditor.settings;
 
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeCellRenderer;
 import java.awt.*;
 
-public class ACAQDataSlotTreeCellRenderer extends JLabel implements TreeCellRenderer {
+public class ACAQDataSlotListCellRenderer extends JLabel implements ListCellRenderer<ACAQDataSlot<?>> {
 
-    public ACAQDataSlotTreeCellRenderer() {
+    public ACAQDataSlotListCellRenderer() {
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
     }
 
     @Override
-    public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
-        if(tree.getFont() != null) {
-            setFont(tree.getFont());
+    public Component getListCellRendererComponent(JList<? extends ACAQDataSlot<?>> list, ACAQDataSlot<?> slot, int index, boolean selected, boolean cellHasFocus) {
+        if(list.getFont() != null) {
+            setFont(list.getFont());
         }
 
-        Object o = ((DefaultMutableTreeNode)value).getUserObject();
-        if(o instanceof ACAQDataSlot<?>) {
-            ACAQDataSlot<?> slot = (ACAQDataSlot<?>)o;
-            setText(slot.getName());
+        if(slot != null) {
+            String type = slot.isInput() ? "Input:" : "Output:";
+            setText(type + " " + slot.getName());
             setIcon(ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(slot.getAcceptedDataType()));
         }
         else {
-            setText(o.toString());
+            setText("<null>");
             setIcon(null);
         }
 
@@ -40,7 +38,6 @@ public class ACAQDataSlotTreeCellRenderer extends JLabel implements TreeCellRend
         else {
             setBackground(new Color(255,255,255));
         }
-
         return this;
     }
 }

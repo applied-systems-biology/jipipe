@@ -1,33 +1,40 @@
-package org.hkijena.acaq5.ui.grapheditor;
+package org.hkijena.acaq5.ui.grapheditor.settings;
 
+import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQRegistryService;
-import org.hkijena.acaq5.api.traits.ACAQMutableTraitGenerator;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTextField;
+import org.jgrapht.event.GraphChangeEvent;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
+import java.util.Set;
 
-public class ACAQMutableTraitConfiguratorUI extends JPanel {
+public class ACAQTraitViewerUI extends JPanel {
 
-    private String slotName;
-    private ACAQMutableTraitGenerator configuration;
+    private ACAQDataSlot<?> slot;
+    private ACAQAlgorithmGraph graph;
     private JXTextField searchField;
     private JPanel traitList;
 
-    public ACAQMutableTraitConfiguratorUI(String slotName, ACAQMutableTraitGenerator configuration) {
-        this.slotName = slotName;
-        this.configuration = configuration;
+    public ACAQTraitViewerUI(ACAQDataSlot<?> slot, ACAQAlgorithmGraph graph) {
+        this.slot = slot;
+        this.graph = graph;
         initialize();
         reloadTraitList();
+        graph.getEventBus().register(this);
     }
 
     private void reloadTraitList() {
         traitList.removeAll();
         String[] searchStrings = getSearchStrings();
+        Set<Class<? extends ACAQTrait>> currentTraits = graph.getAlgorithmTraits().get(slot);
 
         for(Class<? extends ACAQTrait> trait : ACAQRegistryService.getInstance().getTraitRegistry().getTraits()) {
             if(!searchStringsMatches(trait, searchStrings))
@@ -41,24 +48,26 @@ public class ACAQMutableTraitConfiguratorUI extends JPanel {
 ////            traitButton.setForeground(Color.WHITE);
 //            traitButton.setOpaque(true);
             UIUtils.makeFlat(traitButton);
-            traitButton.setToolTipText(ACAQTrait.getTooltipOf(trait));
-            traitButton.setSelected(configuration.getTraitsOf(slotName).contains(trait));
-            traitButton.addActionListener(e -> {
-                if(configuration.getTraitsOf(slotName).contains(trait)) {
-                    configuration.removeTraitFrom(slotName, trait);
-                    traitButton.setSelected(false);
-                }
-                else {
-                    configuration.addTraitTo(slotName, trait);
-                    traitButton.setSelected(true);
-                }
-            });
+            makeToggleToReadonly(trait, traitButton, currentTraits);
 
             traitList.add(traitButton);
         }
 
         traitList.revalidate();
         traitList.repaint();
+    }
+
+    @Subscribe
+    public void onAlgorithmGraphChanged(AlgorithmGraphChangedEvent event) {
+        reloadTraitList();
+    }
+
+    private void makeToggleToReadonly(Class<? extends ACAQTrait> trait, JToggleButton traitButton, Set<Class<? extends ACAQTrait>> currentTraits) {
+        traitButton.setToolTipText(ACAQTrait.getTooltipOf(trait));
+        traitButton.setSelected(currentTraits.contains(trait));
+        traitButton.addActionListener(e -> {
+           traitButton.setSelected(!traitButton.isSelected());
+        });
     }
 
     private boolean searchStringsMatches(Class<? extends ACAQTrait> trait, String[] strings){
@@ -87,6 +96,7 @@ public class ACAQMutableTraitConfiguratorUI extends JPanel {
         setLayout(new BorderLayout());
 
         JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
 
         searchField = new JXTextField("Search ...");
         searchField.getDocument().addDocumentListener(new DocumentChangeListener() {
@@ -106,7 +116,7 @@ public class ACAQMutableTraitConfiguratorUI extends JPanel {
         traitList = new JPanel() {
             @Override
             public Dimension getPreferredSize() {
-                return new Dimension(ACAQMutableTraitConfiguratorUI.this.getWidth() - 16,
+                return new Dimension(ACAQTraitViewerUI.this.getWidth() - 16,
                         super.getPreferredSize().height);
             }
         };

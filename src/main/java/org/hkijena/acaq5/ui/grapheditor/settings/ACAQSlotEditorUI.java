@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.ui.grapheditor;
+package org.hkijena.acaq5.ui.grapheditor.settings;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQRegistryService;

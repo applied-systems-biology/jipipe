@@ -7,6 +7,7 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.traits.ACAQMutableTraitGenerator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
+import org.hkijena.acaq5.ui.grapheditor.settings.ACAQTraitGeneratorUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -67,7 +68,7 @@ public class ACAQDataSlotTraitUI extends JPanel {
         ACAQMutableTraitGenerator traitConfiguration = (ACAQMutableTraitGenerator)slot.getAlgorithm().getTraitConfiguration();
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Annotate data");
         dialog.setModal(true);
-        dialog.setContentPane(new ACAQMutableTraitConfiguratorUI(slot.getName(), traitConfiguration));
+        dialog.setContentPane(new ACAQTraitGeneratorUI(slot.getName(), traitConfiguration, graph));
         dialog.pack();
         dialog.setSize(640, 480);
         dialog.setLocationRelativeTo(this);
