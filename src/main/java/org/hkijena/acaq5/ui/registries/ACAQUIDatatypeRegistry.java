@@ -69,4 +69,8 @@ public class ACAQUIDatatypeRegistry {
             return new ACAQDefaultDataSlotResultUI(workbenchUI, slot);
         }
     }
+
+    public URL getIconURLFor(Class<? extends ACAQData> klass) {
+        return icons.getOrDefault(klass, ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
+    }
 }

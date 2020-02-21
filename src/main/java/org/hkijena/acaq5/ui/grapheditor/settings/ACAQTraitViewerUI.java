@@ -7,9 +7,9 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
+import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTextField;
-import org.jgrapht.event.GraphChangeEvent;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -63,7 +63,7 @@ public class ACAQTraitViewerUI extends JPanel {
     }
 
     private void makeToggleToReadonly(Class<? extends ACAQTrait> trait, JToggleButton traitButton, Set<Class<? extends ACAQTrait>> currentTraits) {
-        traitButton.setToolTipText(ACAQTrait.getTooltipOf(trait));
+        traitButton.setToolTipText(TooltipUtils.getTraitTooltip(trait));
         traitButton.setSelected(currentTraits.contains(trait));
         traitButton.addActionListener(e -> {
            traitButton.setSelected(!traitButton.isSelected());

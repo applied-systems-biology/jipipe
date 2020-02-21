@@ -2,12 +2,12 @@ package org.hkijena.acaq5.ui.grapheditor;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQRegistryService;
-import org.hkijena.acaq5.api.ACAQPreprocessingOutput;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
+import org.hkijena.acaq5.ui.grapheditor.algorithmfinder.ACAQAlgorithmFinderUI;
+import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -65,6 +65,8 @@ public class ACAQDataSlotUI extends JPanel {
             Set<ACAQDataSlot<?>> availableTargets = graph.getAvailableTargets(slot);
 
             JMenuItem findAlgorithmButton = new JMenuItem("Find matching algorithm ...", UIUtils.getIconFromResources("search.png"));
+            findAlgorithmButton.setToolTipText("Opens a tool to find a matching algorithm based on the data");
+            findAlgorithmButton.addActionListener(e -> findAlgorithm(slot));
             assignButtonMenu.add(findAlgorithmButton);
             if(!availableTargets.isEmpty())
                 assignButtonMenu.addSeparator();
@@ -73,10 +75,20 @@ public class ACAQDataSlotUI extends JPanel {
                 JMenuItem connectButton = new JMenuItem(target.getFullName(),
                         ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(target.getAcceptedDataType()));
                 connectButton.addActionListener(e -> connectSlot(slot, target));
-                connectButton.setToolTipText(ACAQAlgorithm.getTooltipOf(target.getAlgorithm().getClass()));
+                connectButton.setToolTipText(TooltipUtils.getAlgorithmTooltip(target.getAlgorithm().getClass()));
                 assignButtonMenu.add(connectButton);
             }
         }
+    }
+
+    private void findAlgorithm(ACAQDataSlot<?> slot) {
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Find matching algorithm");
+        dialog.setModal(true);
+        dialog.setContentPane(new ACAQAlgorithmFinderUI(slot, graph));
+        dialog.pack();
+        dialog.setSize(640, 480);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
     }
 
     private void reloadButtonStatus() {

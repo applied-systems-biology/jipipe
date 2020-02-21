@@ -6,11 +6,10 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.traits.ACAQMutableTraitGenerator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.api.traits.ACAQTraitConfiguration;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
+import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTextField;
-import org.jgrapht.event.GraphChangeEvent;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -57,7 +56,7 @@ public class ACAQTraitGeneratorUI extends JPanel {
     }
 
     private void makeToggleToEditor(Class<? extends ACAQTrait> trait, JToggleButton traitButton) {
-        traitButton.setToolTipText(ACAQTrait.getTooltipOf(trait));
+        traitButton.setToolTipText(TooltipUtils.getTraitTooltip(trait));
         traitButton.setSelected(configuration.getTraitsOf(slotName).contains(trait));
         traitButton.addActionListener(e -> {
             if(configuration.getTraitsOf(slotName).contains(trait)) {

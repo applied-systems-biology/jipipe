@@ -69,48 +69,4 @@ public interface ACAQTrait {
         return klass.getAnnotationsByType(CategoryTrait.class).length > 0;
     }
 
-    static String getTooltipOf(Class<? extends ACAQTrait> klass) {
-        String name = getNameOf(klass);
-        String description = getDescriptionOf(klass);
-        StringBuilder builder = new StringBuilder();
-        builder.append("<html><u><strong>");
-        builder.append(name);
-        builder.append("</u></strong>");
-        if(description != null && !description.isEmpty()) {
-            builder.append("<br/>")
-                .append(description);
-        }
-
-        Set<Class<? extends ACAQTrait>> categories = getCategoriesOf(klass);
-        if(!categories.isEmpty()) {
-            builder.append("<br/><br/>");
-            builder.append("<strong>Inherited annotations</strong><br/>");
-            builder.append("<table>");
-            for (Class<? extends ACAQTrait> trait : categories) {
-                builder.append("<tr>");
-                builder.append("<td>").append("<img src=\"")
-                        .append(ACAQRegistryService.getInstance().getUITraitRegistry().getIconURLFor(trait))
-                        .append("\"/>").append("</td>");
-                builder.append("<td>").append(ACAQTrait.getNameOf(trait)).append("</td>");
-                builder.append("</tr>");
-            }
-            builder.append("</table>");
-        }
-        builder.append("</html>");
-
-        return builder.toString();
-    }
-
-    static void insertTraitTable(StringBuilder builder, Set<Class<? extends ACAQTrait>> traits) {
-        builder.append("<table>");
-        for (Class<? extends ACAQTrait> trait : traits) {
-            builder.append("<tr>");
-            builder.append("<td>").append("<img src=\"")
-                    .append(ACAQRegistryService.getInstance().getUITraitRegistry().getIconURLFor(trait))
-                    .append("\"/>").append("</td>");
-            builder.append("<td>").append(ACAQTrait.getNameOf(trait)).append("</td>");
-            builder.append("</tr>");
-        }
-        builder.append("</table>");
-    }
 }

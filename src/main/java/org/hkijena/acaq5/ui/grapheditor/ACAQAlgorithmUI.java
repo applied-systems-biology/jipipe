@@ -7,6 +7,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.events.AlgorithmNameChanged;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.events.TraitsChangedEvent;
 import org.hkijena.acaq5.ui.events.ACAQAlgorithmUIOpenSettingsRequested;
@@ -38,6 +39,7 @@ public class ACAQAlgorithmUI extends JPanel {
     private JPanel outputSlotPanel;
     private List<ACAQDataSlotUI> slotUIList = new ArrayList<>();
     private EventBus eventBus = new EventBus();
+    private JLabel nameLabel;
 
     public ACAQAlgorithmUI(ACAQAlgorithmGraphCanvasUI graphUI, ACAQAlgorithm algorithm) {
         this.graphUI = graphUI;
@@ -60,7 +62,7 @@ public class ACAQAlgorithmUI extends JPanel {
         outputSlotPanel = new JPanel();
         outputSlotPanel.setOpaque(false);
 
-        JLabel nameLabel = new JLabel(ACAQAlgorithm.getNameOf(algorithm.getClass()));
+        nameLabel = new JLabel(algorithm.getName());
         JButton openSettingsButton = new JButton(UIUtils.getIconFromResources("wrench.png"));
         UIUtils.makeFlat(openSettingsButton);
         openSettingsButton.setPreferredSize(new Dimension(25,25));
@@ -272,7 +274,7 @@ public class ACAQAlgorithmUI extends JPanel {
 
         // Measure width of center
         {
-            TextLayout layout = new TextLayout(ACAQAlgorithm.getNameOf(algorithm.getClass()), getFont(), frc);
+            TextLayout layout = new TextLayout(algorithm.getName(), getFont(), frc);
             width += layout.getBounds().getWidth();
         }
 
@@ -385,6 +387,14 @@ public class ACAQAlgorithmUI extends JPanel {
     @Subscribe
     public void onTraitsChanged(TraitsChangedEvent event) {
         setSize(calculateWidth(), calculateHeight());
+        revalidate();
+        repaint();
+    }
+
+    @Subscribe
+    public void onAlgorithmParametersChanged(AlgorithmNameChanged event) {
+        setSize(calculateWidth(), calculateHeight());
+        nameLabel.setText(algorithm.getName());
         revalidate();
         repaint();
     }

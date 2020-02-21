@@ -8,6 +8,7 @@ import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.traits.ACAQMutableTraitGenerator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQTraitGeneratorUI;
+import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -33,7 +34,7 @@ public class ACAQDataSlotTraitUI extends JPanel {
 
         for(Class<? extends ACAQTrait> trait : traits) {
             JButton traitButton = new JButton(ACAQRegistryService.getInstance().getUITraitRegistry().getIconFor(trait));
-            traitButton.setToolTipText(ACAQTrait.getTooltipOf(trait));
+            traitButton.setToolTipText(TooltipUtils.getTraitTooltip(trait));
             traitButton.setPreferredSize(new Dimension(25, 25));
 
             if(canEditTraits) {

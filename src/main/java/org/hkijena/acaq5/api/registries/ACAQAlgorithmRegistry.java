@@ -75,7 +75,7 @@ public class ACAQAlgorithmRegistry {
      * @return
      */
     public Set<Class<? extends ACAQTrait>> getPreferredTraitsOf(Class<? extends ACAQAlgorithm> klass) {
-        return Collections.unmodifiableSet(preferredTraits.get(klass));
+        return Collections.unmodifiableSet(preferredTraits.getOrDefault(klass, Collections.emptySet()));
     }
 
     /**
@@ -84,7 +84,7 @@ public class ACAQAlgorithmRegistry {
      * @return
      */
     public Set<Class<? extends ACAQTrait>> getUnwantedTraitsOf(Class<? extends ACAQAlgorithm> klass) {
-        return Collections.unmodifiableSet(unwantedTraits.get(klass));
+        return Collections.unmodifiableSet(unwantedTraits.getOrDefault(klass, Collections.emptySet()));
     }
 
     /**

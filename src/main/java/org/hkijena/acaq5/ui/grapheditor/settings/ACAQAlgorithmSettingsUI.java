@@ -7,6 +7,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.FormPanel;
+import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -55,6 +56,7 @@ public class ACAQAlgorithmSettingsUI extends JPanel {
     private void initializeToolbar() {
         JToolBar toolBar = new JToolBar();
         JLabel nameLabel = new JLabel(algorithm.getName(), new ColorIcon(16, 16, algorithm.getCategory().getColor(0.1f, 0.9f)), JLabel.LEFT);
+        nameLabel.setToolTipText(TooltipUtils.getAlgorithmTooltip(algorithm.getClass()));
         toolBar.add(nameLabel);
 
         toolBar.add(Box.createHorizontalGlue());

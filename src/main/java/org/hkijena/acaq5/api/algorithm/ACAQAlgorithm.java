@@ -16,6 +16,7 @@ import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
 import org.hkijena.acaq5.api.events.*;
+import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.traits.*;
 import org.hkijena.acaq5.utils.JsonUtils;
@@ -27,8 +28,6 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
 
-import static org.hkijena.acaq5.api.traits.ACAQTrait.insertTraitTable;
-
 @JsonSerialize(using = ACAQAlgorithm.Serializer.class)
 public abstract class ACAQAlgorithm {
     private ACAQSlotConfiguration slotConfiguration;
@@ -37,6 +36,7 @@ public abstract class ACAQAlgorithm {
     private EventBus eventBus = new EventBus();
     private Point location;
     private Path storagePath;
+    private String customName;
 
     public ACAQAlgorithm(ACAQSlotConfiguration slotConfiguration, ACAQTraitConfiguration traitConfiguration) {
        this.slotConfiguration = slotConfiguration;
@@ -112,8 +112,18 @@ public abstract class ACAQAlgorithm {
         return eventBus;
     }
 
+    @ACAQParameter("name")
+    @ACAQDocumentation(name = "Name")
     public String getName() {
-        return getNameOf(getClass());
+        if(customName == null || customName.isEmpty())
+            return getNameOf(getClass());
+        return customName;
+    }
+
+    @ACAQParameter("name")
+    public void setCustomName(String customName) {
+        this.customName = customName;
+        eventBus.post(new AlgorithmNameChanged(this));
     }
 
     public ACAQAlgorithmCategory getCategory() {
@@ -172,31 +182,6 @@ public abstract class ACAQAlgorithm {
             return ACAQAlgorithmCategory.Internal;
         }
     }
-
-    public static String getTooltipOf(Class<? extends ACAQAlgorithm> algorithmClass) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("<html>");
-        builder.append("<u><strong>").append(ACAQAlgorithm.getNameOf(algorithmClass)).append("</strong></u><br/>");
-        String description = ACAQAlgorithm.getDescriptionOf(algorithmClass);
-        if(description != null && !description.isEmpty())
-            builder.append(description).append("</br>");
-
-        Set<Class<? extends ACAQTrait>> preferredTraits = ACAQRegistryService.getInstance().getAlgorithmRegistry().getPreferredTraitsOf(algorithmClass);
-        Set<Class<? extends ACAQTrait>> unwantedTraits = ACAQRegistryService.getInstance().getAlgorithmRegistry().getUnwantedTraitsOf(algorithmClass);
-
-        if(!preferredTraits.isEmpty()) {
-            builder.append("<br/><br/><strong>Good for<br/>");
-            insertTraitTable(builder, preferredTraits);
-        }
-        if(!unwantedTraits.isEmpty()) {
-            builder.append("<br/><br/><strong>Bad for<br/>");
-            insertTraitTable(builder, unwantedTraits);
-        }
-
-        builder.append("</html>");
-        return builder.toString();
-    }
-
 
 
     public ACAQSlotConfiguration getSlotConfiguration() {

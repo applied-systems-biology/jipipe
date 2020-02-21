@@ -7,12 +7,12 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSource;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.events.ACAQAlgorithmUIOpenSettingsRequested;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQAlgorithmSettingsUI;
+import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -118,7 +118,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
         ACAQRegistryService registryService = ACAQRegistryService.getInstance();
         for(Class<? extends ACAQAlgorithm> algorithmClass : registryService.getAlgorithmRegistry().getAlgorithmsOfCategory(category)) {
             JMenuItem addItem = new JMenuItem(ACAQAlgorithm.getNameOf(algorithmClass), UIUtils.getIconFromResources("cog.png"));
-            addItem.setToolTipText(ACAQAlgorithm.getTooltipOf(algorithmClass));
+            addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(algorithmClass));
             addItem.addActionListener(e -> algorithmGraph.insertNode(ACAQAlgorithm.createInstance(algorithmClass)));
             menu.add(addItem);
         }
@@ -135,7 +135,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
 
                 for(Class<? extends ACAQDataSource<ACAQData>> sourceClass : dataSources) {
                     JMenuItem addItem = new JMenuItem(ACAQAlgorithm.getNameOf(sourceClass), icon);
-                    addItem.setToolTipText(ACAQAlgorithm.getTooltipOf(sourceClass));
+                    addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(sourceClass));
                     addItem.addActionListener(e -> algorithmGraph.insertNode(ACAQAlgorithm.createInstance(sourceClass)));
                     dataMenu.add(addItem);
                 }
