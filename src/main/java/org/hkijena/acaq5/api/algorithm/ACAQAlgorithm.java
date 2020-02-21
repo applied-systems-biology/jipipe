@@ -213,6 +213,27 @@ public abstract class ACAQAlgorithm {
         }
     }
 
+    /**
+     * Returns information about the algorithm input.
+     * Note: The information generally describes the possible slots only roughly. Algorithms have the capability to
+     * modify their slot configuration.
+     * @param klass
+     * @return
+     */
+    public static AlgorithmInputSlot[] getInputOf(Class<? extends ACAQAlgorithm> klass) {
+        return klass.getAnnotationsByType(AlgorithmInputSlot.class);
+    }
+
+    /**
+     * Returns information about the algorithm output.
+     * Note: The information generally describes the possible slots only roughly. Algorithms have the capability to
+     * modify their slot configuration.
+     * @param klass
+     * @return
+     */
+    public static AlgorithmOutputSlot[] getOutputOf(Class<? extends ACAQAlgorithm> klass) {
+        return klass.getAnnotationsByType(AlgorithmOutputSlot.class);
+    }
 
     public ACAQSlotConfiguration getSlotConfiguration() {
         return slotConfiguration;

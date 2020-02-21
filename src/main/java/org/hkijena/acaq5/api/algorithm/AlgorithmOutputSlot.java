@@ -2,16 +2,14 @@ package org.hkijena.acaq5.api.algorithm;
 
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Annotates an {@link ACAQAlgorithm} with an output slot.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
+@Repeatable(AlgorithmOutputSlots.class)
 public @interface AlgorithmOutputSlot {
     /**
      * The slot class

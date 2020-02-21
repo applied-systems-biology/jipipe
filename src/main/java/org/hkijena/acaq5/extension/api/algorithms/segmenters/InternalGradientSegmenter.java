@@ -6,9 +6,7 @@ import ij.plugin.filter.Binary;
 import ij.plugin.filter.GaussianBlur;
 import ij.plugin.filter.RankFilters;
 import org.hkijena.acaq5.api.*;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
-import org.hkijena.acaq5.api.algorithm.ACAQSimpleAlgorithm;
+import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQSubAlgorithm;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
@@ -26,6 +24,10 @@ import org.hkijena.acaq5.utils.ImageJUtils;
 
 @ACAQDocumentation(name = "Internal gradient segmentation")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
+
+// Algorithm flow
+@AlgorithmInputSlot(value = ACAQGreyscaleImageDataSlot.class, slotName = "Image", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQMaskDataSlot.class, slotName = "Mask", autoCreate = true)
 
 // Trait matching
 @GoodForTrait(MembraneLabeledBioObjects.class)
@@ -45,8 +47,6 @@ public class InternalGradientSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscale
     private CLAHEImageEnhancer claheImageEnhancer = new CLAHEImageEnhancer();
 
     public InternalGradientSegmenter() {
-        super("Image", ACAQGreyscaleImageDataSlot.class,
-                "Mask", ACAQMaskDataSlot.class);
     }
 
     public InternalGradientSegmenter(InternalGradientSegmenter other) {

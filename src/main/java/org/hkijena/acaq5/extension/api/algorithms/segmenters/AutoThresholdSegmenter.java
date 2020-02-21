@@ -5,9 +5,7 @@ import ij.Prefs;
 import ij.plugin.Thresholder;
 import ij.process.AutoThresholder;
 import org.hkijena.acaq5.api.*;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
-import org.hkijena.acaq5.api.algorithm.ACAQSimpleAlgorithm;
+import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.*;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
@@ -28,6 +26,10 @@ import org.hkijena.acaq5.utils.ImageJUtils;
 @ACAQDocumentation(name = "Auto threshold segmentation")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
 
+// Algorithm flow
+@AlgorithmInputSlot(value = ACAQGreyscaleImageDataSlot.class, slotName = "Image", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQMaskDataSlot.class, slotName = "Mask", autoCreate = true)
+
 // Trait matching
 @GoodForTrait(UniformlyLabeledBioObjects.class)
 @BadForTrait(NonUniformBrightnessQuality.class)
@@ -43,8 +45,6 @@ public class AutoThresholdSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleIma
     private AutoThresholder.Method method = AutoThresholder.Method.Default;
 
     public AutoThresholdSegmenter() {
-        super("Image", ACAQGreyscaleImageDataSlot.class,
-                "Mask", ACAQMaskDataSlot.class);
     }
 
     public AutoThresholdSegmenter(AutoThresholdSegmenter other) {

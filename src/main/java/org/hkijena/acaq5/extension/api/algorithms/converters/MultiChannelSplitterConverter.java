@@ -3,9 +3,7 @@ package org.hkijena.acaq5.extension.api.algorithms.converters;
 import ij.ImagePlus;
 import ij.plugin.ChannelSplitter;
 import org.hkijena.acaq5.api.*;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
+import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
@@ -13,8 +11,15 @@ import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQMultichannelImageDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 
+// Algorithm metadata
 @ACAQDocumentation(name = "Split multichannel image")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Converter)
+
+//Algorithm data flow
+@AlgorithmInputSlot(ACAQMultichannelImageDataSlot.class)
+@AlgorithmOutputSlot(ACAQGreyscaleImageDataSlot.class)
+
+// Algorithm traits
 @AutoTransferTraits
 public class MultiChannelSplitterConverter extends ACAQAlgorithm {
 

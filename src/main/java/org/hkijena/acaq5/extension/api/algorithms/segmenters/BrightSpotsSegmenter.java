@@ -5,9 +5,7 @@ import ij.plugin.filter.BackgroundSubtracter;
 import ij.plugin.filter.Binary;
 import ij.plugin.filter.GaussianBlur;
 import org.hkijena.acaq5.api.*;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
-import org.hkijena.acaq5.api.algorithm.ACAQSimpleAlgorithm;
+import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQSubAlgorithm;
 import org.hkijena.acaq5.api.traits.AddsTrait;
@@ -26,6 +24,10 @@ import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.BioObjectsP
 @ACAQDocumentation(name = "Bright spots segmentation")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
 
+// Algorithm flow
+@AlgorithmInputSlot(value = ACAQGreyscaleImageDataSlot.class, slotName = "Image", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQMaskDataSlot.class, slotName = "Mask", autoCreate = true)
+
 // Trait matching
 @BadForTrait(NonUniformBrightnessQuality.class)
 
@@ -42,8 +44,6 @@ public class BrightSpotsSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImage
     private AutoThresholdSegmenter autoThresholdSegmenter = new AutoThresholdSegmenter();
 
     public BrightSpotsSegmenter() {
-        super("Image", ACAQGreyscaleImageDataSlot.class,
-                "Mask", ACAQMaskDataSlot.class);
     }
 
     public BrightSpotsSegmenter(BrightSpotsSegmenter other) {

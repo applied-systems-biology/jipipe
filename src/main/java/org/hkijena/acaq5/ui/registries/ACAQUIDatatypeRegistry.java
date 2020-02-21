@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.ui.registries;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
+import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
@@ -72,5 +73,9 @@ public class ACAQUIDatatypeRegistry {
 
     public URL getIconURLFor(Class<? extends ACAQData> klass) {
         return icons.getOrDefault(klass, ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
+    }
+
+    public URL getIconURLForSlot(Class<? extends ACAQDataSlot<?>> klass) {
+        return getIconURLFor(ACAQRegistryService.getInstance().getDatatypeRegistry().getRegisteredSlotDataTypes().inverse().get(klass));
     }
 }

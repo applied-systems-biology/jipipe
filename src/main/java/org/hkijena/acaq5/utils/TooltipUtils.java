@@ -3,12 +3,14 @@ package org.hkijena.acaq5.utils;
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
+import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.AddsTrait;
 import org.hkijena.acaq5.api.traits.RemovesTrait;
 
-import java.util.List;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -51,6 +53,24 @@ public class TooltipUtils {
         StringBuilder builder = new StringBuilder();
         builder.append("<html>");
         builder.append("<u><strong>").append(ACAQAlgorithm.getNameOf(algorithmClass)).append("</strong></u><br/>");
+
+        // Write algorithm slot info
+        builder.append("<table>");
+        builder.append("<tr><td>");
+        for(Class<? extends ACAQDataSlot<?>> slot : Arrays.stream(ACAQAlgorithm.getInputOf(algorithmClass))
+                .map(AlgorithmInputSlot::value).collect(Collectors.toSet())) {
+            builder.append("<img src=\"").append(ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconURLForSlot(slot)).append("\"/>");
+        }
+        builder.append("</td>");
+        builder.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/chevron-right.png")).append("\" /></td>");
+        for(Class<? extends ACAQDataSlot<?>> slot : Arrays.stream(ACAQAlgorithm.getOutputOf(algorithmClass))
+                .map(AlgorithmOutputSlot::value).collect(Collectors.toSet())) {
+            builder.append("<img src=\"").append(ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconURLForSlot(slot)).append("\"/>");
+        }
+        builder.append("</tr>");
+        builder.append("</table>");
+
+        // Write description
         String description = ACAQAlgorithm.getDescriptionOf(algorithmClass);
         if(description != null && !description.isEmpty())
             builder.append(description).append("</br>");

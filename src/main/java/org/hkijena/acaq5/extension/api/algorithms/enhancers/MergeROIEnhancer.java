@@ -2,9 +2,7 @@ package org.hkijena.acaq5.extension.api.algorithms.enhancers;
 
 import ij.gui.Roi;
 import org.hkijena.acaq5.api.*;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
+import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
@@ -16,6 +14,12 @@ import java.util.List;
 
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
 @ACAQDocumentation(name = "Merge ROI")
+
+// Data flow
+@AlgorithmInputSlot(ACAQROIDataSlot.class)
+@AlgorithmOutputSlot(ACAQROIDataSlot.class)
+
+// Traits
 @AutoTransferTraits
 public class MergeROIEnhancer extends ACAQAlgorithm {
     public MergeROIEnhancer() {

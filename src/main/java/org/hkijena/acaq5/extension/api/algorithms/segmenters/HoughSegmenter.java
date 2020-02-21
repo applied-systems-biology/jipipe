@@ -6,9 +6,7 @@ import ij.WindowManager;
 import ij.measure.ResultsTable;
 import ij.plugin.filter.Analyzer;
 import org.hkijena.acaq5.api.*;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
-import org.hkijena.acaq5.api.algorithm.ACAQSimpleAlgorithm;
+import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import org.hkijena.acaq5.api.traits.GoodForTrait;
@@ -25,6 +23,10 @@ import org.hkijena.acaq5.utils.Hough_Circle;
 
 @ACAQDocumentation(name = "Hough segmentation")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
+
+// Algorithm flow
+@AlgorithmInputSlot(value = ACAQGreyscaleImageDataSlot.class, slotName = "Image", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQMaskDataSlot.class, slotName = "Mask", autoCreate = true)
 
 // Trait matching
 @GoodForTrait(RoundBioObjects.class)
@@ -48,8 +50,6 @@ public class HoughSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, 
     private int localRadius = 10;
 
     public HoughSegmenter() {
-        super("Image", ACAQGreyscaleImageDataSlot.class,
-                "Mask", ACAQMaskDataSlot.class);
     }
 
     public HoughSegmenter(HoughSegmenter other) {

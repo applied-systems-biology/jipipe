@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extension.api.algorithms.enhancers;
+package org.hkijena.acaq5.extension.api.algorithms.segmenters;
 
 import ij.ImagePlus;
 import ij.plugin.ImageCalculator;
@@ -8,13 +8,10 @@ import imagescience.image.Aspects;
 import imagescience.image.FloatImage;
 import imagescience.image.Image;
 import org.hkijena.acaq5.api.*;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
-import org.hkijena.acaq5.api.algorithm.ACAQSimpleAlgorithm;
+import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQSubAlgorithm;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
-import org.hkijena.acaq5.extension.api.algorithms.segmenters.AutoThresholdSegmenter;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
@@ -22,21 +19,25 @@ import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 
 import java.util.Vector;
 
-@ACAQDocumentation(name = "Hessian enhancer")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
+@ACAQDocumentation(name = "Hessian segmenter")
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
+
+// Algorithm flow
+@AlgorithmInputSlot(value = ACAQGreyscaleImageDataSlot.class, slotName = "Image", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQMaskDataSlot.class, slotName = "Mask", autoCreate = true)
+
+// Traits
 @AutoTransferTraits
-public class HessianImageEnhancer extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQMaskData> {
+public class HessianSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQMaskData> {
 
     private double smoothing = 1.0;
     private double gradientRadius = 1;
     private AutoThresholdSegmenter autoThresholdSegmenter = new AutoThresholdSegmenter();
 
-    public HessianImageEnhancer() {
-        super("Input image", ACAQGreyscaleImageDataSlot.class,
-               "Output image", ACAQMaskDataSlot.class);
+    public HessianSegmenter() {
     }
 
-    public HessianImageEnhancer(HessianImageEnhancer other) {
+    public HessianSegmenter(HessianSegmenter other) {
         super(other);
         this.smoothing = other.smoothing;
         this.gradientRadius = other.gradientRadius;

@@ -9,10 +9,7 @@ import org.hkijena.acaq5.extension.api.algorithms.enhancers.CLAHEImageEnhancer;
 import org.hkijena.acaq5.extension.api.algorithms.enhancers.IlluminationCorrectionEnhancer;
 import org.hkijena.acaq5.extension.api.algorithms.enhancers.MergeROIEnhancer;
 import org.hkijena.acaq5.extension.api.algorithms.enhancers.WatershedMaskEnhancer;
-import org.hkijena.acaq5.extension.api.algorithms.segmenters.AutoThresholdSegmenter;
-import org.hkijena.acaq5.extension.api.algorithms.segmenters.BrightSpotsSegmenter;
-import org.hkijena.acaq5.extension.api.algorithms.segmenters.HoughSegmenter;
-import org.hkijena.acaq5.extension.api.algorithms.segmenters.InternalGradientSegmenter;
+import org.hkijena.acaq5.extension.api.algorithms.segmenters.*;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQMultichannelImageDataSlot;
@@ -144,6 +141,7 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
         registryService.getAlgorithmRegistry().register(InternalGradientSegmenter.class);
         registryService.getAlgorithmRegistry().register(MultiChannelSplitterConverter.class);
         registryService.getAlgorithmRegistry().register(MergeROIEnhancer.class);
+        registryService.getAlgorithmRegistry().register(HessianSegmenter.class);
     }
 
     private void registerDataTypes(ACAQRegistryService registryService) {

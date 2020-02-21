@@ -3,9 +3,7 @@ package org.hkijena.acaq5.extension.api.algorithms.enhancers;
 import ij.ImagePlus;
 import mpicbg.ij.clahe.Flat;
 import org.hkijena.acaq5.api.*;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
-import org.hkijena.acaq5.api.algorithm.ACAQSimpleAlgorithm;
+import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import org.hkijena.acaq5.api.traits.GoodForTrait;
@@ -18,6 +16,10 @@ import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.Bi
 
 @ACAQDocumentation(name = "CLAHE enhancer")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
+
+// Algorithm flow
+@AlgorithmInputSlot(value = ACAQGreyscaleImageDataSlot.class, slotName = "Input image", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQGreyscaleImageDataSlot.class, slotName = "Output image", autoCreate = true)
 
 // Trait matching
 @GoodForTrait(BioObjectsLabeling.class)
@@ -37,8 +39,6 @@ public class CLAHEImageEnhancer extends ACAQSimpleAlgorithm<ACAQGreyscaleImageDa
     private boolean fastMode = false;
 
     public CLAHEImageEnhancer() {
-        super("Input image", ACAQGreyscaleImageDataSlot.class,
-                "Output image", ACAQGreyscaleImageDataSlot.class);
     }
 
     public CLAHEImageEnhancer(CLAHEImageEnhancer other) {
