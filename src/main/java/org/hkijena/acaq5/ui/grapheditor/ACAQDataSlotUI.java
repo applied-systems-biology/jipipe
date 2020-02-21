@@ -23,6 +23,7 @@ public class ACAQDataSlotUI extends JPanel {
     private ACAQDataSlot<?> slot;
     private JButton assignButton;
     private JPopupMenu assignButtonMenu;
+    private ACAQDataSlotTraitUI traitUI;
 
     public ACAQDataSlotUI(ACAQAlgorithmGraph graph, ACAQDataSlot<?> slot) {
         this.graph = graph;
@@ -141,17 +142,22 @@ public class ACAQDataSlotUI extends JPanel {
 //            add(traitUI, BorderLayout.WEST);
         }
 
-        ACAQDataSlotTraitUI traitUI = new ACAQDataSlotTraitUI(graph, slot);
+        traitUI = new ACAQDataSlotTraitUI(graph, slot);
         centerPanel.add(traitUI);
 
         add(centerPanel, BorderLayout.CENTER);
     }
 
     public int calculateWidth() {
+        // First calculate the width caused by the label width
         FontRenderContext frc = new FontRenderContext(null, false, false);
         TextLayout layout = new TextLayout(ACAQData.getNameOf(slot.getAcceptedDataType()), getFont(), frc);
         double w = layout.getBounds().getWidth();
-        return (int)Math.ceil(w * 1.0 / SLOT_UI_WIDTH) * SLOT_UI_WIDTH + 75;
+        int labelWidth = (int)Math.ceil(w * 1.0 / SLOT_UI_WIDTH) * SLOT_UI_WIDTH;
+        int traitWidth = (int)Math.ceil(traitUI.calculateWidth() * 1.0 / SLOT_UI_WIDTH) * SLOT_UI_WIDTH;
+        int width = Math.max(labelWidth, traitWidth) + 75;
+
+        return width;
     }
 
     public ACAQDataSlot<?> getSlot() {

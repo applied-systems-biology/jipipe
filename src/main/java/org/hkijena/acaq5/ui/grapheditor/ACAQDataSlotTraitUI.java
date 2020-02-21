@@ -28,13 +28,7 @@ public class ACAQDataSlotTraitUI extends JPanel {
     private void reloadButtons() {
         removeAll();
         Set<Class<? extends ACAQTrait>> traits = graph.getAlgorithmTraits().get(slot);
-        int allowedCount = 6;
-        boolean addMoreIndicator = false;
         boolean canEditTraits = slot.getAlgorithm().getTraitConfiguration() instanceof ACAQMutablePreprocessingTraitConfiguration;
-        if(canEditTraits)
-            --allowedCount;
-        if(addMoreIndicator = traits.size() > allowedCount)
-            --allowedCount;
 
         for(Class<? extends ACAQTrait> trait : traits) {
             JButton traitButton = new JButton(ACAQRegistryService.getInstance().getUITraitRegistry().getIconFor(trait));
@@ -52,14 +46,6 @@ public class ACAQDataSlotTraitUI extends JPanel {
                 UIUtils.makeBorderlessWithoutMargin(traitButton);
 
             add(traitButton);
-
-            --allowedCount;
-//            if(allowedCount == 0)
-//                break;
-        }
-
-        // Create "more available" button
-        if(addMoreIndicator) {
         }
 
         // Create button to add traits
@@ -97,5 +83,14 @@ public class ACAQDataSlotTraitUI extends JPanel {
     @Subscribe
     public void onAlgorithmGraphChanged(AlgorithmGraphChangedEvent event) {
         reloadButtons();
+    }
+
+    public int calculateWidth() {
+        Set<Class<? extends ACAQTrait>> traits = graph.getAlgorithmTraits().get(slot);
+        boolean canEditTraits = slot.getAlgorithm().getTraitConfiguration() instanceof ACAQMutablePreprocessingTraitConfiguration;
+        int width = 25 * traits.size();
+        if(canEditTraits)
+            width += 25;
+        return width;
     }
 }

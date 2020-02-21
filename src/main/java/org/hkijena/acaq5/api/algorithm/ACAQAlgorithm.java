@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
+import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.*;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
@@ -118,11 +119,11 @@ public abstract class ACAQAlgorithm {
     }
 
     Set<Class<? extends ACAQTrait>> getPreferredTraits() {
-        return getPreferredTraitsOf(getClass());
+        return ACAQRegistryService.getInstance().getAlgorithmRegistry().getPreferredTraitsOf(getClass());
     }
 
     Set<Class<? extends ACAQTrait>> getUnwantedTraits() {
-        return getUnwantedTraitsOf(getClass());
+        return ACAQRegistryService.getInstance().getAlgorithmRegistry().getUnwantedTraitsOf(getClass());
     }
 
     /**
@@ -141,6 +142,21 @@ public abstract class ACAQAlgorithm {
     }
 
     /**
+     * Returns the description of an algorithm
+     * @param klass
+     * @return
+     */
+    public static String getDescriptionOf(Class<? extends  ACAQAlgorithm> klass) {
+        ACAQDocumentation[] annotations = klass.getAnnotationsByType(ACAQDocumentation.class);
+        if(annotations.length > 0) {
+            return annotations[0].description();
+        }
+        else {
+            return null;
+        }
+    }
+
+    /**
      * Returns the name of an algorithm
      * @param klass
      * @return
@@ -153,32 +169,6 @@ public abstract class ACAQAlgorithm {
         else {
             return ACAQAlgorithmCategory.Internal;
         }
-    }
-
-    /**
-     * Returns all traits marked as preferred by the algorithm
-     * @param klass
-     * @return
-     */
-    public static Set<Class<? extends ACAQTrait>> getPreferredTraitsOf(Class<? extends  ACAQAlgorithm> klass) {
-        Set<Class<? extends ACAQTrait>> result = new HashSet<>();
-        for(GoodForTrait trait : klass.getAnnotationsByType(GoodForTrait.class)) {
-            result.add(trait.value());
-        }
-        return result;
-    }
-
-    /**
-     * Returns all traits marked as unwanted by the algorithm
-     * @param klass
-     * @return
-     */
-    public static Set<Class<? extends ACAQTrait>> getUnwantedTraitsOf(Class<? extends  ACAQAlgorithm> klass) {
-        Set<Class<? extends ACAQTrait>> result = new HashSet<>();
-        for(BadForTrait trait : klass.getAnnotationsByType(BadForTrait.class)) {
-            result.add(trait.value());
-        }
-        return result;
     }
 
     public ACAQSlotConfiguration getSlotConfiguration() {

@@ -8,12 +8,11 @@ import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
+import org.hkijena.acaq5.api.events.TraitsChangedEvent;
 import org.hkijena.acaq5.ui.events.ACAQAlgorithmUIOpenSettingsRequested;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicToolBarUI;
-import javax.swing.plaf.metal.MetalToolBarUI;
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
@@ -44,8 +43,9 @@ public class ACAQAlgorithmUI extends JPanel {
         this.graphUI = graphUI;
         this.algorithm = algorithm;
         this.algorithm.getEventBus().register(this);
+        this.algorithm.getTraitConfiguration().getEventBus().register(this);
         initialize();
-        updateAlgorithmUI();
+        updateAlgorithmSlotUIs();
     }
 
     private void initialize() {
@@ -143,7 +143,7 @@ public class ACAQAlgorithmUI extends JPanel {
         return button;
     }
 
-    public void updateAlgorithmUI() {
+    public void updateAlgorithmSlotUIs() {
         slotUIList.clear();
         inputSlotPanel.removeAll();
         outputSlotPanel.removeAll();
@@ -379,7 +379,14 @@ public class ACAQAlgorithmUI extends JPanel {
 
     @Subscribe
     public void onAlgorithmSlotsChanged(AlgorithmSlotsChangedEvent event) {
-        updateAlgorithmUI();
+        updateAlgorithmSlotUIs();
+    }
+
+    @Subscribe
+    public void onTraitsChanged(TraitsChangedEvent event) {
+        setSize(calculateWidth(), calculateHeight());
+        revalidate();
+        repaint();
     }
 
     @Override

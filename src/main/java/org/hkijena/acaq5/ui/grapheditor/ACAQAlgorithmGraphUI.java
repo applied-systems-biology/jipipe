@@ -8,10 +8,12 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSource;
+import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.events.ACAQAlgorithmUIOpenSettingsRequested;
+import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -112,13 +114,48 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
         menuBar.add(autoLayoutButton);
     }
 
+    private String createTooltipFor(Class<? extends ACAQAlgorithm> algorithmClass) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("<html>");
+        builder.append("<u><strong>").append(ACAQAlgorithm.getNameOf(algorithmClass)).append("</strong></u><br/>");
+        String description = ACAQAlgorithm.getDescriptionOf(algorithmClass);
+        if(description != null && !description.isEmpty())
+            builder.append(description).append("</br>");
+
+        Set<Class<? extends ACAQTrait>> preferredTraits = ACAQRegistryService.getInstance().getAlgorithmRegistry().getPreferredTraitsOf(algorithmClass);
+        Set<Class<? extends ACAQTrait>> unwantedTraits = ACAQRegistryService.getInstance().getAlgorithmRegistry().getUnwantedTraitsOf(algorithmClass);
+
+        if(!preferredTraits.isEmpty()) {
+            builder.append("<br/><br/><strong>Good for<br/>");
+            insertTraitTable(builder, preferredTraits);
+        }
+        if(!unwantedTraits.isEmpty()) {
+            builder.append("<br/><br/><strong>Bad for<br/>");
+            insertTraitTable(builder, unwantedTraits);
+        }
+
+        builder.append("</html>");
+        return builder.toString();
+    }
+
+    private void insertTraitTable(StringBuilder builder, Set<Class<? extends ACAQTrait>> traits) {
+        builder.append("<table>");
+        for (Class<? extends ACAQTrait> trait : traits) {
+            builder.append("<tr>");
+            builder.append("<td>").append("<img src=\"")
+                    .append(ACAQRegistryService.getInstance().getUITraitRegistry().getIconURLFor(trait))
+                    .append("\"/>").append("</td>");
+            builder.append("<td>").append(ACAQTrait.getNameOf(trait)).append("</td>");
+            builder.append("</tr>");
+        }
+        builder.append("</table>");
+    }
+
     private void initializeMenuForCategory(JMenu menu, ACAQAlgorithmCategory category) {
         ACAQRegistryService registryService = ACAQRegistryService.getInstance();
         for(Class<? extends ACAQAlgorithm> algorithmClass : registryService.getAlgorithmRegistry().getAlgorithmsOfCategory(category)) {
             JMenuItem addItem = new JMenuItem(ACAQAlgorithm.getNameOf(algorithmClass), UIUtils.getIconFromResources("cog.png"));
-            ACAQDocumentation documentation = algorithmClass.getAnnotation(ACAQDocumentation.class);
-            if(!documentation.description().isEmpty())
-                addItem.setToolTipText(documentation.description());
+            addItem.setToolTipText(createTooltipFor(algorithmClass));
             addItem.addActionListener(e -> algorithmGraph.insertNode(ACAQAlgorithm.createInstance(algorithmClass)));
             menu.add(addItem);
         }
@@ -135,9 +172,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
 
                 for(Class<? extends ACAQDataSource<ACAQData>> sourceClass : dataSources) {
                     JMenuItem addItem = new JMenuItem(ACAQAlgorithm.getNameOf(sourceClass), icon);
-                    ACAQDocumentation documentation = sourceClass.getAnnotation(ACAQDocumentation.class);
-                    if(!documentation.description().isEmpty())
-                        addItem.setToolTipText(documentation.description());
+                    addItem.setToolTipText(createTooltipFor(sourceClass));
                     addItem.addActionListener(e -> algorithmGraph.insertNode(ACAQAlgorithm.createInstance(sourceClass)));
                     dataMenu.add(addItem);
                 }

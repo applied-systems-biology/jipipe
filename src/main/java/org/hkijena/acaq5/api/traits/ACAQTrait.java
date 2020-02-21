@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.api.traits;
 
 import com.google.common.reflect.TypeToken;
+import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 
 import java.util.HashSet;
@@ -84,11 +85,16 @@ public interface ACAQTrait {
         if(!categories.isEmpty()) {
             builder.append("<br/><br/>");
             builder.append("<strong>Inherited annotations</strong><br/>");
-            builder.append("<ul>");
-            for(Class<? extends ACAQTrait> trait : categories) {
-                builder.append("<li>").append(getNameOf(trait)).append("</li>");
+            builder.append("<table>");
+            for (Class<? extends ACAQTrait> trait : categories) {
+                builder.append("<tr>");
+                builder.append("<td>").append("<img src=\"")
+                        .append(ACAQRegistryService.getInstance().getUITraitRegistry().getIconURLFor(trait))
+                        .append("\"/>").append("</td>");
+                builder.append("<td>").append(ACAQTrait.getNameOf(trait)).append("</td>");
+                builder.append("</tr>");
             }
-            builder.append("</ul>");
+            builder.append("</table>");
         }
         builder.append("</html>");
 

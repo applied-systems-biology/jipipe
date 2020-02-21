@@ -4,6 +4,6 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.extension.api.traits.bioobject.BioObjects;
 import org.hkijena.acaq5.extension.api.traits.bioobject.morphology.BioObjectsMorphology;
 
-@ACAQDocumentation(name = "Single object")
+@ACAQDocumentation(name = "Single object", description = "There is only exact one object")
 public interface SingleBioObject extends BioObjectsCount {
 }

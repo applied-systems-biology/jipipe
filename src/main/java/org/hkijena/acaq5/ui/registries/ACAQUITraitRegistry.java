@@ -18,7 +18,7 @@ public class ACAQUITraitRegistry {
     }
 
     /**
-     * Registers a custom icon for a datatype
+     * Registers a custom icon for a trait
      * @param klass
      * @param resourcePath
      */
@@ -26,9 +26,17 @@ public class ACAQUITraitRegistry {
         icons.put(klass, resourcePath);
     }
 
+    /**
+     * Returns the icon resource path URL for a trait
+     * @param klass
+     * @return
+     */
+    public URL getIconURLFor(Class<? extends ACAQTrait> klass) {
+        return icons.getOrDefault(klass, ResourceUtils.getPluginResource("icons/traits/trait.png"));
+    }
 
     /**
-     * Returns the icon for a datatype
+     * Returns the icon for a trait
      * @param klass
      * @return
      */
