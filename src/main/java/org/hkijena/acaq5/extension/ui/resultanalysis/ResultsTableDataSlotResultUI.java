@@ -1,22 +1,12 @@
 package org.hkijena.acaq5.extension.ui.resultanalysis;
 
-import ij.IJ;
-import ij.ImagePlus;
-import ij.Macro;
-import ij.WindowManager;
-import ij.gui.Roi;
-import ij.macro.Interpreter;
 import ij.measure.ResultsTable;
-import ij.plugin.frame.RoiManager;
 import org.hkijena.acaq5.api.ACAQRunSample;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.extension.api.datasources.ACAQROIDataFromFile;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultDataSlotResultUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
-import javax.swing.*;
-import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

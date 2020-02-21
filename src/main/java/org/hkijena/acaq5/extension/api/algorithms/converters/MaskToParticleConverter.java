@@ -11,7 +11,6 @@ import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQROIDataSlot;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQResultsTableDataSlot;
-import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQROIData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQResultsTableData;
 
