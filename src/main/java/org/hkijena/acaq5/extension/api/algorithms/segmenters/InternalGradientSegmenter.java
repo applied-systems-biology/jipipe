@@ -75,7 +75,7 @@ public class InternalGradientSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscale
         claheImageEnhancer.getInputSlot().setData(getInputSlot().getData());
         claheImageEnhancer.run();
 
-        ImagePlus img = claheImageEnhancer.getOutputSlot().getData().getImage();
+        ImagePlus img = claheImageEnhancer.getOutputSlot().getData().getImage().duplicate();
         (new GaussianBlur()).blurGaussian(img.getProcessor(), gaussSigma);
         ImageJUtils.runOnImage(img, "8-bit");
         applyInternalGradient(img);
@@ -110,6 +110,8 @@ public class InternalGradientSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscale
         for(int i = 0; i < erosionIterations; ++i) {
             binaryFilter.run(img.getProcessor());
         }
+
+        setOutputData(new ACAQMaskData(img));
     }
 
     @ACAQParameter("gauss-sigma")
