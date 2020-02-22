@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.ui.grapheditor.settings;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 
 import javax.swing.*;
@@ -12,8 +11,8 @@ public abstract class ACAQParameterEditorUI extends JPanel {
         this.parameterAccess = parameterAccess;
     }
 
-    public ACAQAlgorithm getAlgorithm() {
-        return parameterAccess.getAlgorithm();
+    public Object getAlgorithm() {
+        return parameterAccess.getParameterHolder();
     }
 
     public ACAQParameterAccess getParameterAccess() {

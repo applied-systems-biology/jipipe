@@ -13,6 +13,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A slot configuration determines which slots an {@link org.hkijena.acaq5.api.algorithm.ACAQAlgorithm} should have.
+ * The algorithm then instantiates {@link ACAQDataSlot} instances to match the configuration.
+ * This is required to allow multiple algorithms to share their slots.
+ */
 @JsonSerialize(using = ACAQSlotConfiguration.Serializer.class)
 public abstract class ACAQSlotConfiguration {
     private EventBus eventBus = new EventBus();

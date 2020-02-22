@@ -9,9 +9,10 @@ import ij.macro.Interpreter;
 import ij.plugin.frame.RoiManager;
 import org.hkijena.acaq5.api.ACAQRunSample;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.extension.api.datasources.ACAQROIDataFromFile;
+import org.hkijena.acaq5.extension.api.datatypes.ACAQROIData;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultDataSlotResultUI;
+import org.hkijena.acaq5.utils.PathUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -28,11 +29,7 @@ public class ROIDataSlotResultUI extends ACAQDefaultDataSlotResultUI {
 
     private Path findROIFile() {
         if (getSlot().getStoragePath() != null && Files.isDirectory(getSlot().getStoragePath())) {
-            try {
-                return Files.list(getSlot().getStoragePath()).filter(p -> Files.isRegularFile(p) && p.toString().endsWith(".zip")).findFirst().orElse(null);
-            } catch (IOException e) {
-                return null;
-            }
+            return PathUtils.findFileByExtensionIn(getSlot().getStoragePath(), ".zip");
         }
         return null;
     }
@@ -71,7 +68,7 @@ public class ROIDataSlotResultUI extends ACAQDefaultDataSlotResultUI {
                 roiManager = (RoiManager) frame;
             }
         }
-        for (Roi roi : ACAQROIDataFromFile.loadFromFile(roiFile)) {
+        for (Roi roi : ACAQROIData.loadRoiListFromFile(roiFile)) {
             if (imp.getStackSize() > 1) {
                 int n = imp.getCurrentSlice();
                 if (imp.isHyperStack()) {

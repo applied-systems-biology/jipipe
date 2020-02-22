@@ -6,6 +6,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Contains all known {@link ACAQTrait} types
+ */
 public class ACAQTraitRegistry {
     private Set<Class<? extends ACAQTrait>> registeredTraits = new HashSet<>();
 

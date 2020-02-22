@@ -3,6 +3,7 @@ package org.hkijena.acaq5.ui.grapheditor;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.api.ACAQPreprocessingOutput;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
@@ -219,10 +220,16 @@ public class ACAQAlgorithmUI extends JPanel {
             ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
 
             int existingSlots = slotType == ACAQDataSlot.SlotType.Input ? algorithm.getInputSlots().size() : algorithm.getOutputSlots().size();
+            String initialValue = slotType + " data ";
+
+            // This is general
+            if(getAlgorithm() instanceof ACAQPreprocessingOutput) {
+                initialValue = "Data ";
+            }
 
             String name = null;
             while(name == null) {
-                String newName = JOptionPane.showInputDialog(this,"Please a data slot name", slotType + " data " + (existingSlots + 1));
+                String newName = JOptionPane.showInputDialog(this,"Please a data slot name", initialValue + (existingSlots + 1));
                 if(newName == null || newName.trim().isEmpty())
                     return;
                 if(slotConfiguration.hasSlot(newName))

@@ -6,13 +6,28 @@ import java.awt.*;
  * Available algorithm categories
  */
 public enum ACAQAlgorithmCategory {
+    /**
+     * Algorithms that convert one data type to another
+     */
     Converter,
+    /**
+     * Algorithms that process one data type and produce the same
+     */
     Enhancer,
+    /**
+     * Algorithms that convert real-space data into binary-space data
+     */
     Segmenter,
+    /**
+     * Algorithms that produce tabular, relational, or any quantification result data
+     */
     Quantififer,
+    /**
+     * Algorithms that read data from filesystem
+     */
     DataSource,
     /**
-     * Internal algorithms are not serialized
+     * Internal algorithms are only used internally within a project
      */
     Internal;
 

@@ -27,7 +27,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
     private Set<Class<? extends ACAQDataSlot<?>>> allowedInputSlotTypes;
     private Set<Class<? extends ACAQDataSlot<?>>> allowedOutputSlotTypes;
 
-    private ACAQMutableSlotConfiguration() {
+    public ACAQMutableSlotConfiguration() {
         allowedInputSlotTypes = new HashSet<>(ACAQRegistryService.getInstance().getDatatypeRegistry().getRegisteredSlotDataTypes().values());
         allowedOutputSlotTypes = new HashSet<>(ACAQRegistryService.getInstance().getDatatypeRegistry().getRegisteredSlotDataTypes().values());
     }

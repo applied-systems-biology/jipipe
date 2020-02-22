@@ -10,6 +10,9 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 
 import java.io.IOException;
 
+/**
+ * Sample within an {@link ACAQProject}
+ */
 @JsonSerialize(using = ACAQProjectSample.Serializer.class)
 public class ACAQProjectSample implements Comparable<ACAQProjectSample> {
     private ACAQProject project;

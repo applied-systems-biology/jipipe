@@ -10,6 +10,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Contains known {@link ACAQData} types, and associates them to their respective {@link ACAQDataSlot}.
+ */
 public class ACAQDatatypeRegistry {
     private Set<Class<? extends ACAQData>> registeredDataTypes = new HashSet<>();
     private BiMap<Class<? extends ACAQData>, Class<? extends ACAQDataSlot<?>>> registeredSlotDataTypes = HashBiMap.create();

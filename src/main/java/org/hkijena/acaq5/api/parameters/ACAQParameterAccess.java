@@ -14,27 +14,27 @@ public class ACAQParameterAccess {
     private Method getter;
     private Method setter;
     private ACAQDocumentation documentation;
-    private ACAQAlgorithm algorithm;
+    private Object parameterHolder;
 
     private ACAQParameterAccess() {
 
     }
 
     /**
-     * Extracts parameters from an algorithm instance
-     * @param algorithm
+     * Extracts parameters from an object
+     * @param parameterHolder
      * @return
      */
-    public static Map<String, ACAQParameterAccess> getParameters(ACAQAlgorithm algorithm) {
+    public static Map<String, ACAQParameterAccess> getParameters(Object parameterHolder) {
         Map<String, ACAQParameterAccess> result = new HashMap<>();
-        for(Method method : algorithm.getClass().getMethods()) {
+        for(Method method : parameterHolder.getClass().getMethods()) {
             ACAQParameter[] parameterAnnotations = method.getAnnotationsByType(ACAQParameter.class);
             if(parameterAnnotations.length > 0) {
                 ACAQParameter parameterAnnotation = parameterAnnotations[0];
                 ACAQParameterAccess access = result.putIfAbsent(parameterAnnotation.value(), new ACAQParameterAccess());
                 if(access == null)
                     access = result.get(parameterAnnotation.value());
-                access.algorithm = algorithm;
+                access.parameterHolder = parameterHolder;
                 if(method.getParameters().length == 1) {
                     // Is a setter
                     access.setter = method;
@@ -59,7 +59,7 @@ public class ACAQParameterAccess {
             if(subAlgorithms.length > 0) {
                 try {
                     ACAQSubAlgorithm subAlgorithmAnnotation = subAlgorithms[0];
-                    ACAQAlgorithm subAlgorithm = (ACAQAlgorithm) method.invoke(algorithm);
+                    ACAQAlgorithm subAlgorithm = (ACAQAlgorithm) method.invoke(parameterHolder);
                     for(Map.Entry<String, ACAQParameterAccess> kv : getParameters(subAlgorithm).entrySet()) {
 
                         // Do not allow name parameter
@@ -106,7 +106,7 @@ public class ACAQParameterAccess {
 
     public <T> T get() {
         try {
-            return (T)getGetter().invoke(algorithm);
+            return (T)getGetter().invoke(parameterHolder);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
@@ -114,7 +114,7 @@ public class ACAQParameterAccess {
 
     public <T> boolean set(T value) {
         try {
-            Object result = getSetter().invoke(algorithm, value);
+            Object result = getSetter().invoke(parameterHolder, value);
             if(result instanceof Boolean) {
                 return (boolean)result;
             }
@@ -126,7 +126,7 @@ public class ACAQParameterAccess {
         }
     }
 
-    public ACAQAlgorithm getAlgorithm() {
-        return algorithm;
+    public Object getParameterHolder() {
+        return parameterHolder;
     }
 }

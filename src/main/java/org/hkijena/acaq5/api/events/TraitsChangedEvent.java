@@ -2,6 +2,9 @@ package org.hkijena.acaq5.api.events;
 
 import org.hkijena.acaq5.api.traits.ACAQTraitConfiguration;
 
+/**
+ * Triggered after an {@link ACAQTraitConfiguration} was changed
+ */
 public class TraitsChangedEvent {
     private ACAQTraitConfiguration source;
 

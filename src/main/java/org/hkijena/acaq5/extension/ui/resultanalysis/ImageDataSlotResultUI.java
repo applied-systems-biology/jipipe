@@ -6,6 +6,7 @@ import org.hkijena.acaq5.api.ACAQRunSample;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultDataSlotResultUI;
+import org.hkijena.acaq5.utils.PathUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import java.io.IOException;
@@ -20,11 +21,7 @@ public class ImageDataSlotResultUI extends ACAQDefaultDataSlotResultUI {
 
     private Path findImageFile() {
         if(getSlot().getStoragePath() != null && Files.isDirectory(getSlot().getStoragePath())) {
-            try {
-                return Files.list(getSlot().getStoragePath()).filter(p -> Files.isRegularFile(p) && p.toString().endsWith(".tif")).findFirst().orElse(null);
-            } catch (IOException e) {
-                return null;
-            }
+            return PathUtils.findFileByExtensionIn(getSlot().getStoragePath(), ".tif");
         }
         return null;
     }

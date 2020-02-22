@@ -7,9 +7,14 @@ import java.lang.annotation.Target;
 
 /**
  * Annotates the getter of an ACAQ sub-algorithm for inclusion into the set of parameters
+ * Parameters are prepended with the specified name to make then differentiate from the already existing parameters
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface ACAQSubAlgorithm {
+    /**
+     * The name of the sub-algorithm
+     * @return
+     */
     String value();
 }

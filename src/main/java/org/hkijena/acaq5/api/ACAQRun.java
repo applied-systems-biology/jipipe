@@ -19,6 +19,9 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+/**
+ * Runnable instance of an {@link ACAQProject}
+ */
 public class ACAQRun {
     private ACAQProject project;
     ACAQAlgorithmGraph algorithmGraph;

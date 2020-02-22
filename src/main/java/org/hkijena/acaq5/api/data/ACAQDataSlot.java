@@ -7,6 +7,11 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 
+/**
+ * A data slot holds an {@link ACAQData} instance.
+ * Slots are part of an {@link ACAQAlgorithm}
+ * @param <T>
+ */
 public abstract class ACAQDataSlot<T extends ACAQData> {
     private ACAQAlgorithm algorithm;
     private String name;

@@ -2,6 +2,9 @@ package org.hkijena.acaq5.api.traits;
 
 import java.lang.annotation.Annotation;
 
+/**
+ * Implementation of {@link RemovesTrait} for usage in {@link org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry}
+ */
 public class DefaultRemovesTrait implements RemovesTrait {
 
     private Class<? extends ACAQTrait> mValue;

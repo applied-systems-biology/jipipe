@@ -10,6 +10,10 @@ import org.hkijena.acaq5.ACAQRegistryService;
 
 import java.io.IOException;
 
+/**
+ * Defines an {@link org.hkijena.acaq5.api.algorithm.ACAQAlgorithm} data slot.
+ * This class is used within {@link ACAQSlotConfiguration}
+ */
 @JsonSerialize(using = ACAQSlotDefinition.Serializer.class)
 @JsonDeserialize(using = ACAQSlotDefinition.Deserializer.class)
 public class ACAQSlotDefinition {

@@ -2,6 +2,9 @@ package org.hkijena.acaq5.api.events;
 
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 
+/**
+ * Triggered after an {@link ACAQMutableSlotConfiguration} removed a slot
+ */
 public class SlotRemovedEvent {
     private ACAQMutableSlotConfiguration slotConfiguration;
     private String slotName;

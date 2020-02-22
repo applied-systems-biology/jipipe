@@ -5,6 +5,9 @@ import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.scijava.service.Service;
 
+/**
+ * Interface for the API extension service
+ */
 public interface ACAQAPIService extends Service {
     ACAQAlgorithmRegistry getAlgorithmRegistry();
     ACAQDatatypeRegistry getDatatypeRegistry();

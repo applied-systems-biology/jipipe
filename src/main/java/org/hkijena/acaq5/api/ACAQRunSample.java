@@ -5,6 +5,9 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 
 import java.util.*;
 
+/**
+ * Sample within an {@link ACAQRun}
+ */
 public class ACAQRunSample {
     private ACAQRun run;
     private ACAQProjectSample projectSample;

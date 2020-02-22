@@ -8,6 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * The default {@link ACAQTraitConfiguration}. It transfers traits from input slots, to output slots.
+ * During this transfer, traits can be added or removed.
+ */
 public class ACAQMutableTraitModifier extends ACAQTraitConfiguration {
     private List<ModifyTask> modifyTasks = new ArrayList<>();
     private List<TransferTask> transferTasks = new ArrayList<>();

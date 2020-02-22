@@ -29,6 +29,10 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
 
+/**
+ * An algorithm is is a set of input and output data slots, and a run() function
+ * It is part of the {@link ACAQAlgorithmGraph}
+ */
 @JsonSerialize(using = ACAQAlgorithm.Serializer.class)
 public abstract class ACAQAlgorithm {
     private ACAQSlotConfiguration slotConfiguration;
