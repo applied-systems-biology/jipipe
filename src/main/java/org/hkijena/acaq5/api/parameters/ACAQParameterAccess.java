@@ -3,6 +3,7 @@ package org.hkijena.acaq5.api.parameters;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -82,6 +83,13 @@ public class ACAQParameterAccess {
 
     public Method getSetter() {
         return setter;
+    }
+
+    public <T extends Annotation> T getAnnotationOfType(Class<T> klass) {
+        T getterAnnotation = getter.getAnnotation(klass);
+        if(getterAnnotation != null)
+            return getterAnnotation;
+        return setter.getAnnotation(klass);
     }
 
     public Class<?> getFieldClass() {

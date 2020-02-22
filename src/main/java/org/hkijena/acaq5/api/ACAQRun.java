@@ -25,11 +25,12 @@ import java.util.function.Supplier;
 public class ACAQRun {
     private ACAQProject project;
     ACAQAlgorithmGraph algorithmGraph;
-    private Path outputPath;
     private BiMap<String, ACAQRunSample> samples = HashBiMap.create();
+    private ACAQRunConfiguration configuration;
 
-    public ACAQRun(ACAQProject project) {
+    public ACAQRun(ACAQProject project, ACAQRunConfiguration configuration) {
         this.project = project;
+        this.configuration = configuration;
         initializeAlgorithmGraph();
     }
 
@@ -157,51 +158,46 @@ public class ACAQRun {
         return project;
     }
 
-    public void setOutputPath(Path outputPath) {
-        this.outputPath = outputPath;
-    }
-
-    public Path getOutputPath() {
-        return outputPath;
-    }
-
     /**
      * This function must be called before running the graph
      */
     private void prepare() {
-
-        if (!Files.exists(outputPath)) {
-            try {
-                Files.createDirectories(outputPath);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        // Apply output path to the data slots
-        for(ACAQDataSlot<?> slot : algorithmGraph.getSlotNodes()) {
-            if(slot.isOutput()) {
-                slot.setStoragePath(outputPath.resolve(slot.getAlgorithm().getStoragePath().resolve(slot.getName())));
+        if(configuration.isFlushingEnabled()) {
+            if (!Files.exists(configuration.getOutputPath())) {
                 try {
-                    Files.createDirectories(slot.getStoragePath());
+                    Files.createDirectories(configuration.getOutputPath());
                 } catch (IOException e) {
                     throw new RuntimeException(e);
+                }
+            }
+
+            // Apply output path to the data slots
+            for(ACAQDataSlot<?> slot : algorithmGraph.getSlotNodes()) {
+                if(slot.isOutput()) {
+                    slot.setStoragePath(configuration.getOutputPath().resolve(slot.getAlgorithm().getStoragePath().resolve(slot.getName())));
+                    try {
+                        Files.createDirectories(slot.getStoragePath());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
     }
 
     private void flushFinishedSlots(List<ACAQDataSlot<?>> traversedSlots, int i, ACAQDataSlot<?> outputSlot) {
-        boolean canFlush = true;
-        for(int j = i + 1; j < traversedSlots.size(); ++j) {
-            ACAQDataSlot<?> futureSlot = traversedSlots.get(j);
-            if(futureSlot.isInput() && algorithmGraph.getSourceSlot(futureSlot) == outputSlot) {
-                canFlush = false;
-                break;
+        if(configuration.isFlushingEnabled()) {
+            boolean canFlush = true;
+            for(int j = i + 1; j < traversedSlots.size(); ++j) {
+                ACAQDataSlot<?> futureSlot = traversedSlots.get(j);
+                if(futureSlot.isInput() && algorithmGraph.getSourceSlot(futureSlot) == outputSlot) {
+                    canFlush = false;
+                    break;
+                }
             }
-        }
-        if(canFlush) {
-            outputSlot.flush();
+            if(canFlush) {
+                outputSlot.flush();
+            }
         }
     }
 
@@ -240,7 +236,7 @@ public class ACAQRun {
 
         // Postprocessing
         try {
-            project.saveProject(outputPath.resolve("parameters.json"));
+            project.saveProject(configuration.getOutputPath().resolve("parameters.json"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -262,10 +258,15 @@ public class ACAQRun {
     public static ACAQRun loadFromFolder(Path folder) throws IOException {
         Path parameterFile = folder.resolve("parameters.json");
         ACAQProject project = ACAQProject.loadProject(parameterFile);
-        ACAQRun run = new ACAQRun(project);
-        run.outputPath = folder;
+        MutableACAQRunConfiguration configuration = new MutableACAQRunConfiguration();
+        configuration.setOutputPath(folder);
+        ACAQRun run = new ACAQRun(project, configuration);
         run.prepare();
         return run;
+    }
+
+    public ACAQRunConfiguration getConfiguration() {
+        return configuration;
     }
 
     public static class Status {

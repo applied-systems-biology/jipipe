@@ -4,7 +4,7 @@ import org.hkijena.acaq5.ACAQCommand;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphUI;
-import org.hkijena.acaq5.ui.running.ACAQRunUI;
+import org.hkijena.acaq5.ui.running.ACAQRunSettingsUI;
 import org.hkijena.acaq5.ui.samplemanagement.ACAQDataUI;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXStatusBar;
@@ -137,7 +137,7 @@ public class ACAQWorkbenchUI extends JPanel {
     }
 
     private void openRunUI() {
-        ACAQRunUI ui = new ACAQRunUI(this);
+        ACAQRunSettingsUI ui = new ACAQRunSettingsUI(this);
         documentTabPane.addTab("Run", UIUtils.getIconFromResources("run.png"), ui,
                 DocumentTabPane.CloseMode.withAskOnCloseButton, true);
         documentTabPane.switchToLastTab();

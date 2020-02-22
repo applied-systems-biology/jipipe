@@ -55,7 +55,7 @@ public class ACAQResultUI extends ACAQUIPanel {
 
     private void openOutputFolder() {
         try {
-            Desktop.getDesktop().open(run.getOutputPath().toFile());
+            Desktop.getDesktop().open(run.getConfiguration().getOutputPath().toFile());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

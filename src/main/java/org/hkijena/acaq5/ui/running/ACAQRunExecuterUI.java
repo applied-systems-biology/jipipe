@@ -1,71 +1,33 @@
 package org.hkijena.acaq5.ui.running;
 
+import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.ACAQRun;
-import org.hkijena.acaq5.ui.ACAQUIPanel;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
-import org.hkijena.acaq5.ui.components.FileSelection;
-import org.hkijena.acaq5.ui.components.FormPanel;
-import org.hkijena.acaq5.ui.resultanalysis.ACAQResultUI;
+import org.hkijena.acaq5.api.events.RunFinishedEvent;
+import org.hkijena.acaq5.api.events.RunInterruptedEvent;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 
-public class ACAQRunUI extends ACAQUIPanel {
-
+public class ACAQRunExecuterUI extends JPanel {
     private ACAQRun run;
-//    private ACAQValidityReport validityReport;
+    private JProgressBar progressBar;
+    private JButton cancelButton;
     private Worker worker;
+    private EventBus eventBus = new EventBus();
 
-    JPanel setupPanel;
-    JButton cancelButton;
-    JButton runButton;
-    JProgressBar progressBar;
-    JPanel buttonPanel;
-
-    public ACAQRunUI(ACAQWorkbenchUI workbenchUI) {
-        super(workbenchUI);
+    public ACAQRunExecuterUI(ACAQRun run) {
+        this.run = run;
         initialize();
     }
 
     private void initialize() {
         setLayout(new BorderLayout(8, 8));
 
-        try {
-            run = new ACAQRun(getWorkbenchUI().getProject());
-            initializeButtons();
-            initializeSetupGUI();
-        }
-        catch(Exception e) {
-            openError(e);
-        }
-    }
-
-    private void initializeSetupGUI() {
-        setupPanel = new JPanel(new BorderLayout());
-        FormPanel formPanel = new FormPanel("documentation/run.md", false);
-
-        FileSelection outputFolderSelection = formPanel.addToForm(new FileSelection(FileSelection.Mode.OPEN),
-                new JLabel("Output folder"),
-                null);
-        outputFolderSelection.getFileChooser().setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        outputFolderSelection.addActionListener(e -> {
-            run.setOutputPath(outputFolderSelection.getPath());
-            runButton.setEnabled(outputFolderSelection.getPath() != null);
-        });
-        formPanel.addVerticalGlue();
-
-        setupPanel.add(formPanel, BorderLayout.CENTER);
-        add(setupPanel, BorderLayout.CENTER);
-    }
-
-    private void initializeButtons() {
-        buttonPanel = new JPanel();
+        JPanel buttonPanel = new JPanel();
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(0,8,8,8));
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
@@ -76,25 +38,14 @@ public class ACAQRunUI extends ACAQUIPanel {
         buttonPanel.add(Box.createHorizontalStrut(16));
 
         cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("remove.png"));
+        cancelButton.addActionListener(e -> requestCancelRun());
         buttonPanel.add(cancelButton);
 
-        runButton = new JButton("Run now", UIUtils.getIconFromResources("run.png"));
-        runButton.addActionListener(e -> runNow());
-        runButton.setEnabled(false);
-        buttonPanel.add(runButton);
-
-        add(buttonPanel, BorderLayout.SOUTH);
-
-        cancelButton.setVisible(false);
+        add(buttonPanel, BorderLayout.CENTER);
     }
 
-    private void runNow() {
-        runButton.setVisible(false);
-        cancelButton.setVisible(true);
-        setupPanel.setVisible(false);
-        remove(setupPanel);
-
-        Worker worker = new Worker(run, progressBar);
+    public void startRun() {
+        worker = new Worker(run, progressBar);
         cancelButton.addActionListener(e -> {
             cancelButton.setEnabled(false);
             worker.cancel(true);
@@ -109,17 +60,17 @@ public class ACAQRunUI extends ACAQUIPanel {
                         }
                         try {
                             if(worker.isCancelled()) {
-                                SwingUtilities.invokeLater(() -> openError(new RuntimeException("Execution was cancelled by user!")));
+                                SwingUtilities.invokeLater(() -> postInterruptedEvent(new RuntimeException("Execution was cancelled by user!")));
                             }
                             else if(worker.get() != null) {
                                 final Exception e = worker.get();
-                                SwingUtilities.invokeLater(() -> openError(e));
+                                SwingUtilities.invokeLater(() -> postInterruptedEvent(e));
                             }
                             else {
-                                openResults();
+                                postFinishedEvent();
                             }
                         } catch (InterruptedException | ExecutionException | CancellationException e) {
-                            SwingUtilities.invokeLater(() -> openError(e));
+                            SwingUtilities.invokeLater(() -> postInterruptedEvent(e));
                         }
                         break;
                 }
@@ -128,20 +79,21 @@ public class ACAQRunUI extends ACAQUIPanel {
         worker.execute();
     }
 
-    private void openError(Exception exception) {
-        StringWriter writer = new StringWriter();
-        exception.printStackTrace(new PrintWriter(writer));
-        JTextArea errorPanel = new JTextArea(writer.toString());
-        errorPanel.setEditable(false);
-        add(new JScrollPane(errorPanel), BorderLayout.CENTER);
-        revalidate();
+    private void postFinishedEvent() {
+        eventBus.post(new RunFinishedEvent(run));
     }
 
-    private void openResults() {
-        ACAQResultUI resultUI = new ACAQResultUI(getWorkbenchUI(), run);
-        add(resultUI, BorderLayout.CENTER);
-        buttonPanel.setVisible(false);
-        revalidate();
+    private void postInterruptedEvent(Exception e) {
+        eventBus.post(new RunInterruptedEvent(run, e));
+    }
+
+    public void requestCancelRun() {
+        cancelButton.setEnabled(false);
+        worker.cancel(true);
+    }
+
+    public EventBus getEventBus() {
+        return eventBus;
     }
 
     private static class Worker extends SwingWorker<Exception, Object> {

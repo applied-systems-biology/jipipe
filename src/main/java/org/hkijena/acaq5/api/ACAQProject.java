@@ -14,9 +14,9 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQInputAsOutputSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.api.events.ACAQSampleAddedEvent;
-import org.hkijena.acaq5.api.events.ACAQSampleRemovedEvent;
-import org.hkijena.acaq5.api.events.ACAQSampleRenamedEvent;
+import org.hkijena.acaq5.api.events.SampleAddedEvent;
+import org.hkijena.acaq5.api.events.SampleRemovedEvent;
+import org.hkijena.acaq5.api.events.SampleRenamedEvent;
 import org.hkijena.acaq5.api.traits.ACAQMutableTraitGenerator;
 import org.hkijena.acaq5.utils.JsonUtils;
 
@@ -74,7 +74,7 @@ public class ACAQProject {
         else {
             ACAQProjectSample sample = new ACAQProjectSample(this);
             samples.put(sampleName, sample);
-            eventBus.post(new ACAQSampleAddedEvent(sample));
+            eventBus.post(new SampleAddedEvent(sample));
             return sample;
         }
     }
@@ -83,7 +83,7 @@ public class ACAQProject {
         String name = sample.getName();
         if(samples.containsKey(name)) {
             samples.remove(name);
-            eventBus.post(new ACAQSampleRemovedEvent(sample));
+            eventBus.post(new SampleRemovedEvent(sample));
             return true;
         }
         return false;
@@ -97,7 +97,7 @@ public class ACAQProject {
             return false;
         samples.remove(sample.getName());
         samples.put(name, sample);
-        eventBus.post(new ACAQSampleRenamedEvent(sample));
+        eventBus.post(new SampleRenamedEvent(sample));
         return true;
     }
 
@@ -116,7 +116,7 @@ public class ACAQProject {
         ACAQProjectSample original = samples.get(name);
         ACAQProjectSample copy =  new ACAQProjectSample(original);
         samples.put(newSampleName, copy);
-        eventBus.post(new ACAQSampleAddedEvent(copy));
+        eventBus.post(new SampleAddedEvent(copy));
     }
 
     public static class Serializer extends JsonSerializer<ACAQProject> {

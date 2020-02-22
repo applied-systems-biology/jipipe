@@ -2,13 +2,14 @@ package org.hkijena.acaq5.api.events;
 
 import org.hkijena.acaq5.api.ACAQProjectSample;
 
+
 /**
- * Triggered when a sample is removed from an {@link org.hkijena.acaq5.api.ACAQProject}
+ * Triggered when a sample in an {@link org.hkijena.acaq5.api.ACAQProject} is renamed
  */
-public class ACAQSampleRemovedEvent {
+public class SampleRenamedEvent {
     private ACAQProjectSample sample;
 
-    public ACAQSampleRemovedEvent(ACAQProjectSample sample) {
+    public SampleRenamedEvent(ACAQProjectSample sample) {
         this.sample = sample;
     }
 

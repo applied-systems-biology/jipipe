@@ -2,7 +2,7 @@ package org.hkijena.acaq5.ui.samplemanagement;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQProjectSample;
-import org.hkijena.acaq5.api.events.ACAQSampleRenamedEvent;
+import org.hkijena.acaq5.api.events.SampleRenamedEvent;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphUI;
@@ -79,7 +79,7 @@ public class ACAQProjectSampleUI extends ACAQUIPanel {
     }
 
     @Subscribe
-    public void onSampleRenamed(ACAQSampleRenamedEvent event) {
+    public void onSampleRenamed(SampleRenamedEvent event) {
         if(event.getSample() == sample) {
             sampleTitle.setText(sample.getName());
         }

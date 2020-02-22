@@ -29,22 +29,26 @@ import java.util.Set;
  */
 public class FileSelection extends JPanel {
 
-    private JFileChooser jFileChooser = new JFileChooser();
+    private JFileChooser fileChooser = new JFileChooser();
     private JTextField pathEdit;
-    private Mode mode;
+    private IOMode ioMode;
+    private PathMode pathMode;
     private Set<ActionListener> listeners = new HashSet<>();
 
     public FileSelection() {
-        this.mode = Mode.OPEN;
+        this.ioMode = IOMode.Open;
+        setPathMode(PathMode.FilesOnly);
         initialize();
     }
 
-    public FileSelection(Mode mode) {
-        this.mode = mode;
+    public FileSelection(IOMode ioMode, PathMode pathMode) {
+        this.ioMode = ioMode;
+        setPathMode(pathMode);
         initialize();
     }
 
     private void initialize() {
+        // Setup the GUI
         setLayout(new GridBagLayout());
 
         pathEdit = new JTextField();
@@ -70,7 +74,7 @@ public class FileSelection extends JPanel {
         });
 
         selectButton.addActionListener(actionEvent -> {
-            if(mode == Mode.OPEN) {
+            if(ioMode == ioMode.Open) {
                 if(getFileChooser().showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                     pathEdit.setText(getFileChooser().getSelectedFile().toString());
                 }
@@ -102,7 +106,7 @@ public class FileSelection extends JPanel {
     }
 
     public JFileChooser getFileChooser() {
-        return jFileChooser;
+        return fileChooser;
     }
 
     private void postAction() {
@@ -119,8 +123,41 @@ public class FileSelection extends JPanel {
         listeners.remove(listener);
     }
 
-    public enum Mode {
-        OPEN,
-        SAVE
+    public IOMode getIoMode() {
+        return ioMode;
+    }
+
+    public void setIoMode(IOMode ioMode) {
+        this.ioMode = ioMode;
+    }
+
+    public PathMode getPathMode() {
+        return pathMode;
+    }
+
+    public void setPathMode(PathMode pathMode) {
+        this.pathMode = pathMode;
+        switch (pathMode) {
+            case FilesOnly:
+                fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                break;
+            case DirectoriesOnly:
+                fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                break;
+            case FilesAndDirectories:
+                fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+                break;
+        }
+    }
+
+    public enum IOMode {
+        Open,
+        Save
+    }
+
+    public enum PathMode {
+        FilesOnly,
+        DirectoriesOnly,
+        FilesAndDirectories
     }
 }
