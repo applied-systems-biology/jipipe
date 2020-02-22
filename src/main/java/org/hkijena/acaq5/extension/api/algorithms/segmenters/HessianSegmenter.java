@@ -8,6 +8,7 @@ import imagescience.image.Aspects;
 import imagescience.image.FloatImage;
 import imagescience.image.Image;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQSubAlgorithm;
@@ -117,5 +118,10 @@ public class HessianSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData
     @ACAQSubAlgorithm("auto-thresholding")
     public AutoThresholdSegmenter getAutoThresholdSegmenter() {
         return autoThresholdSegmenter;
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+        report.forCategory("Auto threshold segmenter").report(autoThresholdSegmenter);
     }
 }

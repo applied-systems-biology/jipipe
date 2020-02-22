@@ -30,7 +30,7 @@ import java.util.Map;
  */
 @JsonSerialize(using = ACAQProject.Serializer.class)
 @JsonDeserialize(using = ACAQProject.Deserializer.class)
-public class ACAQProject {
+public class ACAQProject implements ACAQValidatable {
     private EventBus eventBus = new EventBus();
     private BiMap<String, ACAQProjectSample> samples = HashBiMap.create();
     private ACAQMutableSlotConfiguration preprocessingOutputConfiguration = ACAQMutableSlotConfiguration.builder().withoutOutput().build();
@@ -117,6 +117,16 @@ public class ACAQProject {
         ACAQProjectSample copy =  new ACAQProjectSample(original);
         samples.put(newSampleName, copy);
         eventBus.post(new SampleAddedEvent(copy));
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+        if(samples.isEmpty())
+            report.forCategory("Data").reportIsInvalid("There are no samples! Please add at least one sample.");
+        for(Map.Entry<String, ACAQProjectSample> entry : samples.entrySet()) {
+            entry.getValue().reportValidity(report.forCategory("Data").forCategory(entry.getKey()));
+        }
+        analysis.reportValidity(report.forCategory("Analysis"));
     }
 
     public static class Serializer extends JsonSerializer<ACAQProject> {

@@ -14,6 +14,8 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.ACAQPreprocessingOutput;
+import org.hkijena.acaq5.api.ACAQValidatable;
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
@@ -36,7 +38,7 @@ import java.util.*;
  * Manages multiple {@link ACAQAlgorithm} instances as graph
  */
 @JsonSerialize(using = ACAQAlgorithmGraph.Serializer.class)
-public class ACAQAlgorithmGraph {
+public class ACAQAlgorithmGraph implements ACAQValidatable {
 
     public static final String ACAQ_ALGORITHM_KEY_PREPROCESSING_OUTPUT = "acaq:preprocessing-output";
     private DefaultDirectedGraph<ACAQDataSlot<?>, DefaultEdge> graph = new DefaultDirectedGraph<>(DefaultEdge.class);
@@ -458,6 +460,21 @@ public class ACAQAlgorithmGraph {
 
     public boolean containsNode(ACAQDataSlot<?> slot) {
         return graph.vertexSet().contains(slot);
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+        for(Map.Entry<String, ACAQAlgorithm> entry : algorithms.entrySet()) {
+            report.forCategory(entry.getValue().getName()).report(entry.getValue());
+        }
+        for(ACAQDataSlot<?> slot : graph.vertexSet()) {
+            if(slot.isInput()) {
+                if(graph.incomingEdgesOf(slot).isEmpty()) {
+                    report.forCategory(slot.getAlgorithm().getName()).forCategory("Slot: " + slot.getName()).reportIsInvalid("An input slot has no incoming data! " +
+                            "Please connect the slot to an output of another algorithm.");
+                }
+            }
+        }
     }
 
     public static class Serializer extends JsonSerializer<ACAQAlgorithmGraph> {

@@ -5,6 +5,7 @@ import ij.Prefs;
 import ij.plugin.Thresholder;
 import ij.process.AutoThresholder;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.*;
@@ -73,5 +74,10 @@ public class AutoThresholdSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleIma
     @ACAQParameter("method")
     public void setMethod(AutoThresholder.Method method) {
         this.method = method;
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+
     }
 }

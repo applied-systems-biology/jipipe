@@ -2,6 +2,7 @@ package org.hkijena.acaq5.extension.api.datasources;
 
 import ij.measure.ResultsTable;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
@@ -11,6 +12,7 @@ import org.hkijena.acaq5.extension.api.dataslots.ACAQResultsTableDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQResultsTableData;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 @ACAQDocumentation(name = "Results table from file")
@@ -47,5 +49,11 @@ public class ACAQResultsTableFromFile extends ACAQSimpleDataSource<ACAQResultsTa
     @ACAQDocumentation(name = "File name")
     public Path getFileName() {
         return fileName;
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+        if(fileName == null ||!Files.isRegularFile(fileName))
+            report.reportIsInvalid("Input file does not exist! Please provide a valid input file.");
     }
 }

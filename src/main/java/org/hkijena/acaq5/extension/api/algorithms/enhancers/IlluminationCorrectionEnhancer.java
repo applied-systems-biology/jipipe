@@ -3,6 +3,7 @@ package org.hkijena.acaq5.extension.api.algorithms.enhancers;
 import ij.ImagePlus;
 import ij.plugin.ImageCalculator;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
@@ -68,5 +69,10 @@ public class IlluminationCorrectionEnhancer extends ACAQSimpleAlgorithm<ACAQGrey
     @ACAQParameter("gaussian-sigma")
     public void setGaussianSigma(int gaussianSigma) {
         this.gaussianSigma = gaussianSigma;
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+
     }
 }

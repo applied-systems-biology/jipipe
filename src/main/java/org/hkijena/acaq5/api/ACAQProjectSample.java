@@ -14,7 +14,7 @@ import java.io.IOException;
  * Sample within an {@link ACAQProject}
  */
 @JsonSerialize(using = ACAQProjectSample.Serializer.class)
-public class ACAQProjectSample implements Comparable<ACAQProjectSample> {
+public class ACAQProjectSample implements Comparable<ACAQProjectSample>, ACAQValidatable {
     private ACAQProject project;
     private ACAQAlgorithmGraph preprocessingGraph;
 
@@ -50,6 +50,11 @@ public class ACAQProjectSample implements Comparable<ACAQProjectSample> {
 
     public ACAQAlgorithmGraph getPreprocessingGraph() {
         return preprocessingGraph;
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+        preprocessingGraph.reportValidity(report);
     }
 
     public static class Serializer extends JsonSerializer<ACAQProjectSample> {

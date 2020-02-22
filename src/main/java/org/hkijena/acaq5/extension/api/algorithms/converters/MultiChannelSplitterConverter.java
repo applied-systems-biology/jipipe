@@ -3,6 +3,7 @@ package org.hkijena.acaq5.extension.api.algorithms.converters;
 import ij.ImagePlus;
 import ij.plugin.ChannelSplitter;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
@@ -45,5 +46,10 @@ public class MultiChannelSplitterConverter extends ACAQAlgorithm {
             ACAQGreyscaleImageDataSlot outputSlot = (ACAQGreyscaleImageDataSlot)slot;
             outputSlot.setData(new ACAQGreyscaleImageData(outputImages[i++]));
         }
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+
     }
 }

@@ -2,6 +2,7 @@ package org.hkijena.acaq5.extension.api.algorithms.enhancers;
 
 import ij.gui.Roi;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
@@ -41,5 +42,10 @@ public class MergeROIEnhancer extends ACAQAlgorithm {
 
         ACAQROIDataSlot outputSlot = (ACAQROIDataSlot)getOutputSlots().get(0);
         outputSlot.setData(new ACAQROIData(inputROI));
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+
     }
 }

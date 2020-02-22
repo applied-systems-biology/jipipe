@@ -19,27 +19,67 @@ import java.util.*;
  */
 public class ACAQValidityReport {
     private List<String> categories = new ArrayList<>();
-    private Map<String, Response> data = new HashMap<>();
+    private Map<String, Response> responses = new HashMap<>();
+    private Map<String, String> messages = new HashMap<>();
 
     public ACAQValidityReport() {
+    }
 
+    public void clear() {
+        responses.clear();
+        messages.clear();
     }
 
     public List<String> getInvalidResponses() {
         List<String> result = new ArrayList<>();
-        for(Map.Entry<String, Response> entry : data.entrySet()) {
+        for(Map.Entry<String, Response> entry : responses.entrySet()) {
             if(entry.getValue() == Response.Invalid)
                 result.add(entry.getKey());
         }
         return result;
     }
 
+    public Map<String, String> getMessages() {
+        return Collections.unmodifiableMap(messages);
+    }
+
     public boolean isValid() {
-        return data.values().stream().allMatch(r -> r == Response.Valid);
+        return responses.values().stream().allMatch(r -> r == Response.Valid);
     }
 
     public List<String> getCategories() {
         return categories;
+    }
+
+    public ACAQValidityReport forCategory(String category) {
+        ACAQValidityReport result = new ACAQValidityReport();
+        result.categories.addAll(categories);
+        result.categories.add(category);
+        result.responses = responses;
+        result.messages = messages;
+        return result;
+    }
+
+    public void report(Response response, String message) {
+        String key = String.join("/", categories);
+        responses.put(key, response);
+        messages.put(key, message);
+    }
+
+    public void report(ACAQValidatable validatable) {
+        validatable.reportValidity(this);
+    }
+
+    public void report(boolean valid, String message) {
+        report(valid ? Response.Valid : Response.Invalid, message);
+    }
+
+    public void reportIsValid() {
+        report(true, "");
+    }
+
+    public void reportIsInvalid(String message) {
+        report(false, message);
     }
 
     public enum Response {

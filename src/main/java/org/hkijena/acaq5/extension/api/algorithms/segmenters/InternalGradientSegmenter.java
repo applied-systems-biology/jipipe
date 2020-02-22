@@ -6,6 +6,7 @@ import ij.plugin.filter.Binary;
 import ij.plugin.filter.GaussianBlur;
 import ij.plugin.filter.RankFilters;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQSubAlgorithm;
@@ -166,5 +167,11 @@ public class InternalGradientSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscale
     @ACAQSubAlgorithm("clahe-enhancing")
     public CLAHEImageEnhancer getClaheImageEnhancer() {
         return claheImageEnhancer;
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+        report.forCategory("Auto Threshold Segmenter").report(autoThresholdSegmenter);
+        report.forCategory("CLAHE Enhancer").report(claheImageEnhancer);
     }
 }

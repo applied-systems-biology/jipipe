@@ -4,6 +4,7 @@ import ij.ImagePlus;
 import ij.plugin.filter.Binary;
 import ij.plugin.filter.EDM;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
@@ -72,5 +73,10 @@ public class WatershedMaskEnhancer extends ACAQSimpleAlgorithm<ACAQMaskData, ACA
     @ACAQParameter("erosion-iterations")
     public void setErosionIterations(int erosionIterations) {
         this.erosionIterations = erosionIterations;
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+
     }
 }

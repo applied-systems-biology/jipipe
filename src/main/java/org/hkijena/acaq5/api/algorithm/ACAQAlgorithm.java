@@ -12,6 +12,7 @@ import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQRun;
+import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
@@ -34,7 +35,7 @@ import java.util.*;
  * It is part of the {@link ACAQAlgorithmGraph}
  */
 @JsonSerialize(using = ACAQAlgorithm.Serializer.class)
-public abstract class ACAQAlgorithm {
+public abstract class ACAQAlgorithm implements ACAQValidatable {
     private ACAQSlotConfiguration slotConfiguration;
     private ACAQTraitConfiguration traitConfiguration;
     private Map<String, ACAQDataSlot<?>> slots = new HashMap<>();

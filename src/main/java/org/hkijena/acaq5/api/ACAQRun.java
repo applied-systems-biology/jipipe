@@ -41,15 +41,35 @@ public class ACAQRun {
     private void initializeAlgorithmGraph() {
         algorithmGraph = new ACAQAlgorithmGraph();
 
-        initializeAlgorithmGraphNodes();
+        // Determine the list of algorithms that should be included
+        Set<ACAQAlgorithm> includedAlgorithms = new HashSet<>();
+        if(configuration.getEndAlgorithmId() != null) {
+            for(ACAQDataSlot<?> slot : project.getAnalysis().traverse()) {
+                if(slot.isOutput()) {
+                    ACAQAlgorithm algorithm = slot.getAlgorithm();
+                    String id = project.getAnalysis().getAlgorithmNodes().inverse().get(algorithm);
+
+                    includedAlgorithms.add(algorithm);
+
+                    if(id.equals(configuration.getEndAlgorithmId()))
+                        break;
+                }
+            }
+        }
+        else {
+            includedAlgorithms.addAll(project.getAnalysis().getAlgorithmNodes().values());
+        }
+
+        // Add nodes
+        initializeAlgorithmGraphNodes(includedAlgorithms);
 
         // Add edges
         for(Map.Entry<String, ACAQProjectSample> sampleEntry : project.getSamples().entrySet()) {
-            initializeAlgorithmGraphEdges(sampleEntry);
+            initializeAlgorithmGraphEdges(sampleEntry, includedAlgorithms);
         }
     }
 
-    private void initializeAlgorithmGraphEdges(Map.Entry<String, ACAQProjectSample> sampleEntry) {
+    private void initializeAlgorithmGraphEdges(Map.Entry<String, ACAQProjectSample> sampleEntry, Set<ACAQAlgorithm> includedAlgorithms) {
         ACAQAlgorithmGraph preprocessing = sampleEntry.getValue().getPreprocessingGraph();
         BiMap<String, ACAQAlgorithm> preprocessingAlgorithms = preprocessing.getAlgorithmNodes();
         BiMap<String, ACAQAlgorithm> analysisAlgorithms = project.getAnalysis().getAlgorithmNodes();
@@ -76,6 +96,10 @@ public class ACAQRun {
         for (Map.Entry<ACAQDataSlot<?>, ACAQDataSlot<?>> edge : project.getAnalysis().getSlotEdges()) {
             ACAQAlgorithm sourceAlgorithm = edge.getKey().getAlgorithm();
             ACAQAlgorithm targetAlgorithm = edge.getValue().getAlgorithm();
+            if(!includedAlgorithms.contains(sourceAlgorithm))
+                continue;
+            if(!includedAlgorithms.contains(targetAlgorithm))
+                continue;
             String sourceAlgorithmName = sampleName + "/analysis/" + analysisAlgorithms.inverse().get(sourceAlgorithm);
             String targetAlgorithmName = sampleName + "/analysis/" + analysisAlgorithms.inverse().get(targetAlgorithm);
             String sourceSlotName = edge.getKey().getName();
@@ -95,6 +119,10 @@ public class ACAQRun {
         for (Map.Entry<ACAQDataSlot<?>, ACAQDataSlot<?>> edge : project.getAnalysis().getSlotEdges()) {
             ACAQAlgorithm sourceAlgorithm = edge.getKey().getAlgorithm();
             ACAQAlgorithm targetAlgorithm = edge.getValue().getAlgorithm();
+            if(!includedAlgorithms.contains(sourceAlgorithm))
+                continue;
+            if(!includedAlgorithms.contains(targetAlgorithm))
+                continue;
             String sourceAlgorithmName = sampleName + "/analysis/" + analysisAlgorithms.inverse().get(sourceAlgorithm);
             String targetAlgorithmName = sampleName + "/analysis/" + analysisAlgorithms.inverse().get(targetAlgorithm);
             String sourceSlotName = edge.getKey().getName();
@@ -119,7 +147,7 @@ public class ACAQRun {
         }
     }
 
-    private void initializeAlgorithmGraphNodes() {
+    private void initializeAlgorithmGraphNodes(Set<ACAQAlgorithm> includedAlgorithms) {
         // Create nodes
         for(Map.Entry<String, ACAQProjectSample> sampleEntry : project.getSamples().entrySet()) {
             String sampleName = sampleEntry.getKey();
@@ -140,6 +168,8 @@ public class ACAQRun {
             // Analysis graph
             for(Map.Entry<String, ACAQAlgorithm> algorithmEntry : project.getAnalysis().getAlgorithmNodes().entrySet()) {
                 if(algorithmEntry.getValue().getCategory() == ACAQAlgorithmCategory.Internal)
+                    continue;
+                if(!includedAlgorithms.contains(algorithmEntry.getValue()))
                     continue;
                 String algorithmName = sampleName + "/analysis/" + algorithmEntry.getKey();
                 ACAQAlgorithm copy = ACAQAlgorithm.clone(algorithmEntry.getValue());

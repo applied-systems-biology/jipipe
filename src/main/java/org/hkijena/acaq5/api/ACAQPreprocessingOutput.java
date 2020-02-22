@@ -36,4 +36,9 @@ public class ACAQPreprocessingOutput extends ACAQAlgorithm {
     public void run() {
 
     }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+
+    }
 }
