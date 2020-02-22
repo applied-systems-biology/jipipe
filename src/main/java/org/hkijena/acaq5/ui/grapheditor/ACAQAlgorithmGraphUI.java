@@ -152,7 +152,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
     @Subscribe
     public void onOpenAlgorithmSettings(ACAQAlgorithmUIOpenSettingsRequested event) {
         if(currentAlgorithmSettings == null || currentAlgorithmSettings.getAlgorithm() != event.getUi().getAlgorithm()) {
-            currentAlgorithmSettings = new ACAQAlgorithmSettingsUI(algorithmGraph, event.getUi().getAlgorithm());
+            currentAlgorithmSettings = new ACAQAlgorithmSettingsUI(getWorkbenchUI(), algorithmGraph, event.getUi().getAlgorithm());
             int dividerLocation = splitPane.getDividerLocation();
             splitPane.setRightComponent(currentAlgorithmSettings);
             splitPane.setDividerLocation(dividerLocation);

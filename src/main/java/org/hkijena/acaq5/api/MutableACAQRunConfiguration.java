@@ -1,15 +1,18 @@
 package org.hkijena.acaq5.api;
 
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extension.ui.parametereditors.FilePathParameterSettings;
 import org.hkijena.acaq5.ui.components.FileSelection;
 
 import java.nio.file.Path;
+import java.util.Set;
 
 public class MutableACAQRunConfiguration implements ACAQRunConfiguration {
     private Path outputPath;
     private boolean flushingEnabled = true;
-    private String endAlgorithmId;
+    private ACAQAlgorithm endAlgorithm;
+    private Set<String> sampleRestrictions;
 
     @ACAQParameter("output-path")
     public void setOutputPath(Path outputPath) {
@@ -33,12 +36,22 @@ public class MutableACAQRunConfiguration implements ACAQRunConfiguration {
         this.flushingEnabled = flushingEnabled;
     }
 
+
     @Override
-    public String getEndAlgorithmId() {
-        return endAlgorithmId;
+    public ACAQAlgorithm getEndAlgorithm() {
+        return endAlgorithm;
     }
 
-    public void setEndAlgorithmId(String endAlgorithmId) {
-        this.endAlgorithmId = endAlgorithmId;
+    public void setEndAlgorithm(ACAQAlgorithm endAlgorithm) {
+        this.endAlgorithm = endAlgorithm;
+    }
+
+    @Override
+    public Set<String> getSampleRestrictions() {
+        return sampleRestrictions;
+    }
+
+    public void setSampleRestrictions(Set<String> sampleRestrictions) {
+        this.sampleRestrictions = sampleRestrictions;
     }
 }

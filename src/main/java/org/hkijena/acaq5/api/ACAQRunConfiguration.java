@@ -1,6 +1,9 @@
 package org.hkijena.acaq5.api;
 
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+
 import java.nio.file.Path;
+import java.util.Set;
 
 public interface ACAQRunConfiguration {
     /**
@@ -16,8 +19,14 @@ public interface ACAQRunConfiguration {
     boolean isFlushingEnabled();
 
     /**
-     * If not null, the run is only executed up to the algorithm with the given id
+     * If not null, the run is only executed up to the algorithm
      * @return
      */
-    String getEndAlgorithmId();
+    ACAQAlgorithm getEndAlgorithm();
+
+    /**
+     * If not null or empty, restrict only to specific samples
+     * @return
+     */
+    Set<String> getSampleRestrictions();
 }
