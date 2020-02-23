@@ -21,7 +21,7 @@ public class FormPanel extends JPanel {
     private JPanel forms = new JPanel();
     private MarkdownReader parameterHelp;
 
-    public FormPanel(String defaultHelpDocumentPath, boolean documentationBelow) {
+    public FormPanel(String defaultHelpDocumentPath, boolean documentationBelow, boolean withDocumentation) {
         setLayout(new BorderLayout());
         forms.setLayout(new GridBagLayout());
 
@@ -31,17 +31,26 @@ public class FormPanel extends JPanel {
         helpPanel.add(parameterHelp, BorderLayout.CENTER);
 
         JScrollPane scrollPane = new JScrollPane(forms);
-        JSplitPane splitPane = new JSplitPane(documentationBelow ? JSplitPane.VERTICAL_SPLIT : JSplitPane.HORIZONTAL_SPLIT, scrollPane, helpPanel);
-        splitPane.setDividerSize(3);
-        splitPane.setResizeWeight(0.33);
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                super.componentResized(e);
-                splitPane.setDividerLocation(0.66);
-            }
-        });
-        add(splitPane, BorderLayout.CENTER);
+        if(withDocumentation) {
+            JSplitPane splitPane = new JSplitPane(documentationBelow ? JSplitPane.VERTICAL_SPLIT : JSplitPane.HORIZONTAL_SPLIT, scrollPane, helpPanel);
+            splitPane.setDividerSize(3);
+            splitPane.setResizeWeight(0.33);
+            addComponentListener(new ComponentAdapter() {
+                @Override
+                public void componentResized(ComponentEvent e) {
+                    super.componentResized(e);
+                    splitPane.setDividerLocation(0.66);
+                }
+            });
+            add(splitPane, BorderLayout.CENTER);
+        }
+        else {
+            add(forms, BorderLayout.CENTER);
+        }
+    }
+
+    public FormPanel(String defaultHelpDocumentPath, boolean documentationBelow) {
+        this(defaultHelpDocumentPath, documentationBelow, true);
     }
 
     public FormPanel() {

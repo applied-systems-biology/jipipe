@@ -13,6 +13,7 @@ import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Collections;
 import java.util.Set;
 
 public class ACAQDataSlotTraitUI extends JPanel {
@@ -29,7 +30,7 @@ public class ACAQDataSlotTraitUI extends JPanel {
 
     private void reloadButtons() {
         removeAll();
-        Set<Class<? extends ACAQTrait>> traits = graph.getAlgorithmTraits().get(slot);
+        Set<Class<? extends ACAQTrait>> traits = graph.getAlgorithmTraits().getOrDefault(slot, Collections.emptySet());
         boolean canEditTraits = slot.getAlgorithm().getTraitConfiguration() instanceof ACAQMutableTraitGenerator;
 
         for(Class<? extends ACAQTrait> trait : traits) {
@@ -90,7 +91,7 @@ public class ACAQDataSlotTraitUI extends JPanel {
     }
 
     public int calculateWidth() {
-        Set<Class<? extends ACAQTrait>> traits = graph.getAlgorithmTraits().get(slot);
+        Set<Class<? extends ACAQTrait>> traits = graph.getAlgorithmTraits().getOrDefault(slot, Collections.emptySet());
         boolean canEditTraits = slot.getAlgorithm().getTraitConfiguration() instanceof ACAQMutableTraitGenerator;
         int width = 25 * traits.size();
         if(canEditTraits)

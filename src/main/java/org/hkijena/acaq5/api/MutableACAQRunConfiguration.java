@@ -13,6 +13,8 @@ public class MutableACAQRunConfiguration implements ACAQRunConfiguration {
     private boolean flushingEnabled = true;
     private ACAQAlgorithm endAlgorithm;
     private Set<String> sampleRestrictions;
+    private boolean onlyRunningEndAlgorithm;
+    private boolean flushingKeepsDataEnabled = false;
 
     @ACAQParameter("output-path")
     public void setOutputPath(Path outputPath) {
@@ -53,5 +55,23 @@ public class MutableACAQRunConfiguration implements ACAQRunConfiguration {
 
     public void setSampleRestrictions(Set<String> sampleRestrictions) {
         this.sampleRestrictions = sampleRestrictions;
+    }
+
+    @Override
+    public boolean isOnlyRunningEndAlgorithm() {
+        return onlyRunningEndAlgorithm;
+    }
+
+    public void setOnlyRunningEndAlgorithm(boolean onlyRunningEndAlgorithm) {
+        this.onlyRunningEndAlgorithm = onlyRunningEndAlgorithm;
+    }
+
+    @Override
+    public boolean isFlushingKeepsDataEnabled() {
+        return flushingKeepsDataEnabled;
+    }
+
+    public void setFlushingKeepsDataEnabled(boolean flushingKeepsDataEnabled) {
+        this.flushingKeepsDataEnabled = flushingKeepsDataEnabled;
     }
 }

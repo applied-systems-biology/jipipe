@@ -39,4 +39,8 @@ public class ACAQRunSample {
         result.sort(Comparator.comparing(o -> o.getClass().getCanonicalName()));
         return result;
     }
+
+    public ACAQRun getRun() {
+        return run;
+    }
 }

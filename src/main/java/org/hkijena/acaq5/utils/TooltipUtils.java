@@ -11,6 +11,7 @@ import org.hkijena.acaq5.api.traits.AddsTrait;
 import org.hkijena.acaq5.api.traits.RemovesTrait;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,7 +39,7 @@ public class TooltipUtils {
         builder.append(" of ").append(slot.getAlgorithm().getName()).append("<br/>");
 
         // Show annotations
-        Set<Class<? extends ACAQTrait>> traits = graph.getAlgorithmTraits().get(slot);
+        Set<Class<? extends ACAQTrait>> traits = graph.getAlgorithmTraits().getOrDefault(slot, Collections.emptySet());
         if(traits != null && !traits.isEmpty()) {
             builder.append("<br/><br/><strong>Annotations<br/>");
             insertTraitTable(builder, traits);

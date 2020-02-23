@@ -29,4 +29,16 @@ public interface ACAQRunConfiguration {
      * @return
      */
     Set<String> getSampleRestrictions();
+
+    /**
+     * If true, only the end algorithm will run
+     * @return
+     */
+    boolean isOnlyRunningEndAlgorithm();
+
+    /**
+     * If true, data is only saved instead of flushed (set to null)
+     * @return
+     */
+    boolean isFlushingKeepsDataEnabled();
 }

@@ -41,6 +41,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
     private Map<String, ACAQDataSlot<?>> slots = new HashMap<>();
     private EventBus eventBus = new EventBus();
     private Point location;
+    private Path internalStoragePath;
     private Path storagePath;
     private String customName;
 
@@ -362,6 +363,14 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
 
     public ACAQTraitConfiguration getTraitConfiguration() {
         return traitConfiguration;
+    }
+
+    public Path getInternalStoragePath() {
+        return internalStoragePath;
+    }
+
+    public void setInternalStoragePath(Path internalStoragePath) {
+        this.internalStoragePath = internalStoragePath;
     }
 
     public static class Serializer extends JsonSerializer<ACAQAlgorithm> {

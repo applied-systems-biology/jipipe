@@ -100,7 +100,8 @@ public class ACAQRunSettingsUI extends ACAQUIPanel {
         JPanel setupPanel = new JPanel(new BorderLayout());
         ACAQParameterAccessUI formPanel = new ACAQParameterAccessUI(run.getConfiguration(),
                 "documentation/run.md",
-                false);
+                false,
+                true);
 
         setupPanel.add(formPanel, BorderLayout.CENTER);
 

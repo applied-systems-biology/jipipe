@@ -107,6 +107,15 @@ public abstract class ACAQDataSlot<T extends ACAQData> {
         this.storagePath = storagePath;
     }
 
+    /**
+     * Saves the data to the storage path
+     */
+    public void save() {
+        if(isOutput() && storagePath != null && data != null) {
+            data.saveTo(storagePath, getName());
+        }
+    }
+
     public enum SlotType {
         Input,
         Output
