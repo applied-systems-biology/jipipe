@@ -5,6 +5,7 @@ import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphUI;
 import org.hkijena.acaq5.ui.running.ACAQRunSettingsUI;
+import org.hkijena.acaq5.ui.running.ACAQRunnerQueueUI;
 import org.hkijena.acaq5.ui.samplemanagement.ACAQDataUI;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXStatusBar;
@@ -116,6 +117,10 @@ public class ACAQWorkbenchUI extends JPanel {
         menu.add(projectMenu);
 
         menu.add(Box.createHorizontalGlue());
+
+        // Queue monitor
+        menu.add(new ACAQRunnerQueueUI());
+        menu.add(Box.createHorizontalStrut(1));
 
         // "Run" entry
         JButton runProjectButton = new JButton("Run", UIUtils.getIconFromResources("run.png"));

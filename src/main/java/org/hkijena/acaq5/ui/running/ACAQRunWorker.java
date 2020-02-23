@@ -58,26 +58,26 @@ public class ACAQRunWorker extends SwingWorker<Exception, Object> {
     protected void done() {
         try {
             if(isCancelled()) {
-                SwingUtilities.invokeLater(() -> postInterruptedEvent(new RuntimeException("Execution was cancelled by user!")));
+                postInterruptedEvent(new RuntimeException("Execution was cancelled by user!"));
             }
             else if(get() != null) {
                 final Exception e = get();
-                SwingUtilities.invokeLater(() -> postInterruptedEvent(e));
+                postInterruptedEvent(e);
             }
             else {
                 postFinishedEvent();
             }
         } catch (InterruptedException | ExecutionException | CancellationException e) {
-            SwingUtilities.invokeLater(() -> postInterruptedEvent(e));
+            postInterruptedEvent(e);
         }
     }
 
     private void postFinishedEvent() {
-        eventBus.post(new RunUIWorkerFinishedEvent(run, this));
+        eventBus.post(new RunUIWorkerFinishedEvent(this));
     }
 
     private void postInterruptedEvent(Exception e) {
-        eventBus.post(new RunUIWorkerInterruptedEvent(run, e, this));
+        eventBus.post(new RunUIWorkerInterruptedEvent(this, e));
     }
 
     public EventBus getEventBus() {

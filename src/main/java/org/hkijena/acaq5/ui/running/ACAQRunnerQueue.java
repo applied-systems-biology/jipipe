@@ -6,6 +6,7 @@ import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.acaq5.ui.events.RunUIWorkerInterruptedEvent;
 import org.hkijena.acaq5.ui.events.RunUIWorkerProgressEvent;
+import org.hkijena.acaq5.ui.events.RunUIWorkerStartedEvent;
 
 import java.util.ArrayDeque;
 import java.util.HashMap;
@@ -47,18 +48,23 @@ public class ACAQRunnerQueue {
     public void tryDequeue() {
         if(currentlyRunningWorker == null && !queue.isEmpty()) {
             currentlyRunningWorker = queue.remove();
+            eventBus.post(new RunUIWorkerStartedEvent(currentlyRunningWorker.getRun(), currentlyRunningWorker));
             currentlyRunningWorker.execute();
         }
     }
 
     public void cancel(ACAQRun run) {
+        if(run == null)
+            return;
         ACAQRunWorker worker = findWorkerOf(run);
-        if(currentlyRunningWorker == worker) {
-            worker.cancel(true);
-        }
-        else {
-            queue.remove(worker);
-            eventBus.post(new RunUIWorkerInterruptedEvent(run, new InterruptedException("Operation was cancelled."), worker));
+        if(worker != null) {
+            if(currentlyRunningWorker == worker) {
+                worker.cancel(true);
+            }
+            else {
+                queue.remove(worker);
+                eventBus.post(new RunUIWorkerInterruptedEvent(worker, new InterruptedException("Operation was cancelled.")));
+            }
         }
     }
 
@@ -73,7 +79,7 @@ public class ACAQRunnerQueue {
     }
 
     @Subscribe
-    public void onWorkerInterrupted(RunUIWorkerFinishedEvent event) {
+    public void onWorkerInterrupted(RunUIWorkerInterruptedEvent event) {
         if(event.getWorker() == currentlyRunningWorker) {
             assignedWorkers.remove(currentlyRunningWorker.getRun());
             currentlyRunningWorker = null;
@@ -89,5 +95,9 @@ public class ACAQRunnerQueue {
 
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    public ACAQRun getCurrentRun() {
+        return currentlyRunningWorker != null ? currentlyRunningWorker.getRun() : null;
     }
 }

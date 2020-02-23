@@ -4,8 +4,6 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.MutableACAQRunConfiguration;
-import org.hkijena.acaq5.api.events.RunFinishedEvent;
-import org.hkijena.acaq5.api.events.RunInterruptedEvent;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.*;
@@ -20,9 +18,6 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.List;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
 
 public class ACAQRunSettingsUI extends ACAQUIPanel {
 

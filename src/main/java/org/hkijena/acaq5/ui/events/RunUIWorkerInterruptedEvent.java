@@ -1,19 +1,27 @@
 package org.hkijena.acaq5.ui.events;
 
 import org.hkijena.acaq5.api.ACAQRun;
-import org.hkijena.acaq5.api.events.RunInterruptedEvent;
 import org.hkijena.acaq5.ui.running.ACAQRunWorker;
 
-public class RunUIWorkerInterruptedEvent extends RunInterruptedEvent {
+public class RunUIWorkerInterruptedEvent {
 
+    private Exception exception;
     private ACAQRunWorker worker;
 
-    public RunUIWorkerInterruptedEvent(ACAQRun run, Exception exception, ACAQRunWorker worker) {
-        super(run, exception);
+    public RunUIWorkerInterruptedEvent(ACAQRunWorker worker, Exception exception) {
+        this.exception = exception;
         this.worker = worker;
     }
 
     public ACAQRunWorker getWorker() {
         return worker;
+    }
+
+    public Exception getException() {
+        return exception;
+    }
+
+    public ACAQRun getRun() {
+        return worker.getRun();
     }
 }

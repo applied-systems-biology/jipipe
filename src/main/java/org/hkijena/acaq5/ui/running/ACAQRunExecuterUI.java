@@ -75,6 +75,7 @@ public class ACAQRunExecuterUI extends JPanel {
     @Subscribe
     public void onWorkerProgress(RunUIWorkerProgressEvent event) {
         if(event.getRun() == run) {
+            progressBar.setMaximum(event.getWorker().getMaxProgress());
             if(event.getProgress() > 0)
                 progressBar.setValue(event.getProgress());
             if(event.getMessage() != null)
