@@ -17,6 +17,8 @@ import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Files;
@@ -72,6 +74,15 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
         initializeToolbar();
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        splitPane.setDividerSize(3);
+        splitPane.setResizeWeight(0.66);
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                splitPane.setDividerLocation(0.33);
+            }
+        });
         add(splitPane, BorderLayout.CENTER);
     }
 
@@ -172,6 +183,8 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
 
         revalidate();
         repaint();
+
+        splitPane.setDividerLocation(0.33);
     }
 
     private void openError(Exception exception) {

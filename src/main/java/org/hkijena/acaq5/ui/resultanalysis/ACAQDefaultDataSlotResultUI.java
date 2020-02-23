@@ -29,23 +29,26 @@ public class ACAQDefaultDataSlotResultUI extends ACAQResultDataSlotUI<ACAQDataSl
     private void initialize() {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         add(Box.createHorizontalGlue());
+
         if(!registeredSlotActions.isEmpty()) {
             SlotAction mainSlotAction = registeredSlotActions.get(registeredSlotActions.size() - 1);
             JButton mainActionButton = new JButton(mainSlotAction.getName(), mainSlotAction.getIcon());
             mainActionButton.addActionListener(e -> mainSlotAction.action.accept(getSlot()));
             add(mainActionButton);
-        }
-        if(registeredSlotActions.size() > 1) {
-            JButton menuButton = new JButton("...");
-            menuButton.setToolTipText("More actions ...");
-            JPopupMenu menu = UIUtils.addPopupMenuToComponent(menuButton);
-            for(int i = 0; i < registeredSlotActions.size() - 1; ++i) {
-                SlotAction otherSlotAction = registeredSlotActions.get(i);
-                JMenuItem item = new JMenuItem(otherSlotAction.getName(), otherSlotAction.getIcon());
-                item.addActionListener(e -> otherSlotAction.getAction().accept(getSlot()));
-                menu.add(item);
+
+            if(registeredSlotActions.size() > 1) {
+                JButton menuButton = new JButton("...");
+                menuButton.setMaximumSize(new Dimension(1,(int)mainActionButton.getPreferredSize().getHeight()));
+                menuButton.setToolTipText("More actions ...");
+                JPopupMenu menu = UIUtils.addPopupMenuToComponent(menuButton);
+                for(int i = 0; i < registeredSlotActions.size() - 1; ++i) {
+                    SlotAction otherSlotAction = registeredSlotActions.get(i);
+                    JMenuItem item = new JMenuItem(otherSlotAction.getName(), otherSlotAction.getIcon());
+                    item.addActionListener(e -> otherSlotAction.getAction().accept(getSlot()));
+                    menu.add(item);
+                }
+                add(menuButton);
             }
-            add(menuButton);
         }
     }
 
