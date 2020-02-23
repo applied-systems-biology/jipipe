@@ -9,6 +9,8 @@ import org.hkijena.acaq5.api.events.RunInterruptedEvent;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.*;
+import org.hkijena.acaq5.ui.events.RunUIWorkerFinishedEvent;
+import org.hkijena.acaq5.ui.events.RunUIWorkerInterruptedEvent;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -29,6 +31,7 @@ public class ACAQRunSettingsUI extends ACAQUIPanel {
     public ACAQRunSettingsUI(ACAQWorkbenchUI workbenchUI) {
         super(workbenchUI);
         initialize();
+        ACAQRunnerQueue.getInstance().getEventBus().register(this);
     }
 
     private void initialize() {
@@ -128,18 +131,19 @@ public class ACAQRunSettingsUI extends ACAQUIPanel {
         add(executerUI, BorderLayout.SOUTH);
         revalidate();
         repaint();
-        executerUI.getEventBus().register(this);
         executerUI.startRun();
     }
 
     @Subscribe
-    public void onRunFinished(RunFinishedEvent event) {
-        openResults();
+    public void onRunFinished(RunUIWorkerFinishedEvent event) {
+        if(event.getRun() == run)
+            openResults();
     }
 
     @Subscribe
-    public void onRunInterrupted(RunInterruptedEvent event) {
-        openError(event.getException());
+    public void onRunInterrupted(RunUIWorkerInterruptedEvent event) {
+        if(event.getRun() == run)
+            openError(event.getException());
     }
 
     private void openError(Exception exception) {

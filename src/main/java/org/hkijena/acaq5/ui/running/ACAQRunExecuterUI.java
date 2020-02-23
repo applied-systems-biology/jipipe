@@ -1,27 +1,23 @@
 package org.hkijena.acaq5.ui.running;
 
-import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQRun;
-import org.hkijena.acaq5.api.events.RunFinishedEvent;
-import org.hkijena.acaq5.api.events.RunInterruptedEvent;
+import org.hkijena.acaq5.ui.events.RunUIWorkerFinishedEvent;
+import org.hkijena.acaq5.ui.events.RunUIWorkerProgressEvent;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
 
 public class ACAQRunExecuterUI extends JPanel {
     private ACAQRun run;
     private JProgressBar progressBar;
     private JButton cancelButton;
-    private Worker worker;
-    private EventBus eventBus = new EventBus();
 
     public ACAQRunExecuterUI(ACAQRun run) {
         this.run = run;
         initialize();
+        ACAQRunnerQueue.getInstance().getEventBus().register(this);
     }
 
     private void initialize() {
@@ -45,104 +41,45 @@ public class ACAQRunExecuterUI extends JPanel {
     }
 
     public void startRun() {
-        worker = new Worker(run, progressBar);
+        ACAQRunWorker worker = ACAQRunnerQueue.getInstance().enqueue(run);
+        progressBar.setString("Waiting until other processes are finished ...");
+        progressBar.setMaximum(worker.getMaxProgress());
+        progressBar.setValue(0);
         cancelButton.addActionListener(e -> {
             cancelButton.setEnabled(false);
-            worker.cancel(true);
+            ACAQRunnerQueue.getInstance().cancel(run);
         });
-        worker.addPropertyChangeListener(p -> {
-            if("state".equals(p.getPropertyName())) {
-                switch ((SwingWorker.StateValue)p.getNewValue()) {
-                    case DONE:
-                        cancelButton.setEnabled(false);
-                        if(!worker.isCancelled()) {
-                            cancelButton.setVisible(false);
-                        }
-                        try {
-                            if(worker.isCancelled()) {
-                                SwingUtilities.invokeLater(() -> postInterruptedEvent(new RuntimeException("Execution was cancelled by user!")));
-                            }
-                            else if(worker.get() != null) {
-                                final Exception e = worker.get();
-                                SwingUtilities.invokeLater(() -> postInterruptedEvent(e));
-                            }
-                            else {
-                                postFinishedEvent();
-                            }
-                        } catch (InterruptedException | ExecutionException | CancellationException e) {
-                            SwingUtilities.invokeLater(() -> postInterruptedEvent(e));
-                        }
-                        break;
-                }
-            }
-        });
-        worker.execute();
-    }
-
-    private void postFinishedEvent() {
-        eventBus.post(new RunFinishedEvent(run));
-    }
-
-    private void postInterruptedEvent(Exception e) {
-        eventBus.post(new RunInterruptedEvent(run, e));
     }
 
     public void requestCancelRun() {
         cancelButton.setEnabled(false);
-        worker.cancel(true);
+        ACAQRunnerQueue.getInstance().cancel(run);
     }
 
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
-    private static class Worker extends SwingWorker<Exception, Object> {
-
-        private JProgressBar progressBar;
-        private ACAQRun run;
-
-        public Worker(ACAQRun run, JProgressBar progressBar) {
-            this.progressBar = progressBar;
-            this.run = run;
-
-            progressBar.setMaximum(run.getGraph().getAlgorithmCount());
-            progressBar.setValue(0);
-        }
-
-        private void onStatus(ACAQRun.Status status) {
-            publish(status.getCurrentTask());
-            publish(status.getProgress());
-        }
-
-        @Override
-        protected Exception doInBackground() throws Exception {
-            try {
-                run.run(this::onStatus, this::isCancelled);
-            }
-            catch(Exception e) {
-                e.printStackTrace();
-                return e;
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void process(List<Object> chunks) {
-            super.process(chunks);
-            for(Object chunk : chunks) {
-                if(chunk instanceof Integer) {
-                    progressBar.setValue((Integer)chunk);
-                }
-                else if(chunk instanceof String) {
-                    progressBar.setString("(" + progressBar.getValue() + "/" + progressBar.getMaximum() + ") " + chunk);
-                }
-            }
-        }
-
-        @Override
-        protected void done() {
-            progressBar.setString("Finished.");
+    @Subscribe
+    public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
+        if(event.getRun() == run) {
+            cancelButton.setEnabled(false);
+            progressBar.setString("Finished");
         }
     }
+
+    @Subscribe
+    public void onWorkerInterrupted(RunUIWorkerFinishedEvent event) {
+        if(event.getRun() == run) {
+            cancelButton.setEnabled(false);
+            progressBar.setString("Finished");
+        }
+    }
+
+    @Subscribe
+    public void onWorkerProgress(RunUIWorkerProgressEvent event) {
+        if(event.getRun() == run) {
+            if(event.getProgress() > 0)
+                progressBar.setValue(event.getProgress());
+            if(event.getMessage() != null)
+                progressBar.setString("(" + progressBar.getValue() + "/" + progressBar.getMaximum() + ") " + event.getMessage());
+        }
+    }
+
 }
