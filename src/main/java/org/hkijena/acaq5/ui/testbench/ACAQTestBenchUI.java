@@ -3,7 +3,7 @@ package org.hkijena.acaq5.ui.testbench;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.ACAQRunSample;
-import org.hkijena.acaq5.api.MutableACAQRunConfiguration;
+import org.hkijena.acaq5.api.ACAQMutableRunConfiguration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
@@ -11,7 +11,6 @@ import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.acaq5.ui.events.RunUIWorkerInterruptedEvent;
-import org.hkijena.acaq5.ui.resultanalysis.ACAQRunSampleUI;
 import org.hkijena.acaq5.ui.running.ACAQRunnerQueue;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -22,8 +21,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.List;
@@ -61,7 +58,7 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
         backupList.add(new ACAQAlgorithmBackup(runAlgorithm));
 
         // Force to only run the end algorithm
-        ((MutableACAQRunConfiguration)run.getConfiguration()).setOnlyRunningEndAlgorithm(true);
+        ((ACAQMutableRunConfiguration)run.getConfiguration()).setOnlyRunningEndAlgorithm(true);
 
         initialize();
         updateBackupSelection();
@@ -140,7 +137,7 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
             ++index;
         }
         while(Files.isDirectory(outputPath));
-        ((MutableACAQRunConfiguration)run.getConfiguration()).setOutputPath(outputPath);
+        ((ACAQMutableRunConfiguration)run.getConfiguration()).setOutputPath(outputPath);
 
         ACAQRunnerQueue.getInstance().enqueue(run);
     }

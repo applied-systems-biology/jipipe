@@ -2,10 +2,10 @@ package org.hkijena.acaq5;
 
 import io.scif.services.DatasetIOService;
 import net.imagej.DatasetService;
-import net.imagej.ImageJ;
 import net.imagej.ops.OpService;
+import org.hkijena.acaq5.api.ACAQMutableRunConfiguration;
 import org.hkijena.acaq5.api.ACAQProject;
-import org.hkijena.acaq5.ui.ACAQWorkbenchWindow;
+import org.hkijena.acaq5.api.ACAQRun;
 import org.scijava.app.StatusService;
 import org.scijava.command.Command;
 import org.scijava.command.CommandService;
@@ -17,10 +17,11 @@ import org.scijava.plugin.PluginService;
 import org.scijava.thread.ThreadService;
 import org.scijava.ui.UIService;
 
-import javax.swing.*;
+import java.io.File;
+import java.io.IOException;
 
-@Plugin(type = Command.class, menuPath = "Plugins>ACAQ5")
-public class ACAQCommand implements Command {
+@Plugin(type = Command.class, menuPath = "Plugins>ACAQ5>Run ACAQ5 project")
+public class ACAQRunCommand implements Command {
     @Parameter
     private OpService ops;
 
@@ -51,15 +52,29 @@ public class ACAQCommand implements Command {
     @Parameter
     private PluginService pluginService;
 
+    @Parameter(label = "Project file (*.json)")
+    private File parameterFile;
+
+    @Parameter(label = "Output directory", style = "directory")
+    private File outputDirectory;
+
     @Override
     public void run() {
         ACAQRegistryService.instantiate(pluginService);
-        SwingUtilities.invokeLater(() -> {
-            ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
-            ToolTipManager.sharedInstance().setInitialDelay(1000);
-            ACAQWorkbenchWindow window = ACAQWorkbenchWindow.newWindow(this, new ACAQProject());
-            window.setTitle("New project");
-        });
+        try {
+            ACAQProject project = ACAQProject.loadProject(parameterFile.toPath());
+            ACAQMutableRunConfiguration configuration = new ACAQMutableRunConfiguration();
+            configuration.setOutputPath(outputDirectory.toPath());
+            ACAQRun run = new ACAQRun(project, configuration);
+            run.run(this::onProgress, () -> false);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void onProgress(ACAQRun.Status runStatus) {
+        status.showProgress(runStatus.getProgress(), runStatus.getMaxProgress());
+        status.showStatus("ACAQ5: " + runStatus.getCurrentTask());
     }
 
     public LogService getLogService() {
@@ -92,11 +107,5 @@ public class ACAQCommand implements Command {
 
     public PluginService getPluginService() {
         return pluginService;
-    }
-
-    public static void main(final String... args) {
-        final ImageJ ij = new ImageJ();
-        ij.ui().showUI();
-        ij.command().run(ACAQCommand.class, true);
     }
 }

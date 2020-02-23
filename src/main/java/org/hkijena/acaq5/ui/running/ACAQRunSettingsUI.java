@@ -3,7 +3,7 @@ package org.hkijena.acaq5.ui.running;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.MutableACAQRunConfiguration;
+import org.hkijena.acaq5.api.ACAQMutableRunConfiguration;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.*;
@@ -89,7 +89,7 @@ public class ACAQRunSettingsUI extends ACAQUIPanel {
     private void initializeSetupGUI() {
 
         try {
-            run = new ACAQRun(getWorkbenchUI().getProject(), new MutableACAQRunConfiguration());
+            run = new ACAQRun(getWorkbenchUI().getProject(), new ACAQMutableRunConfiguration());
         }
         catch(Exception e) {
             openError(e);

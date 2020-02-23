@@ -3,9 +3,8 @@ package org.hkijena.acaq5.ui.grapheditor.settings;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.MutableACAQRunConfiguration;
+import org.hkijena.acaq5.api.ACAQMutableRunConfiguration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.*;
@@ -143,7 +142,7 @@ public class ACAQTestBenchSetupUI extends ACAQUIPanel {
     }
 
     private void generateTestBench(String sample, Path outputPath) {
-        MutableACAQRunConfiguration configuration = new MutableACAQRunConfiguration();
+        ACAQMutableRunConfiguration configuration = new ACAQMutableRunConfiguration();
         configuration.setFlushingEnabled(true);
         configuration.setFlushingKeepsDataEnabled(true);
         configuration.setOutputPath(outputPath.resolve("initial"));

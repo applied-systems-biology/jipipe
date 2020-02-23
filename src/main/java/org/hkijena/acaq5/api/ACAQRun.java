@@ -310,7 +310,7 @@ public class ACAQRun {
     public static ACAQRun loadFromFolder(Path folder) throws IOException {
         Path parameterFile = folder.resolve("parameters.json");
         ACAQProject project = ACAQProject.loadProject(parameterFile);
-        MutableACAQRunConfiguration configuration = new MutableACAQRunConfiguration();
+        ACAQMutableRunConfiguration configuration = new ACAQMutableRunConfiguration();
         configuration.setOutputPath(folder);
         ACAQRun run = new ACAQRun(project, configuration);
         run.prepare();

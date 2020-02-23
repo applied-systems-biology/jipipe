@@ -8,7 +8,7 @@ import org.hkijena.acaq5.ui.components.FileSelection;
 import java.nio.file.Path;
 import java.util.Set;
 
-public class MutableACAQRunConfiguration implements ACAQRunConfiguration {
+public class ACAQMutableRunConfiguration implements ACAQRunConfiguration {
     private Path outputPath;
     private boolean flushingEnabled = true;
     private ACAQAlgorithm endAlgorithm;

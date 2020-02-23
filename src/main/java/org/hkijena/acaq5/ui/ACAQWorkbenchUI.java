@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.ui;
 
-import org.hkijena.acaq5.ACAQCommand;
+import org.hkijena.acaq5.ACAQGUICommand;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphUI;
@@ -20,12 +20,12 @@ public class ACAQWorkbenchUI extends JPanel {
 
     private ACAQWorkbenchWindow window;
     private ACAQProject project;
-    private ACAQCommand command;
+    private ACAQGUICommand command;
     private DocumentTabPane documentTabPane;
     private ACAQInfoUI infoUI;
     private JLabel statusText;
 
-    public ACAQWorkbenchUI(ACAQWorkbenchWindow window, ACAQCommand command, ACAQProject project) {
+    public ACAQWorkbenchUI(ACAQWorkbenchWindow window, ACAQGUICommand command, ACAQProject project) {
         this.window = window;
         this.project = project;
         this.command = command;

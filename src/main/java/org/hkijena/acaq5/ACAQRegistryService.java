@@ -31,15 +31,17 @@ public class ACAQRegistryService extends AbstractService implements ACAQService 
     private ACAQUITraitRegistry acaquiTraitRegistry = new ACAQUITraitRegistry();
 
     /**
-     * Instantiates the plugin service. This is done within {@link ACAQCommand}
+     * Instantiates the plugin service. This is done within {@link ACAQGUICommand}
      * @param pluginService
      */
     public static void instantiate(PluginService pluginService) {
-        try {
-            instance = (ACAQRegistryService) pluginService.getPlugin(ACAQRegistryService.class).createInstance();
-            instance.discover(pluginService);
-        } catch (InstantiableException e) {
-            throw new RuntimeException(e);
+        if(instance == null) {
+            try {
+                instance = (ACAQRegistryService) pluginService.getPlugin(ACAQRegistryService.class).createInstance();
+                instance.discover(pluginService);
+            } catch (InstantiableException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
