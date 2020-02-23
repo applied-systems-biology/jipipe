@@ -173,6 +173,8 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
 
     private void loadBackup(ACAQAlgorithmBackup backup) {
 
+        int dividerLocation = splitPane.getDividerLocation();
+
         backup.restore(runAlgorithm);
         ACAQParameterAccessUI parameters = new ACAQParameterAccessUI(runAlgorithm, "documentation/testbench.md",
                 true, true);
@@ -184,7 +186,7 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
         revalidate();
         repaint();
 
-        splitPane.setDividerLocation(0.33);
+        splitPane.setDividerLocation(dividerLocation);
     }
 
     private void openError(Exception exception) {
