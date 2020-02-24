@@ -172,7 +172,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
         if(SwingUtilities.isMiddleMouseButton(e)) {
             isPanning = true;
             int x = e.getX() - scrollPane.getHorizontalScrollBar().getValue();
-            int y = e.getX() - scrollPane.getVerticalScrollBar().getValue();
+            int y = e.getY() - scrollPane.getVerticalScrollBar().getValue();
             panningOffset = new Point(x, y);
             panningScrollbarOffset = new Point(scrollPane.getHorizontalScrollBar().getValue(),
                     scrollPane.getVerticalScrollBar().getValue());
@@ -202,7 +202,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
     public void mouseDragged(MouseEvent e) {
         if(isPanning && panningOffset != null && panningScrollbarOffset != null) {
             int x = e.getX() - scrollPane.getHorizontalScrollBar().getValue();
-            int y = e.getX() - scrollPane.getVerticalScrollBar().getValue();
+            int y = e.getY() - scrollPane.getVerticalScrollBar().getValue();
             int dx = x - panningOffset.x;
             int dy = y - panningOffset.y;
             if(!switchPanningDirectionButton.isSelected()) {
