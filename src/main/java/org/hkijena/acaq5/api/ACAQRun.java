@@ -7,6 +7,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.jgrapht.Graphs;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,6 +16,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Runnable instance of an {@link ACAQProject}
@@ -198,7 +200,9 @@ public class ACAQRun {
         }
     }
 
-    private void flushFinishedSlots(List<ACAQDataSlot<?>> traversedSlots, int i, ACAQDataSlot<?> outputSlot) {
+    private void flushFinishedSlots(List<ACAQDataSlot<?>> traversedSlots, Set<ACAQAlgorithm> executedAlgorithms, int i, ACAQDataSlot<?> outputSlot) {
+        if(!executedAlgorithms.contains(outputSlot.getAlgorithm()))
+            return;
         if(configuration.isFlushingEnabled()) {
             boolean canFlush = true;
             for(int j = i + 1; j < traversedSlots.size(); ++j) {
@@ -222,6 +226,22 @@ public class ACAQRun {
         Set<ACAQAlgorithm> executedAlgorithms = new HashSet<>();
         List<ACAQDataSlot<?>> traversedSlots = algorithmGraph.traverse();
 
+        // Update algorithm limits that may be used by
+        Set<ACAQAlgorithm> algorithmLimits = new HashSet<>();
+        if(configuration.getEndAlgorithm() != null) {
+            if(configuration.isOnlyRunningEndAlgorithm())
+                algorithmLimits.add(configuration.getEndAlgorithm());
+            else {
+                for(ACAQDataSlot<?> slot : configuration.getEndAlgorithm().getOutputSlots()) {
+                    algorithmLimits.addAll(Graphs.predecessorListOf(algorithmGraph.getGraph(), slot)
+                            .stream().map(ACAQDataSlot::getAlgorithm).collect(Collectors.toSet()));
+                }
+            }
+        }
+        else {
+            algorithmLimits.addAll(traversedSlots.stream().map(ACAQDataSlot::getAlgorithm).collect(Collectors.toSet()));
+        }
+
         for(int i = 0; i < traversedSlots.size(); ++i) {
             if (isCancelled.get())
                 throw new RuntimeException("Execution was cancelled");
@@ -234,42 +254,18 @@ public class ACAQRun {
                 slot.setData(sourceSlot.getData());
 
                 // Check if we can flush the output
-                flushFinishedSlots(traversedSlots, i, sourceSlot);
+                flushFinishedSlots(traversedSlots, executedAlgorithms, i, sourceSlot);
             }
             else if(slot.isOutput()) {
                 // Ensure the algorithm has run
-                if(!executedAlgorithms.contains(slot.getAlgorithm())) {
+                if(!executedAlgorithms.contains(slot.getAlgorithm()) && algorithmLimits.contains(slot.getAlgorithm())) {
                     onProgress.accept(new Status(i, algorithmGraph.getSlotCount(), "Algorithm: " + slot.getAlgorithm().getName()));
-
-                    if(configuration.isOnlyRunningEndAlgorithm()) {
-                        ACAQAlgorithm projectAlgorithm = projectAlgorithms.get(slot.getAlgorithm());
-                        if(projectAlgorithm == configuration.getEndAlgorithm()) {
-                            slot.getAlgorithm().run();
-                        }
-                    }
-                    else {
-                        slot.getAlgorithm().run();
-                    }
-
+                    slot.getAlgorithm().run();
                     executedAlgorithms.add(slot.getAlgorithm());
-
-                    if(configuration.getEndAlgorithm() != null) {
-                        ACAQAlgorithm projectAlgorithm = projectAlgorithms.get(slot.getAlgorithm());
-                        if(projectAlgorithm == configuration.getEndAlgorithm()) {
-                            onProgress.accept(new Status(algorithmGraph.getSlotCount(), algorithmGraph.getSlotCount(), "Reached preconfigured end algorithm"));
-
-                            // We are ending the iteration here, so force flushing everything we have
-                            if(configuration.isFlushingEnabled()) {
-                                forceFlushAlgorithms(executedAlgorithms);
-                            }
-
-                            break;
-                        }
-                    }
                 }
 
                 // Check if we can flush the output
-                flushFinishedSlots(traversedSlots, i, slot);
+                flushFinishedSlots(traversedSlots, executedAlgorithms, i, slot);
             }
             onProgress.accept(new Status(i + 1, algorithmGraph.getSlotCount(), slot.getFullName() + " done"));
         }

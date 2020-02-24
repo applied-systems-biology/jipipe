@@ -489,6 +489,10 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         }
     }
 
+    public Graph<ACAQDataSlot<?>, DefaultEdge> getGraph() {
+        return graph;
+    }
+
     public static class Serializer extends JsonSerializer<ACAQAlgorithmGraph> {
         @Override
         public void serialize(ACAQAlgorithmGraph algorithmGraph, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
