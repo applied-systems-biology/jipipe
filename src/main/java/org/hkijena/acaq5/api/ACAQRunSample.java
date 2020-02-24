@@ -8,7 +8,7 @@ import java.util.*;
 /**
  * Sample within an {@link ACAQRun}
  */
-public class ACAQRunSample {
+public class ACAQRunSample implements Comparable<ACAQRunSample>{
     private ACAQRun run;
     private ACAQProjectSample projectSample;
     private Set<ACAQAlgorithm> algorithms;
@@ -42,5 +42,10 @@ public class ACAQRunSample {
 
     public ACAQRun getRun() {
         return run;
+    }
+
+    @Override
+    public int compareTo(ACAQRunSample o) {
+        return getName().compareTo(o.getName());
     }
 }
