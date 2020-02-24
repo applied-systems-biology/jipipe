@@ -7,6 +7,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,6 +19,7 @@ public class ACAQAlgorithmBackup {
     private Map<String, Object> parameterBackups = new HashMap<>();
     private Map<String, Path> storagePathBackups = new HashMap<>();
     private LocalDateTime timestamp;
+    private String label;
 
     public ACAQAlgorithmBackup(ACAQAlgorithm algorithm) {
         this.algorithm = algorithm;
@@ -55,5 +57,13 @@ public class ACAQAlgorithmBackup {
 
     public LocalDateTime getTimestamp() {
         return timestamp;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 }

@@ -11,7 +11,7 @@ import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmNameChanged;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.events.TraitsChangedEvent;
-import org.hkijena.acaq5.ui.events.ACAQAlgorithmUIOpenSettingsRequested;
+import org.hkijena.acaq5.ui.events.OpenSettingsUIRequestedEvent;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -67,7 +67,7 @@ public class ACAQAlgorithmUI extends JPanel {
         JButton openSettingsButton = new JButton(UIUtils.getIconFromResources("wrench.png"));
         UIUtils.makeFlat(openSettingsButton);
         openSettingsButton.setPreferredSize(new Dimension(25,25));
-        openSettingsButton.addActionListener(e -> eventBus.post(new ACAQAlgorithmUIOpenSettingsRequested(this)));
+        openSettingsButton.addActionListener(e -> eventBus.post(new OpenSettingsUIRequestedEvent(this)));
 
         add(inputSlotPanel, new GridBagConstraints() {
             {

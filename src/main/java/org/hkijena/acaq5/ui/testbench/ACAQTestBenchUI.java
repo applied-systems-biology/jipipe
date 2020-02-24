@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.ui.testbench;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.ACAQRunSample;
@@ -9,6 +10,8 @@ import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
+import org.hkijena.acaq5.ui.components.ConfirmingButton;
+import org.hkijena.acaq5.ui.events.ReloadSettingsRequestedEvent;
 import org.hkijena.acaq5.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.acaq5.ui.events.RunUIWorkerInterruptedEvent;
 import org.hkijena.acaq5.ui.running.ACAQRunnerQueue;
@@ -115,6 +118,16 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
         clearBackupsButton.addActionListener(e -> clearBackups());
         toolBar.add(clearBackupsButton);
 
+        JButton renameButton = new JButton(UIUtils.getIconFromResources("label.png"));
+        renameButton.setToolTipText("Label test");
+        renameButton.addActionListener(e -> renameCurrentBackup());
+        toolBar.add(renameButton);
+
+        JButton copyParametersButton = new ConfirmingButton("Apply parameters", UIUtils.getIconFromResources("upload.png"));
+        copyParametersButton.setToolTipText("Copies the current parameters to the algorithm that was used to create this testbench.");
+        copyParametersButton.addActionListener(e -> copyParameters());
+        toolBar.add(copyParametersButton);
+
         toolBar.add(Box.createHorizontalStrut(8));
 
         newTestButton = new JButton("New test", UIUtils.getIconFromResources("run.png"));
@@ -124,8 +137,26 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
         add(toolBar, BorderLayout.NORTH);
     }
 
+    private void copyParameters() {
+        if(backupSelection.getSelectedItem() instanceof ACAQAlgorithmBackup) {
+            ACAQAlgorithmBackup backup = (ACAQAlgorithmBackup) backupSelection.getSelectedItem();
+            backup.restoreParameters(projectAlgorithm);
+            projectAlgorithm.getEventBus().post(new ReloadSettingsRequestedEvent(projectAlgorithm));
+            getWorkbenchUI().sendStatusBarText("Copied parameters from testbench to " + projectAlgorithm.getName());
+        }
+    }
+
+    private void renameCurrentBackup() {
+        if(backupSelection.getSelectedItem() instanceof ACAQAlgorithmBackup) {
+            ACAQAlgorithmBackup backup = (ACAQAlgorithmBackup) backupSelection.getSelectedItem();
+            String newName = JOptionPane.showInputDialog(this,"Please enter a label", backup.getLabel());
+            backup.setLabel(newName);
+            updateBackupSelection();
+        }
+    }
+
     private void clearBackups() {
-        ACAQAlgorithmBackup current = (ACAQAlgorithmBackup) backupSelection.getSelectedItem();
+        Object current = backupSelection.getSelectedItem();
         backupList.removeIf(b -> b != current);
         updateBackupSelection();
     }

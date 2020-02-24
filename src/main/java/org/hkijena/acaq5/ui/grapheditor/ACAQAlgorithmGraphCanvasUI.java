@@ -9,7 +9,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.AlgorithmGraphConnectedEvent;
-import org.hkijena.acaq5.ui.events.ACAQAlgorithmUIOpenSettingsRequested;
+import org.hkijena.acaq5.ui.events.OpenSettingsUIRequestedEvent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -131,7 +131,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
                         currentlyDragged = (ACAQAlgorithmUI)component;
                         currentlyDraggedOffset.x = component.getX() - mouseEvent.getX();
                         currentlyDraggedOffset.y = component.getY() - mouseEvent.getY();
-                        eventBus.post(new ACAQAlgorithmUIOpenSettingsRequested(currentlyDragged));
+                        eventBus.post(new OpenSettingsUIRequestedEvent(currentlyDragged));
                         break;
                     }
                 }
@@ -199,7 +199,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     }
 
     @Subscribe
-    public void onOpenAlgorithmSettings(ACAQAlgorithmUIOpenSettingsRequested event) {
+    public void onOpenAlgorithmSettings(OpenSettingsUIRequestedEvent event) {
         eventBus.post(event);
     }
 

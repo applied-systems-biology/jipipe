@@ -23,7 +23,15 @@ public class ACAQDataSlotBackupListCellRenderer extends JLabel implements ListCe
 
         if(backup != null) {
             LocalDateTime backupTime = backup.getTimestamp();
-            setText(backupTime.format(DateTimeFormatter.ISO_LOCAL_DATE) + " " + backupTime.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+            String formattedBackupTime = backupTime.format(DateTimeFormatter.ISO_LOCAL_DATE) + " " + backupTime.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+            String label = backup.getLabel();
+            if(label != null) {
+                setText("<html>" + label + " " + "<span style=\"color: #9a9a9a;\">" + formattedBackupTime + "</span></html>");
+            }
+            else {
+                setText(formattedBackupTime);
+            }
+
         }
         else {
             setText("<No backup selected>");

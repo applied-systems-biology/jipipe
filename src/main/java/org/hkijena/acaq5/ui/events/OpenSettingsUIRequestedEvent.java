@@ -2,10 +2,10 @@ package org.hkijena.acaq5.ui.events;
 
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
 
-public class ACAQAlgorithmUIOpenSettingsRequested {
+public class OpenSettingsUIRequestedEvent {
     private ACAQAlgorithmUI ui;
 
-    public ACAQAlgorithmUIOpenSettingsRequested(ACAQAlgorithmUI ui) {
+    public OpenSettingsUIRequestedEvent(ACAQAlgorithmUI ui) {
         this.ui = ui;
     }
 

@@ -10,8 +10,8 @@ import org.hkijena.acaq5.api.data.ACAQDataSource;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
-import org.hkijena.acaq5.ui.events.ACAQAlgorithmUIOpenSettingsRequested;
-import org.hkijena.acaq5.ui.grapheditor.settings.ACAQAlgorithmSettingsUI;
+import org.hkijena.acaq5.ui.events.OpenSettingsUIRequestedEvent;
+import org.hkijena.acaq5.ui.grapheditor.settings.ACAQAlgorithmSettingsPanelUI;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -27,7 +27,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
     private ACAQAlgorithmGraph algorithmGraph;
     private JSplitPane splitPane;
     private JScrollPane scrollPane;
-    private ACAQAlgorithmSettingsUI currentAlgorithmSettings;
+    private ACAQAlgorithmSettingsPanelUI currentAlgorithmSettings;
     private JToggleButton autoLayoutButton;
 
     private Point panningOffset = null;
@@ -153,9 +153,9 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
     }
 
     @Subscribe
-    public void onOpenAlgorithmSettings(ACAQAlgorithmUIOpenSettingsRequested event) {
+    public void onOpenAlgorithmSettings(OpenSettingsUIRequestedEvent event) {
         if(currentAlgorithmSettings == null || currentAlgorithmSettings.getAlgorithm() != event.getUi().getAlgorithm()) {
-            currentAlgorithmSettings = new ACAQAlgorithmSettingsUI(getWorkbenchUI(), algorithmGraph, event.getUi().getAlgorithm());
+            currentAlgorithmSettings = new ACAQAlgorithmSettingsPanelUI(getWorkbenchUI(), algorithmGraph, event.getUi().getAlgorithm());
             int dividerLocation = splitPane.getDividerLocation();
             splitPane.setRightComponent(currentAlgorithmSettings);
             splitPane.setDividerLocation(dividerLocation);

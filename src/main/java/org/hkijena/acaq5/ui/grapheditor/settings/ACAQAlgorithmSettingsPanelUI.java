@@ -18,11 +18,11 @@ import java.awt.*;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class ACAQAlgorithmSettingsUI extends ACAQUIPanel {
+public class ACAQAlgorithmSettingsPanelUI extends ACAQUIPanel {
     private ACAQAlgorithmGraph graph;
     private ACAQAlgorithm algorithm;
 
-    public ACAQAlgorithmSettingsUI(ACAQWorkbenchUI workbenchUI, ACAQAlgorithmGraph graph, ACAQAlgorithm algorithm) {
+    public ACAQAlgorithmSettingsPanelUI(ACAQWorkbenchUI workbenchUI, ACAQAlgorithmGraph graph, ACAQAlgorithm algorithm) {
         super(workbenchUI);
         this.graph = graph;
         this.algorithm = algorithm;
@@ -33,10 +33,10 @@ public class ACAQAlgorithmSettingsUI extends ACAQUIPanel {
         setLayout(new BorderLayout());
         DocumentTabPane tabbedPane = new DocumentTabPane();
 
-        FormPanel formPanel = new FormPanel("documentation/algorithm-graph.md", true);
-        initializeParameterPanel(formPanel);
+        ACAQAlgorithmParametersUI parametersUI = new ACAQAlgorithmParametersUI(algorithm,"documentation/algorithm-graph.md",
+                true, true);
         tabbedPane.addTab("Parameters", UIUtils.getIconFromResources("cog.png"),
-                formPanel,
+                parametersUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
 
@@ -83,28 +83,6 @@ public class ACAQAlgorithmSettingsUI extends ACAQUIPanel {
 
     private void deleteAlgorithm() {
         graph.removeNode(algorithm);
-    }
-
-    private void initializeParameterPanel(FormPanel formPanel) {
-        Map<String, ACAQParameterAccess> parameters = ACAQParameterAccess.getParameters(algorithm);
-        if(!parameters.isEmpty()) {
-            for(String key : parameters.keySet().stream().sorted().collect(Collectors.toList())) {
-                ACAQParameterAccess parameterAccess = parameters.get(key);
-                ACAQParameterEditorUI ui = ACAQRegistryService.getInstance()
-                        .getUIParametertypeRegistry().createEditorFor(parameterAccess);
-
-                if(ui.isUILabelEnabled())
-                    formPanel.addToForm(ui, new JLabel(parameterAccess.getName()), null);
-                else
-                    formPanel.addToForm(ui, null);
-            }
-        }
-        else {
-            formPanel.addToForm(new JLabel("This algorithm has no parameters",
-                    UIUtils.getIconFromResources("info.png"), JLabel.LEFT),
-                    null);
-        }
-        formPanel.addVerticalGlue();
     }
 
     public ACAQAlgorithm getAlgorithm() {
