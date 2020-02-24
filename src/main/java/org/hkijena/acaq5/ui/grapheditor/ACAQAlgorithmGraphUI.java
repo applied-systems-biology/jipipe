@@ -77,6 +77,21 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
     }
 
     protected void initializeToolbar() {
+        initializeAddNodesMenus();
+        menuBar.add(Box.createHorizontalGlue());
+        switchPanningDirectionButton = new JToggleButton("Reverse panning direction",
+                UIUtils.getIconFromResources("cursor-arrow.png"));
+        UIUtils.makeFlat(switchPanningDirectionButton);
+        switchPanningDirectionButton.setToolTipText("Changes the direction how panning (middle mouse button) affects the view.");
+        menuBar.add(switchPanningDirectionButton);
+
+        autoLayoutButton = new JToggleButton("Auto layout", UIUtils.getIconFromResources("sort.png"), true);
+        graphUI.setLayoutHelperEnabled(true);
+        autoLayoutButton.addActionListener(e -> graphUI.setLayoutHelperEnabled(autoLayoutButton.isSelected()));
+        menuBar.add(autoLayoutButton);
+    }
+
+    protected void initializeAddNodesMenus() {
         JMenu addDataSourceMenu = new JMenu("Add data");
         addDataSourceMenu.setIcon(UIUtils.getIconFromResources("database.png"));
         initializeAddDataSourceMenu(addDataSourceMenu);
@@ -101,20 +116,6 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
         addQuantifierMenu.setIcon(UIUtils.getIconFromResources("statistics.png"));
         initializeMenuForCategory(addQuantifierMenu, ACAQAlgorithmCategory.Quantififer);
         menuBar.add(addQuantifierMenu);
-
-        menuBar.add(Box.createHorizontalGlue());
-
-
-        switchPanningDirectionButton = new JToggleButton("Reverse panning direction",
-                UIUtils.getIconFromResources("cursor-arrow.png"));
-        UIUtils.makeFlat(switchPanningDirectionButton);
-        switchPanningDirectionButton.setToolTipText("Changes the direction how panning (middle mouse button) affects the view.");
-        menuBar.add(switchPanningDirectionButton);
-
-        autoLayoutButton = new JToggleButton("Auto layout", UIUtils.getIconFromResources("sort.png"), true);
-        graphUI.setLayoutHelperEnabled(true);
-        autoLayoutButton.addActionListener(e -> graphUI.setLayoutHelperEnabled(autoLayoutButton.isSelected()));
-        menuBar.add(autoLayoutButton);
     }
 
     private void initializeMenuForCategory(JMenu menu, ACAQAlgorithmCategory category) {
