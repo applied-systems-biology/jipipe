@@ -6,6 +6,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
+import org.hkijena.acaq5.ui.events.AlgorithmFinderSuccessEvent;
 import org.hkijena.acaq5.ui.grapheditor.algorithmfinder.ACAQAlgorithmFinderUI;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -15,6 +16,7 @@ import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_HEIGHT;
 import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_WIDTH;
@@ -82,12 +84,22 @@ public class ACAQDataSlotUI extends JPanel {
     }
 
     private void findAlgorithm(ACAQDataSlot<?> slot) {
+        ACAQAlgorithmFinderUI algorithmFinderUI = new ACAQAlgorithmFinderUI(slot, graph);
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Find matching algorithm");
         dialog.setModal(true);
-        dialog.setContentPane(new ACAQAlgorithmFinderUI(slot, graph));
+        dialog.setContentPane(algorithmFinderUI);
         dialog.pack();
         dialog.setSize(640, 480);
         dialog.setLocationRelativeTo(this);
+
+        algorithmFinderUI.getEventBus().register(new Consumer<AlgorithmFinderSuccessEvent>() {
+            @Override
+            @Subscribe
+            public void accept(AlgorithmFinderSuccessEvent event) {
+                dialog.setVisible(false);
+            }
+        });
+
         dialog.setVisible(true);
     }
 
@@ -134,7 +146,7 @@ public class ACAQDataSlotUI extends JPanel {
         centerPanel.setOpaque(false);
 
         JLabel nameLabel = new JLabel(slot.getName());
-        nameLabel.setToolTipText(ACAQData.getNameOf(slot.getAcceptedDataType()));
+        nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot, graph, false));
         nameLabel.setBorder(BorderFactory.createEmptyBorder(0,5,0,5));
         nameLabel.setIcon(ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(slot.getAcceptedDataType()));
         centerPanel.add(nameLabel);

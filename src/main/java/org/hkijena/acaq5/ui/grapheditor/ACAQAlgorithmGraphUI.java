@@ -28,6 +28,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
     private JSplitPane splitPane;
     private JScrollPane scrollPane;
     private ACAQAlgorithmSettingsUI currentAlgorithmSettings;
+    private JToggleButton autoLayoutButton;
 
     private Point panningOffset = null;
     private Point panningScrollbarOffset = null;
@@ -110,8 +111,10 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
         switchPanningDirectionButton.setToolTipText("Changes the direction how panning (middle mouse button) affects the view.");
         menuBar.add(switchPanningDirectionButton);
 
-//        JButton autoLayoutButton = new JButton("Auto layout", UIUtils.getIconFromResources("sort.png"));
-//        menuBar.add(autoLayoutButton);
+        autoLayoutButton = new JToggleButton("Auto layout", UIUtils.getIconFromResources("sort.png"), true);
+        graphUI.setLayoutHelperEnabled(true);
+        autoLayoutButton.addActionListener(e -> graphUI.setLayoutHelperEnabled(autoLayoutButton.isSelected()));
+        menuBar.add(autoLayoutButton);
     }
 
     private void initializeMenuForCategory(JMenu menu, ACAQAlgorithmCategory category) {

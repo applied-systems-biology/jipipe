@@ -45,7 +45,7 @@ public class FormPanel extends JPanel {
             add(splitPane, BorderLayout.CENTER);
         }
         else {
-            add(forms, BorderLayout.CENTER);
+            add(scrollPane, BorderLayout.CENTER);
         }
     }
 
@@ -179,5 +179,12 @@ public class FormPanel extends JPanel {
 
     public void setCurrentGroup(String currentGroup) {
         this.currentGroup = currentGroup;
+    }
+
+    public void clear() {
+        forms.removeAll();
+        numRows = 0;
+        revalidate();
+        repaint();
     }
 }

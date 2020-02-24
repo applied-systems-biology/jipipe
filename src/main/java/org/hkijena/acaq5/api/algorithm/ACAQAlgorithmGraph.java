@@ -17,9 +17,7 @@ import org.hkijena.acaq5.api.ACAQPreprocessingOutput;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
-import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
-import org.hkijena.acaq5.api.events.TraitsChangedEvent;
+import org.hkijena.acaq5.api.events.*;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.cycle.CycleDetector;
@@ -107,6 +105,15 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         if(algorithm instanceof ACAQPreprocessingOutput)
             return;
 
+        // Do regular disconnect
+        for(ACAQDataSlot<?> slot : algorithm.getInputSlots()) {
+            disconnectAll(slot);
+        }
+        for(ACAQDataSlot<?> slot : algorithm.getOutputSlots()) {
+            disconnectAll(slot);
+        }
+
+        // Do internal remove operation
         algorithms.remove(algorithms.inverse().get(algorithm));
         algorithm.getEventBus().unregister(this);
         algorithm.getTraitConfiguration().getEventBus().unregister(this);
@@ -155,6 +162,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         graph.addEdge(source, target);
         algorithmTraits = null;
         getEventBus().post(new AlgorithmGraphChangedEvent(this));
+        getEventBus().post(new AlgorithmGraphConnectedEvent(this, source, target));
     }
 
     public void repairGraph() {
@@ -277,21 +285,25 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         if(slot.isInput()) {
             ACAQDataSlot<?> source = getSourceSlot(slot);
             if(source != null) {
-                graph.removeEdge(source, slot);
-                algorithmTraits = null;
-                getEventBus().post(new AlgorithmGraphChangedEvent(this));
+                disconnect(source, slot);
             }
         }
         else if(slot.isOutput()) {
-            boolean modified = false;
             for(ACAQDataSlot<?> target : getTargetSlots(slot)) {
-                graph.removeEdge(slot, target);
-                modified = true;
+                disconnect(slot, target);
             }
-            algorithmTraits = null;
-            if(modified)
-                getEventBus().post(new AlgorithmGraphChangedEvent(this));
         }
+    }
+
+    public boolean disconnect(ACAQDataSlot<?> source, ACAQDataSlot<?> target) {
+        if(graph.containsEdge(source, target)) {
+            graph.removeEdge(source, target);
+            algorithmTraits = null;
+            getEventBus().post(new AlgorithmGraphDisconnectedEvent(this, source, target));
+            getEventBus().post(new AlgorithmGraphChangedEvent(this));
+            return true;
+        }
+        return false;
     }
 
     /**

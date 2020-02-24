@@ -264,4 +264,31 @@ public class UIUtils {
                 "New window");
     }
 
+    /**
+     * Creates a read-only "star-rating" label
+     * @param stars
+     * @param maximum
+     * @return
+     */
+    public static JLabel createStarRatingLabel(String title, double stars, int maximum) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("<html>");
+        builder.append("<table><tr>");
+        if(title != null && !title.isEmpty())
+            builder.append("<td>").append(title).append("</td>");
+        builder.append("<td>");
+        for(int i = 0; i < maximum; ++i) {
+            if(stars >= i + 1)
+                builder.append("<img style=\"vertical-align:middle\" src=\"").append(ResourceUtils.getPluginResource("icons/star.png")).append("\" />");
+            else if(stars >= i + 0.5)
+                builder.append("<img style=\"vertical-align:middle\" src=\"").append(ResourceUtils.getPluginResource("icons/star-half-o.png")).append("\" />");
+            else
+                builder.append("<img style=\"vertical-align:middle\" src=\"").append(ResourceUtils.getPluginResource("icons/star-o.png")).append("\" />");
+        }
+        builder.append("</td>");
+        builder.append("</tr></table>");
+        builder.append("</html>");
+        return new JLabel(builder.toString());
+    }
+
 }

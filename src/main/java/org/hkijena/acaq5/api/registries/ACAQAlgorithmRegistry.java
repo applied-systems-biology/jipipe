@@ -1,15 +1,14 @@
 package org.hkijena.acaq5.api.registries;
 
 import org.hkijena.acaq5.ACAQRegistryService;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
+import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQDataSource;
 import org.hkijena.acaq5.api.traits.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Manages known algorithms and their annotations
@@ -92,6 +91,24 @@ public class ACAQAlgorithmRegistry {
      */
     public Set<Class<? extends ACAQAlgorithm>> getRegisteredAlgorithms() {
         return Collections.unmodifiableSet(registeredAlgorithms);
+    }
+
+    /**
+     * Returns all data slot types that are inputs to the algorithm
+     * @param klass
+     * @return
+     */
+    public Set<Class<? extends ACAQDataSlot<?>>> getInputTypesOf(Class<? extends ACAQAlgorithm> klass) {
+        return Arrays.stream(klass.getAnnotationsByType(AlgorithmInputSlot.class)).map(AlgorithmInputSlot::value).collect(Collectors.toSet());
+    }
+
+    /**
+     * Returns all data slot types that are outputs of the algorithm
+     * @param klass
+     * @return
+     */
+    public Set<Class<? extends ACAQDataSlot<?>>> getOutputTypesOf(Class<? extends ACAQAlgorithm> klass) {
+        return Arrays.stream(klass.getAnnotationsByType(AlgorithmOutputSlot.class)).map(AlgorithmOutputSlot::value).collect(Collectors.toSet());
     }
 
     /**

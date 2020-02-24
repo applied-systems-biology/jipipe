@@ -20,7 +20,7 @@ public class TooltipUtils {
 
     }
 
-    public static String getSlotInstanceTooltip(ACAQDataSlot<?> slot, ACAQAlgorithmGraph graph) {
+    public static String getSlotInstanceTooltip(ACAQDataSlot<?> slot, ACAQAlgorithmGraph graph, boolean withAnnotations) {
         StringBuilder builder = new StringBuilder();
         builder.append("<html>");
         builder.append("<table>");
@@ -39,10 +39,12 @@ public class TooltipUtils {
         builder.append(" of ").append(slot.getAlgorithm().getName()).append("<br/>");
 
         // Show annotations
-        Set<Class<? extends ACAQTrait>> traits = graph.getAlgorithmTraits().getOrDefault(slot, Collections.emptySet());
-        if(traits != null && !traits.isEmpty()) {
-            builder.append("<br/><br/><strong>Annotations<br/>");
-            insertTraitTable(builder, traits);
+        if(withAnnotations) {
+            Set<Class<? extends ACAQTrait>> traits = graph.getAlgorithmTraits().getOrDefault(slot, Collections.emptySet());
+            if (traits != null && !traits.isEmpty()) {
+                builder.append("<br/><br/><strong>Annotations<br/>");
+                insertTraitTable(builder, traits);
+            }
         }
 
         builder.append("</html>");
@@ -51,9 +53,14 @@ public class TooltipUtils {
     }
 
     public static String getAlgorithmTooltip(Class<? extends ACAQAlgorithm> algorithmClass) {
+        return getAlgorithmTooltip(algorithmClass, true);
+    }
+
+    public static String getAlgorithmTooltip(Class<? extends ACAQAlgorithm> algorithmClass, boolean withTitle) {
         StringBuilder builder = new StringBuilder();
         builder.append("<html>");
-        builder.append("<u><strong>").append(ACAQAlgorithm.getNameOf(algorithmClass)).append("</strong></u><br/>");
+        if(withTitle)
+            builder.append("<u><strong>").append(ACAQAlgorithm.getNameOf(algorithmClass)).append("</strong></u><br/>");
 
         // Write algorithm slot info
         builder.append("<table>");
