@@ -36,7 +36,6 @@ import org.hkijena.acaq5.utils.ImageJUtils;
 // Trait configuration
 @AutoTransferTraits
 @RemovesTrait(ImageQuality.class)
-@RemovesTrait(BioObjectsPreparations.class)
 public class InternalGradientSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQMaskData> {
 
     private double gaussSigma = 3;

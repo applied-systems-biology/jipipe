@@ -38,8 +38,6 @@ import org.hkijena.acaq5.utils.ImageJUtils;
 // Trait configuration
 @AutoTransferTraits
 @RemovesTrait(ImageQuality.class)
-@RemovesTrait(BioObjectsPreparations.class)
-@RemovesTrait(BioObjectsLabeling.class)
 @AddsTrait(ClusterBioObjects.class)
 public class AutoThresholdSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQMaskData> {
 

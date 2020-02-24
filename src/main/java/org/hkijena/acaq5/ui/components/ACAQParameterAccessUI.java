@@ -15,10 +15,11 @@ public class ACAQParameterAccessUI extends FormPanel {
     public ACAQParameterAccessUI(Object parameterHolder, String defaultHelpDocumentPath, boolean documentationBelow, boolean withDocumentation) {
         super(defaultHelpDocumentPath, documentationBelow, withDocumentation);
         this.parameterHolder = parameterHolder;
-        initialize();
+        reloadForm();
     }
 
-    private void initialize() {
+    public void reloadForm() {
+        clear();
         Map<String, ACAQParameterAccess> parameters = ACAQParameterAccess.getParameters(getParameterHolder());
         if(!parameters.isEmpty()) {
             for(String key : parameters.keySet().stream().sorted().collect(Collectors.toList())) {

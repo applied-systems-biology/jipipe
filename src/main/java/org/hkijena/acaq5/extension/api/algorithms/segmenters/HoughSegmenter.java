@@ -35,7 +35,6 @@ import org.hkijena.acaq5.utils.Hough_Circle;
 // Trait configuration
 @AutoTransferTraits
 @RemovesTrait(ImageQuality.class)
-@RemovesTrait(BioObjectsPreparations.class)
 @RemovesTrait(ClusterBioObjects.class)
 public class HoughSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQMaskData> {
 

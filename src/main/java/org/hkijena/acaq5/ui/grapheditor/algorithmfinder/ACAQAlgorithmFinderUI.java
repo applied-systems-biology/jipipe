@@ -6,6 +6,7 @@ import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
@@ -83,6 +84,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
         formPanel.clear();
 
         List<Class<? extends ACAQAlgorithm>> algorithms = getFilteredAndSortedCompatibleTargetAlgorithms();
+        Set<ACAQAlgorithm> knownTargetAlgorithms = graph.getTargetSlots(outputSlot).stream().map(ACAQDataSlot::getAlgorithm).collect(Collectors.toSet());
 
         if(!algorithms.isEmpty()) {
             Map<Class<? extends ACAQAlgorithm>, Integer> scores = new HashMap<>();
@@ -104,6 +106,15 @@ public class ACAQAlgorithmFinderUI extends JPanel {
                 for(ACAQAlgorithm existing : graph.getAlgorithmNodes().values().stream().filter(a -> a.getClass().equals(targetAlgorithmClass)).collect(Collectors.toList())) {
                     if(existing == outputSlot.getAlgorithm())
                         continue;
+                    if(knownTargetAlgorithms.contains(existing)) {
+                        if(existing.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
+                            if(!((ACAQMutableSlotConfiguration) existing.getSlotConfiguration()).canModifyInputSlots())
+                                continue;
+                        }
+                        else {
+                            continue;
+                        }
+                    }
                     ACAQAlgorithmFinderAlgorithmUI algorithmUI = new ACAQAlgorithmFinderAlgorithmUI(outputSlot, graph, existing, score, maxScore);
                     algorithmUI.getEventBus().register(this);
                     formPanel.addToForm(algorithmUI, null);

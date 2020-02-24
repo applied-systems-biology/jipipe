@@ -39,14 +39,18 @@ public class ACAQAlgorithmBackup {
         }
     }
 
-    public void restore(ACAQAlgorithm targetAlgorithm) {
-        for(ACAQDataSlot<?> slot : targetAlgorithm.getOutputSlots()) {
-            slot.setStoragePath(storagePathBackups.get(slot.getName()));
-        }
+    public void restoreParameters(ACAQAlgorithm targetAlgorithm) {
         Map<String, ACAQParameterAccess> parameters = ACAQParameterAccess.getParameters(targetAlgorithm);
         for (Map.Entry<String, ACAQParameterAccess> entry : parameters.entrySet()) {
             entry.getValue().set(parameterBackups.get(entry.getKey()));
         }
+    }
+
+    public void restore(ACAQAlgorithm targetAlgorithm) {
+        for(ACAQDataSlot<?> slot : targetAlgorithm.getOutputSlots()) {
+            slot.setStoragePath(storagePathBackups.get(slot.getName()));
+        }
+        restoreParameters(targetAlgorithm);
     }
 
     public LocalDateTime getTimestamp() {

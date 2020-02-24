@@ -35,7 +35,6 @@ import org.hkijena.acaq5.extension.api.traits.quality.NonUniformBrightnessQualit
 // Trait configuration
 @AutoTransferTraits
 @RemovesTrait(ImageQuality.class)
-@RemovesTrait(BioObjectsPreparations.class)
 @AddsTrait(ClusterBioObjects.class)
 public class BrightSpotsSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQMaskData> {
 
