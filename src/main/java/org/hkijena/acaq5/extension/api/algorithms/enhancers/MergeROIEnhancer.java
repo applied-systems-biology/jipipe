@@ -1,20 +1,32 @@
 package org.hkijena.acaq5.extension.api.algorithms.enhancers;
 
 import ij.gui.Roi;
-import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQROIDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQROIData;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
 @ACAQDocumentation(name = "Merge ROI")
+
+// Data flow
+@AlgorithmInputSlot(ACAQROIDataSlot.class)
+@AlgorithmOutputSlot(ACAQROIDataSlot.class)
+
+// Traits
+@AutoTransferTraits
 public class MergeROIEnhancer extends ACAQAlgorithm {
     public MergeROIEnhancer() {
         super(ACAQMutableSlotConfiguration.builder().restrictInputTo(ACAQROIDataSlot.class)
         .addOutputSlot("ROI", ACAQROIDataSlot.class)
-        .sealOutput().build());
+        .sealOutput().build(), null);
     }
 
     public MergeROIEnhancer(MergeROIEnhancer other) {
@@ -30,5 +42,10 @@ public class MergeROIEnhancer extends ACAQAlgorithm {
 
         ACAQROIDataSlot outputSlot = (ACAQROIDataSlot)getOutputSlots().get(0);
         outputSlot.setData(new ACAQROIData(inputROI));
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+
     }
 }

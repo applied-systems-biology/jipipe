@@ -1,16 +1,20 @@
 package org.hkijena.acaq5.api;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 
 import java.io.IOException;
 
+/**
+ * Sample within an {@link ACAQProject}
+ */
 @JsonSerialize(using = ACAQProjectSample.Serializer.class)
-public class ACAQProjectSample implements Comparable<ACAQProjectSample> {
+public class ACAQProjectSample implements Comparable<ACAQProjectSample>, ACAQValidatable {
     private ACAQProject project;
     private ACAQAlgorithmGraph preprocessingGraph;
 
@@ -27,7 +31,8 @@ public class ACAQProjectSample implements Comparable<ACAQProjectSample> {
     }
 
     private void initializePreprocessingGraph() {
-        preprocessingGraph.insertNode(new ACAQPreprocessingOutput(getProject().getPreprocessingOutputConfiguration()));
+        preprocessingGraph.insertNode(new ACAQPreprocessingOutput(getProject().getPreprocessingOutputConfiguration(),
+                project.getPreprocessingTraitConfiguration()));
     }
 
     public ACAQProject getProject() {
@@ -45,6 +50,11 @@ public class ACAQProjectSample implements Comparable<ACAQProjectSample> {
 
     public ACAQAlgorithmGraph getPreprocessingGraph() {
         return preprocessingGraph;
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+        preprocessingGraph.reportValidity(report);
     }
 
     public static class Serializer extends JsonSerializer<ACAQProjectSample> {

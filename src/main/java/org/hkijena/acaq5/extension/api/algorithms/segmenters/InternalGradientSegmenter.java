@@ -5,16 +5,37 @@ import ij.plugin.ImageCalculator;
 import ij.plugin.filter.Binary;
 import ij.plugin.filter.GaussianBlur;
 import ij.plugin.filter.RankFilters;
-import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.api.parameters.ACAQSubAlgorithm;
+import org.hkijena.acaq5.api.traits.AutoTransferTraits;
+import org.hkijena.acaq5.api.traits.GoodForTrait;
+import org.hkijena.acaq5.api.traits.RemovesTrait;
 import org.hkijena.acaq5.extension.api.algorithms.enhancers.CLAHEImageEnhancer;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
+import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.BioObjectsPreparations;
+import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.MembraneLabeledBioObjects;
+import org.hkijena.acaq5.extension.api.traits.quality.ImageQuality;
 import org.hkijena.acaq5.utils.ImageJUtils;
 
 @ACAQDocumentation(name = "Internal gradient segmentation")
-@ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
+
+// Algorithm flow
+@AlgorithmInputSlot(value = ACAQGreyscaleImageDataSlot.class, slotName = "Image", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQMaskDataSlot.class, slotName = "Mask", autoCreate = true)
+
+// Trait matching
+@GoodForTrait(MembraneLabeledBioObjects.class)
+
+// Trait configuration
+@AutoTransferTraits
+@RemovesTrait(ImageQuality.class)
 public class InternalGradientSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQMaskData> {
 
     private double gaussSigma = 3;
@@ -26,8 +47,6 @@ public class InternalGradientSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscale
     private CLAHEImageEnhancer claheImageEnhancer = new CLAHEImageEnhancer();
 
     public InternalGradientSegmenter() {
-        super("Image", ACAQGreyscaleImageDataSlot.class,
-                "Mask", ACAQMaskDataSlot.class);
     }
 
     public InternalGradientSegmenter(InternalGradientSegmenter other) {
@@ -56,7 +75,7 @@ public class InternalGradientSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscale
         claheImageEnhancer.getInputSlot().setData(getInputSlot().getData());
         claheImageEnhancer.run();
 
-        ImagePlus img = claheImageEnhancer.getOutputSlot().getData().getImage();
+        ImagePlus img = claheImageEnhancer.getOutputSlot().getData().getImage().duplicate();
         (new GaussianBlur()).blurGaussian(img.getProcessor(), gaussSigma);
         ImageJUtils.runOnImage(img, "8-bit");
         applyInternalGradient(img);
@@ -91,6 +110,8 @@ public class InternalGradientSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscale
         for(int i = 0; i < erosionIterations; ++i) {
             binaryFilter.run(img.getProcessor());
         }
+
+        setOutputData(new ACAQMaskData(img));
     }
 
     @ACAQParameter("gauss-sigma")
@@ -145,5 +166,11 @@ public class InternalGradientSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscale
     @ACAQSubAlgorithm("clahe-enhancing")
     public CLAHEImageEnhancer getClaheImageEnhancer() {
         return claheImageEnhancer;
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+        report.forCategory("Auto Threshold Segmenter").report(autoThresholdSegmenter);
+        report.forCategory("CLAHE Enhancer").report(claheImageEnhancer);
     }
 }

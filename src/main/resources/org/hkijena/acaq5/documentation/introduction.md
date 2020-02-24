@@ -1,4 +1,4 @@
-<p style="text-align:center;"><img src="image://logo-400.png" width="400"/></p>
+<p style="text-align:center;"><img src="image://logo-400.png" width="400" height="146"/></p>
 
 # Automated Confrontation Assay Quantification Version 5 (ACAQ5)
 

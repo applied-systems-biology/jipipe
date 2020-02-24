@@ -1,7 +1,10 @@
 package org.hkijena.acaq5.api.events;
 
-import org.hkijena.acaq5.api.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 
+/**
+ * Triggered after an {@link ACAQMutableSlotConfiguration} renamed a slot
+ */
 public class SlotRenamedEvent {
     private ACAQMutableSlotConfiguration slotConfiguration;
     private String oldSlotName;

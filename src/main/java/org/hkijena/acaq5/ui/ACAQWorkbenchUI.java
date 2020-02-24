@@ -1,10 +1,11 @@
 package org.hkijena.acaq5.ui;
 
-import org.hkijena.acaq5.ACAQCommand;
+import org.hkijena.acaq5.ACAQGUICommand;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphUI;
-import org.hkijena.acaq5.ui.running.ACAQRunUI;
+import org.hkijena.acaq5.ui.running.ACAQRunSettingsUI;
+import org.hkijena.acaq5.ui.running.ACAQRunnerQueueUI;
 import org.hkijena.acaq5.ui.samplemanagement.ACAQDataUI;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXStatusBar;
@@ -12,8 +13,6 @@ import org.jdesktop.swingx.JXStatusBar;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
-import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -21,12 +20,12 @@ public class ACAQWorkbenchUI extends JPanel {
 
     private ACAQWorkbenchWindow window;
     private ACAQProject project;
-    private ACAQCommand command;
+    private ACAQGUICommand command;
     private DocumentTabPane documentTabPane;
     private ACAQInfoUI infoUI;
     private JLabel statusText;
 
-    public ACAQWorkbenchUI(ACAQWorkbenchWindow window, ACAQCommand command, ACAQProject project) {
+    public ACAQWorkbenchUI(ACAQWorkbenchWindow window, ACAQGUICommand command, ACAQProject project) {
         this.window = window;
         this.project = project;
         this.command = command;
@@ -119,6 +118,10 @@ public class ACAQWorkbenchUI extends JPanel {
 
         menu.add(Box.createHorizontalGlue());
 
+        // Queue monitor
+        menu.add(new ACAQRunnerQueueUI());
+        menu.add(Box.createHorizontalStrut(1));
+
         // "Run" entry
         JButton runProjectButton = new JButton("Run", UIUtils.getIconFromResources("run.png"));
         runProjectButton.setToolTipText("Opens a new interface to run the analysis.");
@@ -139,7 +142,7 @@ public class ACAQWorkbenchUI extends JPanel {
     }
 
     private void openRunUI() {
-        ACAQRunUI ui = new ACAQRunUI(this);
+        ACAQRunSettingsUI ui = new ACAQRunSettingsUI(this);
         documentTabPane.addTab("Run", UIUtils.getIconFromResources("run.png"), ui,
                 DocumentTabPane.CloseMode.withAskOnCloseButton, true);
         documentTabPane.switchToLastTab();

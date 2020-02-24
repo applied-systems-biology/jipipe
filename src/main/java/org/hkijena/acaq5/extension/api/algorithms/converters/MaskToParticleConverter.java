@@ -4,17 +4,31 @@ import ij.ImagePlus;
 import ij.measure.ResultsTable;
 import ij.plugin.filter.ParticleAnalyzer;
 import ij.plugin.frame.RoiManager;
-import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQROIDataSlot;
-import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
+import org.hkijena.acaq5.extension.api.dataslots.ACAQResultsTableDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQROIData;
+import org.hkijena.acaq5.extension.api.datatypes.ACAQResultsTableData;
 
 import java.util.Arrays;
 
+// Algorithm metadata
 @ACAQDocumentation(name = "Convert mask to particles")
-@ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Converter)
-public class MaskToParticleConverter extends ACAQSimpleAlgorithm<ACAQMaskData, ACAQROIData> {
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.Converter)
+
+// Algorithm data flow
+@AlgorithmInputSlot(value = ACAQMaskDataSlot.class, slotName = "Mask", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQROIDataSlot.class, slotName = "ROI", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQResultsTableDataSlot.class, slotName = "Measurements", autoCreate = true)
+
+// Algorithm traits
+@AutoTransferTraits
+public class MaskToParticleConverter extends ACAQAlgorithm {
     private double minParticleSize = 0;
     private double maxParticleSize = Double.MAX_VALUE;
     private double minParticleCircularity = 0;
@@ -22,8 +36,7 @@ public class MaskToParticleConverter extends ACAQSimpleAlgorithm<ACAQMaskData, A
     private boolean excludeEdges = false;
 
     public MaskToParticleConverter() {
-        super("Mask", ACAQMaskDataSlot.class,
-                "ROI", ACAQROIDataSlot.class);
+        super(null, null);
     }
 
     public MaskToParticleConverter(MaskToParticleConverter other) {
@@ -37,15 +50,18 @@ public class MaskToParticleConverter extends ACAQSimpleAlgorithm<ACAQMaskData, A
 
     @Override
     public void run() {
-        ImagePlus inputImage = getInputData().getImage();
+        ImagePlus inputImage = (((ACAQMaskDataSlot)getInputSlots().get(0))).getData().getImage();
 
         ResultsTable resultsTable = new ResultsTable();
         RoiManager manager = new RoiManager(true);
+        ResultsTable table = new ResultsTable();
         ParticleAnalyzer.setRoiManager(manager);
+        ParticleAnalyzer.setResultsTable(table);
         ParticleAnalyzer analyzer = new ParticleAnalyzer(0, 0, resultsTable, minParticleSize, maxParticleSize, minParticleCircularity, maxParticleCircularity);
         analyzer.analyze(inputImage);
 
-        setOutputData(new ACAQROIData(Arrays.asList(manager.getRoisAsArray())));
+        getSlots().get("ROI").setData(new ACAQROIData(Arrays.asList(manager.getRoisAsArray())));
+        getSlots().get("Measurements").setData(new ACAQResultsTableData(table));
     }
 
     @ACAQParameter("min-particle-size")
@@ -107,5 +123,10 @@ public class MaskToParticleConverter extends ACAQSimpleAlgorithm<ACAQMaskData, A
     @ACAQParameter("exclude-edges")
     public void setExcludeEdges(boolean excludeEdges) {
         this.excludeEdges = excludeEdges;
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+
     }
 }

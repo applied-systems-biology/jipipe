@@ -3,26 +3,33 @@ package org.hkijena.acaq5.api;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.data.ACAQDataSlot;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+/**
+ * Runnable instance of an {@link ACAQProject}
+ */
 public class ACAQRun {
     private ACAQProject project;
     ACAQAlgorithmGraph algorithmGraph;
-    private Path outputPath;
     private BiMap<String, ACAQRunSample> samples = HashBiMap.create();
+    private ACAQRunConfiguration configuration;
 
-    public ACAQRun(ACAQProject project) {
+    private Map<ACAQAlgorithm, ACAQAlgorithm> projectAlgorithms = new HashMap<>();
+
+    public ACAQRun(ACAQProject project, ACAQRunConfiguration configuration) {
         this.project = project;
+        this.configuration = configuration;
         initializeAlgorithmGraph();
     }
 
@@ -33,10 +40,14 @@ public class ACAQRun {
     private void initializeAlgorithmGraph() {
         algorithmGraph = new ACAQAlgorithmGraph();
 
+        // Add nodes
         initializeAlgorithmGraphNodes();
 
         // Add edges
         for(Map.Entry<String, ACAQProjectSample> sampleEntry : project.getSamples().entrySet()) {
+            if(configuration.getSampleRestrictions() != null && !configuration.getSampleRestrictions().isEmpty() &&
+            !configuration.getSampleRestrictions().contains(sampleEntry.getKey()))
+                continue;
             initializeAlgorithmGraphEdges(sampleEntry);
         }
     }
@@ -116,17 +127,22 @@ public class ACAQRun {
         for(Map.Entry<String, ACAQProjectSample> sampleEntry : project.getSamples().entrySet()) {
             String sampleName = sampleEntry.getKey();
 
+            if(configuration.getSampleRestrictions() != null && !configuration.getSampleRestrictions().isEmpty() &&
+                    !configuration.getSampleRestrictions().contains(sampleEntry.getKey()))
+                continue;
+
             Set<ACAQAlgorithm> runAlgorithms = new HashSet<>();
 
-            // Preprocesssing graph
+            // Preprocessing graph
             for(Map.Entry<String, ACAQAlgorithm> algorithmEntry : sampleEntry.getValue().getPreprocessingGraph().getAlgorithmNodes().entrySet()) {
                 if(algorithmEntry.getValue().getCategory() == ACAQAlgorithmCategory.Internal)
                     continue;
                 String algorithmName = sampleName + "/preprocessing/" + algorithmEntry.getKey();
                 ACAQAlgorithm copy = ACAQAlgorithm.clone(algorithmEntry.getValue());
-                copy.setStoragePath(Paths.get(sampleName).resolve("preprocessing").resolve(algorithmEntry.getKey()));
+                copy.setInternalStoragePath(Paths.get(sampleName).resolve("preprocessing").resolve(algorithmEntry.getKey()));
                 algorithmGraph.insertNode(algorithmName, copy);
                 runAlgorithms.add(copy);
+                projectAlgorithms.put(copy, algorithmEntry.getValue());
             }
 
             // Analysis graph
@@ -135,9 +151,10 @@ public class ACAQRun {
                     continue;
                 String algorithmName = sampleName + "/analysis/" + algorithmEntry.getKey();
                 ACAQAlgorithm copy = ACAQAlgorithm.clone(algorithmEntry.getValue());
-                copy.setStoragePath(Paths.get(sampleName).resolve("analysis").resolve(algorithmEntry.getKey()));
+                copy.setInternalStoragePath(Paths.get(sampleName).resolve("analysis").resolve(algorithmEntry.getKey()));
                 algorithmGraph.insertNode(algorithmName, copy);
                 runAlgorithms.add(copy);
+                projectAlgorithms.put(copy, algorithmEntry.getValue());
             }
 
             // Create sample in the sample list
@@ -150,51 +167,53 @@ public class ACAQRun {
         return project;
     }
 
-    public void setOutputPath(Path outputPath) {
-        this.outputPath = outputPath;
-    }
-
-    public Path getOutputPath() {
-        return outputPath;
-    }
-
     /**
      * This function must be called before running the graph
      */
     private void prepare() {
+        assignDataStoragePaths();
+    }
 
-        if (!Files.exists(outputPath)) {
-            try {
-                Files.createDirectories(outputPath);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        // Apply output path to the data slots
-        for(ACAQDataSlot<?> slot : algorithmGraph.getSlotNodes()) {
-            if(slot.isOutput()) {
-                slot.setStoragePath(outputPath.resolve(slot.getAlgorithm().getStoragePath().resolve(slot.getName())));
+    public void assignDataStoragePaths() {
+        if(configuration.getOutputPath() != null) {
+            if (!Files.exists(configuration.getOutputPath())) {
                 try {
-                    Files.createDirectories(slot.getStoragePath());
+                    Files.createDirectories(configuration.getOutputPath());
                 } catch (IOException e) {
                     throw new RuntimeException(e);
+                }
+            }
+
+            // Apply output path to the data slots
+            for(ACAQDataSlot<?> slot : algorithmGraph.getSlotNodes()) {
+                if(slot.isOutput()) {
+                    slot.setStoragePath(configuration.getOutputPath().resolve(slot.getAlgorithm().getInternalStoragePath().resolve(slot.getName())));
+                    try {
+                        Files.createDirectories(slot.getStoragePath());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
     }
 
     private void flushFinishedSlots(List<ACAQDataSlot<?>> traversedSlots, int i, ACAQDataSlot<?> outputSlot) {
-        boolean canFlush = true;
-        for(int j = i + 1; j < traversedSlots.size(); ++j) {
-            ACAQDataSlot<?> futureSlot = traversedSlots.get(j);
-            if(futureSlot.isInput() && algorithmGraph.getSourceSlot(futureSlot) == outputSlot) {
-                canFlush = false;
-                break;
+        if(configuration.isFlushingEnabled()) {
+            boolean canFlush = true;
+            for(int j = i + 1; j < traversedSlots.size(); ++j) {
+                ACAQDataSlot<?> futureSlot = traversedSlots.get(j);
+                if(futureSlot.isInput() && algorithmGraph.getSourceSlot(futureSlot) == outputSlot) {
+                    canFlush = false;
+                    break;
+                }
             }
-        }
-        if(canFlush) {
-            outputSlot.flush();
+            if(canFlush) {
+                if(configuration.isFlushingKeepsDataEnabled())
+                    outputSlot.save();
+                else
+                    outputSlot.flush();
+            }
         }
     }
 
@@ -221,8 +240,32 @@ public class ACAQRun {
                 // Ensure the algorithm has run
                 if(!executedAlgorithms.contains(slot.getAlgorithm())) {
                     onProgress.accept(new Status(i, algorithmGraph.getSlotCount(), "Algorithm: " + slot.getAlgorithm().getName()));
-                    slot.getAlgorithm().run();
+
+                    if(configuration.isOnlyRunningEndAlgorithm()) {
+                        ACAQAlgorithm projectAlgorithm = projectAlgorithms.get(slot.getAlgorithm());
+                        if(projectAlgorithm == configuration.getEndAlgorithm()) {
+                            slot.getAlgorithm().run();
+                        }
+                    }
+                    else {
+                        slot.getAlgorithm().run();
+                    }
+
                     executedAlgorithms.add(slot.getAlgorithm());
+
+                    if(configuration.getEndAlgorithm() != null) {
+                        ACAQAlgorithm projectAlgorithm = projectAlgorithms.get(slot.getAlgorithm());
+                        if(projectAlgorithm == configuration.getEndAlgorithm()) {
+                            onProgress.accept(new Status(algorithmGraph.getSlotCount(), algorithmGraph.getSlotCount(), "Reached preconfigured end algorithm"));
+
+                            // We are ending the iteration here, so force flushing everything we have
+                            if(configuration.isFlushingEnabled()) {
+                                forceFlushAlgorithms(executedAlgorithms);
+                            }
+
+                            break;
+                        }
+                    }
                 }
 
                 // Check if we can flush the output
@@ -233,9 +276,21 @@ public class ACAQRun {
 
         // Postprocessing
         try {
-            project.saveProject(outputPath.resolve("parameters.json"));
+            if(configuration.getOutputPath() != null && configuration.isFlushingEnabled())
+                project.saveProject(configuration.getOutputPath().resolve("parameters.json"));
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void forceFlushAlgorithms(Set<ACAQAlgorithm> algorithms) {
+        for(ACAQAlgorithm algorithm : algorithms) {
+            for(ACAQDataSlot<?> outputSlot : algorithm.getOutputSlots()) {
+                if(configuration.isFlushingKeepsDataEnabled())
+                    outputSlot.save();
+                else
+                    outputSlot.flush();
+            }
         }
     }
 
@@ -255,10 +310,22 @@ public class ACAQRun {
     public static ACAQRun loadFromFolder(Path folder) throws IOException {
         Path parameterFile = folder.resolve("parameters.json");
         ACAQProject project = ACAQProject.loadProject(parameterFile);
-        ACAQRun run = new ACAQRun(project);
-        run.outputPath = folder;
+        ACAQMutableRunConfiguration configuration = new ACAQMutableRunConfiguration();
+        configuration.setOutputPath(folder);
+        ACAQRun run = new ACAQRun(project, configuration);
         run.prepare();
         return run;
+    }
+
+    public ACAQRunConfiguration getConfiguration() {
+        return configuration;
+    }
+
+    /**
+     * Maps the run algorithm to its respective project algorithm
+     */
+    public Map<ACAQAlgorithm, ACAQAlgorithm> getProjectAlgorithms() {
+        return Collections.unmodifiableMap(projectAlgorithms);
     }
 
     public static class Status {

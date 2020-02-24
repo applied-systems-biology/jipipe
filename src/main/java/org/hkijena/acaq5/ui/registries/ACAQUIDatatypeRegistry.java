@@ -1,8 +1,10 @@
 package org.hkijena.acaq5.ui.registries;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
-import org.hkijena.acaq5.api.ACAQData;
-import org.hkijena.acaq5.api.ACAQDataSlot;
+import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.api.ACAQRunSample;
+import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultDataSlotResultUI;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultDataSlotUI;
@@ -46,7 +48,7 @@ public class ACAQUIDatatypeRegistry {
      * @return
      */
     public ImageIcon getIconFor(Class<? extends ACAQData> klass) {
-        URL uri = icons.getOrDefault(klass, ResourceUtils.getPluginResource("icons/data-type-unknown.png"));
+        URL uri = icons.getOrDefault(klass, ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
         return new ImageIcon(uri);
     }
 
@@ -55,18 +57,26 @@ public class ACAQUIDatatypeRegistry {
      * @param slot
      * @return
      */
-    public ACAQResultDataSlotUI<?> getUIForResultSlot(ACAQWorkbenchUI workbenchUI, ACAQDataSlot<?> slot) {
+    public ACAQResultDataSlotUI<?> getUIForResultSlot(ACAQWorkbenchUI workbenchUI, ACAQRunSample sample, ACAQDataSlot<?> slot) {
         Class<? extends ACAQResultDataSlotUI<?>> uiClass = resultUIs.getOrDefault(slot.getClass(), null);
         if(uiClass != null) {
             try {
-                return ConstructorUtils.getMatchingAccessibleConstructor(uiClass, ACAQWorkbenchUI.class, slot.getClass())
-                        .newInstance(workbenchUI, slot);
+                return ConstructorUtils.getMatchingAccessibleConstructor(uiClass, ACAQWorkbenchUI.class, ACAQRunSample.class, slot.getClass())
+                        .newInstance(workbenchUI, sample, slot);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
         }
         else {
-            return new ACAQDefaultDataSlotResultUI(workbenchUI, slot);
+            return new ACAQDefaultDataSlotResultUI(workbenchUI, sample, slot);
         }
+    }
+
+    public URL getIconURLFor(Class<? extends ACAQData> klass) {
+        return icons.getOrDefault(klass, ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
+    }
+
+    public URL getIconURLForSlot(Class<? extends ACAQDataSlot<?>> klass) {
+        return getIconURLFor(ACAQRegistryService.getInstance().getDatatypeRegistry().getRegisteredSlotDataTypes().inverse().get(klass));
     }
 }

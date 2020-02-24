@@ -164,6 +164,34 @@ public class UIUtils {
         return popupMenu;
     }
 
+    public static void addPopupPanelToComponent(AbstractButton target, JPanel panel) {
+        PopupFactory popupFactory = PopupFactory.getSharedInstance();
+
+        target.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                super.mouseClicked(mouseEvent);
+                Point l = target.getLocationOnScreen();
+                Popup popup = popupFactory.getPopup(target, panel, l.x, l.y + target.getHeight());
+                popup.show();
+            }
+        });
+        target.addActionListener(e -> {
+
+            if(MouseInfo.getPointerInfo().getLocation().x >= target.getLocationOnScreen().x
+                    && MouseInfo.getPointerInfo().getLocation().x <= target.getLocationOnScreen().x + target.getWidth()
+                    && MouseInfo.getPointerInfo().getLocation().y >= target.getLocationOnScreen().y
+                    && MouseInfo.getPointerInfo().getLocation().y <= target.getLocationOnScreen().y + target.getHeight()) {
+
+            }
+            else {
+                Point l = target.getLocationOnScreen();
+                Popup popup = popupFactory.getPopup(target, panel, l.x, l.y + target.getHeight());
+                popup.show();
+            }
+        });
+    }
+
     public static ImageIcon getIconFromResources(String iconName) {
         return new ImageIcon(ResourceUtils.getPluginResource("icons/" + iconName));
     }
@@ -180,7 +208,18 @@ public class UIUtils {
         component.setBorder(compound);
     }
 
-    public static void makeFlatWithoutMargin(AbstractButton component) {
+    public static void makeFlat25x25(AbstractButton component) {
+        component.setBackground(Color.WHITE);
+        component.setOpaque(false);
+        component.setPreferredSize(new Dimension(25,25));
+        component.setMinimumSize(new Dimension(25,25));
+        component.setMaximumSize(new Dimension(25,25));
+        Border margin = new EmptyBorder(2, 2, 2, 2);
+        Border compound = new CompoundBorder( BorderFactory.createEtchedBorder(), margin);
+        component.setBorder(compound);
+    }
+
+    public static void makeBorderlessWithoutMargin(AbstractButton component) {
         component.setBackground(Color.WHITE);
         component.setOpaque(false);
         component.setBorder(null);
@@ -223,6 +262,33 @@ public class UIUtils {
                 null,
                 new Object[]{"This window", "New window", "Cancel"},
                 "New window");
+    }
+
+    /**
+     * Creates a read-only "star-rating" label
+     * @param stars
+     * @param maximum
+     * @return
+     */
+    public static JLabel createStarRatingLabel(String title, double stars, int maximum) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("<html>");
+        builder.append("<table><tr>");
+        if(title != null && !title.isEmpty())
+            builder.append("<td>").append(title).append("</td>");
+        builder.append("<td>");
+        for(int i = 0; i < maximum; ++i) {
+            if(stars >= i + 1)
+                builder.append("<img style=\"vertical-align:middle\" src=\"").append(ResourceUtils.getPluginResource("icons/star.png")).append("\" />");
+            else if(stars >= i + 0.5)
+                builder.append("<img style=\"vertical-align:middle\" src=\"").append(ResourceUtils.getPluginResource("icons/star-half-o.png")).append("\" />");
+            else
+                builder.append("<img style=\"vertical-align:middle\" src=\"").append(ResourceUtils.getPluginResource("icons/star-o.png")).append("\" />");
+        }
+        builder.append("</td>");
+        builder.append("</tr></table>");
+        builder.append("</html>");
+        return new JLabel(builder.toString());
     }
 
 }

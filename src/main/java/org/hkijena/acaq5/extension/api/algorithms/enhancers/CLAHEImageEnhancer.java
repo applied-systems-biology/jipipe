@@ -1,17 +1,38 @@
 package org.hkijena.acaq5.extension.api.algorithms.enhancers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import ij.ImagePlus;
 import mpicbg.ij.clahe.Flat;
-import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.api.traits.AutoTransferTraits;
+import org.hkijena.acaq5.api.traits.GoodForTrait;
+import org.hkijena.acaq5.api.traits.RemovesTrait;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
-
-import java.io.File;
-import java.io.IOException;
+import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.MembraneLabeledBioObjects;
+import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.UniformlyLabeledBioObjects;
+import org.hkijena.acaq5.extension.api.traits.quality.LowBrightnessQuality;
+import org.hkijena.acaq5.extension.api.traits.quality.NonUniformBrightnessQuality;
 
 @ACAQDocumentation(name = "CLAHE enhancer")
-@ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
+
+// Algorithm flow
+@AlgorithmInputSlot(value = ACAQGreyscaleImageDataSlot.class, slotName = "Input image", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQGreyscaleImageDataSlot.class, slotName = "Output image", autoCreate = true)
+
+// Trait matching
+@GoodForTrait(UniformlyLabeledBioObjects.class)
+@GoodForTrait(MembraneLabeledBioObjects.class)
+@GoodForTrait(LowBrightnessQuality.class)
+@GoodForTrait(NonUniformBrightnessQuality.class)
+
+// Trait configuration
+@AutoTransferTraits
+@RemovesTrait(LowBrightnessQuality.class)
+@RemovesTrait(NonUniformBrightnessQuality.class)
 public class CLAHEImageEnhancer extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData,
         ACAQGreyscaleImageData> {
 
@@ -21,8 +42,6 @@ public class CLAHEImageEnhancer extends ACAQSimpleAlgorithm<ACAQGreyscaleImageDa
     private boolean fastMode = false;
 
     public CLAHEImageEnhancer() {
-        super("Input image", ACAQGreyscaleImageDataSlot.class,
-                "Output image", ACAQGreyscaleImageDataSlot.class);
     }
 
     public CLAHEImageEnhancer(CLAHEImageEnhancer other) {
@@ -85,5 +104,10 @@ public class CLAHEImageEnhancer extends ACAQSimpleAlgorithm<ACAQGreyscaleImageDa
     @ACAQParameter("fast-mode")
     public void setFastMode(boolean fastMode) {
         this.fastMode = fastMode;
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+
     }
 }

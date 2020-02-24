@@ -1,7 +1,13 @@
 package org.hkijena.acaq5.api;
 
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.data.ACAQDataSlot;
+
 import java.util.*;
 
+/**
+ * Sample within an {@link ACAQRun}
+ */
 public class ACAQRunSample {
     private ACAQRun run;
     private ACAQProjectSample projectSample;
@@ -32,5 +38,9 @@ public class ACAQRunSample {
         }
         result.sort(Comparator.comparing(o -> o.getClass().getCanonicalName()));
         return result;
+    }
+
+    public ACAQRun getRun() {
+        return run;
     }
 }

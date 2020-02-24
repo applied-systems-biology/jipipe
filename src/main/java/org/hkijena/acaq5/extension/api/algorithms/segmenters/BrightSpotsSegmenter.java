@@ -4,15 +4,38 @@ import ij.ImagePlus;
 import ij.plugin.filter.BackgroundSubtracter;
 import ij.plugin.filter.Binary;
 import ij.plugin.filter.GaussianBlur;
-import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.api.parameters.ACAQSubAlgorithm;
+import org.hkijena.acaq5.api.traits.AddsTrait;
+import org.hkijena.acaq5.api.traits.AutoTransferTraits;
+import org.hkijena.acaq5.api.traits.BadForTrait;
+import org.hkijena.acaq5.api.traits.RemovesTrait;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
+import org.hkijena.acaq5.extension.api.traits.bioobject.count.ClusterBioObjects;
+import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.BioObjectsPreparations;
+import org.hkijena.acaq5.extension.api.traits.quality.ImageQuality;
+import org.hkijena.acaq5.extension.api.traits.quality.NonUniformBrightnessQuality;
 
-// TODO: Suggest CLAHE
 @ACAQDocumentation(name = "Bright spots segmentation")
-@ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
+
+// Algorithm flow
+@AlgorithmInputSlot(value = ACAQGreyscaleImageDataSlot.class, slotName = "Image", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQMaskDataSlot.class, slotName = "Mask", autoCreate = true)
+
+// Trait matching
+@BadForTrait(NonUniformBrightnessQuality.class)
+
+// Trait configuration
+@AutoTransferTraits
+@RemovesTrait(ImageQuality.class)
+@AddsTrait(ClusterBioObjects.class)
 public class BrightSpotsSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQMaskData> {
 
     private int rollingBallRadius = 20;
@@ -21,8 +44,6 @@ public class BrightSpotsSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImage
     private AutoThresholdSegmenter autoThresholdSegmenter = new AutoThresholdSegmenter();
 
     public BrightSpotsSegmenter() {
-        super("Image", ACAQGreyscaleImageDataSlot.class,
-                "Mask", ACAQMaskDataSlot.class);
     }
 
     public BrightSpotsSegmenter(BrightSpotsSegmenter other) {
@@ -119,5 +140,10 @@ public class BrightSpotsSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImage
     @ACAQSubAlgorithm("auto-thresholding")
     public AutoThresholdSegmenter getAutoThresholdSegmenter() {
         return autoThresholdSegmenter;
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+
     }
 }

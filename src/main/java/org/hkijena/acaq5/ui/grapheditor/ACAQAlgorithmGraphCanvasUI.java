@@ -4,11 +4,12 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.api.ACAQAlgorithm;
-import org.hkijena.acaq5.api.ACAQAlgorithmGraph;
-import org.hkijena.acaq5.api.ACAQDataSlot;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
-import org.hkijena.acaq5.ui.events.ACAQAlgorithmUIOpenSettingsRequested;
+import org.hkijena.acaq5.api.events.AlgorithmGraphConnectedEvent;
+import org.hkijena.acaq5.ui.events.OpenSettingsUIRequestedEvent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,6 +30,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     private BiMap<ACAQAlgorithm, ACAQAlgorithmUI> nodeUIs = HashBiMap.create();
     private EventBus eventBus = new EventBus();
     private int newEntryLocationX = ACAQAlgorithmUI.SLOT_UI_WIDTH * 4;
+    private boolean layoutHelperEnabled;
 
     public ACAQAlgorithmGraphCanvasUI(ACAQAlgorithmGraph algorithmGraph) {
         super(null);
@@ -46,17 +48,6 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
     public ACAQAlgorithmGraph getAlgorithmGraph() {
         return algorithmGraph;
-    }
-
-    /**
-     * Assigns slot connections if slots are directly next to each other in the UI
-     */
-    private void autoAssignConnections() {
-
-    }
-
-    private void tryMoveToAutoAssign() {
-
     }
 
     /**
@@ -85,11 +76,12 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     private void addNewNodes() {
         List<ACAQAlgorithm> newNodes = algorithmGraph.getAlgorithmNodes().values().stream().filter(x -> !nodeUIs.containsKey(x)).collect(Collectors.toList());
         for(ACAQAlgorithm algorithm : newNodes) {
-            //TODO: More auto-layout-like placement. Only use the brute force method as last measurement
             int y = nodeUIs.values().stream().map(ACAQAlgorithmUI::getBottomY).max(Integer::compareTo).orElse(0);
             int x = newEntryLocationX;
             if(y == 0)
                 y += 2 * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+            else
+                y += ACAQAlgorithmUI.SLOT_UI_HEIGHT;
 
             // Align X position to grid
             x = (int)Math.ceil(x * 1.0 / ACAQAlgorithmUI.SLOT_UI_WIDTH) * ACAQAlgorithmUI.SLOT_UI_WIDTH;
@@ -139,7 +131,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
                         currentlyDragged = (ACAQAlgorithmUI)component;
                         currentlyDraggedOffset.x = component.getX() - mouseEvent.getX();
                         currentlyDraggedOffset.y = component.getY() - mouseEvent.getY();
-                        eventBus.post(new ACAQAlgorithmUIOpenSettingsRequested(currentlyDragged));
+                        eventBus.post(new OpenSettingsUIRequestedEvent(currentlyDragged));
                         break;
                     }
                 }
@@ -186,7 +178,28 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     }
 
     @Subscribe
-    public void onOpenAlgorithmSettings(ACAQAlgorithmUIOpenSettingsRequested event) {
+    public void onAlgorithmConnected(AlgorithmGraphConnectedEvent event) {
+        ACAQAlgorithmUI sourceNode = nodeUIs.getOrDefault(event.getSource().getAlgorithm(), null);
+        ACAQAlgorithmUI targetNode = nodeUIs.getOrDefault(event.getTarget().getAlgorithm(), null);
+
+        if(sourceNode != null && targetNode != null && layoutHelperEnabled) {
+            int minX = sourceNode.getX() + sourceNode.getWidth() + 4 * ACAQAlgorithmUI.SLOT_UI_WIDTH;
+            if(targetNode.getX() < minX) {
+                if(!targetNode.trySetLocationNoGrid(minX, targetNode.getY())) {
+                    int y = nodeUIs.values().stream().map(ACAQAlgorithmUI::getBottomY).max(Integer::compareTo).orElse(0);
+                    if(y == 0)
+                        y += 2 * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+                    else
+                        y += ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+
+                    targetNode.trySetLocationNoGrid(minX, y);
+                }
+            }
+        }
+    }
+
+    @Subscribe
+    public void onOpenAlgorithmSettings(OpenSettingsUIRequestedEvent event) {
         eventBus.post(event);
     }
 
@@ -275,5 +288,13 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
      */
     public void setNewEntryLocationX(int newEntryLocationX) {
         this.newEntryLocationX = newEntryLocationX;
+    }
+
+    public boolean isLayoutHelperEnabled() {
+        return layoutHelperEnabled;
+    }
+
+    public void setLayoutHelperEnabled(boolean layoutHelperEnabled) {
+        this.layoutHelperEnabled = layoutHelperEnabled;
     }
 }

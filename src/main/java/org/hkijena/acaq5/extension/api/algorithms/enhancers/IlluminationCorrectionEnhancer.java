@@ -2,21 +2,39 @@ package org.hkijena.acaq5.extension.api.algorithms.enhancers;
 
 import ij.ImagePlus;
 import ij.plugin.ImageCalculator;
-import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.api.traits.AutoTransferTraits;
+import org.hkijena.acaq5.api.traits.GoodForTrait;
+import org.hkijena.acaq5.api.traits.RemovesTrait;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
+import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.UnlabeledBioObjects;
+import org.hkijena.acaq5.extension.api.traits.quality.NonUniformBrightnessQuality;
 import org.hkijena.acaq5.utils.ImageJUtils;
 import org.hkijena.acaq5.utils.MacroSetting;
 
 @ACAQDocumentation(name = "Illumination correction enhancer")
-@ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
+
+// Algorithm flow
+@AlgorithmInputSlot(value = ACAQGreyscaleImageDataSlot.class, slotName = "Input image", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQGreyscaleImageDataSlot.class, slotName = "Output image", autoCreate = true)
+
+// Trait matching
+@GoodForTrait(UnlabeledBioObjects.class)
+@GoodForTrait(NonUniformBrightnessQuality.class)
+
+// Trait configuration
+@AutoTransferTraits
+@RemovesTrait(NonUniformBrightnessQuality.class)
 public class IlluminationCorrectionEnhancer extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQGreyscaleImageData> {
 
     private int gaussianSigma = 21;
 
     public IlluminationCorrectionEnhancer() {
-        super("Input image", ACAQGreyscaleImageDataSlot.class,
-                "Output image", ACAQGreyscaleImageDataSlot.class);
     }
 
     public IlluminationCorrectionEnhancer(IlluminationCorrectionEnhancer other) {
@@ -51,5 +69,10 @@ public class IlluminationCorrectionEnhancer extends ACAQSimpleAlgorithm<ACAQGrey
     @ACAQParameter("gaussian-sigma")
     public void setGaussianSigma(int gaussianSigma) {
         this.gaussianSigma = gaussianSigma;
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+
     }
 }

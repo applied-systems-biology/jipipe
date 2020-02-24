@@ -2,9 +2,11 @@ package org.hkijena.acaq5.extension.ui.resultanalysis;
 
 import ij.IJ;
 import ij.ImagePlus;
-import org.hkijena.acaq5.api.ACAQDataSlot;
+import org.hkijena.acaq5.api.ACAQRunSample;
+import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultDataSlotResultUI;
+import org.hkijena.acaq5.utils.PathUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import java.io.IOException;
@@ -12,17 +14,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class ImageDataSlotResultUI extends ACAQDefaultDataSlotResultUI {
-    public ImageDataSlotResultUI(ACAQWorkbenchUI workbenchUI, ACAQDataSlot<?> slot) {
-        super(workbenchUI, slot);
+
+    public ImageDataSlotResultUI(ACAQWorkbenchUI workbenchUI, ACAQRunSample sample, ACAQDataSlot<?> slot) {
+        super(workbenchUI, sample, slot);
     }
 
     private Path findImageFile() {
         if(getSlot().getStoragePath() != null && Files.isDirectory(getSlot().getStoragePath())) {
-            try {
-                return Files.list(getSlot().getStoragePath()).filter(p -> Files.isRegularFile(p) && p.toString().endsWith(".tif")).findFirst().orElse(null);
-            } catch (IOException e) {
-                return null;
-            }
+            return PathUtils.findFileByExtensionIn(getSlot().getStoragePath(), ".tif");
         }
         return null;
     }

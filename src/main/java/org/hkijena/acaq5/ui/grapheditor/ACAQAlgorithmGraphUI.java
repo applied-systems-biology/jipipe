@@ -2,11 +2,17 @@ package org.hkijena.acaq5.ui.grapheditor;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQRegistryService;
-import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.api.data.ACAQDataSource;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
-import org.hkijena.acaq5.ui.events.ACAQAlgorithmUIOpenSettingsRequested;
+import org.hkijena.acaq5.ui.events.OpenSettingsUIRequestedEvent;
+import org.hkijena.acaq5.ui.grapheditor.settings.ACAQAlgorithmSettingsPanelUI;
+import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -21,7 +27,8 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
     private ACAQAlgorithmGraph algorithmGraph;
     private JSplitPane splitPane;
     private JScrollPane scrollPane;
-    private ACAQAlgorithmSettingsUI currentAlgorithmSettings;
+    private ACAQAlgorithmSettingsPanelUI currentAlgorithmSettings;
+    private JToggleButton autoLayoutButton;
 
     private Point panningOffset = null;
     private Point panningScrollbarOffset = null;
@@ -81,7 +88,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
         menuBar.add(addEnhancerMenu);
 
         JMenu addSegmenterMenu = new JMenu("Segment");
-        addSegmenterMenu.setIcon(UIUtils.getIconFromResources("data-type-binary.png"));
+        addSegmenterMenu.setIcon(UIUtils.getIconFromResources("data-types/binary.png"));
         initializeMenuForCategory(addSegmenterMenu, ACAQAlgorithmCategory.Segmenter);
         menuBar.add(addSegmenterMenu);
 
@@ -100,10 +107,13 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
 
         switchPanningDirectionButton = new JToggleButton("Reverse panning direction",
                 UIUtils.getIconFromResources("cursor-arrow.png"));
+        UIUtils.makeFlat(switchPanningDirectionButton);
         switchPanningDirectionButton.setToolTipText("Changes the direction how panning (middle mouse button) affects the view.");
         menuBar.add(switchPanningDirectionButton);
 
-        JButton autoLayoutButton = new JButton("Auto layout", UIUtils.getIconFromResources("sort.png"));
+        autoLayoutButton = new JToggleButton("Auto layout", UIUtils.getIconFromResources("sort.png"), true);
+        graphUI.setLayoutHelperEnabled(true);
+        autoLayoutButton.addActionListener(e -> graphUI.setLayoutHelperEnabled(autoLayoutButton.isSelected()));
         menuBar.add(autoLayoutButton);
     }
 
@@ -111,9 +121,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
         ACAQRegistryService registryService = ACAQRegistryService.getInstance();
         for(Class<? extends ACAQAlgorithm> algorithmClass : registryService.getAlgorithmRegistry().getAlgorithmsOfCategory(category)) {
             JMenuItem addItem = new JMenuItem(ACAQAlgorithm.getNameOf(algorithmClass), UIUtils.getIconFromResources("cog.png"));
-            ACAQDocumentation documentation = algorithmClass.getAnnotation(ACAQDocumentation.class);
-            if(!documentation.description().isEmpty())
-                addItem.setToolTipText(documentation.description());
+            addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(algorithmClass));
             addItem.addActionListener(e -> algorithmGraph.insertNode(ACAQAlgorithm.createInstance(algorithmClass)));
             menu.add(addItem);
         }
@@ -130,9 +138,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
 
                 for(Class<? extends ACAQDataSource<ACAQData>> sourceClass : dataSources) {
                     JMenuItem addItem = new JMenuItem(ACAQAlgorithm.getNameOf(sourceClass), icon);
-                    ACAQDocumentation documentation = sourceClass.getAnnotation(ACAQDocumentation.class);
-                    if(!documentation.description().isEmpty())
-                        addItem.setToolTipText(documentation.description());
+                    addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(sourceClass));
                     addItem.addActionListener(e -> algorithmGraph.insertNode(ACAQAlgorithm.createInstance(sourceClass)));
                     dataMenu.add(addItem);
                 }
@@ -147,9 +153,9 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
     }
 
     @Subscribe
-    public void onOpenAlgorithmSettings(ACAQAlgorithmUIOpenSettingsRequested event) {
+    public void onOpenAlgorithmSettings(OpenSettingsUIRequestedEvent event) {
         if(currentAlgorithmSettings == null || currentAlgorithmSettings.getAlgorithm() != event.getUi().getAlgorithm()) {
-            currentAlgorithmSettings = new ACAQAlgorithmSettingsUI(algorithmGraph, event.getUi().getAlgorithm());
+            currentAlgorithmSettings = new ACAQAlgorithmSettingsPanelUI(getWorkbenchUI(), algorithmGraph, event.getUi().getAlgorithm());
             int dividerLocation = splitPane.getDividerLocation();
             splitPane.setRightComponent(currentAlgorithmSettings);
             splitPane.setDividerLocation(dividerLocation);

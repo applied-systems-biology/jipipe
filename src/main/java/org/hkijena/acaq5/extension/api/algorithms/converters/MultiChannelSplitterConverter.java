@@ -2,13 +2,26 @@ package org.hkijena.acaq5.extension.api.algorithms.converters;
 
 import ij.ImagePlus;
 import ij.plugin.ChannelSplitter;
-import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQMultichannelImageDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 
+// Algorithm metadata
 @ACAQDocumentation(name = "Split multichannel image")
-@ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Converter)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.Converter)
+
+//Algorithm data flow
+@AlgorithmInputSlot(ACAQMultichannelImageDataSlot.class)
+@AlgorithmOutputSlot(ACAQGreyscaleImageDataSlot.class)
+
+// Algorithm traits
+@AutoTransferTraits
 public class MultiChannelSplitterConverter extends ACAQAlgorithm {
 
     public MultiChannelSplitterConverter() {
@@ -16,7 +29,7 @@ public class MultiChannelSplitterConverter extends ACAQAlgorithm {
                 .addInputSlot("Multichannel image", ACAQMultichannelImageDataSlot.class)
                 .sealInput()
                 .restrictOutputTo(ACAQGreyscaleImageDataSlot.class)
-                .build());
+                .build(), null);
     }
 
     public MultiChannelSplitterConverter(MultiChannelSplitterConverter other) {
@@ -33,5 +46,10 @@ public class MultiChannelSplitterConverter extends ACAQAlgorithm {
             ACAQGreyscaleImageDataSlot outputSlot = (ACAQGreyscaleImageDataSlot)slot;
             outputSlot.setData(new ACAQGreyscaleImageData(outputImages[i++]));
         }
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+
     }
 }

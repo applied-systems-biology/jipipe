@@ -5,15 +5,37 @@ import ij.ImagePlus;
 import ij.WindowManager;
 import ij.measure.ResultsTable;
 import ij.plugin.filter.Analyzer;
-import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.api.traits.AutoTransferTraits;
+import org.hkijena.acaq5.api.traits.GoodForTrait;
+import org.hkijena.acaq5.api.traits.RemovesTrait;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
+import org.hkijena.acaq5.extension.api.traits.bioobject.count.ClusterBioObjects;
+import org.hkijena.acaq5.extension.api.traits.bioobject.morphology.RoundBioObjects;
+import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.BioObjectsPreparations;
+import org.hkijena.acaq5.extension.api.traits.quality.ImageQuality;
 import org.hkijena.acaq5.utils.Hough_Circle;
 
 @ACAQDocumentation(name = "Hough segmentation")
-@ACAQAlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
+
+// Algorithm flow
+@AlgorithmInputSlot(value = ACAQGreyscaleImageDataSlot.class, slotName = "Image", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQMaskDataSlot.class, slotName = "Mask", autoCreate = true)
+
+// Trait matching
+@GoodForTrait(RoundBioObjects.class)
+
+// Trait configuration
+@AutoTransferTraits
+@RemovesTrait(ImageQuality.class)
+@RemovesTrait(ClusterBioObjects.class)
 public class HoughSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQMaskData> {
 
     private int minRadius = 7;
@@ -28,8 +50,6 @@ public class HoughSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, 
     private int localRadius = 10;
 
     public HoughSegmenter() {
-        super("Image", ACAQGreyscaleImageDataSlot.class,
-                "Mask", ACAQMaskDataSlot.class);
     }
 
     public HoughSegmenter(HoughSegmenter other) {
@@ -233,5 +253,10 @@ public class HoughSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, 
     @ACAQParameter("local-radius")
     public void setLocalRadius(int localRadius) {
         this.localRadius = localRadius;
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+
     }
 }

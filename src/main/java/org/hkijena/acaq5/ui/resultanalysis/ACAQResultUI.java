@@ -4,6 +4,7 @@ import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.ACAQRunSample;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -25,7 +26,10 @@ public class ACAQResultUI extends ACAQUIPanel {
         setLayout(new BorderLayout());
         ACAQResultSampleManagerUI sampleManagerUI = new ACAQResultSampleManagerUI(this);
 
-        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sampleManagerUI, new JPanel());
+        MarkdownReader documentation = new MarkdownReader(false);
+        documentation.loadFromResource("documentation/result-analysis.md");
+        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sampleManagerUI,
+                documentation);
         add(splitPane, BorderLayout.CENTER);
 
         sampleManagerUI.getSampleTree().addTreeSelectionListener(e -> {
@@ -51,7 +55,7 @@ public class ACAQResultUI extends ACAQUIPanel {
 
     private void openOutputFolder() {
         try {
-            Desktop.getDesktop().open(run.getOutputPath().toFile());
+            Desktop.getDesktop().open(run.getConfiguration().getOutputPath().toFile());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

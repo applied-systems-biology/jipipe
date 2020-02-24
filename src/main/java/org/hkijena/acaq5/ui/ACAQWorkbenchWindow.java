@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.ui;
 
-import org.hkijena.acaq5.ACAQCommand;
+import org.hkijena.acaq5.ACAQGUICommand;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
@@ -14,12 +14,12 @@ import java.nio.file.Path;
 
 public class ACAQWorkbenchWindow extends JFrame {
 
-    private ACAQCommand command;
+    private ACAQGUICommand command;
     private ACAQProject project;
     private ACAQWorkbenchUI projectUI;
     private Path projectSavePath;
 
-    public ACAQWorkbenchWindow(ACAQCommand command, ACAQProject project) {
+    public ACAQWorkbenchWindow(ACAQGUICommand command, ACAQProject project) {
         this.command = command;
         initialize();
         loadProject(project);
@@ -63,7 +63,7 @@ public class ACAQWorkbenchWindow extends JFrame {
                     return;
                 window.projectSavePath = fileChooser.getSelectedFile().toPath();
                 window.getProjectUI().sendStatusBarText("Opened project from " + window.projectSavePath);
-                setTitle(window.projectSavePath.toString());
+                window.setTitle(window.projectSavePath.toString());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -82,7 +82,7 @@ public class ACAQWorkbenchWindow extends JFrame {
                     return;
                 window.projectSavePath = fileChooser.getSelectedFile().toPath().resolve("parameters.json");
                 window.getProjectUI().sendStatusBarText("Opened project from " + window.projectSavePath);
-                setTitle(window.projectSavePath.toString());
+                window.setTitle(window.projectSavePath.toString());
 
                 // Create a new tab
                 window.getProjectUI().getDocumentTabPane().addTab("Run",
@@ -139,7 +139,7 @@ public class ACAQWorkbenchWindow extends JFrame {
         return null;
     }
 
-    public static ACAQWorkbenchWindow newWindow(ACAQCommand command, ACAQProject project) {
+    public static ACAQWorkbenchWindow newWindow(ACAQGUICommand command, ACAQProject project) {
         ACAQWorkbenchWindow frame = new ACAQWorkbenchWindow(command, project);
         frame.pack();
         frame.setSize(1024, 768);
@@ -148,7 +148,7 @@ public class ACAQWorkbenchWindow extends JFrame {
         return frame;
     }
 
-    public ACAQCommand getCommand() {
+    public ACAQGUICommand getCommand() {
         return command;
     }
 

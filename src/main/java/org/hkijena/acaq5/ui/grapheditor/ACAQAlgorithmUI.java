@@ -3,12 +3,15 @@ package org.hkijena.acaq5.ui.grapheditor;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQRegistryService;
-import org.hkijena.acaq5.api.ACAQAlgorithm;
-import org.hkijena.acaq5.api.ACAQData;
-import org.hkijena.acaq5.api.ACAQDataSlot;
-import org.hkijena.acaq5.api.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.ACAQPreprocessingOutput;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.events.AlgorithmNameChanged;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
-import org.hkijena.acaq5.ui.events.ACAQAlgorithmUIOpenSettingsRequested;
+import org.hkijena.acaq5.api.events.TraitsChangedEvent;
+import org.hkijena.acaq5.ui.events.OpenSettingsUIRequestedEvent;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -37,13 +40,15 @@ public class ACAQAlgorithmUI extends JPanel {
     private JPanel outputSlotPanel;
     private List<ACAQDataSlotUI> slotUIList = new ArrayList<>();
     private EventBus eventBus = new EventBus();
+    private JLabel nameLabel;
 
     public ACAQAlgorithmUI(ACAQAlgorithmGraphCanvasUI graphUI, ACAQAlgorithm algorithm) {
         this.graphUI = graphUI;
         this.algorithm = algorithm;
         this.algorithm.getEventBus().register(this);
+        this.algorithm.getTraitConfiguration().getEventBus().register(this);
         initialize();
-        updateAlgorithmUI();
+        updateAlgorithmSlotUIs();
     }
 
     private void initialize() {
@@ -58,11 +63,11 @@ public class ACAQAlgorithmUI extends JPanel {
         outputSlotPanel = new JPanel();
         outputSlotPanel.setOpaque(false);
 
-        JLabel nameLabel = new JLabel(ACAQAlgorithm.getNameOf(algorithm.getClass()));
+        nameLabel = new JLabel(algorithm.getName());
         JButton openSettingsButton = new JButton(UIUtils.getIconFromResources("wrench.png"));
         UIUtils.makeFlat(openSettingsButton);
-        openSettingsButton.setPreferredSize(new Dimension(21,21));
-        openSettingsButton.addActionListener(e -> eventBus.post(new ACAQAlgorithmUIOpenSettingsRequested(this)));
+        openSettingsButton.setPreferredSize(new Dimension(25,25));
+        openSettingsButton.addActionListener(e -> eventBus.post(new OpenSettingsUIRequestedEvent(this)));
 
         add(inputSlotPanel, new GridBagConstraints() {
             {
@@ -141,45 +146,70 @@ public class ACAQAlgorithmUI extends JPanel {
         return button;
     }
 
-    public void updateAlgorithmUI() {
+    public void updateAlgorithmSlotUIs() {
         slotUIList.clear();
         inputSlotPanel.removeAll();
         outputSlotPanel.removeAll();
         inputSlotPanel.setLayout(new GridLayout(getDisplayedRows(), 1));
         outputSlotPanel.setLayout(new GridLayout(getDisplayedRows(), 1));
+
+        boolean createAddInputSlotButton = false;
+        boolean createAddOutputSlotButton = false;
+
+        if(algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
+            ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
+            createAddInputSlotButton = slotConfiguration.allowsInputSlots() && !slotConfiguration.isInputSlotsSealed();
+            createAddOutputSlotButton = slotConfiguration.allowsOutputSlots() && !slotConfiguration.isOutputSlotsSealed();
+        }
+
         if(algorithm.getInputSlots().size() > 0) {
-            for(ACAQDataSlot<?> slot : algorithm.getInputSlots()) {
+            List<ACAQDataSlot<?>> slots = algorithm.getInputSlots();
+            for(int i = 0; i < slots.size(); ++i) {
+                int bottomBorder = 0;
+                if(i < getDisplayedRows() - 1 || createAddInputSlotButton || createAddOutputSlotButton)
+                    bottomBorder = 1;
+
+                ACAQDataSlot<?> slot = slots.get(i);
                 ACAQDataSlotUI ui = new ACAQDataSlotUI(graphUI.getAlgorithmGraph(), slot);
-                ui.setOpaque(false);
+                ui.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,0,bottomBorder,1, getAlgorithmBorderColor()),
+                        BorderFactory.createEmptyBorder(0,0,0,4)));
                 slotUIList.add(ui);
                 inputSlotPanel.add(ui);
             }
         }
         if(algorithm.getOutputSlots().size() > 0) {
-            for(ACAQDataSlot<?> slot : algorithm.getOutputSlots()) {
+            List<ACAQDataSlot<?>> slots = algorithm.getOutputSlots();
+            for(int i = 0; i < slots.size(); ++i) {
+                int bottomBorder = 0;
+                if(i < getDisplayedRows() - 1 || createAddInputSlotButton || createAddOutputSlotButton)
+                    bottomBorder = 1;
+                ACAQDataSlot<?> slot = slots.get(i);
                 ACAQDataSlotUI ui = new ACAQDataSlotUI(graphUI.getAlgorithmGraph(), slot);
-                ui.setOpaque(false);
+                ui.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,1,bottomBorder,0, getAlgorithmBorderColor()),
+                        BorderFactory.createEmptyBorder(0,4,0,0)));
                 slotUIList.add(ui);
                 outputSlotPanel.add(ui);
             }
         }
-        if(algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
-            ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration)algorithm.getSlotConfiguration();
-            if(slotConfiguration.allowsInputSlots() && !slotConfiguration.isInputSlotsSealed()) {
-                JButton addInputSlotButton = createAddSlotButton(ACAQDataSlot.SlotType.Input);
-                JPanel panel = new JPanel(new BorderLayout());
-                panel.setOpaque(false);
-                panel.add(addInputSlotButton, BorderLayout.WEST);
-                inputSlotPanel.add(panel);
-            }
-            if(slotConfiguration.allowsOutputSlots() && !slotConfiguration.isOutputSlotsSealed()) {
-                JButton addOutputSlotButton = createAddSlotButton(ACAQDataSlot.SlotType.Output);
-                JPanel panel = new JPanel(new BorderLayout());
-                panel.setOpaque(false);
-                panel.add(addOutputSlotButton, BorderLayout.EAST);
-                outputSlotPanel.add(panel);
-            }
+
+        // Create slot for adding new output
+        if(createAddInputSlotButton) {
+            JButton addInputSlotButton = createAddSlotButton(ACAQDataSlot.SlotType.Input);
+            JPanel panel = new JPanel(new BorderLayout());
+            panel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,0,0,1, getAlgorithmBorderColor()),
+                    BorderFactory.createEmptyBorder(0,0,0,4)));
+            panel.add(addInputSlotButton, BorderLayout.WEST);
+            inputSlotPanel.add(panel);
         }
+        if(createAddOutputSlotButton) {
+            JButton addOutputSlotButton = createAddSlotButton(ACAQDataSlot.SlotType.Output);
+            JPanel panel = new JPanel(new BorderLayout());
+            panel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,1,0,0, getAlgorithmBorderColor()),
+                    BorderFactory.createEmptyBorder(0,4,0,0)));
+            panel.add(addOutputSlotButton, BorderLayout.EAST);
+            outputSlotPanel.add(panel);
+        }
+
         setSize(new Dimension(calculateWidth(), calculateHeight()));
         revalidate();
         repaint();
@@ -190,10 +220,16 @@ public class ACAQAlgorithmUI extends JPanel {
             ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
 
             int existingSlots = slotType == ACAQDataSlot.SlotType.Input ? algorithm.getInputSlots().size() : algorithm.getOutputSlots().size();
+            String initialValue = slotType + " data ";
+
+            // This is general
+            if(getAlgorithm() instanceof ACAQPreprocessingOutput) {
+                initialValue = "Data ";
+            }
 
             String name = null;
             while(name == null) {
-                String newName = JOptionPane.showInputDialog(this,"Please a data slot name", slotType + " data " + (existingSlots + 1));
+                String newName = JOptionPane.showInputDialog(this,"Please a data slot name", initialValue + (existingSlots + 1));
                 if(newName == null || newName.trim().isEmpty())
                     return;
                 if(slotConfiguration.hasSlot(newName))
@@ -245,7 +281,7 @@ public class ACAQAlgorithmUI extends JPanel {
 
         // Measure width of center
         {
-            TextLayout layout = new TextLayout(ACAQAlgorithm.getNameOf(algorithm.getClass()), getFont(), frc);
+            TextLayout layout = new TextLayout(algorithm.getName(), getFont(), frc);
             width += layout.getBounds().getWidth();
         }
 
@@ -320,6 +356,28 @@ public class ACAQAlgorithmUI extends JPanel {
         return true;
     }
 
+//    @Override
+//    protected void paintComponent(Graphics g) {
+//        super.paintComponent(g);
+//
+//        Graphics2D graphics = (Graphics2D)g;
+////        RenderingHints rh = new RenderingHints(
+////                RenderingHints.KEY_ANTIALIASING,
+////                RenderingHints.VALUE_ANTIALIAS_ON);
+////        graphics.setRenderingHints(rh);
+//        for(int x = inputSlotPanel.getWidth(); x < getWidth() - outputSlotPanel.getWidth(); ++x) {
+//            for(int y = 0; y < getHeight(); ++y) {
+//                if((x - y) % 3 == 0) {
+//                    if(y % 2 == 0)
+//                        graphics.setColor(Color.GRAY);
+//                    else
+//                        graphics.setColor(Color.WHITE);
+//                    graphics.fillRect(x, y, 1, 1);
+//                }
+//            }
+//        }
+//    }
+
     /**
      * Get the Y location of the bottom part
      * @return
@@ -330,7 +388,22 @@ public class ACAQAlgorithmUI extends JPanel {
 
     @Subscribe
     public void onAlgorithmSlotsChanged(AlgorithmSlotsChangedEvent event) {
-        updateAlgorithmUI();
+        updateAlgorithmSlotUIs();
+    }
+
+    @Subscribe
+    public void onTraitsChanged(TraitsChangedEvent event) {
+        setSize(calculateWidth(), calculateHeight());
+        revalidate();
+        repaint();
+    }
+
+    @Subscribe
+    public void onAlgorithmParametersChanged(AlgorithmNameChanged event) {
+        setSize(calculateWidth(), calculateHeight());
+        nameLabel.setText(algorithm.getName());
+        revalidate();
+        repaint();
     }
 
     @Override

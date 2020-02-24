@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.api.events;
 
-import org.hkijena.acaq5.api.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 
 /**
  * Event is triggered when algorithm graph is changed

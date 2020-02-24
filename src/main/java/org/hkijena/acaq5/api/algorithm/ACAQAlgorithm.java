@@ -1,0 +1,393 @@
+package org.hkijena.acaq5.api.algorithm;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
+import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQRun;
+import org.hkijena.acaq5.api.ACAQValidatable;
+import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
+import org.hkijena.acaq5.api.events.*;
+import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.api.traits.*;
+import org.hkijena.acaq5.utils.JsonUtils;
+
+import java.awt.*;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.*;
+
+/**
+ * An algorithm is is a set of input and output data slots, and a run() function
+ * It is part of the {@link ACAQAlgorithmGraph}
+ */
+@JsonSerialize(using = ACAQAlgorithm.Serializer.class)
+public abstract class ACAQAlgorithm implements ACAQValidatable {
+    private ACAQSlotConfiguration slotConfiguration;
+    private ACAQTraitConfiguration traitConfiguration;
+    private Map<String, ACAQDataSlot<?>> slots = new HashMap<>();
+    private EventBus eventBus = new EventBus();
+    private Point location;
+    private Path internalStoragePath;
+    private Path storagePath;
+    private String customName;
+
+    /**
+     * Initializes this algorithm with a custom provided slot configuration and trait configuration
+     *
+     * @param slotConfiguration if null, generate the slot configuration
+     * @param traitConfiguration if null, defaults to {@link ACAQMutableTraitModifier}
+     */
+    public ACAQAlgorithm(ACAQSlotConfiguration slotConfiguration, ACAQTraitConfiguration traitConfiguration) {
+        if(slotConfiguration == null) {
+            ACAQMutableSlotConfiguration.Builder builder = ACAQMutableSlotConfiguration.builder();
+
+            for(AlgorithmInputSlot slot : getClass().getAnnotationsByType(AlgorithmInputSlot.class)) {
+                if(slot.autoCreate()) {
+                    builder.addInputSlot(slot.slotName(), slot.value());
+                }
+            }
+            for(AlgorithmOutputSlot slot : getClass().getAnnotationsByType(AlgorithmOutputSlot.class)) {
+                if(slot.autoCreate()) {
+                    builder.addOutputSlot(slot.slotName(), slot.value());
+                }
+            }
+
+            builder.seal();
+            slotConfiguration = builder.build();
+        }
+        if (traitConfiguration == null) {
+            traitConfiguration = new ACAQMutableTraitModifier(slotConfiguration);
+        }
+
+        this.slotConfiguration = slotConfiguration;
+        this.traitConfiguration = traitConfiguration;
+        slotConfiguration.getEventBus().register(this);
+        initalize();
+        initializeTraits();
+    }
+
+    /**
+     * Copies the input algorithm's properties into this algorithm
+     *
+     * @param other
+     */
+    public ACAQAlgorithm(ACAQAlgorithm other) {
+        this.slotConfiguration = copySlotConfiguration(other);
+        this.traitConfiguration = new ACAQMutableTraitModifier(slotConfiguration);
+        this.location = other.location;
+        slotConfiguration.getEventBus().register(this);
+        initalize();
+        initializeTraits();
+    }
+
+    /**
+     * Copies the slot configuration from the other algorithm to this algorithm
+     * Override this method for special configuration cases
+     *
+     * @param other
+     * @return
+     */
+    protected ACAQSlotConfiguration copySlotConfiguration(ACAQAlgorithm other) {
+        ACAQMutableSlotConfiguration configuration = ACAQMutableSlotConfiguration.builder().build();
+        configuration.setTo(other.slotConfiguration);
+        return configuration;
+    }
+
+    public static ACAQAlgorithm clone(ACAQAlgorithm other) {
+        try {
+            return ConstructorUtils.getMatchingAccessibleConstructor(other.getClass(), other.getClass()).newInstance(other);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void initalize() {
+        for (Map.Entry<String, ACAQSlotDefinition> kv : slotConfiguration.getSlots().entrySet()) {
+            slots.put(kv.getKey(), ACAQDataSlot.createInstance(this, kv.getValue()));
+        }
+    }
+
+    /**
+     * Initializes the trait configuration.
+     * This includes applying annotation-based trait assignments
+     */
+    protected void initializeTraits() {
+        if (getTraitConfiguration() instanceof ACAQMutableTraitModifier) {
+            ACAQMutableTraitModifier traitConfiguration = (ACAQMutableTraitModifier) getTraitConfiguration();
+            // Annotation-based trait configuration
+            if (getClass().getAnnotationsByType(AutoTransferTraits.class).length > 0) {
+                traitConfiguration.transferFromAllToAll();
+            }
+            for (AddsTrait trait : ACAQRegistryService.getInstance().getAlgorithmRegistry().getAddedTraitsOf(getClass())) {
+                if (trait.autoAdd())
+                    traitConfiguration.addsTrait(trait.value());
+            }
+            for (RemovesTrait trait : ACAQRegistryService.getInstance().getAlgorithmRegistry().getRemovedTraitsOf(getClass())) {
+                if (trait.autoRemove())
+                    traitConfiguration.removesTrait(trait.value());
+            }
+        }
+    }
+
+    public abstract void run();
+
+    public EventBus getEventBus() {
+        return eventBus;
+    }
+
+    @ACAQParameter("name")
+    @ACAQDocumentation(name = "Name")
+    public String getName() {
+        if (customName == null || customName.isEmpty())
+            return getNameOf(getClass());
+        return customName;
+    }
+
+    @ACAQParameter("name")
+    public void setCustomName(String customName) {
+        this.customName = customName;
+        eventBus.post(new AlgorithmNameChanged(this));
+    }
+
+    public ACAQAlgorithmCategory getCategory() {
+        return getCategoryOf(getClass());
+    }
+
+    Set<Class<? extends ACAQTrait>> getPreferredTraits() {
+        return ACAQRegistryService.getInstance().getAlgorithmRegistry().getPreferredTraitsOf(getClass());
+    }
+
+    Set<Class<? extends ACAQTrait>> getUnwantedTraits() {
+        return ACAQRegistryService.getInstance().getAlgorithmRegistry().getUnwantedTraitsOf(getClass());
+    }
+
+    /**
+     * Returns the name of an algorithm
+     *
+     * @param klass
+     * @return
+     */
+    public static String getNameOf(Class<? extends ACAQAlgorithm> klass) {
+        ACAQDocumentation[] annotations = klass.getAnnotationsByType(ACAQDocumentation.class);
+        if (annotations.length > 0) {
+            return annotations[0].name();
+        } else {
+            return klass.getSimpleName();
+        }
+    }
+
+    /**
+     * Returns the description of an algorithm
+     *
+     * @param klass
+     * @return
+     */
+    public static String getDescriptionOf(Class<? extends ACAQAlgorithm> klass) {
+        ACAQDocumentation[] annotations = klass.getAnnotationsByType(ACAQDocumentation.class);
+        if (annotations.length > 0) {
+            return annotations[0].description();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Returns the name of an algorithm
+     *
+     * @param klass
+     * @return
+     */
+    public static ACAQAlgorithmCategory getCategoryOf(Class<? extends ACAQAlgorithm> klass) {
+        AlgorithmMetadata[] annotations = klass.getAnnotationsByType(AlgorithmMetadata.class);
+        if (annotations.length > 0) {
+            return annotations[0].category();
+        } else {
+            return ACAQAlgorithmCategory.Internal;
+        }
+    }
+
+    /**
+     * Returns information about the algorithm input.
+     * Note: The information generally describes the possible slots only roughly. Algorithms have the capability to
+     * modify their slot configuration.
+     * @param klass
+     * @return
+     */
+    public static AlgorithmInputSlot[] getInputOf(Class<? extends ACAQAlgorithm> klass) {
+        return klass.getAnnotationsByType(AlgorithmInputSlot.class);
+    }
+
+    /**
+     * Returns information about the algorithm output.
+     * Note: The information generally describes the possible slots only roughly. Algorithms have the capability to
+     * modify their slot configuration.
+     * @param klass
+     * @return
+     */
+    public static AlgorithmOutputSlot[] getOutputOf(Class<? extends ACAQAlgorithm> klass) {
+        return klass.getAnnotationsByType(AlgorithmOutputSlot.class);
+    }
+
+    public ACAQSlotConfiguration getSlotConfiguration() {
+        return slotConfiguration;
+    }
+
+    public Map<String, ACAQDataSlot<?>> getSlots() {
+        return Collections.unmodifiableMap(slots);
+    }
+
+    public List<String> getInputSlotOrder() {
+        return getSlotConfiguration().getInputSlotOrder();
+    }
+
+    public List<String> getOutputSlotOrder() {
+        return getSlotConfiguration().getOutputSlotOrder();
+    }
+
+    public List<ACAQDataSlot<?>> getInputSlots() {
+        List<ACAQDataSlot<?>> result = new ArrayList<>();
+        for (String key : getInputSlotOrder()) {
+            result.add(slots.get(key));
+        }
+        return Collections.unmodifiableList(result);
+    }
+
+    public List<ACAQDataSlot<?>> getOutputSlots() {
+        List<ACAQDataSlot<?>> result = new ArrayList<>();
+        for (String key : getOutputSlotOrder()) {
+            result.add(slots.get(key));
+        }
+        return Collections.unmodifiableList(result);
+    }
+
+    @Subscribe
+    public void onSlotAdded(SlotAddedEvent event) {
+        ACAQSlotDefinition definition = slotConfiguration.getSlots().get(event.getSlotName());
+        slots.put(definition.getName(), ACAQDataSlot.createInstance(this, definition));
+        eventBus.post(new AlgorithmSlotsChangedEvent(this));
+    }
+
+    @Subscribe
+    public void onSlotRemoved(SlotRemovedEvent event) {
+        slots.remove(event.getSlotName());
+        eventBus.post(new AlgorithmSlotsChangedEvent(this));
+    }
+
+    @Subscribe
+    public void onSlotRenamed(SlotRenamedEvent event) {
+        ACAQDataSlot<?> slot = slots.get(event.getOldSlotName());
+        slots.remove(event.getOldSlotName());
+        slots.put(event.getNewSlotName(), slot);
+        eventBus.post(new AlgorithmSlotsChangedEvent(this));
+    }
+
+    @Subscribe
+    public void onSlotOrderChanged(SlotOrderChangedEvent event) {
+        eventBus.post(new AlgorithmSlotsChangedEvent(this));
+    }
+
+    /**
+     * Gets the location within UI representations
+     *
+     * @return
+     */
+    public Point getLocation() {
+        return location;
+    }
+
+    public void setLocation(Point location) {
+        this.location = location;
+    }
+
+    public static <T extends ACAQAlgorithm> T createInstance(Class<? extends T> klass) {
+        try {
+            return klass.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void fromJson(JsonNode node) {
+        if (node.has("acaq:slot-configuration"))
+            slotConfiguration.fromJson(node.get("acaq:slot-configuration"));
+        if (node.has("acaq:algorithm-location-x") && node.has("acaq:algorithm-location-y")) {
+            location = new Point();
+            location.x = node.get("acaq:algorithm-location-x").asInt();
+            location.y = node.get("acaq:algorithm-location-y").asInt();
+        }
+        if (node.has("acaq:trait-generation") && getTraitConfiguration() instanceof ACAQMutableTraitGenerator) {
+            ((ACAQMutableTraitGenerator) getTraitConfiguration()).fromJson(node.get("acaq:trait-generation"));
+        }
+
+        // Deserialize algorithm-specific parameters
+        for (Map.Entry<String, ACAQParameterAccess> kv : ACAQParameterAccess.getParameters(this).entrySet()) {
+            if (node.has(kv.getKey())) {
+                Object v;
+                try {
+                    v = JsonUtils.getObjectMapper().readerFor(kv.getValue().getFieldClass()).readValue(node.get(kv.getKey()));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                kv.getValue().set(v);
+            }
+        }
+    }
+
+    /**
+     * The storage path is used in {@link ACAQRun} to indicate where output data is written
+     * This is only used internally
+     *
+     * @return
+     */
+    public Path getStoragePath() {
+        return storagePath;
+    }
+
+    public void setStoragePath(Path storagePath) {
+        this.storagePath = storagePath;
+    }
+
+    public ACAQTraitConfiguration getTraitConfiguration() {
+        return traitConfiguration;
+    }
+
+    public Path getInternalStoragePath() {
+        return internalStoragePath;
+    }
+
+    public void setInternalStoragePath(Path internalStoragePath) {
+        this.internalStoragePath = internalStoragePath;
+    }
+
+    public static class Serializer extends JsonSerializer<ACAQAlgorithm> {
+        @Override
+        public void serialize(ACAQAlgorithm algorithm, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeObjectField("acaq:slot-configuration", algorithm.slotConfiguration);
+            jsonGenerator.writeObjectField("acaq:algorithm-class", algorithm.getClass().getCanonicalName());
+            jsonGenerator.writeNumberField("acaq:algorithm-location-x", algorithm.location.x);
+            jsonGenerator.writeNumberField("acaq:algorithm-location-y", algorithm.location.y);
+            for (Map.Entry<String, ACAQParameterAccess> kv : ACAQParameterAccess.getParameters(algorithm).entrySet()) {
+                jsonGenerator.writeObjectField(kv.getKey(), kv.getValue().get());
+            }
+            if (algorithm.getTraitConfiguration() instanceof ACAQMutableTraitGenerator) {
+                jsonGenerator.writeObjectField("acaq:trait-generation", algorithm.getTraitConfiguration());
+            }
+            jsonGenerator.writeEndObject();
+        }
+    }
+}

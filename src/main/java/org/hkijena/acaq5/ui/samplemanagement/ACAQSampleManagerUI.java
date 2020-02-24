@@ -2,9 +2,9 @@ package org.hkijena.acaq5.ui.samplemanagement;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQProjectSample;
-import org.hkijena.acaq5.api.events.ACAQSampleAddedEvent;
-import org.hkijena.acaq5.api.events.ACAQSampleRemovedEvent;
-import org.hkijena.acaq5.api.events.ACAQSampleRenamedEvent;
+import org.hkijena.acaq5.api.events.SampleAddedEvent;
+import org.hkijena.acaq5.api.events.SampleRemovedEvent;
+import org.hkijena.acaq5.api.events.SampleRenamedEvent;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -106,17 +106,17 @@ public class ACAQSampleManagerUI extends ACAQUIPanel {
     }
 
     @Subscribe
-    public void onSampleAdded(ACAQSampleAddedEvent event) {
+    public void onSampleAdded(SampleAddedEvent event) {
         rebuildSampleListTree();
     }
 
     @Subscribe
-    public void onSampleRemoved(ACAQSampleRemovedEvent event) {
+    public void onSampleRemoved(SampleRemovedEvent event) {
         rebuildSampleListTree();
     }
 
     @Subscribe
-    public void onSampleRenamed(ACAQSampleRenamedEvent event) {
+    public void onSampleRenamed(SampleRenamedEvent event) {
         rebuildSampleListTree();
     }
 
