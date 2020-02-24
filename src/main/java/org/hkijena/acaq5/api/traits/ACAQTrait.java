@@ -5,6 +5,7 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Base interface for an algorithm data trait
@@ -59,12 +60,41 @@ public interface ACAQTrait {
     }
 
     /**
+     * Returns all inherited traits as one string for later sorting
+     */
+    static String getCategoriesStringOf(Class<? extends ACAQTrait> klass) {
+        return getCategoriesOf(klass).stream().map(ACAQTrait::getNameOf).collect(Collectors.joining("_"));
+    }
+
+    /**
      * Returns true if the trait is hidden from the user
      * @param klass
      * @return
      */
     static boolean isHidden(Class<? extends ACAQTrait> klass) {
         return klass.getAnnotationsByType(CategoryTrait.class).length > 0;
+    }
+
+    /**
+     * Compare function for two trait classes
+     * @param t0
+     * @param t1
+     * @return
+     */
+    static int compareByName(Class<? extends ACAQTrait> t0, Class<? extends ACAQTrait> t1) {
+        return getNameOf(t0).compareTo(getNameOf(t1));
+    }
+
+    /**
+     * Compare function for two trait classes
+     * @param t0
+     * @param t1
+     * @return
+     */
+    static int compareByNameAndCategoriesString(Class<? extends ACAQTrait> t0, Class<? extends ACAQTrait> t1) {
+        String n0 = getNameOf(t0) + "_" + getCategoriesStringOf(t0);
+        String n1 = getNameOf(t1) + "_" + getCategoriesStringOf(t1);
+        return n0.compareTo(n1);
     }
 
 }

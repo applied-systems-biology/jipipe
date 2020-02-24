@@ -12,6 +12,10 @@ import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * A scijava service that discovers ACAQ5 plugins in the classpath
  */
@@ -22,6 +26,8 @@ public class ACAQRegistryService extends AbstractService implements ACAQService 
     public static ACAQRegistryService getInstance() {
         return instance;
     }
+
+    private List<ACAQExtensionService> registeredExtensions = new ArrayList<>();
 
     private ACAQAlgorithmRegistry algorithmRegistry = new ACAQAlgorithmRegistry();
     private ACAQDatatypeRegistry datatypeRegistry = new ACAQDatatypeRegistry();
@@ -89,5 +95,9 @@ public class ACAQRegistryService extends AbstractService implements ACAQService 
     @Override
     public ACAQUITraitRegistry getUITraitRegistry() {
         return acaquiTraitRegistry;
+    }
+
+    public List<ACAQExtensionService> getRegisteredExtensions() {
+        return Collections.unmodifiableList(registeredExtensions);
     }
 }

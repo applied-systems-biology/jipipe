@@ -37,7 +37,7 @@ public class ACAQTraitViewerUI extends JPanel {
         String[] searchStrings = getSearchStrings();
         Set<Class<? extends ACAQTrait>> currentTraits = graph.getAlgorithmTraits().getOrDefault(slot, Collections.emptySet());
 
-        for(Class<? extends ACAQTrait> trait : ACAQRegistryService.getInstance().getTraitRegistry().getTraits()) {
+        for(Class<? extends ACAQTrait> trait : ACAQRegistryService.getInstance().getTraitRegistry().getSortedTraits()) {
             if(!searchStringsMatches(trait, searchStrings))
                 continue;
 

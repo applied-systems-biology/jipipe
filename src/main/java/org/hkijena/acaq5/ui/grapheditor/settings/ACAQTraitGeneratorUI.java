@@ -34,7 +34,7 @@ public class ACAQTraitGeneratorUI extends JPanel {
         traitList.removeAll();
         String[] searchStrings = getSearchStrings();
 
-        for(Class<? extends ACAQTrait> trait : ACAQRegistryService.getInstance().getTraitRegistry().getTraits()) {
+        for(Class<? extends ACAQTrait> trait : ACAQRegistryService.getInstance().getTraitRegistry().getSortedTraits()) {
             if(!searchStringsMatches(trait, searchStrings))
                 continue;
 

@@ -11,6 +11,7 @@ import org.scijava.command.Command;
 import org.scijava.command.CommandService;
 import org.scijava.display.DisplayService;
 import org.scijava.log.LogService;
+import org.scijava.options.OptionsService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
@@ -50,6 +51,9 @@ public class ACAQGUICommand implements Command {
 
     @Parameter
     private PluginService pluginService;
+
+    @Parameter
+    private OptionsService optionsService;
 
     @Override
     public void run() {
@@ -92,6 +96,10 @@ public class ACAQGUICommand implements Command {
 
     public PluginService getPluginService() {
         return pluginService;
+    }
+
+    public OptionsService getOptionsService() {
+        return optionsService;
     }
 
     public static void main(final String... args) {
