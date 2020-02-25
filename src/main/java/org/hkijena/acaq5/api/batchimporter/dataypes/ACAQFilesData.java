@@ -7,21 +7,6 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 
-@ACAQDocumentation(name = "Files")
-public class ACAQFilesData extends ACAQData {
-
-    private List<ACAQFileData> files;
-
-    public ACAQFilesData(List<ACAQFileData> files) {
-        this.files = files;
-    }
-
-    @Override
-    public void saveTo(Path storageFilePath, String name) {
-
-    }
-
-    public List<ACAQFileData> getFiles() {
-        return Collections.unmodifiableList(files);
-    }
+public interface ACAQFilesData extends ACAQFilesystemData {
+    List<ACAQFileData> getFiles();
 }

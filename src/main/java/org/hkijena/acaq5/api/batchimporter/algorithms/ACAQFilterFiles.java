@@ -5,17 +5,14 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.batchimporter.dataslots.ACAQFilesDataSlot;
 import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFileData;
+import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFileListData;
 import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFilesData;
-import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFolderData;
-import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFoldersData;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import org.hkijena.acaq5.utils.PathFilter;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @ACAQDocumentation(name = "Filter files", description = "Filters the input files by their name")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
@@ -47,7 +44,7 @@ public class ACAQFilterFiles extends ACAQSimpleAlgorithm<ACAQFilesData, ACAQFile
                 result.add(folder);
             }
         }
-        setOutputData(new ACAQFilesData(result));
+        setOutputData(new ACAQFileListData(result));
     }
 
     @Override

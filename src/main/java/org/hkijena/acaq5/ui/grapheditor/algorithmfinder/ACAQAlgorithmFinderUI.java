@@ -7,6 +7,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
+import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
@@ -132,12 +133,15 @@ public class ACAQAlgorithmFinderUI extends JPanel {
         String[] searchStrings = getSearchStrings();
         Predicate<ACAQAlgorithmDeclaration> filterFunction = declaration -> {
             if(searchStrings != null && searchStrings.length > 0) {
+                boolean matches = true;
                 String name = declaration.getName();
                 for (String searchString : searchStrings) {
-                    if(name.toLowerCase().contains(searchString.toLowerCase()))
-                        return true;
+                    if(!name.toLowerCase().contains(searchString.toLowerCase())) {
+                        matches = false;
+                        break;
+                    }
                 }
-                return false;
+                return matches;
             }
             else {
                 return true;
@@ -186,10 +190,12 @@ public class ACAQAlgorithmFinderUI extends JPanel {
     }
 
     public static List<ACAQAlgorithmDeclaration> findCompatibleTargetAlgorithms(ACAQDataSlot<?> slot) {
+        Class<? extends ACAQData> outputSlotDataClass = slot.getAcceptedDataType();
         List<ACAQAlgorithmDeclaration> result = new ArrayList<>();
         for (ACAQAlgorithmDeclaration declaration : ACAQRegistryService.getInstance().getAlgorithmRegistry().getRegisteredAlgorithms()) {
             for (Class<? extends ACAQDataSlot<?>> inputSlotClass : declaration.getInputSlots().stream().map(AlgorithmInputSlot::value).collect(Collectors.toList())) {
-                if(inputSlotClass.isAssignableFrom(slot.getClass())) {
+                Class<? extends ACAQData> inputSlotDataClass = ACAQRegistryService.getInstance().getDatatypeRegistry().getRegisteredSlotDataTypes().inverse().get(inputSlotClass);
+                if(inputSlotDataClass.isAssignableFrom(outputSlotDataClass)) {
                     result.add(declaration);
                     break;
                 }

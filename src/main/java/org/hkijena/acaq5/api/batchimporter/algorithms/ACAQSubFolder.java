@@ -5,6 +5,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.batchimporter.dataslots.ACAQFoldersDataSlot;
 import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFolderData;
+import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFolderListData;
 import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFoldersData;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
@@ -37,7 +38,7 @@ public class ACAQSubFolder extends ACAQSimpleAlgorithm<ACAQFoldersData, ACAQFold
     @Override
     public void run() {
         List<ACAQFolderData> fileNames = getInputData().getFolders();
-        setOutputData(new ACAQFoldersData(fileNames.stream().map(p -> p.resolveToFolder(Paths.get(subFolder))).collect(Collectors.toList())));
+        setOutputData(new ACAQFolderListData(fileNames.stream().map(p -> p.resolveToFolder(Paths.get(subFolder))).collect(Collectors.toList())));
     }
 
     @Override

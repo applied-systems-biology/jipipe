@@ -9,10 +9,7 @@ import org.hkijena.acaq5.api.batchimporter.dataslots.ACAQFolderDataSlot;
 import org.hkijena.acaq5.api.batchimporter.dataslots.ACAQFoldersDataSlot;
 import org.hkijena.acaq5.api.batchimporter.datasources.ACAQFileDataSource;
 import org.hkijena.acaq5.api.batchimporter.datasources.ACAQFolderDataSource;
-import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFileData;
-import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFilesData;
-import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFolderData;
-import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFoldersData;
+import org.hkijena.acaq5.api.batchimporter.dataypes.*;
 import org.hkijena.acaq5.api.batchimporter.traits.ProjectSampleTrait;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
@@ -57,9 +54,17 @@ public class ACAQBatchImporterExtensionService extends AbstractService implement
     @Override
     public void register(ACAQRegistryService registryService) {
         registryService.getDatatypeRegistry().register(ACAQFileData.class, ACAQFileDataSlot.class);
+        registryService.getUIDatatypeRegistry().registerIcon(ACAQFileData.class,
+                ResourceUtils.getPluginResource("icons/data-types/file.png"));
         registryService.getDatatypeRegistry().register(ACAQFilesData.class, ACAQFilesDataSlot.class);
+        registryService.getUIDatatypeRegistry().registerIcon(ACAQFilesData.class,
+                ResourceUtils.getPluginResource("icons/data-types/files.png"));
         registryService.getDatatypeRegistry().register(ACAQFolderData.class, ACAQFolderDataSlot.class);
+        registryService.getUIDatatypeRegistry().registerIcon(ACAQFolderData.class,
+                ResourceUtils.getPluginResource("icons/data-types/folder.png"));
         registryService.getDatatypeRegistry().register(ACAQFoldersData.class, ACAQFoldersDataSlot.class);
+        registryService.getUIDatatypeRegistry().registerIcon(ACAQFoldersData.class,
+                ResourceUtils.getPluginResource("icons/data-types/folders.png"));
 
         registryService.getAlgorithmRegistry().register(ACAQFileDataSource.class);
         registryService.getAlgorithmRegistry().register(ACAQFolderDataSource.class);
@@ -71,7 +76,10 @@ public class ACAQBatchImporterExtensionService extends AbstractService implement
         registryService.getAlgorithmRegistry().register(ACAQListFiles.class);
         registryService.getAlgorithmRegistry().register(ACAQListSubfolders.class);
         registryService.getAlgorithmRegistry().register(ACAQSubFolder.class);
+        registryService.getAlgorithmRegistry().register(ACAQFoldersAsSamples.class);
 
         registryService.getTraitRegistry().register(ProjectSampleTrait.class);
+        registryService.getUITraitRegistry().registerIcon(ProjectSampleTrait.class,
+                ResourceUtils.getPluginResource("icons/traits/project-sample.png"));
     }
 }

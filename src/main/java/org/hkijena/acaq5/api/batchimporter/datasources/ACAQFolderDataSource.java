@@ -35,7 +35,7 @@ public class ACAQFolderDataSource extends ACAQSimpleDataSource<ACAQFolderData> {
 
     @Override
     public void run() {
-        setOutputData(new ACAQFolderData(parent, folderPath));
+        setOutputData(new ACAQFolderData(null, folderPath));
     }
 
     @ACAQParameter("folder-path")

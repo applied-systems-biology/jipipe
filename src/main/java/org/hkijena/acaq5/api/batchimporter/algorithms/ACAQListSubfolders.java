@@ -5,8 +5,8 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.batchimporter.dataslots.ACAQFolderDataSlot;
 import org.hkijena.acaq5.api.batchimporter.dataslots.ACAQFoldersDataSlot;
-import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFileData;
 import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFolderData;
+import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFolderListData;
 import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFoldersData;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 
@@ -48,7 +48,7 @@ public class ACAQListSubfolders extends ACAQSimpleAlgorithm<ACAQFolderData, ACAQ
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        setOutputData(new ACAQFoldersData(result));
+        setOutputData(new ACAQFolderListData(result));
     }
 
     @Override

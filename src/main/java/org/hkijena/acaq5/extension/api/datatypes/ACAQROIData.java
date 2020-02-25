@@ -16,11 +16,10 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 @ACAQDocumentation(name = "ROI", description = "Collection of ROI")
-public class ACAQROIData extends ACAQData {
+public class ACAQROIData implements ACAQData {
     private List<Roi> roi;
 
     public ACAQROIData(Path storageFilePath) throws IOException {
-        super(storageFilePath);
         this.roi = loadRoiListFromFile(PathUtils.findFileByExtensionIn(storageFilePath, ".zip"));
     }
 

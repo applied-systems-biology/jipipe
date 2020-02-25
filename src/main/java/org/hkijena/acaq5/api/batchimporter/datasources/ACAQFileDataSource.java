@@ -8,6 +8,7 @@ import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.batchimporter.dataslots.ACAQFileDataSlot;
 import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFileData;
+import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFolderData;
 import org.hkijena.acaq5.api.data.ACAQSimpleDataSource;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 
@@ -35,7 +36,7 @@ public class ACAQFileDataSource extends ACAQSimpleDataSource<ACAQFileData> {
 
     @Override
     public void run() {
-        setOutputData(new ACAQFileData(parent, fileName));
+        setOutputData(new ACAQFileData(new ACAQFolderData(null, fileName.getParent()), fileName));
     }
 
     @ACAQParameter("file-name")

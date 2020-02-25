@@ -10,12 +10,11 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 @ACAQDocumentation(name = "Multichannel Image")
-public class ACAQMultichannelImageData extends ACAQData {
+public class ACAQMultichannelImageData implements ACAQData {
 
     private ImagePlus image;
 
     public ACAQMultichannelImageData(Path storageFilePath) throws IOException {
-        super(storageFilePath);
         image = IJ.openImage(PathUtils.findFileByExtensionIn(storageFilePath, ".tif").toString());
     }
 

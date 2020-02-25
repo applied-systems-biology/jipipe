@@ -11,8 +11,6 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import org.hkijena.acaq5.utils.PathFilter;
 
-import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 @ACAQDocumentation(name = "Select folder", description = "Selects any folder that has a name that matches the filter")

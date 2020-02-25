@@ -42,7 +42,12 @@ public class PathFilter implements Predicate<Path> {
     public void setFilterString(String filterString) {
         this.filterString = filterString;
         if(mode == Mode.Glob && filterString != null && !filterString.isEmpty()) {
-            globPathMatcher = FileSystems.getDefault().getPathMatcher(filterString);
+            try {
+                globPathMatcher = FileSystems.getDefault().getPathMatcher("glob:" + filterString);
+            }
+            catch (Exception e) {
+                globPathMatcher = null;
+            }
         }
         else {
             globPathMatcher = null;

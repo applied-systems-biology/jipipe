@@ -9,12 +9,11 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 @ACAQDocumentation(name = "Results table")
-public class ACAQResultsTableData extends ACAQData {
+public class ACAQResultsTableData implements ACAQData {
 
     private ResultsTable table;
 
     public ACAQResultsTableData(Path storageFilePath) throws IOException {
-        super(storageFilePath);
         table = ResultsTable.open(PathUtils.findFileByExtensionIn(storageFilePath, ".csv").toString());
     }
 
