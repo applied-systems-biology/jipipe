@@ -8,11 +8,12 @@ import java.nio.file.Path;
 @ACAQDocumentation(name = "File")
 public class ACAQFileData extends ACAQData {
 
-    private Path fileName;
+    private ACAQFolderData parent;
+    private Path filePath;
 
-    public ACAQFileData(Path fileName) {
-
-        this.fileName = fileName;
+    public ACAQFileData(ACAQFolderData parent, Path filePath) {
+        this.parent = parent;
+        this.filePath = filePath;
     }
 
     @Override
@@ -20,7 +21,11 @@ public class ACAQFileData extends ACAQData {
 
     }
 
-    public Path getFileName() {
-        return fileName;
+    public Path getFilePath() {
+        return filePath;
+    }
+
+    public ACAQFolderData getParent() {
+        return parent;
     }
 }

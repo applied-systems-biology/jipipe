@@ -5,6 +5,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.batchimporter.dataslots.ACAQFolderDataSlot;
 import org.hkijena.acaq5.api.batchimporter.dataslots.ACAQFoldersDataSlot;
+import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFileData;
 import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFolderData;
 import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFoldersData;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
@@ -12,6 +13,8 @@ import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @ACAQDocumentation(name = "List subfolders", description = "Lists all subfolders")
@@ -35,12 +38,17 @@ public class ACAQListSubfolders extends ACAQSimpleAlgorithm<ACAQFolderData, ACAQ
 
     @Override
     public void run() {
-        Path folderPath = getInputData().getFolderPath();
+        ACAQFolderData inputFolder = getInputData();
+        List<ACAQFolderData> result = new ArrayList<>();
         try {
-            setOutputData(new ACAQFoldersData(Files.list(folderPath).filter(Files::isDirectory).collect(Collectors.toList())));
+            for (Path path : Files.list(inputFolder.getFolderPath()).filter(Files::isDirectory).collect(Collectors.toList())) {
+                result.add(new ACAQFolderData(inputFolder, path));
+            }
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        setOutputData(new ACAQFoldersData(result));
     }
 
     @Override

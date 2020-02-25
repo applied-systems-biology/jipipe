@@ -4,12 +4,15 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.batchimporter.dataslots.ACAQFoldersDataSlot;
+import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFileData;
+import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFolderData;
 import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFoldersData;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import org.hkijena.acaq5.utils.PathFilter;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,8 +39,14 @@ public class ACAQFilterFolders extends ACAQSimpleAlgorithm<ACAQFoldersData, ACAQ
 
     @Override
     public void run() {
-        List<Path> fileNames = getInputData().getFolderPaths();
-        setOutputData(new ACAQFoldersData(fileNames.stream().filter(filter).collect(Collectors.toList())));
+        List<ACAQFolderData> folders = getInputData().getFolders();
+        List<ACAQFolderData> result = new ArrayList<>();
+        for(ACAQFolderData folder : folders) {
+            if(filter.test(folder.getFolderPath())) {
+                result.add(folder);
+            }
+        }
+        setOutputData(new ACAQFoldersData(result));
     }
 
     @Override

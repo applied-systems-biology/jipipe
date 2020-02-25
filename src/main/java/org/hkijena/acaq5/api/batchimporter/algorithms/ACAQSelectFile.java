@@ -11,7 +11,6 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import org.hkijena.acaq5.utils.PathFilter;
 
-import java.nio.file.Path;
 import java.util.List;
 
 @ACAQDocumentation(name = "Select file", description = "Selects any file that has a name that matches the filter")
@@ -37,8 +36,13 @@ public class ACAQSelectFile extends ACAQSimpleAlgorithm<ACAQFilesData, ACAQFileD
 
     @Override
     public void run() {
-        List<Path> fileNames = getInputData().getFileNames();
-        setOutputData(new ACAQFileData(fileNames.stream().filter(filter).findFirst().orElse(null)));
+        List<ACAQFileData> inputFiles = getInputData().getFiles();
+        for(ACAQFileData inputFile : inputFiles) {
+            if(filter.test(inputFile.getFilePath())) {
+                setOutputData(inputFile);
+                break;
+            }
+        }
     }
 
     @Override

@@ -8,6 +8,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.events.OpenSettingsUIRequestedEvent;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQAlgorithmSettingsPanelUI;
@@ -120,8 +121,9 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
     protected void initializeMenuForCategory(JMenu menu, ACAQAlgorithmCategory category) {
         ACAQRegistryService registryService = ACAQRegistryService.getInstance();
         boolean isEmpty = true;
+        Icon icon = new ColorIcon(16, 16, category.getColor(0.1f, 0.9f));
         for(ACAQAlgorithmDeclaration declaration : registryService.getAlgorithmRegistry().getAlgorithmsOfCategory(category)) {
-            JMenuItem addItem = new JMenuItem(declaration.getName(), UIUtils.getIconFromResources("cog.png"));
+            JMenuItem addItem = new JMenuItem(declaration.getName(), icon);
             addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
             addItem.addActionListener(e -> algorithmGraph.insertNode(declaration.newInstance()));
             menu.add(addItem);

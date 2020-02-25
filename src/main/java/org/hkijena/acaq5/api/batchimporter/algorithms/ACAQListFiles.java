@@ -5,6 +5,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.batchimporter.dataslots.ACAQFilesDataSlot;
 import org.hkijena.acaq5.api.batchimporter.dataslots.ACAQFolderDataSlot;
+import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFileData;
 import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFilesData;
 import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFolderData;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
@@ -12,6 +13,8 @@ import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @ACAQDocumentation(name = "List files", description = "Lists all files in the input folder")
@@ -35,12 +38,18 @@ public class ACAQListFiles extends ACAQSimpleAlgorithm<ACAQFolderData, ACAQFiles
 
     @Override
     public void run() {
-        Path folderPath = getInputData().getFolderPath();
+        ACAQFolderData inputData = getInputData();
+        List<ACAQFileData> result = new ArrayList<>();
+
         try {
-            setOutputData(new ACAQFilesData(Files.list(folderPath).filter(Files::isRegularFile).collect(Collectors.toList())));
+            for(Path file : Files.list(inputData.getFolderPath()).filter(Files::isRegularFile).collect(Collectors.toList())) {
+                result.add(new ACAQFileData(inputData, file));
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        setOutputData(new ACAQFilesData(result));
     }
 
     @Override

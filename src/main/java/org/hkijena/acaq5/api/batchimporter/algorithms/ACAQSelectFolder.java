@@ -12,6 +12,7 @@ import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import org.hkijena.acaq5.utils.PathFilter;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 @ACAQDocumentation(name = "Select folder", description = "Selects any folder that has a name that matches the filter")
@@ -37,8 +38,13 @@ public class ACAQSelectFolder extends ACAQSimpleAlgorithm<ACAQFoldersData, ACAQF
 
     @Override
     public void run() {
-        List<Path> fileNames = getInputData().getFolderPaths();
-        setOutputData(new ACAQFolderData(fileNames.stream().filter(filter).findFirst().orElse(null)));
+        List<ACAQFolderData> inputFolders = getInputData().getFolders();
+        for(ACAQFolderData inputFolder : inputFolders) {
+            if(filter.test(inputFolder.getFolderPath())) {
+                setOutputData(inputFolder);
+                break;
+            }
+        }
     }
 
     @Override

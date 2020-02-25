@@ -10,10 +10,10 @@ import java.util.List;
 @ACAQDocumentation(name = "Files")
 public class ACAQFilesData extends ACAQData {
 
-    private List<Path> fileNames;
+    private List<ACAQFileData> files;
 
-    public ACAQFilesData(List<Path> fileNames) {
-        this.fileNames = fileNames;
+    public ACAQFilesData(List<ACAQFileData> files) {
+        this.files = files;
     }
 
     @Override
@@ -21,7 +21,7 @@ public class ACAQFilesData extends ACAQData {
 
     }
 
-    public List<Path> getFileNames() {
-        return Collections.unmodifiableList(fileNames);
+    public List<ACAQFileData> getFiles() {
+        return Collections.unmodifiableList(files);
     }
 }

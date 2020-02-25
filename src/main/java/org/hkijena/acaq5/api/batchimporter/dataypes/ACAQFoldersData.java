@@ -10,10 +10,10 @@ import java.util.List;
 @ACAQDocumentation(name = "Folders")
 public class ACAQFoldersData extends ACAQData {
 
-    private List<Path> folderPaths;
+    private List<ACAQFolderData> folders;
 
-    public ACAQFoldersData(List<Path> folderPaths) {
-        this.folderPaths = folderPaths;
+    public ACAQFoldersData(List<ACAQFolderData> folders) {
+        this.folders = folders;
     }
 
     @Override
@@ -21,7 +21,7 @@ public class ACAQFoldersData extends ACAQData {
 
     }
 
-    public List<Path> getFolderPaths() {
-        return Collections.unmodifiableList(folderPaths);
+    public List<ACAQFolderData> getFolders() {
+        return Collections.unmodifiableList(folders);
     }
 }
