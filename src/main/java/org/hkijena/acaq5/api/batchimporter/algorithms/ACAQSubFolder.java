@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @ACAQDocumentation(name = "Subfolders", description = "Goes to the specified subfolder")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.FileSystem)
 
 // Algorithm flow
 @AlgorithmInputSlot(value = ACAQFoldersDataSlot.class, slotName = "Folders", autoCreate = true)

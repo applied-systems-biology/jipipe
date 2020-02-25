@@ -1,6 +1,11 @@
 package org.hkijena.acaq5.api.batchimporter;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.batchimporter.algorithms.ACAQDataSourceFromFile;
 import org.hkijena.acaq5.api.batchimporter.dataslots.ACAQFilesDataSlot;
@@ -15,9 +20,11 @@ import org.hkijena.acaq5.api.traits.RemovesTrait;
 import org.hkijena.acaq5.extension.ui.parametereditors.FilePathParameterSettings;
 import org.hkijena.acaq5.ui.components.FileSelection;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 
+@JsonSerialize(using = ACAQDataSourceFromFileAlgorithmDeclaration.Serializer.class)
 public class ACAQDataSourceFromFileAlgorithmDeclaration implements ACAQAlgorithmDeclaration {
 
     private ACAQAlgorithmDeclaration wrappedAlgorithmDeclaration;
@@ -94,6 +101,11 @@ public class ACAQDataSourceFromFileAlgorithmDeclaration implements ACAQAlgorithm
     }
 
     @Override
+    public ACAQAlgorithmVisibility getVisibility() {
+        return ACAQAlgorithmVisibility.BatchImporterOnly;
+    }
+
+    @Override
     public Set<Class<? extends ACAQTrait>> getPreferredTraits() {
         return Collections.singleton(ProjectSampleTrait.class);
     }
@@ -125,6 +137,24 @@ public class ACAQDataSourceFromFileAlgorithmDeclaration implements ACAQAlgorithm
 
     @Override
     public boolean matches(JsonNode node) {
+        JsonNode classNode = node.path("acaq:algorithm-class");
+        JsonNode wrappedNode = node.path("acaq:wrapped-algorithm-class");
+        if(!classNode.isMissingNode() && !wrappedNode.isMissingNode()) {
+            String className = classNode.asText();
+            if(getAlgorithmClass().getCanonicalName().equals(className)) {
+                return wrappedAlgorithmDeclaration.matches(wrappedNode);
+            }
+        }
         return false;
+    }
+
+    public static class Serializer extends JsonSerializer<ACAQDataSourceFromFileAlgorithmDeclaration> {
+        @Override
+        public void serialize(ACAQDataSourceFromFileAlgorithmDeclaration declaration, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeObjectField("acaq:algorithm-class", declaration.getAlgorithmClass().getCanonicalName());
+            jsonGenerator.writeObjectField("acaq:wrapped-algorithm", declaration.wrappedAlgorithmDeclaration);
+            jsonGenerator.writeEndObject();
+        }
     }
 }

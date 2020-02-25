@@ -17,14 +17,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @ACAQDocumentation(name = "Results table from file")
-@AlgorithmOutputSlot(ACAQResultsTableDataSlot.class)
+@AlgorithmOutputSlot(value = ACAQResultsTableDataSlot.class, slotName = "Results table", autoCreate = true)
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
 public class ACAQResultsTableFromFile extends ACAQSimpleDataSource<ACAQResultsTableData> {
 
     private Path fileName;
 
     public ACAQResultsTableFromFile(ACAQAlgorithmDeclaration declaration) {
-        super("Results table", declaration, ACAQResultsTableDataSlot.class, ACAQResultsTableData.class);
+        super(declaration);
     }
 
     public ACAQResultsTableFromFile(ACAQResultsTableFromFile other) {

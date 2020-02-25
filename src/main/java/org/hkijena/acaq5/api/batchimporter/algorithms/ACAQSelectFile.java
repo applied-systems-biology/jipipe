@@ -14,7 +14,7 @@ import org.hkijena.acaq5.utils.PathFilter;
 import java.util.List;
 
 @ACAQDocumentation(name = "Select file", description = "Selects any file that has a name that matches the filter")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Converter)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.FileSystem)
 
 // Algorithm flow
 @AlgorithmInputSlot(value = ACAQFilesDataSlot.class, slotName = "Files", autoCreate = true)

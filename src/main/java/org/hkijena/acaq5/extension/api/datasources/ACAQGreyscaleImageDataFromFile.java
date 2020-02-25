@@ -3,10 +3,7 @@ package org.hkijena.acaq5.extension.api.datasources;
 import ij.IJ;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
-import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQSimpleDataSource;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
@@ -19,14 +16,14 @@ import java.nio.file.Path;
  * Loads greyscale data from a file via IJ.openFile()
  */
 @ACAQDocumentation(name = "Greyscale image from file")
-@AlgorithmOutputSlot(ACAQGreyscaleImageDataSlot.class)
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
+@AlgorithmOutputSlot(value = ACAQGreyscaleImageDataSlot.class, slotName = "Greyscale image", autoCreate = true)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource, visibility = ACAQAlgorithmVisibility.PreprocessingAnalysisOnly)
 public class ACAQGreyscaleImageDataFromFile extends ACAQSimpleDataSource<ACAQGreyscaleImageData> {
 
     private Path fileName;
 
     public ACAQGreyscaleImageDataFromFile(ACAQAlgorithmDeclaration declaration) {
-        super("Greyscale Image", declaration, ACAQGreyscaleImageDataSlot.class, ACAQGreyscaleImageData.class);
+        super(declaration);
     }
 
     public ACAQGreyscaleImageDataFromFile(ACAQGreyscaleImageDataFromFile other) {

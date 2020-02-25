@@ -27,27 +27,21 @@ public enum ACAQAlgorithmCategory {
      */
     DataSource,
     /**
+     * Operations on files
+     */
+    FileSystem,
+    /**
      * Internal algorithms are only used internally within a project
      */
     Internal;
 
     public Color getColor(float s, float v) {
-        float n = ACAQAlgorithmCategory.values().length;
-        switch(this) {
-            case Converter:
-                return Color.getHSBColor(0, s, v);
-            case Enhancer:
-                return Color.getHSBColor(1 / n, s, v);
-            case Segmenter:
-                return Color.getHSBColor(2 / n, s, v);
-            case Quantififer:
-                return Color.getHSBColor(3 / n, s, v);
-            case DataSource:
-                return Color.getHSBColor(4 / n, s, v);
-            case Internal:
-                return Color.getHSBColor(5 / n, s, v);
-            default:
-                throw new RuntimeException("Unknown category " + this);
+        ACAQAlgorithmCategory[] values = ACAQAlgorithmCategory.values();
+        for(int i = 0; i < values.length; ++i) {
+            if(values[i] == this) {
+                return  Color.getHSBColor(i * 1.0f / values.length, s, v);
+            }
         }
+        throw new IllegalArgumentException("Unknown category");
     }
 }

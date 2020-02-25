@@ -1,13 +1,21 @@
 package org.hkijena.acaq5.api.algorithm;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.AddsTrait;
 import org.hkijena.acaq5.api.traits.RemovesTrait;
 
+import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+@JsonSerialize(using = ACAQEmptyAlgorithmDeclaration.Serializer.class)
 public class ACAQEmptyAlgorithmDeclaration implements ACAQAlgorithmDeclaration {
     @Override
     public Class<? extends ACAQAlgorithm> getAlgorithmClass() {
@@ -36,41 +44,54 @@ public class ACAQEmptyAlgorithmDeclaration implements ACAQAlgorithmDeclaration {
 
     @Override
     public ACAQAlgorithmCategory getCategory() {
-        return null;
+        return ACAQAlgorithmCategory.Internal;
+    }
+
+    @Override
+    public ACAQAlgorithmVisibility getVisibility() {
+        return ACAQAlgorithmVisibility.All;
     }
 
     @Override
     public Set<Class<? extends ACAQTrait>> getPreferredTraits() {
-        return null;
+        return Collections.emptySet();
     }
 
     @Override
     public Set<Class<? extends ACAQTrait>> getUnwantedTraits() {
-        return null;
+        return Collections.emptySet();
     }
 
     @Override
     public List<AddsTrait> getAddedTraits() {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
     public List<RemovesTrait> getRemovedTraits() {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
     public List<AlgorithmInputSlot> getInputSlots() {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
     public List<AlgorithmOutputSlot> getOutputSlots() {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
     public boolean matches(JsonNode node) {
         return false;
+    }
+
+    public static class Serializer extends JsonSerializer<ACAQEmptyAlgorithmDeclaration> {
+        @Override
+        public void serialize(ACAQEmptyAlgorithmDeclaration acaqEmptyAlgorithmDeclaration, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeEndObject();
+        }
     }
 }

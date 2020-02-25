@@ -12,6 +12,7 @@ import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmVisibility;
 import org.hkijena.acaq5.api.data.ACAQInputAsOutputSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.SampleAddedEvent;
@@ -36,7 +37,7 @@ public class ACAQProject implements ACAQValidatable {
     private ACAQMutableSlotConfiguration preprocessingOutputConfiguration = ACAQMutableSlotConfiguration.builder().withoutOutput().build();
     private ACAQMutableSlotConfiguration analysisOutputConfiguration = ACAQMutableSlotConfiguration.builder().withoutOutput().build();
     private ACAQMutableTraitGenerator preprocessingTraitConfiguration;
-    private ACAQAlgorithmGraph analysis = new ACAQAlgorithmGraph();
+    private ACAQAlgorithmGraph analysis = new ACAQAlgorithmGraph(ACAQAlgorithmVisibility.PreprocessingAnalysisOnly);
 
     public ACAQProject() {
         preprocessingTraitConfiguration = new ACAQMutableTraitGenerator(preprocessingOutputConfiguration);

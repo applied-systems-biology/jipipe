@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ACAQDocumentation(name = "Filter folders", description = "Filters the input folders by their name")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.FileSystem)
 
 // Algorithm flow
 @AlgorithmInputSlot(value = ACAQFoldersDataSlot.class, slotName = "Folders", autoCreate = true)

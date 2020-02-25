@@ -19,14 +19,14 @@ import java.nio.file.Path;
  * Provides an input file
  */
 @ACAQDocumentation(name = "File")
-@AlgorithmOutputSlot(ACAQFileDataSlot.class)
+@AlgorithmOutputSlot(value = ACAQFileDataSlot.class, slotName = "Filename", autoCreate = true)
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
 public class ACAQFileDataSource extends ACAQSimpleDataSource<ACAQFileData> {
 
     private Path fileName;
 
     public ACAQFileDataSource(ACAQAlgorithmDeclaration declaration) {
-        super("Filename", declaration, ACAQFileDataSlot.class, ACAQFileData.class);
+        super(declaration);
     }
 
     public ACAQFileDataSource(ACAQFileDataSource other) {

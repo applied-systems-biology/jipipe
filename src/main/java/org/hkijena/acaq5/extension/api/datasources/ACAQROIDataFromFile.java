@@ -18,14 +18,14 @@ import java.nio.file.Path;
  * Loads ROI data from a file via IJ.openFile()
  */
 @ACAQDocumentation(name = "ROI from file")
-@AlgorithmOutputSlot(ACAQROIDataSlot.class)
+@AlgorithmOutputSlot(value = ACAQROIDataSlot.class, slotName = "Mask", autoCreate = true)
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
 public class ACAQROIDataFromFile extends ACAQSimpleDataSource<ACAQROIData> {
 
     private Path fileName;
 
     public ACAQROIDataFromFile(ACAQAlgorithmDeclaration declaration) {
-        super("Mask", declaration, ACAQROIDataSlot.class, ACAQROIData.class);
+        super(declaration);
     }
 
     public ACAQROIDataFromFile(ACAQROIDataFromFile other) {

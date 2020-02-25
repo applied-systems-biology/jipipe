@@ -18,15 +18,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @ACAQDocumentation(name = "List subfolders", description = "Lists all subfolders")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Converter)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.FileSystem)
 
 // Algorithm flow
-@AlgorithmInputSlot(value = ACAQFolderDataSlot.class, slotName = "Folder", autoCreate = true)
+@AlgorithmInputSlot(value = ACAQFoldersDataSlot.class, slotName = "Folders", autoCreate = true)
 @AlgorithmOutputSlot(value = ACAQFoldersDataSlot.class, slotName = "Subfolders", autoCreate = true)
 
 // Traits
 @AutoTransferTraits
-public class ACAQListSubfolders extends ACAQSimpleAlgorithm<ACAQFolderData, ACAQFoldersData> {
+public class ACAQListSubfolders extends ACAQSimpleAlgorithm<ACAQFoldersData, ACAQFoldersData> {
 
     public ACAQListSubfolders(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
@@ -38,13 +38,14 @@ public class ACAQListSubfolders extends ACAQSimpleAlgorithm<ACAQFolderData, ACAQ
 
     @Override
     public void run() {
-        ACAQFolderData inputFolder = getInputData();
+        ACAQFoldersData inputFolders = getInputData();
         List<ACAQFolderData> result = new ArrayList<>();
         try {
-            for (Path path : Files.list(inputFolder.getFolderPath()).filter(Files::isDirectory).collect(Collectors.toList())) {
-                result.add(new ACAQFolderData(inputFolder, path));
+            for (ACAQFolderData inputFolder : inputFolders.getFolders()) {
+                for (Path path : Files.list(inputFolder.getFolderPath()).filter(Files::isDirectory).collect(Collectors.toList())) {
+                    result.add(new ACAQFolderData(inputFolder, path));
+                }
             }
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

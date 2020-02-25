@@ -1,6 +1,11 @@
 package org.hkijena.acaq5.api;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQInputAsOutputSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
@@ -10,6 +15,7 @@ import org.hkijena.acaq5.api.traits.ACAQTraitConfiguration;
 import org.hkijena.acaq5.api.traits.AddsTrait;
 import org.hkijena.acaq5.api.traits.RemovesTrait;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -48,6 +54,7 @@ public class ACAQPreprocessingOutput extends ACAQAlgorithm {
 
     }
 
+    @JsonSerialize(using = DeclarationSerializer.class)
     public static class Declaration implements ACAQAlgorithmDeclaration {
 
         @Override
@@ -78,6 +85,11 @@ public class ACAQPreprocessingOutput extends ACAQAlgorithm {
         @Override
         public ACAQAlgorithmCategory getCategory() {
             return ACAQAlgorithmCategory.Internal;
+        }
+
+        @Override
+        public ACAQAlgorithmVisibility getVisibility() {
+            return ACAQAlgorithmVisibility.All;
         }
 
         @Override
@@ -113,6 +125,14 @@ public class ACAQPreprocessingOutput extends ACAQAlgorithm {
         @Override
         public boolean matches(JsonNode node) {
             return false;
+        }
+    }
+
+    public static class DeclarationSerializer extends JsonSerializer<Declaration> {
+        @Override
+        public void serialize(Declaration declaration, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeEndObject();
         }
     }
 }

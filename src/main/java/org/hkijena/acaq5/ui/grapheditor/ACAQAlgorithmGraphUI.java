@@ -97,6 +97,11 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
         initializeAddDataSourceMenu(addDataSourceMenu);
         menuBar.add(addDataSourceMenu);
 
+        JMenu addFilesystemMenu = new JMenu("Filesystem");
+        addFilesystemMenu.setIcon(UIUtils.getIconFromResources("tree.png"));
+        initializeMenuForCategory(addFilesystemMenu, ACAQAlgorithmCategory.FileSystem);
+        menuBar.add(addFilesystemMenu);
+
         JMenu addEnhancerMenu = new JMenu("Enhance");
         addEnhancerMenu.setIcon(UIUtils.getIconFromResources("magic.png"));
         initializeMenuForCategory(addEnhancerMenu, ACAQAlgorithmCategory.Enhancer);
@@ -123,6 +128,8 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
         boolean isEmpty = true;
         Icon icon = new ColorIcon(16, 16, category.getColor(0.1f, 0.9f));
         for(ACAQAlgorithmDeclaration declaration : registryService.getAlgorithmRegistry().getAlgorithmsOfCategory(category)) {
+            if(!declaration.getVisibility().isVisibleIn(graphUI.getAlgorithmGraph().getVisibility()))
+                continue;
             JMenuItem addItem = new JMenuItem(declaration.getName(), icon);
             addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
             addItem.addActionListener(e -> algorithmGraph.insertNode(declaration.newInstance()));
@@ -137,20 +144,24 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
         ACAQRegistryService registryService = ACAQRegistryService.getInstance();
         for(Class<? extends ACAQData> dataClass : registryService.getDatatypeRegistry().getRegisteredDataTypes()) {
             Set<ACAQAlgorithmDeclaration> dataSources = registryService.getAlgorithmRegistry().getDataSourcesFor(dataClass);
-            if(!dataSources.isEmpty()) {
-                Icon icon = registryService.getUIDatatypeRegistry().getIconFor(dataClass);
-                JMenu dataMenu = new JMenu(ACAQData.getNameOf(dataClass));
-                dataMenu.setIcon(icon);
+            boolean isEmpty = true;
+            Icon icon = registryService.getUIDatatypeRegistry().getIconFor(dataClass);
+            JMenu dataMenu = new JMenu(ACAQData.getNameOf(dataClass));
+            dataMenu.setIcon(icon);
 
-                for(ACAQAlgorithmDeclaration declaration : dataSources) {
-                    JMenuItem addItem = new JMenuItem(declaration.getName(), icon);
-                    addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
-                    addItem.addActionListener(e -> algorithmGraph.insertNode(declaration.newInstance()));
-                    dataMenu.add(addItem);
-                }
-
-                menu.add(dataMenu);
+            for(ACAQAlgorithmDeclaration declaration : dataSources) {
+                if(!declaration.getVisibility().isVisibleIn(graphUI.getAlgorithmGraph().getVisibility()))
+                    continue;
+                JMenuItem addItem = new JMenuItem(declaration.getName(), icon);
+                addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
+                addItem.addActionListener(e -> algorithmGraph.insertNode(declaration.newInstance()));
+                dataMenu.add(addItem);
+                isEmpty = false;
             }
+
+            menu.add(dataMenu);
+            if(isEmpty)
+                dataMenu.setVisible(false);
         }
     }
 

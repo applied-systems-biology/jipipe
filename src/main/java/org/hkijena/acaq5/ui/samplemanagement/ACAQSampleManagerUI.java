@@ -7,6 +7,8 @@ import org.hkijena.acaq5.api.events.SampleRemovedEvent;
 import org.hkijena.acaq5.api.events.SampleRenamedEvent;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.batchimporter.ACAQBatchImporterUI;
+import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -69,6 +71,12 @@ public class ACAQSampleManagerUI extends ACAQUIPanel {
     }
 
     private void batchImportSamples() {
+        getWorkbenchUI().getDocumentTabPane().addTab("Batch importer",
+                UIUtils.getIconFromResources("import.png"),
+                new ACAQBatchImporterUI(getWorkbenchUI()),
+                DocumentTabPane.CloseMode.withAskOnCloseButton,
+                true);
+        getWorkbenchUI().getDocumentTabPane().switchToLastTab();
     }
 
     public void rebuildSampleListTree() {

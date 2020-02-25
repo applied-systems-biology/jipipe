@@ -19,14 +19,14 @@ import java.nio.file.Path;
  * Loads greyscale data from a file via IJ.openFile()
  */
 @ACAQDocumentation(name = "Mask from file")
-@AlgorithmOutputSlot(ACAQMaskDataSlot.class)
+@AlgorithmOutputSlot(value = ACAQMaskDataSlot.class, slotName = "Mask", autoCreate = true)
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
 public class ACAQMaskImageDataFromFile extends ACAQSimpleDataSource<ACAQMaskData> {
 
     private Path fileName;
 
     public ACAQMaskImageDataFromFile(ACAQAlgorithmDeclaration declaration) {
-        super("Mask", declaration, ACAQMaskDataSlot.class, ACAQMaskData.class);
+        super(declaration);
     }
 
     public ACAQMaskImageDataFromFile(ACAQMaskImageDataFromFile other) {

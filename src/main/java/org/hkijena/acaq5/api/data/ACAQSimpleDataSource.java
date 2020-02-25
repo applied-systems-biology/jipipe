@@ -8,8 +8,12 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
  */
 public abstract class ACAQSimpleDataSource<T extends ACAQData> extends ACAQDataSource<T> {
 
-    public ACAQSimpleDataSource(String name, ACAQAlgorithmDeclaration declaration, Class<? extends ACAQDataSlot<T>> slotClass, Class<? extends T> generatedDataClass) {
-        super(declaration, ACAQMutableSlotConfiguration.builder().addOutputSlot(name, slotClass).seal().build(), generatedDataClass);
+    public ACAQSimpleDataSource(String name, ACAQAlgorithmDeclaration declaration, Class<? extends ACAQDataSlot<T>> slotClass) {
+        super(declaration, ACAQMutableSlotConfiguration.builder().addOutputSlot(name, slotClass).seal().build());
+    }
+
+    public ACAQSimpleDataSource(ACAQAlgorithmDeclaration declaration) {
+        super(declaration);
     }
 
     public ACAQSimpleDataSource(ACAQSimpleDataSource<T> other) {

@@ -47,6 +47,12 @@ public interface ACAQAlgorithmDeclaration {
     ACAQAlgorithmCategory getCategory();
 
     /**
+     * Returns where the algorithm is visible
+     * @return
+     */
+    ACAQAlgorithmVisibility getVisibility();
+
+    /**
      * Returns the preferred traits
      * @return
      */

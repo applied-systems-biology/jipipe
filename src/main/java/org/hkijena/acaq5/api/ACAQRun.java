@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableBiMap;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmVisibility;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.jgrapht.Graphs;
 
@@ -40,7 +41,7 @@ public class ACAQRun {
      * This function removes internal nodes such as PreprocessingOutput
      */
     private void initializeAlgorithmGraph() {
-        algorithmGraph = new ACAQAlgorithmGraph();
+        algorithmGraph = new ACAQAlgorithmGraph(ACAQAlgorithmVisibility.PreprocessingAnalysisOnly);
 
         // Add nodes
         initializeAlgorithmGraphNodes();

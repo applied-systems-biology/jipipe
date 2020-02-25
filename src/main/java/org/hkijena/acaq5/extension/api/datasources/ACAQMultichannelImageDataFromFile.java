@@ -19,14 +19,14 @@ import java.nio.file.Path;
  * Loads greyscale data from a file via IJ.openFile()
  */
 @ACAQDocumentation(name = "Multichannel image from file")
-@AlgorithmOutputSlot(ACAQMultichannelImageDataSlot.class)
+@AlgorithmOutputSlot(value = ACAQMultichannelImageDataSlot.class, slotName = "Multichannel Image", autoCreate = true)
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
 public class ACAQMultichannelImageDataFromFile extends ACAQSimpleDataSource<ACAQMultichannelImageData> {
 
     private Path fileName;
 
     public ACAQMultichannelImageDataFromFile(ACAQAlgorithmDeclaration declaration) {
-        super("Multichannel Image", declaration, ACAQMultichannelImageDataSlot.class, ACAQMultichannelImageData.class);
+        super(declaration);
     }
 
     public ACAQMultichannelImageDataFromFile(ACAQMultichannelImageDataFromFile other) {

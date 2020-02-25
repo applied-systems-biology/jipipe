@@ -43,12 +43,16 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     private BiMap<String, ACAQAlgorithm> algorithms = HashBiMap.create();
     private EventBus eventBus = new EventBus();
     private  Map<ACAQDataSlot<?>, Set<Class<? extends ACAQTrait>>> algorithmTraits;
+    private ACAQAlgorithmVisibility visibility;
 
-    public ACAQAlgorithmGraph() {
-
+    public ACAQAlgorithmGraph(ACAQAlgorithmVisibility visibility) {
+        this.visibility = visibility;
     }
 
     public ACAQAlgorithmGraph(ACAQAlgorithmGraph other) {
+
+        this.visibility = other.visibility;
+
         // Copy nodes
         for(Map.Entry<String, ACAQAlgorithm> kv : other.algorithms.entrySet()) {
             ACAQAlgorithm algorithm = ACAQAlgorithm.clone(kv.getValue());
@@ -422,10 +426,13 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
                 algorithms.get(kv.getKey()).fromJson(kv.getValue());
             }
             else {
-                ACAQAlgorithmDeclaration declaration = ACAQRegistryService.getInstance().getAlgorithmRegistry().findMatchingDeclaration(kv.getValue());
-                ACAQAlgorithm algorithm = declaration.newInstance();
-                algorithm.fromJson(kv.getValue());
-                insertNode(kv.getKey(), algorithm);
+                JsonNode declarationNode = kv.getValue().path("acaq:declaration");
+                if(!declarationNode.isMissingNode()) {
+                    ACAQAlgorithmDeclaration declaration = ACAQRegistryService.getInstance().getAlgorithmRegistry().findMatchingDeclaration(declarationNode);
+                    ACAQAlgorithm algorithm = declaration.newInstance();
+                    algorithm.fromJson(kv.getValue());
+                    insertNode(kv.getKey(), algorithm);
+                }
             }
         }
 
@@ -491,6 +498,10 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
     public Graph<ACAQDataSlot<?>, DefaultEdge> getGraph() {
         return graph;
+    }
+
+    public ACAQAlgorithmVisibility getVisibility() {
+        return visibility;
     }
 
     public static class Serializer extends JsonSerializer<ACAQAlgorithmGraph> {

@@ -82,6 +82,7 @@ public class ACAQBatchImporterExtensionService extends AbstractService implement
         registryService.getAlgorithmRegistry().register(ACAQListSubfolders.class);
         registryService.getAlgorithmRegistry().register(ACAQSubFolder.class);
         registryService.getAlgorithmRegistry().register(ACAQFoldersAsSamples.class);
+        registryService.getAlgorithmRegistry().register(ACAQSubfoldersAsSamples.class);
 
         registryService.getTraitRegistry().register(ProjectSampleTrait.class);
         registryService.getUITraitRegistry().registerIcon(ProjectSampleTrait.class,

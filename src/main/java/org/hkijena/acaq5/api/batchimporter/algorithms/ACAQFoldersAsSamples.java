@@ -12,7 +12,7 @@ import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import org.hkijena.acaq5.api.traits.BadForTrait;
 
 @ACAQDocumentation(name = "Folders as samples", description = "Makes that each individual folder is seen as sample")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Converter)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.FileSystem, visibility = ACAQAlgorithmVisibility.BatchImporterOnly)
 
 // Algorithm flow
 @AlgorithmInputSlot(value = ACAQFoldersDataSlot.class, slotName = "Folders", autoCreate = true)
@@ -39,7 +39,7 @@ public class ACAQFoldersAsSamples extends ACAQSimpleAlgorithm<ACAQFoldersData, A
         for (ACAQFolderData folder : data.getFolders()) {
             folder.annotate(ProjectSampleTrait.FILESYSTEM_ANNOTATION_SAMPLE, folder.getFolderPath().getFileName().toString());
         }
-
+        setOutputData(data);
     }
 
     @Override

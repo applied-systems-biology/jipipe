@@ -16,4 +16,10 @@ public @interface AlgorithmMetadata {
      * @return
      */
     ACAQAlgorithmCategory category();
+
+    /**
+     * Where the algorithm is visible
+     * @return
+     */
+    ACAQAlgorithmVisibility visibility() default ACAQAlgorithmVisibility.All;
 }

@@ -312,7 +312,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
             jsonGenerator.writeObjectField("acaq:slot-configuration", algorithm.slotConfiguration);
             jsonGenerator.writeNumberField("acaq:algorithm-location-x", algorithm.location.x);
             jsonGenerator.writeNumberField("acaq:algorithm-location-y", algorithm.location.y);
-            jsonGenerator.writeObject(algorithm.getDeclaration());
+            jsonGenerator.writeObjectField("acaq:declaration", algorithm.getDeclaration());
             for (Map.Entry<String, ACAQParameterAccess> kv : ACAQParameterAccess.getParameters(algorithm).entrySet()) {
                 jsonGenerator.writeObjectField(kv.getKey(), kv.getValue().get());
             }

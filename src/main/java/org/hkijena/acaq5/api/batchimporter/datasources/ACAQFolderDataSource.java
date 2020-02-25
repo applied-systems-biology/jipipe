@@ -18,14 +18,14 @@ import java.nio.file.Path;
  * Provides an input folder
  */
 @ACAQDocumentation(name = "Folder")
-@AlgorithmOutputSlot(ACAQFolderDataSlot.class)
+@AlgorithmOutputSlot(value = ACAQFolderDataSlot.class, slotName = "Folder path", autoCreate = true)
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
 public class ACAQFolderDataSource extends ACAQSimpleDataSource<ACAQFolderData> {
 
     private Path folderPath;
 
     public ACAQFolderDataSource(ACAQAlgorithmDeclaration declaration) {
-        super("Folder path", declaration, ACAQFolderDataSlot.class, ACAQFolderData.class);
+        super(declaration);
     }
 
     public ACAQFolderDataSource(ACAQFolderDataSource other) {

@@ -5,7 +5,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.data.ACAQDataSource;
 import org.hkijena.acaq5.api.traits.AddsTrait;
 import org.hkijena.acaq5.api.traits.BadForTrait;
 import org.hkijena.acaq5.api.traits.GoodForTrait;
@@ -19,6 +21,7 @@ import java.util.Arrays;
  * {@link ACAQAlgorithmDeclaration} for an algorithm that is defined in Java code
  * All necessary properties are extracted from class attributes
  */
+@JsonSerialize(using = ACAQDefaultAlgorithmDeclaration.Serializer.class)
 public class ACAQDefaultAlgorithmDeclaration extends ACAQMutableAlgorithmDeclaration {
 
     public ACAQDefaultAlgorithmDeclaration(Class<? extends ACAQAlgorithm> algorithmClass) {
@@ -26,6 +29,10 @@ public class ACAQDefaultAlgorithmDeclaration extends ACAQMutableAlgorithmDeclara
         setName(getNameOf(algorithmClass));
         setDescription(getDescriptionOf(algorithmClass));
         setCategory(getCategoryOf(algorithmClass));
+        if(ACAQDataSource.class.isAssignableFrom(algorithmClass))
+            setVisibility(ACAQAlgorithmVisibility.PreprocessingAnalysisOnly);
+        else
+            setVisibility(getVisiblityOf(algorithmClass));
 
         initializeSlots();
         initializeTraits();
@@ -106,7 +113,7 @@ public class ACAQDefaultAlgorithmDeclaration extends ACAQMutableAlgorithmDeclara
     }
 
     /**
-     * Returns the name of an algorithm
+     * Returns the category of an algorithm
      *
      * @param klass
      * @return
@@ -120,10 +127,27 @@ public class ACAQDefaultAlgorithmDeclaration extends ACAQMutableAlgorithmDeclara
         }
     }
 
+    /**
+     * Returns the visibility of an algorithm
+     *
+     * @param klass
+     * @return
+     */
+    public static ACAQAlgorithmVisibility getVisiblityOf(Class<? extends ACAQAlgorithm> klass) {
+        AlgorithmMetadata[] annotations = klass.getAnnotationsByType(AlgorithmMetadata.class);
+        if (annotations.length > 0) {
+            return annotations[0].visibility();
+        } else {
+            return ACAQAlgorithmVisibility.All;
+        }
+    }
+
     public static class Serializer extends JsonSerializer<ACAQDefaultAlgorithmDeclaration> {
         @Override
         public void serialize(ACAQDefaultAlgorithmDeclaration declaration, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+            jsonGenerator.writeStartObject();
             jsonGenerator.writeObjectField("acaq:algorithm-class", declaration.getAlgorithmClass().getCanonicalName());
+            jsonGenerator.writeEndObject();
         }
     }
 }

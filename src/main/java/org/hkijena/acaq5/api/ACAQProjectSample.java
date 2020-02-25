@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmVisibility;
 
 import java.io.IOException;
 
@@ -20,7 +21,7 @@ public class ACAQProjectSample implements Comparable<ACAQProjectSample>, ACAQVal
 
     public ACAQProjectSample(ACAQProject project) {
         this.project = project;
-        this.preprocessingGraph = new ACAQAlgorithmGraph();
+        this.preprocessingGraph = new ACAQAlgorithmGraph(ACAQAlgorithmVisibility.PreprocessingAnalysisOnly);
 
         initializePreprocessingGraph();
     }
