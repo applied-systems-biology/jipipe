@@ -2,10 +2,17 @@ package org.hkijena.acaq5.api.batchimporter;
 
 import org.hkijena.acaq5.ACAQExtensionService;
 import org.hkijena.acaq5.ACAQRegistryService;
-import org.hkijena.acaq5.api.batchimporter.dataslots.ACAQBatchImporterFileDataSlot;
-import org.hkijena.acaq5.api.batchimporter.dataslots.ACAQBatchImporterFolderDataSlot;
-import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQBatchImporterFileData;
-import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQBatchImporterFolderData;
+import org.hkijena.acaq5.api.batchimporter.algorithms.*;
+import org.hkijena.acaq5.api.batchimporter.dataslots.ACAQFileDataSlot;
+import org.hkijena.acaq5.api.batchimporter.dataslots.ACAQFilesDataSlot;
+import org.hkijena.acaq5.api.batchimporter.dataslots.ACAQFolderDataSlot;
+import org.hkijena.acaq5.api.batchimporter.dataslots.ACAQFoldersDataSlot;
+import org.hkijena.acaq5.api.batchimporter.datasources.ACAQFileDataSource;
+import org.hkijena.acaq5.api.batchimporter.datasources.ACAQFolderDataSource;
+import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFileData;
+import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFilesData;
+import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFolderData;
+import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFoldersData;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
@@ -48,7 +55,19 @@ public class ACAQBatchImporterExtensionService extends AbstractService implement
 
     @Override
     public void register(ACAQRegistryService registryService) {
-        registryService.getDatatypeRegistry().register(ACAQBatchImporterFileData.class, ACAQBatchImporterFileDataSlot.class);
-        registryService.getDatatypeRegistry().register(ACAQBatchImporterFolderData.class, ACAQBatchImporterFolderDataSlot.class);
+        registryService.getDatatypeRegistry().register(ACAQFileData.class, ACAQFileDataSlot.class);
+        registryService.getDatatypeRegistry().register(ACAQFilesData.class, ACAQFilesDataSlot.class);
+        registryService.getDatatypeRegistry().register(ACAQFolderData.class, ACAQFolderDataSlot.class);
+        registryService.getDatatypeRegistry().register(ACAQFoldersData.class, ACAQFoldersDataSlot.class);
+
+        registryService.getAlgorithmRegistry().register(ACAQFileDataSource.class);
+        registryService.getAlgorithmRegistry().register(ACAQFolderDataSource.class);
+
+        registryService.getAlgorithmRegistry().register(ACAQFilterFiles.class);
+        registryService.getAlgorithmRegistry().register(ACAQFilterFolders.class);
+        registryService.getAlgorithmRegistry().register(ACAQSelectFile.class);
+        registryService.getAlgorithmRegistry().register(ACAQSelectFolder.class);
+        registryService.getAlgorithmRegistry().register(ACAQListFiles.class);
+        registryService.getAlgorithmRegistry().register(ACAQListSubfolders.class);
     }
 }

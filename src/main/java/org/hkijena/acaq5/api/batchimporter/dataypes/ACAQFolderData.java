@@ -6,11 +6,11 @@ import org.hkijena.acaq5.api.data.ACAQData;
 import java.nio.file.Path;
 
 @ACAQDocumentation(name = "Folder")
-public class ACAQBatchImporterFolderData extends ACAQData {
+public class ACAQFolderData extends ACAQData {
 
     private Path folderPath;
 
-    public ACAQBatchImporterFolderData(Path folderPath) {
+    public ACAQFolderData(Path folderPath) {
         this.folderPath = folderPath;
     }
 

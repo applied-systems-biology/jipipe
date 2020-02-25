@@ -7,11 +7,11 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 @ACAQDocumentation(name = "File")
-public class ACAQBatchImporterFileData extends ACAQData {
+public class ACAQFileData extends ACAQData {
 
     private Path fileName;
 
-    public ACAQBatchImporterFileData(Path fileName) {
+    public ACAQFileData(Path fileName) {
 
         this.fileName = fileName;
     }

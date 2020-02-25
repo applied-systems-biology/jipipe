@@ -119,14 +119,18 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
         menuBar.add(addQuantifierMenu);
     }
 
-    private void initializeMenuForCategory(JMenu menu, ACAQAlgorithmCategory category) {
+    protected void initializeMenuForCategory(JMenu menu, ACAQAlgorithmCategory category) {
         ACAQRegistryService registryService = ACAQRegistryService.getInstance();
+        boolean isEmpty = true;
         for(ACAQAlgorithmDeclaration declaration : registryService.getAlgorithmRegistry().getAlgorithmsOfCategory(category)) {
             JMenuItem addItem = new JMenuItem(declaration.getName(), UIUtils.getIconFromResources("cog.png"));
             addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
             addItem.addActionListener(e -> algorithmGraph.insertNode(declaration.newInstance()));
             menu.add(addItem);
+            isEmpty = false;
         }
+        if(isEmpty)
+            menu.setVisible(false);
     }
 
     private void initializeAddDataSourceMenu(JMenu menu) {
