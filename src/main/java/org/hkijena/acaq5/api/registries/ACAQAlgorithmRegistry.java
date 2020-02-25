@@ -6,6 +6,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQDefaultAlgorithmDeclaration;
+import org.hkijena.acaq5.api.batchimporter.ACAQDataSourceFromFileAlgorithmDeclaration;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQDataSource;
@@ -33,6 +34,14 @@ public class ACAQAlgorithmRegistry {
      */
     public void register(Class<? extends ACAQAlgorithm> klass) {
         registeredAlgorithms.add(new ACAQDefaultAlgorithmDeclaration(klass));
+    }
+
+    /**
+     * Registers an algorithm declaration
+     * @param declaration
+     */
+    public void register(ACAQAlgorithmDeclaration declaration) {
+        registeredAlgorithms.add(declaration);
     }
 
     /**
@@ -103,7 +112,7 @@ public class ACAQAlgorithmRegistry {
         Class<? extends ACAQDataSlot<?>> slotClass = ACAQRegistryService.getInstance().getDatatypeRegistry().getRegisteredSlotDataTypes().get(dataClass);
         Set<ACAQAlgorithmDeclaration> result = new HashSet<>();
         for(ACAQAlgorithmDeclaration declaration : registeredAlgorithms) {
-            if(ACAQDataSource.class.isAssignableFrom(declaration.getAlgorithmClass())) {
+            if(declaration.getCategory() == ACAQAlgorithmCategory.DataSource) {
                 if(declaration.getOutputSlots().stream().anyMatch(slot -> slot.value().equals(slotClass))) {
                     result.add(declaration);
                 }
@@ -129,4 +138,6 @@ public class ACAQAlgorithmRegistry {
     public ACAQAlgorithmDeclaration findMatchingDeclaration(JsonNode value) {
         return registeredAlgorithms.stream().filter(d -> d.matches(value)).findFirst().orElse(null);
     }
+
+
 }

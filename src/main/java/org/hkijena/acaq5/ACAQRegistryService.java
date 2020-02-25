@@ -15,6 +15,7 @@ import org.scijava.service.AbstractService;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A scijava service that discovers ACAQ5 plugins in the classpath
@@ -56,7 +57,8 @@ public class ACAQRegistryService extends AbstractService implements ACAQService 
      * @param pluginService
      */
     private void discover(PluginService pluginService) {
-        for(PluginInfo<ACAQExtensionService> info : pluginService.getPluginsOfType(ACAQExtensionService.class)) {
+        for(PluginInfo<ACAQExtensionService> info : pluginService.getPluginsOfType(ACAQExtensionService.class).stream()
+                .sorted(ACAQRegistryService::comparePlugins).collect(Collectors.toList())) {
             System.out.println("ACAQ5: Registering plugin " + info);
             try {
                 ACAQExtensionService service = (ACAQExtensionService)info.createInstance();
@@ -65,6 +67,10 @@ public class ACAQRegistryService extends AbstractService implements ACAQService 
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    public static int comparePlugins(PluginInfo<?> p0, PluginInfo<?> p1) {
+        return -Double.compare(p0.getPriority(), p1.getPriority());
     }
 
     @Override

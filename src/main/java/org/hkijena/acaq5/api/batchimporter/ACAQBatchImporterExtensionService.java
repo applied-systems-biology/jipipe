@@ -1,7 +1,10 @@
 package org.hkijena.acaq5.api.batchimporter;
 
+import com.google.common.collect.ImmutableList;
 import org.hkijena.acaq5.ACAQExtensionService;
 import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.batchimporter.algorithms.*;
 import org.hkijena.acaq5.api.batchimporter.dataslots.ACAQFileDataSlot;
 import org.hkijena.acaq5.api.batchimporter.dataslots.ACAQFilesDataSlot;
@@ -11,7 +14,9 @@ import org.hkijena.acaq5.api.batchimporter.datasources.ACAQFileDataSource;
 import org.hkijena.acaq5.api.batchimporter.datasources.ACAQFolderDataSource;
 import org.hkijena.acaq5.api.batchimporter.dataypes.*;
 import org.hkijena.acaq5.api.batchimporter.traits.ProjectSampleTrait;
+import org.hkijena.acaq5.api.data.ACAQDataSource;
 import org.hkijena.acaq5.utils.ResourceUtils;
+import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 
@@ -19,7 +24,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
-@Plugin(type = ACAQExtensionService.class)
+@Plugin(type = ACAQExtensionService.class, priority = Priority.LAST)
 public class ACAQBatchImporterExtensionService extends AbstractService implements ACAQExtensionService {
     @Override
     public String getName() {
@@ -81,5 +86,16 @@ public class ACAQBatchImporterExtensionService extends AbstractService implement
         registryService.getTraitRegistry().register(ProjectSampleTrait.class);
         registryService.getUITraitRegistry().registerIcon(ProjectSampleTrait.class,
                 ResourceUtils.getPluginResource("icons/traits/project-sample.png"));
+
+        registerSourceGeneratorAlgorithms(registryService);
+    }
+
+    private void registerSourceGeneratorAlgorithms(ACAQRegistryService registryService) {
+        for(ACAQAlgorithmDeclaration declaration : ImmutableList.copyOf(registryService.getAlgorithmRegistry().getRegisteredAlgorithms())) {
+            if(declaration.getCategory() == ACAQAlgorithmCategory.DataSource) {
+                ACAQDataSourceFromFileAlgorithmDeclaration wrappedDeclaration = new ACAQDataSourceFromFileAlgorithmDeclaration(declaration);
+                registryService.getAlgorithmRegistry().register(wrappedDeclaration);
+            }
+        }
     }
 }

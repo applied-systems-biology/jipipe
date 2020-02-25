@@ -241,6 +241,14 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
         return allowedOutputSlotTypes;
     }
 
+    public void setInputSealed(boolean b) {
+        this.inputSlotsSealed = b;
+    }
+
+    public void setOutputSealed(boolean b) {
+        this.outputSlotsSealed = b;
+    }
+
     public static class Builder {
         private ACAQMutableSlotConfiguration object = new ACAQMutableSlotConfiguration();
 

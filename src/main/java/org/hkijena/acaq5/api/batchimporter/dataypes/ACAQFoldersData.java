@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 
+@ACAQDocumentation(name = "Folders")
 public interface ACAQFoldersData extends ACAQFilesystemData {
     List<ACAQFolderData> getFolders();
 }
