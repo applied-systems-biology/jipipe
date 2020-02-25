@@ -77,7 +77,7 @@ public class ACAQDataSlotUI extends JPanel {
                 JMenuItem connectButton = new JMenuItem(target.getFullName(),
                         ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(target.getAcceptedDataType()));
                 connectButton.addActionListener(e -> connectSlot(slot, target));
-                connectButton.setToolTipText(TooltipUtils.getAlgorithmTooltip(target.getAlgorithm().getClass()));
+                connectButton.setToolTipText(TooltipUtils.getAlgorithmTooltip(target.getAlgorithm().getDeclaration()));
                 assignButtonMenu.add(connectButton);
             }
         }

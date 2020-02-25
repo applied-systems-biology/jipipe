@@ -310,11 +310,11 @@ public class ACAQAlgorithmUI extends JPanel {
      * @return
      */
     public Color getAlgorithmColor() {
-        return ACAQAlgorithm.getCategoryOf(algorithm.getClass()).getColor(0.1f, 0.9f);
+        return algorithm.getCategory().getColor(0.1f, 0.9f);
     }
 
     public Color getAlgorithmBorderColor() {
-        return ACAQAlgorithm.getCategoryOf(algorithm.getClass()).getColor(0.1f, 0.5f);
+        return algorithm.getCategory().getColor(0.1f, 0.5f);
     }
 
     /**

@@ -1,10 +1,7 @@
 package org.hkijena.acaq5.utils;
 
 import org.hkijena.acaq5.ACAQRegistryService;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
-import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.AddsTrait;
@@ -52,26 +49,25 @@ public class TooltipUtils {
         return builder.toString();
     }
 
-    public static String getAlgorithmTooltip(Class<? extends ACAQAlgorithm> algorithmClass) {
-        return getAlgorithmTooltip(algorithmClass, true);
+    public static String getAlgorithmTooltip(ACAQAlgorithmDeclaration declaration) {
+        return getAlgorithmTooltip(declaration, true);
     }
 
-    public static String getAlgorithmTooltip(Class<? extends ACAQAlgorithm> algorithmClass, boolean withTitle) {
+    public static String getAlgorithmTooltip(ACAQAlgorithmDeclaration declaration, boolean withTitle) {
         StringBuilder builder = new StringBuilder();
         builder.append("<html>");
         if(withTitle)
-            builder.append("<u><strong>").append(ACAQAlgorithm.getNameOf(algorithmClass)).append("</strong></u><br/>");
+            builder.append("<u><strong>").append(declaration.getName()).append("</strong></u><br/>");
 
         // Write algorithm slot info
         builder.append("<table>");
         builder.append("<tr><td>");
-        for(Class<? extends ACAQDataSlot<?>> slot : Arrays.stream(ACAQAlgorithm.getInputOf(algorithmClass))
-                .map(AlgorithmInputSlot::value).collect(Collectors.toSet())) {
+        for(Class<? extends ACAQDataSlot<?>> slot : declaration.getInputSlots().stream().map(AlgorithmInputSlot::value).collect(Collectors.toSet())) {
             builder.append("<img src=\"").append(ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconURLForSlot(slot)).append("\"/>");
         }
         builder.append("</td>");
         builder.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/chevron-right.png")).append("\" /></td>");
-        for(Class<? extends ACAQDataSlot<?>> slot : Arrays.stream(ACAQAlgorithm.getOutputOf(algorithmClass))
+        for(Class<? extends ACAQDataSlot<?>> slot : declaration.getOutputSlots().stream()
                 .map(AlgorithmOutputSlot::value).collect(Collectors.toSet())) {
             builder.append("<img src=\"").append(ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconURLForSlot(slot)).append("\"/>");
         }
@@ -79,15 +75,15 @@ public class TooltipUtils {
         builder.append("</table>");
 
         // Write description
-        String description = ACAQAlgorithm.getDescriptionOf(algorithmClass);
+        String description = declaration.getDescription();
         if(description != null && !description.isEmpty())
             builder.append(description).append("</br>");
 
-        Set<Class<? extends ACAQTrait>> preferredTraits = ACAQRegistryService.getInstance().getAlgorithmRegistry().getPreferredTraitsOf(algorithmClass);
-        Set<Class<? extends ACAQTrait>> unwantedTraits = ACAQRegistryService.getInstance().getAlgorithmRegistry().getUnwantedTraitsOf(algorithmClass);
-        Set<Class<? extends ACAQTrait>> addedTraits = ACAQRegistryService.getInstance().getAlgorithmRegistry().getAddedTraitsOf(algorithmClass)
+        Set<Class<? extends ACAQTrait>> preferredTraits = declaration.getPreferredTraits();
+        Set<Class<? extends ACAQTrait>> unwantedTraits = declaration.getUnwantedTraits();
+        Set<Class<? extends ACAQTrait>> addedTraits = declaration.getAddedTraits()
                 .stream().map(AddsTrait::value).collect(Collectors.toSet());
-        Set<Class<? extends ACAQTrait>> removedTraits = ACAQRegistryService.getInstance().getAlgorithmRegistry().getRemovedTraitsOf(algorithmClass)
+        Set<Class<? extends ACAQTrait>> removedTraits = declaration.getRemovedTraits()
                 .stream().map(RemovesTrait::value).collect(Collectors.toSet());
 
         if(!preferredTraits.isEmpty()) {

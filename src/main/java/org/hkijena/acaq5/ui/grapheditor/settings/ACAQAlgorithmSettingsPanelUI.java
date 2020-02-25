@@ -68,7 +68,7 @@ public class ACAQAlgorithmSettingsPanelUI extends ACAQUIPanel {
     private void initializeToolbar() {
         JToolBar toolBar = new JToolBar();
         JLabel nameLabel = new JLabel(algorithm.getName(), new ColorIcon(16, 16, algorithm.getCategory().getColor(0.1f, 0.9f)), JLabel.LEFT);
-        nameLabel.setToolTipText(TooltipUtils.getAlgorithmTooltip(algorithm.getClass()));
+        nameLabel.setToolTipText(TooltipUtils.getAlgorithmTooltip(algorithm.getDeclaration()));
         toolBar.add(nameLabel);
 
         toolBar.add(Box.createHorizontalGlue());

@@ -1,13 +1,15 @@
 package org.hkijena.acaq5.api.data;
 
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+
 /**
  * A helper that simplifies the creation of an {@link ACAQDataSource} algorithm
  * @param <T>
  */
 public abstract class ACAQSimpleDataSource<T extends ACAQData> extends ACAQDataSource<T> {
 
-    public ACAQSimpleDataSource(String name, Class<? extends ACAQDataSlot<T>> slotClass, Class<? extends T> generatedDataClass) {
-        super(ACAQMutableSlotConfiguration.builder().addOutputSlot(name, slotClass).seal().build(), generatedDataClass);
+    public ACAQSimpleDataSource(String name, ACAQAlgorithmDeclaration declaration, Class<? extends ACAQDataSlot<T>> slotClass, Class<? extends T> generatedDataClass) {
+        super(declaration, ACAQMutableSlotConfiguration.builder().addOutputSlot(name, slotClass).seal().build(), generatedDataClass);
     }
 
     public ACAQSimpleDataSource(ACAQSimpleDataSource<T> other) {

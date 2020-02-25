@@ -24,8 +24,8 @@ import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 @AutoTransferTraits
 public class MultiChannelSplitterConverter extends ACAQAlgorithm {
 
-    public MultiChannelSplitterConverter() {
-        super(ACAQMutableSlotConfiguration.builder()
+    public MultiChannelSplitterConverter(ACAQAlgorithmDeclaration declaration) {
+        super(declaration, ACAQMutableSlotConfiguration.builder()
                 .addInputSlot("Multichannel image", ACAQMultichannelImageDataSlot.class)
                 .sealInput()
                 .restrictOutputTo(ACAQGreyscaleImageDataSlot.class)

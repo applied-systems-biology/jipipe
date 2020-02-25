@@ -35,8 +35,8 @@ public class MaskToParticleConverter extends ACAQAlgorithm {
     private double maxParticleCircularity = 1;
     private boolean excludeEdges = false;
 
-    public MaskToParticleConverter() {
-        super(null, null);
+    public MaskToParticleConverter(ACAQAlgorithmDeclaration declaration) {
+        super(declaration, null, null);
     }
 
     public MaskToParticleConverter(MaskToParticleConverter other) {

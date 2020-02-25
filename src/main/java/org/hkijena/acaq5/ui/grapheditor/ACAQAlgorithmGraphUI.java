@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSource;
@@ -120,10 +121,10 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
 
     private void initializeMenuForCategory(JMenu menu, ACAQAlgorithmCategory category) {
         ACAQRegistryService registryService = ACAQRegistryService.getInstance();
-        for(Class<? extends ACAQAlgorithm> algorithmClass : registryService.getAlgorithmRegistry().getAlgorithmsOfCategory(category)) {
-            JMenuItem addItem = new JMenuItem(ACAQAlgorithm.getNameOf(algorithmClass), UIUtils.getIconFromResources("cog.png"));
-            addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(algorithmClass));
-            addItem.addActionListener(e -> algorithmGraph.insertNode(ACAQAlgorithm.createInstance(algorithmClass)));
+        for(ACAQAlgorithmDeclaration declaration : registryService.getAlgorithmRegistry().getAlgorithmsOfCategory(category)) {
+            JMenuItem addItem = new JMenuItem(declaration.getName(), UIUtils.getIconFromResources("cog.png"));
+            addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
+            addItem.addActionListener(e -> algorithmGraph.insertNode(declaration.newInstance()));
             menu.add(addItem);
         }
     }
@@ -131,16 +132,16 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
     private void initializeAddDataSourceMenu(JMenu menu) {
         ACAQRegistryService registryService = ACAQRegistryService.getInstance();
         for(Class<? extends ACAQData> dataClass : registryService.getDatatypeRegistry().getRegisteredDataTypes()) {
-            Set<Class<? extends ACAQDataSource<ACAQData>>> dataSources = registryService.getAlgorithmRegistry().getDataSourcesFor(dataClass);
+            Set<ACAQAlgorithmDeclaration> dataSources = registryService.getAlgorithmRegistry().getDataSourcesFor(dataClass);
             if(!dataSources.isEmpty()) {
                 Icon icon = registryService.getUIDatatypeRegistry().getIconFor(dataClass);
                 JMenu dataMenu = new JMenu(ACAQData.getNameOf(dataClass));
                 dataMenu.setIcon(icon);
 
-                for(Class<? extends ACAQDataSource<ACAQData>> sourceClass : dataSources) {
-                    JMenuItem addItem = new JMenuItem(ACAQAlgorithm.getNameOf(sourceClass), icon);
-                    addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(sourceClass));
-                    addItem.addActionListener(e -> algorithmGraph.insertNode(ACAQAlgorithm.createInstance(sourceClass)));
+                for(ACAQAlgorithmDeclaration declaration : dataSources) {
+                    JMenuItem addItem = new JMenuItem(declaration.getName(), icon);
+                    addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
+                    addItem.addActionListener(e -> algorithmGraph.insertNode(declaration.newInstance()));
                     dataMenu.add(addItem);
                 }
 

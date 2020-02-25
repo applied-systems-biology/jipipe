@@ -38,7 +38,8 @@ public class WatershedMaskEnhancer extends ACAQSimpleAlgorithm<ACAQMaskData, ACA
 
     private int erosionIterations = 0;
 
-    public WatershedMaskEnhancer() {
+    public WatershedMaskEnhancer(ACAQAlgorithmDeclaration declaration) {
+        super(declaration);
     }
 
     public WatershedMaskEnhancer(WatershedMaskEnhancer other) {

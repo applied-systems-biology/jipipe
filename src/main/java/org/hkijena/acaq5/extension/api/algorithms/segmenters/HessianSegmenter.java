@@ -36,9 +36,10 @@ public class HessianSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData
 
     private double smoothing = 1.0;
     private double gradientRadius = 1;
-    private AutoThresholdSegmenter autoThresholdSegmenter = new AutoThresholdSegmenter();
+    private AutoThresholdSegmenter autoThresholdSegmenter = new AutoThresholdSegmenter(new ACAQEmptyAlgorithmDeclaration());
 
-    public HessianSegmenter() {
+    public HessianSegmenter(ACAQAlgorithmDeclaration declaration) {
+        super(declaration);
     }
 
     public HessianSegmenter(HessianSegmenter other) {

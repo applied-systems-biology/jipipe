@@ -4,6 +4,7 @@ import ij.IJ;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQSimpleDataSource;
@@ -24,8 +25,8 @@ public class ACAQGreyscaleImageDataFromFile extends ACAQSimpleDataSource<ACAQGre
 
     private Path fileName;
 
-    public ACAQGreyscaleImageDataFromFile() {
-        super("Greyscale Image", ACAQGreyscaleImageDataSlot.class, ACAQGreyscaleImageData.class);
+    public ACAQGreyscaleImageDataFromFile(ACAQAlgorithmDeclaration declaration) {
+        super("Greyscale Image", declaration, ACAQGreyscaleImageDataSlot.class, ACAQGreyscaleImageData.class);
     }
 
     public ACAQGreyscaleImageDataFromFile(ACAQGreyscaleImageDataFromFile other) {

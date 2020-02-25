@@ -5,6 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.ACAQPreprocessingOutput;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
@@ -30,12 +31,12 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
     private JPanel slotPanel;
     private EventBus eventBus = new EventBus();
 
-    public ACAQAlgorithmFinderAlgorithmUI(ACAQDataSlot<?> outputSlot, ACAQAlgorithmGraph graph, Class<? extends ACAQAlgorithm> algorithmClass, int score, int maxScore) {
+    public ACAQAlgorithmFinderAlgorithmUI(ACAQDataSlot<?> outputSlot, ACAQAlgorithmGraph graph, ACAQAlgorithmDeclaration declaration, int score, int maxScore) {
         this.outputSlot = outputSlot;
         this.graph = graph;
         this.score = score;
         this.maxScore = maxScore;
-        this.algorithm = ACAQAlgorithm.createInstance(algorithmClass);
+        this.algorithm = declaration.newInstance();
         this.isExistingInstance = false;
 
         initialize();
@@ -78,7 +79,7 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
 
         JLabel label = new JLabel();
         label.setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
-        label.setText(TooltipUtils.getAlgorithmTooltip(algorithm.getClass(), false));
+        label.setText(TooltipUtils.getAlgorithmTooltip(algorithm.getDeclaration(), false));
         centerPanel.add(label, BorderLayout.CENTER);
 
         add(centerPanel, BorderLayout.CENTER);

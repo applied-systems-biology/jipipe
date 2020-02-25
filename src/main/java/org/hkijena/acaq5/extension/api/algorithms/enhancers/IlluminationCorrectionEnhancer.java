@@ -34,7 +34,8 @@ public class IlluminationCorrectionEnhancer extends ACAQSimpleAlgorithm<ACAQGrey
 
     private int gaussianSigma = 21;
 
-    public IlluminationCorrectionEnhancer() {
+    public IlluminationCorrectionEnhancer(ACAQAlgorithmDeclaration declaration) {
+        super(declaration);
     }
 
     public IlluminationCorrectionEnhancer(IlluminationCorrectionEnhancer other) {

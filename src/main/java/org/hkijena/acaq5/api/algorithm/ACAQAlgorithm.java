@@ -36,6 +36,7 @@ import java.util.*;
  */
 @JsonSerialize(using = ACAQAlgorithm.Serializer.class)
 public abstract class ACAQAlgorithm implements ACAQValidatable {
+    private ACAQAlgorithmDeclaration declaration;
     private ACAQSlotConfiguration slotConfiguration;
     private ACAQTraitConfiguration traitConfiguration;
     private Map<String, ACAQDataSlot<?>> slots = new HashMap<>();
@@ -48,10 +49,12 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
     /**
      * Initializes this algorithm with a custom provided slot configuration and trait configuration
      *
+     * @param declaration Contains algorithm metadata
      * @param slotConfiguration if null, generate the slot configuration
      * @param traitConfiguration if null, defaults to {@link ACAQMutableTraitModifier}
      */
-    public ACAQAlgorithm(ACAQSlotConfiguration slotConfiguration, ACAQTraitConfiguration traitConfiguration) {
+    public ACAQAlgorithm(ACAQAlgorithmDeclaration declaration, ACAQSlotConfiguration slotConfiguration, ACAQTraitConfiguration traitConfiguration) {
+        this.declaration = declaration;
         if(slotConfiguration == null) {
             ACAQMutableSlotConfiguration.Builder builder = ACAQMutableSlotConfiguration.builder();
 
@@ -86,6 +89,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
      * @param other
      */
     public ACAQAlgorithm(ACAQAlgorithm other) {
+        this.declaration = other.declaration;
         this.slotConfiguration = copySlotConfiguration(other);
         this.traitConfiguration = new ACAQMutableTraitModifier(slotConfiguration);
         this.location = other.location;
@@ -132,11 +136,11 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
             if (getClass().getAnnotationsByType(AutoTransferTraits.class).length > 0) {
                 traitConfiguration.transferFromAllToAll();
             }
-            for (AddsTrait trait : ACAQRegistryService.getInstance().getAlgorithmRegistry().getAddedTraitsOf(getClass())) {
+            for (AddsTrait trait : getDeclaration().getAddedTraits()) {
                 if (trait.autoAdd())
                     traitConfiguration.addsTrait(trait.value());
             }
-            for (RemovesTrait trait : ACAQRegistryService.getInstance().getAlgorithmRegistry().getRemovedTraitsOf(getClass())) {
+            for (RemovesTrait trait : getDeclaration().getRemovedTraits()) {
                 if (trait.autoRemove())
                     traitConfiguration.removesTrait(trait.value());
             }
@@ -153,7 +157,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
     @ACAQDocumentation(name = "Name")
     public String getName() {
         if (customName == null || customName.isEmpty())
-            return getNameOf(getClass());
+            return getDeclaration().getName();
         return customName;
     }
 
@@ -164,82 +168,15 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
     }
 
     public ACAQAlgorithmCategory getCategory() {
-        return getCategoryOf(getClass());
+        return getDeclaration().getCategory();
     }
 
     Set<Class<? extends ACAQTrait>> getPreferredTraits() {
-        return ACAQRegistryService.getInstance().getAlgorithmRegistry().getPreferredTraitsOf(getClass());
+        return getDeclaration().getPreferredTraits();
     }
 
     Set<Class<? extends ACAQTrait>> getUnwantedTraits() {
-        return ACAQRegistryService.getInstance().getAlgorithmRegistry().getUnwantedTraitsOf(getClass());
-    }
-
-    /**
-     * Returns the name of an algorithm
-     *
-     * @param klass
-     * @return
-     */
-    public static String getNameOf(Class<? extends ACAQAlgorithm> klass) {
-        ACAQDocumentation[] annotations = klass.getAnnotationsByType(ACAQDocumentation.class);
-        if (annotations.length > 0) {
-            return annotations[0].name();
-        } else {
-            return klass.getSimpleName();
-        }
-    }
-
-    /**
-     * Returns the description of an algorithm
-     *
-     * @param klass
-     * @return
-     */
-    public static String getDescriptionOf(Class<? extends ACAQAlgorithm> klass) {
-        ACAQDocumentation[] annotations = klass.getAnnotationsByType(ACAQDocumentation.class);
-        if (annotations.length > 0) {
-            return annotations[0].description();
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Returns the name of an algorithm
-     *
-     * @param klass
-     * @return
-     */
-    public static ACAQAlgorithmCategory getCategoryOf(Class<? extends ACAQAlgorithm> klass) {
-        AlgorithmMetadata[] annotations = klass.getAnnotationsByType(AlgorithmMetadata.class);
-        if (annotations.length > 0) {
-            return annotations[0].category();
-        } else {
-            return ACAQAlgorithmCategory.Internal;
-        }
-    }
-
-    /**
-     * Returns information about the algorithm input.
-     * Note: The information generally describes the possible slots only roughly. Algorithms have the capability to
-     * modify their slot configuration.
-     * @param klass
-     * @return
-     */
-    public static AlgorithmInputSlot[] getInputOf(Class<? extends ACAQAlgorithm> klass) {
-        return klass.getAnnotationsByType(AlgorithmInputSlot.class);
-    }
-
-    /**
-     * Returns information about the algorithm output.
-     * Note: The information generally describes the possible slots only roughly. Algorithms have the capability to
-     * modify their slot configuration.
-     * @param klass
-     * @return
-     */
-    public static AlgorithmOutputSlot[] getOutputOf(Class<? extends ACAQAlgorithm> klass) {
-        return klass.getAnnotationsByType(AlgorithmOutputSlot.class);
+        return getDeclaration().getUnwantedTraits();
     }
 
     public ACAQSlotConfiguration getSlotConfiguration() {
@@ -313,14 +250,6 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
         this.location = location;
     }
 
-    public static <T extends ACAQAlgorithm> T createInstance(Class<? extends T> klass) {
-        try {
-            return klass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public void fromJson(JsonNode node) {
         if (node.has("acaq:slot-configuration"))
             slotConfiguration.fromJson(node.get("acaq:slot-configuration"));
@@ -373,14 +302,18 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
         this.internalStoragePath = internalStoragePath;
     }
 
+    public ACAQAlgorithmDeclaration getDeclaration() {
+        return declaration;
+    }
+
     public static class Serializer extends JsonSerializer<ACAQAlgorithm> {
         @Override
         public void serialize(ACAQAlgorithm algorithm, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeObjectField("acaq:slot-configuration", algorithm.slotConfiguration);
-            jsonGenerator.writeObjectField("acaq:algorithm-class", algorithm.getClass().getCanonicalName());
             jsonGenerator.writeNumberField("acaq:algorithm-location-x", algorithm.location.x);
             jsonGenerator.writeNumberField("acaq:algorithm-location-y", algorithm.location.y);
+            jsonGenerator.writeObject(algorithm.getDeclaration());
             for (Map.Entry<String, ACAQParameterAccess> kv : ACAQParameterAccess.getParameters(algorithm).entrySet()) {
                 jsonGenerator.writeObjectField(kv.getKey(), kv.getValue().get());
             }

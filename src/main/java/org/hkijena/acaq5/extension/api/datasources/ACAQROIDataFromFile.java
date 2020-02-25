@@ -3,6 +3,7 @@ package org.hkijena.acaq5.extension.api.datasources;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQSimpleDataSource;
@@ -23,8 +24,8 @@ public class ACAQROIDataFromFile extends ACAQSimpleDataSource<ACAQROIData> {
 
     private Path fileName;
 
-    public ACAQROIDataFromFile() {
-        super("Mask", ACAQROIDataSlot.class, ACAQROIData.class);
+    public ACAQROIDataFromFile(ACAQAlgorithmDeclaration declaration) {
+        super("Mask", declaration, ACAQROIDataSlot.class, ACAQROIData.class);
     }
 
     public ACAQROIDataFromFile(ACAQROIDataFromFile other) {

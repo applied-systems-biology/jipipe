@@ -21,19 +21,21 @@ public class ACAQParameterAccessUI extends FormPanel {
     public void reloadForm() {
         clear();
         Map<String, ACAQParameterAccess> parameters = ACAQParameterAccess.getParameters(getParameterHolder());
-        if(!parameters.isEmpty()) {
-            for(String key : parameters.keySet().stream().sorted().collect(Collectors.toList())) {
-                ACAQParameterAccess parameterAccess = parameters.get(key);
-                ACAQParameterEditorUI ui = ACAQRegistryService.getInstance()
-                        .getUIParametertypeRegistry().createEditorFor(parameterAccess);
+        boolean hasAddedParameters = false;
+        for (String key : parameters.keySet().stream().sorted().collect(Collectors.toList())) {
+            ACAQParameterAccess parameterAccess = parameters.get(key);
+            if (parameterAccess.isHidden())
+                continue;
+            ACAQParameterEditorUI ui = ACAQRegistryService.getInstance()
+                    .getUIParametertypeRegistry().createEditorFor(parameterAccess);
 
-                if(ui.isUILabelEnabled())
-                    addToForm(ui, new JLabel(parameterAccess.getName()), null);
-                else
-                    addToForm(ui, null);
-            }
+            if (ui.isUILabelEnabled())
+                addToForm(ui, new JLabel(parameterAccess.getName()), null);
+            else
+                addToForm(ui, null);
+            hasAddedParameters = true;
         }
-        else {
+        if (!hasAddedParameters) {
             addToForm(new JLabel("There are no parameters",
                             UIUtils.getIconFromResources("info.png"), JLabel.LEFT),
                     null);

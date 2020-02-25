@@ -4,7 +4,9 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
@@ -55,7 +57,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
         toolBar.setFloatable(false);
 
         JLabel algorithmNameLabel = new JLabel(algorithm.getName(), new ColorIcon(16, 16, algorithm.getCategory().getColor(0.1f, 0.9f)), JLabel.LEFT);
-        algorithmNameLabel.setToolTipText(TooltipUtils.getAlgorithmTooltip(algorithm.getClass()));
+        algorithmNameLabel.setToolTipText(TooltipUtils.getAlgorithmTooltip(algorithm.getDeclaration()));
         toolBar.add(algorithmNameLabel);
         toolBar.add(Box.createHorizontalStrut(5));
         JLabel slotNameLabel = new JLabel(outputSlot.getName(), ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(outputSlot.getAcceptedDataType()), JLabel.LEFT);
@@ -83,27 +85,27 @@ public class ACAQAlgorithmFinderUI extends JPanel {
     private void reloadAlgorithmList() {
         formPanel.clear();
 
-        List<Class<? extends ACAQAlgorithm>> algorithms = getFilteredAndSortedCompatibleTargetAlgorithms();
+        List<ACAQAlgorithmDeclaration> algorithms = getFilteredAndSortedCompatibleTargetAlgorithms();
         Set<ACAQAlgorithm> knownTargetAlgorithms = graph.getTargetSlots(outputSlot).stream().map(ACAQDataSlot::getAlgorithm).collect(Collectors.toSet());
 
         if(!algorithms.isEmpty()) {
-            Map<Class<? extends ACAQAlgorithm>, Integer> scores = new HashMap<>();
-            for (Class<? extends ACAQAlgorithm> targetAlgorithm : algorithms) {
+            Map<ACAQAlgorithmDeclaration, Integer> scores = new HashMap<>();
+            for (ACAQAlgorithmDeclaration targetAlgorithm : algorithms) {
                 scores.put(targetAlgorithm, scoreAlgorithmForOutputSlot(targetAlgorithm, outputSlot, graph));
             }
             int maxScore = scores.values().stream().max(Integer::compareTo).orElse(0);
 
-            for (Class<? extends ACAQAlgorithm> targetAlgorithmClass : algorithms) {
-                int score = scores.get(targetAlgorithmClass);
+            for (ACAQAlgorithmDeclaration targetAlgorithm : algorithms) {
+                int score = scores.get(targetAlgorithm);
                 // Add a generic one for creating a new instance
                 {
-                    ACAQAlgorithmFinderAlgorithmUI algorithmUI = new ACAQAlgorithmFinderAlgorithmUI(outputSlot, graph, targetAlgorithmClass, score, maxScore);
+                    ACAQAlgorithmFinderAlgorithmUI algorithmUI = new ACAQAlgorithmFinderAlgorithmUI(outputSlot, graph, targetAlgorithm, score, maxScore);
                     algorithmUI.getEventBus().register(this);
                     formPanel.addToForm(algorithmUI, null);
                 }
 
                 // Add existing instances
-                for(ACAQAlgorithm existing : graph.getAlgorithmNodes().values().stream().filter(a -> a.getClass().equals(targetAlgorithmClass)).collect(Collectors.toList())) {
+                for(ACAQAlgorithm existing : graph.getAlgorithmNodes().values().stream().filter(a -> a.getClass().equals(targetAlgorithm)).collect(Collectors.toList())) {
                     if(existing == outputSlot.getAlgorithm())
                         continue;
                     if(knownTargetAlgorithms.contains(existing)) {
@@ -126,11 +128,11 @@ public class ACAQAlgorithmFinderUI extends JPanel {
         formPanel.addVerticalGlue();
     }
 
-    private List<Class<? extends ACAQAlgorithm>> getFilteredAndSortedCompatibleTargetAlgorithms() {
+    private List<ACAQAlgorithmDeclaration> getFilteredAndSortedCompatibleTargetAlgorithms() {
         String[] searchStrings = getSearchStrings();
-        Predicate<Class<? extends ACAQAlgorithm>> filterFunction = aClass -> {
+        Predicate<ACAQAlgorithmDeclaration> filterFunction = declaration -> {
             if(searchStrings != null && searchStrings.length > 0) {
-                String name = ACAQAlgorithm.getNameOf(aClass);
+                String name = declaration.getName();
                 for (String searchString : searchStrings) {
                     if(name.toLowerCase().contains(searchString.toLowerCase()))
                         return true;
@@ -144,7 +146,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
         return findCompatibleTargetAlgorithms(outputSlot).stream().filter(filterFunction).sorted(this::compareAlgorithmScore).collect(Collectors.toList());
     }
 
-    private int compareAlgorithmScore(Class<? extends ACAQAlgorithm> algorithmClass, Class<? extends ACAQAlgorithm> algorithmClass2) {
+    private int compareAlgorithmScore(ACAQAlgorithmDeclaration algorithmClass, ACAQAlgorithmDeclaration algorithmClass2) {
         return -Integer.compare(scoreAlgorithmForOutputSlot(algorithmClass, outputSlot, graph),
                 scoreAlgorithmForOutputSlot(algorithmClass2, outputSlot, graph));
     }
@@ -165,9 +167,9 @@ public class ACAQAlgorithmFinderUI extends JPanel {
         eventBus.post(event);
     }
 
-    public static int scoreAlgorithmForOutputSlot(Class<? extends ACAQAlgorithm> algorithmClass, ACAQDataSlot<?> slot, ACAQAlgorithmGraph graph) {
-        Set<Class<? extends ACAQTrait>> preferredTraits = ACAQRegistryService.getInstance().getAlgorithmRegistry().getPreferredTraitsOf(algorithmClass);
-        Set<Class<? extends ACAQTrait>> unwantedTraits = ACAQRegistryService.getInstance().getAlgorithmRegistry().getUnwantedTraitsOf(algorithmClass);
+    public static int scoreAlgorithmForOutputSlot(ACAQAlgorithmDeclaration declaration, ACAQDataSlot<?> slot, ACAQAlgorithmGraph graph) {
+        Set<Class<? extends ACAQTrait>> preferredTraits = declaration.getPreferredTraits();
+        Set<Class<? extends ACAQTrait>> unwantedTraits = declaration.getUnwantedTraits();
         int score = 0;
         for (Class<? extends ACAQTrait> trait : graph.getAlgorithmTraits().getOrDefault(slot, Collections.emptySet())) {
             if(preferredTraits.contains(trait)) {
@@ -183,12 +185,12 @@ public class ACAQAlgorithmFinderUI extends JPanel {
         return score;
     }
 
-    public static List<Class<? extends ACAQAlgorithm>> findCompatibleTargetAlgorithms(ACAQDataSlot<?> slot) {
-        List<Class<? extends ACAQAlgorithm>> result = new ArrayList<>();
-        for (Class<? extends ACAQAlgorithm> algorithmClass : ACAQRegistryService.getInstance().getAlgorithmRegistry().getRegisteredAlgorithms()) {
-            for (Class<? extends ACAQDataSlot<?>> inputSlotClass : ACAQRegistryService.getInstance().getAlgorithmRegistry().getInputTypesOf(algorithmClass)) {
+    public static List<ACAQAlgorithmDeclaration> findCompatibleTargetAlgorithms(ACAQDataSlot<?> slot) {
+        List<ACAQAlgorithmDeclaration> result = new ArrayList<>();
+        for (ACAQAlgorithmDeclaration declaration : ACAQRegistryService.getInstance().getAlgorithmRegistry().getRegisteredAlgorithms()) {
+            for (Class<? extends ACAQDataSlot<?>> inputSlotClass : declaration.getInputSlots().stream().map(AlgorithmInputSlot::value).collect(Collectors.toList())) {
                 if(inputSlotClass.isAssignableFrom(slot.getClass())) {
-                    result.add(algorithmClass);
+                    result.add(declaration);
                     break;
                 }
             }

@@ -1,12 +1,18 @@
 package org.hkijena.acaq5.api;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
+import com.fasterxml.jackson.databind.JsonNode;
+import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQInputAsOutputSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
+import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitConfiguration;
+import org.hkijena.acaq5.api.traits.AddsTrait;
+import org.hkijena.acaq5.api.traits.RemovesTrait;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 /**
  * An internal node that interfaces sample-specific processing with the analysis
@@ -23,7 +29,7 @@ import org.hkijena.acaq5.api.traits.ACAQTraitConfiguration;
 public class ACAQPreprocessingOutput extends ACAQAlgorithm {
 
     public ACAQPreprocessingOutput(ACAQSlotConfiguration slotConfiguration, ACAQTraitConfiguration traitConfiguration) {
-        super(slotConfiguration, traitConfiguration);
+        super(new Declaration(), slotConfiguration, traitConfiguration);
     }
 
     @Override
@@ -40,5 +46,73 @@ public class ACAQPreprocessingOutput extends ACAQAlgorithm {
     @Override
     public void reportValidity(ACAQValidityReport report) {
 
+    }
+
+    public static class Declaration implements ACAQAlgorithmDeclaration {
+
+        @Override
+        public Class<? extends ACAQAlgorithm> getAlgorithmClass() {
+            return ACAQPreprocessingOutput.class;
+        }
+
+        @Override
+        public ACAQAlgorithm newInstance() {
+            return null;
+        }
+
+        @Override
+        public ACAQAlgorithm clone(ACAQAlgorithm algorithm) {
+            return null;
+        }
+
+        @Override
+        public String getName() {
+            return "Preprocessing output";
+        }
+
+        @Override
+        public String getDescription() {
+            return null;
+        }
+
+        @Override
+        public ACAQAlgorithmCategory getCategory() {
+            return ACAQAlgorithmCategory.Internal;
+        }
+
+        @Override
+        public Set<Class<? extends ACAQTrait>> getPreferredTraits() {
+            return Collections.emptySet();
+        }
+
+        @Override
+        public Set<Class<? extends ACAQTrait>> getUnwantedTraits() {
+            return Collections.emptySet();
+        }
+
+        @Override
+        public List<AddsTrait> getAddedTraits() {
+            return Collections.emptyList();
+        }
+
+        @Override
+        public List<RemovesTrait> getRemovedTraits() {
+            return Collections.emptyList();
+        }
+
+        @Override
+        public List<AlgorithmInputSlot> getInputSlots() {
+            return Collections.emptyList();
+        }
+
+        @Override
+        public List<AlgorithmOutputSlot> getOutputSlots() {
+            return Collections.emptyList();
+        }
+
+        @Override
+        public boolean matches(JsonNode node) {
+            return false;
+        }
     }
 }

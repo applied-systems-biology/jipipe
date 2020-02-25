@@ -14,8 +14,6 @@ import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.traits.bioobject.count.ClusterBioObjects;
-import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.BioObjectsPreparations;
-import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.BioObjectsLabeling;
 import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.UniformlyLabeledBioObjects;
 import org.hkijena.acaq5.extension.api.traits.quality.ImageQuality;
 import org.hkijena.acaq5.extension.api.traits.quality.NonUniformBrightnessQuality;
@@ -43,7 +41,8 @@ public class AutoThresholdSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleIma
 
     private AutoThresholder.Method method = AutoThresholder.Method.Default;
 
-    public AutoThresholdSegmenter() {
+    public AutoThresholdSegmenter(ACAQAlgorithmDeclaration declaration) {
+        super(declaration);
     }
 
     public AutoThresholdSegmenter(AutoThresholdSegmenter other) {

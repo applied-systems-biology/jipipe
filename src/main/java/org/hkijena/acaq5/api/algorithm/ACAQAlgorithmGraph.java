@@ -422,8 +422,8 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
                 algorithms.get(kv.getKey()).fromJson(kv.getValue());
             }
             else {
-                String className = kv.getValue().get("acaq:algorithm-class").asText();
-                ACAQAlgorithm algorithm = ACAQRegistryService.getInstance().getAlgorithmRegistry().createInstanceFromClassName(className);
+                ACAQAlgorithmDeclaration declaration = ACAQRegistryService.getInstance().getAlgorithmRegistry().findMatchingDeclaration(kv.getValue());
+                ACAQAlgorithm algorithm = declaration.newInstance();
                 algorithm.fromJson(kv.getValue());
                 insertNode(kv.getKey(), algorithm);
             }

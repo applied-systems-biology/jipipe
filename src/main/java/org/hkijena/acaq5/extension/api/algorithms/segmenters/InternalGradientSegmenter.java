@@ -18,7 +18,6 @@ import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
-import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.BioObjectsPreparations;
 import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.MembraneLabeledBioObjects;
 import org.hkijena.acaq5.extension.api.traits.quality.ImageQuality;
 import org.hkijena.acaq5.utils.ImageJUtils;
@@ -43,10 +42,11 @@ public class InternalGradientSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscale
     private int dilationIterations = 3;
     private int erosionIterations = 2;
 
-    private AutoThresholdSegmenter autoThresholdSegmenter = new AutoThresholdSegmenter();
-    private CLAHEImageEnhancer claheImageEnhancer = new CLAHEImageEnhancer();
+    private AutoThresholdSegmenter autoThresholdSegmenter = new AutoThresholdSegmenter(new ACAQEmptyAlgorithmDeclaration());
+    private CLAHEImageEnhancer claheImageEnhancer = new CLAHEImageEnhancer(new ACAQEmptyAlgorithmDeclaration());
 
-    public InternalGradientSegmenter() {
+    public InternalGradientSegmenter(ACAQAlgorithmDeclaration declaration) {
+        super(declaration);
     }
 
     public InternalGradientSegmenter(InternalGradientSegmenter other) {

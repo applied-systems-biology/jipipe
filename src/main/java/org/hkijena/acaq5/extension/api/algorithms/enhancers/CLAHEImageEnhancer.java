@@ -41,7 +41,8 @@ public class CLAHEImageEnhancer extends ACAQSimpleAlgorithm<ACAQGreyscaleImageDa
     private float maxSlope = 3.0f;
     private boolean fastMode = false;
 
-    public CLAHEImageEnhancer() {
+    public CLAHEImageEnhancer(ACAQAlgorithmDeclaration declaration) {
+        super(declaration);
     }
 
     public CLAHEImageEnhancer(CLAHEImageEnhancer other) {

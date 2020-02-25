@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.api.data;
 
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQMutableTraitGenerator;
 
 /**
@@ -10,8 +11,8 @@ public abstract class ACAQDataSource<T extends ACAQData> extends ACAQAlgorithm {
 
     private Class<? extends ACAQData> generatedDataClass;
 
-    public ACAQDataSource(ACAQMutableSlotConfiguration configuration, Class<? extends T> generatedDataClass) {
-        super(configuration, new ACAQMutableTraitGenerator(configuration));
+    public ACAQDataSource(ACAQAlgorithmDeclaration declaration, ACAQMutableSlotConfiguration configuration, Class<? extends T> generatedDataClass) {
+        super(declaration, configuration, new ACAQMutableTraitGenerator(configuration));
         this.generatedDataClass = generatedDataClass;
         if(configuration.hasInputSlots())
             throw new IllegalArgumentException("Data sources cannot have input slots!");

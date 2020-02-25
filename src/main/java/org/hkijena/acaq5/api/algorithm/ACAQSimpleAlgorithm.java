@@ -13,14 +13,15 @@ public abstract class ACAQSimpleAlgorithm<IData extends ACAQData, OData extends 
 
     /**
      * Instantiates the algorithm with autoconfiguration via {@link AlgorithmInputSlot} and {@link AlgorithmOutputSlot}
+     * @param declaration
      */
-    public ACAQSimpleAlgorithm() {
-        super(null, null);
+    public ACAQSimpleAlgorithm(ACAQAlgorithmDeclaration declaration) {
+        super(declaration, null, null);
     }
 
-    public ACAQSimpleAlgorithm(String inputSlotName, Class<? extends ACAQDataSlot<IData>> inputSlotClass,
+    public ACAQSimpleAlgorithm(ACAQAlgorithmDeclaration declaration, String inputSlotName, Class<? extends ACAQDataSlot<IData>> inputSlotClass,
                                String outputSlotName, Class<? extends ACAQDataSlot<OData>> outputSlotClass) {
-        super(ACAQMutableSlotConfiguration.builder()
+        super(declaration, ACAQMutableSlotConfiguration.builder()
                 .addInputSlot(inputSlotName, inputSlotClass)
                 .addOutputSlot(outputSlotName, outputSlotClass)
                 .seal()

@@ -112,6 +112,11 @@ public class ACAQParameterAccess {
         return null;
     }
 
+    public boolean isHidden() {
+        return getGetter().getAnnotationsByType(ACAQHiddenParameter.class).length > 0 ||
+                getSetter().getAnnotationsByType(ACAQHiddenParameter.class).length > 0;
+    }
+
     public <T> T get() {
         try {
             return (T)getGetter().invoke(parameterHolder);

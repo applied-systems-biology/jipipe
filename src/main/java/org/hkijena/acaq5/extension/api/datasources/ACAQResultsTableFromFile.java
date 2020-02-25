@@ -4,6 +4,7 @@ import ij.measure.ResultsTable;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQSimpleDataSource;
@@ -22,8 +23,8 @@ public class ACAQResultsTableFromFile extends ACAQSimpleDataSource<ACAQResultsTa
 
     private Path fileName;
 
-    public ACAQResultsTableFromFile() {
-        super("Results table", ACAQResultsTableDataSlot.class, ACAQResultsTableData.class);
+    public ACAQResultsTableFromFile(ACAQAlgorithmDeclaration declaration) {
+        super("Results table", declaration, ACAQResultsTableDataSlot.class, ACAQResultsTableData.class);
     }
 
     public ACAQResultsTableFromFile(ACAQResultsTableFromFile other) {

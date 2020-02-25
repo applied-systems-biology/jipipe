@@ -23,8 +23,8 @@ import java.util.List;
 // Traits
 @AutoTransferTraits
 public class MergeROIEnhancer extends ACAQAlgorithm {
-    public MergeROIEnhancer() {
-        super(ACAQMutableSlotConfiguration.builder().restrictInputTo(ACAQROIDataSlot.class)
+    public MergeROIEnhancer(ACAQAlgorithmDeclaration declaration) {
+        super(declaration, ACAQMutableSlotConfiguration.builder().restrictInputTo(ACAQROIDataSlot.class)
         .addOutputSlot("ROI", ACAQROIDataSlot.class)
         .sealOutput().build(), null);
     }

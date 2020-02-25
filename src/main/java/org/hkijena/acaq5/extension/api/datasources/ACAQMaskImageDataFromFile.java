@@ -4,6 +4,7 @@ import ij.IJ;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQSimpleDataSource;
@@ -24,8 +25,8 @@ public class ACAQMaskImageDataFromFile extends ACAQSimpleDataSource<ACAQMaskData
 
     private Path fileName;
 
-    public ACAQMaskImageDataFromFile() {
-        super("Mask", ACAQMaskDataSlot.class, ACAQMaskData.class);
+    public ACAQMaskImageDataFromFile(ACAQAlgorithmDeclaration declaration) {
+        super("Mask", declaration, ACAQMaskDataSlot.class, ACAQMaskData.class);
     }
 
     public ACAQMaskImageDataFromFile(ACAQMaskImageDataFromFile other) {

@@ -18,7 +18,6 @@ import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.traits.bioobject.count.ClusterBioObjects;
 import org.hkijena.acaq5.extension.api.traits.bioobject.morphology.RoundBioObjects;
-import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.BioObjectsPreparations;
 import org.hkijena.acaq5.extension.api.traits.quality.ImageQuality;
 import org.hkijena.acaq5.utils.Hough_Circle;
 
@@ -49,7 +48,8 @@ public class HoughSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, 
     private int bandwidth = 10;
     private int localRadius = 10;
 
-    public HoughSegmenter() {
+    public HoughSegmenter(ACAQAlgorithmDeclaration declaration) {
+        super(declaration);
     }
 
     public HoughSegmenter(HoughSegmenter other) {
