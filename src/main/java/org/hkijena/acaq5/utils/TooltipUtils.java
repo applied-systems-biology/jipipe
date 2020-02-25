@@ -1,13 +1,15 @@
 package org.hkijena.acaq5.utils;
 
 import org.hkijena.acaq5.ACAQRegistryService;
-import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
+import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.AddsTrait;
 import org.hkijena.acaq5.api.traits.RemovesTrait;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;

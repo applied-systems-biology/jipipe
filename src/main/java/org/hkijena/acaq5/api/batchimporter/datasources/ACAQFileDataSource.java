@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.api.batchimporter.datasources;
 
-import ij.IJ;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
@@ -11,8 +10,6 @@ import org.hkijena.acaq5.api.batchimporter.dataslots.ACAQFileDataSlot;
 import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFileData;
 import org.hkijena.acaq5.api.data.ACAQSimpleDataSource;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
-import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

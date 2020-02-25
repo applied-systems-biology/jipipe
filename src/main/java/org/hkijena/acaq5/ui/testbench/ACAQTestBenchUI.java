@@ -1,10 +1,9 @@
 package org.hkijena.acaq5.ui.testbench;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.acaq5.api.ACAQMutableRunConfiguration;
 import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.ACAQRunSample;
-import org.hkijena.acaq5.api.ACAQMutableRunConfiguration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
@@ -27,8 +26,8 @@ import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 public class ACAQTestBenchUI extends ACAQUIPanel {
 

@@ -13,6 +13,7 @@ import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFileData;
 import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFilesData;
 import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFolderData;
 import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFoldersData;
+import org.hkijena.acaq5.api.batchimporter.traits.ProjectSampleTrait;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
@@ -69,5 +70,7 @@ public class ACAQBatchImporterExtensionService extends AbstractService implement
         registryService.getAlgorithmRegistry().register(ACAQSelectFolder.class);
         registryService.getAlgorithmRegistry().register(ACAQListFiles.class);
         registryService.getAlgorithmRegistry().register(ACAQListSubfolders.class);
+
+        registryService.getTraitRegistry().register(ProjectSampleTrait.class);
     }
 }

@@ -3,7 +3,6 @@ package org.hkijena.acaq5.extension.api.datatypes;
 import ij.gui.Roi;
 import ij.io.RoiDecoder;
 import ij.io.RoiEncoder;
-import ij.plugin.frame.RoiManager;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.utils.PathUtils;

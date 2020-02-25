@@ -7,7 +7,6 @@ import org.hkijena.acaq5.api.traits.RemovesTrait;
 
 import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
 
 public interface ACAQAlgorithmDeclaration {
     /**

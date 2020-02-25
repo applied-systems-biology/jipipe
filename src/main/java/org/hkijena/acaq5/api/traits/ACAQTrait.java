@@ -52,7 +52,7 @@ public interface ACAQTrait {
     static Set<Class<? extends ACAQTrait>> getCategoriesOf(Class<? extends ACAQTrait> klass) {
         Set<Class<? extends ACAQTrait>> result = new HashSet<>();
         for(TypeToken<?> type : TypeToken.of(klass).getTypes().interfaces()) {
-            if(type.getRawType().getAnnotationsByType(CategoryTrait.class).length > 0) {
+            if(type.getRawType().getAnnotationsByType(HiddenTrait.class).length > 0) {
                 result.add((Class<? extends ACAQTrait>) type.getRawType());
             }
         }
@@ -72,7 +72,7 @@ public interface ACAQTrait {
      * @return
      */
     static boolean isHidden(Class<? extends ACAQTrait> klass) {
-        return klass.getAnnotationsByType(CategoryTrait.class).length > 0;
+        return klass.getAnnotationsByType(HiddenTrait.class).length > 0;
     }
 
     /**

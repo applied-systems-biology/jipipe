@@ -7,6 +7,7 @@ import org.hkijena.acaq5.api.batchimporter.dataslots.ACAQFolderDataSlot;
 import org.hkijena.acaq5.api.batchimporter.dataslots.ACAQFoldersDataSlot;
 import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFolderData;
 import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFoldersData;
+import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,6 +20,9 @@ import java.util.stream.Collectors;
 // Algorithm flow
 @AlgorithmInputSlot(value = ACAQFolderDataSlot.class, slotName = "Folder", autoCreate = true)
 @AlgorithmOutputSlot(value = ACAQFoldersDataSlot.class, slotName = "Subfolders", autoCreate = true)
+
+// Traits
+@AutoTransferTraits
 public class ACAQListSubfolders extends ACAQSimpleAlgorithm<ACAQFolderData, ACAQFoldersData> {
 
     public ACAQListSubfolders(ACAQAlgorithmDeclaration declaration) {

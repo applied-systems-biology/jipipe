@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.ui.components;
 
-import com.google.common.base.Joiner;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;

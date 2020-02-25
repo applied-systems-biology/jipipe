@@ -3,7 +3,6 @@ package org.hkijena.acaq5.api.batchimporter.dataypes;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.data.ACAQData;
 
-import java.io.IOException;
 import java.nio.file.Path;
 
 @ACAQDocumentation(name = "File")

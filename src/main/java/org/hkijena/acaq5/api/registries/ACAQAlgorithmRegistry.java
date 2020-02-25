@@ -2,13 +2,18 @@ package org.hkijena.acaq5.api.registries;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.acaq5.ACAQRegistryService;
-import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.api.algorithm.ACAQDefaultAlgorithmDeclaration;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQDataSource;
 import org.hkijena.acaq5.api.traits.*;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
