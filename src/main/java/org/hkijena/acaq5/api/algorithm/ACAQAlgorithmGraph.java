@@ -482,6 +482,11 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
                 }
             }
         }
+        for(ACAQAlgorithm missing : algorithms.values()) {
+            if(!visited.contains(missing)) {
+                result.add(missing);
+            }
+        }
         return result;
     }
 

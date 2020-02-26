@@ -74,28 +74,59 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
      * Adds node UIs that are not in the canvas yet
      */
     private void addNewNodes() {
-        List<ACAQAlgorithm> newNodes = algorithmGraph.getAlgorithmNodes().values().stream().filter(x -> !nodeUIs.containsKey(x)).collect(Collectors.toList());
-        for(ACAQAlgorithm algorithm : newNodes) {
-            int y = nodeUIs.values().stream().map(ACAQAlgorithmUI::getBottomY).max(Integer::compareTo).orElse(0);
-            int x = newEntryLocationX;
-            if(y == 0)
-                y += 2 * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
-            else
-                y += ACAQAlgorithmUI.SLOT_UI_HEIGHT;
-
-            // Align X position to grid
-            x = (int)Math.ceil(x * 1.0 / ACAQAlgorithmUI.SLOT_UI_WIDTH) * ACAQAlgorithmUI.SLOT_UI_WIDTH;
+        for(ACAQAlgorithm algorithm : algorithmGraph.traverseAlgorithms()) {
+            if(nodeUIs.containsKey(algorithm))
+                continue;
 
             ACAQAlgorithmUI ui = new ACAQAlgorithmUI(this, algorithm);
             ui.getEventBus().register(this);
             add(ui);
             nodeUIs.put(algorithm, ui);
             if(algorithm.getLocation() == null || !ui.trySetLocationNoGrid(algorithm.getLocation().x, algorithm.getLocation().y)) {
-                ui.setLocation(x, y);
+                autoPlaceAlgorithm(ui);
             }
         }
         revalidate();
         repaint();
+    }
+
+    private void autoPlaceAlgorithm(ACAQAlgorithmUI ui) {
+        ACAQAlgorithm targetAlgorithm = ui.getAlgorithm();
+
+        // Find the source algorithm that is right-most
+        ACAQAlgorithmUI rightMostSource = null;
+        for (ACAQDataSlot<?> target : targetAlgorithm.getInputSlots()) {
+            ACAQDataSlot<?> source = algorithmGraph.getSourceSlot(target);
+            if(source != null) {
+                ACAQAlgorithmUI sourceUI = nodeUIs.getOrDefault(source.getAlgorithm(), null);
+                if(sourceUI != null) {
+                    if(rightMostSource == null || sourceUI.getX() > rightMostSource.getX())
+                        rightMostSource = sourceUI;
+                }
+            }
+        }
+
+        // Auto-place
+        int minX = 4 * ACAQAlgorithmUI.SLOT_UI_WIDTH;
+        if(rightMostSource != null) {
+            minX += rightMostSource.getX() + rightMostSource.getWidth();
+            minX += 4 * ACAQAlgorithmUI.SLOT_UI_WIDTH;
+        }
+
+        int minY = Math.max(ui.getY(), 2 * ACAQAlgorithmUI.SLOT_UI_HEIGHT);
+
+        if(ui.getX() < minX) {
+            if(!ui.trySetLocationNoGrid(minX, minY)) {
+                int y = nodeUIs.values().stream().map(ACAQAlgorithmUI::getBottomY).max(Integer::compareTo).orElse(0);
+                if(y == 0)
+                    y += 2 * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+                else
+                    y += ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+
+                ui.trySetLocationNoGrid(minX, y);
+            }
+        }
+
     }
 
     @Override
@@ -183,18 +214,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         ACAQAlgorithmUI targetNode = nodeUIs.getOrDefault(event.getTarget().getAlgorithm(), null);
 
         if(sourceNode != null && targetNode != null && layoutHelperEnabled) {
-            int minX = sourceNode.getX() + sourceNode.getWidth() + 4 * ACAQAlgorithmUI.SLOT_UI_WIDTH;
-            if(targetNode.getX() < minX) {
-                if(!targetNode.trySetLocationNoGrid(minX, targetNode.getY())) {
-                    int y = nodeUIs.values().stream().map(ACAQAlgorithmUI::getBottomY).max(Integer::compareTo).orElse(0);
-                    if(y == 0)
-                        y += 2 * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
-                    else
-                        y += ACAQAlgorithmUI.SLOT_UI_HEIGHT;
-
-                    targetNode.trySetLocationNoGrid(minX, y);
-                }
-            }
+            autoPlaceAlgorithm(targetNode);
         }
     }
 
@@ -223,8 +243,11 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         for(Map.Entry<ACAQDataSlot<?>, ACAQDataSlot<?>> kv : algorithmGraph.getSlotEdges()) {
             ACAQDataSlot<?> source = kv.getKey();
             ACAQDataSlot<?> target = kv.getValue();
-            ACAQAlgorithmUI sourceUI = nodeUIs.get(source.getAlgorithm());
-            ACAQAlgorithmUI targetUI = nodeUIs.get(target.getAlgorithm());
+            ACAQAlgorithmUI sourceUI = nodeUIs.getOrDefault(source.getAlgorithm(), null);
+            ACAQAlgorithmUI targetUI = nodeUIs.getOrDefault(target.getAlgorithm(), null);
+
+            if(sourceUI == null || targetUI == null)
+                continue;
 
             int sourceY = 0;
             int targetY = 0;
