@@ -12,6 +12,8 @@
 
 package org.hkijena.acaq5.utils;
 
+import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.ui.components.ACAQValidityReportUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 
 import javax.swing.*;
@@ -23,6 +25,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 public class UIUtils {
 
@@ -289,6 +293,35 @@ public class UIUtils {
         builder.append("</tr></table>");
         builder.append("</html>");
         return new JLabel(builder.toString());
+    }
+
+    public static void openErrorDialog(Component parent, Exception exception) {
+        StringWriter writer = new StringWriter();
+        exception.printStackTrace(new PrintWriter(writer));
+        JTextArea errorArea = new JTextArea(writer.toString());
+        errorArea.setEditable(false);
+
+        JDialog dialog = new JDialog();
+        dialog.setTitle("Error");
+        dialog.setContentPane(errorArea);
+        dialog.setModal(false);
+        dialog.pack();
+        dialog.setSize(new Dimension(500,400));
+        dialog.setLocationRelativeTo(parent);
+        dialog.setVisible(true);
+    }
+
+    public static void openValidityReportDialog(Component parent, ACAQValidityReport report) {
+        ACAQValidityReportUI ui = new ACAQValidityReportUI();
+        ui.setReport(report);
+        JDialog dialog = new JDialog();
+        dialog.setTitle("Error");
+        dialog.setContentPane(ui);
+        dialog.setModal(false);
+        dialog.pack();
+        dialog.setSize(new Dimension(500,400));
+        dialog.setLocationRelativeTo(parent);
+        dialog.setVisible(true);
     }
 
 }

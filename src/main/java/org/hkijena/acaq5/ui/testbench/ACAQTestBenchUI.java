@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQMutableRunConfiguration;
 import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.ACAQRunSample;
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
@@ -169,6 +170,15 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
     }
 
     private void newTest() {
+
+        // Check if we are still valid
+        ACAQValidityReport report = new ACAQValidityReport();
+        runAlgorithm.reportValidity(report);
+        if(!report.isValid()) {
+            UIUtils.openValidityReportDialog(this, report);
+            return;
+        }
+
         newTestButton.setEnabled(false);
         Path outputBasePath = run.getConfiguration().getOutputPath().getParent();
         Path outputPath;
@@ -197,7 +207,7 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
     public void onWorkerInterrupted(RunUIWorkerInterruptedEvent event) {
         if(event.getRun() == run) {
             newTestButton.setEnabled(true);
-            openError(event.getException());
+            UIUtils.openErrorDialog(this, event.getException());
         }
     }
 
@@ -217,21 +227,5 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
         repaint();
 
         splitPane.setDividerLocation(dividerLocation);
-    }
-
-    private void openError(Exception exception) {
-        StringWriter writer = new StringWriter();
-        exception.printStackTrace(new PrintWriter(writer));
-        JTextArea errorArea = new JTextArea(writer.toString());
-        errorArea.setEditable(false);
-
-        JDialog dialog = new JDialog();
-        dialog.setTitle("Error");
-        dialog.setContentPane(errorArea);
-        dialog.setModal(false);
-        dialog.pack();
-        dialog.setSize(new Dimension(500,400));
-        dialog.setLocationRelativeTo(this);
-        dialog.setVisible(true);
     }
 }

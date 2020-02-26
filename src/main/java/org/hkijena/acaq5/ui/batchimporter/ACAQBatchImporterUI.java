@@ -1,18 +1,23 @@
 package org.hkijena.acaq5.ui.batchimporter;
 
 import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.batchimporter.ACAQBatchImporter;
 import org.hkijena.acaq5.api.batchimporter.algorithms.ACAQSubfoldersAsSamples;
 import org.hkijena.acaq5.api.batchimporter.datasources.ACAQFolderDataSource;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.components.ConfirmingButton;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Set;
 
 public class ACAQBatchImporterUI extends ACAQUIPanel {
 
@@ -59,7 +64,7 @@ public class ACAQBatchImporterUI extends ACAQUIPanel {
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton runButton = new JButton("Import", UIUtils.getIconFromResources("import.png"));
+        ConfirmingButton runButton = new ConfirmingButton("Import", UIUtils.getIconFromResources("import.png"));
         runButton.addActionListener(e -> runImport());
         toolBar.add(runButton);
 
@@ -67,7 +72,58 @@ public class ACAQBatchImporterUI extends ACAQUIPanel {
     }
 
     private void runImport() {
-        batchImporter.run(s -> {}, () -> false);
+        ACAQValidityReport report = new ACAQValidityReport();
+        batchImporter.reportValidity(report);
+        if(!report.isValid()) {
+            UIUtils.openValidityReportDialog(this, report);
+            return;
+        }
+
+        Set<String> conflictingSamples = batchImporter.getConflictingSamples();
+
+        if(!conflictingSamples.isEmpty()) {
+
+            StringBuilder builder = new StringBuilder();
+            builder.append("<html>");
+            builder.append("The batch importer detected following samples that already exist:<br/><br/>");
+            for (String conflictingSample : conflictingSamples) {
+                builder.append("<i>").append(conflictingSample).append("</i><br/>");
+            }
+            builder.append("<br/><br/>");
+            builder.append("You can either skip already existing samples, overwrite them, or rename new samples and leave existing ones untouched.");
+            builder.append("<br>What should be done?");
+            builder.append("</html>");
+
+            int option = JOptionPane.showOptionDialog(this,
+                    builder.toString(),
+                    "Batch-import",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    new Object[]{"Skip", "Overwrite", "Rename", "Cancel"},
+                    "Cancel");
+            switch(option) {
+                case 0:
+                    batchImporter.setConflictResolution(ACAQBatchImporter.ConflictResolution.Skip);
+                    break;
+                case 1:
+                    batchImporter.setConflictResolution(ACAQBatchImporter.ConflictResolution.Overwrite);
+                    break;
+                case 2:
+                    batchImporter.setConflictResolution(ACAQBatchImporter.ConflictResolution.Rename);
+                    break;
+                default:
+                    return;
+            }
+        }
+
+        try {
+            batchImporter.run(s -> {}, () -> false);
+            getWorkbenchUI().sendStatusBarText("Imported " + batchImporter.getLastImportedSamples().size() + " samples via batch-importer");
+        }
+        catch (Exception e) {
+            UIUtils.openErrorDialog(this, e);
+        }
     }
 
     private void save() {

@@ -90,6 +90,13 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         repaint();
     }
 
+    /**
+     * Auto-layouts all UIs
+     */
+    public void autoLayoutAll() {
+
+    }
+
     private void autoPlaceAlgorithm(ACAQAlgorithmUI ui) {
         ACAQAlgorithm targetAlgorithm = ui.getAlgorithm();
 
