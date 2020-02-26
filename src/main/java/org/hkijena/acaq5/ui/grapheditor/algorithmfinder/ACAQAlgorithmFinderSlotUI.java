@@ -17,6 +17,7 @@ public class ACAQAlgorithmFinderSlotUI extends JPanel {
 
     private ACAQDataSlot<?> outputSlot;
     private ACAQAlgorithmGraph graph;
+    private String compartment;
     private ACAQDataSlot<?> inputSlot;
     private boolean isExistingInstance;
     private EventBus eventBus = new EventBus();
@@ -24,9 +25,10 @@ public class ACAQAlgorithmFinderSlotUI extends JPanel {
     private JButton assignButton;
     private JPopupMenu assignButtonMenu;
 
-    public ACAQAlgorithmFinderSlotUI(ACAQDataSlot<?> outputSlot, ACAQAlgorithmGraph graph, ACAQDataSlot<?> inputSlot, boolean isExistingInstance) {
+    public ACAQAlgorithmFinderSlotUI(ACAQDataSlot<?> outputSlot, ACAQAlgorithmGraph graph, String compartment, ACAQDataSlot<?> inputSlot, boolean isExistingInstance) {
         this.outputSlot = outputSlot;
         this.graph = graph;
+        this.compartment = compartment;
         this.inputSlot = inputSlot;
         this.isExistingInstance = isExistingInstance;
         initialize();
@@ -77,13 +79,13 @@ public class ACAQAlgorithmFinderSlotUI extends JPanel {
     }
 
     private void connectToNewInstance() {
-        graph.insertNode(inputSlot.getAlgorithm());
+        graph.insertNode(inputSlot.getAlgorithm(), compartment);
         graph.connect(outputSlot, inputSlot);
         eventBus.post(new AlgorithmFinderSuccessEvent(outputSlot, inputSlot));
     }
 
     private void disconnectAllExistingInstance() {
-        graph.disconnectAll(inputSlot);
+        graph.disconnectAll(inputSlot, true);
         reloadAssignMenu();
     }
 
@@ -99,5 +101,9 @@ public class ACAQAlgorithmFinderSlotUI extends JPanel {
 
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    public String getCompartment() {
+        return compartment;
     }
 }

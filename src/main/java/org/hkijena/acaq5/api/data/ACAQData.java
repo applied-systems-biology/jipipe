@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.api.data;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.traits.ACAQTrait;
 
 import java.io.IOException;
 import java.nio.file.Path;

@@ -1,11 +1,8 @@
 package org.hkijena.acaq5.ui.batchimporter;
 
-import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.batchimporter.ACAQBatchImporter;
-import org.hkijena.acaq5.api.batchimporter.algorithms.ACAQSubfoldersAsSamples;
-import org.hkijena.acaq5.api.batchimporter.datasources.ACAQFolderDataSource;
-import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.ConfirmingButton;
@@ -15,8 +12,6 @@ import org.hkijena.acaq5.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Set;
 
 public class ACAQBatchImporterUI extends ACAQUIPanel {
@@ -32,19 +27,19 @@ public class ACAQBatchImporterUI extends ACAQUIPanel {
     }
 
     private void initializeGraphWithDefaults() {
-        ACAQAlgorithmRegistry algorithmRegistry = ACAQRegistryService.getInstance().getAlgorithmRegistry();
-        ACAQFolderDataSource source = (ACAQFolderDataSource) algorithmRegistry.getDefaultDeclarationFor(ACAQFolderDataSource.class).newInstance();
-        ACAQSubfoldersAsSamples sampleGenerator = (ACAQSubfoldersAsSamples) algorithmRegistry.getDefaultDeclarationFor(ACAQSubfoldersAsSamples.class).newInstance();
-
-        batchImporter.getGraph().insertNode(source);
-        batchImporter.getGraph().insertNode(sampleGenerator);
-
-        batchImporter.getGraph().connect(source.getOutputSlot(), sampleGenerator.getInputSlots().get(0));
+//        ACAQAlgorithmRegistry algorithmRegistry = ACAQRegistryService.getInstance().getAlgorithmRegistry();
+//        ACAQFolderDataSource source = (ACAQFolderDataSource) algorithmRegistry.getDefaultDeclarationFor(ACAQFolderDataSource.class).newInstance();
+//        ACAQSubfoldersAsSamples sampleGenerator = (ACAQSubfoldersAsSamples) algorithmRegistry.getDefaultDeclarationFor(ACAQSubfoldersAsSamples.class).newInstance();
+//
+//        batchImporter.getGraph().insertNode(source);
+//        batchImporter.getGraph().insertNode(sampleGenerator);
+//
+//        batchImporter.getGraph().connect(source.getOutputSlot(), sampleGenerator.getInputSlots().get(0));
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
-        graphUI = new ACAQAlgorithmGraphUI(getWorkbenchUI(), batchImporter.getGraph());
+        graphUI = new ACAQAlgorithmGraphUI(getWorkbenchUI(), batchImporter.getGraph(), ACAQAlgorithmGraph.COMPARTMENT_BATCHIMPORTER);
         add(graphUI, BorderLayout.CENTER);
 
         initializeToolbar();
@@ -148,7 +143,7 @@ public class ACAQBatchImporterUI extends ACAQUIPanel {
             try {
                 batchImporter = ACAQBatchImporter.loadFromFile(fileChooser.getSelectedFile().toPath(), getProject());
                 remove(graphUI);
-                graphUI = new ACAQAlgorithmGraphUI(getWorkbenchUI(), batchImporter.getGraph());
+                graphUI = new ACAQAlgorithmGraphUI(getWorkbenchUI(), batchImporter.getGraph(), ACAQAlgorithmGraph.COMPARTMENT_BATCHIMPORTER);
                 add(graphUI, BorderLayout.CENTER);
                 revalidate();
                 repaint();

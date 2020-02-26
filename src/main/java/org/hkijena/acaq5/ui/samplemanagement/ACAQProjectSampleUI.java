@@ -27,7 +27,7 @@ public class ACAQProjectSampleUI extends ACAQUIPanel {
         setLayout(new BorderLayout());
         initializeTitlePanel();
 
-        algorithmGraphUI = new ACAQAlgorithmGraphUI(getWorkbenchUI(), sample.getPreprocessingGraph());
+        algorithmGraphUI = new ACAQAlgorithmGraphUI(getWorkbenchUI(), sample.getProject().getGraph(), sample.getName());
         add(algorithmGraphUI, BorderLayout.CENTER);
     }
 

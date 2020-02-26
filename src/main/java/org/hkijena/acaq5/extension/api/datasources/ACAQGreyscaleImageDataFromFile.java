@@ -17,7 +17,7 @@ import java.nio.file.Path;
  */
 @ACAQDocumentation(name = "Greyscale image from file")
 @AlgorithmOutputSlot(value = ACAQGreyscaleImageDataSlot.class, slotName = "Greyscale image", autoCreate = true)
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource, visibility = ACAQAlgorithmVisibility.PreprocessingAnalysisOnly)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource, visibility = ACAQAlgorithmVisibility.Analysis)
 public class ACAQGreyscaleImageDataFromFile extends ACAQSimpleDataSource<ACAQGreyscaleImageData> {
 
     private Path fileName;

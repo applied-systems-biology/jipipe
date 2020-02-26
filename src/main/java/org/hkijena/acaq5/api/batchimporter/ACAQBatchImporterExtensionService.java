@@ -92,11 +92,11 @@ public class ACAQBatchImporterExtensionService extends AbstractService implement
     }
 
     private void registerSourceGeneratorAlgorithms(ACAQRegistryService registryService) {
-        for(ACAQAlgorithmDeclaration declaration : ImmutableList.copyOf(registryService.getAlgorithmRegistry().getRegisteredAlgorithms())) {
-            if(declaration.getCategory() == ACAQAlgorithmCategory.DataSource) {
-                ACAQDataSourceFromFileAlgorithmDeclaration wrappedDeclaration = new ACAQDataSourceFromFileAlgorithmDeclaration(declaration);
-                registryService.getAlgorithmRegistry().register(wrappedDeclaration);
-            }
-        }
+//        for(ACAQAlgorithmDeclaration declaration : ImmutableList.copyOf(registryService.getAlgorithmRegistry().getRegisteredAlgorithms())) {
+//            if(declaration.getCategory() == ACAQAlgorithmCategory.DataSource) {
+//                ACAQDataSourceFromFileAlgorithmDeclaration wrappedDeclaration = new ACAQDataSourceFromFileAlgorithmDeclaration(declaration);
+//                registryService.getAlgorithmRegistry().register(wrappedDeclaration);
+//            }
+//        }
     }
 }

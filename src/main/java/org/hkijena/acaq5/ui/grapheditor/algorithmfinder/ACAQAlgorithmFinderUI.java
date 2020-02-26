@@ -31,11 +31,13 @@ public class ACAQAlgorithmFinderUI extends JPanel {
     private ACAQDataSlot<?> outputSlot;
     private ACAQAlgorithm algorithm;
     private ACAQAlgorithmGraph graph;
+    private String compartment;
     private JXTextField searchField;
     private FormPanel formPanel;
     private EventBus eventBus = new EventBus();
 
-    public ACAQAlgorithmFinderUI(ACAQDataSlot<?> outputSlot, ACAQAlgorithmGraph graph) {
+    public ACAQAlgorithmFinderUI(ACAQDataSlot<?> outputSlot, ACAQAlgorithmGraph graph, String compartment) {
+        this.compartment = compartment;
         if(!outputSlot.isOutput())
             throw new IllegalArgumentException();
         this.outputSlot = outputSlot;
@@ -100,7 +102,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
                 int score = scores.get(targetAlgorithm);
                 // Add a generic one for creating a new instance
                 {
-                    ACAQAlgorithmFinderAlgorithmUI algorithmUI = new ACAQAlgorithmFinderAlgorithmUI(outputSlot, graph, targetAlgorithm, score, maxScore);
+                    ACAQAlgorithmFinderAlgorithmUI algorithmUI = new ACAQAlgorithmFinderAlgorithmUI(outputSlot, graph, compartment, targetAlgorithm, score, maxScore);
                     algorithmUI.getEventBus().register(this);
                     formPanel.addToForm(algorithmUI, null);
                 }
@@ -118,7 +120,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
                             continue;
                         }
                     }
-                    ACAQAlgorithmFinderAlgorithmUI algorithmUI = new ACAQAlgorithmFinderAlgorithmUI(outputSlot, graph, existing, score, maxScore);
+                    ACAQAlgorithmFinderAlgorithmUI algorithmUI = new ACAQAlgorithmFinderAlgorithmUI(outputSlot, graph, compartment, existing, score, maxScore);
                     algorithmUI.getEventBus().register(this);
                     formPanel.addToForm(algorithmUI, null);
                 }
@@ -206,5 +208,9 @@ public class ACAQAlgorithmFinderUI extends JPanel {
 
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    public String getCompartment() {
+        return compartment;
     }
 }

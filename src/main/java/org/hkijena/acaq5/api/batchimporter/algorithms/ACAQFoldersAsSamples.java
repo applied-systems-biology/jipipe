@@ -12,7 +12,7 @@ import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import org.hkijena.acaq5.api.traits.BadForTrait;
 
 @ACAQDocumentation(name = "Folders as samples", description = "Makes that each individual folder is seen as sample")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.FileSystem, visibility = ACAQAlgorithmVisibility.BatchImporterOnly)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.FileSystem, visibility = ACAQAlgorithmVisibility.BatchImporter)
 
 // Algorithm flow
 @AlgorithmInputSlot(value = ACAQFoldersDataSlot.class, slotName = "Folders", autoCreate = true)

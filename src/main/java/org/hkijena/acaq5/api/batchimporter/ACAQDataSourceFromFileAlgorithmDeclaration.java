@@ -11,7 +11,6 @@ import org.hkijena.acaq5.api.batchimporter.algorithms.ACAQDataSourceFromFile;
 import org.hkijena.acaq5.api.batchimporter.dataslots.ACAQFilesDataSlot;
 import org.hkijena.acaq5.api.batchimporter.dataslots.ACAQFoldersDataSlot;
 import org.hkijena.acaq5.api.batchimporter.traits.ProjectSampleTrait;
-import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
@@ -102,7 +101,7 @@ public class ACAQDataSourceFromFileAlgorithmDeclaration implements ACAQAlgorithm
 
     @Override
     public ACAQAlgorithmVisibility getVisibility() {
-        return ACAQAlgorithmVisibility.BatchImporterOnly;
+        return ACAQAlgorithmVisibility.BatchImporter;
     }
 
     @Override

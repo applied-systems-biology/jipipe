@@ -3,7 +3,7 @@ package org.hkijena.acaq5.ui.grapheditor.algorithmfinder;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQRegistryService;
-import org.hkijena.acaq5.api.ACAQPreprocessingOutput;
+import org.hkijena.acaq5.api.compartments.algorithms.ACAQPreprocessingOutput;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
@@ -30,10 +30,12 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
     private boolean isExistingInstance;
     private JPanel slotPanel;
     private EventBus eventBus = new EventBus();
+    private String compartment;
 
-    public ACAQAlgorithmFinderAlgorithmUI(ACAQDataSlot<?> outputSlot, ACAQAlgorithmGraph graph, ACAQAlgorithmDeclaration declaration, int score, int maxScore) {
+    public ACAQAlgorithmFinderAlgorithmUI(ACAQDataSlot<?> outputSlot, ACAQAlgorithmGraph graph, String compartment, ACAQAlgorithmDeclaration declaration, int score, int maxScore) {
         this.outputSlot = outputSlot;
         this.graph = graph;
+        this.compartment = compartment;
         this.score = score;
         this.maxScore = maxScore;
         this.algorithm = declaration.newInstance();
@@ -42,9 +44,10 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
         initialize();
     }
 
-    public ACAQAlgorithmFinderAlgorithmUI(ACAQDataSlot<?> outputSlot, ACAQAlgorithmGraph graph, ACAQAlgorithm algorithm, int score, int maxScore) {
+    public ACAQAlgorithmFinderAlgorithmUI(ACAQDataSlot<?> outputSlot, ACAQAlgorithmGraph graph, String compartment, ACAQAlgorithm algorithm, int score, int maxScore) {
         this.outputSlot = outputSlot;
         this.graph = graph;
+        this.compartment = compartment;
         this.score = score;
         this.maxScore = maxScore;
         this.algorithm = algorithm;
@@ -105,7 +108,7 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
         }
 
         for(ACAQDataSlot<?> slot : algorithm.getInputSlots()) {
-            ACAQAlgorithmFinderSlotUI ui = new ACAQAlgorithmFinderSlotUI(outputSlot, graph, slot, isExistingInstance);
+            ACAQAlgorithmFinderSlotUI ui = new ACAQAlgorithmFinderSlotUI(outputSlot, graph, compartment, slot, isExistingInstance);
             ui.getEventBus().register(this);
             slotPanel.add(ui);
         }

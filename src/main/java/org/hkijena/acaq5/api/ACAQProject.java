@@ -13,7 +13,12 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmVisibility;
-import org.hkijena.acaq5.api.data.ACAQInputAsOutputSlotConfiguration;
+import org.hkijena.acaq5.api.compartments.ACAQAlgorithmInputDeclaration;
+import org.hkijena.acaq5.api.compartments.ACAQAnalysisInputSlotConfiguration;
+import org.hkijena.acaq5.api.compartments.algorithms.ACAQAlgorithmInput;
+import org.hkijena.acaq5.api.compartments.algorithms.ACAQPreprocessingOutput;
+import org.hkijena.acaq5.api.compartments.ACAQPreprocessingOutputSlotConfiguration;
+import org.hkijena.acaq5.api.compartments.dataslots.ACAQPreprocessingOutputDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.SampleAddedEvent;
 import org.hkijena.acaq5.api.events.SampleRemovedEvent;
@@ -34,30 +39,35 @@ import java.util.Map;
 public class ACAQProject implements ACAQValidatable {
     private EventBus eventBus = new EventBus();
     private BiMap<String, ACAQProjectSample> samples = HashBiMap.create();
-    private ACAQMutableSlotConfiguration preprocessingOutputConfiguration = ACAQMutableSlotConfiguration.builder().withoutOutput().build();
-    private ACAQMutableSlotConfiguration analysisOutputConfiguration = ACAQMutableSlotConfiguration.builder().withoutOutput().build();
+
+    private ACAQMutableSlotConfiguration preprocessingOutputConfiguration;
+    private ACAQAnalysisInputSlotConfiguration analysisInputSlotConfiguration;
     private ACAQMutableTraitGenerator preprocessingTraitConfiguration;
-    private ACAQAlgorithmGraph analysis = new ACAQAlgorithmGraph(ACAQAlgorithmVisibility.PreprocessingAnalysisOnly);
+    private ACAQAlgorithmInput algorithmInput;
+    private ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph(ACAQAlgorithmVisibility.Analysis);
 
     public ACAQProject() {
+        preprocessingOutputConfiguration = ACAQMutableSlotConfiguration.builder()
+                .addOutputSlot("Data", ACAQPreprocessingOutputDataSlot.class).sealOutput().build();
         preprocessingTraitConfiguration = new ACAQMutableTraitGenerator(preprocessingOutputConfiguration);
-        analysis.insertNode(new ACAQPreprocessingOutput(new ACAQInputAsOutputSlotConfiguration(preprocessingOutputConfiguration), preprocessingTraitConfiguration));
+
+        analysisInputSlotConfiguration = new ACAQAnalysisInputSlotConfiguration(preprocessingOutputConfiguration);
+        algorithmInput = ACAQAlgorithmInputDeclaration.createInstance(analysisInputSlotConfiguration,
+                preprocessingTraitConfiguration);
+        graph.insertNode(algorithmInput,
+                ACAQAlgorithmGraph.COMPARTMENT_ANALYSIS);
     }
 
     public EventBus getEventBus() {
         return eventBus;
     }
 
-    public ACAQAlgorithmGraph getAnalysis() {
-        return analysis;
+    public ACAQAlgorithmGraph getGraph() {
+        return graph;
     }
 
     public ACAQMutableSlotConfiguration getPreprocessingOutputConfiguration() {
         return preprocessingOutputConfiguration;
-    }
-
-    public ACAQMutableSlotConfiguration getAnalysisOutputConfiguration() {
-        return analysisOutputConfiguration;
     }
 
     public ACAQMutableTraitGenerator getPreprocessingTraitConfiguration() {
@@ -68,13 +78,16 @@ public class ACAQProject implements ACAQValidatable {
         return ImmutableBiMap.copyOf(samples);
     }
 
-    public ACAQProjectSample addSample(String sampleName) {
+    public ACAQProjectSample getOrCreate(String sampleName) {
         if(samples.containsKey(sampleName)) {
             return samples.get(sampleName);
         }
         else {
-            ACAQProjectSample sample = new ACAQProjectSample(this);
+            ACAQProjectSample sample = new ACAQProjectSample(this, sampleName);
             samples.put(sampleName, sample);
+            analysisInputSlotConfiguration.addInputSlot("__" + sampleName, ACAQPreprocessingOutputDataSlot.class);
+            graph.connect(sample.getPreprocessingOutput().getSlots().get("Data"),
+                    algorithmInput.getSlots().get("__" + sampleName));
             eventBus.post(new SampleAddedEvent(sample));
             return sample;
         }
@@ -83,7 +96,9 @@ public class ACAQProject implements ACAQValidatable {
     public boolean removeSample(ACAQProjectSample sample) {
         String name = sample.getName();
         if(samples.containsKey(name)) {
+            graph.removeCompartment(name);
             samples.remove(name);
+            analysisInputSlotConfiguration.removeSlot("__" + name);
             eventBus.post(new SampleRemovedEvent(sample));
             return true;
         }
@@ -91,15 +106,17 @@ public class ACAQProject implements ACAQValidatable {
     }
 
     public boolean renameSample(ACAQProjectSample sample, String name) {
-        if(name == null)
-            return false;
-        name = name.trim();
-        if(name.isEmpty() || samples.containsKey(name))
-            return false;
-        samples.remove(sample.getName());
-        samples.put(name, sample);
-        eventBus.post(new SampleRenamedEvent(sample));
-        return true;
+        throw new UnsupportedOperationException();
+//        if(name == null)
+//            return false;
+//        name = name.trim();
+//        if(name.isEmpty() || samples.containsKey(name))
+//            return false;
+//        samples.remove(sample.getName());
+//        samples.put(name, sample);
+//        sample.setName(name);
+//        eventBus.post(new SampleRenamedEvent(sample));
+//        return true;
     }
 
     public void saveProject(Path fileName) throws IOException {
@@ -127,7 +144,11 @@ public class ACAQProject implements ACAQValidatable {
         for(Map.Entry<String, ACAQProjectSample> entry : samples.entrySet()) {
             entry.getValue().reportValidity(report.forCategory("Data").forCategory(entry.getKey()));
         }
-        analysis.reportValidity(report.forCategory("Analysis"));
+        graph.reportValidity(report.forCategory("Analysis"));
+    }
+
+    public ACAQAlgorithmInput getAlgorithmInput() {
+        return algorithmInput;
     }
 
     public static class Serializer extends JsonSerializer<ACAQProject> {
@@ -145,7 +166,7 @@ public class ACAQProject implements ACAQValidatable {
 
             jsonGenerator.writeObjectField("preprocessing-output-slots", project.preprocessingOutputConfiguration);
             jsonGenerator.writeObjectField("preprocessing-output-slot-traits", project.preprocessingTraitConfiguration);
-            jsonGenerator.writeObjectField("algorithm-graph", project.analysis);
+            jsonGenerator.writeObjectField("algorithm-graph", project.graph);
 
             jsonGenerator.writeEndObject();
         }
@@ -188,7 +209,7 @@ public class ACAQProject implements ACAQValidatable {
 
         private void readAlgorithm(ACAQProject project, JsonNode node) {
             if(node.has("algorithm-graph")) {
-                project.analysis.fromJson(node.get("algorithm-graph"));
+                project.graph.fromJson(node.get("algorithm-graph"));
             }
             if(node.has("preprocessing-output-slot-traits")) {
                 project.preprocessingTraitConfiguration.fromJson(node.get("preprocessing-output-slot-traits"));
@@ -197,7 +218,7 @@ public class ACAQProject implements ACAQValidatable {
 
         private void readSamples(ACAQProject project, JsonNode node) {
             for(Map.Entry<String, JsonNode> kv : ImmutableList.copyOf(node.fields())) {
-                ACAQProjectSample sample = project.addSample(kv.getKey());
+                ACAQProjectSample sample = project.getOrCreate(kv.getKey());
                 sample.fromJson(kv.getValue());
             }
         }

@@ -9,13 +9,12 @@ import org.hkijena.acaq5.api.batchimporter.dataslots.ACAQFoldersDataSlot;
 import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFolderData;
 import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFoldersData;
 import org.hkijena.acaq5.api.batchimporter.traits.ProjectSampleTrait;
-import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.traits.AddsTrait;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import org.hkijena.acaq5.api.traits.BadForTrait;
 
 @ACAQDocumentation(name = "Subfolders as samples", description = "Lists all subfolders of the input folder, and marks them as samples")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.FileSystem, visibility = ACAQAlgorithmVisibility.BatchImporterOnly)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.FileSystem, visibility = ACAQAlgorithmVisibility.BatchImporter)
 
 // Algorithm flow
 @AlgorithmInputSlot(value = ACAQFoldersDataSlot.class, slotName = "Folder", autoCreate = true)

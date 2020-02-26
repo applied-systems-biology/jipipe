@@ -25,6 +25,8 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
     private ACAQAlgorithmGraphCanvasUI graphUI;
     protected JMenuBar menuBar = new JMenuBar();
     private ACAQAlgorithmGraph algorithmGraph;
+    private String compartment;
+
     private JSplitPane splitPane;
     private JScrollPane scrollPane;
     private ACAQAlgorithmSettingsPanelUI currentAlgorithmSettings;
@@ -35,9 +37,10 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
     private boolean isPanning = false;
     private JToggleButton switchPanningDirectionButton;
 
-    public ACAQAlgorithmGraphUI(ACAQWorkbenchUI workbenchUI, ACAQAlgorithmGraph algorithmGraph) {
+    public ACAQAlgorithmGraphUI(ACAQWorkbenchUI workbenchUI, ACAQAlgorithmGraph algorithmGraph, String compartment) {
         super(workbenchUI);
         this.algorithmGraph = algorithmGraph;
+        this.compartment = compartment;
         initialize();
     }
 
@@ -54,7 +57,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
             }
         });
 
-        graphUI = new ACAQAlgorithmGraphCanvasUI(algorithmGraph);
+        graphUI = new ACAQAlgorithmGraphCanvasUI(algorithmGraph, compartment);
         graphUI.getEventBus().register(this);
         graphUI.addMouseListener(this);
         graphUI.addMouseMotionListener(this);
@@ -132,7 +135,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
                 continue;
             JMenuItem addItem = new JMenuItem(declaration.getName(), icon);
             addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
-            addItem.addActionListener(e -> algorithmGraph.insertNode(declaration.newInstance()));
+            addItem.addActionListener(e -> algorithmGraph.insertNode(declaration.newInstance(), compartment));
             menu.add(addItem);
             isEmpty = false;
         }
@@ -154,7 +157,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
                     continue;
                 JMenuItem addItem = new JMenuItem(declaration.getName(), icon);
                 addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
-                addItem.addActionListener(e -> algorithmGraph.insertNode(declaration.newInstance()));
+                addItem.addActionListener(e -> algorithmGraph.insertNode(declaration.newInstance(), compartment));
                 dataMenu.add(addItem);
                 isEmpty = false;
             }
@@ -236,5 +239,9 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
     @Override
     public void mouseMoved(MouseEvent e) {
 
+    }
+
+    public String getCompartment() {
+        return compartment;
     }
 }

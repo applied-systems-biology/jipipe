@@ -53,21 +53,21 @@ public class ACAQDataSourceFromFile extends ACAQAlgorithm {
     }
 
     private void processInputFilesSlot(ACAQFilesDataSlot inputSlot) {
-        for(ACAQFileData file : inputSlot.getData().getFiles()) {
-            String sampleName = (String) file.findAnnotation(ProjectSampleTrait.FILESYSTEM_ANNOTATION_SAMPLE);
-            ACAQProjectSample sample = batchImporter.getTargetSample(sampleName);
-            if(sample == null)
-                continue;
-
-            ACAQAlgorithmGraph graph = sample.getPreprocessingGraph();
-            ACAQAlgorithm dataSource = ((ACAQDataSourceFromFileAlgorithmDeclaration)getDeclaration()).getWrappedAlgorithmDeclaration().newInstance();
-            Map<String, ACAQParameterAccess> parameters = ACAQParameterAccess.getParameters(dataSource);
-            ACAQParameterAccess parameterAccess = parameters.get(inputSlot.getName());
-            parameterAccess.set(file.getFilePath());
-
-            String algorithmName = batchImporter.getGraph().getIdOf(this);
-            graph.insertNode(algorithmName, dataSource);
-        }
+//        for(ACAQFileData file : inputSlot.getData().getFiles()) {
+//            String sampleName = (String) file.findAnnotation(ProjectSampleTrait.FILESYSTEM_ANNOTATION_SAMPLE);
+//            ACAQProjectSample sample = batchImporter.getTargetSample(sampleName);
+//            if(sample == null)
+//                continue;
+//
+//            ACAQAlgorithmGraph graph = sample.getPreprocessingGraph();
+//            ACAQAlgorithm dataSource = ((ACAQDataSourceFromFileAlgorithmDeclaration)getDeclaration()).getWrappedAlgorithmDeclaration().newInstance();
+//            Map<String, ACAQParameterAccess> parameters = ACAQParameterAccess.getParameters(dataSource);
+//            ACAQParameterAccess parameterAccess = parameters.get(inputSlot.getName());
+//            parameterAccess.set(file.getFilePath());
+//
+//            String algorithmName = batchImporter.getGraph().getIdOf(this);
+//            graph.insertNode(algorithmName, dataSource);
+//        }
     }
 
     @Override

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.hkijena.acaq5.api.ACAQPreprocessingOutput;
+import org.hkijena.acaq5.api.compartments.algorithms.ACAQPreprocessingOutput;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.ACAQProjectSample;
 import org.hkijena.acaq5.api.ACAQRunnable;
@@ -12,7 +12,6 @@ import org.hkijena.acaq5.api.ACAQRunnerStatus;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmVisibility;
 import org.hkijena.acaq5.api.batchimporter.algorithms.ACAQDataSourceFromFile;
@@ -39,7 +38,7 @@ import java.util.stream.Collectors;
 @JsonSerialize(using = ACAQBatchImporter.Serializer.class)
 public class ACAQBatchImporter implements ACAQRunnable, ACAQValidatable {
     private ACAQProject project;
-    private ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph(ACAQAlgorithmVisibility.BatchImporterOnly);
+    private ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph(ACAQAlgorithmVisibility.BatchImporter);
     private ConflictResolution conflictResolution = ConflictResolution.Skip;
     private Map<String, ACAQProjectSample> currentSampleAssignment = new HashMap<>();
 
@@ -49,8 +48,8 @@ public class ACAQBatchImporter implements ACAQRunnable, ACAQValidatable {
     }
 
     private void initialize() {
-        graph.insertNode(new ACAQPreprocessingOutput(project.getPreprocessingOutputConfiguration(),
-                project.getPreprocessingTraitConfiguration()));
+//        graph.insertNode(new ACAQPreprocessingOutput(project.getPreprocessingOutputConfiguration(),
+//                project.getPreprocessingTraitConfiguration()), ACAQAlgorithmGraph.COMPARTMENT_BATCHIMPORTER);
     }
 
     public ACAQAlgorithmGraph getGraph() {
@@ -144,55 +143,55 @@ public class ACAQBatchImporter implements ACAQRunnable, ACAQValidatable {
     @Override
     public void run(Consumer<ACAQRunnerStatus> onProgress, Supplier<Boolean> isCancelled) {
 
-        Set<ACAQAlgorithm> dataGenerationAlgorithms = getDataGenerationAlgorithms();
-
-        runFilesystemAlgorithms();
-
-        // Find the association batch-sample -> project sample
-        registerSamples();
-
-        // Run data generation
-        for(ACAQAlgorithm algorithm : graph.getAlgorithmNodes().values()) {
-            if (algorithm instanceof ACAQDataSourceFromFile) {
-                ((ACAQDataSourceFromFile) algorithm).setBatchImporter(this);
-                algorithm.run();
-            }
-        }
-
-        // Generate algorithms
-        for(ACAQAlgorithm algorithm : graph.getAlgorithmNodes().values()) {
-            if(algorithm.getCategory() == ACAQAlgorithmCategory.Internal)
-                continue;
-            if(!dataGenerationAlgorithms.contains(algorithm)) {
-                for(ACAQProjectSample sample : currentSampleAssignment.values()) {
-                    ACAQAlgorithm copy = ACAQAlgorithm.clone(algorithm);
-                    copy.setLocation(null);
-                    sample.getPreprocessingGraph().insertNode(graph.getIdOf(algorithm), copy);
-                }
-            }
-        }
-
-        // Add connections
-        for(ACAQAlgorithm targetAlgorithm : graph.getAlgorithmNodes().values()) {
-            String targetAlgorithmId = graph.getIdOf(targetAlgorithm);
-            if (!dataGenerationAlgorithms.contains(targetAlgorithm)) {
-                for(ACAQProjectSample sample : currentSampleAssignment.values()) {
-                    ACAQAlgorithm targetCopy = sample.getPreprocessingGraph().getAlgorithmNodes().get(targetAlgorithmId);
-
-                    for (ACAQDataSlot<?> targetSlot : targetAlgorithm.getInputSlots()) {
-                        ACAQDataSlot<?> sourceSlot = graph.getSourceSlot(targetSlot);
-                        String sourceAlgorithmId = graph.getIdOf(sourceSlot.getAlgorithm());
-                        ACAQAlgorithm sourceCopy = sample.getPreprocessingGraph().getAlgorithmNodes().get(sourceAlgorithmId);
-
-                        ACAQDataSlot<?> copyTarget = targetCopy.getSlots().get(targetSlot.getName());
-                        ACAQDataSlot<?> copySource = sourceCopy.getSlots().get(sourceSlot.getName());
-
-                        sample.getPreprocessingGraph().connect(copySource, copyTarget);
-                    }
-
-                }
-            }
-        }
+//        Set<ACAQAlgorithm> dataGenerationAlgorithms = getDataGenerationAlgorithms();
+//
+//        runFilesystemAlgorithms();
+//
+//        // Find the association batch-sample -> project sample
+//        registerSamples();
+//
+//        // Run data generation
+//        for(ACAQAlgorithm algorithm : graph.getAlgorithmNodes().values()) {
+//            if (algorithm instanceof ACAQDataSourceFromFile) {
+//                ((ACAQDataSourceFromFile) algorithm).setBatchImporter(this);
+//                algorithm.run();
+//            }
+//        }
+//
+//        // Generate algorithms
+//        for(ACAQAlgorithm algorithm : graph.getAlgorithmNodes().values()) {
+//            if(algorithm.getCategory() == ACAQAlgorithmCategory.Internal)
+//                continue;
+//            if(!dataGenerationAlgorithms.contains(algorithm)) {
+//                for(ACAQProjectSample sample : currentSampleAssignment.values()) {
+//                    ACAQAlgorithm copy = ACAQAlgorithm.clone(algorithm);
+//                    copy.setLocation(null);
+//                    sample.insertNode(graph.getIdOf(algorithm), copy);
+//                }
+//            }
+//        }
+//
+//        // Add connections
+//        for(ACAQAlgorithm targetAlgorithm : graph.getAlgorithmNodes().values()) {
+//            String targetAlgorithmId = graph.getIdOf(targetAlgorithm);
+//            if (!dataGenerationAlgorithms.contains(targetAlgorithm)) {
+//                for(ACAQProjectSample sample : currentSampleAssignment.values()) {
+//                    ACAQAlgorithm targetCopy = sample.getPreprocessingGraph().getAlgorithmNodes().get(targetAlgorithmId);
+//
+//                    for (ACAQDataSlot<?> targetSlot : targetAlgorithm.getInputSlots()) {
+//                        ACAQDataSlot<?> sourceSlot = graph.getSourceSlot(targetSlot);
+//                        String sourceAlgorithmId = graph.getIdOf(sourceSlot.getAlgorithm());
+//                        ACAQAlgorithm sourceCopy = sample.getPreprocessingGraph().getAlgorithmNodes().get(sourceAlgorithmId);
+//
+//                        ACAQDataSlot<?> copyTarget = targetCopy.getSlots().get(targetSlot.getName());
+//                        ACAQDataSlot<?> copySource = sourceCopy.getSlots().get(sourceSlot.getName());
+//
+//                        sample.getPreprocessingGraph().connect(copySource, copyTarget);
+//                    }
+//
+//                }
+//            }
+//        }
     }
 
     private void registerSamples() {
@@ -266,11 +265,11 @@ public class ACAQBatchImporter implements ACAQRunnable, ACAQValidatable {
                     break;
                 case Overwrite:
                     project.removeSample(project.getSamples().get(sampleName));
-                    currentSampleAssignment.put(sampleName, project.addSample(sampleName));
+                    currentSampleAssignment.put(sampleName, project.getOrCreate(sampleName));
                     break;
                 case Rename: {
                     String newSampleName = StringUtils.makeUniqueString(sampleName, project.getSamples().keySet());
-                    currentSampleAssignment.put(sampleName, project.addSample(newSampleName));
+                    currentSampleAssignment.put(sampleName, project.getOrCreate(newSampleName));
                 }
                     break;
                 default:
@@ -278,7 +277,7 @@ public class ACAQBatchImporter implements ACAQRunnable, ACAQValidatable {
             }
         }
         else {
-            currentSampleAssignment.put(sampleName, project.addSample(sampleName));
+            currentSampleAssignment.put(sampleName, project.getOrCreate(sampleName));
         }
     }
 

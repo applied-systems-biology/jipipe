@@ -3,7 +3,7 @@ package org.hkijena.acaq5.ui.grapheditor;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQRegistryService;
-import org.hkijena.acaq5.api.ACAQPreprocessingOutput;
+import org.hkijena.acaq5.api.compartments.algorithms.ACAQPreprocessingOutput;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
@@ -170,7 +170,7 @@ public class ACAQAlgorithmUI extends JPanel {
                     bottomBorder = 1;
 
                 ACAQDataSlot<?> slot = slots.get(i);
-                ACAQDataSlotUI ui = new ACAQDataSlotUI(graphUI.getAlgorithmGraph(), slot);
+                ACAQDataSlotUI ui = new ACAQDataSlotUI(graphUI.getAlgorithmGraph(), graphUI.getCompartment(), slot);
                 ui.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,0,bottomBorder,1, getAlgorithmBorderColor()),
                         BorderFactory.createEmptyBorder(0,0,0,4)));
                 slotUIList.add(ui);
@@ -184,7 +184,7 @@ public class ACAQAlgorithmUI extends JPanel {
                 if(i < getDisplayedRows() - 1 || createAddInputSlotButton || createAddOutputSlotButton)
                     bottomBorder = 1;
                 ACAQDataSlot<?> slot = slots.get(i);
-                ACAQDataSlotUI ui = new ACAQDataSlotUI(graphUI.getAlgorithmGraph(), slot);
+                ACAQDataSlotUI ui = new ACAQDataSlotUI(graphUI.getAlgorithmGraph(), graphUI.getCompartment(), slot);
                 ui.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,1,bottomBorder,0, getAlgorithmBorderColor()),
                         BorderFactory.createEmptyBorder(0,4,0,0)));
                 slotUIList.add(ui);

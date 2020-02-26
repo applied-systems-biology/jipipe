@@ -30,7 +30,7 @@ public class ACAQDefaultAlgorithmDeclaration extends ACAQMutableAlgorithmDeclara
         setDescription(getDescriptionOf(algorithmClass));
         setCategory(getCategoryOf(algorithmClass));
         if(ACAQDataSource.class.isAssignableFrom(algorithmClass))
-            setVisibility(ACAQAlgorithmVisibility.PreprocessingAnalysisOnly);
+            setVisibility(ACAQAlgorithmVisibility.Analysis);
         else
             setVisibility(getVisiblityOf(algorithmClass));
 

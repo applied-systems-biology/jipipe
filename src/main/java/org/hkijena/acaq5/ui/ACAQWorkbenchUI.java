@@ -2,6 +2,8 @@ package org.hkijena.acaq5.ui;
 
 import org.hkijena.acaq5.ACAQGUICommand;
 import org.hkijena.acaq5.api.ACAQProject;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphUI;
 import org.hkijena.acaq5.ui.running.ACAQRunSettingsUI;
@@ -50,7 +52,7 @@ public class ACAQWorkbenchUI extends JPanel {
                 false);
         documentTabPane.addTab("Analysis",
                 UIUtils.getIconFromResources("cog.png"),
-                new ACAQAlgorithmGraphUI(this, project.getAnalysis()),
+                new ACAQAlgorithmGraphUI(this, project.getGraph(), ACAQAlgorithmGraph.COMPARTMENT_ANALYSIS),
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
         documentTabPane.selectSingletonTab("INTRODUCTION");

@@ -74,7 +74,7 @@ public class ACAQAddSamplesDialog extends JDialog implements WindowListener {
                 String modified = line.trim();
                 if(!modified.isEmpty()) {
                     if(!workbenchUI.getProject().getSamples().containsKey(modified)) {
-                        workbenchUI.getProject().addSample(modified);
+                        workbenchUI.getProject().getOrCreate(modified);
                     }
                 }
             }

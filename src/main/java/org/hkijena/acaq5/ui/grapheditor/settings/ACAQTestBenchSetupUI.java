@@ -145,21 +145,21 @@ public class ACAQTestBenchSetupUI extends ACAQUIPanel {
     }
 
     private void generateTestBench(String sample, Path outputPath) {
-        ACAQMutableRunConfiguration configuration = new ACAQMutableRunConfiguration();
-        configuration.setFlushingEnabled(true);
-        configuration.setFlushingKeepsDataEnabled(true);
-        configuration.setOutputPath(outputPath.resolve("initial"));
-        configuration.setSampleRestrictions(new HashSet<>(Arrays.asList(sample)));
-
-        currentRun = new ACAQRun(getProject(), configuration);
-        configuration.setEndAlgorithm(currentRun.getGraph().getEquivalentOf(algorithm, graph));
-
-        removeAll();
-        ACAQRunExecuterUI executerUI = new ACAQRunExecuterUI(currentRun);
-        add(executerUI, BorderLayout.SOUTH);
-        revalidate();
-        repaint();
-        executerUI.startRun();
+//        ACAQMutableRunConfiguration configuration = new ACAQMutableRunConfiguration();
+//        configuration.setFlushingEnabled(true);
+//        configuration.setFlushingKeepsDataEnabled(true);
+//        configuration.setOutputPath(outputPath.resolve("initial"));
+//        configuration.setSampleRestrictions(new HashSet<>(Arrays.asList(sample)));
+//
+//        currentRun = new ACAQRun(getProject(), configuration);
+//        configuration.setEndAlgorithm(currentRun.getGraph().getEquivalentOf(algorithm, graph));
+//
+//        removeAll();
+//        ACAQRunExecuterUI executerUI = new ACAQRunExecuterUI(currentRun);
+//        add(executerUI, BorderLayout.SOUTH);
+//        revalidate();
+//        repaint();
+//        executerUI.startRun();
     }
 
     @Subscribe

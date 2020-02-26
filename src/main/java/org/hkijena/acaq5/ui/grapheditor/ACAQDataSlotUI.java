@@ -23,13 +23,15 @@ import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_WIDTH;
 
 public class ACAQDataSlotUI extends JPanel {
     private ACAQAlgorithmGraph graph;
+    private String compartment;
     private ACAQDataSlot<?> slot;
     private JButton assignButton;
     private JPopupMenu assignButtonMenu;
     private ACAQDataSlotTraitUI traitUI;
 
-    public ACAQDataSlotUI(ACAQAlgorithmGraph graph, ACAQDataSlot<?> slot) {
+    public ACAQDataSlotUI(ACAQAlgorithmGraph graph, String compartment, ACAQDataSlot<?> slot) {
         this.graph = graph;
+        this.compartment = compartment;
         this.slot = slot;
         initialize();
         reloadPopupMenu();
@@ -57,12 +59,24 @@ public class ACAQDataSlotUI extends JPanel {
             }
         }
         else if(slot.isOutput()) {
-            if(!graph.getTargetSlots(slot).isEmpty()) {
-                JMenuItem disconnectButton = new JMenuItem("Disconnect all", UIUtils.getIconFromResources("remove.png"));
-                disconnectButton.addActionListener(e -> disconnectSlot());
-                assignButtonMenu.add(disconnectButton);
+            Set<ACAQDataSlot<?>> targetSlots = graph.getTargetSlots(slot);
+            if(!targetSlots.isEmpty()) {
 
-                assignButtonMenu.addSeparator();
+                boolean allowDisconnect = false;
+                for (ACAQDataSlot<?> targetSlot : targetSlots) {
+                    if(graph.canUserDisconnect(slot, targetSlot)) {
+                        allowDisconnect = true;
+                        break;
+                    }
+                }
+
+                if(allowDisconnect) {
+                    JMenuItem disconnectButton = new JMenuItem("Disconnect all", UIUtils.getIconFromResources("remove.png"));
+                    disconnectButton.addActionListener(e -> disconnectSlot());
+                    assignButtonMenu.add(disconnectButton);
+
+                    assignButtonMenu.addSeparator();
+                }
             }
             Set<ACAQDataSlot<?>> availableTargets = graph.getAvailableTargets(slot);
 
@@ -84,7 +98,7 @@ public class ACAQDataSlotUI extends JPanel {
     }
 
     private void findAlgorithm(ACAQDataSlot<?> slot) {
-        ACAQAlgorithmFinderUI algorithmFinderUI = new ACAQAlgorithmFinderUI(slot, graph);
+        ACAQAlgorithmFinderUI algorithmFinderUI = new ACAQAlgorithmFinderUI(slot, graph, compartment);
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Find matching algorithm");
         dialog.setModal(true);
         dialog.setContentPane(algorithmFinderUI);
@@ -129,7 +143,7 @@ public class ACAQDataSlotUI extends JPanel {
     }
 
     private void disconnectSlot() {
-        graph.disconnectAll(slot);
+        graph.disconnectAll(slot, true);
     }
 
     private void initialize() {
@@ -202,5 +216,9 @@ public class ACAQDataSlotUI extends JPanel {
             reloadPopupMenu();
             reloadButtonStatus();
         }
+    }
+
+    public String getCompartment() {
+        return compartment;
     }
 }
