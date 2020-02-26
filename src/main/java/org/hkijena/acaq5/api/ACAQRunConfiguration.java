@@ -19,10 +19,10 @@ public interface ACAQRunConfiguration {
     boolean isFlushingEnabled();
 
     /**
-     * If not null, the run is only executed up to the algorithm
+     * If not null, the run is only executed up to the algorithm with given Id
      * @return
      */
-    ACAQAlgorithm getEndAlgorithm();
+    String getEndAlgorithmId();
 
     /**
      * If not null or empty, restrict only to specific samples

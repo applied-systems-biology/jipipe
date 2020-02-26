@@ -11,7 +11,7 @@ import java.util.Set;
 public class ACAQMutableRunConfiguration implements ACAQRunConfiguration {
     private Path outputPath;
     private boolean flushingEnabled = true;
-    private ACAQAlgorithm endAlgorithm;
+    private String endAlgorithmId;
     private Set<String> sampleRestrictions;
     private boolean onlyRunningEndAlgorithm;
     private boolean flushingKeepsDataEnabled = false;
@@ -36,16 +36,6 @@ public class ACAQMutableRunConfiguration implements ACAQRunConfiguration {
 
     public void setFlushingEnabled(boolean flushingEnabled) {
         this.flushingEnabled = flushingEnabled;
-    }
-
-
-    @Override
-    public ACAQAlgorithm getEndAlgorithm() {
-        return endAlgorithm;
-    }
-
-    public void setEndAlgorithm(ACAQAlgorithm endAlgorithm) {
-        this.endAlgorithm = endAlgorithm;
     }
 
     @Override
@@ -73,5 +63,14 @@ public class ACAQMutableRunConfiguration implements ACAQRunConfiguration {
 
     public void setFlushingKeepsDataEnabled(boolean flushingKeepsDataEnabled) {
         this.flushingKeepsDataEnabled = flushingKeepsDataEnabled;
+    }
+
+    @Override
+    public String getEndAlgorithmId() {
+        return endAlgorithmId;
+    }
+
+    public void setEndAlgorithmId(String endAlgorithmId) {
+        this.endAlgorithmId = endAlgorithmId;
     }
 }

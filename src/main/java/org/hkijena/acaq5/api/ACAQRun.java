@@ -230,20 +230,20 @@ public class ACAQRun implements ACAQRunnable {
         List<ACAQDataSlot<?>> traversedSlots = algorithmGraph.traverse();
 
         // Update algorithm limits that may be used by
-        Set<ACAQAlgorithm> algorithmLimits = new HashSet<>();
-        if(configuration.getEndAlgorithm() != null) {
-            if(configuration.isOnlyRunningEndAlgorithm())
-                algorithmLimits.add(configuration.getEndAlgorithm());
-            else {
-                for(ACAQDataSlot<?> slot : configuration.getEndAlgorithm().getOutputSlots()) {
-                    algorithmLimits.addAll(GraphUtils.getAllPredecessors(algorithmGraph.getGraph(), slot)
-                            .stream().map(ACAQDataSlot::getAlgorithm).collect(Collectors.toSet()));
-                }
-            }
-        }
-        else {
-            algorithmLimits.addAll(traversedSlots.stream().map(ACAQDataSlot::getAlgorithm).collect(Collectors.toSet()));
-        }
+//        Set<ACAQAlgorithm> algorithmLimits = new HashSet<>();
+//        if(configuration.getEndAlgorithmId() != null) {
+//            if(configuration.isOnlyRunningEndAlgorithm())
+//                algorithmLimits.add(configuration.getEndAlgorithm());
+//            else {
+//                for(ACAQDataSlot<?> slot : configuration.getEndAlgorithm().getOutputSlots()) {
+//                    algorithmLimits.addAll(GraphUtils.getAllPredecessors(algorithmGraph.getGraph(), slot)
+//                            .stream().map(ACAQDataSlot::getAlgorithm).collect(Collectors.toSet()));
+//                }
+//            }
+//        }
+//        else {
+//            algorithmLimits.addAll(traversedSlots.stream().map(ACAQDataSlot::getAlgorithm).collect(Collectors.toSet()));
+//        }
 
         for(int i = 0; i < traversedSlots.size(); ++i) {
             if (isCancelled.get())
@@ -261,7 +261,7 @@ public class ACAQRun implements ACAQRunnable {
             }
             else if(slot.isOutput()) {
                 // Ensure the algorithm has run
-                if(!executedAlgorithms.contains(slot.getAlgorithm()) && algorithmLimits.contains(slot.getAlgorithm())) {
+                if(!executedAlgorithms.contains(slot.getAlgorithm())) {
                     onProgress.accept(new ACAQRunnerStatus(i, algorithmGraph.getSlotCount(), "Algorithm: " + slot.getAlgorithm().getName()));
                     slot.getAlgorithm().run();
                     executedAlgorithms.add(slot.getAlgorithm());

@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.ui.testbench;
+package org.hkijena.acaq5.api.testbench;
 
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;

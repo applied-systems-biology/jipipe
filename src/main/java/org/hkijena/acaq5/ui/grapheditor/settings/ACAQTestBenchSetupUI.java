@@ -149,7 +149,6 @@ public class ACAQTestBenchSetupUI extends ACAQUIPanel {
         configuration.setFlushingEnabled(true);
         configuration.setFlushingKeepsDataEnabled(true);
         configuration.setOutputPath(outputPath.resolve("initial"));
-        configuration.setEndAlgorithm(algorithm);
         configuration.setSampleRestrictions(new HashSet<>(Arrays.asList(sample)));
 
         currentRun = new ACAQRun(getProject(), configuration);
