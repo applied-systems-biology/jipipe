@@ -148,6 +148,10 @@ public class ACAQDataSourceFromFileAlgorithmDeclaration implements ACAQAlgorithm
         return false;
     }
 
+    public ACAQAlgorithmDeclaration getWrappedAlgorithmDeclaration() {
+        return wrappedAlgorithmDeclaration;
+    }
+
     public static class Serializer extends JsonSerializer<ACAQDataSourceFromFileAlgorithmDeclaration> {
         @Override
         public void serialize(ACAQDataSourceFromFileAlgorithmDeclaration declaration, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {

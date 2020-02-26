@@ -1,32 +1,27 @@
 package org.hkijena.acaq5.ui.events;
 
-import org.hkijena.acaq5.api.ACAQRun;
+import org.hkijena.acaq5.api.ACAQRunnable;
+import org.hkijena.acaq5.api.ACAQRunnerStatus;
 import org.hkijena.acaq5.ui.running.ACAQRunWorker;
 
 public class RunUIWorkerProgressEvent {
     private ACAQRunWorker worker;
-    private int progress;
-    private String message;
+    private ACAQRunnerStatus status;
 
-    public RunUIWorkerProgressEvent(ACAQRunWorker worker, int progress, String message) {
+    public RunUIWorkerProgressEvent(ACAQRunWorker worker, ACAQRunnerStatus status) {
         this.worker = worker;
-        this.progress = progress;
-        this.message = message;
+        this.status = status;
     }
 
     public ACAQRunWorker getWorker() {
         return worker;
     }
 
-    public int getProgress() {
-        return progress;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public ACAQRun getRun() {
+    public ACAQRunnable getRun() {
         return worker.getRun();
+    }
+
+    public ACAQRunnerStatus getStatus() {
+        return status;
     }
 }

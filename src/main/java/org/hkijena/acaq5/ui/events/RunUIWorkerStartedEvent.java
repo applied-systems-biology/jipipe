@@ -1,14 +1,15 @@
 package org.hkijena.acaq5.ui.events;
 
 import org.hkijena.acaq5.api.ACAQRun;
+import org.hkijena.acaq5.api.ACAQRunnable;
 import org.hkijena.acaq5.ui.running.ACAQRunWorker;
 
 public class RunUIWorkerStartedEvent {
 
-    private ACAQRun run;
+    private ACAQRunnable run;
     private ACAQRunWorker worker;
 
-    public RunUIWorkerStartedEvent(ACAQRun run, ACAQRunWorker worker) {
+    public RunUIWorkerStartedEvent(ACAQRunnable run, ACAQRunWorker worker) {
         this.run = run;
         this.worker = worker;
     }
@@ -17,7 +18,7 @@ public class RunUIWorkerStartedEvent {
         return worker;
     }
 
-    public ACAQRun getRun() {
+    public ACAQRunnable getRun() {
         return run;
     }
 }

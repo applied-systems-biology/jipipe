@@ -32,6 +32,8 @@ public abstract class ACAQDataSlot<T extends ACAQData> {
     }
 
     public boolean accepts(ACAQData data) {
+        if(data == null)
+            throw new NullPointerException("Data slots cannot accept null data!");
         return acceptedDataType.isAssignableFrom(data.getClass());
     }
 

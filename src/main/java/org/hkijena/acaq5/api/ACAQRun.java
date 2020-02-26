@@ -8,6 +8,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmVisibility;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.utils.GraphUtils;
 import org.jgrapht.Graphs;
 
 import java.io.IOException;
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
 /**
  * Runnable instance of an {@link ACAQProject}
  */
-public class ACAQRun {
+public class ACAQRun implements ACAQRunnable {
     private ACAQProject project;
     ACAQAlgorithmGraph algorithmGraph;
     private BiMap<String, ACAQRunSample> samples = HashBiMap.create();
@@ -222,7 +223,8 @@ public class ACAQRun {
         }
     }
 
-    public void run(Consumer<Status> onProgress, Supplier<Boolean> isCancelled) {
+    @Override
+    public void run(Consumer<ACAQRunnerStatus> onProgress, Supplier<Boolean> isCancelled) {
         prepare();
         Set<ACAQAlgorithm> executedAlgorithms = new HashSet<>();
         List<ACAQDataSlot<?>> traversedSlots = algorithmGraph.traverse();
@@ -234,7 +236,7 @@ public class ACAQRun {
                 algorithmLimits.add(configuration.getEndAlgorithm());
             else {
                 for(ACAQDataSlot<?> slot : configuration.getEndAlgorithm().getOutputSlots()) {
-                    algorithmLimits.addAll(Graphs.predecessorListOf(algorithmGraph.getGraph(), slot)
+                    algorithmLimits.addAll(GraphUtils.getAllPredecessors(algorithmGraph.getGraph(), slot)
                             .stream().map(ACAQDataSlot::getAlgorithm).collect(Collectors.toSet()));
                 }
             }
@@ -247,7 +249,7 @@ public class ACAQRun {
             if (isCancelled.get())
                 throw new RuntimeException("Execution was cancelled");
             ACAQDataSlot<?> slot = traversedSlots.get(i);
-            onProgress.accept(new Status(i, algorithmGraph.getSlotCount(), slot.getFullName()));
+            onProgress.accept(new ACAQRunnerStatus(i, algorithmGraph.getSlotCount(), slot.getFullName()));
 
             if(slot.isInput()) {
                 // Copy data from source
@@ -260,7 +262,7 @@ public class ACAQRun {
             else if(slot.isOutput()) {
                 // Ensure the algorithm has run
                 if(!executedAlgorithms.contains(slot.getAlgorithm()) && algorithmLimits.contains(slot.getAlgorithm())) {
-                    onProgress.accept(new Status(i, algorithmGraph.getSlotCount(), "Algorithm: " + slot.getAlgorithm().getName()));
+                    onProgress.accept(new ACAQRunnerStatus(i, algorithmGraph.getSlotCount(), "Algorithm: " + slot.getAlgorithm().getName()));
                     slot.getAlgorithm().run();
                     executedAlgorithms.add(slot.getAlgorithm());
                 }
@@ -268,7 +270,7 @@ public class ACAQRun {
                 // Check if we can flush the output
                 flushFinishedSlots(traversedSlots, executedAlgorithms, i, slot);
             }
-            onProgress.accept(new Status(i + 1, algorithmGraph.getSlotCount(), slot.getFullName() + " done"));
+            onProgress.accept(new ACAQRunnerStatus(i + 1, algorithmGraph.getSlotCount(), slot.getFullName() + " done"));
         }
 
         // Postprocessing
@@ -325,27 +327,4 @@ public class ACAQRun {
         return Collections.unmodifiableMap(projectAlgorithms);
     }
 
-    public static class Status {
-        private int progress;
-        private int maxProgress;
-        private String currentTask;
-
-        public Status(int progress, int maxProgress, String currentTask) {
-            this.progress = progress;
-            this.maxProgress = maxProgress;
-            this.currentTask = currentTask;
-        }
-
-        public int getProgress() {
-            return progress;
-        }
-
-        public int getMaxProgress() {
-            return maxProgress;
-        }
-
-        public String getCurrentTask() {
-            return currentTask;
-        }
-    }
 }

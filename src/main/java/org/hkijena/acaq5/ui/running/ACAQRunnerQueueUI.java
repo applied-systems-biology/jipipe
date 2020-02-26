@@ -91,11 +91,11 @@ public class ACAQRunnerQueueUI extends JPanel {
 
     @Subscribe
     public void onWorkerProgress(RunUIWorkerProgressEvent event) {
-        runningQueueProgress.setMaximum(event.getWorker().getMaxProgress());
-        if(event.getProgress() > 0)
-            runningQueueProgress.setValue(event.getProgress());
-        if(event.getMessage() != null)
-            runningQueueProgress.setToolTipText("(" + runningQueueProgress.getValue() + "/" + runningQueueProgress.getMaximum() + ") " + event.getMessage());
+        runningQueueProgress.setMaximum(event.getStatus().getMaxProgress());
+        runningQueueProgress.setValue(event.getStatus().getProgress());
+        if(event.getStatus().getMessage() != null)
+            runningQueueProgress.setToolTipText("(" + runningQueueProgress.getValue() + "/" + runningQueueProgress.getMaximum() + ") " +
+                    event.getStatus().getMessage());
     }
 
 }

@@ -43,8 +43,7 @@ public class ACAQRunExecuterUI extends JPanel {
     public void startRun() {
         ACAQRunWorker worker = ACAQRunnerQueue.getInstance().enqueue(run);
         progressBar.setString("Waiting until other processes are finished ...");
-        progressBar.setMaximum(worker.getMaxProgress());
-        progressBar.setValue(0);
+        progressBar.setIndeterminate(true);
         cancelButton.addActionListener(e -> {
             cancelButton.setEnabled(false);
             ACAQRunnerQueue.getInstance().cancel(run);
@@ -75,11 +74,10 @@ public class ACAQRunExecuterUI extends JPanel {
     @Subscribe
     public void onWorkerProgress(RunUIWorkerProgressEvent event) {
         if(event.getRun() == run) {
-            progressBar.setMaximum(event.getWorker().getMaxProgress());
-            if(event.getProgress() > 0)
-                progressBar.setValue(event.getProgress());
-            if(event.getMessage() != null)
-                progressBar.setString("(" + progressBar.getValue() + "/" + progressBar.getMaximum() + ") " + event.getMessage());
+            progressBar.setIndeterminate(false);
+            progressBar.setMaximum(event.getStatus().getMaxProgress());
+            progressBar.setValue(event.getStatus().getMaxProgress());
+            progressBar.setString("(" + progressBar.getValue() + "/" + progressBar.getMaximum() + ") " + event.getStatus().getMessage());
         }
     }
 

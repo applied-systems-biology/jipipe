@@ -3,6 +3,7 @@ package org.hkijena.acaq5.ui.running;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQRun;
+import org.hkijena.acaq5.api.ACAQRunnable;
 import org.hkijena.acaq5.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.acaq5.ui.events.RunUIWorkerInterruptedEvent;
 import org.hkijena.acaq5.ui.events.RunUIWorkerProgressEvent;
@@ -41,7 +42,7 @@ public class ACAQRunnerQueue {
         return worker;
     }
 
-    public ACAQRunWorker findWorkerOf(ACAQRun run) {
+    public ACAQRunWorker findWorkerOf(ACAQRunnable run) {
         return assignedWorkers.getOrDefault(run, null);
     }
 
@@ -53,7 +54,7 @@ public class ACAQRunnerQueue {
         }
     }
 
-    public void cancel(ACAQRun run) {
+    public void cancel(ACAQRunnable run) {
         if(run == null)
             return;
         ACAQRunWorker worker = findWorkerOf(run);
@@ -97,7 +98,7 @@ public class ACAQRunnerQueue {
         return eventBus;
     }
 
-    public ACAQRun getCurrentRun() {
+    public ACAQRunnable getCurrentRun() {
         return currentlyRunningWorker != null ? currentlyRunningWorker.getRun() : null;
     }
 }

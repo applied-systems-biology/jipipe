@@ -6,6 +6,7 @@ import net.imagej.ops.OpService;
 import org.hkijena.acaq5.api.ACAQMutableRunConfiguration;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.ACAQRun;
+import org.hkijena.acaq5.api.ACAQRunnerStatus;
 import org.scijava.app.StatusService;
 import org.scijava.command.Command;
 import org.scijava.command.CommandService;
@@ -72,9 +73,9 @@ public class ACAQRunCommand implements Command {
         }
     }
 
-    private void onProgress(ACAQRun.Status runStatus) {
+    private void onProgress(ACAQRunnerStatus runStatus) {
         status.showProgress(runStatus.getProgress(), runStatus.getMaxProgress());
-        status.showStatus("ACAQ5: " + runStatus.getCurrentTask());
+        status.showStatus("ACAQ5: " + runStatus.getMessage());
     }
 
     public LogService getLogService() {

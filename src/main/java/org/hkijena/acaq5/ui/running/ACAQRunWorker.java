@@ -1,7 +1,8 @@
 package org.hkijena.acaq5.ui.running;
 
 import com.google.common.eventbus.EventBus;
-import org.hkijena.acaq5.api.ACAQRun;
+import org.hkijena.acaq5.api.ACAQRunnable;
+import org.hkijena.acaq5.api.ACAQRunnerStatus;
 import org.hkijena.acaq5.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.acaq5.ui.events.RunUIWorkerInterruptedEvent;
 import org.hkijena.acaq5.ui.events.RunUIWorkerProgressEvent;
@@ -14,18 +15,14 @@ import java.util.concurrent.ExecutionException;
 public class ACAQRunWorker extends SwingWorker<Exception, Object> {
 
     private EventBus eventBus = new EventBus();
-    private ACAQRun run;
-    private int maxProgress;
+    private ACAQRunnable run;
 
-    public ACAQRunWorker(ACAQRun run) {
+    public ACAQRunWorker(ACAQRunnable run) {
         this.run = run;
-
-        maxProgress = run.getGraph().getAlgorithmCount();
     }
 
-    private void onStatus(ACAQRun.Status status) {
-        publish(status.getCurrentTask());
-        publish(status.getProgress());
+    private void onStatus(ACAQRunnerStatus status) {
+        publish(status);
     }
 
     @Override
@@ -45,11 +42,8 @@ public class ACAQRunWorker extends SwingWorker<Exception, Object> {
     protected void process(List<Object> chunks) {
         super.process(chunks);
         for(Object chunk : chunks) {
-            if(chunk instanceof Integer) {
-                eventBus.post(new RunUIWorkerProgressEvent(this, (Integer) chunk, null));
-            }
-            else if(chunk instanceof String) {
-                eventBus.post(new RunUIWorkerProgressEvent(this, -1, (String) chunk));
+            if(chunk instanceof ACAQRunnerStatus) {
+                eventBus.post(new RunUIWorkerProgressEvent(this, (ACAQRunnerStatus) chunk));
             }
         }
     }
@@ -84,11 +78,7 @@ public class ACAQRunWorker extends SwingWorker<Exception, Object> {
         return eventBus;
     }
 
-    public int getMaxProgress() {
-        return maxProgress;
-    }
-
-    public ACAQRun getRun() {
+    public ACAQRunnable getRun() {
         return run;
     }
 }

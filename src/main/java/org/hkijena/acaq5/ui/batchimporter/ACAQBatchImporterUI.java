@@ -67,7 +67,7 @@ public class ACAQBatchImporterUI extends ACAQUIPanel {
     }
 
     private void runImport() {
-
+        batchImporter.run(s -> {}, () -> false);
     }
 
     private void save() {
