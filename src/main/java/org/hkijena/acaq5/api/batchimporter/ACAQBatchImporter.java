@@ -129,18 +129,20 @@ public class ACAQBatchImporter implements ACAQRunnable {
         }
 
         // Add connections
-        for(ACAQAlgorithm algorithm : graph.getAlgorithmNodes().values()) {
-            String algorithmId = graph.getIdOf(algorithm);
-            if (!dataGenerationAlgorithms.contains(algorithm)) {
+        for(ACAQAlgorithm targetAlgorithm : graph.getAlgorithmNodes().values()) {
+            String targetAlgorithmId = graph.getIdOf(targetAlgorithm);
+            if (!dataGenerationAlgorithms.contains(targetAlgorithm)) {
                 for (String sampleName : sampleNames) {
                     ACAQProjectSample sample = project.addSample(sampleName);
-                    ACAQAlgorithm copy = sample.getPreprocessingGraph().getAlgorithmNodes().get(algorithmId);
+                    ACAQAlgorithm targetCopy = sample.getPreprocessingGraph().getAlgorithmNodes().get(targetAlgorithmId);
 
-                    for (ACAQDataSlot<?> target : algorithm.getInputSlots()) {
-                        ACAQDataSlot<?> source = graph.getSourceSlot(target);
+                    for (ACAQDataSlot<?> targetSlot : targetAlgorithm.getInputSlots()) {
+                        ACAQDataSlot<?> sourceSlot = graph.getSourceSlot(targetSlot);
+                        String sourceAlgorithmId = graph.getIdOf(sourceSlot.getAlgorithm());
+                        ACAQAlgorithm sourceCopy = sample.getPreprocessingGraph().getAlgorithmNodes().get(sourceAlgorithmId);
 
-                        ACAQDataSlot<?> copyTarget = copy.getSlots().get(target.getName());
-                        ACAQDataSlot<?> copySource = copy.getSlots().get(source.getName());
+                        ACAQDataSlot<?> copyTarget = targetCopy.getSlots().get(targetSlot.getName());
+                        ACAQDataSlot<?> copySource = sourceCopy.getSlots().get(sourceSlot.getName());
 
                         sample.getPreprocessingGraph().connect(copySource, copyTarget);
                     }

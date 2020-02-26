@@ -471,6 +471,20 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         return result;
     }
 
+    public List<ACAQAlgorithm> traverseAlgorithms() {
+        Set<ACAQAlgorithm> visited = new HashSet<>();
+        List<ACAQAlgorithm> result = new ArrayList<>();
+        for (ACAQDataSlot<?> slot : traverse()) {
+            if(slot.isOutput()) {
+                if(!visited.contains(slot.getAlgorithm())) {
+                    visited.add(slot.getAlgorithm());
+                    result.add(slot.getAlgorithm());
+                }
+            }
+        }
+        return result;
+    }
+
     public Set<ACAQDataSlot<?>> getSlotNodes() {
         return graph.vertexSet();
     }
