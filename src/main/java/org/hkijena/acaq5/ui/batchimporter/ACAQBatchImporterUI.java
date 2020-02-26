@@ -90,7 +90,12 @@ public class ACAQBatchImporterUI extends ACAQUIPanel {
         fileChooser.setDialogTitle("Open importer configuration (*.json");
         if(fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
-                batchImporter.loadFrom(fileChooser.getSelectedFile().toPath());
+                batchImporter = ACAQBatchImporter.loadFromFile(fileChooser.getSelectedFile().toPath(), getProject());
+                remove(graphUI);
+                graphUI = new ACAQAlgorithmGraphUI(getWorkbenchUI(), batchImporter.getGraph());
+                add(graphUI, BorderLayout.CENTER);
+                revalidate();
+                repaint();
                 getWorkbenchUI().sendStatusBarText("Loaded importer from " + fileChooser.getSelectedFile());
             } catch (IOException e) {
                 throw new RuntimeException(e);

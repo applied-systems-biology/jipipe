@@ -6,16 +6,20 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.acaq5.api.ACAQPreprocessingOutput;
 import org.hkijena.acaq5.api.ACAQProject;
+import org.hkijena.acaq5.api.ACAQProjectSample;
 import org.hkijena.acaq5.api.ACAQRunnable;
 import org.hkijena.acaq5.api.ACAQRunnerStatus;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmVisibility;
 import org.hkijena.acaq5.api.batchimporter.algorithms.ACAQDataSourceFromFile;
+import org.hkijena.acaq5.api.batchimporter.dataslots.ACAQFilesDataSlot;
+import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFilesData;
+import org.hkijena.acaq5.api.batchimporter.traits.ProjectSampleTrait;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.utils.GraphUtils;
 import org.hkijena.acaq5.utils.JsonUtils;
-import org.jgrapht.Graphs;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -23,6 +27,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @JsonSerialize(using = ACAQBatchImporter.Serializer.class)
 public class ACAQBatchImporter implements ACAQRunnable {
@@ -48,8 +53,10 @@ public class ACAQBatchImporter implements ACAQRunnable {
         mapper.writerWithDefaultPrettyPrinter().writeValue(path.toFile(), this);
     }
 
-    public void loadFrom(Path fileName) throws IOException {
-        fromJson(JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(fileName.toFile()));
+    public static ACAQBatchImporter loadFromFile(Path fileName, ACAQProject project) throws IOException {
+        ACAQBatchImporter importer = new ACAQBatchImporter(project);
+        importer.fromJson(JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(fileName.toFile()));
+        return importer;
     }
 
     @Override
@@ -58,11 +65,10 @@ public class ACAQBatchImporter implements ACAQRunnable {
         // First detect which algorithms are part of data generation and which are part of data processing
         Set<ACAQAlgorithm> dataGenerationAlgorithms = new HashSet<>();
 
-
         for(ACAQAlgorithm algorithm : graph.getAlgorithmNodes().values()) {
             if(algorithm instanceof ACAQDataSourceFromFile) {
                 // Assign project
-                ((ACAQDataSourceFromFile) algorithm).setProject(project);
+                ((ACAQDataSourceFromFile) algorithm).setBatchImporter(this);
 
                 for (ACAQDataSlot<?> outputSlot : algorithm.getOutputSlots()) {
                     for (ACAQDataSlot<?> predecessor : GraphUtils.getAllPredecessors(graph.getGraph(), outputSlot)) {
@@ -92,9 +98,56 @@ public class ACAQBatchImporter implements ACAQRunnable {
             }
         }
 
-        if(isCancelled.get())
-            return;
-        onProgress.accept(new ACAQRunnerStatus(1, 2, ""));
+        // Find samples to modify
+        Set<String> sampleNames = new HashSet<>();
+        for(ACAQAlgorithm algorithm : graph.getAlgorithmNodes().values()) {
+            if (algorithm instanceof ACAQDataSourceFromFile) {
+                for(ACAQDataSlot<?> inputSlot : algorithm.getInputSlots()) {
+                    if(inputSlot instanceof ACAQFilesDataSlot) {
+                        ACAQFilesData data = ((ACAQFilesDataSlot) inputSlot).getData();
+                        sampleNames.addAll(data.getFiles().stream().map(f -> (String)f.findAnnotation(ProjectSampleTrait.FILESYSTEM_ANNOTATION_SAMPLE)).collect(Collectors.toSet()));
+                    }
+                    else {
+                        throw new RuntimeException("Invalid DataSourceFromFile input slot!");
+                    }
+                }
+            }
+        }
+
+        // Generate algorithms
+        for(ACAQAlgorithm algorithm : graph.getAlgorithmNodes().values()) {
+            if(algorithm.getCategory() == ACAQAlgorithmCategory.Internal)
+                continue;
+            if(!dataGenerationAlgorithms.contains(algorithm)) {
+                for(String sampleName : sampleNames) {
+                    ACAQProjectSample sample = project.addSample(sampleName);
+                    ACAQAlgorithm copy = ACAQAlgorithm.clone(algorithm);
+                    copy.setLocation(null);
+                    sample.getPreprocessingGraph().insertNode(graph.getIdOf(algorithm), copy);
+                }
+            }
+        }
+
+        // Add connections
+        for(ACAQAlgorithm algorithm : graph.getAlgorithmNodes().values()) {
+            String algorithmId = graph.getIdOf(algorithm);
+            if (!dataGenerationAlgorithms.contains(algorithm)) {
+                for (String sampleName : sampleNames) {
+                    ACAQProjectSample sample = project.addSample(sampleName);
+                    ACAQAlgorithm copy = sample.getPreprocessingGraph().getAlgorithmNodes().get(algorithmId);
+
+                    for (ACAQDataSlot<?> target : algorithm.getInputSlots()) {
+                        ACAQDataSlot<?> source = graph.getSourceSlot(target);
+
+                        ACAQDataSlot<?> copyTarget = copy.getSlots().get(target.getName());
+                        ACAQDataSlot<?> copySource = copy.getSlots().get(source.getName());
+
+                        sample.getPreprocessingGraph().connect(copySource, copyTarget);
+                    }
+
+                }
+            }
+        }
     }
 
     public void fromJson(JsonNode node) {
@@ -104,6 +157,10 @@ public class ACAQBatchImporter implements ACAQRunnable {
         graph.clear();
         initialize();
         graph.fromJson(node.get("algorithm-graph"));
+    }
+
+    public ACAQProject getProject() {
+        return project;
     }
 
     public static class Serializer extends JsonSerializer<ACAQBatchImporter> {

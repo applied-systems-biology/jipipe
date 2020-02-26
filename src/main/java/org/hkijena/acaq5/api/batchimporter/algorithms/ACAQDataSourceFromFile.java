@@ -6,6 +6,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.batchimporter.ACAQBatchImporter;
 import org.hkijena.acaq5.api.batchimporter.ACAQDataSourceFromFileAlgorithmDeclaration;
 import org.hkijena.acaq5.api.batchimporter.dataslots.ACAQFilesDataSlot;
 import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFileData;
@@ -26,7 +27,7 @@ import java.util.Map;
  */
 public class ACAQDataSourceFromFile extends ACAQAlgorithm {
 
-    private ACAQProject project;
+    private ACAQBatchImporter batchImporter;
 
     public ACAQDataSourceFromFile(ACAQAlgorithmDeclaration declaration, ACAQMutableSlotConfiguration configuration) {
         super(declaration, configuration, new ACAQMutableTraitModifier(configuration));
@@ -38,12 +39,15 @@ public class ACAQDataSourceFromFile extends ACAQAlgorithm {
 
     @Override
     public void run() {
-        if(project == null)
+        if(batchImporter == null)
             return;
 
         for(ACAQDataSlot<?> inputSlot : getInputSlots()) {
             if(inputSlot instanceof ACAQFilesDataSlot) {
                 processInputFilesSlot((ACAQFilesDataSlot)inputSlot);
+            }
+            else {
+                throw new RuntimeException("Invalid DataSourceFromFile input slot!");
             }
         }
     }
@@ -51,7 +55,7 @@ public class ACAQDataSourceFromFile extends ACAQAlgorithm {
     private void processInputFilesSlot(ACAQFilesDataSlot inputSlot) {
         for(ACAQFileData file : inputSlot.getData().getFiles()) {
             String sampleName = (String) file.findAnnotation(ProjectSampleTrait.FILESYSTEM_ANNOTATION_SAMPLE);
-            ACAQProjectSample sample = project.addSample(sampleName);
+            ACAQProjectSample sample = batchImporter.getProject().addSample(sampleName);
 
             ACAQAlgorithmGraph graph = sample.getPreprocessingGraph();
             ACAQAlgorithm dataSource = ((ACAQDataSourceFromFileAlgorithmDeclaration)getDeclaration()).getWrappedAlgorithmDeclaration().newInstance();
@@ -59,7 +63,8 @@ public class ACAQDataSourceFromFile extends ACAQAlgorithm {
             ACAQParameterAccess parameterAccess = parameters.get(inputSlot.getName());
             parameterAccess.set(file.getFilePath());
 
-            graph.insertNode(dataSource);
+            String algorithmName = batchImporter.getGraph().getIdOf(this);
+            graph.insertNode(algorithmName, dataSource);
         }
     }
 
@@ -68,11 +73,11 @@ public class ACAQDataSourceFromFile extends ACAQAlgorithm {
 
     }
 
-    public ACAQProject getProject() {
-        return project;
+    public ACAQBatchImporter getBatchImporter() {
+        return batchImporter;
     }
 
-    public void setProject(ACAQProject project) {
-        this.project = project;
+    public void setBatchImporter(ACAQBatchImporter batchImporter) {
+        this.batchImporter = batchImporter;
     }
 }

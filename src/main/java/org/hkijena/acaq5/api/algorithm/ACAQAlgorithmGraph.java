@@ -13,6 +13,7 @@ import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.ACAQPreprocessingOutput;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.api.batchimporter.algorithms.ACAQDataSourceFromFile;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.*;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
@@ -505,6 +506,10 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         for(ACAQAlgorithm algorithm : ImmutableSet.copyOf(algorithms.values())) {
             removeNode(algorithm);
         }
+    }
+
+    public String getIdOf(ACAQAlgorithm algorithm) {
+        return algorithms.inverse().get(algorithm);
     }
 
     public static class Serializer extends JsonSerializer<ACAQAlgorithmGraph> {

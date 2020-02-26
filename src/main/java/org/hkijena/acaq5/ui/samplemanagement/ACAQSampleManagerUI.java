@@ -123,6 +123,10 @@ public class ACAQSampleManagerUI extends ACAQUIPanel {
             rootNode.add(sampleNode);
         }
 
+        if(getProject().getSamples().isEmpty()) {
+            toSelect = rootNode;
+        }
+
         DefaultTreeModel model = new DefaultTreeModel(rootNode);
         sampleTree.setModel(model);
         UIUtils.expandAllTree(sampleTree);

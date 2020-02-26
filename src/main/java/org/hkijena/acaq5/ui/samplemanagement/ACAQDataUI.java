@@ -35,6 +35,9 @@ public class ACAQDataUI extends ACAQUIPanel {
                         setCurrentlyDisplayedSample((ACAQProjectSample)nd.getUserObject());
                     }
                 }
+                else {
+                    setCurrentlyDisplayedSample(null);
+                }
             }
         });
     }
