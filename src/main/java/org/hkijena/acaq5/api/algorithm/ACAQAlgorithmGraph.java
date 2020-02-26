@@ -526,6 +526,14 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         return algorithms.inverse().get(algorithm);
     }
 
+    public boolean containsEquivalentOf(ACAQAlgorithm foreign, ACAQAlgorithmGraph foreignGraph) {
+        return getAlgorithmNodes().containsKey(foreignGraph.getIdOf(foreign));
+    }
+
+    public ACAQAlgorithm getEquivalentOf(ACAQAlgorithm foreign, ACAQAlgorithmGraph foreignGraph) {
+        return getAlgorithmNodes().get(foreignGraph.getIdOf(foreign));
+    }
+
     public static class Serializer extends JsonSerializer<ACAQAlgorithmGraph> {
         @Override
         public void serialize(ACAQAlgorithmGraph algorithmGraph, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
