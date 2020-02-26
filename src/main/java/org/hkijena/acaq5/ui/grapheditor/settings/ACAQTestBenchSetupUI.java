@@ -5,6 +5,7 @@ import org.hkijena.acaq5.api.ACAQMutableRunConfiguration;
 import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.*;
@@ -28,14 +29,16 @@ import java.util.HashSet;
 public class ACAQTestBenchSetupUI extends ACAQUIPanel {
 
     private ACAQAlgorithm algorithm;
+    private ACAQAlgorithmGraph graph;
     private JPanel setupPanel;
     private JPanel validationReportPanel;
     private ACAQValidityReportUI validationReportUI;
     private ACAQRun currentRun;
 
-    public ACAQTestBenchSetupUI(ACAQWorkbenchUI workbenchUI, ACAQAlgorithm algorithm) {
+    public ACAQTestBenchSetupUI(ACAQWorkbenchUI workbenchUI, ACAQAlgorithm algorithm, ACAQAlgorithmGraph graph) {
         super(workbenchUI);
         this.algorithm = algorithm;
+        this.graph = graph;
 
         setLayout(new BorderLayout());
         this.validationReportUI = new ACAQValidityReportUI();
@@ -150,6 +153,7 @@ public class ACAQTestBenchSetupUI extends ACAQUIPanel {
         configuration.setSampleRestrictions(new HashSet<>(Arrays.asList(sample)));
 
         currentRun = new ACAQRun(getProject(), configuration);
+        configuration.setEndAlgorithm(currentRun.getGraph().getEquivalentOf(algorithm, graph));
 
         removeAll();
         ACAQRunExecuterUI executerUI = new ACAQRunExecuterUI(currentRun);

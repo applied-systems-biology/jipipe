@@ -50,7 +50,7 @@ public class ACAQAlgorithmSettingsPanelUI extends ACAQUIPanel {
 
         if(algorithm.getCategory() != ACAQAlgorithmCategory.Internal &&
                 graph.getVisibility() != ACAQAlgorithmVisibility.BatchImporterOnly) {
-            ACAQTestBenchSetupUI testBenchSetupUI = new ACAQTestBenchSetupUI(getWorkbenchUI(), algorithm);
+            ACAQTestBenchSetupUI testBenchSetupUI = new ACAQTestBenchSetupUI(getWorkbenchUI(), algorithm, graph);
             tabbedPane.addTab("Testbench", UIUtils.getIconFromResources("testbench.png"),
                     testBenchSetupUI,
                     DocumentTabPane.CloseMode.withoutCloseButton,
