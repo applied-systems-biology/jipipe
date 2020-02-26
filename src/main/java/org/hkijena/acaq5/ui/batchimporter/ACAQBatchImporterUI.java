@@ -73,7 +73,7 @@ public class ACAQBatchImporterUI extends ACAQUIPanel {
     private void save() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fileChooser.setDialogTitle("Save project (*.json");
+        fileChooser.setDialogTitle("Save importer configuration (*.json");
         if(fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
                 batchImporter.saveAs(fileChooser.getSelectedFile().toPath());
@@ -85,6 +85,16 @@ public class ACAQBatchImporterUI extends ACAQUIPanel {
     }
 
     private void open() {
-
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setDialogTitle("Open importer configuration (*.json");
+        if(fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            try {
+                batchImporter.loadFrom(fileChooser.getSelectedFile().toPath());
+                getWorkbenchUI().sendStatusBarText("Loaded importer from " + fileChooser.getSelectedFile());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

@@ -138,7 +138,7 @@ public class ACAQDataSourceFromFileAlgorithmDeclaration implements ACAQAlgorithm
     @Override
     public boolean matches(JsonNode node) {
         JsonNode classNode = node.path("acaq:algorithm-class");
-        JsonNode wrappedNode = node.path("acaq:wrapped-algorithm-class");
+        JsonNode wrappedNode = node.path("acaq:wrapped-algorithm");
         if(!classNode.isMissingNode() && !wrappedNode.isMissingNode()) {
             String className = classNode.asText();
             if(getAlgorithmClass().getCanonicalName().equals(className)) {

@@ -72,6 +72,7 @@ public class ACAQAlgorithmSettingsPanelUI extends ACAQUIPanel {
 
         JButton deleteButton = new JButton(UIUtils.getIconFromResources("delete.png"));
         deleteButton.setToolTipText("Delete algorithm");
+        deleteButton.setEnabled(graph.canUserDelete(algorithm));
         deleteButton.addActionListener(e -> deleteAlgorithm());
         toolBar.add(deleteButton);
 

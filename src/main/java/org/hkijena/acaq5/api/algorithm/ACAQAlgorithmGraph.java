@@ -6,10 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableBiMap;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.*;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQRegistryService;
@@ -104,11 +101,11 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
        insertNode(uniqueName, algorithm);
     }
 
+    public boolean canUserDelete(ACAQAlgorithm algorithm) {
+        return algorithm.getCategory() != ACAQAlgorithmCategory.Internal;
+    }
+
     public void removeNode(ACAQAlgorithm algorithm) {
-
-        if(algorithm instanceof ACAQPreprocessingOutput)
-            return;
-
         // Do regular disconnect
         for(ACAQDataSlot<?> slot : algorithm.getInputSlots()) {
             disconnectAll(slot);
@@ -502,6 +499,12 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
     public ACAQAlgorithmVisibility getVisibility() {
         return visibility;
+    }
+
+    public void clear() {
+        for(ACAQAlgorithm algorithm : ImmutableSet.copyOf(algorithms.values())) {
+            removeNode(algorithm);
+        }
     }
 
     public static class Serializer extends JsonSerializer<ACAQAlgorithmGraph> {

@@ -15,8 +15,11 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
+import java.util.List;
 
 public class ACAQSampleManagerUI extends ACAQUIPanel {
 
@@ -57,8 +60,24 @@ public class ACAQSampleManagerUI extends ACAQUIPanel {
         toolBar.add(Box.createHorizontalGlue());
 
         JButton removeButton = new JButton( UIUtils.getIconFromResources("delete.png"));
+        removeButton.addActionListener(e -> removeSelectedSamples());
         removeButton.setToolTipText("Remove selected samples");
         toolBar.add(removeButton);
+    }
+
+    private void removeSelectedSamples() {
+        List<ACAQProjectSample> toRemove = new ArrayList<>();
+        for (TreePath path : sampleTree.getSelectionPaths()) {
+            if(path.getLastPathComponent() instanceof DefaultMutableTreeNode) {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+                if(node.getUserObject() instanceof ACAQProjectSample) {
+                    toRemove.add((ACAQProjectSample) node.getUserObject());
+                }
+            }
+        }
+        for (ACAQProjectSample sample : toRemove) {
+            getProject().removeSample(sample);
+        }
     }
 
     private void addSamples() {

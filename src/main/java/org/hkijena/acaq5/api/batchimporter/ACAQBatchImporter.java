@@ -1,10 +1,10 @@
 package org.hkijena.acaq5.api.batchimporter;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.acaq5.api.ACAQPreprocessingOutput;
 import org.hkijena.acaq5.api.ACAQProject;
@@ -37,6 +37,19 @@ public class ACAQBatchImporter {
     public void saveAs(Path path) throws IOException {
         ObjectMapper mapper = JsonUtils.getObjectMapper();
         mapper.writerWithDefaultPrettyPrinter().writeValue(path.toFile(), this);
+    }
+
+    public void loadFrom(Path fileName) throws IOException {
+        fromJson(JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(fileName.toFile()));
+    }
+
+    public void fromJson(JsonNode node) {
+        JsonNode projectTypeNode = node.path("acaq:project-type");
+        if(projectTypeNode.isMissingNode() || !projectTypeNode.asText().equals("batch-importer"))
+            throw new IllegalArgumentException("The JSON data does not contain data for a batch-importer!");
+        graph.clear();
+        initialize();
+        graph.fromJson(node.get("algorithm-graph"));
     }
 
     public static class Serializer extends JsonSerializer<ACAQBatchImporter> {
