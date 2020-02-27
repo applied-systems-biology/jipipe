@@ -13,6 +13,9 @@ import org.hkijena.acaq5.extension.api.algorithms.segmenters.*;
 import org.hkijena.acaq5.extension.api.dataslots.*;
 import org.hkijena.acaq5.extension.api.datasources.*;
 import org.hkijena.acaq5.extension.api.datatypes.*;
+import org.hkijena.acaq5.extension.api.traits.Sample;
+import org.hkijena.acaq5.extension.api.traits.Subject;
+import org.hkijena.acaq5.extension.api.traits.Treatment;
 import org.hkijena.acaq5.extension.api.traits.bioobject.count.ClusterBioObjects;
 import org.hkijena.acaq5.extension.api.traits.bioobject.count.SingleBioObject;
 import org.hkijena.acaq5.extension.api.traits.bioobject.morphology.FilamentousBioObjects;
@@ -157,6 +160,18 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
         registryService.getTraitRegistry().register(UnlabeledBioObjects.class);
         registryService.getUITraitRegistry().registerIcon(UnlabeledBioObjects.class,
                 ResourceUtils.getPluginResource("icons/traits/bioobject-unlabeled.png"));
+
+        registryService.getTraitRegistry().register(Sample.class);
+        registryService.getUITraitRegistry().registerIcon(Sample.class,
+                ResourceUtils.getPluginResource("icons/traits/project-sample.png"));
+
+        registryService.getTraitRegistry().register(Treatment.class);
+        registryService.getUITraitRegistry().registerIcon(Sample.class,
+                ResourceUtils.getPluginResource("icons/traits/project-label.png"));
+
+        registryService.getTraitRegistry().register(Subject.class);
+        registryService.getUITraitRegistry().registerIcon(Sample.class,
+                ResourceUtils.getPluginResource("icons/traits/project-subject.png"));
     }
 
     private void registerAlgorithms(ACAQRegistryService registryService) {
