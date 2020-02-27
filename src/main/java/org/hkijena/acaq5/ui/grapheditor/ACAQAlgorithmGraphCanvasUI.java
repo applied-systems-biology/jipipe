@@ -85,7 +85,8 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             ui.getEventBus().register(this);
             add(ui);
             nodeUIs.put(algorithm, ui);
-            if(algorithm.getLocation() == null || !ui.trySetLocationNoGrid(algorithm.getLocation().x, algorithm.getLocation().y)) {
+            Point location = algorithm.getLocationWithin(compartment);
+            if(location == null || !ui.trySetLocationNoGrid(location.x, location.y)) {
                 autoPlaceAlgorithm(ui);
             }
         }

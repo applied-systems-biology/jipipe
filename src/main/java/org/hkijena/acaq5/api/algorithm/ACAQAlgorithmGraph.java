@@ -13,6 +13,7 @@ import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.ACAQAlgorithmGraphEdge;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.*;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
@@ -443,20 +444,11 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
             return;
 
         for(Map.Entry<String, JsonNode> kv : ImmutableList.copyOf(node.get("nodes").fields())) {
-
-            if(algorithms.containsKey(kv.getKey())) {
-                // Load an existing algorithm (like the preprocessing output)
-                algorithms.get(kv.getKey()).fromJson(kv.getValue());
-            }
-            else {
-                JsonNode declarationNode = kv.getValue().path("acaq:declaration");
-                if(!declarationNode.isMissingNode()) {
-                    ACAQAlgorithmDeclaration declaration = ACAQAlgorithmRegistry.getInstance().getDeclarationById(declarationNode.asText());
-                    ACAQAlgorithm algorithm = declaration.newInstance();
-                    algorithm.fromJson(kv.getValue());
-                    insertNode(kv.getKey(), algorithm, algorithm.getCompartment());
-                }
-            }
+            String declarationInfo = kv.getValue().get("acaq:algorithm-type").asText();
+            ACAQAlgorithmDeclaration declaration = ACAQAlgorithmRegistry.getInstance().getDeclarationById(declarationInfo);
+            ACAQAlgorithm algorithm = declaration.newInstance();
+            algorithm.fromJson(kv.getValue());
+            insertNode(kv.getKey(), algorithm, algorithm.getCompartment());
         }
 
         // Load edges

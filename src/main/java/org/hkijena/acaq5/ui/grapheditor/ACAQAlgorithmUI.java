@@ -424,13 +424,13 @@ public class ACAQAlgorithmUI extends JPanel {
     @Override
     public void setLocation(int x, int y) {
         super.setLocation(x, y);
-        algorithm.setLocation(new Point(x, y));
+        algorithm.setLocationWithin(graphUI.getCompartment(), new Point(x, y));
     }
 
     @Override
     public void setLocation(Point p) {
         super.setLocation(p);
-        algorithm.setLocation(p);
+        algorithm.setLocationWithin(graphUI.getCompartment(), p);
     }
 
     public EventBus getEventBus() {

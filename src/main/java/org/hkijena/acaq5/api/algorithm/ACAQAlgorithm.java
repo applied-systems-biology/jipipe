@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
@@ -40,7 +41,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
     private ACAQTraitConfiguration traitConfiguration;
     private Map<String, ACAQDataSlot<?>> slots = new HashMap<>();
     private EventBus eventBus = new EventBus();
-    private Point location;
+    private Map<String, Point> locations = new HashMap<>();
     private Path internalStoragePath;
     private Path storagePath;
     private String customName;
@@ -93,7 +94,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
         this.declaration = other.declaration;
         this.slotConfiguration = copySlotConfiguration(other);
         this.traitConfiguration = new ACAQMutableTraitModifier(slotConfiguration);
-        this.location = other.location;
+        this.locations = new HashMap<>(other.locations);
         slotConfiguration.getEventBus().register(this);
         initalize();
         initializeTraits();
@@ -240,17 +241,17 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
         eventBus.post(new AlgorithmSlotsChangedEvent(this));
     }
 
-    /**
-     * Gets the location within UI representations
-     *
-     * @return
-     */
-    public Point getLocation() {
-        return location;
+
+    public Map<String, Point> getLocations() {
+        return locations;
     }
 
-    public void setLocation(Point location) {
-        this.location = location;
+    public Point getLocationWithin(String compartment) {
+        return locations.getOrDefault(compartment, null);
+    }
+
+    public void setLocationWithin(String compartment, Point location) {
+        this.locations.put(compartment, location);
     }
 
     public void fromJson(JsonNode node) {
@@ -260,10 +261,14 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
 
         if (node.has("acaq:slot-configuration"))
             slotConfiguration.fromJson(node.get("acaq:slot-configuration"));
-        if (node.has("acaq:algorithm-location-x") && node.has("acaq:algorithm-location-y")) {
-            location = new Point();
-            location.x = node.get("acaq:algorithm-location-x").asInt();
-            location.y = node.get("acaq:algorithm-location-y").asInt();
+        if (node.has("acaq:algorithm-ui-location")) {
+            for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(node.get("acaq:algorithm-ui-location").fields())) {
+                JsonNode xValue = entry.getValue().path("x");
+                JsonNode yValue = entry.getValue().path("y");
+                if(!xValue.isMissingNode() && !yValue.isMissingNode()) {
+                    locations.put(entry.getKey(), new Point(xValue.asInt(), yValue.asInt()));
+                }
+            }
         }
         if (node.has("acaq:trait-generation") && getTraitConfiguration() instanceof ACAQMutableTraitGenerator) {
             ((ACAQMutableTraitGenerator) getTraitConfiguration()).fromJson(node.get("acaq:trait-generation"));
@@ -338,10 +343,18 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
         public void serialize(ACAQAlgorithm algorithm, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeObjectField("acaq:slot-configuration", algorithm.slotConfiguration);
-            if(algorithm.location != null) {
-                jsonGenerator.writeNumberField("acaq:algorithm-location-x", algorithm.location.x);
-                jsonGenerator.writeNumberField("acaq:algorithm-location-y", algorithm.location.y);
+            jsonGenerator.writeFieldName("acaq:algorithm-ui-location");
+            jsonGenerator.writeStartObject();
+            for (Map.Entry<String, Point> entry : algorithm.locations.entrySet()) {
+                if(entry.getValue() != null) {
+                    jsonGenerator.writeFieldName(entry.getKey());
+                    jsonGenerator.writeStartObject();
+                    jsonGenerator.writeNumberField("x", entry.getValue().x);
+                    jsonGenerator.writeNumberField("y", entry.getValue().y);
+                    jsonGenerator.writeEndObject();
+                }
             }
+            jsonGenerator.writeEndObject();
             jsonGenerator.writeStringField("acaq:algorithm-type", algorithm.getDeclaration().getId());
             jsonGenerator.writeStringField("acaq:algorithm-compartment", algorithm.getCompartment());
             for (Map.Entry<String, ACAQParameterAccess> kv : ACAQParameterAccess.getParameters(algorithm).entrySet()) {

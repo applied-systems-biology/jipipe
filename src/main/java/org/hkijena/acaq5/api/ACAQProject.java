@@ -10,6 +10,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.eventbus.EventBus;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.events.CompartmentAddedEvent;
@@ -20,6 +21,7 @@ import org.hkijena.acaq5.utils.JsonUtils;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -146,6 +148,10 @@ public class ACAQProject implements ACAQValidatable {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("acaq:project-type", "project");
             jsonGenerator.writeObjectField("algorithm-graph", project.graph);
+            jsonGenerator.writeFieldName("compartments");
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeObjectField("order", project.compartmentOrder);
+            jsonGenerator.writeEndObject();
             jsonGenerator.writeEndObject();
         }
     }
@@ -156,22 +162,25 @@ public class ACAQProject implements ACAQValidatable {
         public ACAQProject deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             ACAQProject project = new ACAQProject();
 
-//            JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-//
-//            // First load the slot configuration
-//            // This is required (!) to fill the preprocessing slots!
-//            {
-//                JsonNode slotConfigNode = node.path("algorithm").path("preprocessing-output-slots");
-//                if(!slotConfigNode.isMissingNode()) {
-//                    project.preprocessingOutputConfiguration.fromJson(slotConfigNode);
-//                }
-//            }
-//
-//            if(node.has("samples"))
-//                readSamples(project, node.get("samples"));
-//
-//            if(node.has("algorithm"))
-//                readAlgorithm(project, node.get("algorithm"));
+            JsonNode node = jsonParser.getCodec().readTree(jsonParser);
+
+            // We must first load the graph, as we can infer compartments later
+            project.graph.fromJson(node.get("algorithm-graph"));
+
+            // read compartment order
+            project.compartmentOrder.addAll(Arrays.asList(JsonUtils.getObjectMapper().readerFor(String[].class).readValue(node.get("compartments").get("order"))));
+
+            // Iterate through the graph to detect compartments
+            for (ACAQAlgorithm algorithm : project.graph.getAlgorithmNodes().values()) {
+                String compartmentName = algorithm.getCompartment();
+                if(!project.compartments.containsKey(compartmentName)) {
+                    ACAQProjectCompartment compartment = new ACAQProjectCompartment(project, compartmentName);
+                    project.compartments.put(compartmentName, compartment);
+                }
+            }
+
+            // Update node visibilities
+            project.updateCompartmentVisibility();
 
             return project;
         }
