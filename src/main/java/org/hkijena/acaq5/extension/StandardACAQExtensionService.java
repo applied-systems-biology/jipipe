@@ -166,11 +166,11 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
                 ResourceUtils.getPluginResource("icons/traits/project-sample.png"));
 
         registryService.getTraitRegistry().register(Treatment.class);
-        registryService.getUITraitRegistry().registerIcon(Sample.class,
+        registryService.getUITraitRegistry().registerIcon(Treatment.class,
                 ResourceUtils.getPluginResource("icons/traits/project-label.png"));
 
         registryService.getTraitRegistry().register(Subject.class);
-        registryService.getUITraitRegistry().registerIcon(Sample.class,
+        registryService.getUITraitRegistry().registerIcon(Subject.class,
                 ResourceUtils.getPluginResource("icons/traits/project-subject.png"));
     }
 
