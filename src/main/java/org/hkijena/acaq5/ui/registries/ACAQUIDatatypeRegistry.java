@@ -2,7 +2,6 @@ package org.hkijena.acaq5.ui.registries;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.acaq5.ACAQRegistryService;
-import org.hkijena.acaq5.api.ACAQRunSample;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
@@ -62,18 +61,18 @@ public class ACAQUIDatatypeRegistry {
      * @param slot
      * @return
      */
-    public ACAQResultDataSlotUI<?> getUIForResultSlot(ACAQWorkbenchUI workbenchUI, ACAQRunSample sample, ACAQDataSlot<?> slot) {
+    public ACAQResultDataSlotUI<?> getUIForResultSlot(ACAQWorkbenchUI workbenchUI,ACAQDataSlot<?> slot) {
         Class<? extends ACAQResultDataSlotUI<?>> uiClass = resultUIs.getOrDefault(slot.getClass(), null);
         if(uiClass != null) {
             try {
-                return ConstructorUtils.getMatchingAccessibleConstructor(uiClass, ACAQWorkbenchUI.class, ACAQRunSample.class, slot.getClass())
-                        .newInstance(workbenchUI, sample, slot);
+                return ConstructorUtils.getMatchingAccessibleConstructor(uiClass, ACAQWorkbenchUI.class, slot.getClass())
+                        .newInstance(workbenchUI, slot);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
         }
         else {
-            return new ACAQDefaultDataSlotResultUI(workbenchUI, sample, slot);
+            return new ACAQDefaultDataSlotResultUI(workbenchUI, slot);
         }
     }
 

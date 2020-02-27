@@ -50,7 +50,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     public ACAQAlgorithmGraph(ACAQAlgorithmGraph other) {
         // Copy nodes
         for(Map.Entry<String, ACAQAlgorithm> kv : other.algorithms.entrySet()) {
-            ACAQAlgorithm algorithm = ACAQAlgorithm.clone(kv.getValue());
+            ACAQAlgorithm algorithm = kv.getValue().getDeclaration().clone(kv.getValue());
             algorithms.put(kv.getKey(), algorithm);
             algorithm.getEventBus().register(this);
         }
@@ -91,10 +91,10 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * @param algorithm
      */
     public void insertNode(ACAQAlgorithm algorithm, String compartment) {
-       String name = compartment + "/" + algorithm.getName().toLowerCase().replace(' ', '-');
+       String name = compartment + "/" + algorithm.getName();
        String uniqueName = name;
        for(int i = 2; algorithms.containsKey(uniqueName); ++i) {
-           uniqueName = name + "-" + i;
+           uniqueName = name + " " + i;
        }
        insertNode(uniqueName, algorithm, compartment);
     }

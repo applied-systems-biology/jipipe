@@ -25,12 +25,6 @@ public interface ACAQRunConfiguration {
     String getEndAlgorithmId();
 
     /**
-     * If not null or empty, restrict only to specific samples
-     * @return
-     */
-    Set<String> getSampleRestrictions();
-
-    /**
      * If true, only the end algorithm will run
      * @return
      */

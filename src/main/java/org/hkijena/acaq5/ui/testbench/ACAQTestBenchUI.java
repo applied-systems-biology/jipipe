@@ -3,7 +3,6 @@ package org.hkijena.acaq5.ui.testbench;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQMutableRunConfiguration;
 import org.hkijena.acaq5.api.ACAQRun;
-import org.hkijena.acaq5.api.ACAQRunSample;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.testbench.ACAQAlgorithmBackup;
@@ -27,7 +26,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class ACAQTestBenchUI extends ACAQUIPanel {
 
@@ -45,30 +43,30 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
         this.projectAlgorithm = projectAlgorithm;
         this.run = run;
 
-        // Associate sample -> appropriate run algorithm
-        for (Map.Entry<String, ACAQRunSample> entry : run.getSamples().entrySet()) {
-            ACAQAlgorithm algorithm = entry.getValue().getAlgorithms().stream().filter(a -> run.getProjectAlgorithms().get(a) == projectAlgorithm).findFirst().orElse(null);
-            if(algorithm != null) {
-                sampleName = entry.getKey();
-                runAlgorithm = algorithm;
-                break;
-            }
-        }
-
-        if(runAlgorithm == null)
-            throw new IllegalArgumentException("The provided testbench parameters should be associated to exactly one sample!");
-
-        // Do the initial backup
-        backupList.add(new ACAQAlgorithmBackup(runAlgorithm));
-
-        // Force to only run the end algorithm
-        ((ACAQMutableRunConfiguration)run.getConfiguration()).setOnlyRunningEndAlgorithm(true);
-
-        initialize();
-        updateBackupSelection();
-        loadBackup(backupList.get(0));
-
-        ACAQRunnerQueue.getInstance().getEventBus().register(this);
+//        // Associate sample -> appropriate run algorithm
+//        for (Map.Entry<String, ACAQRunSample> entry : run.getSamples().entrySet()) {
+//            ACAQAlgorithm algorithm = entry.getValue().getAlgorithms().stream().filter(a -> run.getProjectAlgorithms().get(a) == projectAlgorithm).findFirst().orElse(null);
+//            if(algorithm != null) {
+//                sampleName = entry.getKey();
+//                runAlgorithm = algorithm;
+//                break;
+//            }
+//        }
+//
+//        if(runAlgorithm == null)
+//            throw new IllegalArgumentException("The provided testbench parameters should be associated to exactly one sample!");
+//
+//        // Do the initial backup
+//        backupList.add(new ACAQAlgorithmBackup(runAlgorithm));
+//
+//        // Force to only run the end algorithm
+//        ((ACAQMutableRunConfiguration)run.getConfiguration()).setOnlyRunningEndAlgorithm(true);
+//
+//        initialize();
+//        updateBackupSelection();
+//        loadBackup(backupList.get(0));
+//
+//        ACAQRunnerQueue.getInstance().getEventBus().register(this);
     }
 
     private void initialize() {
@@ -219,7 +217,7 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
                 true, true);
         splitPane.setLeftComponent(parameters);
 
-        ACAQTestBenchResultUI resultUI = new ACAQTestBenchResultUI(getWorkbenchUI(), runAlgorithm, run.getSamples().get(sampleName));
+        ACAQTestBenchResultUI resultUI = new ACAQTestBenchResultUI(getWorkbenchUI(), runAlgorithm);
         splitPane.setRightComponent(resultUI);
 
         revalidate();

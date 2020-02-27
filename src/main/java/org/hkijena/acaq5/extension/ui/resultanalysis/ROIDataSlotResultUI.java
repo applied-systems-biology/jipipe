@@ -7,7 +7,6 @@ import ij.WindowManager;
 import ij.gui.Roi;
 import ij.macro.Interpreter;
 import ij.plugin.frame.RoiManager;
-import org.hkijena.acaq5.api.ACAQRunSample;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQROIData;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
@@ -22,8 +21,8 @@ import java.nio.file.Path;
 
 public class ROIDataSlotResultUI extends ACAQDefaultDataSlotResultUI {
 
-    public ROIDataSlotResultUI(ACAQWorkbenchUI workbenchUI, ACAQRunSample sample, ACAQDataSlot<?> slot) {
-        super(workbenchUI, sample, slot);
+    public ROIDataSlotResultUI(ACAQWorkbenchUI workbenchUI, ACAQDataSlot<?> slot) {
+        super(workbenchUI, slot);
     }
 
     private Path findROIFile() {

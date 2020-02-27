@@ -95,6 +95,8 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
         this.slotConfiguration = copySlotConfiguration(other);
         this.traitConfiguration = new ACAQMutableTraitModifier(slotConfiguration);
         this.locations = new HashMap<>(other.locations);
+        this.compartment = other.compartment;
+        this.visibleCompartments = new HashSet<>(other.visibleCompartments);
         slotConfiguration.getEventBus().register(this);
         initalize();
         initializeTraits();
@@ -111,14 +113,6 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
         ACAQMutableSlotConfiguration configuration = ACAQMutableSlotConfiguration.builder().build();
         configuration.setTo(other.slotConfiguration);
         return configuration;
-    }
-
-    public static ACAQAlgorithm clone(ACAQAlgorithm other) {
-        try {
-            return ConstructorUtils.getMatchingAccessibleConstructor(other.getClass(), other.getClass()).newInstance(other);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private void initalize() {

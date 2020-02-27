@@ -35,7 +35,6 @@ public class ACAQTestbench implements ACAQRunnable {
         configuration.setFlushingEnabled(true);
         configuration.setFlushingKeepsDataEnabled(true);
         configuration.setOutputPath(workDirectory.resolve("initial"));
-        configuration.setSampleRestrictions(new HashSet<>(Arrays.asList(sample.getName())));
         configuration.setEndAlgorithmId(graph.getIdOf(targetAlgorithm));
 
         testbenchRun = new ACAQRun(project, configuration);

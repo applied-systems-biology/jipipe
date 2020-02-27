@@ -1,14 +1,11 @@
 package org.hkijena.acaq5.ui.resultanalysis;
 
 import org.hkijena.acaq5.api.ACAQRun;
-import org.hkijena.acaq5.api.ACAQRunSample;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
-import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.io.IOException;
 
@@ -24,23 +21,23 @@ public class ACAQResultUI extends ACAQUIPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        ACAQResultSampleManagerUI sampleManagerUI = new ACAQResultSampleManagerUI(this);
-
-        MarkdownReader documentation = new MarkdownReader(false);
-        documentation.loadFromResource("documentation/result-analysis.md");
-        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sampleManagerUI,
-                documentation);
-        add(splitPane, BorderLayout.CENTER);
-
-        sampleManagerUI.getSampleTree().addTreeSelectionListener(e -> {
-            Object pathComponent = e.getPath().getLastPathComponent();
-            if(pathComponent != null) {
-                DefaultMutableTreeNode nd = (DefaultMutableTreeNode) pathComponent;
-                if(nd.getUserObject() instanceof ACAQRunSample) {
-                    setCurrentDisplayed((ACAQRunSample)nd.getUserObject());
-                }
-            }
-        });
+//        ACAQResultSampleManagerUI sampleManagerUI = new ACAQResultSampleManagerUI(this);
+//
+//        MarkdownReader documentation = new MarkdownReader(false);
+//        documentation.loadFromResource("documentation/result-analysis.md");
+//        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sampleManagerUI,
+//                documentation);
+//        add(splitPane, BorderLayout.CENTER);
+//
+//        sampleManagerUI.getSampleTree().addTreeSelectionListener(e -> {
+//            Object pathComponent = e.getPath().getLastPathComponent();
+//            if(pathComponent != null) {
+//                DefaultMutableTreeNode nd = (DefaultMutableTreeNode) pathComponent;
+//                if(nd.getUserObject() instanceof ACAQRunSample) {
+//                    setCurrentDisplayed((ACAQRunSample)nd.getUserObject());
+//                }
+//            }
+//        });
 
         initializeToolbar();
     }
@@ -59,10 +56,6 @@ public class ACAQResultUI extends ACAQUIPanel {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private void setCurrentDisplayed(ACAQRunSample sample) {
-        splitPane.setRightComponent(new ACAQRunSampleUI(getWorkbenchUI(), sample));
     }
 
     public ACAQRun getRun() {

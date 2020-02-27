@@ -3,13 +3,17 @@ package org.hkijena.acaq5.api;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
+import edu.mines.jtk.util.StringUtil;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.utils.JsonUtils;
+import org.hkijena.acaq5.utils.StringUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -20,146 +24,29 @@ import java.util.function.Supplier;
 public class ACAQRun implements ACAQRunnable {
     private ACAQProject project;
     ACAQAlgorithmGraph algorithmGraph;
-    private BiMap<String, ACAQRunSample> samples = HashBiMap.create();
     private ACAQRunConfiguration configuration;
-
-    private Map<ACAQAlgorithm, ACAQAlgorithm> projectAlgorithms = new HashMap<>();
 
     public ACAQRun(ACAQProject project, ACAQRunConfiguration configuration) {
         this.project = project;
         this.configuration = configuration;
-        initializeAlgorithmGraph();
+        this.algorithmGraph = new ACAQAlgorithmGraph(project.getGraph());
+        initializeInternalStoragePaths();
+        algorithmGraph.exportDOT(Paths.get("/home/rgerst/graph.dot"));
     }
 
-    /**
-     * Converts the per-sample preprocessing graphs and the global analysis graph into one large analysis graph
-     * This function removes internal nodes such as PreprocessingOutput
-     */
-    private void initializeAlgorithmGraph() {
-        algorithmGraph = new ACAQAlgorithmGraph();
+    private void initializeInternalStoragePaths() {
+        Map<String, Set<String>> existingNames = new HashMap<>();
+        for (ACAQAlgorithm algorithm : algorithmGraph.getAlgorithmNodes().values()) {
+            existingNames.putIfAbsent(algorithm.getCompartment(), new HashSet<>());
+            Set<String> existingInCompartment = existingNames.get(algorithm.getCompartment());
 
-        // Add nodes
-        initializeAlgorithmGraphNodes();
+            String fsName = StringUtils.jsonify(StringUtils.makeUniqueString(StringUtils.jsonify(algorithm.getName()), existingInCompartment));
+            existingInCompartment.add(fsName);
 
-        // Add edges
-        for(Map.Entry<String, ACAQProjectCompartment> sampleEntry : project.getCompartments().entrySet()) {
-            if(configuration.getSampleRestrictions() != null && !configuration.getSampleRestrictions().isEmpty() &&
-            !configuration.getSampleRestrictions().contains(sampleEntry.getKey()))
-                continue;
-            initializeAlgorithmGraphEdges(sampleEntry);
+            algorithm.setInternalStoragePath(Paths.get(StringUtils.jsonify(algorithm.getCompartment())).resolve(fsName));
         }
-    }
 
-    private void initializeAlgorithmGraphEdges(Map.Entry<String, ACAQProjectCompartment> sampleEntry) {
-//        ACAQAlgorithmGraph preprocessing = sampleEntry.getValue().getPreprocessingGraph();
-//        BiMap<String, ACAQAlgorithm> preprocessingAlgorithms = preprocessing.getAlgorithmNodes();
-//        BiMap<String, ACAQAlgorithm> analysisAlgorithms = project.getGraph().getAlgorithmNodes();
-//        String sampleName = sampleEntry.getKey();
-//
-//        // Preprocessing graph
-//        for (Map.Entry<ACAQDataSlot<?>, ACAQDataSlot<?>> edge : sampleEntry.getValue().getPreprocessingGraph().getSlotEdges()) {
-//            ACAQAlgorithm sourceAlgorithm = edge.getKey().getAlgorithm();
-//            ACAQAlgorithm targetAlgorithm = edge.getValue().getAlgorithm();
-//            String sourceAlgorithmName = sampleName + "/preprocessing/" + preprocessingAlgorithms.inverse().get(sourceAlgorithm);
-//            String targetAlgorithmName = sampleName + "/preprocessing/" + preprocessingAlgorithms.inverse().get(targetAlgorithm);
-//            String sourceSlotName = edge.getKey().getName();
-//            String targetSlotName = edge.getValue().getName();
-//
-//            if(!(targetAlgorithm instanceof ACAQPreprocessingOutput)) {
-//                ACAQAlgorithm runSourceAlgorithm = algorithmGraph.getAlgorithmNodes().get(sourceAlgorithmName);
-//                ACAQAlgorithm runTargetAlgorithm = algorithmGraph.getAlgorithmNodes().get(targetAlgorithmName);
-//                algorithmGraph.connect(runSourceAlgorithm.getSlots().get(sourceSlotName),
-//                        runTargetAlgorithm.getSlots().get(targetSlotName));
-//            }
-//        }
-//
-//        // Analysis graph
-//        for (Map.Entry<ACAQDataSlot<?>, ACAQDataSlot<?>> edge : project.getGraph().getSlotEdges()) {
-//            ACAQAlgorithm sourceAlgorithm = edge.getKey().getAlgorithm();
-//            ACAQAlgorithm targetAlgorithm = edge.getValue().getAlgorithm();
-//            String sourceAlgorithmName = sampleName + "/analysis/" + analysisAlgorithms.inverse().get(sourceAlgorithm);
-//            String targetAlgorithmName = sampleName + "/analysis/" + analysisAlgorithms.inverse().get(targetAlgorithm);
-//            String sourceSlotName = edge.getKey().getName();
-//            String targetSlotName = edge.getValue().getName();
-//
-//            if(!(sourceAlgorithm instanceof ACAQPreprocessingOutput)) {
-//                ACAQAlgorithm runSourceAlgorithm = algorithmGraph.getAlgorithmNodes().get(sourceAlgorithmName);
-//                ACAQAlgorithm runTargetAlgorithm = algorithmGraph.getAlgorithmNodes().get(targetAlgorithmName);
-//                algorithmGraph.connect(runSourceAlgorithm.getSlots().get(sourceSlotName),
-//                        runTargetAlgorithm.getSlots().get(targetSlotName));
-//            }
-//        }
-//
-//        // Preprocessing output connections
-//        ACAQAlgorithm preprocessingOutput = preprocessingAlgorithms.values().stream().filter(a -> a instanceof ACAQPreprocessingOutput).findFirst().get();
-//
-//        for (Map.Entry<ACAQDataSlot<?>, ACAQDataSlot<?>> edge : project.getGraph().getSlotEdges()) {
-//            ACAQAlgorithm sourceAlgorithm = edge.getKey().getAlgorithm();
-//            ACAQAlgorithm targetAlgorithm = edge.getValue().getAlgorithm();
-//            String sourceAlgorithmName = sampleName + "/analysis/" + analysisAlgorithms.inverse().get(sourceAlgorithm);
-//            String targetAlgorithmName = sampleName + "/analysis/" + analysisAlgorithms.inverse().get(targetAlgorithm);
-//            String sourceSlotName = edge.getKey().getName();
-//            String targetSlotName = edge.getValue().getName();
-//
-//            if(sourceAlgorithm instanceof ACAQPreprocessingOutput) {
-//
-//                // Find the generating data slot within the preprocessing namespace
-//                // Then connect its output directly to the input
-//                ACAQDataSlot<?> preprocessingOutputSlot = preprocessingOutput.getSlots().get(sourceSlotName);
-//                ACAQDataSlot<?> rawSourceSlot = preprocessing.getSourceSlot(preprocessingOutputSlot);
-//                String rawSourceSlotName = rawSourceSlot.getName();
-//                ACAQAlgorithm rawSourceAlgorithm = rawSourceSlot.getAlgorithm();
-//                String rawSourceAlgorithmName = sampleName + "/preprocessing/" + preprocessingAlgorithms.inverse().get(rawSourceAlgorithm);
-//
-//                // Connect
-//                ACAQAlgorithm runSourceAlgorithm = algorithmGraph.getAlgorithmNodes().get(rawSourceAlgorithmName);
-//                ACAQAlgorithm runTargetAlgorithm = algorithmGraph.getAlgorithmNodes().get(targetAlgorithmName);
-//                algorithmGraph.connect(runSourceAlgorithm.getSlots().get(rawSourceSlotName),
-//                        runTargetAlgorithm.getSlots().get(targetSlotName));
-//            }
-//        }
     }
-
-    private void initializeAlgorithmGraphNodes() {
-//        // Create nodes
-//        for(Map.Entry<String, ACAQProjectSample> sampleEntry : project.getSamples().entrySet()) {
-//            String sampleName = sampleEntry.getKey();
-//
-//            if(configuration.getSampleRestrictions() != null && !configuration.getSampleRestrictions().isEmpty() &&
-//                    !configuration.getSampleRestrictions().contains(sampleEntry.getKey()))
-//                continue;
-//
-//            Set<ACAQAlgorithm> runAlgorithms = new HashSet<>();
-//
-//            // Preprocessing graph
-//            for(Map.Entry<String, ACAQAlgorithm> algorithmEntry : sampleEntry.getValue().getPreprocessingGraph().getAlgorithmNodes().entrySet()) {
-//                if(algorithmEntry.getValue().getCategory() == ACAQAlgorithmCategory.Internal)
-//                    continue;
-//                String algorithmName = sampleName + "/preprocessing/" + algorithmEntry.getKey();
-//                ACAQAlgorithm copy = ACAQAlgorithm.clone(algorithmEntry.getValue());
-//                copy.setInternalStoragePath(Paths.get(sampleName).resolve("preprocessing").resolve(algorithmEntry.getKey()));
-//                algorithmGraph.insertNode(algorithmName, copy);
-//                runAlgorithms.add(copy);
-//                projectAlgorithms.put(copy, algorithmEntry.getValue());
-//            }
-//
-//            // Analysis graph
-//            for(Map.Entry<String, ACAQAlgorithm> algorithmEntry : project.getGraph().getAlgorithmNodes().entrySet()) {
-//                if(algorithmEntry.getValue().getCategory() == ACAQAlgorithmCategory.Internal)
-//                    continue;
-//                String algorithmName = sampleName + "/analysis/" + algorithmEntry.getKey();
-//                ACAQAlgorithm copy = ACAQAlgorithm.clone(algorithmEntry.getValue());
-//                copy.setInternalStoragePath(Paths.get(sampleName).resolve("analysis").resolve(algorithmEntry.getKey()));
-//                algorithmGraph.insertNode(algorithmName, copy);
-//                runAlgorithms.add(copy);
-//                projectAlgorithms.put(copy, algorithmEntry.getValue());
-//            }
-//
-//            // Create sample in the sample list
-//            samples.put(sampleEntry.getKey(), new ACAQRunSample(this, sampleEntry.getValue(), runAlgorithms));
-//        }
-    }
-
 
     public ACAQProject getProject() {
         return project;
@@ -291,10 +178,6 @@ public class ACAQRun implements ACAQRunnable {
         return algorithmGraph;
     }
 
-    public BiMap<String, ACAQRunSample> getSamples() {
-        return ImmutableBiMap.copyOf(samples);
-    }
-
     /**
      * Loads an ACAQRun from a folder
      * @param folder
@@ -314,11 +197,5 @@ public class ACAQRun implements ACAQRunnable {
         return configuration;
     }
 
-    /**
-     * Maps the run algorithm to its respective project algorithm
-     */
-    public Map<ACAQAlgorithm, ACAQAlgorithm> getProjectAlgorithms() {
-        return Collections.unmodifiableMap(projectAlgorithms);
-    }
 
 }

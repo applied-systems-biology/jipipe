@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.data.ACAQDataSource;
 import org.hkijena.acaq5.api.traits.AddsTrait;
@@ -55,7 +56,11 @@ public class ACAQDefaultAlgorithmDeclaration extends ACAQMutableAlgorithmDeclara
 
     @Override
     public ACAQAlgorithm clone(ACAQAlgorithm algorithm) {
-        return null;
+        try {
+            return ConstructorUtils.getMatchingAccessibleConstructor(getAlgorithmClass(), algorithm.getClass()).newInstance(algorithm);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

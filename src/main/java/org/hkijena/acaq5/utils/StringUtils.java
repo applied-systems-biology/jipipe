@@ -16,8 +16,31 @@ import java.util.Collection;
 import java.util.function.Predicate;
 
 public class StringUtils {
+
+    public static final char[] INVALID_FILESYSTEM_CHARACTERS = new char[] { '<', '>', ':', '"', '/', '\\', '|', '?', '*', '{', '}' };
+    public static final char[] INVALID_JSONIFY_CHARACTERS = new char[] { '<', '>', ':', '"', '/', '\\', '|', '?', '*', '{', '}', ' ', '_' };
+
     private StringUtils() {
 
+    }
+
+    /**
+     * Removes all spaces, and filesystem-unsafe characters from the string and replaces them with dashes
+     * Duplicate dashes are removed
+     * @param input
+     * @return
+     */
+    public static String jsonify(String input) {
+        if(input == null)
+            return null;
+        input = input.trim().toLowerCase();
+        for (char c : INVALID_JSONIFY_CHARACTERS) {
+            input = input.replace(c, '-');
+        }
+        while(input.contains("--")) {
+            input = input.replace("--", "-");
+        }
+        return input;
     }
 
     public static String makeUniqueString(String input, Collection<String> existing) {

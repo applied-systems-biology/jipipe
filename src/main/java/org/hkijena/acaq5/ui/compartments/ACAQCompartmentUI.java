@@ -29,10 +29,10 @@ public class ACAQCompartmentUI extends ACAQUIPanel {
     }
 
     private void initializeToolbar() {
-        JToolBar toolBar = new JToolBar();
-        toolBar.setFloatable(false);
-
-
-        add(toolBar, BorderLayout.NORTH);
+//        JToolBar toolBar = new JToolBar();
+//        toolBar.setFloatable(false);
+//
+//
+//        add(toolBar, BorderLayout.NORTH);
     }
 }

@@ -2,7 +2,6 @@ package org.hkijena.acaq5.extension.ui.resultanalysis;
 
 import ij.IJ;
 import ij.ImagePlus;
-import org.hkijena.acaq5.api.ACAQRunSample;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultDataSlotResultUI;
@@ -14,8 +13,8 @@ import java.nio.file.Path;
 
 public class ImageDataSlotResultUI extends ACAQDefaultDataSlotResultUI {
 
-    public ImageDataSlotResultUI(ACAQWorkbenchUI workbenchUI, ACAQRunSample sample, ACAQDataSlot<?> slot) {
-        super(workbenchUI, sample, slot);
+    public ImageDataSlotResultUI(ACAQWorkbenchUI workbenchUI, ACAQDataSlot<?> slot) {
+        super(workbenchUI, slot);
     }
 
     private Path findImageFile() {
