@@ -1,6 +1,10 @@
 package org.hkijena.acaq5.api.data;
 
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.api.traits.ACAQTrait;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A helper that simplifies the creation of an {@link ACAQDataSource} algorithm
@@ -24,7 +28,11 @@ public abstract class ACAQSimpleDataSource<T extends ACAQData> extends ACAQDataS
         return (ACAQDataSlot<T>)getSlots().values().iterator().next();
     }
 
-    public void setOutputData(T data) {
-        getOutputSlot().setData(data);
+    public void addOutputData(T data, List<ACAQTrait> traits) {
+        getOutputSlot().addData(data, traits);
+    }
+
+    public void addOutputData(T data) {
+        addOutputData(data, new ArrayList<>());
     }
 }

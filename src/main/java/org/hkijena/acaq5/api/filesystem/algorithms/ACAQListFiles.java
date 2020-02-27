@@ -3,8 +3,8 @@ package org.hkijena.acaq5.api.filesystem.algorithms;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.filesystem.dataslots.ACAQFilesDataSlot;
-import org.hkijena.acaq5.api.filesystem.dataslots.ACAQFoldersDataSlot;
+import org.hkijena.acaq5.api.filesystem.dataslots.ACAQFileDataSlot;
+import org.hkijena.acaq5.api.filesystem.dataslots.ACAQFolderDataSlot;
 import org.hkijena.acaq5.api.filesystem.dataypes.*;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 
@@ -19,12 +19,12 @@ import java.util.stream.Collectors;
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.FileSystem)
 
 // Algorithm flow
-@AlgorithmInputSlot(value = ACAQFoldersDataSlot.class, slotName = "Folders", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQFilesDataSlot.class, slotName = "Files", autoCreate = true)
+@AlgorithmInputSlot(value = ACAQFolderDataSlot.class, slotName = "Folders", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQFileDataSlot.class, slotName = "Files", autoCreate = true)
 
 // Traits
 @AutoTransferTraits
-public class ACAQListFiles extends ACAQSimpleAlgorithm<ACAQFoldersData, ACAQFilesData> {
+public class ACAQListFiles extends ACAQIteratingAlgorithm {
 
     public ACAQListFiles(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
@@ -35,21 +35,15 @@ public class ACAQListFiles extends ACAQSimpleAlgorithm<ACAQFoldersData, ACAQFile
     }
 
     @Override
-    public void run() {
-        ACAQFoldersData inputData = getInputData();
-        List<ACAQFileData> result = new ArrayList<>();
-
+    protected void runIteration(ACAQDataInterface dataInterface) {
+        ACAQFolderData inputFolder = dataInterface.getInputData("Folders");
         try {
-            for(ACAQFolderData folder : inputData.getFolders()) {
-                for(Path file : Files.list(folder.getFolderPath()).filter(Files::isRegularFile).collect(Collectors.toList())) {
-                    result.add(new ACAQFileData(folder, file));
-                }
+            for(Path file : Files.list(inputFolder.getFolderPath()).filter(Files::isRegularFile).collect(Collectors.toList())) {
+               dataInterface.addOutputData("Files", new ACAQFileData(file));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-        setOutputData(new ACAQFileListData(result));
     }
 
     @Override

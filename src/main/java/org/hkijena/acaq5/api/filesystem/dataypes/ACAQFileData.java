@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.api.filesystem.dataypes;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.data.ACAQData;
 
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -9,14 +10,11 @@ import java.util.List;
 import java.util.Map;
 
 @ACAQDocumentation(name = "File")
-public class ACAQFileData implements ACAQFilesData {
+public class ACAQFileData implements ACAQData {
 
-    private ACAQFolderData parent;
     private Path filePath;
-    private Map<String, Object> annotations = new HashMap<>();
 
-    public ACAQFileData(ACAQFolderData parent, Path filePath) {
-        this.parent = parent;
+    public ACAQFileData(Path filePath) {
         this.filePath = filePath;
     }
 
@@ -26,32 +24,5 @@ public class ACAQFileData implements ACAQFilesData {
 
     public Path getFilePath() {
         return filePath;
-    }
-
-    public ACAQFolderData getParent() {
-        return parent;
-    }
-
-    @Override
-    public Map<String, Object> getAnnotations() {
-        return null;
-    }
-
-    @Override
-    public Object findAnnotation(String key) {
-        Object existing = annotations.get(key);
-        if(existing == null && parent != null)
-            existing = parent.findAnnotation(key);
-        return existing;
-    }
-
-    @Override
-    public void annotate(String key, Object value) {
-        annotations.put(key, value);
-    }
-
-    @Override
-    public List<ACAQFileData> getFiles() {
-        return Arrays.asList(this);
     }
 }

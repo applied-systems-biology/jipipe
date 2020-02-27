@@ -3,10 +3,8 @@ package org.hkijena.acaq5.api.filesystem.algorithms;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.filesystem.dataslots.ACAQFoldersDataSlot;
+import org.hkijena.acaq5.api.filesystem.dataslots.ACAQFolderDataSlot;
 import org.hkijena.acaq5.api.filesystem.dataypes.ACAQFolderData;
-import org.hkijena.acaq5.api.filesystem.dataypes.ACAQFolderListData;
-import org.hkijena.acaq5.api.filesystem.dataypes.ACAQFoldersData;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 
@@ -18,12 +16,12 @@ import java.util.stream.Collectors;
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.FileSystem)
 
 // Algorithm flow
-@AlgorithmInputSlot(value = ACAQFoldersDataSlot.class, slotName = "Folders", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQFoldersDataSlot.class, slotName = "Subfolders", autoCreate = true)
+@AlgorithmInputSlot(value = ACAQFolderDataSlot.class, slotName = "Folders", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQFolderDataSlot.class, slotName = "Subfolders", autoCreate = true)
 
 // Traits
 @AutoTransferTraits
-public class ACAQSubFolder extends ACAQSimpleAlgorithm<ACAQFoldersData, ACAQFoldersData> {
+public class ACAQSubFolder extends ACAQIteratingAlgorithm {
 
     private String subFolder;
 
@@ -36,18 +34,19 @@ public class ACAQSubFolder extends ACAQSimpleAlgorithm<ACAQFoldersData, ACAQFold
     }
 
     @Override
-    public void run() {
-        List<ACAQFolderData> fileNames = getInputData().getFolders();
-        setOutputData(new ACAQFolderListData(fileNames.stream().map(p -> p.resolveToFolder(Paths.get(subFolder))).collect(Collectors.toList())));
+    protected void runIteration(ACAQDataInterface dataInterface) {
+        ACAQFolderData inputFolder = dataInterface.getInputData("Folders");
+        dataInterface.addOutputData("Subfolders", new ACAQFolderData(inputFolder.getFolderPath().resolve(subFolder)));
     }
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-
+        if(subFolder == null || subFolder.isEmpty())
+            report.forCategory("Subfolder name").reportIsInvalid("The subfolder name is empty! Please enter a name.");
     }
 
     @ACAQParameter("subfolder")
-    @ACAQDocumentation(name = "Subfolder")
+    @ACAQDocumentation(name = "Subfolder name")
     public String getSubFolder() {
         return subFolder;
     }

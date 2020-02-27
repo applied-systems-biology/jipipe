@@ -201,6 +201,16 @@ public abstract class ACAQDataSlot<T extends ACAQData> implements TableModel {
 //        }
     }
 
+    /**
+     * Copies the source slot into this slot
+     * @param sourceSlot
+     */
+    public void copyFrom(ACAQDataSlot<?> sourceSlot) {
+        for(int row = 0; row < sourceSlot.getRowCount(); ++row) {
+            addData(sourceSlot.getData(row), sourceSlot.getAnnotations(row));
+        }
+    }
+
     public enum SlotType {
         Input,
         Output

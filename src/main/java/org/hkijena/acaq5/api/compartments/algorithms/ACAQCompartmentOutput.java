@@ -22,7 +22,7 @@ public class ACAQCompartmentOutput extends ACAQAlgorithm {
     public void run() {
         for (ACAQDataSlot<?> inputSlot : getInputSlots()) {
             ACAQDataSlot<?> outputSlot = getSlots().get("Output " + inputSlot.getName());
-            outputSlot.setData(inputSlot.getData());
+            outputSlot.copyFrom(inputSlot);
         }
     }
 

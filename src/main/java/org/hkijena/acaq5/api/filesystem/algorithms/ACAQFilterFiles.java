@@ -3,27 +3,22 @@ package org.hkijena.acaq5.api.filesystem.algorithms;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.filesystem.dataslots.ACAQFilesDataSlot;
+import org.hkijena.acaq5.api.filesystem.dataslots.ACAQFileDataSlot;
 import org.hkijena.acaq5.api.filesystem.dataypes.ACAQFileData;
-import org.hkijena.acaq5.api.filesystem.dataypes.ACAQFileListData;
-import org.hkijena.acaq5.api.filesystem.dataypes.ACAQFilesData;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import org.hkijena.acaq5.utils.PathFilter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @ACAQDocumentation(name = "Filter files", description = "Filters the input files by their name")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.FileSystem)
 
 // Algorithm flow
-@AlgorithmInputSlot(value = ACAQFilesDataSlot.class, slotName = "Files", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQFilesDataSlot.class, slotName = "Filtered files", autoCreate = true)
+@AlgorithmInputSlot(value = ACAQFileDataSlot.class, slotName = "Files", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQFileDataSlot.class, slotName = "Filtered files", autoCreate = true)
 
 // Traits
 @AutoTransferTraits
-public class ACAQFilterFiles extends ACAQSimpleAlgorithm<ACAQFilesData, ACAQFilesData> {
+public class ACAQFilterFiles extends ACAQIteratingAlgorithm {
 
     private PathFilter filter = new PathFilter();
 
@@ -33,23 +28,20 @@ public class ACAQFilterFiles extends ACAQSimpleAlgorithm<ACAQFilesData, ACAQFile
 
     public ACAQFilterFiles(ACAQFilterFiles other) {
         super(other);
+        this.filter = new PathFilter(other.filter);
     }
 
     @Override
-    public void run() {
-        List<ACAQFileData> files = getInputData().getFiles();
-        List<ACAQFileData> result = new ArrayList<>();
-        for(ACAQFileData folder : files) {
-            if(filter.test(folder.getFilePath())) {
-                result.add(folder);
-            }
+    protected void runIteration(ACAQDataInterface dataInterface) {
+        ACAQFileData inputData = dataInterface.getInputData("Files");
+        if(filter.test(inputData.getFilePath())) {
+            dataInterface.addOutputData("Filtered files", inputData);
         }
-        setOutputData(new ACAQFileListData(result));
     }
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-
+        report.forCategory("Filter").report(filter);
     }
 
     @ACAQParameter("filter")

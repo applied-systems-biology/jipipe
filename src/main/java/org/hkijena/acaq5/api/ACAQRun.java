@@ -26,7 +26,6 @@ public class ACAQRun implements ACAQRunnable {
         this.configuration = configuration;
         this.algorithmGraph = new ACAQAlgorithmGraph(project.getGraph());
         initializeInternalStoragePaths();
-        algorithmGraph.exportDOT(Paths.get("/home/rgerst/graph.dot"));
     }
 
     private void initializeInternalStoragePaths() {
@@ -122,7 +121,7 @@ public class ACAQRun implements ACAQRunnable {
             if(slot.isInput()) {
                 // Copy data from source
                 ACAQDataSlot<?> sourceSlot = algorithmGraph.getSourceSlot(slot);
-                slot.setData(sourceSlot.getData());
+                slot.copyFrom(sourceSlot);
 
                 // Check if we can flush the output
                 flushFinishedSlots(traversedSlots, executedAlgorithms, i, sourceSlot);

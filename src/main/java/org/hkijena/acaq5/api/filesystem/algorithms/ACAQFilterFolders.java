@@ -3,27 +3,22 @@ package org.hkijena.acaq5.api.filesystem.algorithms;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.filesystem.dataslots.ACAQFoldersDataSlot;
+import org.hkijena.acaq5.api.filesystem.dataslots.ACAQFolderDataSlot;
 import org.hkijena.acaq5.api.filesystem.dataypes.ACAQFolderData;
-import org.hkijena.acaq5.api.filesystem.dataypes.ACAQFolderListData;
-import org.hkijena.acaq5.api.filesystem.dataypes.ACAQFoldersData;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import org.hkijena.acaq5.utils.PathFilter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @ACAQDocumentation(name = "Filter folders", description = "Filters the input folders by their name")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.FileSystem)
 
 // Algorithm flow
-@AlgorithmInputSlot(value = ACAQFoldersDataSlot.class, slotName = "Folders", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQFoldersDataSlot.class, slotName = "Filtered files", autoCreate = true)
+@AlgorithmInputSlot(value = ACAQFolderDataSlot.class, slotName = "Folders", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQFolderDataSlot.class, slotName = "Filtered folders", autoCreate = true)
 
 // Traits
 @AutoTransferTraits
-public class ACAQFilterFolders extends ACAQSimpleAlgorithm<ACAQFoldersData, ACAQFoldersData> {
+public class ACAQFilterFolders extends ACAQIteratingAlgorithm {
 
     private PathFilter filter = new PathFilter();
 
@@ -33,23 +28,20 @@ public class ACAQFilterFolders extends ACAQSimpleAlgorithm<ACAQFoldersData, ACAQ
 
     public ACAQFilterFolders(ACAQFilterFolders other) {
         super(other);
+        this.filter = new PathFilter(other.filter);
     }
 
     @Override
-    public void run() {
-        List<ACAQFolderData> folders = getInputData().getFolders();
-        List<ACAQFolderData> result = new ArrayList<>();
-        for(ACAQFolderData folder : folders) {
-            if(filter.test(folder.getFolderPath())) {
-                result.add(folder);
-            }
+    protected void runIteration(ACAQDataInterface dataInterface) {
+        ACAQFolderData inputData = dataInterface.getInputData("Folders");
+        if(filter.test(inputData.getFolderPath())) {
+            dataInterface.addOutputData("Filtered folders", inputData);
         }
-        setOutputData(new ACAQFolderListData(result));
     }
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-
+        report.forCategory("Filter").report(filter);
     }
 
     @ACAQParameter("filter")

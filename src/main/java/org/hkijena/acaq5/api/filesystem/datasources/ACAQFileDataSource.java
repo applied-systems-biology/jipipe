@@ -36,7 +36,7 @@ public class ACAQFileDataSource extends ACAQSimpleDataSource<ACAQFileData> {
 
     @Override
     public void run() {
-        setOutputData(new ACAQFileData(new ACAQFolderData(null, fileName.getParent()), fileName));
+        addOutputData(new ACAQFileData(fileName));
     }
 
     @ACAQParameter("file-name")

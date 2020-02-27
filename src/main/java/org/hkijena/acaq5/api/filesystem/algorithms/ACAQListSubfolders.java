@@ -3,10 +3,8 @@ package org.hkijena.acaq5.api.filesystem.algorithms;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.filesystem.dataslots.ACAQFoldersDataSlot;
+import org.hkijena.acaq5.api.filesystem.dataslots.ACAQFolderDataSlot;
 import org.hkijena.acaq5.api.filesystem.dataypes.ACAQFolderData;
-import org.hkijena.acaq5.api.filesystem.dataypes.ACAQFolderListData;
-import org.hkijena.acaq5.api.filesystem.dataypes.ACAQFoldersData;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 
 import java.io.IOException;
@@ -20,12 +18,12 @@ import java.util.stream.Collectors;
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.FileSystem)
 
 // Algorithm flow
-@AlgorithmInputSlot(value = ACAQFoldersDataSlot.class, slotName = "Folders", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQFoldersDataSlot.class, slotName = "Subfolders", autoCreate = true)
+@AlgorithmInputSlot(value = ACAQFolderDataSlot.class, slotName = "Folders", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQFolderDataSlot.class, slotName = "Subfolders", autoCreate = true)
 
 // Traits
 @AutoTransferTraits
-public class ACAQListSubfolders extends ACAQSimpleAlgorithm<ACAQFoldersData, ACAQFoldersData> {
+public class ACAQListSubfolders extends ACAQIteratingAlgorithm {
 
     public ACAQListSubfolders(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
@@ -36,19 +34,15 @@ public class ACAQListSubfolders extends ACAQSimpleAlgorithm<ACAQFoldersData, ACA
     }
 
     @Override
-    public void run() {
-        ACAQFoldersData inputFolders = getInputData();
-        List<ACAQFolderData> result = new ArrayList<>();
+    protected void runIteration(ACAQDataInterface dataInterface) {
+        ACAQFolderData inputFolder = dataInterface.getInputData("Folders");
         try {
-            for (ACAQFolderData inputFolder : inputFolders.getFolders()) {
-                for (Path path : Files.list(inputFolder.getFolderPath()).filter(Files::isDirectory).collect(Collectors.toList())) {
-                    result.add(new ACAQFolderData(inputFolder, path));
-                }
+            for (Path path : Files.list(inputFolder.getFolderPath()).filter(Files::isDirectory).collect(Collectors.toList())) {
+                dataInterface.addOutputData("Subfolders", new ACAQFolderData(path));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        setOutputData(new ACAQFolderListData(result));
     }
 
     @Override

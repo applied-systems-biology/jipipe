@@ -51,7 +51,6 @@ public class StringUtils {
     public static String makeFilesystemCompatible(String input) {
         if(input == null)
             return null;
-        input = input.trim().toLowerCase();
         for (char c : INVALID_FILESYSTEM_CHARACTERS) {
             input = input.replace(c, ' ');
         }

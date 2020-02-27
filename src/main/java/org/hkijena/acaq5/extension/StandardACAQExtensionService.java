@@ -3,15 +3,7 @@ package org.hkijena.acaq5.extension;
 import ij.process.AutoThresholder;
 import org.hkijena.acaq5.ACAQExtensionService;
 import org.hkijena.acaq5.ACAQRegistryService;
-import org.hkijena.acaq5.extension.api.algorithms.converters.MaskToParticleConverter;
-import org.hkijena.acaq5.extension.api.algorithms.converters.MultiChannelSplitterConverter;
-import org.hkijena.acaq5.extension.api.algorithms.enhancers.CLAHEImageEnhancer;
-import org.hkijena.acaq5.extension.api.algorithms.enhancers.IlluminationCorrectionEnhancer;
-import org.hkijena.acaq5.extension.api.algorithms.enhancers.MergeROIEnhancer;
-import org.hkijena.acaq5.extension.api.algorithms.enhancers.WatershedMaskEnhancer;
-import org.hkijena.acaq5.extension.api.algorithms.segmenters.*;
 import org.hkijena.acaq5.extension.api.dataslots.*;
-import org.hkijena.acaq5.extension.api.datasources.*;
 import org.hkijena.acaq5.extension.api.datatypes.*;
 import org.hkijena.acaq5.extension.api.traits.Sample;
 import org.hkijena.acaq5.extension.api.traits.Subject;
@@ -87,11 +79,11 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
         registerAlgorithms(registryService);
 
         // Register data sources
-        registryService.getAlgorithmRegistry().register(ACAQGreyscaleImageDataFromFile.class);
-        registryService.getAlgorithmRegistry().register(ACAQMaskImageDataFromFile.class);
-        registryService.getAlgorithmRegistry().register(ACAQROIDataFromFile.class);
-        registryService.getAlgorithmRegistry().register(ACAQMultichannelImageDataFromFile.class);
-        registryService.getAlgorithmRegistry().register(ACAQResultsTableFromFile.class);
+//        registryService.getAlgorithmRegistry().register(ACAQGreyscaleImageDataFromFile.class);
+//        registryService.getAlgorithmRegistry().register(ACAQMaskImageDataFromFile.class);
+//        registryService.getAlgorithmRegistry().register(ACAQROIDataFromFile.class);
+//        registryService.getAlgorithmRegistry().register(ACAQMultichannelImageDataFromFile.class);
+//        registryService.getAlgorithmRegistry().register(ACAQResultsTableFromFile.class);
 
         // Register parameter editor UIs
         registryService.getUIParametertypeRegistry().registerParameterEditor(Path.class, FilePathParameterEditorUI.class);
@@ -175,17 +167,17 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
     }
 
     private void registerAlgorithms(ACAQRegistryService registryService) {
-        registryService.getAlgorithmRegistry().register(MaskToParticleConverter.class);
-        registryService.getAlgorithmRegistry().register(CLAHEImageEnhancer.class);
-        registryService.getAlgorithmRegistry().register(IlluminationCorrectionEnhancer.class);
-        registryService.getAlgorithmRegistry().register(WatershedMaskEnhancer.class);
-        registryService.getAlgorithmRegistry().register(AutoThresholdSegmenter.class);
-        registryService.getAlgorithmRegistry().register(BrightSpotsSegmenter.class);
-        registryService.getAlgorithmRegistry().register(HoughSegmenter.class);
-        registryService.getAlgorithmRegistry().register(InternalGradientSegmenter.class);
-        registryService.getAlgorithmRegistry().register(MultiChannelSplitterConverter.class);
-        registryService.getAlgorithmRegistry().register(MergeROIEnhancer.class);
-        registryService.getAlgorithmRegistry().register(HessianSegmenter.class);
+//        registryService.getAlgorithmRegistry().register(MaskToParticleConverter.class);
+//        registryService.getAlgorithmRegistry().register(CLAHEImageEnhancer.class);
+//        registryService.getAlgorithmRegistry().register(IlluminationCorrectionEnhancer.class);
+//        registryService.getAlgorithmRegistry().register(WatershedMaskEnhancer.class);
+//        registryService.getAlgorithmRegistry().register(AutoThresholdSegmenter.class);
+//        registryService.getAlgorithmRegistry().register(BrightSpotsSegmenter.class);
+//        registryService.getAlgorithmRegistry().register(HoughSegmenter.class);
+//        registryService.getAlgorithmRegistry().register(InternalGradientSegmenter.class);
+//        registryService.getAlgorithmRegistry().register(MultiChannelSplitterConverter.class);
+//        registryService.getAlgorithmRegistry().register(MergeROIEnhancer.class);
+//        registryService.getAlgorithmRegistry().register(HessianSegmenter.class);
     }
 
     private void registerDataTypes(ACAQRegistryService registryService) {
