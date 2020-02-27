@@ -1,11 +1,11 @@
-package org.hkijena.acaq5.api.compartments;
+package org.hkijena.acaq5.api.algorithm;
 
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
 
-public class ACAQCompartmentSlotConfiguration extends ACAQMutableSlotConfiguration {
-    public ACAQCompartmentSlotConfiguration() {
+public class ACAQIOSlotConfiguration extends ACAQMutableSlotConfiguration {
+    public ACAQIOSlotConfiguration() {
     }
 
     @Override
