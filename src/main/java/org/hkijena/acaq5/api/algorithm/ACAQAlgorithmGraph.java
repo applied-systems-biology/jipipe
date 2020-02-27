@@ -72,8 +72,11 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * @param algorithm
      */
     public void insertNode(String key, ACAQAlgorithm algorithm, String compartment) {
+        if(compartment == null)
+            throw new NullPointerException("Compartment should not be null!");
         if(algorithms.containsKey(key))
             throw new RuntimeException("Already contains algorithm with name " + key);
+        algorithm.setCompartment(compartment);
         algorithms.put(key, algorithm);
         compartments.put(algorithm, compartment);
         algorithm.getEventBus().register(this);
@@ -523,12 +526,13 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     @Override
     public void reportValidity(ACAQValidityReport report) {
         for(Map.Entry<String, ACAQAlgorithm> entry : algorithms.entrySet()) {
-            report.forCategory(entry.getValue().getName()).report(entry.getValue());
+            report.forCategory(entry.getValue().getCompartment()).forCategory(entry.getValue().getName()).report(entry.getValue());
         }
         for(ACAQDataSlot<?> slot : graph.vertexSet()) {
             if(slot.isInput()) {
                 if(graph.incomingEdgesOf(slot).isEmpty()) {
-                    report.forCategory(slot.getAlgorithm().getName()).forCategory("Slot: " + slot.getName()).reportIsInvalid("An input slot has no incoming data! " +
+                    report.forCategory(slot.getAlgorithm().getCompartment()).forCategory(slot.getAlgorithm().getName())
+                            .forCategory("Slot: " + slot.getName()).reportIsInvalid("An input slot has no incoming data! " +
                             "Please connect the slot to an output of another algorithm.");
                 }
             }

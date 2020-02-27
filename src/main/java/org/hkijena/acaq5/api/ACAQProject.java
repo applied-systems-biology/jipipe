@@ -129,7 +129,7 @@ public class ACAQProject implements ACAQValidatable {
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        graph.reportValidity(report.forCategory("Analysis"));
+        graph.reportValidity(report);
     }
 
     public List<String> getCompartmentOrder() {

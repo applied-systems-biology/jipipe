@@ -6,6 +6,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.AlgorithmGraphConnectedEvent;
@@ -123,6 +124,12 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         }
 
         int minY = Math.max(ui.getY(), 2 * ACAQAlgorithmUI.SLOT_UI_HEIGHT);
+
+//        if(ui.getAlgorithm() instanceof ACAQCompartmentOutput) {
+//            if(ui.getAlgorithm().getCompartment().equals(compartment)) {
+//                minX = 20 * ACAQAlgorithmUI.SLOT_UI_WIDTH;
+//            }
+//        }
 
         if(ui.getX() < minX) {
             if(!ui.trySetLocationNoGrid(minX, minY)) {

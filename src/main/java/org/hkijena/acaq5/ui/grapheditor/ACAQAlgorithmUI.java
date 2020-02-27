@@ -156,6 +156,8 @@ public class ACAQAlgorithmUI extends JPanel {
 
         boolean createAddInputSlotButton = false;
         boolean createAddOutputSlotButton = false;
+        boolean createInputSlots = true;
+        boolean createOutputSlots = true;
 
         if(algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
             ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
@@ -167,13 +169,15 @@ public class ACAQAlgorithmUI extends JPanel {
         if(algorithm instanceof ACAQCompartmentOutput) {
             if(algorithm.getCompartment().equals(graphUI.getCompartment())) {
                 createAddOutputSlotButton = false;
+                createOutputSlots = false;
             }
             else {
                 createAddInputSlotButton = false;
+                createInputSlots = false;
             }
         }
 
-        if(algorithm.getInputSlots().size() > 0) {
+        if(createInputSlots && algorithm.getInputSlots().size() > 0) {
             List<ACAQDataSlot<?>> slots = algorithm.getInputSlots();
             for(int i = 0; i < slots.size(); ++i) {
                 int bottomBorder = 0;
@@ -188,7 +192,7 @@ public class ACAQAlgorithmUI extends JPanel {
                 inputSlotPanel.add(ui);
             }
         }
-        if(algorithm.getOutputSlots().size() > 0) {
+        if(createOutputSlots && algorithm.getOutputSlots().size() > 0) {
             List<ACAQDataSlot<?>> slots = algorithm.getOutputSlots();
             for(int i = 0; i < slots.size(); ++i) {
                 int bottomBorder = 0;

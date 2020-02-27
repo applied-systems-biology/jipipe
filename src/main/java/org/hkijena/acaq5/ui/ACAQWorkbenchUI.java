@@ -76,7 +76,7 @@ public class ACAQWorkbenchUI extends JPanel {
             if(!compartments.containsKey(compartmentName)) {
                 ACAQCompartmentUI compartmentUI = new ACAQCompartmentUI(this, project.getCompartments().get(compartmentName));
                 DocumentTabPane.DocumentTab documentTab = documentTabPane.addTab(compartmentName,
-                        UIUtils.getIconFromResources("cog.png"),
+                        UIUtils.getIconFromResources("chevron-right.png"),
                         compartmentUI,
                         DocumentTabPane.CloseMode.withoutCloseButton,
                         false);
