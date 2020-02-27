@@ -4,6 +4,7 @@ import com.google.common.reflect.TypeToken;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -49,5 +50,26 @@ public interface ACAQTrait {
         else {
             return null;
         }
+    }
+
+    /**
+     * Faster method to compare traits
+     * @param first
+     * @param second
+     * @return
+     */
+    static boolean equals(ACAQTrait first, ACAQTrait second) {
+        if(first == null && second == null)
+            return true;
+        else if(first == null)
+            return false;
+        else if(second == null)
+            return false;
+        else if(first.getDeclaration() != second.getDeclaration())
+            return false;
+        else if(first.getDeclaration().isDiscriminator())
+            return Objects.equals(((ACAQDiscriminator) first).getValue(), ((ACAQDiscriminator)second).getValue());
+        else
+            return true;
     }
 }

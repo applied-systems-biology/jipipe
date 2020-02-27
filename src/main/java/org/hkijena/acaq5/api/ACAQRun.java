@@ -1,13 +1,8 @@
 package org.hkijena.acaq5.api;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableBiMap;
-import edu.mines.jtk.util.StringUtil;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.io.IOException;
@@ -122,7 +117,7 @@ public class ACAQRun implements ACAQRunnable {
             if (isCancelled.get())
                 throw new RuntimeException("Execution was cancelled");
             ACAQDataSlot<?> slot = traversedSlots.get(i);
-            onProgress.accept(new ACAQRunnerStatus(i, algorithmGraph.getSlotCount(), slot.getFullName()));
+            onProgress.accept(new ACAQRunnerStatus(i, algorithmGraph.getSlotCount(), slot.getNameWithAlgorithmName()));
 
             if(slot.isInput()) {
                 // Copy data from source
@@ -143,7 +138,7 @@ public class ACAQRun implements ACAQRunnable {
                 // Check if we can flush the output
                 flushFinishedSlots(traversedSlots, executedAlgorithms, i, slot);
             }
-            onProgress.accept(new ACAQRunnerStatus(i + 1, algorithmGraph.getSlotCount(), slot.getFullName() + " done"));
+            onProgress.accept(new ACAQRunnerStatus(i + 1, algorithmGraph.getSlotCount(), slot.getNameWithAlgorithmName() + " done"));
         }
 
         // Postprocessing

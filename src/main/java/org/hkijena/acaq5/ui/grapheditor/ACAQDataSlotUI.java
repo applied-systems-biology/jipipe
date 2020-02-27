@@ -3,7 +3,6 @@ package org.hkijena.acaq5.ui.grapheditor;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
-import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.ui.events.AlgorithmFinderSuccessEvent;
@@ -51,7 +50,7 @@ public class ACAQDataSlotUI extends JPanel {
                 for(ACAQDataSlot<?> source : availableSources) {
                     if(!source.getAlgorithm().isVisibleIn(compartment))
                         continue;
-                    JMenuItem connectButton = new JMenuItem(source.getFullName(),
+                    JMenuItem connectButton = new JMenuItem(source.getNameWithAlgorithmName(),
                             ACAQUIDatatypeRegistry.getInstance().getIconFor(source.getAcceptedDataType()));
                     connectButton.addActionListener(e -> connectSlot(source, slot));
                     assignButtonMenu.add(connectButton);
@@ -94,7 +93,7 @@ public class ACAQDataSlotUI extends JPanel {
                 assignButtonMenu.addSeparator();
 
             for(ACAQDataSlot<?> target : availableTargets) {
-                JMenuItem connectButton = new JMenuItem(target.getFullName(),
+                JMenuItem connectButton = new JMenuItem(target.getNameWithAlgorithmName(),
                         ACAQUIDatatypeRegistry.getInstance().getIconFor(target.getAcceptedDataType()));
                 connectButton.addActionListener(e -> connectSlot(slot, target));
                 connectButton.setToolTipText(TooltipUtils.getAlgorithmTooltip(target.getAlgorithm().getDeclaration()));

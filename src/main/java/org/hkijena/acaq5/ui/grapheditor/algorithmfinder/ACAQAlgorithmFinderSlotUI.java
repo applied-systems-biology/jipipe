@@ -1,7 +1,6 @@
 package org.hkijena.acaq5.ui.grapheditor.algorithmfinder;
 
 import com.google.common.eventbus.EventBus;
-import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
@@ -62,18 +61,18 @@ public class ACAQAlgorithmFinderSlotUI extends JPanel {
 
         if(isExistingInstance) {
             if(graph.getSourceSlot(inputSlot) != null) {
-                JMenuItem disconnectExistingButton = new JMenuItem("Disconnect existing: " + graph.getSourceSlot(inputSlot).getFullName(), UIUtils.getIconFromResources("remove.png"));
+                JMenuItem disconnectExistingButton = new JMenuItem("Disconnect existing: " + graph.getSourceSlot(inputSlot).getNameWithAlgorithmName(), UIUtils.getIconFromResources("remove.png"));
                 disconnectExistingButton.addActionListener(e -> disconnectAllExistingInstance());
                 assignButtonMenu.add(disconnectExistingButton);
             }
             else {
-                JMenuItem connectButton = new JMenuItem(inputSlot.getFullName(), ACAQUIDatatypeRegistry.getInstance().getIconFor(inputSlot.getAcceptedDataType()));
+                JMenuItem connectButton = new JMenuItem(inputSlot.getNameWithAlgorithmName(), ACAQUIDatatypeRegistry.getInstance().getIconFor(inputSlot.getAcceptedDataType()));
                 connectButton.addActionListener(e -> connectToExistingInstance());
                 assignButtonMenu.add(connectButton);
             }
         }
         else {
-            JMenuItem connectButton = new JMenuItem(inputSlot.getFullName(), ACAQUIDatatypeRegistry.getInstance().getIconFor(inputSlot.getAcceptedDataType()));
+            JMenuItem connectButton = new JMenuItem(inputSlot.getNameWithAlgorithmName(), ACAQUIDatatypeRegistry.getInstance().getIconFor(inputSlot.getAcceptedDataType()));
             connectButton.addActionListener(e -> connectToNewInstance());
             assignButtonMenu.add(connectButton);
         }
