@@ -131,8 +131,6 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
         boolean isEmpty = true;
         Icon icon = new ColorIcon(16, 16, category.getColor(0.1f, 0.9f));
         for(ACAQAlgorithmDeclaration declaration : registryService.getAlgorithmRegistry().getAlgorithmsOfCategory(category)) {
-            if(!declaration.getVisibility().isVisibleIn(graphUI.getAlgorithmGraph().getVisibility()))
-                continue;
             JMenuItem addItem = new JMenuItem(declaration.getName(), icon);
             addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
             addItem.addActionListener(e -> algorithmGraph.insertNode(declaration.newInstance(), compartment));
@@ -153,8 +151,6 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
             dataMenu.setIcon(icon);
 
             for(ACAQAlgorithmDeclaration declaration : dataSources) {
-                if(!declaration.getVisibility().isVisibleIn(graphUI.getAlgorithmGraph().getVisibility()))
-                    continue;
                 JMenuItem addItem = new JMenuItem(declaration.getName(), icon);
                 addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
                 addItem.addActionListener(e -> algorithmGraph.insertNode(declaration.newInstance(), compartment));

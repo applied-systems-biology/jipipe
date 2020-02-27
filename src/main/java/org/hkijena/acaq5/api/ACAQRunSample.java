@@ -10,10 +10,10 @@ import java.util.*;
  */
 public class ACAQRunSample implements Comparable<ACAQRunSample>{
     private ACAQRun run;
-    private ACAQProjectSample projectSample;
+    private ACAQProjectCompartment projectSample;
     private Set<ACAQAlgorithm> algorithms;
 
-    public ACAQRunSample(ACAQRun run, ACAQProjectSample projectSample, Set<ACAQAlgorithm> algorithms) {
+    public ACAQRunSample(ACAQRun run, ACAQProjectCompartment projectSample, Set<ACAQAlgorithm> algorithms) {
         this.run = run;
         this.projectSample = projectSample;
         this.algorithms = algorithms;
@@ -27,7 +27,7 @@ public class ACAQRunSample implements Comparable<ACAQRunSample>{
         return Collections.unmodifiableSet(algorithms);
     }
 
-    public ACAQProjectSample getProjectSample() {
+    public ACAQProjectCompartment getProjectSample() {
         return projectSample;
     }
 

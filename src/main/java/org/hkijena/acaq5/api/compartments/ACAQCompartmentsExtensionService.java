@@ -2,10 +2,6 @@ package org.hkijena.acaq5.api.compartments;
 
 import org.hkijena.acaq5.ACAQExtensionService;
 import org.hkijena.acaq5.ACAQRegistryService;
-import org.hkijena.acaq5.api.compartments.algorithms.ACAQAlgorithmInput;
-import org.hkijena.acaq5.api.compartments.algorithms.ACAQPreprocessingOutput;
-import org.hkijena.acaq5.api.compartments.dataslots.ACAQPreprocessingOutputDataSlot;
-import org.hkijena.acaq5.api.compartments.datatypes.ACAQPreprocessingOutputData;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
@@ -48,6 +44,5 @@ public class ACAQCompartmentsExtensionService extends AbstractService implements
 
     @Override
     public void register(ACAQRegistryService registryService) {
-        registryService.getDatatypeRegistry().register(ACAQPreprocessingOutputData.class, ACAQPreprocessingOutputDataSlot.class);
     }
 }

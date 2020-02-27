@@ -29,11 +29,6 @@ public class ACAQDefaultAlgorithmDeclaration extends ACAQMutableAlgorithmDeclara
         setName(getNameOf(algorithmClass));
         setDescription(getDescriptionOf(algorithmClass));
         setCategory(getCategoryOf(algorithmClass));
-        if(ACAQDataSource.class.isAssignableFrom(algorithmClass))
-            setVisibility(ACAQAlgorithmVisibility.Analysis);
-        else
-            setVisibility(getVisiblityOf(algorithmClass));
-
         initializeSlots();
         initializeTraits();
     }
@@ -124,21 +119,6 @@ public class ACAQDefaultAlgorithmDeclaration extends ACAQMutableAlgorithmDeclara
             return annotations[0].category();
         } else {
             return ACAQAlgorithmCategory.Internal;
-        }
-    }
-
-    /**
-     * Returns the visibility of an algorithm
-     *
-     * @param klass
-     * @return
-     */
-    public static ACAQAlgorithmVisibility getVisiblityOf(Class<? extends ACAQAlgorithm> klass) {
-        AlgorithmMetadata[] annotations = klass.getAnnotationsByType(AlgorithmMetadata.class);
-        if (annotations.length > 0) {
-            return annotations[0].visibility();
-        } else {
-            return ACAQAlgorithmVisibility.All;
         }
     }
 

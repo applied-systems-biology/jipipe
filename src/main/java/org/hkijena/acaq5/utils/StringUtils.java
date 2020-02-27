@@ -13,6 +13,7 @@
 package org.hkijena.acaq5.utils;
 
 import java.util.Collection;
+import java.util.function.Predicate;
 
 public class StringUtils {
     private StringUtils() {
@@ -24,6 +25,16 @@ public class StringUtils {
             return input;
         int index = 1;
         while(existing.contains(input + " " + index)) {
+            ++index;
+        }
+        return input + " " + index;
+    }
+
+    public static String makeUniqueString(String input, Predicate<String> existing) {
+        if(!existing.test(input))
+            return input;
+        int index = 1;
+        while(existing.test(input + " " + index)) {
             ++index;
         }
         return input + " " + index;

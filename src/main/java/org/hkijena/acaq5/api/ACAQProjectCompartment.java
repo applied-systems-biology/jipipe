@@ -7,38 +7,39 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.compartments.ACAQAlgorithmInputDeclaration;
-import org.hkijena.acaq5.api.compartments.ACAQPreprocessingOutputDeclaration;
-import org.hkijena.acaq5.api.compartments.ACAQPreprocessingOutputSlotConfiguration;
-import org.hkijena.acaq5.api.compartments.algorithms.ACAQAlgorithmInput;
-import org.hkijena.acaq5.api.compartments.algorithms.ACAQPreprocessingOutput;
+import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 
 import java.io.IOException;
 
 /**
  * Sample within an {@link ACAQProject}
  */
-@JsonSerialize(using = ACAQProjectSample.Serializer.class)
-public class ACAQProjectSample implements Comparable<ACAQProjectSample>, ACAQValidatable {
+@JsonSerialize(using = ACAQProjectCompartment.Serializer.class)
+public class ACAQProjectCompartment implements Comparable<ACAQProjectCompartment>, ACAQValidatable {
     private ACAQProject project;
     private String name;
-    private ACAQPreprocessingOutput preprocessingOutput;
+    private ACAQCompartmentOutput compartmentOutputCache;
 
-    public ACAQProjectSample(ACAQProject project, String name) {
+    public ACAQProjectCompartment(ACAQProject project, String name) {
         this.project = project;
         this.name = name;
-        initializePreprocessingGraph();
     }
 
-    public ACAQProjectSample(ACAQProjectSample other) {
+    public ACAQProjectCompartment(ACAQProjectCompartment other) {
         this.name = other.name;
         this.project = other.project;
     }
 
-    private void initializePreprocessingGraph() {
-        preprocessingOutput = ACAQPreprocessingOutputDeclaration.createInstance(new ACAQPreprocessingOutputSlotConfiguration(project.getPreprocessingOutputConfiguration()),
-                project.getPreprocessingTraitConfiguration());
-        insertNode(preprocessingOutput);
+    public ACAQCompartmentOutput getOutputNode() {
+        if(compartmentOutputCache == null) {
+            for (ACAQAlgorithm algorithm : project.getGraph().getAlgorithmNodes().values()) {
+                if(algorithm instanceof ACAQCompartmentOutput && name.equals(algorithm.getCompartment())) {
+                    compartmentOutputCache = (ACAQCompartmentOutput) algorithm;
+                    break;
+                }
+            }
+        }
+        return compartmentOutputCache;
     }
 
     public void insertNode(ACAQAlgorithm algorithm) {
@@ -54,7 +55,7 @@ public class ACAQProjectSample implements Comparable<ACAQProjectSample>, ACAQVal
     }
 
     @Override
-    public int compareTo(ACAQProjectSample o) {
+    public int compareTo(ACAQProjectCompartment o) {
         return getName().compareTo(o.getName());
     }
 
@@ -71,13 +72,9 @@ public class ACAQProjectSample implements Comparable<ACAQProjectSample>, ACAQVal
         this.name = name;
     }
 
-    public ACAQPreprocessingOutput getPreprocessingOutput() {
-        return preprocessingOutput;
-    }
-
-    public static class Serializer extends JsonSerializer<ACAQProjectSample> {
+    public static class Serializer extends JsonSerializer<ACAQProjectCompartment> {
         @Override
-        public void serialize(ACAQProjectSample acaqProjectSample, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+        public void serialize(ACAQProjectCompartment acaqProjectCompartment, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeEndObject();
         }

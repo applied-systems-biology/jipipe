@@ -48,11 +48,6 @@ public class ACAQEmptyAlgorithmDeclaration implements ACAQAlgorithmDeclaration {
     }
 
     @Override
-    public ACAQAlgorithmVisibility getVisibility() {
-        return ACAQAlgorithmVisibility.All;
-    }
-
-    @Override
     public Set<Class<? extends ACAQTrait>> getPreferredTraits() {
         return Collections.emptySet();
     }

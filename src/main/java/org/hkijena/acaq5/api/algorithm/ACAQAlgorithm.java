@@ -45,6 +45,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
     private Path storagePath;
     private String customName;
     private String compartment;
+    private Set<String> visibleCompartments = new HashSet<>();
 
     /**
      * Initializes this algorithm with a custom provided slot configuration and trait configuration
@@ -318,6 +319,14 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
 
     public void setCompartment(String compartment) {
         this.compartment = compartment;
+    }
+
+    public Set<String> getVisibleCompartments() {
+        return visibleCompartments;
+    }
+
+    public void setVisibleCompartments(Set<String> visibleCompartments) {
+        this.visibleCompartments = visibleCompartments;
     }
 
     public static class Serializer extends JsonSerializer<ACAQAlgorithm> {

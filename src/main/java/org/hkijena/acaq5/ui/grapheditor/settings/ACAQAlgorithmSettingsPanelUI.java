@@ -3,7 +3,6 @@ package org.hkijena.acaq5.ui.grapheditor.settings;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmVisibility;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
@@ -48,8 +47,7 @@ public class ACAQAlgorithmSettingsPanelUI extends ACAQUIPanel {
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
 
-        if(algorithm.getCategory() != ACAQAlgorithmCategory.Internal &&
-                graph.getVisibility() != ACAQAlgorithmVisibility.BatchImporter) {
+        if(algorithm.getCategory() != ACAQAlgorithmCategory.Internal) {
             ACAQTestBenchSetupUI testBenchSetupUI = new ACAQTestBenchSetupUI(getWorkbenchUI(), algorithm, graph);
             tabbedPane.addTab("Testbench", UIUtils.getIconFromResources("testbench.png"),
                     testBenchSetupUI,

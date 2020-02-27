@@ -3,8 +3,8 @@ package org.hkijena.acaq5.ui.grapheditor;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQRegistryService;
-import org.hkijena.acaq5.api.compartments.algorithms.ACAQPreprocessingOutput;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
@@ -223,7 +223,7 @@ public class ACAQAlgorithmUI extends JPanel {
             String initialValue = slotType + " data ";
 
             // This is general
-            if(getAlgorithm() instanceof ACAQPreprocessingOutput) {
+            if(getAlgorithm() instanceof ACAQCompartmentOutput) {
                 initialValue = "Data ";
             }
 

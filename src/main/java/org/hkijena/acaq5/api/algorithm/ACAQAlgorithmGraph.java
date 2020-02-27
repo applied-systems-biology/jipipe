@@ -11,7 +11,6 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.ACAQAlgorithmGraphEdge;
-import org.hkijena.acaq5.api.compartments.algorithms.ACAQPreprocessingOutput;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
@@ -20,7 +19,6 @@ import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.cycle.CycleDetector;
 import org.jgrapht.graph.DefaultDirectedGraph;
-import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.io.DOTExporter;
 import org.jgrapht.io.ExportException;
 import org.jgrapht.traverse.GraphIterator;
@@ -37,23 +35,17 @@ import java.util.stream.Collectors;
 @JsonSerialize(using = ACAQAlgorithmGraph.Serializer.class)
 public class ACAQAlgorithmGraph implements ACAQValidatable {
 
-    public static final String COMPARTMENT_ANALYSIS = "/analysis";
-    public static final String COMPARTMENT_BATCHIMPORTER = "/batchimporter";
     private DefaultDirectedGraph<ACAQDataSlot<?>, ACAQAlgorithmGraphEdge> graph = new DefaultDirectedGraph<>(ACAQAlgorithmGraphEdge.class);
     private BiMap<String, ACAQAlgorithm> algorithms = HashBiMap.create();
     private Map<ACAQAlgorithm, String> compartments = new HashMap<>();
     private EventBus eventBus = new EventBus();
     private Map<ACAQDataSlot<?>, Set<Class<? extends ACAQTrait>>> algorithmTraits;
-    private ACAQAlgorithmVisibility visibility;
 
-    public ACAQAlgorithmGraph(ACAQAlgorithmVisibility visibility) {
-        this.visibility = visibility;
+    public ACAQAlgorithmGraph() {
+
     }
 
     public ACAQAlgorithmGraph(ACAQAlgorithmGraph other) {
-
-        this.visibility = other.visibility;
-
         // Copy nodes
         for(Map.Entry<String, ACAQAlgorithm> kv : other.algorithms.entrySet()) {
             ACAQAlgorithm algorithm = ACAQAlgorithm.clone(kv.getValue());
@@ -419,10 +411,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
             }
             for(ACAQDataSlot<?> slot : traverse()) {
                 Set<Class<? extends ACAQTrait>> traits = algorithmTraits.get(slot);
-                if(slot.getAlgorithm() instanceof ACAQPreprocessingOutput) {
-                    slot.getAlgorithm().getTraitConfiguration().modify(slot.getName(), traits);
-                }
-                else if(slot.isInput()) {
+                if(slot.isInput()) {
                     ACAQAlgorithmGraphEdge incomingEdge = graph.incomingEdgesOf(slot).stream().findFirst().orElse(null);
                     if(incomingEdge != null) {
                         ACAQDataSlot<?> source = graph.getEdgeSource(incomingEdge);
@@ -547,10 +536,6 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
     public Graph<ACAQDataSlot<?>, ACAQAlgorithmGraphEdge> getGraph() {
         return graph;
-    }
-
-    public ACAQAlgorithmVisibility getVisibility() {
-        return visibility;
     }
 
     public void clear() {

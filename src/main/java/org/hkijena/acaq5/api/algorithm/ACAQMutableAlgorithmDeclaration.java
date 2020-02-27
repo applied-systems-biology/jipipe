@@ -18,7 +18,6 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
     private String name;
     private String description;
     private ACAQAlgorithmCategory category;
-    private ACAQAlgorithmVisibility visibility;
     private Set<Class<? extends ACAQTrait>> preferredTraits = new HashSet<>();
     private Set<Class<? extends ACAQTrait>> unwantedTraits = new HashSet<>();
     private List<AddsTrait> addedTraits = new ArrayList<>();
@@ -114,14 +113,5 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
 
     public void setOutputSlots(List<AlgorithmOutputSlot> outputSlots) {
         this.outputSlots = outputSlots;
-    }
-
-    @Override
-    public ACAQAlgorithmVisibility getVisibility() {
-        return visibility;
-    }
-
-    public void setVisibility(ACAQAlgorithmVisibility visibility) {
-        this.visibility = visibility;
     }
 }

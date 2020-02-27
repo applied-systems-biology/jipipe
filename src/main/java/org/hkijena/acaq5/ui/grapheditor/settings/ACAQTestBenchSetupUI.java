@@ -1,7 +1,6 @@
 package org.hkijena.acaq5.ui.grapheditor.settings;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.api.ACAQMutableRunConfiguration;
 import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
@@ -11,7 +10,6 @@ import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.*;
 import org.hkijena.acaq5.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.acaq5.ui.events.RunUIWorkerInterruptedEvent;
-import org.hkijena.acaq5.ui.running.ACAQRunExecuterUI;
 import org.hkijena.acaq5.ui.running.ACAQRunnerQueue;
 import org.hkijena.acaq5.ui.testbench.ACAQTestBenchUI;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -23,8 +21,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.HashSet;
 
 public class ACAQTestBenchSetupUI extends ACAQUIPanel {
 
@@ -77,7 +73,7 @@ public class ACAQTestBenchSetupUI extends ACAQUIPanel {
         setupPanel.add(formPanel, BorderLayout.CENTER);
 
         // Allow the user to select one sample
-        JComboBox<String> sampleSelection = new JComboBox<String>(getProject().getSamples().keySet().toArray(new String[0]));
+        JComboBox<String> sampleSelection = new JComboBox<String>(getProject().getCompartments().keySet().toArray(new String[0]));
         formPanel.addToForm(sampleSelection, new JLabel("Sample"), null);
 
         // Let the user choose where temporary data is saved

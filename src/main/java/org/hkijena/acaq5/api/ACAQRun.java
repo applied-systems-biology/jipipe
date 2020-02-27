@@ -4,15 +4,12 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmVisibility;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -39,13 +36,13 @@ public class ACAQRun implements ACAQRunnable {
      * This function removes internal nodes such as PreprocessingOutput
      */
     private void initializeAlgorithmGraph() {
-        algorithmGraph = new ACAQAlgorithmGraph(ACAQAlgorithmVisibility.Analysis);
+        algorithmGraph = new ACAQAlgorithmGraph();
 
         // Add nodes
         initializeAlgorithmGraphNodes();
 
         // Add edges
-        for(Map.Entry<String, ACAQProjectSample> sampleEntry : project.getSamples().entrySet()) {
+        for(Map.Entry<String, ACAQProjectCompartment> sampleEntry : project.getCompartments().entrySet()) {
             if(configuration.getSampleRestrictions() != null && !configuration.getSampleRestrictions().isEmpty() &&
             !configuration.getSampleRestrictions().contains(sampleEntry.getKey()))
                 continue;
@@ -53,7 +50,7 @@ public class ACAQRun implements ACAQRunnable {
         }
     }
 
-    private void initializeAlgorithmGraphEdges(Map.Entry<String, ACAQProjectSample> sampleEntry) {
+    private void initializeAlgorithmGraphEdges(Map.Entry<String, ACAQProjectCompartment> sampleEntry) {
 //        ACAQAlgorithmGraph preprocessing = sampleEntry.getValue().getPreprocessingGraph();
 //        BiMap<String, ACAQAlgorithm> preprocessingAlgorithms = preprocessing.getAlgorithmNodes();
 //        BiMap<String, ACAQAlgorithm> analysisAlgorithms = project.getGraph().getAlgorithmNodes();

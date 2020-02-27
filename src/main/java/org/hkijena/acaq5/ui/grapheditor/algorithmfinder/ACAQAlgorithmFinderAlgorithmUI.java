@@ -3,10 +3,10 @@ package org.hkijena.acaq5.ui.grapheditor.algorithmfinder;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQRegistryService;
-import org.hkijena.acaq5.api.compartments.algorithms.ACAQPreprocessingOutput;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
@@ -164,7 +164,7 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
             String initialValue = slotType + " data ";
 
             // This is general
-            if(algorithm instanceof ACAQPreprocessingOutput) {
+            if(algorithm instanceof ACAQCompartmentOutput) {
                 initialValue = "Data ";
             }
 

@@ -27,6 +27,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.function.Predicate;
 
 public class UIUtils {
 
@@ -322,6 +323,21 @@ public class UIUtils {
         dialog.setSize(new Dimension(500,400));
         dialog.setLocationRelativeTo(parent);
         dialog.setVisible(true);
+    }
+
+    public static String getUniqueStringByDialog(Component parent, String message, String initialValue, Predicate<String> exists) {
+        if(initialValue != null)
+            initialValue = StringUtils.makeUniqueString(initialValue, exists);
+        String value = null;
+        while(value == null) {
+            String newValue = JOptionPane.showInputDialog(parent,message, initialValue);
+            if(newValue == null || newValue.trim().isEmpty())
+                return null;
+            if(exists.test(newValue))
+                continue;
+            value = newValue;
+        }
+        return value;
     }
 
 }
