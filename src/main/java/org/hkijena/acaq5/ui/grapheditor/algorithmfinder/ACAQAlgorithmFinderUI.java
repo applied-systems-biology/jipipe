@@ -10,11 +10,14 @@ import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
+import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.events.AlgorithmFinderSuccessEvent;
+import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTextField;
@@ -63,7 +66,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
         algorithmNameLabel.setToolTipText(TooltipUtils.getAlgorithmTooltip(algorithm.getDeclaration()));
         toolBar.add(algorithmNameLabel);
         toolBar.add(Box.createHorizontalStrut(5));
-        JLabel slotNameLabel = new JLabel(outputSlot.getName(), ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(outputSlot.getAcceptedDataType()), JLabel.LEFT);
+        JLabel slotNameLabel = new JLabel(outputSlot.getName(), ACAQUIDatatypeRegistry.getInstance().getIconFor(outputSlot.getAcceptedDataType()), JLabel.LEFT);
         slotNameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(outputSlot, graph, true));
         toolBar.add(slotNameLabel);
 
@@ -194,9 +197,9 @@ public class ACAQAlgorithmFinderUI extends JPanel {
     public static List<ACAQAlgorithmDeclaration> findCompatibleTargetAlgorithms(ACAQDataSlot<?> slot) {
         Class<? extends ACAQData> outputSlotDataClass = slot.getAcceptedDataType();
         List<ACAQAlgorithmDeclaration> result = new ArrayList<>();
-        for (ACAQAlgorithmDeclaration declaration : ACAQRegistryService.getInstance().getAlgorithmRegistry().getRegisteredAlgorithms()) {
+        for (ACAQAlgorithmDeclaration declaration : ACAQAlgorithmRegistry.getInstance().getRegisteredAlgorithms()) {
             for (Class<? extends ACAQDataSlot<?>> inputSlotClass : declaration.getInputSlots().stream().map(AlgorithmInputSlot::value).collect(Collectors.toList())) {
-                Class<? extends ACAQData> inputSlotDataClass = ACAQRegistryService.getInstance().getDatatypeRegistry().getRegisteredSlotDataTypes().inverse().get(inputSlotClass);
+                Class<? extends ACAQData> inputSlotDataClass = ACAQDatatypeRegistry.getInstance().getRegisteredSlotDataTypes().inverse().get(inputSlotClass);
                 if(inputSlotDataClass.isAssignableFrom(outputSlotDataClass)) {
                     result.add(declaration);
                     break;

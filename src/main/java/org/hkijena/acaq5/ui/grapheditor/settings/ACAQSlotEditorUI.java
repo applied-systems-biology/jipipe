@@ -7,7 +7,9 @@ import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
+import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
+import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -207,8 +209,8 @@ public class ACAQSlotEditorUI extends JPanel {
         }
 
         for(Class<? extends ACAQDataSlot<?>> slotClass : allowedSlotTypes) {
-            Class<? extends ACAQData> dataClass = ACAQRegistryService.getInstance().getDatatypeRegistry().getRegisteredSlotDataTypes().inverse().get(slotClass);
-            JMenuItem item = new JMenuItem(ACAQData.getNameOf(dataClass), ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(dataClass));
+            Class<? extends ACAQData> dataClass = ACAQDatatypeRegistry.getInstance().getRegisteredSlotDataTypes().inverse().get(slotClass);
+            JMenuItem item = new JMenuItem(ACAQData.getNameOf(dataClass), ACAQUIDatatypeRegistry.getInstance().getIconFor(dataClass));
             item.addActionListener(e -> addNewSlot(slotType, slotClass));
             menu.add(item);
         }

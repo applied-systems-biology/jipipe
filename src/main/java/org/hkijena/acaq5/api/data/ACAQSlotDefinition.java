@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 
 import java.io.IOException;
 
@@ -55,7 +56,7 @@ public class ACAQSlotDefinition {
         @Override
         public ACAQSlotDefinition deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-            return new ACAQSlotDefinition(ACAQRegistryService.getInstance().getDatatypeRegistry().findDataSlotClass(node.get("slot-class").asText()),
+            return new ACAQSlotDefinition(ACAQDatatypeRegistry.getInstance().findDataSlotClass(node.get("slot-class").asText()),
                     ACAQDataSlot.SlotType.valueOf(node.get("slot-type").asText()),
                     node.get("name").asText());
         }

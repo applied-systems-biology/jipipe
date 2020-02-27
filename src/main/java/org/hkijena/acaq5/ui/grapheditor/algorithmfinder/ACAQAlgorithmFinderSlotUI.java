@@ -6,6 +6,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.ui.events.AlgorithmFinderSuccessEvent;
+import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -45,7 +46,7 @@ public class ACAQAlgorithmFinderSlotUI extends JPanel {
         JLabel nameLabel = new JLabel(inputSlot.getName());
         nameLabel.setToolTipText(ACAQData.getNameOf(inputSlot.getAcceptedDataType()));
         nameLabel.setBorder(BorderFactory.createEmptyBorder(0,5,0,5));
-        nameLabel.setIcon(ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(inputSlot.getAcceptedDataType()));
+        nameLabel.setIcon(ACAQUIDatatypeRegistry.getInstance().getIconFor(inputSlot.getAcceptedDataType()));
 
         add(nameLabel, BorderLayout.CENTER);
 
@@ -66,13 +67,13 @@ public class ACAQAlgorithmFinderSlotUI extends JPanel {
                 assignButtonMenu.add(disconnectExistingButton);
             }
             else {
-                JMenuItem connectButton = new JMenuItem(inputSlot.getFullName(), ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(inputSlot.getAcceptedDataType()));
+                JMenuItem connectButton = new JMenuItem(inputSlot.getFullName(), ACAQUIDatatypeRegistry.getInstance().getIconFor(inputSlot.getAcceptedDataType()));
                 connectButton.addActionListener(e -> connectToExistingInstance());
                 assignButtonMenu.add(connectButton);
             }
         }
         else {
-            JMenuItem connectButton = new JMenuItem(inputSlot.getFullName(), ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(inputSlot.getAcceptedDataType()));
+            JMenuItem connectButton = new JMenuItem(inputSlot.getFullName(), ACAQUIDatatypeRegistry.getInstance().getIconFor(inputSlot.getAcceptedDataType()));
             connectButton.addActionListener(e -> connectToNewInstance());
             assignButtonMenu.add(connectButton);
         }

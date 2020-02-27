@@ -15,6 +15,7 @@ import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.*;
+import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.cycle.CycleDetector;
@@ -447,7 +448,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
             else {
                 JsonNode declarationNode = kv.getValue().path("acaq:declaration");
                 if(!declarationNode.isMissingNode()) {
-                    ACAQAlgorithmDeclaration declaration = ACAQRegistryService.getInstance().getAlgorithmRegistry().findMatchingDeclaration(declarationNode);
+                    ACAQAlgorithmDeclaration declaration = ACAQAlgorithmRegistry.getInstance().findMatchingDeclaration(declarationNode);
                     ACAQAlgorithm algorithm = declaration.newInstance();
                     algorithm.fromJson(kv.getValue());
                     insertNode(kv.getKey(), algorithm, algorithm.getCompartment());

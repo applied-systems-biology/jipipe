@@ -5,6 +5,7 @@ import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.ACAQRunSample;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultDataSlotResultUI;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultDataSlotUI;
@@ -22,6 +23,10 @@ public class ACAQUIDatatypeRegistry {
 
     public ACAQUIDatatypeRegistry() {
 
+    }
+
+    public static ACAQUIDatatypeRegistry getInstance() {
+        return ACAQRegistryService.getInstance().getUIDatatypeRegistry();
     }
 
     /**
@@ -77,6 +82,6 @@ public class ACAQUIDatatypeRegistry {
     }
 
     public URL getIconURLForSlot(Class<? extends ACAQDataSlot<?>> klass) {
-        return getIconURLFor(ACAQRegistryService.getInstance().getDatatypeRegistry().getRegisteredSlotDataTypes().inverse().get(klass));
+        return getIconURLFor(ACAQDatatypeRegistry.getInstance().getRegisteredSlotDataTypes().inverse().get(klass));
     }
 }

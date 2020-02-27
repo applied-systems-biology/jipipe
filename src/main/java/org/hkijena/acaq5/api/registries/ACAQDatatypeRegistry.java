@@ -3,6 +3,7 @@ package org.hkijena.acaq5.api.registries;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
+import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 
@@ -19,6 +20,10 @@ public class ACAQDatatypeRegistry {
 
     public ACAQDatatypeRegistry() {
 
+    }
+
+    public static ACAQDatatypeRegistry getInstance() {
+        return ACAQRegistryService.getInstance().getDatatypeRegistry();
     }
 
     public void register(Class<? extends ACAQData> klass, Class<? extends ACAQDataSlot<?>> slotClass) {

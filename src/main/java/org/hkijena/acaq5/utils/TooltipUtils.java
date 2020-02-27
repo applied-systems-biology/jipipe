@@ -9,6 +9,8 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.AddsTrait;
 import org.hkijena.acaq5.api.traits.RemovesTrait;
+import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
+import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
 
 import java.util.Collections;
 import java.util.Set;
@@ -25,7 +27,7 @@ public class TooltipUtils {
         builder.append("<table>");
         builder.append("<tr>");
         builder.append("<td>").append("<img src=\"")
-                .append(ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconURLFor(slot.getAcceptedDataType()))
+                .append(ACAQUIDatatypeRegistry.getInstance().getIconURLFor(slot.getAcceptedDataType()))
                 .append("\"/>").append("</td>");
         builder.append("<td>").append(slot.getName()).append("</td>");
         builder.append("</tr>");
@@ -65,13 +67,13 @@ public class TooltipUtils {
         builder.append("<table>");
         builder.append("<tr><td>");
         for(Class<? extends ACAQDataSlot<?>> slot : declaration.getInputSlots().stream().map(AlgorithmInputSlot::value).collect(Collectors.toSet())) {
-            builder.append("<img src=\"").append(ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconURLForSlot(slot)).append("\"/>");
+            builder.append("<img src=\"").append(ACAQUIDatatypeRegistry.getInstance().getIconURLForSlot(slot)).append("\"/>");
         }
         builder.append("</td>");
         builder.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/chevron-right.png")).append("\" /></td>");
         for(Class<? extends ACAQDataSlot<?>> slot : declaration.getOutputSlots().stream()
                 .map(AlgorithmOutputSlot::value).collect(Collectors.toSet())) {
-            builder.append("<img src=\"").append(ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconURLForSlot(slot)).append("\"/>");
+            builder.append("<img src=\"").append(ACAQUIDatatypeRegistry.getInstance().getIconURLForSlot(slot)).append("\"/>");
         }
         builder.append("</tr>");
         builder.append("</table>");
@@ -129,7 +131,7 @@ public class TooltipUtils {
             for (Class<? extends ACAQTrait> trait : categories) {
                 builder.append("<tr>");
                 builder.append("<td>").append("<img src=\"")
-                        .append(ACAQRegistryService.getInstance().getUITraitRegistry().getIconURLFor(trait))
+                        .append(ACAQUITraitRegistry.getInstance().getIconURLFor(trait))
                         .append("\"/>").append("</td>");
                 builder.append("<td>").append(ACAQTrait.getNameOf(trait)).append("</td>");
                 builder.append("</tr>");
@@ -146,7 +148,7 @@ public class TooltipUtils {
         for (Class<? extends ACAQTrait> trait : traits) {
             builder.append("<tr>");
             builder.append("<td>").append("<img src=\"")
-                    .append(ACAQRegistryService.getInstance().getUITraitRegistry().getIconURLFor(trait))
+                    .append(ACAQUITraitRegistry.getInstance().getIconURLFor(trait))
                     .append("\"/>").append("</td>");
             builder.append("<td>").append(ACAQTrait.getNameOf(trait)).append("</td>");
             builder.append("</tr>");

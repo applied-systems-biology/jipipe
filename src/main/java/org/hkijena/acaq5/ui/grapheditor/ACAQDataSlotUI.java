@@ -1,13 +1,14 @@
 package org.hkijena.acaq5.ui.grapheditor;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.ui.events.AlgorithmFinderSuccessEvent;
 import org.hkijena.acaq5.ui.grapheditor.algorithmfinder.ACAQAlgorithmFinderUI;
+import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -47,7 +48,7 @@ public class ACAQDataSlotUI extends JPanel {
             if(graph.getSourceSlot(slot) == null) {
                 for(ACAQDataSlot<?> source : graph.getAvailableSources(slot)) {
                     JMenuItem connectButton = new JMenuItem(source.getFullName(),
-                            ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(source.getAcceptedDataType()));
+                            ACAQUIDatatypeRegistry.getInstance().getIconFor(source.getAcceptedDataType()));
                     connectButton.addActionListener(e -> connectSlot(source, slot));
                     assignButtonMenu.add(connectButton);
                 }
@@ -89,7 +90,7 @@ public class ACAQDataSlotUI extends JPanel {
 
             for(ACAQDataSlot<?> target : availableTargets) {
                 JMenuItem connectButton = new JMenuItem(target.getFullName(),
-                        ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(target.getAcceptedDataType()));
+                        ACAQUIDatatypeRegistry.getInstance().getIconFor(target.getAcceptedDataType()));
                 connectButton.addActionListener(e -> connectSlot(slot, target));
                 connectButton.setToolTipText(TooltipUtils.getAlgorithmTooltip(target.getAlgorithm().getDeclaration()));
                 assignButtonMenu.add(connectButton);
@@ -154,15 +155,28 @@ public class ACAQDataSlotUI extends JPanel {
         assignButtonMenu = UIUtils.addPopupMenuToComponent(assignButton);
         UIUtils.makeFlat(assignButton);
 
+        if(slot.getAlgorithm() instanceof ACAQCompartmentOutput) {
+            if(slot.getAlgorithm().getCompartment().equals(compartment)) {
+                if(slot.isOutput()) {
+                    assignButton.setEnabled(false);
+                }
+            }
+            else {
+                if(slot.isInput()) {
+                    assignButton.setEnabled(false);
+                }
+            }
+        }
+
         JPanel centerPanel = new JPanel();
 //        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
         centerPanel.setLayout(new GridLayout(2, 1));
         centerPanel.setOpaque(false);
 
-        JLabel nameLabel = new JLabel(slot.getName());
+        JLabel nameLabel = new JLabel(getDisplayedName());
         nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot, graph, false));
         nameLabel.setBorder(BorderFactory.createEmptyBorder(0,5,0,5));
-        nameLabel.setIcon(ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(slot.getAcceptedDataType()));
+        nameLabel.setIcon(ACAQUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()));
         centerPanel.add(nameLabel);
 //        add(nameLabel, BorderLayout.CENTER);
 
@@ -194,10 +208,24 @@ public class ACAQDataSlotUI extends JPanel {
         add(centerPanel, BorderLayout.CENTER);
     }
 
+    public String getDisplayedName() {
+        if(slot.getAlgorithm() instanceof ACAQCompartmentOutput) {
+            if(slot.isOutput()) {
+                return slot.getName().substring("Output ".length());
+            }
+            else {
+                return slot.getName();
+            }
+        }
+        else {
+            return slot.getName();
+        }
+    }
+
     public int calculateWidth() {
         // First calculate the width caused by the label width
         FontRenderContext frc = new FontRenderContext(null, false, false);
-        TextLayout layout = new TextLayout(ACAQData.getNameOf(slot.getAcceptedDataType()), getFont(), frc);
+        TextLayout layout = new TextLayout(getDisplayedName(), getFont(), frc);
         double w = layout.getBounds().getWidth();
         int labelWidth = (int)Math.ceil(w * 1.0 / SLOT_UI_WIDTH) * SLOT_UI_WIDTH;
         int traitWidth = (int)Math.ceil(traitUI.calculateWidth() * 1.0 / SLOT_UI_WIDTH) * SLOT_UI_WIDTH;

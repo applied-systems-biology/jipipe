@@ -9,6 +9,7 @@ import org.hkijena.acaq5.api.batchimporter.dataslots.ACAQFoldersDataSlot;
 import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFolderData;
 import org.hkijena.acaq5.api.batchimporter.dataypes.ACAQFoldersData;
 import org.hkijena.acaq5.api.batchimporter.traits.ProjectSampleTrait;
+import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.traits.AddsTrait;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import org.hkijena.acaq5.api.traits.BadForTrait;
@@ -40,13 +41,11 @@ public class ACAQSubfoldersAsSamples extends ACAQAlgorithm {
     public void run() {
         ACAQFoldersData data = (ACAQFoldersData) getInputSlots().get(0).getData();
 
-        ACAQListSubfolders listSubfoldersOperation = (ACAQListSubfolders) ACAQRegistryService.getInstance().getAlgorithmRegistry()
-                .getDefaultDeclarationFor(ACAQListSubfolders.class).newInstance();
+        ACAQListSubfolders listSubfoldersOperation = (ACAQListSubfolders) ACAQAlgorithmRegistry.getInstance().getDefaultDeclarationFor(ACAQListSubfolders.class).newInstance();
         listSubfoldersOperation.setInputData(data);
         listSubfoldersOperation.run();
 
-        ACAQListFiles listFilesOperation = (ACAQListFiles) ACAQRegistryService.getInstance().getAlgorithmRegistry()
-                .getDefaultDeclarationFor(ACAQListFiles.class).newInstance();
+        ACAQListFiles listFilesOperation = (ACAQListFiles) ACAQAlgorithmRegistry.getInstance().getDefaultDeclarationFor(ACAQListFiles.class).newInstance();
         listFilesOperation.setInputData(listSubfoldersOperation.getOutputData());
         listFilesOperation.run();
 

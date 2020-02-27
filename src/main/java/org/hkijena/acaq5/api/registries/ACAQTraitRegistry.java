@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.api.registries;
 
+import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 
 import java.util.Collections;
@@ -16,6 +17,10 @@ public class ACAQTraitRegistry {
 
     public ACAQTraitRegistry() {
 
+    }
+
+    public static ACAQTraitRegistry getInstance() {
+        return ACAQRegistryService.getInstance().getTraitRegistry();
     }
 
     public void register(Class<? extends ACAQTrait> klass) {

@@ -75,7 +75,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
      */
     private void addNewNodes() {
         for(ACAQAlgorithm algorithm : algorithmGraph.traverseAlgorithms()) {
-            if(!compartment.equals(algorithmGraph.getCompartmentOf(algorithm)))
+            if(!algorithm.isVisibleIn(compartment))
                 continue;
             if(nodeUIs.containsKey(algorithm))
                 continue;

@@ -25,6 +25,10 @@ public class ACAQAlgorithmRegistry {
 
     }
 
+    public static ACAQAlgorithmRegistry getInstance() {
+        return ACAQRegistryService.getInstance().getAlgorithmRegistry();
+    }
+
     /**
      * Registers an algorithm class
      * Automatically registers {@link GoodForTrait} and {@link BadForTrait} annotations
@@ -107,7 +111,7 @@ public class ACAQAlgorithmRegistry {
      * @return
      */
     public <T extends ACAQData> Set<ACAQAlgorithmDeclaration> getDataSourcesFor(Class<? extends T> dataClass) {
-        Class<? extends ACAQDataSlot<?>> slotClass = ACAQRegistryService.getInstance().getDatatypeRegistry().getRegisteredSlotDataTypes().get(dataClass);
+        Class<? extends ACAQDataSlot<?>> slotClass = ACAQDatatypeRegistry.getInstance().getRegisteredSlotDataTypes().get(dataClass);
         Set<ACAQAlgorithmDeclaration> result = new HashSet<>();
         for(ACAQAlgorithmDeclaration declaration : registeredAlgorithms) {
             if(declaration.getCategory() == ACAQAlgorithmCategory.DataSource) {

@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableList;
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
 import org.hkijena.acaq5.api.events.TraitsChangedEvent;
+import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -116,7 +117,7 @@ public class ACAQMutableTraitGenerator extends ACAQTraitConfiguration {
     public void fromJson(JsonNode node) {
         if(node.has("traits")) {
             for(JsonNode trait : ImmutableList.copyOf(node.get("traits").elements())) {
-                Class<? extends ACAQTrait> klass = ACAQRegistryService.getInstance().getTraitRegistry().findTraitClass(trait.get("class").asText());
+                Class<? extends ACAQTrait> klass = ACAQTraitRegistry.getInstance().findTraitClass(trait.get("class").asText());
                 String slotName = trait.get("slot-name").asText();
                 addTraitTo(slotName, klass);
             }

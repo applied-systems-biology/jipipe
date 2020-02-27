@@ -321,6 +321,10 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
         this.compartment = compartment;
     }
 
+    public boolean isVisibleIn(String containerCompartment) {
+        return containerCompartment.equals(compartment) || visibleCompartments.contains(containerCompartment);
+    }
+
     public Set<String> getVisibleCompartments() {
         return visibleCompartments;
     }

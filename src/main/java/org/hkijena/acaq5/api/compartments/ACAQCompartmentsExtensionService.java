@@ -2,6 +2,7 @@ package org.hkijena.acaq5.api.compartments;
 
 import org.hkijena.acaq5.ACAQExtensionService;
 import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
@@ -44,5 +45,6 @@ public class ACAQCompartmentsExtensionService extends AbstractService implements
 
     @Override
     public void register(ACAQRegistryService registryService) {
+        registryService.getAlgorithmRegistry().register(ACAQCompartmentOutput.class);
     }
 }

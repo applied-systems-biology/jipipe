@@ -7,6 +7,7 @@ import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.events.SlotAddedEvent;
 import org.hkijena.acaq5.api.events.SlotOrderChangedEvent;
 import org.hkijena.acaq5.api.events.SlotRemovedEvent;
+import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,8 +29,8 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
     private Set<Class<? extends ACAQDataSlot<?>>> allowedOutputSlotTypes;
 
     public ACAQMutableSlotConfiguration() {
-        allowedInputSlotTypes = new HashSet<>(ACAQRegistryService.getInstance().getDatatypeRegistry().getRegisteredSlotDataTypes().values());
-        allowedOutputSlotTypes = new HashSet<>(ACAQRegistryService.getInstance().getDatatypeRegistry().getRegisteredSlotDataTypes().values());
+        allowedInputSlotTypes = new HashSet<>(ACAQDatatypeRegistry.getInstance().getRegisteredSlotDataTypes().values());
+        allowedOutputSlotTypes = new HashSet<>(ACAQDatatypeRegistry.getInstance().getRegisteredSlotDataTypes().values());
     }
 
     public boolean hasSlot(String name) {
@@ -145,7 +146,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
         for(Map.Entry<String, JsonNode> kv : ImmutableList.copyOf(node.fields())) {
             if(!slots.containsKey(kv.getKey())) {
                 String name = kv.getValue().get("name").asText();
-                Class<? extends ACAQDataSlot<?>> klass = ACAQRegistryService.getInstance().getDatatypeRegistry()
+                Class<? extends ACAQDataSlot<?>> klass = ACAQDatatypeRegistry.getInstance()
                         .findDataSlotClass(kv.getValue().get("slot-class").asText());
                 if(kv.getValue().get("slot-type").asText().equalsIgnoreCase("input")) {
                     addInputSlot(name, klass);

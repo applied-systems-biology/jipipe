@@ -2,7 +2,6 @@ package org.hkijena.acaq5.ui.grapheditor;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.data.ACAQData;
@@ -11,7 +10,9 @@ import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmNameChanged;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.events.TraitsChangedEvent;
+import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.ui.events.OpenSettingsUIRequestedEvent;
+import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -137,8 +138,8 @@ public class ACAQAlgorithmUI extends JPanel {
         }
 
         for(Class<? extends ACAQDataSlot<?>> slotClass : allowedSlotTypes) {
-            Class<? extends ACAQData> dataClass = ACAQRegistryService.getInstance().getDatatypeRegistry().getRegisteredSlotDataTypes().inverse().get(slotClass);
-            JMenuItem item = new JMenuItem(ACAQData.getNameOf(dataClass), ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(dataClass));
+            Class<? extends ACAQData> dataClass = ACAQDatatypeRegistry.getInstance().getRegisteredSlotDataTypes().inverse().get(slotClass);
+            JMenuItem item = new JMenuItem(ACAQData.getNameOf(dataClass), ACAQUIDatatypeRegistry.getInstance().getIconFor(dataClass));
             item.addActionListener(e -> addNewSlot(slotType, slotClass));
             menu.add(item);
         }
@@ -160,6 +161,16 @@ public class ACAQAlgorithmUI extends JPanel {
             ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
             createAddInputSlotButton = slotConfiguration.allowsInputSlots() && !slotConfiguration.isInputSlotsSealed();
             createAddOutputSlotButton = slotConfiguration.allowsOutputSlots() && !slotConfiguration.isOutputSlotsSealed();
+        }
+
+        // For ACAQCompartmentOutput, we want to hide creating outputs / inputs depending on the current compartment
+        if(algorithm instanceof ACAQCompartmentOutput) {
+            if(algorithm.getCompartment().equals(graphUI.getCompartment())) {
+                createAddOutputSlotButton = false;
+            }
+            else {
+                createAddInputSlotButton = false;
+            }
         }
 
         if(algorithm.getInputSlots().size() > 0) {

@@ -10,11 +10,11 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.events.CompartmentAddedEvent;
 import org.hkijena.acaq5.api.events.CompartmentRemovedEvent;
-import org.hkijena.acaq5.api.events.CompartmentRenamedEvent;
+import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.io.IOException;
@@ -65,8 +65,8 @@ public class ACAQProject implements ACAQValidatable {
             return compartments.get(name);
         }
         else {
-            ACAQProjectCompartment sample = new ACAQProjectCompartment(this, name);
-            compartments.put(name, sample);
+            ACAQProjectCompartment compartment = new ACAQProjectCompartment(this, name);
+            compartments.put(name, compartment);
             if(parent == null)
                 compartmentOrder.add(name);
             else {
@@ -76,8 +76,30 @@ public class ACAQProject implements ACAQValidatable {
                 else
                     compartmentOrder.add(parentIndex + 1, name);
             }
-            eventBus.post(new CompartmentAddedEvent(sample));
-            return sample;
+            initializeCompartment(compartment);
+            updateCompartmentVisibility();
+            eventBus.post(new CompartmentAddedEvent(compartment));
+            return compartment;
+        }
+    }
+
+    private void initializeCompartment(ACAQProjectCompartment compartment) {
+        ACAQCompartmentOutput compartmentOutput = (ACAQCompartmentOutput) ACAQAlgorithmRegistry.getInstance().getDefaultDeclarationFor(ACAQCompartmentOutput.class).newInstance();
+        compartmentOutput.setCustomName(compartment.getName() + " output");
+        compartmentOutput.setCompartment(compartment.getName());
+        compartment.insertNode(compartmentOutput);
+    }
+
+    private void updateCompartmentVisibility() {
+        for (ACAQProjectCompartment compartment : compartments.values()) {
+            compartment.getOutputNode().getVisibleCompartments().clear();
+        }
+
+        for(int i = 1; i < compartmentOrder.size(); ++i) {
+            ACAQProjectCompartment left = compartments.get(compartmentOrder.get(i - 1));
+            ACAQProjectCompartment right = compartments.get(compartmentOrder.get(i));
+
+            left.getOutputNode().getVisibleCompartments().add(right.getName());
         }
     }
 

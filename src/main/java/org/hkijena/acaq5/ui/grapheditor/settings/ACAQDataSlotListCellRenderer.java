@@ -2,6 +2,7 @@ package org.hkijena.acaq5.ui.grapheditor.settings;
 
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,7 +23,7 @@ public class ACAQDataSlotListCellRenderer extends JLabel implements ListCellRend
         if(slot != null) {
             String type = slot.isInput() ? "Input:" : "Output:";
             setText(type + " " + slot.getName());
-            setIcon(ACAQRegistryService.getInstance().getUIDatatypeRegistry().getIconFor(slot.getAcceptedDataType()));
+            setIcon(ACAQUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()));
         }
         else {
             setText("<No data slot selected>");

@@ -5,8 +5,10 @@ import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
+import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
+import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTextField;
@@ -37,12 +39,12 @@ public class ACAQTraitViewerUI extends JPanel {
         String[] searchStrings = getSearchStrings();
         Set<Class<? extends ACAQTrait>> currentTraits = graph.getAlgorithmTraits().getOrDefault(slot, Collections.emptySet());
 
-        for(Class<? extends ACAQTrait> trait : ACAQRegistryService.getInstance().getTraitRegistry().getSortedTraits()) {
+        for(Class<? extends ACAQTrait> trait : ACAQTraitRegistry.getInstance().getSortedTraits()) {
             if(!searchStringsMatches(trait, searchStrings))
                 continue;
 
             JToggleButton traitButton = new JToggleButton(ACAQTrait.getNameOf(trait),
-                    ACAQRegistryService.getInstance().getUITraitRegistry().getIconFor(trait));
+                    ACAQUITraitRegistry.getInstance().getIconFor(trait));
 //            traitButton.setBackground(new Color(189, 213, 243));
 //            traitButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(4, 57, 124), 1, true),
 //                    BorderFactory.createEmptyBorder(4,4,4,4)));
