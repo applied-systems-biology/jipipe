@@ -114,6 +114,8 @@ public class ACAQAlgorithmFinderUI extends JPanel {
                 for(ACAQAlgorithm existing : graph.getAlgorithmNodes().values().stream().filter(a -> a.getClass().equals(targetAlgorithm)).collect(Collectors.toList())) {
                     if(existing == outputSlot.getAlgorithm())
                         continue;
+                    if(!algorithm.isVisibleIn(compartment))
+                        continue;
                     if(knownTargetAlgorithms.contains(existing)) {
                         if(existing.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
                             if(!((ACAQMutableSlotConfiguration) existing.getSlotConfiguration()).canModifyInputSlots())
@@ -197,7 +199,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
     public static List<ACAQAlgorithmDeclaration> findCompatibleTargetAlgorithms(ACAQDataSlot<?> slot) {
         Class<? extends ACAQData> outputSlotDataClass = slot.getAcceptedDataType();
         List<ACAQAlgorithmDeclaration> result = new ArrayList<>();
-        for (ACAQAlgorithmDeclaration declaration : ACAQAlgorithmRegistry.getInstance().getRegisteredAlgorithms()) {
+        for (ACAQAlgorithmDeclaration declaration : ACAQAlgorithmRegistry.getInstance().getRegisteredAlgorithms().values()) {
             for (Class<? extends ACAQDataSlot<?>> inputSlotClass : declaration.getInputSlots().stream().map(AlgorithmInputSlot::value).collect(Collectors.toList())) {
                 Class<? extends ACAQData> inputSlotDataClass = ACAQDatatypeRegistry.getInstance().getRegisteredSlotDataTypes().inverse().get(inputSlotClass);
                 if(inputSlotDataClass.isAssignableFrom(outputSlotDataClass)) {

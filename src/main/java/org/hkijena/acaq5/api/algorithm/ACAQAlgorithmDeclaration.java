@@ -9,6 +9,13 @@ import java.util.List;
 import java.util.Set;
 
 public interface ACAQAlgorithmDeclaration {
+
+    /**
+     * Generates an Id for this declaration
+     * @return
+     */
+    String getId();
+
     /**
      * The algorithm class that is generated
      * @return
@@ -81,12 +88,4 @@ public interface ACAQAlgorithmDeclaration {
      * @return
      */
     List<AlgorithmOutputSlot> getOutputSlots();
-
-    /**
-     * Returns true if the JSON node matches this algorithm declaration
-     * This is used to identity the correct declaration for deserialization
-     * @param node
-     * @return
-     */
-    boolean matches(JsonNode node);
 }

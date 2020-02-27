@@ -11,7 +11,9 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.traits.*;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,7 +21,7 @@ import java.util.stream.Collectors;
  * Manages known algorithms and their annotations
  */
 public class ACAQAlgorithmRegistry {
-    private Set<ACAQAlgorithmDeclaration> registeredAlgorithms = new HashSet<>();
+    private Map<String, ACAQAlgorithmDeclaration> registeredAlgorithms = new HashMap<>();
 
     public ACAQAlgorithmRegistry() {
 
@@ -35,7 +37,7 @@ public class ACAQAlgorithmRegistry {
      * @param klass
      */
     public void register(Class<? extends ACAQAlgorithm> klass) {
-        registeredAlgorithms.add(new ACAQDefaultAlgorithmDeclaration(klass));
+        register(new ACAQDefaultAlgorithmDeclaration(klass));
     }
 
     /**
@@ -43,7 +45,7 @@ public class ACAQAlgorithmRegistry {
      * @param declaration
      */
     public void register(ACAQAlgorithmDeclaration declaration) {
-        registeredAlgorithms.add(declaration);
+        registeredAlgorithms.put(declaration.getId(), declaration);
     }
 
     /**
@@ -53,7 +55,7 @@ public class ACAQAlgorithmRegistry {
      * @return
      */
     public ACAQDefaultAlgorithmDeclaration getDefaultDeclarationFor(Class<? extends ACAQAlgorithm> klass) {
-        return (ACAQDefaultAlgorithmDeclaration) registeredAlgorithms.stream().filter(d -> d.getAlgorithmClass().equals(klass)).findFirst().orElse(null);
+        return (ACAQDefaultAlgorithmDeclaration) getDeclarationById(ACAQDefaultAlgorithmDeclaration.getDeclarationIdOf(klass));
     }
 
     /**
@@ -100,8 +102,8 @@ public class ACAQAlgorithmRegistry {
      * Gets the set of all known algorithms
      * @return
      */
-    public Set<ACAQAlgorithmDeclaration> getRegisteredAlgorithms() {
-        return Collections.unmodifiableSet(registeredAlgorithms);
+    public Map<String, ACAQAlgorithmDeclaration> getRegisteredAlgorithms() {
+        return Collections.unmodifiableMap(registeredAlgorithms);
     }
 
     /**
@@ -113,7 +115,7 @@ public class ACAQAlgorithmRegistry {
     public <T extends ACAQData> Set<ACAQAlgorithmDeclaration> getDataSourcesFor(Class<? extends T> dataClass) {
         Class<? extends ACAQDataSlot<?>> slotClass = ACAQDatatypeRegistry.getInstance().getRegisteredSlotDataTypes().get(dataClass);
         Set<ACAQAlgorithmDeclaration> result = new HashSet<>();
-        for(ACAQAlgorithmDeclaration declaration : registeredAlgorithms) {
+        for(ACAQAlgorithmDeclaration declaration : registeredAlgorithms.values()) {
             if(declaration.getCategory() == ACAQAlgorithmCategory.DataSource) {
                 if(declaration.getOutputSlots().stream().anyMatch(slot -> slot.value().equals(slotClass))) {
                     result.add(declaration);
@@ -129,17 +131,16 @@ public class ACAQAlgorithmRegistry {
      * @return
      */
     public Set<ACAQAlgorithmDeclaration> getAlgorithmsOfCategory(ACAQAlgorithmCategory category) {
-       return registeredAlgorithms.stream().filter(d -> d.getCategory() == category).collect(Collectors.toSet());
+       return registeredAlgorithms.values().stream().filter(d -> d.getCategory() == category).collect(Collectors.toSet());
     }
 
     /**
-     * Finds an {@link ACAQAlgorithmDeclaration} that matches the algorithm JSON node
-     * @param value
+     * Gets a matching declaration by Id
+     * @param id
      * @return
      */
-    public ACAQAlgorithmDeclaration findMatchingDeclaration(JsonNode value) {
-        return registeredAlgorithms.stream().filter(d -> d.matches(value)).findFirst().orElse(null);
+    public ACAQAlgorithmDeclaration getDeclarationById(String id) {
+        return registeredAlgorithms.get(id);
     }
-
 
 }

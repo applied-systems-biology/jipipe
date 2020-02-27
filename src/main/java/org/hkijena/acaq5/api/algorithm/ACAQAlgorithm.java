@@ -338,10 +338,12 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
         public void serialize(ACAQAlgorithm algorithm, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeObjectField("acaq:slot-configuration", algorithm.slotConfiguration);
-            jsonGenerator.writeNumberField("acaq:algorithm-location-x", algorithm.location.x);
-            jsonGenerator.writeNumberField("acaq:algorithm-location-y", algorithm.location.y);
-            jsonGenerator.writeObjectField("acaq:declaration", algorithm.getDeclaration());
-            jsonGenerator.writeObjectField("acaq:algorithm-compartment", algorithm.getCompartment());
+            if(algorithm.location != null) {
+                jsonGenerator.writeNumberField("acaq:algorithm-location-x", algorithm.location.x);
+                jsonGenerator.writeNumberField("acaq:algorithm-location-y", algorithm.location.y);
+            }
+            jsonGenerator.writeStringField("acaq:algorithm-type", algorithm.getDeclaration().getId());
+            jsonGenerator.writeStringField("acaq:algorithm-compartment", algorithm.getCompartment());
             for (Map.Entry<String, ACAQParameterAccess> kv : ACAQParameterAccess.getParameters(algorithm).entrySet()) {
                 jsonGenerator.writeObjectField(kv.getKey(), kv.getValue().get());
             }

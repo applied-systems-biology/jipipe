@@ -451,7 +451,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
             else {
                 JsonNode declarationNode = kv.getValue().path("acaq:declaration");
                 if(!declarationNode.isMissingNode()) {
-                    ACAQAlgorithmDeclaration declaration = ACAQAlgorithmRegistry.getInstance().findMatchingDeclaration(declarationNode);
+                    ACAQAlgorithmDeclaration declaration = ACAQAlgorithmRegistry.getInstance().getDeclarationById(declarationNode.asText());
                     ACAQAlgorithm algorithm = declaration.newInstance();
                     algorithm.fromJson(kv.getValue());
                     insertNode(kv.getKey(), algorithm, algorithm.getCompartment());
@@ -584,7 +584,6 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         }
 
         private void serializeNodes(ACAQAlgorithmGraph algorithmGraph, JsonGenerator jsonGenerator) throws IOException {
-            int index = 0;
             for(Map.Entry<String, ACAQAlgorithm> kv : algorithmGraph.algorithms.entrySet()) {
                 jsonGenerator.writeObjectField(kv.getKey(), kv.getValue());
             }

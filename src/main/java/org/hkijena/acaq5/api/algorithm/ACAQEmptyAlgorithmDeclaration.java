@@ -18,6 +18,11 @@ import java.util.Set;
 @JsonSerialize(using = ACAQEmptyAlgorithmDeclaration.Serializer.class)
 public class ACAQEmptyAlgorithmDeclaration implements ACAQAlgorithmDeclaration {
     @Override
+    public String getId() {
+        return "acaq:empty";
+    }
+
+    @Override
     public Class<? extends ACAQAlgorithm> getAlgorithmClass() {
         return null;
     }
@@ -75,11 +80,6 @@ public class ACAQEmptyAlgorithmDeclaration implements ACAQAlgorithmDeclaration {
     @Override
     public List<AlgorithmOutputSlot> getOutputSlots() {
         return Collections.emptyList();
-    }
-
-    @Override
-    public boolean matches(JsonNode node) {
-        return false;
     }
 
     public static class Serializer extends JsonSerializer<ACAQEmptyAlgorithmDeclaration> {

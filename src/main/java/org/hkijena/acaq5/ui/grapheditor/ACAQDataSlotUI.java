@@ -47,6 +47,8 @@ public class ACAQDataSlotUI extends JPanel {
         if(slot.isInput()) {
             if(graph.getSourceSlot(slot) == null) {
                 for(ACAQDataSlot<?> source : graph.getAvailableSources(slot)) {
+                    if(!source.getAlgorithm().isVisibleIn(compartment))
+                        continue;
                     JMenuItem connectButton = new JMenuItem(source.getFullName(),
                             ACAQUIDatatypeRegistry.getInstance().getIconFor(source.getAcceptedDataType()));
                     connectButton.addActionListener(e -> connectSlot(source, slot));
@@ -89,6 +91,8 @@ public class ACAQDataSlotUI extends JPanel {
                 assignButtonMenu.addSeparator();
 
             for(ACAQDataSlot<?> target : availableTargets) {
+                if(!target.getAlgorithm().isVisibleIn(compartment))
+                    continue;
                 JMenuItem connectButton = new JMenuItem(target.getFullName(),
                         ACAQUIDatatypeRegistry.getInstance().getIconFor(target.getAcceptedDataType()));
                 connectButton.addActionListener(e -> connectSlot(slot, target));
