@@ -80,9 +80,9 @@ public class ACAQFilesystemExtensionService extends AbstractService implements A
         registryService.getAlgorithmRegistry().register(ACAQFoldersAsSamples.class);
         registryService.getAlgorithmRegistry().register(ACAQSubfoldersAsSamples.class);
 
-        registryService.getTraitRegistry().register(ProjectSampleTrait.class);
-        registryService.getUITraitRegistry().registerIcon(ProjectSampleTrait.class,
-                ResourceUtils.getPluginResource("icons/traits/project-sample.png"));
+//        registryService.getTraitRegistry().register(ProjectSampleTrait.class);
+//        registryService.getUITraitRegistry().registerIcon(ProjectSampleTrait.class,
+//                ResourceUtils.getPluginResource("icons/traits/project-sample.png"));
 
         registerSourceGeneratorAlgorithms(registryService);
     }

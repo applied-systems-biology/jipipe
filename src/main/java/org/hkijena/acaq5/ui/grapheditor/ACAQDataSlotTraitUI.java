@@ -31,35 +31,35 @@ public class ACAQDataSlotTraitUI extends JPanel {
 
     private void reloadButtons() {
         removeAll();
-        Set<Class<? extends ACAQTrait>> traits = graph.getAlgorithmTraits().getOrDefault(slot, Collections.emptySet());
-        boolean canEditTraits = slot.getAlgorithm().getTraitConfiguration() instanceof ACAQMutableTraitGenerator;
-
-        for(Class<? extends ACAQTrait> trait : traits) {
-            JButton traitButton = new JButton(ACAQUITraitRegistry.getInstance().getIconFor(trait));
-            traitButton.setToolTipText(TooltipUtils.getTraitTooltip(trait));
-            traitButton.setPreferredSize(new Dimension(25, 25));
-
-            if(canEditTraits) {
-                UIUtils.makeFlat25x25(traitButton);
-                JPopupMenu menu = UIUtils.addPopupMenuToComponent(traitButton);
-                JMenuItem removeTraitButton = new JMenuItem("Remove this annotation", UIUtils.getIconFromResources("remove.png"));
-                removeTraitButton.addActionListener(e -> removeTrait(trait));
-                menu.add(removeTraitButton);
-            }
-            else
-                UIUtils.makeBorderlessWithoutMargin(traitButton);
-
-            add(traitButton);
-        }
-
-        // Create button to add traits
-        if(canEditTraits) {
-            JButton addTraitButton = new JButton(UIUtils.getIconFromResources("label.png"));
-            addTraitButton.setToolTipText("Annotate this data");
-            addTraitButton.addActionListener(e -> addTrait());
-            UIUtils.makeFlat25x25(addTraitButton);
-            add(addTraitButton);
-        }
+//        Set<Class<? extends ACAQTrait>> traits = graph.getAlgorithmTraits().getOrDefault(slot, Collections.emptySet());
+//        boolean canEditTraits = slot.getAlgorithm().getTraitConfiguration() instanceof ACAQMutableTraitGenerator;
+//
+//        for(Class<? extends ACAQTrait> trait : traits) {
+//            JButton traitButton = new JButton(ACAQUITraitRegistry.getInstance().getIconFor(trait));
+//            traitButton.setToolTipText(TooltipUtils.getTraitTooltip(trait));
+//            traitButton.setPreferredSize(new Dimension(25, 25));
+//
+//            if(canEditTraits) {
+//                UIUtils.makeFlat25x25(traitButton);
+//                JPopupMenu menu = UIUtils.addPopupMenuToComponent(traitButton);
+//                JMenuItem removeTraitButton = new JMenuItem("Remove this annotation", UIUtils.getIconFromResources("remove.png"));
+//                removeTraitButton.addActionListener(e -> removeTrait(trait));
+//                menu.add(removeTraitButton);
+//            }
+//            else
+//                UIUtils.makeBorderlessWithoutMargin(traitButton);
+//
+//            add(traitButton);
+//        }
+//
+//        // Create button to add traits
+//        if(canEditTraits) {
+//            JButton addTraitButton = new JButton(UIUtils.getIconFromResources("label.png"));
+//            addTraitButton.setToolTipText("Annotate this data");
+//            addTraitButton.addActionListener(e -> addTrait());
+//            UIUtils.makeFlat25x25(addTraitButton);
+//            add(addTraitButton);
+//        }
     }
 
     private void removeTrait(Class<? extends ACAQTrait> trait) {

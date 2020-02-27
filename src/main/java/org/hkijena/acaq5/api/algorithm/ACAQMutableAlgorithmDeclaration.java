@@ -15,6 +15,7 @@ import java.util.Set;
 public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDeclaration {
 
     private Class<? extends ACAQAlgorithm> algorithmClass;
+    private String id;
     private String name;
     private String description;
     private ACAQAlgorithmCategory category;
@@ -113,5 +114,14 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
 
     public void setOutputSlots(List<AlgorithmOutputSlot> outputSlots) {
         this.outputSlots = outputSlots;
+    }
+
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

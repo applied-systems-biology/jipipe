@@ -116,11 +116,11 @@ public class ACAQMutableTraitGenerator extends ACAQTraitConfiguration {
 
     public void fromJson(JsonNode node) {
         if(node.has("traits")) {
-            for(JsonNode trait : ImmutableList.copyOf(node.get("traits").elements())) {
-                Class<? extends ACAQTrait> klass = ACAQTraitRegistry.getInstance().findTraitClass(trait.get("class").asText());
-                String slotName = trait.get("slot-name").asText();
-                addTraitTo(slotName, klass);
-            }
+//            for(JsonNode trait : ImmutableList.copyOf(node.get("traits").elements())) {
+//                Class<? extends ACAQTrait> klass = ACAQTraitRegistry.getInstance().findTraitClass(trait.get("class").asText());
+//                String slotName = trait.get("slot-name").asText();
+//                addTraitTo(slotName, klass);
+//            }
         }
     }
 

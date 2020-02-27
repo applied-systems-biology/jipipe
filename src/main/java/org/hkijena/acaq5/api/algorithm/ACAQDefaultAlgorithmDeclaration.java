@@ -27,6 +27,7 @@ public class ACAQDefaultAlgorithmDeclaration extends ACAQMutableAlgorithmDeclara
 
     public ACAQDefaultAlgorithmDeclaration(Class<? extends ACAQAlgorithm> algorithmClass) {
         setAlgorithmClass(algorithmClass);
+        setId(getDeclarationIdOf(algorithmClass));
         setName(getNameOf(algorithmClass));
         setDescription(getDescriptionOf(algorithmClass));
         setCategory(getCategoryOf(algorithmClass));
@@ -61,11 +62,6 @@ public class ACAQDefaultAlgorithmDeclaration extends ACAQMutableAlgorithmDeclara
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public String getId() {
-        return getDeclarationIdOf(getAlgorithmClass());
     }
 
     @Override

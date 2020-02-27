@@ -36,40 +36,40 @@ public class ACAQTraitGeneratorUI extends JPanel {
         traitList.removeAll();
         String[] searchStrings = getSearchStrings();
 
-        for(Class<? extends ACAQTrait> trait : ACAQTraitRegistry.getInstance().getSortedTraits()) {
-            if(!searchStringsMatches(trait, searchStrings))
-                continue;
-
-            JToggleButton traitButton = new JToggleButton(ACAQTrait.getNameOf(trait),
-                    ACAQUITraitRegistry.getInstance().getIconFor(trait));
-//            traitButton.setBackground(new Color(189, 213, 243));
-//            traitButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(4, 57, 124), 1, true),
-//                    BorderFactory.createEmptyBorder(4,4,4,4)));
-////            traitButton.setForeground(Color.WHITE);
-//            traitButton.setOpaque(true);
-            UIUtils.makeFlat(traitButton);
-            makeToggleToEditor(trait, traitButton);
-
-            traitList.add(traitButton);
-        }
+//        for(Class<? extends ACAQTrait> trait : ACAQTraitRegistry.getInstance().getSortedTraits()) {
+//            if(!searchStringsMatches(trait, searchStrings))
+//                continue;
+//
+//            JToggleButton traitButton = new JToggleButton(ACAQTrait.getNameOf(trait),
+//                    ACAQUITraitRegistry.getInstance().getIconFor(trait));
+////            traitButton.setBackground(new Color(189, 213, 243));
+////            traitButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(4, 57, 124), 1, true),
+////                    BorderFactory.createEmptyBorder(4,4,4,4)));
+//////            traitButton.setForeground(Color.WHITE);
+////            traitButton.setOpaque(true);
+//            UIUtils.makeFlat(traitButton);
+//            makeToggleToEditor(trait, traitButton);
+//
+//            traitList.add(traitButton);
+//        }
 
         traitList.revalidate();
         traitList.repaint();
     }
 
     private void makeToggleToEditor(Class<? extends ACAQTrait> trait, JToggleButton traitButton) {
-        traitButton.setToolTipText(TooltipUtils.getTraitTooltip(trait));
-        traitButton.setSelected(configuration.getTraitsOf(slotName).contains(trait));
-        traitButton.addActionListener(e -> {
-            if(configuration.getTraitsOf(slotName).contains(trait)) {
-                configuration.removeTraitFrom(slotName, trait);
-                traitButton.setSelected(false);
-            }
-            else {
-                configuration.addTraitTo(slotName, trait);
-                traitButton.setSelected(true);
-            }
-        });
+//        traitButton.setToolTipText(TooltipUtils.getTraitTooltip(trait));
+//        traitButton.setSelected(configuration.getTraitsOf(slotName).contains(trait));
+//        traitButton.addActionListener(e -> {
+//            if(configuration.getTraitsOf(slotName).contains(trait)) {
+//                configuration.removeTraitFrom(slotName, trait);
+//                traitButton.setSelected(false);
+//            }
+//            else {
+//                configuration.addTraitTo(slotName, trait);
+//                traitButton.setSelected(true);
+//            }
+//        });
     }
 
     private boolean searchStringsMatches(Class<? extends ACAQTrait> trait, String[] strings){

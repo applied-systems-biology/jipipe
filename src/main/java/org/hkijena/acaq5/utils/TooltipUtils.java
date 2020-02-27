@@ -111,37 +111,37 @@ public class TooltipUtils {
         return builder.toString();
     }
 
-    public static String getTraitTooltip(Class<? extends ACAQTrait> klass) {
-        String name = ACAQTrait.getNameOf(klass);
-        String description = ACAQTrait.getDescriptionOf(klass);
-        StringBuilder builder = new StringBuilder();
-        builder.append("<html><u><strong>");
-        builder.append(name);
-        builder.append("</u></strong>");
-        if(description != null && !description.isEmpty()) {
-            builder.append("<br/>")
-                .append(description);
-        }
-
-        Set<Class<? extends ACAQTrait>> categories = ACAQTrait.getCategoriesOf(klass);
-        if(!categories.isEmpty()) {
-            builder.append("<br/><br/>");
-            builder.append("<strong>Inherited annotations</strong><br/>");
-            builder.append("<table>");
-            for (Class<? extends ACAQTrait> trait : categories) {
-                builder.append("<tr>");
-                builder.append("<td>").append("<img src=\"")
-                        .append(ACAQUITraitRegistry.getInstance().getIconURLFor(trait))
-                        .append("\"/>").append("</td>");
-                builder.append("<td>").append(ACAQTrait.getNameOf(trait)).append("</td>");
-                builder.append("</tr>");
-            }
-            builder.append("</table>");
-        }
-        builder.append("</html>");
-
-        return builder.toString();
-    }
+//    public static String getTraitTooltip(Class<? extends ACAQTrait> klass) {
+//        String name = ACAQTrait.getNameOf(klass);
+//        String description = ACAQTrait.getDescriptionOf(klass);
+//        StringBuilder builder = new StringBuilder();
+//        builder.append("<html><u><strong>");
+//        builder.append(name);
+//        builder.append("</u></strong>");
+//        if(description != null && !description.isEmpty()) {
+//            builder.append("<br/>")
+//                .append(description);
+//        }
+//
+//        Set<Class<? extends ACAQTrait>> categories = ACAQTrait.getCategoriesOf(klass);
+//        if(!categories.isEmpty()) {
+//            builder.append("<br/><br/>");
+//            builder.append("<strong>Inherited annotations</strong><br/>");
+//            builder.append("<table>");
+//            for (Class<? extends ACAQTrait> trait : categories) {
+//                builder.append("<tr>");
+//                builder.append("<td>").append("<img src=\"")
+//                        .append(ACAQUITraitRegistry.getInstance().getIconURLFor(trait))
+//                        .append("\"/>").append("</td>");
+//                builder.append("<td>").append(ACAQTrait.getNameOf(trait)).append("</td>");
+//                builder.append("</tr>");
+//            }
+//            builder.append("</table>");
+//        }
+//        builder.append("</html>");
+//
+//        return builder.toString();
+//    }
 
     public static void insertTraitTable(StringBuilder builder, Set<Class<? extends ACAQTrait>> traits) {
         builder.append("<table>");

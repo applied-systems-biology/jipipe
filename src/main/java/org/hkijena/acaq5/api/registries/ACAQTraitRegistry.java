@@ -1,11 +1,15 @@
 package org.hkijena.acaq5.api.registries;
 
 import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.api.traits.ACAQDefaultTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
+import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -13,7 +17,7 @@ import java.util.stream.Collectors;
  * Contains all known {@link ACAQTrait} types
  */
 public class ACAQTraitRegistry {
-    private Set<Class<? extends ACAQTrait>> registeredTraits = new HashSet<>();
+    private Map<String, ACAQTraitDeclaration> registeredTraits = new HashMap<>();
 
     public ACAQTraitRegistry() {
 
@@ -24,19 +28,18 @@ public class ACAQTraitRegistry {
     }
 
     public void register(Class<? extends ACAQTrait> klass) {
-        if(!ACAQTrait.isHidden(klass))
-            registeredTraits.add(klass);
+        register(new ACAQDefaultTraitDeclaration(klass));
     }
 
-    public Set<Class<? extends ACAQTrait>> getTraits() {
-        return Collections.unmodifiableSet(registeredTraits);
+    public void register(ACAQTraitDeclaration declaration) {
+        registeredTraits.put(declaration.getId(), declaration);
     }
 
-    public List<Class<? extends ACAQTrait>> getSortedTraits() {
-        return getTraits().stream().sorted(ACAQTrait::compareByNameAndCategoriesString).collect(Collectors.toList());
+    public ACAQTraitDeclaration getDefaultDeclarationFor(Class<? extends ACAQTrait> klass) {
+        return registeredTraits.getOrDefault(ACAQDefaultTraitDeclaration.getDeclarationIdOf(klass), null);
     }
 
-    public Class<? extends ACAQTrait> findTraitClass(String canonicalName) {
-        return registeredTraits.stream().filter(c -> c.getCanonicalName().equals(canonicalName)).findFirst().get();
+    public ACAQTraitDeclaration getDeclarationById(String id) {
+        return registeredTraits.get(id);
     }
 }
