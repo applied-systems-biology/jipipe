@@ -43,6 +43,24 @@ public class StringUtils {
         return input;
     }
 
+    /**
+     * Replaces all characters invalid for filesystems with spaces
+     * @param input
+     * @return
+     */
+    public static String makeFilesystemCompatible(String input) {
+        if(input == null)
+            return null;
+        input = input.trim().toLowerCase();
+        for (char c : INVALID_FILESYSTEM_CHARACTERS) {
+            input = input.replace(c, ' ');
+        }
+        while(input.contains("  ")) {
+            input = input.replace("  ", " ");
+        }
+        return input;
+    }
+
     public static String makeUniqueString(String input, Collection<String> existing) {
         if(!existing.contains(input))
             return input;

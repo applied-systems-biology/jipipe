@@ -18,6 +18,7 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.*;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
+import org.hkijena.acaq5.utils.StringUtils;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.cycle.CycleDetector;
 import org.jgrapht.graph.DefaultDirectedGraph;
@@ -91,11 +92,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * @param algorithm
      */
     public void insertNode(ACAQAlgorithm algorithm, String compartment) {
-       String name = compartment + "/" + algorithm.getName();
-       String uniqueName = name;
-       for(int i = 2; algorithms.containsKey(uniqueName); ++i) {
-           uniqueName = name + " " + i;
-       }
+       String uniqueName = StringUtils.makeUniqueString(StringUtils.jsonify(compartment + "-" + algorithm.getName()), algorithms.keySet());
        insertNode(uniqueName, algorithm, compartment);
     }
 
@@ -448,15 +445,15 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
             ACAQAlgorithmDeclaration declaration = ACAQAlgorithmRegistry.getInstance().getDeclarationById(declarationInfo);
             ACAQAlgorithm algorithm = declaration.newInstance();
             algorithm.fromJson(kv.getValue());
-            insertNode(kv.getKey(), algorithm, algorithm.getCompartment());
+            insertNode(StringUtils.jsonify(kv.getKey()), algorithm, algorithm.getCompartment());
         }
 
         // Load edges
         for(JsonNode edgeNode : ImmutableList.copyOf(node.get("edges").elements())) {
-            ACAQAlgorithm sourceAlgorithm = algorithms.get(edgeNode.get("source-algorithm").asText());
-            ACAQAlgorithm targetAlgorithm = algorithms.get(edgeNode.get("target-algorithm").asText());
-            ACAQDataSlot<?> source = sourceAlgorithm.getSlots().get(edgeNode.get("source-slot").asText());
-            ACAQDataSlot<?> target = targetAlgorithm.getSlots().get(edgeNode.get("target-slot").asText());
+            ACAQAlgorithm sourceAlgorithm = algorithms.get(StringUtils.jsonify(edgeNode.get("source-algorithm").asText()));
+            ACAQAlgorithm targetAlgorithm = algorithms.get(StringUtils.jsonify(edgeNode.get("target-algorithm").asText()));
+            ACAQDataSlot<?> source = sourceAlgorithm.getSlots().get(StringUtils.makeFilesystemCompatible(edgeNode.get("source-slot").asText()));
+            ACAQDataSlot<?> target = targetAlgorithm.getSlots().get(StringUtils.makeFilesystemCompatible(edgeNode.get("target-slot").asText()));
             connect(source, target);
         }
     }
@@ -577,17 +574,17 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
         private void serializeNodes(ACAQAlgorithmGraph algorithmGraph, JsonGenerator jsonGenerator) throws IOException {
             for(Map.Entry<String, ACAQAlgorithm> kv : algorithmGraph.algorithms.entrySet()) {
-                jsonGenerator.writeObjectField(kv.getKey(), kv.getValue());
+                jsonGenerator.writeObjectField(StringUtils.jsonify(kv.getKey()), kv.getValue());
             }
         }
 
         private void serializeEdges(ACAQAlgorithmGraph graph, JsonGenerator jsonGenerator) throws IOException {
             for(Map.Entry<ACAQDataSlot<?>, ACAQDataSlot<?>> edge : graph.getSlotEdges()) {
                 jsonGenerator.writeStartObject();
-                jsonGenerator.writeStringField("source-algorithm", graph.algorithms.inverse().get(edge.getKey().getAlgorithm()));
-                jsonGenerator.writeStringField("target-algorithm", graph.algorithms.inverse().get(edge.getValue().getAlgorithm()));
-                jsonGenerator.writeStringField("source-slot", edge.getKey().getName());
-                jsonGenerator.writeStringField("target-slot", edge.getValue().getName());
+                jsonGenerator.writeStringField("source-algorithm", StringUtils.jsonify(graph.getIdOf(edge.getKey().getAlgorithm())));
+                jsonGenerator.writeStringField("target-algorithm", StringUtils.jsonify(graph.getIdOf(edge.getValue().getAlgorithm())));
+                jsonGenerator.writeStringField("source-slot", StringUtils.makeFilesystemCompatible(edge.getKey().getName()));
+                jsonGenerator.writeStringField("target-slot", StringUtils.makeFilesystemCompatible(edge.getValue().getName()));
                 jsonGenerator.writeEndObject();
             }
         }

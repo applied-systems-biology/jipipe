@@ -13,6 +13,7 @@ import org.hkijena.acaq5.api.events.TraitsChangedEvent;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.ui.events.OpenSettingsUIRequestedEvent;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
+import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -247,6 +248,7 @@ public class ACAQAlgorithmUI extends JPanel {
                 String newName = JOptionPane.showInputDialog(this,"Please a data slot name", initialValue + (existingSlots + 1));
                 if(newName == null || newName.trim().isEmpty())
                     return;
+                newName = StringUtils.makeFilesystemCompatible(newName);
                 if(slotConfiguration.hasSlot(newName))
                     continue;
                 name = newName;

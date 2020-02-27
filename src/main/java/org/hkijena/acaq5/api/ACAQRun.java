@@ -35,17 +35,9 @@ public class ACAQRun implements ACAQRunnable {
     }
 
     private void initializeInternalStoragePaths() {
-        Map<String, Set<String>> existingNames = new HashMap<>();
         for (ACAQAlgorithm algorithm : algorithmGraph.getAlgorithmNodes().values()) {
-            existingNames.putIfAbsent(algorithm.getCompartment(), new HashSet<>());
-            Set<String> existingInCompartment = existingNames.get(algorithm.getCompartment());
-
-            String fsName = StringUtils.jsonify(StringUtils.makeUniqueString(StringUtils.jsonify(algorithm.getName()), existingInCompartment));
-            existingInCompartment.add(fsName);
-
-            algorithm.setInternalStoragePath(Paths.get(StringUtils.jsonify(algorithm.getCompartment())).resolve(fsName));
+            algorithm.setInternalStoragePath(Paths.get(StringUtils.jsonify(algorithm.getCompartment())).resolve(StringUtils.jsonify(algorithmGraph.getIdOf(algorithm))));
         }
-
     }
 
     public ACAQProject getProject() {
