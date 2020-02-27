@@ -15,9 +15,12 @@ import org.hkijena.acaq5.ui.grapheditor.settings.ACAQAlgorithmSettingsPanelUI;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.Set;
 
 public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, MouseMotionListener {
@@ -82,16 +85,37 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
     protected void initializeToolbar() {
         initializeAddNodesMenus();
         menuBar.add(Box.createHorizontalGlue());
-        switchPanningDirectionButton = new JToggleButton("Reverse panning direction",
-                UIUtils.getIconFromResources("cursor-arrow.png"));
+        switchPanningDirectionButton = new JToggleButton(UIUtils.getIconFromResources("cursor-arrow.png"));
+        switchPanningDirectionButton.setToolTipText("Reverse panning direction");
         UIUtils.makeFlat(switchPanningDirectionButton);
         switchPanningDirectionButton.setToolTipText("Changes the direction how panning (middle mouse button) affects the view.");
         menuBar.add(switchPanningDirectionButton);
 
-        autoLayoutButton = new JToggleButton("Auto layout", UIUtils.getIconFromResources("sort.png"), true);
+        autoLayoutButton = new JToggleButton(UIUtils.getIconFromResources("sort.png"), true);
+        autoLayoutButton.setToolTipText("Auto layout");
         graphUI.setLayoutHelperEnabled(true);
         autoLayoutButton.addActionListener(e -> graphUI.setLayoutHelperEnabled(autoLayoutButton.isSelected()));
         menuBar.add(autoLayoutButton);
+
+        JButton createScreenshotButton = new JButton(UIUtils.getIconFromResources("filetype-image.png"));
+        createScreenshotButton.setToolTipText("Export graph as *.png");
+        UIUtils.makeFlat(createScreenshotButton);
+        createScreenshotButton.addActionListener(e -> createScreenshot());
+        menuBar.add(createScreenshotButton);
+    }
+
+    private void createScreenshot() {
+        BufferedImage screenshot = graphUI.createScreenshot();
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Export graph as *.png");
+        if(fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            try {
+                ImageIO.write(screenshot, "PNG", fileChooser.getSelectedFile());
+                getWorkbenchUI().sendStatusBarText("Exported graph as " + fileChooser.getSelectedFile());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     protected void initializeAddNodesMenus() {

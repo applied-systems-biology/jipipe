@@ -6,11 +6,11 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
-import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.AlgorithmGraphConnectedEvent;
 import org.hkijena.acaq5.ui.events.OpenSettingsUIRequestedEvent;
+import org.hkijena.acaq5.utils.ScreenImage;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,6 +18,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Path2D;
+import java.awt.image.BufferedImage;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -357,5 +358,9 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
     public String getCompartment() {
         return compartment;
+    }
+
+    public BufferedImage createScreenshot() {
+        return ScreenImage.createImage(this);
     }
 }
