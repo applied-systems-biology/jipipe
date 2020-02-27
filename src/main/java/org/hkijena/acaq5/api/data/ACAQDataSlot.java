@@ -94,7 +94,12 @@ public abstract class ACAQDataSlot<T extends ACAQData> implements TableModel {
         }
     }
 
-    private int findRowWithTraits(List<ACAQTrait> traits) {
+    /**
+     * Finds the row that matches the given traits
+     * @param traits
+     * @return row index >= 0 if found, otherwise -1
+     */
+    public int findRowWithTraits(List<ACAQTrait> traits) {
         ACAQTraitDeclaration[] declarationMap = new ACAQTraitDeclaration[traits.size()];
         for(int i = 0; i < traits.size(); ++i) {
             int declarationIndex = annotationColumns.indexOf(traits.get(i).getDeclaration());
