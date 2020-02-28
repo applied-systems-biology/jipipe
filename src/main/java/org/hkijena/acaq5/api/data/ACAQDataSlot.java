@@ -95,6 +95,14 @@ public abstract class ACAQDataSlot<T extends ACAQData> implements TableModel {
     }
 
     /**
+     * Adds a data row
+     * @param value
+     */
+    public void addData(ACAQData value) {
+        addData(value, Collections.emptyList());
+    }
+
+    /**
      * Finds the row that matches the given traits
      * @param traits
      * @return row index >= 0 if found, otherwise -1

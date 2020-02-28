@@ -85,6 +85,14 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
         initializeTraits();
     }
 
+    public ACAQAlgorithm(ACAQAlgorithmDeclaration declaration, ACAQSlotConfiguration slotConfiguration) {
+        this(declaration, slotConfiguration, null);
+    }
+
+    public ACAQAlgorithm(ACAQAlgorithmDeclaration declaration) {
+        this(declaration, null, null);
+    }
+
     /**
      * Copies the input algorithm's properties into this algorithm
      *
@@ -330,6 +338,28 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
 
     public void setVisibleCompartments(Set<String> visibleCompartments) {
         this.visibleCompartments = visibleCompartments;
+    }
+
+    public ACAQDataSlot<?> getOutputSlot(String name) {
+        ACAQDataSlot<?> slot = slots.get(name);
+        if(!slot.isOutput())
+            throw new IllegalArgumentException("The slot " + name + " is not an output slot!");
+        return slot;
+    }
+
+    public ACAQDataSlot<?> getInputSlot(String name) {
+        ACAQDataSlot<?> slot = slots.get(name);
+        if(!slot.isInput())
+            throw new IllegalArgumentException("The slot " + name + " is not an input slot!");
+        return slot;
+    }
+
+    public ACAQDataSlot<?> getFirstOutputSlot() {
+        return getOutputSlots().get(0);
+    }
+
+    public ACAQDataSlot<?> getFirstInputSlot() {
+        return getInputSlots().get(0);
     }
 
     public static class Serializer extends JsonSerializer<ACAQAlgorithm> {

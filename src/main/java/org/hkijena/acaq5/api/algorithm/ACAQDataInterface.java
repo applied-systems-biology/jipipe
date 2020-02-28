@@ -37,11 +37,28 @@ public class ACAQDataInterface {
         }
     }
 
+    /**
+     * Gets stored data from an input slot
+     * @param slotName
+     * @param <T>
+     * @return
+     */
     public <T extends ACAQData> T getInputData(String slotName) {
-        ACAQDataSlot<?> slot = algorithm.getSlots().get(slotName);
+       return getInputData(algorithm.getInputSlot(slotName));
+    }
+
+    /**
+     * Gets stored data from an input slot
+     * @param slot
+     * @param <T>
+     * @return
+     */
+    public <T extends ACAQData> T getInputData(ACAQDataSlot<?> slot) {
+        if(slot.getAlgorithm() != algorithm)
+            throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if(!slot.isInput())
             throw new IllegalArgumentException("Slot is not an input slot!");
-        return (T) slot.getData(inputSlotRows.get(slot));
+        return (T)slot.getData(inputSlotRows.get(slot));
     }
 
     /**
@@ -86,7 +103,18 @@ public class ACAQDataInterface {
      * @param data
      */
     public void addOutputData(String slotName, ACAQData data) {
-        ACAQDataSlot<?> slot = algorithm.getSlots().get(slotName);
+        addOutputData(algorithm.getOutputSlot(slotName), data);
+    }
+
+    /**
+     *  Writes output data into the provided slot
+     *  Please note that annotations should be set up till this point
+     * @param slot
+     * @param data
+     */
+    public void addOutputData(ACAQDataSlot<?> slot, ACAQData data) {
+        if(slot.getAlgorithm() != algorithm)
+            throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if(!slot.isOutput())
             throw new IllegalArgumentException("Slot is not an output slot!");
         slot.addData(data, annotations);

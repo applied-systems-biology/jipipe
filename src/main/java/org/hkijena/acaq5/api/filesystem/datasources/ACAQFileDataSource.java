@@ -2,14 +2,13 @@ package org.hkijena.acaq5.api.filesystem.datasources;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.filesystem.dataslots.ACAQFileDataSlot;
 import org.hkijena.acaq5.api.filesystem.dataypes.ACAQFileData;
-import org.hkijena.acaq5.api.filesystem.dataypes.ACAQFolderData;
-import org.hkijena.acaq5.api.data.ACAQSimpleDataSource;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 
 import java.nio.file.Files;
@@ -21,7 +20,7 @@ import java.nio.file.Path;
 @ACAQDocumentation(name = "File")
 @AlgorithmOutputSlot(value = ACAQFileDataSlot.class, slotName = "Filename", autoCreate = true)
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
-public class ACAQFileDataSource extends ACAQSimpleDataSource<ACAQFileData> {
+public class ACAQFileDataSource extends ACAQAlgorithm {
 
     private Path fileName;
 
@@ -36,7 +35,7 @@ public class ACAQFileDataSource extends ACAQSimpleDataSource<ACAQFileData> {
 
     @Override
     public void run() {
-        addOutputData(new ACAQFileData(fileName));
+        getFirstOutputSlot().addData(new ACAQFileData(fileName));
     }
 
     @ACAQParameter("file-name")

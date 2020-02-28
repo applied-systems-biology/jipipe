@@ -31,6 +31,7 @@ public class ACAQSubFolder extends ACAQIteratingAlgorithm {
 
     public ACAQSubFolder(ACAQSubFolder other) {
         super(other);
+        this.subFolder = other.subFolder;
     }
 
     @Override

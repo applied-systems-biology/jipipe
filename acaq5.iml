@@ -7,7 +7,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <excludeFolder url="file://$MODULE_DIR$/src/main/java/org/hkijena/acaq5/extension/api/algorithms" />
-      <excludeFolder url="file://$MODULE_DIR$/src/main/java/org/hkijena/acaq5/extension/api/datasources" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />

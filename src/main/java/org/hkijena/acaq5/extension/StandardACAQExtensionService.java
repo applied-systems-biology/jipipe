@@ -4,6 +4,11 @@ import ij.process.AutoThresholder;
 import org.hkijena.acaq5.ACAQExtensionService;
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.extension.api.dataslots.*;
+import org.hkijena.acaq5.extension.api.datasources.ACAQGreyscaleImageDataFromFile;
+import org.hkijena.acaq5.extension.api.datasources.ACAQMaskImageDataFromFile;
+import org.hkijena.acaq5.extension.api.datasources.ACAQMultichannelImageDataFromFile;
+import org.hkijena.acaq5.extension.api.datasources.ACAQROIDataFromFile;
+import org.hkijena.acaq5.extension.api.datasources.ACAQResultsTableFromFile;
 import org.hkijena.acaq5.extension.api.datatypes.*;
 import org.hkijena.acaq5.extension.api.traits.Sample;
 import org.hkijena.acaq5.extension.api.traits.Subject;
@@ -79,11 +84,11 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
         registerAlgorithms(registryService);
 
         // Register data sources
-//        registryService.getAlgorithmRegistry().register(ACAQGreyscaleImageDataFromFile.class);
-//        registryService.getAlgorithmRegistry().register(ACAQMaskImageDataFromFile.class);
-//        registryService.getAlgorithmRegistry().register(ACAQROIDataFromFile.class);
-//        registryService.getAlgorithmRegistry().register(ACAQMultichannelImageDataFromFile.class);
-//        registryService.getAlgorithmRegistry().register(ACAQResultsTableFromFile.class);
+        registryService.getAlgorithmRegistry().register(ACAQGreyscaleImageDataFromFile.class);
+        registryService.getAlgorithmRegistry().register(ACAQMaskImageDataFromFile.class);
+        registryService.getAlgorithmRegistry().register(ACAQROIDataFromFile.class);
+        registryService.getAlgorithmRegistry().register(ACAQMultichannelImageDataFromFile.class);
+        registryService.getAlgorithmRegistry().register(ACAQResultsTableFromFile.class);
 
         // Register parameter editor UIs
         registryService.getUIParametertypeRegistry().registerParameterEditor(Path.class, FilePathParameterEditorUI.class);

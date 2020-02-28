@@ -2,13 +2,13 @@ package org.hkijena.acaq5.api.filesystem.datasources;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.filesystem.dataslots.ACAQFolderDataSlot;
 import org.hkijena.acaq5.api.filesystem.dataypes.ACAQFolderData;
-import org.hkijena.acaq5.api.data.ACAQSimpleDataSource;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 
 import java.nio.file.Files;
@@ -20,7 +20,7 @@ import java.nio.file.Path;
 @ACAQDocumentation(name = "Folder")
 @AlgorithmOutputSlot(value = ACAQFolderDataSlot.class, slotName = "Folder path", autoCreate = true)
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
-public class ACAQFolderDataSource extends ACAQSimpleDataSource<ACAQFolderData> {
+public class ACAQFolderDataSource extends ACAQAlgorithm {
 
     private Path folderPath;
 
@@ -35,7 +35,7 @@ public class ACAQFolderDataSource extends ACAQSimpleDataSource<ACAQFolderData> {
 
     @Override
     public void run() {
-        addOutputData(new ACAQFolderData(folderPath));
+        getFirstOutputSlot().addData(new ACAQFolderData(folderPath));
     }
 
     @ACAQParameter("folder-path")
