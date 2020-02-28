@@ -9,6 +9,7 @@ import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
+import org.hkijena.acaq5.ui.events.DefaultUIActionRequestedEvent;
 import org.hkijena.acaq5.ui.events.OpenSettingsUIRequestedEvent;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.utils.TooltipUtils;
@@ -153,6 +154,13 @@ public class ACAQCompartmentGraphUI extends ACAQUIPanel implements MouseListener
             int dividerLocation = splitPane.getDividerLocation();
             splitPane.setRightComponent(currentSettings);
             splitPane.setDividerLocation(dividerLocation);
+        }
+    }
+
+    @Subscribe
+    public void onOpenCompartment(DefaultUIActionRequestedEvent event) {
+        if(event.getUi() != null && event.getUi().getAlgorithm() instanceof ACAQProjectCompartment) {
+            getWorkbenchUI().openCompartmentGraph((ACAQProjectCompartment) event.getUi().getAlgorithm(), true);
         }
     }
 

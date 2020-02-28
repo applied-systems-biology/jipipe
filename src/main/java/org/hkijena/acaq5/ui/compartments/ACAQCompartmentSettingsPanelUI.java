@@ -66,8 +66,7 @@ public class ACAQCompartmentSettingsPanelUI extends ACAQUIPanel {
     }
 
     private void openInEditor() {
-        getWorkbenchUI().openCompartmentGraph(compartment);
-        getWorkbenchUI().getDocumentTabPane().switchToLastTab();
+        getWorkbenchUI().openCompartmentGraph(compartment, true);
     }
 
     private void deleteCompartment() {

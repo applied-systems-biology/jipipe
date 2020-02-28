@@ -4,9 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQGUICommand;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
-import org.hkijena.acaq5.api.events.CompartmentAddedEvent;
 import org.hkijena.acaq5.api.events.CompartmentRemovedEvent;
-import org.hkijena.acaq5.api.events.CompartmentRenamedEvent;
 import org.hkijena.acaq5.ui.compartments.ACAQCompartmentGraphUI;
 import org.hkijena.acaq5.ui.compartments.ACAQCompartmentUI;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
@@ -21,10 +19,7 @@ import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ACAQWorkbenchUI extends JPanel {
 
@@ -51,9 +46,9 @@ public class ACAQWorkbenchUI extends JPanel {
             ACAQProjectCompartment postprocessing = project.addCompartment("Postprocessing");
             project.connectCompartments(preprocessing, analysis);
             project.connectCompartments(analysis, postprocessing);
-            openCompartmentGraph(preprocessing);
-            openCompartmentGraph(analysis);
-            openCompartmentGraph(postprocessing);
+            openCompartmentGraph(preprocessing, false);
+            openCompartmentGraph(analysis, false);
+            openCompartmentGraph(postprocessing, false);
         }
     }
 
@@ -92,7 +87,7 @@ public class ACAQWorkbenchUI extends JPanel {
         return result;
     }
 
-    public void openCompartmentGraph(ACAQProjectCompartment compartment) {
+    public void openCompartmentGraph(ACAQProjectCompartment compartment, boolean switchToTab) {
         List<ACAQCompartmentUI> compartmentUIs = findCompartmentUIs(compartment);
         if(compartmentUIs.isEmpty()) {
             ACAQCompartmentUI compartmentUI = new ACAQCompartmentUI(this, compartment);
@@ -101,8 +96,10 @@ public class ACAQWorkbenchUI extends JPanel {
                     compartmentUI,
                     DocumentTabPane.CloseMode.withSilentCloseButton,
                     false);
+            if(switchToTab)
+                documentTabPane.switchToLastTab();
         }
-        else {
+        else if(switchToTab) {
             documentTabPane.setSelectedComponent(compartmentUIs.get(0));
         }
     }
@@ -215,8 +212,7 @@ public class ACAQWorkbenchUI extends JPanel {
             if(compartmentName != null && !compartmentName.trim().isEmpty()) {
                 ACAQProjectCompartment compartment = project.addCompartment(compartmentName);
                 project.connectCompartments(ui.getCompartment(), compartment);
-                openCompartmentGraph(compartment);
-                documentTabPane.switchToLastTab();
+                openCompartmentGraph(compartment, true);
             }
         }
         else {

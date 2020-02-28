@@ -9,6 +9,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.AlgorithmGraphConnectedEvent;
+import org.hkijena.acaq5.ui.events.DefaultUIActionRequestedEvent;
 import org.hkijena.acaq5.ui.events.OpenSettingsUIRequestedEvent;
 import org.hkijena.acaq5.utils.ScreenImage;
 
@@ -190,26 +191,28 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     @Override
     public void mouseClicked(MouseEvent mouseEvent) {
         if(SwingUtilities.isLeftMouseButton(mouseEvent) && mouseEvent.getClickCount() == 2) {
-
+            ACAQAlgorithmUI ui = pickComponent(mouseEvent);
+            eventBus.post(new DefaultUIActionRequestedEvent(ui));
         }
     }
 
     @Override
     public void mousePressed(MouseEvent mouseEvent) {
         if(SwingUtilities.isLeftMouseButton(mouseEvent)) {
-            pickComponent(mouseEvent);
+            ACAQAlgorithmUI ui = pickComponent(mouseEvent);
+            currentlyDragged = ui;
+            currentlyDraggedOffset.x = ui.getX() - mouseEvent.getX();
+            currentlyDraggedOffset.y = ui.getY() - mouseEvent.getY();
+            eventBus.post(new OpenSettingsUIRequestedEvent(ui));
         }
     }
 
-    private Component pickComponent(MouseEvent mouseEvent) {
+    private ACAQAlgorithmUI pickComponent(MouseEvent mouseEvent) {
         for(int i = 0; i < getComponentCount(); ++i) {
             Component component = getComponent(i);
             if(component.getBounds().contains(mouseEvent.getX(), mouseEvent.getY())) {
                 if(component instanceof ACAQAlgorithmUI) {
-                    currentlyDragged = (ACAQAlgorithmUI)component;
-                    currentlyDraggedOffset.x = component.getX() - mouseEvent.getX();
-                    currentlyDraggedOffset.y = component.getY() - mouseEvent.getY();
-                   return component;
+                    return (ACAQAlgorithmUI) component;
                 }
             }
         }
