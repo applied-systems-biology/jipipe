@@ -348,6 +348,25 @@ public class ACAQAlgorithmUI extends JPanel {
     }
 
     /**
+     * Returns true if this component overlaps with another component
+     * @return
+     */
+    public boolean isOverlapping() {
+        for(int i = 0; i < graphUI.getComponentCount(); ++i) {
+            Component component = graphUI.getComponent(i);
+            if(component instanceof ACAQAlgorithmUI) {
+                ACAQAlgorithmUI ui = (ACAQAlgorithmUI)component;
+                if(ui != this) {
+                    if(ui.getBounds().intersects(getBounds())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Tries to move the node to the provided location
      * A grid is applied to the input coordinates
      * @param x

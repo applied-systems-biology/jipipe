@@ -14,12 +14,15 @@ import org.hkijena.acaq5.utils.ScreenImage;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -90,9 +93,34 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             if(location == null || !ui.trySetLocationNoGrid(location.x, location.y)) {
                 autoPlaceAlgorithm(ui);
             }
+            ui.addComponentListener(new ComponentAdapter() {
+                @Override
+                public void componentResized(ComponentEvent e) {
+                    removeComponentOverlaps();
+                }
+            });
         }
         revalidate();
         repaint();
+    }
+
+    /**
+     * Detects components overlapping each other.
+     * Auto-places components when an overlap was detected
+     */
+    private void removeComponentOverlaps() {
+        List<ACAQAlgorithm> traversed = algorithmGraph.traverseAlgorithms();
+        for(int i = traversed.size() - 1; i >= 0; --i) {
+            ACAQAlgorithm algorithm = traversed.get(i);
+            if (!algorithm.isVisibleIn(compartment))
+                continue;
+            ACAQAlgorithmUI ui = nodeUIs.getOrDefault(algorithm, null);
+            if(ui != null) {
+                if(ui.isOverlapping()) {
+                    autoPlaceAlgorithm(ui);
+                }
+            }
+        }
     }
 
     /**
@@ -127,13 +155,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
         int minY = Math.max(ui.getY(), 2 * ACAQAlgorithmUI.SLOT_UI_HEIGHT);
 
-//        if(ui.getAlgorithm() instanceof ACAQCompartmentOutput) {
-//            if(ui.getAlgorithm().getCompartment().equals(compartment)) {
-//                minX = 20 * ACAQAlgorithmUI.SLOT_UI_WIDTH;
-//            }
-//        }
-
-        if(ui.getX() < minX) {
+        if(ui.getX() < minX || ui.isOverlapping()) {
             if(!ui.trySetLocationNoGrid(minX, minY)) {
                 int y = nodeUIs.values().stream().map(ACAQAlgorithmUI::getBottomY).max(Integer::compareTo).orElse(0);
                 if(y == 0)
