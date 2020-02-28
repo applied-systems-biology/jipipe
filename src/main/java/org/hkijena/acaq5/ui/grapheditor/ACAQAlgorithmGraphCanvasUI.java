@@ -278,8 +278,37 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         g.setRenderingHints(rh);
 
         // Draw the edges
-        graphics.setColor(Color.DARK_GRAY);
         g.setStroke(new BasicStroke(2));
+        graphics.setColor(Color.LIGHT_GRAY);
+        for (ACAQAlgorithmUI ui : nodeUIs.values()) {
+            if(!ui.getAlgorithm().getVisibleCompartments().isEmpty()) {
+                int sourceY = 0;
+                int targetY = 0;
+                int sourceX = 0;
+                int targetX = 0;
+                if(compartment.equals(ui.getAlgorithm().getCompartment())) {
+                    sourceX = ui.getX() + ui.getWidth();
+                    sourceY = ui.getY() + ACAQAlgorithmUI.SLOT_UI_HEIGHT / 2;
+                    targetX = getWidth();
+                    targetY = sourceY;
+                }
+                else {
+                    sourceX = 0;
+                    sourceY = ui.getY() + ACAQAlgorithmUI.SLOT_UI_HEIGHT / 2;
+                    targetX = ui.getX();
+                    targetY = sourceY;
+                }
+                Path2D.Float path = new Path2D.Float();
+                path.moveTo(sourceX, sourceY);
+                float dx = targetX - sourceX;
+                path.curveTo(sourceX + 0.4f * dx, sourceY,
+                        sourceX + 0.6f * dx , targetY,
+                        targetX, targetY);
+                g.draw(path);
+            }
+        }
+
+        graphics.setColor(Color.DARK_GRAY);
         for(Map.Entry<ACAQDataSlot, ACAQDataSlot> kv : algorithmGraph.getSlotEdges()) {
             ACAQDataSlot source = kv.getKey();
             ACAQDataSlot target = kv.getValue();
