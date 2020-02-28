@@ -94,11 +94,20 @@ public class ACAQProject implements ACAQValidatable {
 
     private void initializeCompartment(ACAQProjectCompartment compartment) {
         compartment.setProject(this);
-        ACAQCompartmentOutput compartmentOutput = (ACAQCompartmentOutput) ACAQAlgorithmRegistry.getInstance().getDefaultDeclarationFor(ACAQCompartmentOutput.class).newInstance();
-        compartmentOutput.setCustomName(compartment.getName() + " output");
-        compartmentOutput.setCompartment(compartment.getProjectCompartmentId());
+        ACAQCompartmentOutput compartmentOutput = null;
+        for (ACAQAlgorithm algorithm : graph.getAlgorithmNodes().values()) {
+            if(algorithm instanceof ACAQCompartmentOutput && algorithm.getCompartment().equals(compartment.getProjectCompartmentId())) {
+                 compartmentOutput = (ACAQCompartmentOutput) algorithm;
+            }
+        }
+        if(compartmentOutput == null) {
+            compartmentOutput = (ACAQCompartmentOutput) ACAQAlgorithmRegistry.getInstance().getDefaultDeclarationFor(ACAQCompartmentOutput.class).newInstance();
+            compartmentOutput.setCustomName(compartment.getName() + " output");
+            compartmentOutput.setCompartment(compartment.getProjectCompartmentId());
+            graph.insertNode(compartmentOutput, compartment.getProjectCompartmentId());
+        }
+
         compartment.setOutputNode(compartmentOutput);
-        graph.insertNode(compartmentOutput, compartment.getProjectCompartmentId());
     }
 
     private void updateCompartmentVisibility() {

@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.ui.grapheditor.settings;
 
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.acaq5.api.ACAQMutableRunConfiguration;
 import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
@@ -10,6 +11,7 @@ import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.*;
 import org.hkijena.acaq5.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.acaq5.ui.events.RunUIWorkerInterruptedEvent;
+import org.hkijena.acaq5.ui.running.ACAQRunExecuterUI;
 import org.hkijena.acaq5.ui.running.ACAQRunnerQueue;
 import org.hkijena.acaq5.ui.testbench.ACAQTestBenchUI;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -72,10 +74,6 @@ public class ACAQTestBenchSetupUI extends ACAQUIPanel {
         FormPanel formPanel = new FormPanel("documentation/testbench.md", true);
         setupPanel.add(formPanel, BorderLayout.CENTER);
 
-        // Allow the user to select one sample
-        JComboBox<String> sampleSelection = new JComboBox<String>(getProject().getCompartments().keySet().toArray(new String[0]));
-        formPanel.addToForm(sampleSelection, new JLabel("Sample"), null);
-
         // Let the user choose where temporary data is saved
         FileSelection outputFolderSelection = new FileSelection();
         outputFolderSelection.setIoMode(FileSelection.IOMode.Open);
@@ -94,8 +92,7 @@ public class ACAQTestBenchSetupUI extends ACAQUIPanel {
         toolBar.add(Box.createHorizontalGlue());
 
         JButton generateButton = new JButton("Create", UIUtils.getIconFromResources("run.png"));
-        generateButton.addActionListener(e -> generateTestBench(sampleSelection.getSelectedItem().toString(),
-                outputFolderSelection.getPath()));
+        generateButton.addActionListener(e -> generateTestBench(outputFolderSelection.getPath()));
         toolBar.add(generateButton);
 
         setupPanel.add(toolBar, BorderLayout.NORTH);
@@ -140,22 +137,19 @@ public class ACAQTestBenchSetupUI extends ACAQUIPanel {
         revalidate();
     }
 
-    private void generateTestBench(String sample, Path outputPath) {
-//        ACAQMutableRunConfiguration configuration = new ACAQMutableRunConfiguration();
-//        configuration.setFlushingEnabled(true);
-//        configuration.setFlushingKeepsDataEnabled(true);
-//        configuration.setOutputPath(outputPath.resolve("initial"));
-//        configuration.setSampleRestrictions(new HashSet<>(Arrays.asList(sample)));
-//
-//        currentRun = new ACAQRun(getProject(), configuration);
-//        configuration.setEndAlgorithm(currentRun.getGraph().getEquivalentOf(algorithm, graph));
-//
-//        removeAll();
-//        ACAQRunExecuterUI executerUI = new ACAQRunExecuterUI(currentRun);
-//        add(executerUI, BorderLayout.SOUTH);
-//        revalidate();
-//        repaint();
-//        executerUI.startRun();
+    private void generateTestBench(Path outputPath) {
+        ACAQMutableRunConfiguration configuration = new ACAQMutableRunConfiguration();
+        configuration.setOutputPath(outputPath.resolve("initial"));
+
+        currentRun = new ACAQRun(getProject(), configuration);
+        configuration.setEndAlgorithmId(algorithm.getIdInGraph());
+
+        removeAll();
+        ACAQRunExecuterUI executerUI = new ACAQRunExecuterUI(currentRun);
+        add(executerUI, BorderLayout.SOUTH);
+        revalidate();
+        repaint();
+        executerUI.startRun();
     }
 
     @Subscribe

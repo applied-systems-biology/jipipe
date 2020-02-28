@@ -31,7 +31,6 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
 
     private ACAQAlgorithm projectAlgorithm;
     private ACAQRun run;
-    private String sampleName;
     private ACAQAlgorithm runAlgorithm;
     private List<ACAQAlgorithmBackup> backupList = new ArrayList<>();
     private JComboBox<ACAQAlgorithmBackup> backupSelection;
@@ -42,31 +41,19 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
         super(workbenchUI);
         this.projectAlgorithm = projectAlgorithm;
         this.run = run;
+        this.runAlgorithm = run.getGraph().getAlgorithmNodes().get(projectAlgorithm.getIdInGraph());
 
-//        // Associate sample -> appropriate run algorithm
-//        for (Map.Entry<String, ACAQRunSample> entry : run.getSamples().entrySet()) {
-//            ACAQAlgorithm algorithm = entry.getValue().getAlgorithms().stream().filter(a -> run.getProjectAlgorithms().get(a) == projectAlgorithm).findFirst().orElse(null);
-//            if(algorithm != null) {
-//                sampleName = entry.getKey();
-//                runAlgorithm = algorithm;
-//                break;
-//            }
-//        }
-//
-//        if(runAlgorithm == null)
-//            throw new IllegalArgumentException("The provided testbench parameters should be associated to exactly one sample!");
-//
-//        // Do the initial backup
-//        backupList.add(new ACAQAlgorithmBackup(runAlgorithm));
-//
-//        // Force to only run the end algorithm
-//        ((ACAQMutableRunConfiguration)run.getConfiguration()).setOnlyRunningEndAlgorithm(true);
-//
-//        initialize();
-//        updateBackupSelection();
-//        loadBackup(backupList.get(0));
-//
-//        ACAQRunnerQueue.getInstance().getEventBus().register(this);
+        // Do the initial backup
+        backupList.add(new ACAQAlgorithmBackup(runAlgorithm));
+
+        // Force to only run the end algorithm
+        ((ACAQMutableRunConfiguration)run.getConfiguration()).setOnlyRunningEndAlgorithm(true);
+
+        initialize();
+        updateBackupSelection();
+        loadBackup(backupList.get(0));
+
+        ACAQRunnerQueue.getInstance().getEventBus().register(this);
     }
 
     private void initialize() {
@@ -90,8 +77,9 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        JLabel sampleInfo = new JLabel(sampleName, UIUtils.getIconFromResources("sample.png"), JLabel.LEFT);
-        toolBar.add(sampleInfo);
+        String compartmentName = getProject().getCompartments().get(projectAlgorithm.getCompartment()).getName();
+        JLabel compartmentInfo = new JLabel(compartmentName, UIUtils.getIconFromResources("graph-compartment.png"), JLabel.LEFT);
+        toolBar.add(compartmentInfo);
 
         toolBar.add(Box.createHorizontalStrut(8));
 
