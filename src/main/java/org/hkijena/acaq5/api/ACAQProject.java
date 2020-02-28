@@ -93,6 +93,7 @@ public class ACAQProject implements ACAQValidatable {
     }
 
     private void initializeCompartment(ACAQProjectCompartment compartment) {
+        compartment.setProject(this);
         ACAQCompartmentOutput compartmentOutput = (ACAQCompartmentOutput) ACAQAlgorithmRegistry.getInstance().getDefaultDeclarationFor(ACAQCompartmentOutput.class).newInstance();
         compartmentOutput.setCustomName(compartment.getName() + " output");
         compartmentOutput.setCompartment(compartment.getProjectCompartmentId());
