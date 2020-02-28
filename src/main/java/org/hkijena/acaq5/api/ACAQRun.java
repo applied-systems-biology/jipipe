@@ -3,6 +3,7 @@ package org.hkijena.acaq5.api;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.utils.GraphUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.io.IOException;
@@ -12,6 +13,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Runnable instance of an {@link ACAQProject}
@@ -97,20 +99,21 @@ public class ACAQRun implements ACAQRunnable {
         List<ACAQDataSlot> traversedSlots = algorithmGraph.traverse();
 
         // Update algorithm limits that may be used by
-//        Set<ACAQAlgorithm> algorithmLimits = new HashSet<>();
-//        if(configuration.getEndAlgorithmId() != null) {
-//            if(configuration.isOnlyRunningEndAlgorithm())
-//                algorithmLimits.add(configuration.getEndAlgorithm());
-//            else {
-//                for(ACAQDataSlot slot : configuration.getEndAlgorithm().getOutputSlots()) {
-//                    algorithmLimits.addAll(GraphUtils.getAllPredecessors(algorithmGraph.getGraph(), slot)
-//                            .stream().map(ACAQDataSlot::getAlgorithm).collect(Collectors.toSet()));
-//                }
-//            }
-//        }
-//        else {
-//            algorithmLimits.addAll(traversedSlots.stream().map(ACAQDataSlot::getAlgorithm).collect(Collectors.toSet()));
-//        }
+        Set<ACAQAlgorithm> algorithmLimits = new HashSet<>();
+        if(configuration.getEndAlgorithmId() != null) {
+            ACAQAlgorithm endAlgorithm = algorithmGraph.getAlgorithmNodes().get(configuration.getEndAlgorithmId());
+            if(configuration.isOnlyRunningEndAlgorithm())
+                algorithmLimits.add(endAlgorithm);
+            else {
+                for(ACAQDataSlot slot : endAlgorithm.getOutputSlots()) {
+                    algorithmLimits.addAll(GraphUtils.getAllPredecessors(algorithmGraph.getGraph(), slot)
+                            .stream().map(ACAQDataSlot::getAlgorithm).collect(Collectors.toSet()));
+                }
+            }
+        }
+        else {
+            algorithmLimits.addAll(algorithmGraph.getAlgorithmNodes().values());
+        }
 
         for(int i = 0; i < traversedSlots.size(); ++i) {
             if (isCancelled.get())
@@ -128,7 +131,7 @@ public class ACAQRun implements ACAQRunnable {
             }
             else if(slot.isOutput()) {
                 // Ensure the algorithm has run
-                if(!executedAlgorithms.contains(slot.getAlgorithm())) {
+                if(!executedAlgorithms.contains(slot.getAlgorithm()) && algorithmLimits.contains(slot.getAlgorithm())) {
                     onProgress.accept(new ACAQRunnerStatus(i, algorithmGraph.getSlotCount(), "Algorithm: " + slot.getAlgorithm().getName()));
                     slot.getAlgorithm().run();
                     executedAlgorithms.add(slot.getAlgorithm());
