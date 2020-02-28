@@ -15,11 +15,11 @@ import java.util.function.Consumer;
 /**
  * Provides a standard result slot UI that can be also further extended
  */
-public class ACAQDefaultDataSlotResultUI extends ACAQResultDataSlotUI<ACAQDataSlot<?>> {
+public class ACAQDefaultDataSlotResultUI extends ACAQResultDataSlotUI<ACAQDataSlot> {
 
     private List<SlotAction> registeredSlotActions = new ArrayList<>();
 
-    public ACAQDefaultDataSlotResultUI(ACAQWorkbenchUI workbenchUI, ACAQDataSlot<?> slot) {
+    public ACAQDefaultDataSlotResultUI(ACAQWorkbenchUI workbenchUI, ACAQDataSlot slot) {
         super(workbenchUI, slot);
         registerActions();
         initialize();
@@ -67,7 +67,7 @@ public class ACAQDefaultDataSlotResultUI extends ACAQResultDataSlotUI<ACAQDataSl
      * @param icon
      * @param action
      */
-    protected void registerAction(String name, Icon icon, Consumer<ACAQDataSlot<?>> action) {
+    protected void registerAction(String name, Icon icon, Consumer<ACAQDataSlot> action) {
         registeredSlotActions.add(new SlotAction(name, icon, action));
     }
 
@@ -82,9 +82,9 @@ public class ACAQDefaultDataSlotResultUI extends ACAQResultDataSlotUI<ACAQDataSl
     private static class SlotAction {
         private String name;
         private Icon icon;
-        private Consumer<ACAQDataSlot<?>> action;
+        private Consumer<ACAQDataSlot> action;
 
-        private SlotAction(String name, Icon icon, Consumer<ACAQDataSlot<?>> action) {
+        private SlotAction(String name, Icon icon, Consumer<ACAQDataSlot> action) {
             this.name = name;
             this.icon = icon;
             this.action = action;
@@ -98,7 +98,7 @@ public class ACAQDefaultDataSlotResultUI extends ACAQResultDataSlotUI<ACAQDataSl
             return icon;
         }
 
-        public Consumer<ACAQDataSlot<?>> getAction() {
+        public Consumer<ACAQDataSlot> getAction() {
             return action;
         }
     }

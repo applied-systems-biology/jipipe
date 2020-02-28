@@ -16,21 +16,20 @@ import java.util.*;
 /**
  * A data slot holds an {@link ACAQData} instance.
  * Slots are part of an {@link ACAQAlgorithm}
- * @param <T>
  */
-public abstract class ACAQDataSlot<T extends ACAQData> implements TableModel {
+public class ACAQDataSlot implements TableModel {
     private ACAQAlgorithm algorithm;
     private String name;
-    private Class<T> acceptedDataType;
+    private Class<? extends ACAQData> acceptedDataType;
     private SlotType slotType;
     private Path storagePath;
     private boolean uniqueData = true;
 
-    private ArrayList<T> data = new ArrayList<>();
+    private ArrayList<ACAQData> data = new ArrayList<>();
     private List<ACAQTraitDeclaration> annotationColumns = new ArrayList<>();
     private Map<ACAQTraitDeclaration, ArrayList<ACAQTrait>> annotations = new HashMap<>();
 
-    public ACAQDataSlot(ACAQAlgorithm algorithm, SlotType slotType, String name, Class<T> acceptedDataType) {
+    public ACAQDataSlot(ACAQAlgorithm algorithm, SlotType slotType, String name, Class<? extends ACAQData> acceptedDataType) {
         this.algorithm = algorithm;
         this.name = name;
         this.slotType = slotType;
@@ -52,8 +51,8 @@ public abstract class ACAQDataSlot<T extends ACAQData> implements TableModel {
      * @param row
      * @return
      */
-    public T getData(int row) {
-        return data.get(row);
+    public <T> T getData(int row) {
+        return (T)data.get(row);
     }
 
     /**
@@ -84,7 +83,7 @@ public abstract class ACAQDataSlot<T extends ACAQData> implements TableModel {
                 uniqueData = false;
             }
         }
-        data.add((T) value);
+        data.add(value);
         for (ACAQTrait trait : traits) {
             if(!annotations.containsKey(trait.getDeclaration())) {
                 annotationColumns.add(trait.getDeclaration());
@@ -213,7 +212,7 @@ public abstract class ACAQDataSlot<T extends ACAQData> implements TableModel {
      * Copies the source slot into this slot
      * @param sourceSlot
      */
-    public void copyFrom(ACAQDataSlot<?> sourceSlot) {
+    public void copyFrom(ACAQDataSlot sourceSlot) {
         for(int row = 0; row < sourceSlot.getRowCount(); ++row) {
             addData(sourceSlot.getData(row), sourceSlot.getAnnotations(row));
         }
@@ -222,22 +221,6 @@ public abstract class ACAQDataSlot<T extends ACAQData> implements TableModel {
     public enum SlotType {
         Input,
         Output
-    }
-
-    /**
-     * Instantiates a slot.
-     * This requires from the slot class that it has the same parameters as {@link ACAQDataSlot}, but without acceptedDataType
-     * @param algorithm
-     * @param definition
-     * @return
-     */
-    public static ACAQDataSlot<?> createInstance(ACAQAlgorithm algorithm, ACAQSlotDefinition definition) {
-        Constructor<?> constructor = ConstructorUtils.getMatchingAccessibleConstructor(definition.getSlotClass(), ACAQAlgorithm.class, SlotType.class, String.class);
-        try {
-            return (ACAQDataSlot<?>) constructor.newInstance(algorithm, definition.getSlotType(), definition.getName());
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override

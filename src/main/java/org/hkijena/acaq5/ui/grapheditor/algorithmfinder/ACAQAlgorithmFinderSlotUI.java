@@ -15,17 +15,17 @@ import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_HEIGHT;
 
 public class ACAQAlgorithmFinderSlotUI extends JPanel {
 
-    private ACAQDataSlot<?> outputSlot;
+    private ACAQDataSlot outputSlot;
     private ACAQAlgorithmGraph graph;
     private String compartment;
-    private ACAQDataSlot<?> inputSlot;
+    private ACAQDataSlot inputSlot;
     private boolean isExistingInstance;
     private EventBus eventBus = new EventBus();
 
     private JButton assignButton;
     private JPopupMenu assignButtonMenu;
 
-    public ACAQAlgorithmFinderSlotUI(ACAQDataSlot<?> outputSlot, ACAQAlgorithmGraph graph, String compartment, ACAQDataSlot<?> inputSlot, boolean isExistingInstance) {
+    public ACAQAlgorithmFinderSlotUI(ACAQDataSlot outputSlot, ACAQAlgorithmGraph graph, String compartment, ACAQDataSlot inputSlot, boolean isExistingInstance) {
         this.outputSlot = outputSlot;
         this.graph = graph;
         this.compartment = compartment;

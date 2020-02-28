@@ -31,7 +31,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class ACAQAlgorithmFinderUI extends JPanel {
-    private ACAQDataSlot<?> outputSlot;
+    private ACAQDataSlot outputSlot;
     private ACAQAlgorithm algorithm;
     private ACAQAlgorithmGraph graph;
     private String compartment;
@@ -39,7 +39,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
     private FormPanel formPanel;
     private EventBus eventBus = new EventBus();
 
-    public ACAQAlgorithmFinderUI(ACAQDataSlot<?> outputSlot, ACAQAlgorithmGraph graph, String compartment) {
+    public ACAQAlgorithmFinderUI(ACAQDataSlot outputSlot, ACAQAlgorithmGraph graph, String compartment) {
         this.compartment = compartment;
         if(!outputSlot.isOutput())
             throw new IllegalArgumentException();
@@ -178,7 +178,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
         eventBus.post(event);
     }
 
-    public static int scoreAlgorithmForOutputSlot(ACAQAlgorithmDeclaration declaration, ACAQDataSlot<?> slot, ACAQAlgorithmGraph graph) {
+    public static int scoreAlgorithmForOutputSlot(ACAQAlgorithmDeclaration declaration, ACAQDataSlot slot, ACAQAlgorithmGraph graph) {
         Set<Class<? extends ACAQTrait>> preferredTraits = declaration.getPreferredTraits();
         Set<Class<? extends ACAQTrait>> unwantedTraits = declaration.getUnwantedTraits();
         int score = 0;
@@ -196,12 +196,11 @@ public class ACAQAlgorithmFinderUI extends JPanel {
         return score;
     }
 
-    public static List<ACAQAlgorithmDeclaration> findCompatibleTargetAlgorithms(ACAQDataSlot<?> slot) {
+    public static List<ACAQAlgorithmDeclaration> findCompatibleTargetAlgorithms(ACAQDataSlot slot) {
         Class<? extends ACAQData> outputSlotDataClass = slot.getAcceptedDataType();
         List<ACAQAlgorithmDeclaration> result = new ArrayList<>();
         for (ACAQAlgorithmDeclaration declaration : ACAQAlgorithmRegistry.getInstance().getRegisteredAlgorithms().values()) {
-            for (Class<? extends ACAQDataSlot<?>> inputSlotClass : declaration.getInputSlots().stream().map(AlgorithmInputSlot::value).collect(Collectors.toList())) {
-                Class<? extends ACAQData> inputSlotDataClass = ACAQDatatypeRegistry.getInstance().getRegisteredSlotDataTypes().inverse().get(inputSlotClass);
+            for (Class<? extends ACAQData> inputSlotDataClass : declaration.getInputSlots().stream().map(AlgorithmInputSlot::value).collect(Collectors.toList())) {
                 if(inputSlotDataClass.isAssignableFrom(outputSlotDataClass)) {
                     result.add(declaration);
                     break;

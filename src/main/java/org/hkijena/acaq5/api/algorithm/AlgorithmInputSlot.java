@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.api.algorithm;
 
+import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 
 import java.lang.annotation.*;
@@ -12,10 +13,10 @@ import java.lang.annotation.*;
 @Repeatable(AlgorithmInputSlots.class)
 public @interface AlgorithmInputSlot {
     /**
-     * The slot class
+     * The data class
      * @return
      */
-    Class<? extends ACAQDataSlot<?>> value();
+    Class<? extends ACAQData> value();
 
     /**
      * An optional slot name. Cannot be empty if autoCreate is true.

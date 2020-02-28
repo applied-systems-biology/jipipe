@@ -19,18 +19,18 @@ public class ACAQTestBenchResultUI extends ACAQUIPanel {
 //        setLayout(new BorderLayout());
 //        formPanel = new FormPanel(null, false, false);
 //
-//        for(ACAQDataSlot<?> slot : runAlgorithm.getInputSlots()) {
-//            ACAQDataSlot<?> source = runSample.getRun().getGraph().getSourceSlot(slot);
+//        for(ACAQDataSlot slot : runAlgorithm.getInputSlots()) {
+//            ACAQDataSlot source = runSample.getRun().getGraph().getSourceSlot(slot);
 //            addSlotToForm("Input: " + source.getName(), source, null);
 //        }
-//        for(ACAQDataSlot<?> slot : runAlgorithm.getOutputSlots()) {
+//        for(ACAQDataSlot slot : runAlgorithm.getOutputSlots()) {
 //            addSlotToForm("Output: " + slot.getName(), slot, null);
 //        }
 //        formPanel.addVerticalGlue();
 //        add(formPanel, BorderLayout.CENTER);
     }
 
-//    private void addSlotToForm(String name, ACAQDataSlot<?> slot, String documentationPath) {
+//    private void addSlotToForm(String name, ACAQDataSlot slot, String documentationPath) {
 //        Component ui = ACAQUIDatatypeRegistry.getInstance().getUIForResultSlot(getWorkbenchUI(), runSample, slot);
 //        formPanel.addToForm(ui,
 //                new JLabel(name,

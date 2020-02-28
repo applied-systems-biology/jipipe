@@ -7,9 +7,7 @@ import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQData;
-import org.hkijena.acaq5.api.filesystem.dataslots.ACAQFileDataSlot;
-import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
-import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
+import org.hkijena.acaq5.api.filesystem.dataypes.ACAQFileData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMultichannelImageData;
 
@@ -19,8 +17,8 @@ import java.nio.file.Path;
  * Loads greyscale data from a file via IJ.openFile()
  */
 @ACAQDocumentation(name = "Mask from file")
-@AlgorithmInputSlot(value = ACAQFileDataSlot.class, slotName = "Files", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQMaskDataSlot.class, slotName = "Mask", autoCreate = true)
+@AlgorithmInputSlot(value = ACAQFileData.class, slotName = "Files", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQMaskData.class, slotName = "Mask", autoCreate = true)
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
 public class ACAQMaskImageDataFromFile extends ACAQMultichannelImageDataFromFile {
 

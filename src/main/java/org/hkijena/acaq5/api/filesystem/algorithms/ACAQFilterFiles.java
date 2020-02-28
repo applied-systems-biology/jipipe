@@ -3,7 +3,6 @@ package org.hkijena.acaq5.api.filesystem.algorithms;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.filesystem.dataslots.ACAQFileDataSlot;
 import org.hkijena.acaq5.api.filesystem.dataypes.ACAQFileData;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
@@ -13,8 +12,8 @@ import org.hkijena.acaq5.utils.PathFilter;
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.FileSystem)
 
 // Algorithm flow
-@AlgorithmInputSlot(value = ACAQFileDataSlot.class, slotName = "Files", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQFileDataSlot.class, slotName = "Filtered files", autoCreate = true)
+@AlgorithmInputSlot(value = ACAQFileData.class, slotName = "Files", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQFileData.class, slotName = "Filtered files", autoCreate = true)
 
 // Traits
 @AutoTransferTraits

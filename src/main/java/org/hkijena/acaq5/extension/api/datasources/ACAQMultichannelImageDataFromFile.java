@@ -11,9 +11,7 @@ import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQData;
-import org.hkijena.acaq5.api.filesystem.dataslots.ACAQFileDataSlot;
 import org.hkijena.acaq5.api.filesystem.dataypes.ACAQFileData;
-import org.hkijena.acaq5.extension.api.dataslots.ACAQMultichannelImageDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMultichannelImageData;
 
 import java.nio.file.Path;
@@ -22,8 +20,8 @@ import java.nio.file.Path;
  * Loads greyscale data from a file via IJ.openFile()
  */
 @ACAQDocumentation(name = "Multichannel image from file")
-@AlgorithmInputSlot(value = ACAQFileDataSlot.class, slotName = "Files", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQMultichannelImageDataSlot.class, slotName = "Multichannel Image", autoCreate = true)
+@AlgorithmInputSlot(value = ACAQFileData.class, slotName = "Files", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQMultichannelImageData.class, slotName = "Multichannel Image", autoCreate = true)
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
 public class ACAQMultichannelImageDataFromFile extends ACAQIteratingAlgorithm {
 

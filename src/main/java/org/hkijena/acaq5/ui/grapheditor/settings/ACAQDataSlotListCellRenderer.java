@@ -7,7 +7,7 @@ import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import javax.swing.*;
 import java.awt.*;
 
-public class ACAQDataSlotListCellRenderer extends JLabel implements ListCellRenderer<ACAQDataSlot<?>> {
+public class ACAQDataSlotListCellRenderer extends JLabel implements ListCellRenderer<ACAQDataSlot> {
 
     public ACAQDataSlotListCellRenderer() {
         setOpaque(true);
@@ -15,7 +15,7 @@ public class ACAQDataSlotListCellRenderer extends JLabel implements ListCellRend
     }
 
     @Override
-    public Component getListCellRendererComponent(JList<? extends ACAQDataSlot<?>> list, ACAQDataSlot<?> slot, int index, boolean selected, boolean cellHasFocus) {
+    public Component getListCellRendererComponent(JList<? extends ACAQDataSlot> list, ACAQDataSlot slot, int index, boolean selected, boolean cellHasFocus) {
         if(list.getFont() != null) {
             setFont(list.getFont());
         }

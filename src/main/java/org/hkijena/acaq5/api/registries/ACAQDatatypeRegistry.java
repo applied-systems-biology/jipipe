@@ -16,7 +16,6 @@ import java.util.Set;
  */
 public class ACAQDatatypeRegistry {
     private Set<Class<? extends ACAQData>> registeredDataTypes = new HashSet<>();
-    private BiMap<Class<? extends ACAQData>, Class<? extends ACAQDataSlot<?>>> registeredSlotDataTypes = HashBiMap.create();
 
     public ACAQDatatypeRegistry() {
 
@@ -26,20 +25,15 @@ public class ACAQDatatypeRegistry {
         return ACAQRegistryService.getInstance().getDatatypeRegistry();
     }
 
-    public void register(Class<? extends ACAQData> klass, Class<? extends ACAQDataSlot<?>> slotClass) {
+    public void register(Class<? extends ACAQData> klass) {
         registeredDataTypes.add(klass);
-        registeredSlotDataTypes.put(klass, slotClass);
     }
 
     public Set<Class<? extends ACAQData>> getRegisteredDataTypes() {
         return Collections.unmodifiableSet(registeredDataTypes);
     }
 
-    public  BiMap<Class<? extends ACAQData>, Class<? extends ACAQDataSlot<?>>> getRegisteredSlotDataTypes() {
-        return ImmutableBiMap.copyOf(registeredSlotDataTypes);
-    }
-
-    public Class<? extends ACAQDataSlot<?>> findDataSlotClass(String canonicalName) {
-        return registeredSlotDataTypes.values().stream().filter(c -> c.getCanonicalName().equals(canonicalName)).findFirst().get();
+    public Class<? extends ACAQData> findDataClass(String canonicalName) {
+        return registeredDataTypes.stream().filter(c -> c.getCanonicalName().equals(canonicalName)).findFirst().get();
     }
 }

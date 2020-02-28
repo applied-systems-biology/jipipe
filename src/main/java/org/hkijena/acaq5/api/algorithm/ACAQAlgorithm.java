@@ -39,7 +39,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
     private ACAQAlgorithmDeclaration declaration;
     private ACAQSlotConfiguration slotConfiguration;
     private ACAQTraitConfiguration traitConfiguration;
-    private Map<String, ACAQDataSlot<?>> slots = new HashMap<>();
+    private Map<String, ACAQDataSlot> slots = new HashMap<>();
     private EventBus eventBus = new EventBus();
     private Map<String, Point> locations = new HashMap<>();
     private Path internalStoragePath;
@@ -125,7 +125,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
 
     private void initalize() {
         for (Map.Entry<String, ACAQSlotDefinition> kv : slotConfiguration.getSlots().entrySet()) {
-            slots.put(kv.getKey(), ACAQDataSlot.createInstance(this, kv.getValue()));
+            slots.put(kv.getKey(), new ACAQDataSlot(this, kv.getValue().getSlotType(), kv.getKey(), kv.getValue().getDataClass()));
         }
     }
 
@@ -187,7 +187,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
         return slotConfiguration;
     }
 
-    public Map<String, ACAQDataSlot<?>> getSlots() {
+    public Map<String, ACAQDataSlot> getSlots() {
         return Collections.unmodifiableMap(slots);
     }
 
@@ -199,8 +199,8 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
         return getSlotConfiguration().getOutputSlotOrder();
     }
 
-    public List<ACAQDataSlot<?>> getInputSlots() {
-        List<ACAQDataSlot<?>> result = new ArrayList<>();
+    public List<ACAQDataSlot> getInputSlots() {
+        List<ACAQDataSlot> result = new ArrayList<>();
         for (String key : getInputSlotOrder()) {
             if(slots.containsKey(key))
                 result.add(slots.get(key));
@@ -208,8 +208,8 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
         return Collections.unmodifiableList(result);
     }
 
-    public List<ACAQDataSlot<?>> getOutputSlots() {
-        List<ACAQDataSlot<?>> result = new ArrayList<>();
+    public List<ACAQDataSlot> getOutputSlots() {
+        List<ACAQDataSlot> result = new ArrayList<>();
         for (String key : getOutputSlotOrder()) {
             if(slots.containsKey(key))
                 result.add(slots.get(key));
@@ -220,7 +220,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
     @Subscribe
     public void onSlotAdded(SlotAddedEvent event) {
         ACAQSlotDefinition definition = slotConfiguration.getSlots().get(event.getSlotName());
-        slots.put(definition.getName(), ACAQDataSlot.createInstance(this, definition));
+        slots.put(definition.getName(), new ACAQDataSlot(this, definition.getSlotType(), definition.getName(), definition.getDataClass()));
         eventBus.post(new AlgorithmSlotsChangedEvent(this));
     }
 
@@ -232,7 +232,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
 
     @Subscribe
     public void onSlotRenamed(SlotRenamedEvent event) {
-        ACAQDataSlot<?> slot = slots.get(event.getOldSlotName());
+        ACAQDataSlot slot = slots.get(event.getOldSlotName());
         slots.remove(event.getOldSlotName());
         slots.put(event.getNewSlotName(), slot);
         eventBus.post(new AlgorithmSlotsChangedEvent(this));
@@ -340,25 +340,25 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
         this.visibleCompartments = visibleCompartments;
     }
 
-    public ACAQDataSlot<?> getOutputSlot(String name) {
-        ACAQDataSlot<?> slot = slots.get(name);
+    public ACAQDataSlot getOutputSlot(String name) {
+        ACAQDataSlot slot = slots.get(name);
         if(!slot.isOutput())
             throw new IllegalArgumentException("The slot " + name + " is not an output slot!");
         return slot;
     }
 
-    public ACAQDataSlot<?> getInputSlot(String name) {
-        ACAQDataSlot<?> slot = slots.get(name);
+    public ACAQDataSlot getInputSlot(String name) {
+        ACAQDataSlot slot = slots.get(name);
         if(!slot.isInput())
             throw new IllegalArgumentException("The slot " + name + " is not an input slot!");
         return slot;
     }
 
-    public ACAQDataSlot<?> getFirstOutputSlot() {
+    public ACAQDataSlot getFirstOutputSlot() {
         return getOutputSlots().get(0);
     }
 
-    public ACAQDataSlot<?> getFirstInputSlot() {
+    public ACAQDataSlot getFirstInputSlot() {
         return getInputSlots().get(0);
     }
 

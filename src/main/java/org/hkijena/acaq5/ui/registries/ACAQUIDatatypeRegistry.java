@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class ACAQUIDatatypeRegistry {
     private Map<Class<? extends ACAQData>, URL> icons = new HashMap<>();
-    private Map<Class<? extends ACAQDataSlot<?>>, Class<? extends ACAQResultDataSlotUI<?>>> resultUIs = new HashMap<>();
+    private Map<Class<? extends ACAQData>, Class<? extends ACAQResultDataSlotUI<?>>> resultUIs = new HashMap<>();
 
     public ACAQUIDatatypeRegistry() {
 
@@ -42,7 +42,7 @@ public class ACAQUIDatatypeRegistry {
      * @param klass
      * @param uiClass
      */
-    public void registerResultSlotUI(Class<? extends ACAQDataSlot<?>> klass, Class<? extends ACAQResultDataSlotUI<?>> uiClass) {
+    public void registerResultSlotUI(Class<? extends ACAQData> klass, Class<? extends ACAQResultDataSlotUI<?>> uiClass) {
         resultUIs.put(klass, uiClass);
     }
 
@@ -61,7 +61,7 @@ public class ACAQUIDatatypeRegistry {
      * @param slot
      * @return
      */
-    public ACAQResultDataSlotUI<?> getUIForResultSlot(ACAQWorkbenchUI workbenchUI,ACAQDataSlot<?> slot) {
+    public ACAQResultDataSlotUI<?> getUIForResultSlot(ACAQWorkbenchUI workbenchUI,ACAQDataSlot slot) {
         Class<? extends ACAQResultDataSlotUI<?>> uiClass = resultUIs.getOrDefault(slot.getClass(), null);
         if(uiClass != null) {
             try {
@@ -78,9 +78,5 @@ public class ACAQUIDatatypeRegistry {
 
     public URL getIconURLFor(Class<? extends ACAQData> klass) {
         return icons.getOrDefault(klass, ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
-    }
-
-    public URL getIconURLForSlot(Class<? extends ACAQDataSlot<?>> klass) {
-        return getIconURLFor(ACAQDatatypeRegistry.getInstance().getRegisteredSlotDataTypes().inverse().get(klass));
     }
 }

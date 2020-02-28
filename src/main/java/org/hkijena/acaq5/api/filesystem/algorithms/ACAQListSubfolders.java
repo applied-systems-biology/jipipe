@@ -3,23 +3,20 @@ package org.hkijena.acaq5.api.filesystem.algorithms;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.filesystem.dataslots.ACAQFolderDataSlot;
 import org.hkijena.acaq5.api.filesystem.dataypes.ACAQFolderData;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @ACAQDocumentation(name = "List subfolders", description = "Lists all subfolders")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.FileSystem)
 
 // Algorithm flow
-@AlgorithmInputSlot(value = ACAQFolderDataSlot.class, slotName = "Folders", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQFolderDataSlot.class, slotName = "Subfolders", autoCreate = true)
+@AlgorithmInputSlot(value = ACAQFolderData.class, slotName = "Folders", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQFolderData.class, slotName = "Subfolders", autoCreate = true)
 
 // Traits
 @AutoTransferTraits

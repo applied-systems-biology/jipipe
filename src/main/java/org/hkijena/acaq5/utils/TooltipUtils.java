@@ -5,6 +5,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.AddsTrait;
@@ -21,7 +22,7 @@ public class TooltipUtils {
 
     }
 
-    public static String getSlotInstanceTooltip(ACAQDataSlot<?> slot, ACAQAlgorithmGraph graph, boolean withAnnotations) {
+    public static String getSlotInstanceTooltip(ACAQDataSlot slot, ACAQAlgorithmGraph graph, boolean withAnnotations) {
         StringBuilder builder = new StringBuilder();
         builder.append("<html>");
         builder.append("<table>");
@@ -66,14 +67,14 @@ public class TooltipUtils {
         // Write algorithm slot info
         builder.append("<table>");
         builder.append("<tr><td>");
-        for(Class<? extends ACAQDataSlot<?>> slot : declaration.getInputSlots().stream().map(AlgorithmInputSlot::value).collect(Collectors.toSet())) {
-            builder.append("<img src=\"").append(ACAQUIDatatypeRegistry.getInstance().getIconURLForSlot(slot)).append("\"/>");
+        for(Class<? extends ACAQData> slot : declaration.getInputSlots().stream().map(AlgorithmInputSlot::value).collect(Collectors.toSet())) {
+            builder.append("<img src=\"").append(ACAQUIDatatypeRegistry.getInstance().getIconURLFor(slot)).append("\"/>");
         }
         builder.append("</td>");
         builder.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/chevron-right.png")).append("\" /></td>");
-        for(Class<? extends ACAQDataSlot<?>> slot : declaration.getOutputSlots().stream()
+        for(Class<? extends ACAQData> slot : declaration.getOutputSlots().stream()
                 .map(AlgorithmOutputSlot::value).collect(Collectors.toSet())) {
-            builder.append("<img src=\"").append(ACAQUIDatatypeRegistry.getInstance().getIconURLForSlot(slot)).append("\"/>");
+            builder.append("<img src=\"").append(ACAQUIDatatypeRegistry.getInstance().getIconURLFor(slot)).append("\"/>");
         }
         builder.append("</tr>");
         builder.append("</table>");

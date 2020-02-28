@@ -10,9 +10,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQIteratingAlgorithm;
 import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
-import org.hkijena.acaq5.api.filesystem.dataslots.ACAQFileDataSlot;
 import org.hkijena.acaq5.api.filesystem.dataypes.ACAQFileData;
-import org.hkijena.acaq5.extension.api.dataslots.ACAQROIDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQROIData;
 
 import java.util.List;
@@ -21,8 +19,8 @@ import java.util.List;
  * Loads ROI data from a file via IJ.openFile()
  */
 @ACAQDocumentation(name = "ROI from file")
-@AlgorithmInputSlot(value = ACAQFileDataSlot.class, slotName = "Files", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQROIDataSlot.class, slotName = "Mask", autoCreate = true)
+@AlgorithmInputSlot(value = ACAQFileData.class, slotName = "Files", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQROIData.class, slotName = "Mask", autoCreate = true)
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
 public class ACAQROIDataFromFile extends ACAQIteratingAlgorithm {
 

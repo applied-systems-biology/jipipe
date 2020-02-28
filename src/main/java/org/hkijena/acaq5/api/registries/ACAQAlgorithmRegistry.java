@@ -113,11 +113,10 @@ public class ACAQAlgorithmRegistry {
      * @return
      */
     public <T extends ACAQData> Set<ACAQAlgorithmDeclaration> getDataSourcesFor(Class<? extends T> dataClass) {
-        Class<? extends ACAQDataSlot<?>> slotClass = ACAQDatatypeRegistry.getInstance().getRegisteredSlotDataTypes().get(dataClass);
         Set<ACAQAlgorithmDeclaration> result = new HashSet<>();
         for(ACAQAlgorithmDeclaration declaration : registeredAlgorithms.values()) {
             if(declaration.getCategory() == ACAQAlgorithmCategory.DataSource) {
-                if(declaration.getOutputSlots().stream().anyMatch(slot -> slot.value().equals(slotClass))) {
+                if(declaration.getOutputSlots().stream().anyMatch(slot -> slot.value() == dataClass)) {
                     result.add(declaration);
                 }
             }

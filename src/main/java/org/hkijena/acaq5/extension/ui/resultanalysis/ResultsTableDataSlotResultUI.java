@@ -13,7 +13,7 @@ import java.nio.file.Path;
 
 public class ResultsTableDataSlotResultUI extends ACAQDefaultDataSlotResultUI {
 
-    public ResultsTableDataSlotResultUI(ACAQWorkbenchUI workbenchUI, ACAQDataSlot<?> slot) {
+    public ResultsTableDataSlotResultUI(ACAQWorkbenchUI workbenchUI, ACAQDataSlot slot) {
         super(workbenchUI, slot);
     }
 

@@ -3,7 +3,6 @@ package org.hkijena.acaq5.api.data;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
-import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.events.SlotAddedEvent;
 import org.hkijena.acaq5.api.events.SlotOrderChangedEvent;
 import org.hkijena.acaq5.api.events.SlotRemovedEvent;
@@ -25,19 +24,19 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
     private boolean outputSlotsSealed = false;
     private boolean allowInputSlots = true;
     private boolean allowOutputSlots = true;
-    private Set<Class<? extends ACAQDataSlot<?>>> allowedInputSlotTypes;
-    private Set<Class<? extends ACAQDataSlot<?>>> allowedOutputSlotTypes;
+    private Set<Class<? extends ACAQData>> allowedInputSlotTypes;
+    private Set<Class<? extends ACAQData>> allowedOutputSlotTypes;
 
     public ACAQMutableSlotConfiguration() {
-        allowedInputSlotTypes = new HashSet<>(ACAQDatatypeRegistry.getInstance().getRegisteredSlotDataTypes().values());
-        allowedOutputSlotTypes = new HashSet<>(ACAQDatatypeRegistry.getInstance().getRegisteredSlotDataTypes().values());
+        allowedInputSlotTypes = new HashSet<>(ACAQDatatypeRegistry.getInstance().getRegisteredDataTypes());
+        allowedOutputSlotTypes = new HashSet<>(ACAQDatatypeRegistry.getInstance().getRegisteredDataTypes());
     }
 
     public boolean hasSlot(String name) {
         return slots.containsKey(name);
     }
 
-    public void addInputSlot(String name, Class<? extends ACAQDataSlot<?>> klass) {
+    public void addInputSlot(String name, Class<? extends ACAQData> klass) {
         if(!allowedInputSlotTypes.contains(klass))
             throw new RuntimeException("Slot type is not accepted by this configuration!");
         if(!allowInputSlots)
@@ -51,7 +50,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
         getEventBus().post(new SlotAddedEvent(this, name));
     }
 
-    public void addOutputSlot(String name, Class<? extends ACAQDataSlot<?>> klass) {
+    public void addOutputSlot(String name, Class<? extends ACAQData> klass) {
         if(!allowedOutputSlotTypes.contains(klass))
             throw new RuntimeException("Slot type is not accepted by this configuration!");
         if(!allowOutputSlots)
@@ -118,7 +117,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
         List<String> newSlots = configuration.getSlots().keySet().stream().filter(s -> !slots.containsKey(s)).collect(Collectors.toList());
         List<String> removedSlots = slots.keySet().stream().filter(s -> !configuration.getSlots().containsKey(s)).collect(Collectors.toList());
         for(Map.Entry<String, ACAQSlotDefinition> kv : configuration.getSlots().entrySet()) {
-            slots.put(kv.getKey(), new ACAQSlotDefinition(kv.getValue().getSlotClass(), kv.getValue().getSlotType(), kv.getKey()));
+            slots.put(kv.getKey(), new ACAQSlotDefinition(kv.getValue().getDataClass(), kv.getValue().getSlotType(), kv.getKey()));
         }
         if(configuration instanceof ACAQMutableSlotConfiguration) {
             ACAQMutableSlotConfiguration other = (ACAQMutableSlotConfiguration)configuration;
@@ -146,8 +145,8 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
         for(Map.Entry<String, JsonNode> kv : ImmutableList.copyOf(node.fields())) {
             if(!slots.containsKey(kv.getKey())) {
                 String name = kv.getValue().get("name").asText();
-                Class<? extends ACAQDataSlot<?>> klass = ACAQDatatypeRegistry.getInstance()
-                        .findDataSlotClass(kv.getValue().get("slot-class").asText());
+                Class<? extends ACAQData> klass = ACAQDatatypeRegistry.getInstance()
+                        .findDataClass(kv.getValue().get("slot-class").asText());
                 if(kv.getValue().get("slot-type").asText().equalsIgnoreCase("input")) {
                     addInputSlot(name, klass);
                 }
@@ -234,11 +233,11 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
         return allowsOutputSlots() && !isOutputSlotsSealed();
     }
 
-    public Set<Class<? extends ACAQDataSlot<?>>> getAllowedInputSlotTypes() {
+    public Set<Class<? extends ACAQData>> getAllowedInputSlotTypes() {
         return allowedInputSlotTypes;
     }
 
-    public Set<Class<? extends ACAQDataSlot<?>>> getAllowedOutputSlotTypes() {
+    public Set<Class<? extends ACAQData>> getAllowedOutputSlotTypes() {
         return allowedOutputSlotTypes;
     }
 
@@ -257,12 +256,12 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
         }
 
-        public Builder addInputSlot(String name, Class<? extends ACAQDataSlot<?>> klass) {
+        public Builder addInputSlot(String name, Class<? extends ACAQData> klass) {
             object.addInputSlot(name, klass);
             return this;
         }
 
-        public Builder addOutputSlot(String name, Class<? extends ACAQDataSlot<?>> klass) {
+        public Builder addOutputSlot(String name, Class<? extends ACAQData> klass) {
             object.addOutputSlot(name, klass);
             return this;
         }
@@ -296,13 +295,13 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
         }
 
         @SafeVarargs
-        public final Builder restrictInputTo(Class<? extends ACAQDataSlot<?>>... types) {
+        public final Builder restrictInputTo(Class<? extends ACAQData>... types) {
             object.allowedInputSlotTypes = new HashSet<>(Arrays.asList(types));
             return this;
         }
 
         @SafeVarargs
-        public final Builder restrictOutputTo(Class<? extends ACAQDataSlot<?>>... types) {
+        public final Builder restrictOutputTo(Class<? extends ACAQData>... types) {
             object.allowedOutputSlotTypes = new HashSet<>(Arrays.asList(types));
             return this;
         }

@@ -30,7 +30,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
     }
 
     private void checkInputSlots() {
-        List<ACAQDataSlot<?>> inputSlots = getInputSlots();
+        List<ACAQDataSlot> inputSlots = getInputSlots();
         int rows = inputSlots.get(0).getRowCount();
         for(int i = 1; i < inputSlots.size(); ++i) {
             if(rows != inputSlots.get(i).getRowCount())
@@ -41,7 +41,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
     @Override
     public void run() {
         checkInputSlots();
-        ACAQDataSlot<?> referenceSlot = getInputSlots().get(0);
+        ACAQDataSlot referenceSlot = getInputSlots().get(0);
         for(int row = 0; row < referenceSlot.getRowCount(); ++row) {
             ACAQDataInterface dataInterface = new ACAQDataInterface(this, referenceSlot, row);
             runIteration(dataInterface);

@@ -21,7 +21,7 @@ import java.nio.file.Path;
 
 public class ROIDataSlotResultUI extends ACAQDefaultDataSlotResultUI {
 
-    public ROIDataSlotResultUI(ACAQWorkbenchUI workbenchUI, ACAQDataSlot<?> slot) {
+    public ROIDataSlotResultUI(ACAQWorkbenchUI workbenchUI, ACAQDataSlot slot) {
         super(workbenchUI, slot);
     }
 

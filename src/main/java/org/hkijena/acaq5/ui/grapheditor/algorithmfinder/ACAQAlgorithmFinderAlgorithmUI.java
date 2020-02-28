@@ -25,7 +25,7 @@ import java.util.Set;
 import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_HEIGHT;
 
 public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
-    private ACAQDataSlot<?> outputSlot;
+    private ACAQDataSlot outputSlot;
     private ACAQAlgorithmGraph graph;
     private ACAQAlgorithm algorithm;
     private int score;
@@ -35,7 +35,7 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
     private EventBus eventBus = new EventBus();
     private String compartment;
 
-    public ACAQAlgorithmFinderAlgorithmUI(ACAQDataSlot<?> outputSlot, ACAQAlgorithmGraph graph, String compartment, ACAQAlgorithmDeclaration declaration, int score, int maxScore) {
+    public ACAQAlgorithmFinderAlgorithmUI(ACAQDataSlot outputSlot, ACAQAlgorithmGraph graph, String compartment, ACAQAlgorithmDeclaration declaration, int score, int maxScore) {
         this.outputSlot = outputSlot;
         this.graph = graph;
         this.compartment = compartment;
@@ -47,7 +47,7 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
         initialize();
     }
 
-    public ACAQAlgorithmFinderAlgorithmUI(ACAQDataSlot<?> outputSlot, ACAQAlgorithmGraph graph, String compartment, ACAQAlgorithm algorithm, int score, int maxScore) {
+    public ACAQAlgorithmFinderAlgorithmUI(ACAQDataSlot outputSlot, ACAQAlgorithmGraph graph, String compartment, ACAQAlgorithm algorithm, int score, int maxScore) {
         this.outputSlot = outputSlot;
         this.graph = graph;
         this.compartment = compartment;
@@ -110,7 +110,7 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
             createAddInputSlotButton = slotConfiguration.allowsInputSlots() && !slotConfiguration.isInputSlotsSealed();
         }
 
-        for(ACAQDataSlot<?> slot : algorithm.getInputSlots()) {
+        for(ACAQDataSlot slot : algorithm.getInputSlots()) {
             ACAQAlgorithmFinderSlotUI ui = new ACAQAlgorithmFinderSlotUI(outputSlot, graph, compartment, slot, isExistingInstance);
             ui.getEventBus().register(this);
             slotPanel.add(ui);
@@ -137,7 +137,7 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
         JPopupMenu menu = UIUtils.addPopupMenuToComponent(button);
         ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration)algorithm.getSlotConfiguration();
 
-        Set<Class<? extends ACAQDataSlot<?>>> allowedSlotTypes;
+        Set<Class<? extends ACAQData>> allowedSlotTypes;
         switch(slotType) {
             case Input:
                 allowedSlotTypes = slotConfiguration.getAllowedInputSlotTypes();
@@ -149,17 +149,16 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
                 throw new RuntimeException();
         }
 
-        for(Class<? extends ACAQDataSlot<?>> slotClass : allowedSlotTypes) {
-            Class<? extends ACAQData> dataClass = ACAQDatatypeRegistry.getInstance().getRegisteredSlotDataTypes().inverse().get(slotClass);
+        for(Class<? extends ACAQData> dataClass : allowedSlotTypes) {
             JMenuItem item = new JMenuItem(ACAQData.getNameOf(dataClass), ACAQUIDatatypeRegistry.getInstance().getIconFor(dataClass));
-            item.addActionListener(e -> addNewSlot(slotType, slotClass));
+            item.addActionListener(e -> addNewSlot(slotType, dataClass));
             menu.add(item);
         }
 
         return button;
     }
 
-    private void addNewSlot(ACAQDataSlot.SlotType slotType, Class<? extends ACAQDataSlot<?>> klass) {
+    private void addNewSlot(ACAQDataSlot.SlotType slotType, Class<? extends ACAQData> klass) {
         if(algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
             ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
 

@@ -5,10 +5,10 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 
 public class AlgorithmGraphConnectedEvent {
     private ACAQAlgorithmGraph graph;
-    private ACAQDataSlot<?> source;
-    private ACAQDataSlot<?> target;
+    private ACAQDataSlot source;
+    private ACAQDataSlot target;
 
-    public AlgorithmGraphConnectedEvent(ACAQAlgorithmGraph graph, ACAQDataSlot<?> source, ACAQDataSlot<?> target) {
+    public AlgorithmGraphConnectedEvent(ACAQAlgorithmGraph graph, ACAQDataSlot source, ACAQDataSlot target) {
         this.graph = graph;
         this.source = source;
         this.target = target;
@@ -18,11 +18,11 @@ public class AlgorithmGraphConnectedEvent {
         return graph;
     }
 
-    public ACAQDataSlot<?> getSource() {
+    public ACAQDataSlot getSource() {
         return source;
     }
 
-    public ACAQDataSlot<?> getTarget() {
+    public ACAQDataSlot getTarget() {
         return target;
     }
 }

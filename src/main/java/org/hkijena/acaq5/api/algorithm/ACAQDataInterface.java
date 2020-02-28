@@ -15,19 +15,19 @@ import java.util.Map;
  */
 public class ACAQDataInterface {
     private ACAQAlgorithm algorithm;
-    private Map<ACAQDataSlot<?>, Integer> inputSlotRows;
+    private Map<ACAQDataSlot, Integer> inputSlotRows;
     private List<ACAQTrait> annotations;
 
-    public ACAQDataInterface(ACAQAlgorithm algorithm, ACAQDataSlot<?> referenceInputSlot, int referenceInputSlotRow) {
+    public ACAQDataInterface(ACAQAlgorithm algorithm, ACAQDataSlot referenceInputSlot, int referenceInputSlotRow) {
         this.algorithm = algorithm;
         this.inputSlotRows = new HashMap<>();
         initialize(referenceInputSlot, referenceInputSlotRow);
     }
 
-    private void initialize(ACAQDataSlot<?> referenceInputSlot, int referenceInputSlotRow) {
+    private void initialize(ACAQDataSlot referenceInputSlot, int referenceInputSlotRow) {
         inputSlotRows.put(referenceInputSlot, referenceInputSlotRow);
         annotations = referenceInputSlot.getAnnotations(referenceInputSlotRow);
-        for (ACAQDataSlot<?> inputSlot : algorithm.getInputSlots()) {
+        for (ACAQDataSlot inputSlot : algorithm.getInputSlots()) {
             if(inputSlot != referenceInputSlot) {
                 int row = inputSlot.findRowWithTraits(annotations);
                 if(row == -1)
@@ -53,7 +53,7 @@ public class ACAQDataInterface {
      * @param <T>
      * @return
      */
-    public <T extends ACAQData> T getInputData(ACAQDataSlot<?> slot) {
+    public <T extends ACAQData> T getInputData(ACAQDataSlot slot) {
         if(slot.getAlgorithm() != algorithm)
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if(!slot.isInput())
@@ -112,7 +112,7 @@ public class ACAQDataInterface {
      * @param slot
      * @param data
      */
-    public void addOutputData(ACAQDataSlot<?> slot, ACAQData data) {
+    public void addOutputData(ACAQDataSlot slot, ACAQData data) {
         if(slot.getAlgorithm() != algorithm)
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if(!slot.isOutput())

@@ -135,8 +135,8 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
         // Find the source algorithm that is right-most
         ACAQAlgorithmUI rightMostSource = null;
-        for (ACAQDataSlot<?> target : targetAlgorithm.getInputSlots()) {
-            ACAQDataSlot<?> source = algorithmGraph.getSourceSlot(target);
+        for (ACAQDataSlot target : targetAlgorithm.getInputSlots()) {
+            ACAQDataSlot source = algorithmGraph.getSourceSlot(target);
             if(source != null) {
                 ACAQAlgorithmUI sourceUI = nodeUIs.getOrDefault(source.getAlgorithm(), null);
                 if(sourceUI != null) {
@@ -280,9 +280,9 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         // Draw the edges
         graphics.setColor(Color.DARK_GRAY);
         g.setStroke(new BasicStroke(2));
-        for(Map.Entry<ACAQDataSlot<?>, ACAQDataSlot<?>> kv : algorithmGraph.getSlotEdges()) {
-            ACAQDataSlot<?> source = kv.getKey();
-            ACAQDataSlot<?> target = kv.getValue();
+        for(Map.Entry<ACAQDataSlot, ACAQDataSlot> kv : algorithmGraph.getSlotEdges()) {
+            ACAQDataSlot source = kv.getKey();
+            ACAQDataSlot target = kv.getValue();
             ACAQAlgorithmUI sourceUI = nodeUIs.getOrDefault(source.getAlgorithm(), null);
             ACAQAlgorithmUI targetUI = nodeUIs.getOrDefault(target.getAlgorithm(), null);
 

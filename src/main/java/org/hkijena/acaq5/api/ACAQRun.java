@@ -56,7 +56,7 @@ public class ACAQRun implements ACAQRunnable {
             }
 
             // Apply output path to the data slots
-            for(ACAQDataSlot<?> slot : algorithmGraph.getSlotNodes()) {
+            for(ACAQDataSlot slot : algorithmGraph.getSlotNodes()) {
                 if(slot.isOutput()) {
                     slot.setStoragePath(configuration.getOutputPath().resolve(slot.getAlgorithm().getInternalStoragePath().resolve(slot.getName())));
                     try {
@@ -69,13 +69,13 @@ public class ACAQRun implements ACAQRunnable {
         }
     }
 
-    private void flushFinishedSlots(List<ACAQDataSlot<?>> traversedSlots, Set<ACAQAlgorithm> executedAlgorithms, int i, ACAQDataSlot<?> outputSlot) {
+    private void flushFinishedSlots(List<ACAQDataSlot> traversedSlots, Set<ACAQAlgorithm> executedAlgorithms, int i, ACAQDataSlot outputSlot) {
         if(!executedAlgorithms.contains(outputSlot.getAlgorithm()))
             return;
         if(configuration.isFlushingEnabled()) {
             boolean canFlush = true;
             for(int j = i + 1; j < traversedSlots.size(); ++j) {
-                ACAQDataSlot<?> futureSlot = traversedSlots.get(j);
+                ACAQDataSlot futureSlot = traversedSlots.get(j);
                 if(futureSlot.isInput() && algorithmGraph.getSourceSlot(futureSlot) == outputSlot) {
                     canFlush = false;
                     break;
@@ -94,7 +94,7 @@ public class ACAQRun implements ACAQRunnable {
     public void run(Consumer<ACAQRunnerStatus> onProgress, Supplier<Boolean> isCancelled) {
         prepare();
         Set<ACAQAlgorithm> executedAlgorithms = new HashSet<>();
-        List<ACAQDataSlot<?>> traversedSlots = algorithmGraph.traverse();
+        List<ACAQDataSlot> traversedSlots = algorithmGraph.traverse();
 
         // Update algorithm limits that may be used by
 //        Set<ACAQAlgorithm> algorithmLimits = new HashSet<>();
@@ -102,7 +102,7 @@ public class ACAQRun implements ACAQRunnable {
 //            if(configuration.isOnlyRunningEndAlgorithm())
 //                algorithmLimits.add(configuration.getEndAlgorithm());
 //            else {
-//                for(ACAQDataSlot<?> slot : configuration.getEndAlgorithm().getOutputSlots()) {
+//                for(ACAQDataSlot slot : configuration.getEndAlgorithm().getOutputSlots()) {
 //                    algorithmLimits.addAll(GraphUtils.getAllPredecessors(algorithmGraph.getGraph(), slot)
 //                            .stream().map(ACAQDataSlot::getAlgorithm).collect(Collectors.toSet()));
 //                }
@@ -115,12 +115,12 @@ public class ACAQRun implements ACAQRunnable {
         for(int i = 0; i < traversedSlots.size(); ++i) {
             if (isCancelled.get())
                 throw new RuntimeException("Execution was cancelled");
-            ACAQDataSlot<?> slot = traversedSlots.get(i);
+            ACAQDataSlot slot = traversedSlots.get(i);
             onProgress.accept(new ACAQRunnerStatus(i, algorithmGraph.getSlotCount(), slot.getNameWithAlgorithmName()));
 
             if(slot.isInput()) {
                 // Copy data from source
-                ACAQDataSlot<?> sourceSlot = algorithmGraph.getSourceSlot(slot);
+                ACAQDataSlot sourceSlot = algorithmGraph.getSourceSlot(slot);
                 slot.copyFrom(sourceSlot);
 
                 // Check if we can flush the output
@@ -151,7 +151,7 @@ public class ACAQRun implements ACAQRunnable {
 
     private void forceFlushAlgorithms(Set<ACAQAlgorithm> algorithms) {
         for(ACAQAlgorithm algorithm : algorithms) {
-            for(ACAQDataSlot<?> outputSlot : algorithm.getOutputSlots()) {
+            for(ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
                 if(configuration.isFlushingKeepsDataEnabled())
                     outputSlot.save();
                 else

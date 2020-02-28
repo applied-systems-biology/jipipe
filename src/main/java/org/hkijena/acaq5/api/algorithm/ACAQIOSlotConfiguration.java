@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.api.algorithm;
 
+import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
@@ -9,7 +10,7 @@ public class ACAQIOSlotConfiguration extends ACAQMutableSlotConfiguration {
     }
 
     @Override
-    public void addInputSlot(String name, Class<? extends ACAQDataSlot<?>> klass) {
+    public void addInputSlot(String name, Class<? extends ACAQData> klass) {
         super.addInputSlot(name, klass);
         if(!getSlots().containsKey("Output " + name)) {
             addOutputSlot("Output " + name, klass);
@@ -17,7 +18,7 @@ public class ACAQIOSlotConfiguration extends ACAQMutableSlotConfiguration {
     }
 
     @Override
-    public void addOutputSlot(String name, Class<? extends ACAQDataSlot<?>> klass) {
+    public void addOutputSlot(String name, Class<? extends ACAQData> klass) {
         if(!name.startsWith("Output "))
             name = "Output " + name;
         super.addOutputSlot(name, klass);

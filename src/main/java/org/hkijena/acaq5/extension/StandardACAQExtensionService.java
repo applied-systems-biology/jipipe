@@ -3,7 +3,6 @@ package org.hkijena.acaq5.extension;
 import ij.process.AutoThresholder;
 import org.hkijena.acaq5.ACAQExtensionService;
 import org.hkijena.acaq5.ACAQRegistryService;
-import org.hkijena.acaq5.extension.api.dataslots.*;
 import org.hkijena.acaq5.extension.api.datasources.ACAQGreyscaleImageDataFromFile;
 import org.hkijena.acaq5.extension.api.datasources.ACAQMaskImageDataFromFile;
 import org.hkijena.acaq5.extension.api.datasources.ACAQMultichannelImageDataFromFile;
@@ -101,11 +100,11 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
         registryService.getUIParametertypeRegistry().registerParameterEditor(PathFilter.class, PathFilterParameterEditorUI.class);
 
         // Register result data slot UIs
-        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQMultichannelImageDataSlot.class, ImageDataSlotResultUI.class);
-        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQGreyscaleImageDataSlot.class, ImageDataSlotResultUI.class);
-        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQMaskDataSlot.class, ImageDataSlotResultUI.class);
-        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQROIDataSlot.class, ROIDataSlotResultUI.class);
-        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQResultsTableDataSlot.class, ResultsTableDataSlotResultUI.class);
+        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQMultichannelImageData.class, ImageDataSlotResultUI.class);
+        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQGreyscaleImageData.class, ImageDataSlotResultUI.class);
+        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQMaskData.class, ImageDataSlotResultUI.class);
+        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQROIData.class, ROIDataSlotResultUI.class);
+        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQResultsTableData.class, ResultsTableDataSlotResultUI.class);
     }
 
     private void registerTraits(ACAQRegistryService registryService) {
@@ -186,19 +185,19 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
     }
 
     private void registerDataTypes(ACAQRegistryService registryService) {
-        registryService.getDatatypeRegistry().register(ACAQGreyscaleImageData.class, ACAQGreyscaleImageDataSlot.class);
+        registryService.getDatatypeRegistry().register(ACAQGreyscaleImageData.class);
         registryService.getUIDatatypeRegistry().registerIcon(ACAQGreyscaleImageData.class,
                 ResourceUtils.getPluginResource("icons/data-types/greyscale.png"));
-        registryService.getDatatypeRegistry().register(ACAQMaskData.class, ACAQMaskDataSlot.class);
+        registryService.getDatatypeRegistry().register(ACAQMaskData.class);
         registryService.getUIDatatypeRegistry().registerIcon(ACAQMaskData.class,
                 ResourceUtils.getPluginResource("icons/data-types/binary.png"));
-        registryService.getDatatypeRegistry().register(ACAQROIData.class, ACAQROIDataSlot.class);
+        registryService.getDatatypeRegistry().register(ACAQROIData.class);
         registryService.getUIDatatypeRegistry().registerIcon(ACAQROIData.class,
                 ResourceUtils.getPluginResource("icons/data-types/roi.png"));
-        registryService.getDatatypeRegistry().register(ACAQMultichannelImageData.class, ACAQMultichannelImageDataSlot.class);
+        registryService.getDatatypeRegistry().register(ACAQMultichannelImageData.class);
         registryService.getUIDatatypeRegistry().registerIcon(ACAQMultichannelImageData.class,
                 ResourceUtils.getPluginResource("icons/data-types/multichannel.png"));
-        registryService.getDatatypeRegistry().register(ACAQResultsTableData.class, ACAQResultsTableDataSlot.class);
+        registryService.getDatatypeRegistry().register(ACAQResultsTableData.class);
         registryService.getUIDatatypeRegistry().registerIcon(ACAQResultsTableData.class,
                 ResourceUtils.getPluginResource("icons/data-types/results-table.png"));
     }

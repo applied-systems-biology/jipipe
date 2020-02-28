@@ -23,8 +23,8 @@ public class ACAQDataSlotTreeCellRenderer extends JLabel implements TreeCellRend
         }
 
         Object o = ((DefaultMutableTreeNode)value).getUserObject();
-        if(o instanceof ACAQDataSlot<?>) {
-            ACAQDataSlot<?> slot = (ACAQDataSlot<?>)o;
+        if(o instanceof ACAQDataSlot) {
+            ACAQDataSlot slot = (ACAQDataSlot)o;
             setText(slot.getName());
             setIcon(ACAQUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()));
         }

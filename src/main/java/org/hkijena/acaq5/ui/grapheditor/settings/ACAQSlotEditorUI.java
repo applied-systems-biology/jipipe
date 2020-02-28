@@ -101,25 +101,25 @@ public class ACAQSlotEditorUI extends JPanel {
     }
 
     private void moveSlotDown() {
-        ACAQDataSlot<?> slot = getSelectedSlot();
+        ACAQDataSlot slot = getSelectedSlot();
         if(slot != null) {
             ((ACAQMutableSlotConfiguration)algorithm.getSlotConfiguration()).moveDown(slot.getName());
         }
     }
 
     private void moveSlotUp() {
-        ACAQDataSlot<?> slot = getSelectedSlot();
+        ACAQDataSlot slot = getSelectedSlot();
         if(slot != null) {
             ((ACAQMutableSlotConfiguration)algorithm.getSlotConfiguration()).moveUp(slot.getName());
         }
     }
 
-    public ACAQDataSlot<?> getSelectedSlot() {
-        ACAQDataSlot<?> selectedSlot = null;
+    public ACAQDataSlot getSelectedSlot() {
+        ACAQDataSlot selectedSlot = null;
         if(slotTree.getLastSelectedPathComponent() != null) {
             DefaultMutableTreeNode nd = (DefaultMutableTreeNode) slotTree.getLastSelectedPathComponent();
-            if(nd.getUserObject() instanceof ACAQDataSlot<?>) {
-                selectedSlot = (ACAQDataSlot<?>)nd.getUserObject();
+            if(nd.getUserObject() instanceof ACAQDataSlot) {
+                selectedSlot = (ACAQDataSlot)nd.getUserObject();
             }
         }
         return selectedSlot;
@@ -144,24 +144,24 @@ public class ACAQSlotEditorUI extends JPanel {
     private void removeSelectedSlots() {
         if(!canModifyInputSlots() && !canModifyOutputSlots())
             return;
-        Set<ACAQDataSlot<?>> toRemove = new HashSet<>();
+        Set<ACAQDataSlot> toRemove = new HashSet<>();
         if(slotTree.getSelectionPaths() != null) {
             for(TreePath path : slotTree.getSelectionPaths()) {
                 DefaultMutableTreeNode nd = (DefaultMutableTreeNode)path.getLastPathComponent();
-                if(nd.getUserObject() instanceof ACAQDataSlot<?>) {
-                    toRemove.add((ACAQDataSlot<?>)nd.getUserObject());
+                if(nd.getUserObject() instanceof ACAQDataSlot) {
+                    toRemove.add((ACAQDataSlot)nd.getUserObject());
                 }
             }
         }
         ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration)algorithm.getSlotConfiguration();
-        for(ACAQDataSlot<?> sample : toRemove) {
+        for(ACAQDataSlot sample : toRemove) {
             slotConfiguration.removeSlot(sample.getName());
         }
     }
 
     public void reloadList() {
 
-        ACAQDataSlot<?> selectedSlot = getSelectedSlot();
+        ACAQDataSlot selectedSlot = getSelectedSlot();
 
         DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("Data slots");
         DefaultMutableTreeNode inputNode = new DefaultMutableTreeNode("Input");
@@ -171,13 +171,13 @@ public class ACAQSlotEditorUI extends JPanel {
 
         DefaultMutableTreeNode toSelect = null;
 
-        for(ACAQDataSlot<?> slot : algorithm.getInputSlots()){
+        for(ACAQDataSlot slot : algorithm.getInputSlots()){
             DefaultMutableTreeNode node = new DefaultMutableTreeNode(slot);
             if(slot == selectedSlot)
                 toSelect = node;
             inputNode.add(node);
         }
-        for(ACAQDataSlot<?> slot : algorithm.getOutputSlots()){
+        for(ACAQDataSlot slot : algorithm.getOutputSlots()){
             DefaultMutableTreeNode node = new DefaultMutableTreeNode(slot);
             if(slot == selectedSlot)
                 toSelect = node;
@@ -197,7 +197,7 @@ public class ACAQSlotEditorUI extends JPanel {
         JPopupMenu menu = UIUtils.addPopupMenuToComponent(button);
         ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration)algorithm.getSlotConfiguration();
 
-        Set<Class<? extends ACAQDataSlot<?>>> allowedSlotTypes;
+        Set<Class<? extends ACAQData>> allowedSlotTypes;
         switch(slotType) {
             case Input:
                 allowedSlotTypes = slotConfiguration.getAllowedInputSlotTypes();
@@ -209,15 +209,14 @@ public class ACAQSlotEditorUI extends JPanel {
                 throw new RuntimeException();
         }
 
-        for(Class<? extends ACAQDataSlot<?>> slotClass : allowedSlotTypes) {
-            Class<? extends ACAQData> dataClass = ACAQDatatypeRegistry.getInstance().getRegisteredSlotDataTypes().inverse().get(slotClass);
+        for(Class<? extends ACAQData> dataClass : allowedSlotTypes) {
             JMenuItem item = new JMenuItem(ACAQData.getNameOf(dataClass), ACAQUIDatatypeRegistry.getInstance().getIconFor(dataClass));
-            item.addActionListener(e -> addNewSlot(slotType, slotClass));
+            item.addActionListener(e -> addNewSlot(slotType, dataClass));
             menu.add(item);
         }
     }
 
-    private void addNewSlot(ACAQDataSlot.SlotType slotType, Class<? extends ACAQDataSlot<?>> klass) {
+    private void addNewSlot(ACAQDataSlot.SlotType slotType, Class<? extends ACAQData> klass) {
         if(algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
             ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
             int existingSlots = slotType == ACAQDataSlot.SlotType.Input ? algorithm.getInputSlots().size() : algorithm.getOutputSlots().size();

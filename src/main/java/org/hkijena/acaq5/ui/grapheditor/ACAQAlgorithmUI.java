@@ -126,22 +126,21 @@ public class ACAQAlgorithmUI extends JPanel {
         JPopupMenu menu = UIUtils.addPopupMenuToComponent(button);
         ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration)algorithm.getSlotConfiguration();
 
-        Set<Class<? extends ACAQDataSlot<?>>> allowedSlotTypes;
+        Set<Class<? extends ACAQData>> allowedDataTypes;
         switch(slotType) {
             case Input:
-                allowedSlotTypes = slotConfiguration.getAllowedInputSlotTypes();
+                allowedDataTypes = slotConfiguration.getAllowedInputSlotTypes();
                 break;
             case Output:
-                allowedSlotTypes = slotConfiguration.getAllowedOutputSlotTypes();
+                allowedDataTypes = slotConfiguration.getAllowedOutputSlotTypes();
                 break;
             default:
                 throw new RuntimeException();
         }
 
-        for(Class<? extends ACAQDataSlot<?>> slotClass : allowedSlotTypes) {
-            Class<? extends ACAQData> dataClass = ACAQDatatypeRegistry.getInstance().getRegisteredSlotDataTypes().inverse().get(slotClass);
+        for(Class<? extends ACAQData> dataClass : allowedDataTypes) {
             JMenuItem item = new JMenuItem(ACAQData.getNameOf(dataClass), ACAQUIDatatypeRegistry.getInstance().getIconFor(dataClass));
-            item.addActionListener(e -> addNewSlot(slotType, slotClass));
+            item.addActionListener(e -> addNewSlot(slotType, dataClass));
             menu.add(item);
         }
 
@@ -179,13 +178,13 @@ public class ACAQAlgorithmUI extends JPanel {
         }
 
         if(createInputSlots && algorithm.getInputSlots().size() > 0) {
-            List<ACAQDataSlot<?>> slots = algorithm.getInputSlots();
+            List<ACAQDataSlot> slots = algorithm.getInputSlots();
             for(int i = 0; i < slots.size(); ++i) {
                 int bottomBorder = 0;
                 if(i < getDisplayedRows() - 1 || createAddInputSlotButton || createAddOutputSlotButton)
                     bottomBorder = 1;
 
-                ACAQDataSlot<?> slot = slots.get(i);
+                ACAQDataSlot slot = slots.get(i);
                 ACAQDataSlotUI ui = new ACAQDataSlotUI(graphUI.getAlgorithmGraph(), graphUI.getCompartment(), slot);
                 ui.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,0,bottomBorder,1, getAlgorithmBorderColor()),
                         BorderFactory.createEmptyBorder(0,0,0,4)));
@@ -194,12 +193,12 @@ public class ACAQAlgorithmUI extends JPanel {
             }
         }
         if(createOutputSlots && algorithm.getOutputSlots().size() > 0) {
-            List<ACAQDataSlot<?>> slots = algorithm.getOutputSlots();
+            List<ACAQDataSlot> slots = algorithm.getOutputSlots();
             for(int i = 0; i < slots.size(); ++i) {
                 int bottomBorder = 0;
                 if(i < getDisplayedRows() - 1 || createAddInputSlotButton || createAddOutputSlotButton)
                     bottomBorder = 1;
-                ACAQDataSlot<?> slot = slots.get(i);
+                ACAQDataSlot slot = slots.get(i);
                 ACAQDataSlotUI ui = new ACAQDataSlotUI(graphUI.getAlgorithmGraph(), graphUI.getCompartment(), slot);
                 ui.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,1,bottomBorder,0, getAlgorithmBorderColor()),
                         BorderFactory.createEmptyBorder(0,4,0,0)));
@@ -231,7 +230,7 @@ public class ACAQAlgorithmUI extends JPanel {
         repaint();
     }
 
-    private void addNewSlot(ACAQDataSlot.SlotType slotType, Class<? extends ACAQDataSlot<?>> klass) {
+    private void addNewSlot(ACAQDataSlot.SlotType slotType, Class<? extends ACAQData> klass) {
         if(algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
             ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
 

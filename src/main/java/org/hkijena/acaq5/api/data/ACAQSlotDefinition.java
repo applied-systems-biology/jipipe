@@ -6,7 +6,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 
 import java.io.IOException;
@@ -18,18 +17,18 @@ import java.io.IOException;
 @JsonSerialize(using = ACAQSlotDefinition.Serializer.class)
 @JsonDeserialize(using = ACAQSlotDefinition.Deserializer.class)
 public class ACAQSlotDefinition {
-    private Class<? extends ACAQDataSlot<?>> slotClass;
+    private Class<? extends ACAQData> dataClass;
     private ACAQDataSlot.SlotType slotType;
     private String name;
 
-    public ACAQSlotDefinition(Class<? extends ACAQDataSlot<?>> slotClass, ACAQDataSlot.SlotType slotType, String name) {
-        this.slotClass = slotClass;
+    public ACAQSlotDefinition(Class<? extends ACAQData> dataClass, ACAQDataSlot.SlotType slotType, String name) {
+        this.dataClass = dataClass;
         this.slotType = slotType;
         this.name = name;
     }
 
-    public Class<? extends ACAQDataSlot<?>> getSlotClass() {
-        return slotClass;
+    public Class<? extends ACAQData> getDataClass() {
+        return dataClass;
     }
 
     public ACAQDataSlot.SlotType getSlotType() {
@@ -44,7 +43,7 @@ public class ACAQSlotDefinition {
         @Override
         public void serialize(ACAQSlotDefinition definition, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             jsonGenerator.writeStartObject();
-            jsonGenerator.writeStringField("slot-class", definition.slotClass.getCanonicalName());
+            jsonGenerator.writeStringField("slot-class", definition.dataClass.getCanonicalName());
             jsonGenerator.writeStringField("slot-type", definition.slotType.name());
             jsonGenerator.writeStringField("name", definition.name);
             jsonGenerator.writeEndObject();
@@ -56,7 +55,7 @@ public class ACAQSlotDefinition {
         @Override
         public ACAQSlotDefinition deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-            return new ACAQSlotDefinition(ACAQDatatypeRegistry.getInstance().findDataSlotClass(node.get("slot-class").asText()),
+            return new ACAQSlotDefinition(ACAQDatatypeRegistry.getInstance().findDataClass(node.get("slot-class").asText()),
                     ACAQDataSlot.SlotType.valueOf(node.get("slot-type").asText()),
                     node.get("name").asText());
         }

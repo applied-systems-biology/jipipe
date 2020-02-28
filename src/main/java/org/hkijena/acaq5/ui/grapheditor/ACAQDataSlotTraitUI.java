@@ -19,9 +19,9 @@ import java.util.Set;
 
 public class ACAQDataSlotTraitUI extends JPanel {
     private ACAQAlgorithmGraph graph;
-    private ACAQDataSlot<?> slot;
+    private ACAQDataSlot slot;
 
-    public ACAQDataSlotTraitUI(ACAQAlgorithmGraph graph, ACAQDataSlot<?> slot) {
+    public ACAQDataSlotTraitUI(ACAQAlgorithmGraph graph, ACAQDataSlot slot) {
         this.graph = graph;
         this.slot = slot;
         initialize();

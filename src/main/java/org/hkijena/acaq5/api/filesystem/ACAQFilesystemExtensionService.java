@@ -3,8 +3,6 @@ package org.hkijena.acaq5.api.filesystem;
 import org.hkijena.acaq5.ACAQExtensionService;
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.filesystem.algorithms.*;
-import org.hkijena.acaq5.api.filesystem.dataslots.ACAQFileDataSlot;
-import org.hkijena.acaq5.api.filesystem.dataslots.ACAQFolderDataSlot;
 import org.hkijena.acaq5.api.filesystem.datasources.ACAQFileDataSource;
 import org.hkijena.acaq5.api.filesystem.datasources.ACAQFolderDataSource;
 import org.hkijena.acaq5.api.filesystem.dataypes.*;
@@ -50,10 +48,10 @@ public class ACAQFilesystemExtensionService extends AbstractService implements A
 
     @Override
     public void register(ACAQRegistryService registryService) {
-        registryService.getDatatypeRegistry().register(ACAQFileData.class, ACAQFileDataSlot.class);
+        registryService.getDatatypeRegistry().register(ACAQFileData.class);
         registryService.getUIDatatypeRegistry().registerIcon(ACAQFileData.class,
                 ResourceUtils.getPluginResource("icons/data-types/file.png"));
-        registryService.getDatatypeRegistry().register(ACAQFolderData.class, ACAQFolderDataSlot.class);
+        registryService.getDatatypeRegistry().register(ACAQFolderData.class);
         registryService.getUIDatatypeRegistry().registerIcon(ACAQFolderData.class,
                 ResourceUtils.getPluginResource("icons/data-types/folder.png"));
 

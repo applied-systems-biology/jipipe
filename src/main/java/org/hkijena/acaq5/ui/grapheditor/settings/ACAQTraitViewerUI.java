@@ -21,12 +21,12 @@ import java.util.Set;
 
 public class ACAQTraitViewerUI extends JPanel {
 
-    private ACAQDataSlot<?> slot;
+    private ACAQDataSlot slot;
     private ACAQAlgorithmGraph graph;
     private JXTextField searchField;
     private JPanel traitList;
 
-    public ACAQTraitViewerUI(ACAQDataSlot<?> slot, ACAQAlgorithmGraph graph) {
+    public ACAQTraitViewerUI(ACAQDataSlot slot, ACAQAlgorithmGraph graph) {
         this.slot = slot;
         this.graph = graph;
         initialize();

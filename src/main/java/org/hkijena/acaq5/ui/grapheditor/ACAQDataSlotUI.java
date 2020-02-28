@@ -24,12 +24,12 @@ import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_WIDTH;
 public class ACAQDataSlotUI extends JPanel {
     private ACAQAlgorithmGraph graph;
     private String compartment;
-    private ACAQDataSlot<?> slot;
+    private ACAQDataSlot slot;
     private JButton assignButton;
     private JPopupMenu assignButtonMenu;
     private ACAQDataSlotTraitUI traitUI;
 
-    public ACAQDataSlotUI(ACAQAlgorithmGraph graph, String compartment, ACAQDataSlot<?> slot) {
+    public ACAQDataSlotUI(ACAQAlgorithmGraph graph, String compartment, ACAQDataSlot slot) {
         this.graph = graph;
         this.compartment = compartment;
         this.slot = slot;
@@ -45,9 +45,9 @@ public class ACAQDataSlotUI extends JPanel {
 
         if(slot.isInput()) {
             if(graph.getSourceSlot(slot) == null) {
-                Set<ACAQDataSlot<?>> availableSources = graph.getAvailableSources(slot);
+                Set<ACAQDataSlot> availableSources = graph.getAvailableSources(slot);
                 availableSources.removeIf(slot -> !slot.getAlgorithm().isVisibleIn(compartment));
-                for(ACAQDataSlot<?> source : availableSources) {
+                for(ACAQDataSlot source : availableSources) {
                     if(!source.getAlgorithm().isVisibleIn(compartment))
                         continue;
                     JMenuItem connectButton = new JMenuItem(source.getNameWithAlgorithmName(),
@@ -63,11 +63,11 @@ public class ACAQDataSlotUI extends JPanel {
             }
         }
         else if(slot.isOutput()) {
-            Set<ACAQDataSlot<?>> targetSlots = graph.getTargetSlots(slot);
+            Set<ACAQDataSlot> targetSlots = graph.getTargetSlots(slot);
             if(!targetSlots.isEmpty()) {
 
                 boolean allowDisconnect = false;
-                for (ACAQDataSlot<?> targetSlot : targetSlots) {
+                for (ACAQDataSlot targetSlot : targetSlots) {
                     if(graph.canUserDisconnect(slot, targetSlot)) {
                         allowDisconnect = true;
                         break;
@@ -82,7 +82,7 @@ public class ACAQDataSlotUI extends JPanel {
                     assignButtonMenu.addSeparator();
                 }
             }
-            Set<ACAQDataSlot<?>> availableTargets = graph.getAvailableTargets(slot);
+            Set<ACAQDataSlot> availableTargets = graph.getAvailableTargets(slot);
             availableTargets.removeIf(slot -> !slot.getAlgorithm().isVisibleIn(compartment));
 
             JMenuItem findAlgorithmButton = new JMenuItem("Find matching algorithm ...", UIUtils.getIconFromResources("search.png"));
@@ -92,7 +92,7 @@ public class ACAQDataSlotUI extends JPanel {
             if(!availableTargets.isEmpty())
                 assignButtonMenu.addSeparator();
 
-            for(ACAQDataSlot<?> target : availableTargets) {
+            for(ACAQDataSlot target : availableTargets) {
                 JMenuItem connectButton = new JMenuItem(target.getNameWithAlgorithmName(),
                         ACAQUIDatatypeRegistry.getInstance().getIconFor(target.getAcceptedDataType()));
                 connectButton.addActionListener(e -> connectSlot(slot, target));
@@ -102,7 +102,7 @@ public class ACAQDataSlotUI extends JPanel {
         }
     }
 
-    private void findAlgorithm(ACAQDataSlot<?> slot) {
+    private void findAlgorithm(ACAQDataSlot slot) {
         ACAQAlgorithmFinderUI algorithmFinderUI = new ACAQAlgorithmFinderUI(slot, graph, compartment);
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Find matching algorithm");
         dialog.setModal(true);
@@ -141,7 +141,7 @@ public class ACAQDataSlotUI extends JPanel {
         }
     }
 
-    private void connectSlot(ACAQDataSlot<?> source, ACAQDataSlot<?> target) {
+    private void connectSlot(ACAQDataSlot source, ACAQDataSlot target) {
         if(graph.canConnect(source, target)) {
             graph.connect(source, target);
         }
@@ -238,7 +238,7 @@ public class ACAQDataSlotUI extends JPanel {
         return width;
     }
 
-    public ACAQDataSlot<?> getSlot() {
+    public ACAQDataSlot getSlot() {
         return slot;
     }
 
