@@ -1,17 +1,29 @@
 package org.hkijena.acaq5.api.data;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
+import ij.measure.ResultsTable;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
+import org.hkijena.acaq5.utils.JsonUtils;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
+import javax.xml.soap.Text;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A data slot holds an {@link ACAQData} instance.
@@ -158,10 +170,10 @@ public class ACAQDataSlot implements TableModel {
      * Warning: Ensure that depending input slots do not use this slot, anymore!
      */
     public void flush() {
-//        if(isOutput() && storagePath != null && data != null) {
-//            data.saveTo(storagePath, getName());
-//            data = null;
-//        }
+        save();
+        for(int i = 0; i < data.size(); ++i) {
+            data.set(i, null);
+        }
     }
 
     public boolean isInput() {
@@ -203,9 +215,127 @@ public class ACAQDataSlot implements TableModel {
      * Saves the data to the storage path
      */
     public void save() {
-//        if(isOutput() && storagePath != null && data != null) {
-//            data.saveTo(storagePath, getName());
-//        }
+        if(isOutput() && storagePath != null && data != null) {
+
+            // Save data
+            List<Path> dataOutputPaths = new ArrayList<>();
+            for(int row = 0; row < getRowCount(); ++row) {
+                Path pathName = Paths.get("" + row);
+                Path path = storagePath.resolve(pathName);
+                if(!Files.isDirectory(path)) {
+                    try {
+                        Files.createDirectories(path);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                dataOutputPaths.add(pathName);
+                data.get(row).saveTo(path, getName());
+            }
+            saveDataJsonTable(dataOutputPaths);
+            saveDataCSVTable(dataOutputPaths);
+        }
+    }
+
+    private void saveDataCSVTable(List<Path> dataOutputPaths) {
+        ResultsTable table = new ResultsTable();
+        String algorithmId = algorithm.getIdInGraph();
+        String internalPath = algorithm.getInternalStoragePath().resolve(getName()).toString();
+        for(int row = 0; row < getRowCount(); ++row) {
+            table.incrementCounter();
+            table.addValue("acaq:algorithm-id", algorithmId);
+            table.addValue("acaq:slot", getName());
+            table.addValue("acaq:data-type", getAcceptedDataType().getCanonicalName());
+            table.addValue("acaq:internal-path", internalPath);
+            table.addValue("acaq:location", dataOutputPaths.get(row).toString());
+            for(int i = 0; i < annotationColumns.size(); ++i) {
+                ACAQTraitDeclaration declaration = annotationColumns.get(i);
+                ACAQTrait trait = annotations.get(declaration).get(i);
+                if(trait == null)
+                    table.addValue(declaration.getName(), 0);
+                else if(trait instanceof ACAQDiscriminator)
+                    table.addValue(declaration.getName(), ((ACAQDiscriminator) trait).getValue());
+                else
+                    table.addValue(declaration.getName(), 1);
+            }
+        }
+        try {
+            table.saveAs(storagePath.resolve("data-table.csv").toString());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void saveDataJsonTable(List<Path> dataOutputPaths) {
+        // Save data table with traits
+        ObjectMapper objectMapper = JsonUtils.getObjectMapper();
+        ObjectNode jsonTable = objectMapper.createObjectNode();
+        jsonTable.set("algorithm-id", new TextNode(algorithm.getIdInGraph()));
+        jsonTable.set("slot", new TextNode(getName()));
+        jsonTable.set("internal-path", new TextNode(algorithm.getInternalStoragePath().resolve(getName()).toString()));
+        jsonTable.set("data-type", new TextNode(getAcceptedDataType().getCanonicalName()));
+        ArrayNode jsonTableRows = objectMapper.createArrayNode();
+        for(int row = 0; row < getRowCount(); ++row) {
+            ObjectNode jsonRow = objectMapper.createObjectNode();
+            jsonRow.set("location", new TextNode(dataOutputPaths.get(row).toString()));
+
+            ArrayNode jsonTraits = objectMapper.createArrayNode();
+            for (ACAQTrait annotation : getAnnotations(row)) {
+                jsonTraits.add(objectMapper.convertValue(annotation, JsonNode.class));
+            }
+            jsonRow.set("traits", jsonTraits);
+
+            jsonTableRows.add(jsonRow);
+        }
+        jsonTable.set("rows", jsonTableRows);
+
+        try {
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue(storagePath.resolve("data-table.json").toFile(), jsonTable);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Returns all trait declarations, sorted by their information
+     * @return
+     */
+    public List<ACAQTraitDeclaration> getTraitsSortedByInformation() {
+        Map<ACAQTraitDeclaration, Double> informations = new HashMap<>();
+        for (ACAQTraitDeclaration traitDeclaration : annotationColumns) {
+            informations.put(traitDeclaration, getInformationOf(traitDeclaration));
+        }
+        return annotationColumns.stream().sorted(Comparator.comparing(informations::get)).collect(Collectors.toList());
+    }
+
+    /**
+     * Calculates the information of a trait
+     * @param traitDeclaration
+     * @return
+     */
+    public double getInformationOf(ACAQTraitDeclaration traitDeclaration) {
+        Map<Object, Integer> frequencies = new HashMap<>();
+        for (ACAQTrait trait : annotations.get(traitDeclaration)) {
+            if(trait instanceof ACAQDiscriminator) {
+                String value = ((ACAQDiscriminator) trait).getValue();
+                frequencies.put(value, frequencies.getOrDefault(value, 0) + 1);
+            }
+            else if(trait == null) {
+                frequencies.put(false, frequencies.getOrDefault(false, 0) + 1);
+            }
+            else {
+                frequencies.put(true, frequencies.getOrDefault(true, 0) + 1);
+            }
+        }
+        double I = 0;
+        for (Map.Entry<Object, Integer> entry : frequencies.entrySet()) {
+            if(entry.getValue() == 0)
+                continue;
+            double Ie =  Math.log(1.0 / entry.getValue());
+            I += Ie;
+        }
+        return I;
     }
 
     /**

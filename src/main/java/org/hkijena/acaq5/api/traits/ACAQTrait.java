@@ -1,8 +1,14 @@
 package org.hkijena.acaq5.api.traits;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.reflect.TypeToken;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -14,6 +20,7 @@ import java.util.stream.Collectors;
  * Algorithms can modify output traits by adding or removing them.
  */
 @HiddenTrait
+@JsonSerialize(using = ACAQTrait.Serializer.class)
 public interface ACAQTrait {
 
     /**
@@ -71,5 +78,15 @@ public interface ACAQTrait {
             return Objects.equals(((ACAQDiscriminator) first).getValue(), ((ACAQDiscriminator)second).getValue());
         else
             return true;
+    }
+
+    class Serializer extends JsonSerializer<ACAQTrait> {
+        @Override
+        public void serialize(ACAQTrait trait, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeStringField("acaq:trait-type", trait.getDeclaration().getId());
+            jsonGenerator.writeStringField("name", trait.getDeclaration().getName());
+            jsonGenerator.writeEndObject();
+        }
     }
 }

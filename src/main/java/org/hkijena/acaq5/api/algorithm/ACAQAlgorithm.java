@@ -47,6 +47,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
     private String customName;
     private String compartment;
     private Set<String> visibleCompartments = new HashSet<>();
+    private ACAQAlgorithmGraph graph;
 
     /**
      * Initializes this algorithm with a custom provided slot configuration and trait configuration
@@ -360,6 +361,18 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
 
     public ACAQDataSlot getFirstInputSlot() {
         return getInputSlots().get(0);
+    }
+
+    public ACAQAlgorithmGraph getGraph() {
+        return graph;
+    }
+
+    public void setGraph(ACAQAlgorithmGraph graph) {
+        this.graph = graph;
+    }
+
+    public String getIdInGraph() {
+        return graph.getIdOf(this);
     }
 
     public static class Serializer extends JsonSerializer<ACAQAlgorithm> {

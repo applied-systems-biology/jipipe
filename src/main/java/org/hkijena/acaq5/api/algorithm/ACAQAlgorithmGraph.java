@@ -53,6 +53,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         for(Map.Entry<String, ACAQAlgorithm> kv : other.algorithms.entrySet()) {
             ACAQAlgorithm algorithm = kv.getValue().getDeclaration().clone(kv.getValue());
             algorithms.put(kv.getKey(), algorithm);
+            algorithm.setGraph(this);
             algorithm.getEventBus().register(this);
         }
         repairGraph();
@@ -79,6 +80,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         if(algorithms.containsKey(key))
             throw new RuntimeException("Already contains algorithm with name " + key);
         algorithm.setCompartment(compartment);
+        algorithm.setGraph(this);
         algorithms.put(key, algorithm);
         compartments.put(algorithm, compartment);
         algorithm.getEventBus().register(this);
@@ -144,6 +146,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         for(ACAQDataSlot slot : algorithm.getOutputSlots()) {
             graph.removeVertex(slot);
         }
+        algorithm.setGraph(null);
         algorithmTraits = null;
         getEventBus().post(new AlgorithmGraphChangedEvent(this));
     }
