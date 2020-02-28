@@ -189,25 +189,31 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
     @Override
     public void mouseClicked(MouseEvent mouseEvent) {
+        if(SwingUtilities.isLeftMouseButton(mouseEvent) && mouseEvent.getClickCount() == 2) {
 
+        }
     }
 
     @Override
     public void mousePressed(MouseEvent mouseEvent) {
         if(SwingUtilities.isLeftMouseButton(mouseEvent)) {
-            for(int i = 0; i < getComponentCount(); ++i) {
-                Component component = getComponent(i);
-                if(component.getBounds().contains(mouseEvent.getX(), mouseEvent.getY())) {
-                    if(component instanceof ACAQAlgorithmUI) {
-                        currentlyDragged = (ACAQAlgorithmUI)component;
-                        currentlyDraggedOffset.x = component.getX() - mouseEvent.getX();
-                        currentlyDraggedOffset.y = component.getY() - mouseEvent.getY();
-                        eventBus.post(new OpenSettingsUIRequestedEvent(currentlyDragged));
-                        break;
-                    }
+            pickComponent(mouseEvent);
+        }
+    }
+
+    private Component pickComponent(MouseEvent mouseEvent) {
+        for(int i = 0; i < getComponentCount(); ++i) {
+            Component component = getComponent(i);
+            if(component.getBounds().contains(mouseEvent.getX(), mouseEvent.getY())) {
+                if(component instanceof ACAQAlgorithmUI) {
+                    currentlyDragged = (ACAQAlgorithmUI)component;
+                    currentlyDraggedOffset.x = component.getX() - mouseEvent.getX();
+                    currentlyDraggedOffset.y = component.getY() - mouseEvent.getY();
+                   return component;
                 }
             }
         }
+        return null;
     }
 
     @Override
