@@ -10,6 +10,7 @@ import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
@@ -91,8 +92,21 @@ public class ACAQAlgorithmFinderUI extends JPanel {
     private void reloadAlgorithmList() {
         formPanel.clear();
 
+        // Add possible algorithms
         List<ACAQAlgorithmDeclaration> algorithms = getFilteredAndSortedCompatibleTargetAlgorithms();
+
+        // Add open slots
         Set<ACAQAlgorithm> knownTargetAlgorithms = graph.getTargetSlots(outputSlot).stream().map(ACAQDataSlot::getAlgorithm).collect(Collectors.toSet());
+
+        // Add algorithms that allow adding slots of given type
+        for (ACAQAlgorithm algorithm : graph.getAlgorithmNodes().values()) {
+            if(algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
+                ACAQMutableSlotConfiguration configuration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
+                if(configuration.canCreateCompatibleInputSlot(outputSlot.getAcceptedDataType())) {
+                    knownTargetAlgorithms.add(algorithm);
+                }
+            }
+        }
 
         if(!algorithms.isEmpty()) {
             Map<ACAQAlgorithmDeclaration, Integer> scores = new HashMap<>();
@@ -111,7 +125,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
                 }
 
                 // Add existing instances
-                for(ACAQAlgorithm existing : graph.getAlgorithmNodes().values().stream().filter(a -> a.getClass().equals(targetAlgorithm)).collect(Collectors.toList())) {
+                for(ACAQAlgorithm existing : graph.getAlgorithmNodes().values().stream().filter(a -> a.getDeclaration() == targetAlgorithm).collect(Collectors.toList())) {
                     if(existing == outputSlot.getAlgorithm())
                         continue;
                     if(!algorithm.isVisibleIn(compartment))

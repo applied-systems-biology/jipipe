@@ -249,6 +249,16 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
         this.outputSlotsSealed = b;
     }
 
+    public boolean canCreateCompatibleInputSlot(Class<? extends ACAQData> acceptedDataType) {
+        if(!canModifyInputSlots())
+            return false;
+        for (Class<? extends ACAQData> allowedInputSlotType : allowedInputSlotTypes) {
+            if(allowedInputSlotType.isAssignableFrom(acceptedDataType))
+                return true;
+        }
+        return false;
+    }
+
     public static class Builder {
         private ACAQMutableSlotConfiguration object = new ACAQMutableSlotConfiguration();
 

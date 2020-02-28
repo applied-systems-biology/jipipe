@@ -5,12 +5,16 @@ import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
+import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.compartments.datatypes.ACAQCompartmentOutputData;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 
 @ACAQDocumentation(name = "Graph compartment", description = "A compartment in the analysis graph")
+@AlgorithmInputSlot(ACAQCompartmentOutputData.class)
+@AlgorithmOutputSlot(ACAQCompartmentOutputData.class)
 public class ACAQProjectCompartment extends ACAQAlgorithm {
 
     private ACAQProject project;
