@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ACAQWorkbenchUI extends JPanel {
 
@@ -33,9 +34,6 @@ public class ACAQWorkbenchUI extends JPanel {
     private DocumentTabPane documentTabPane;
     private ACAQInfoUI infoUI;
     private JLabel statusText;
-
-    private Map<ACAQProjectCompartment, ACAQCompartmentUI> compartments = new HashMap<>();
-    private Map<ACAQProjectCompartment, DocumentTabPane.DocumentTab> compartmentTabs = new HashMap<>();
 
     public ACAQWorkbenchUI(ACAQWorkbenchWindow window, ACAQGUICommand command, ACAQProject project) {
         this.window = window;
@@ -53,6 +51,9 @@ public class ACAQWorkbenchUI extends JPanel {
             ACAQProjectCompartment postprocessing = project.addCompartment("Postprocessing");
             project.connectCompartments(preprocessing, analysis);
             project.connectCompartments(analysis, postprocessing);
+            openCompartmentGraph(preprocessing);
+            openCompartmentGraph(analysis);
+            openCompartmentGraph(postprocessing);
         }
     }
 
@@ -80,19 +81,29 @@ public class ACAQWorkbenchUI extends JPanel {
         sendStatusBarText("Welcome to ACAQ5");
     }
 
+    public List<ACAQCompartmentUI> findCompartmentUIs(ACAQProjectCompartment compartment) {
+        List<ACAQCompartmentUI> result = new ArrayList<>();
+        for (DocumentTabPane.DocumentTab tab : documentTabPane.getTabs()) {
+            if(tab.getContent() instanceof ACAQCompartmentUI) {
+                if(((ACAQCompartmentUI) tab.getContent()).getCompartment() == compartment)
+                    result.add((ACAQCompartmentUI) tab.getContent());
+            }
+        }
+        return result;
+    }
+
     public void openCompartmentGraph(ACAQProjectCompartment compartment) {
-        if(!compartments.containsKey(compartment)) {
+        List<ACAQCompartmentUI> compartmentUIs = findCompartmentUIs(compartment);
+        if(compartmentUIs.isEmpty()) {
             ACAQCompartmentUI compartmentUI = new ACAQCompartmentUI(this, compartment);
             DocumentTabPane.DocumentTab documentTab = documentTabPane.addTab(compartment.getName(),
                     UIUtils.getIconFromResources("graph-compartment.png"),
                     compartmentUI,
                     DocumentTabPane.CloseMode.withSilentCloseButton,
                     false);
-            compartmentTabs.put(compartment, documentTab);
-            compartments.put(compartment, compartmentUI);
         }
         else {
-            documentTabPane.setSelectedComponent(compartmentTabs.get(compartment).getContent());
+            documentTabPane.setSelectedComponent(compartmentUIs.get(0));
         }
     }
 
@@ -197,11 +208,19 @@ public class ACAQWorkbenchUI extends JPanel {
     }
 
     private void newCompartmentAfterCurrent() {
-        String compartmentName = UIUtils.getUniqueStringByDialog(this, "Please enter the name of the compartment",
-                "Compartment", s -> project.getCompartments().containsKey(s));
-        if(compartmentName != null && !compartmentName.trim().isEmpty()) {
-            ACAQProjectCompartment compartment = project.addCompartment(compartmentName);
-            openCompartmentGraph(compartment);
+        if(documentTabPane.getSelectedComponent() instanceof ACAQCompartmentUI) {
+            ACAQCompartmentUI ui = (ACAQCompartmentUI) documentTabPane.getSelectedComponent();
+            String compartmentName = UIUtils.getUniqueStringByDialog(this, "Please enter the name of the compartment",
+                    "Compartment", s -> project.getCompartments().containsKey(s));
+            if(compartmentName != null && !compartmentName.trim().isEmpty()) {
+                ACAQProjectCompartment compartment = project.addCompartment(compartmentName);
+                project.connectCompartments(ui.getCompartment(), compartment);
+                openCompartmentGraph(compartment);
+                documentTabPane.switchToLastTab();
+            }
+        }
+        else {
+            JOptionPane.showMessageDialog(this, "Please switch to a graph compartment editor.", "New compartment after current", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -226,9 +245,8 @@ public class ACAQWorkbenchUI extends JPanel {
 
     @Subscribe
     public void onCompartmentRemoved(CompartmentRemovedEvent event) {
-        if(compartmentTabs.containsKey(event.getCompartment())) {
-            DocumentTabPane.DocumentTab documentTab = compartmentTabs.get(event.getCompartment());
-            documentTabPane.remove(documentTab.getTabComponent());
+        for (ACAQCompartmentUI compartmentUI : findCompartmentUIs(event.getCompartment())) {
+            documentTabPane.remove(compartmentUI);
         }
     }
 

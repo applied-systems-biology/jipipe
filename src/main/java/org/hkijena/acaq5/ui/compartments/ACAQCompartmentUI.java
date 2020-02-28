@@ -33,4 +33,8 @@ public class ACAQCompartmentUI extends ACAQUIPanel {
 //
 //        add(toolBar, BorderLayout.NORTH);
     }
+
+    public ACAQProjectCompartment getCompartment() {
+        return compartment;
+    }
 }

@@ -152,6 +152,8 @@ public class ACAQProject implements ACAQValidatable {
         graph.removeCompartment(compartment.getProjectCompartmentId());
         compartments.remove(compartment.getProjectCompartmentId());
         updateCompartmentVisibility();
+        compartmentGraph.removeNode(compartment);
+        eventBus.post(new CompartmentRemovedEvent(compartment));
     }
 
     public static class Serializer extends JsonSerializer<ACAQProject> {

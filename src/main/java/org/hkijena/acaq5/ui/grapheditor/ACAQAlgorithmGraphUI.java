@@ -6,6 +6,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
@@ -41,6 +42,8 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
     private boolean isPanning = false;
     private JToggleButton switchPanningDirectionButton;
 
+    private MarkdownReader documentationPanel;
+
     public ACAQAlgorithmGraphUI(ACAQWorkbenchUI workbenchUI, ACAQAlgorithmGraph algorithmGraph, String compartment) {
         super(workbenchUI);
         this.algorithmGraph = algorithmGraph;
@@ -61,6 +64,9 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
             }
         });
 
+        documentationPanel = new MarkdownReader(false);
+        documentationPanel.loadFromResource("documentation/algorithm-graph.md");
+
         graphUI = new ACAQAlgorithmGraphCanvasUI(algorithmGraph, compartment);
         graphUI.getEventBus().register(this);
         graphUI.addMouseListener(this);
@@ -72,15 +78,12 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
             graphUI.setNewEntryLocationX(scrollPane.getHorizontalScrollBar().getValue());
         });
         splitPane.setLeftComponent(scrollPane);
-        splitPane.setRightComponent(new MarkdownReader(false) {
-            {
-                loadFromResource("documentation/algorithm-graph.md");
-            }
-        });
+        splitPane.setRightComponent(documentationPanel);
         add(splitPane, BorderLayout.CENTER);
 
         add(menuBar, BorderLayout.NORTH);
         initializeToolbar();
+        algorithmGraph.getEventBus().register(this);
     }
 
     protected void initializeToolbar() {
@@ -201,6 +204,15 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
             currentAlgorithmSettings = new ACAQAlgorithmSettingsPanelUI(getWorkbenchUI(), algorithmGraph, event.getUi().getAlgorithm());
             int dividerLocation = splitPane.getDividerLocation();
             splitPane.setRightComponent(currentAlgorithmSettings);
+            splitPane.setDividerLocation(dividerLocation);
+        }
+    }
+
+    @Subscribe
+    public void onGraphChanged(AlgorithmGraphChangedEvent event) {
+        if(currentAlgorithmSettings != null && !algorithmGraph.getAlgorithmNodes().containsValue(currentAlgorithmSettings.getAlgorithm())) {
+            int dividerLocation = splitPane.getDividerLocation();
+            splitPane.setRightComponent(documentationPanel);
             splitPane.setDividerLocation(dividerLocation);
         }
     }
