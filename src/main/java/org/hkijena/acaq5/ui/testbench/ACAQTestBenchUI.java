@@ -96,7 +96,7 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
         toolBar.add(Box.createHorizontalStrut(8));
 
         JLabel algorithmInfo = new JLabel(projectAlgorithm.getName(),  new ColorIcon(16, 16,
-                projectAlgorithm.getCategory().getColor(0.1f, 0.9f)), JLabel.LEFT);
+                UIUtils.getFillColorFor(projectAlgorithm.getDeclaration())), JLabel.LEFT);
         algorithmInfo.setToolTipText(TooltipUtils.getAlgorithmTooltip(projectAlgorithm.getDeclaration()));
         toolBar.add(algorithmInfo);
 

@@ -157,7 +157,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
     protected void initializeMenuForCategory(JMenu menu, ACAQAlgorithmCategory category) {
         ACAQRegistryService registryService = ACAQRegistryService.getInstance();
         boolean isEmpty = true;
-        Icon icon = new ColorIcon(16, 16, category.getColor(0.1f, 0.9f));
+        Icon icon = new ColorIcon(16, 16, UIUtils.getFillColorFor(category));
         for(ACAQAlgorithmDeclaration declaration : registryService.getAlgorithmRegistry().getAlgorithmsOfCategory(category)) {
             JMenuItem addItem = new JMenuItem(declaration.getName(), icon);
             addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));

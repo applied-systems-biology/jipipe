@@ -47,7 +47,7 @@ public class ACAQCompartmentSettingsPanelUI extends ACAQUIPanel {
 
     private void initializeToolbar() {
         JToolBar toolBar = new JToolBar();
-        JLabel nameLabel = new JLabel(compartment.getName(), new ColorIcon(16, 16, compartment.getCategory().getColor(0.1f, 0.9f)), JLabel.LEFT);
+        JLabel nameLabel = new JLabel(compartment.getName(), new ColorIcon(16, 16, UIUtils.getFillColorFor(compartment.getDeclaration())), JLabel.LEFT);
         nameLabel.setToolTipText(TooltipUtils.getAlgorithmTooltip(compartment.getDeclaration()));
         toolBar.add(nameLabel);
 

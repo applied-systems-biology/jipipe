@@ -13,6 +13,10 @@
 package org.hkijena.acaq5.utils;
 
 import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.ui.components.ACAQValidityReportUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 
@@ -340,4 +344,19 @@ public class UIUtils {
         return value;
     }
 
+    public static Color getFillColorFor(ACAQAlgorithmDeclaration declaration) {
+        if(declaration.getAlgorithmClass() == ACAQProjectCompartment.class)
+            return new Color(254, 254, 255);
+        return declaration.getCategory().getColor(0.1f, 0.9f);
+    }
+
+    public static Color getFillColorFor(ACAQAlgorithmCategory category) {
+        return category.getColor(0.1f, 0.9f);
+    }
+
+    public static Color getBorderColorFor(ACAQAlgorithmDeclaration declaration) {
+        if(declaration.getAlgorithmClass() == ACAQProjectCompartment.class)
+            return new Color(6, 20, 57);
+        return declaration.getCategory().getColor(0.1f, 0.5f);
+    }
 }

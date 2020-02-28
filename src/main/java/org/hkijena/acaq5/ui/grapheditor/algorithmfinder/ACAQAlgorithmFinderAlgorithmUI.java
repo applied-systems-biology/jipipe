@@ -91,7 +91,7 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
         add(centerPanel, BorderLayout.CENTER);
 
         JPanel colorPanel = new JPanel();
-        colorPanel.setBackground(getAlgorithmColor());
+        colorPanel.setBackground(UIUtils.getFillColorFor(algorithm.getDeclaration()));
         colorPanel.setPreferredSize(new Dimension(16, 1));
         add(colorPanel, BorderLayout.WEST);
 
@@ -189,10 +189,6 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
                     break;
             }
         }
-    }
-
-    public Color getAlgorithmColor() {
-        return algorithm.getCategory().getColor(0.1f, 0.9f);
     }
 
     @Subscribe

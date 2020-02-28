@@ -44,18 +44,23 @@ public class ACAQAlgorithmUI extends JPanel {
     private EventBus eventBus = new EventBus();
     private JLabel nameLabel;
 
+    private Color fillColor;
+    private Color borderColor;
+
     public ACAQAlgorithmUI(ACAQAlgorithmGraphCanvasUI graphUI, ACAQAlgorithm algorithm) {
         this.graphUI = graphUI;
         this.algorithm = algorithm;
         this.algorithm.getEventBus().register(this);
         this.algorithm.getTraitConfiguration().getEventBus().register(this);
+        this.fillColor = UIUtils.getFillColorFor(algorithm.getDeclaration());
+        this.borderColor = UIUtils.getBorderColorFor(algorithm.getDeclaration());
         initialize();
         updateAlgorithmSlotUIs();
     }
 
     private void initialize() {
-        setBackground(getAlgorithmColor());
-        setBorder(BorderFactory.createLineBorder(getAlgorithmBorderColor()));
+        setBackground(fillColor);
+        setBorder(BorderFactory.createLineBorder(borderColor));
         setSize(new Dimension(calculateWidth(), calculateHeight()));
         setLayout(new GridBagLayout());
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -186,7 +191,7 @@ public class ACAQAlgorithmUI extends JPanel {
 
                 ACAQDataSlot slot = slots.get(i);
                 ACAQDataSlotUI ui = new ACAQDataSlotUI(graphUI.getAlgorithmGraph(), graphUI.getCompartment(), slot);
-                ui.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,0,bottomBorder,1, getAlgorithmBorderColor()),
+                ui.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,0,bottomBorder,1, borderColor),
                         BorderFactory.createEmptyBorder(0,0,0,4)));
                 slotUIList.add(ui);
                 inputSlotPanel.add(ui);
@@ -200,7 +205,7 @@ public class ACAQAlgorithmUI extends JPanel {
                     bottomBorder = 1;
                 ACAQDataSlot slot = slots.get(i);
                 ACAQDataSlotUI ui = new ACAQDataSlotUI(graphUI.getAlgorithmGraph(), graphUI.getCompartment(), slot);
-                ui.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,1,bottomBorder,0, getAlgorithmBorderColor()),
+                ui.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,1,bottomBorder,0, borderColor),
                         BorderFactory.createEmptyBorder(0,4,0,0)));
                 slotUIList.add(ui);
                 outputSlotPanel.add(ui);
@@ -211,7 +216,7 @@ public class ACAQAlgorithmUI extends JPanel {
         if(createAddInputSlotButton) {
             JButton addInputSlotButton = createAddSlotButton(ACAQDataSlot.SlotType.Input);
             JPanel panel = new JPanel(new BorderLayout());
-            panel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,0,0,1, getAlgorithmBorderColor()),
+            panel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,0,0,1, borderColor),
                     BorderFactory.createEmptyBorder(0,0,0,4)));
             panel.add(addInputSlotButton, BorderLayout.WEST);
             inputSlotPanel.add(panel);
@@ -219,7 +224,7 @@ public class ACAQAlgorithmUI extends JPanel {
         if(createAddOutputSlotButton) {
             JButton addOutputSlotButton = createAddSlotButton(ACAQDataSlot.SlotType.Output);
             JPanel panel = new JPanel(new BorderLayout());
-            panel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,1,0,0, getAlgorithmBorderColor()),
+            panel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,1,0,0, borderColor),
                     BorderFactory.createEmptyBorder(0,4,0,0)));
             panel.add(addOutputSlotButton, BorderLayout.EAST);
             outputSlotPanel.add(panel);
@@ -318,19 +323,6 @@ public class ACAQAlgorithmUI extends JPanel {
         }
 
         return (int)Math.ceil(width * 1.0 / SLOT_UI_WIDTH) * SLOT_UI_WIDTH + 150;
-    }
-
-    /**
-     * Gets a hashed color value for the algorithm.
-     * The color is the same for all algorithms of the same type
-     * @return
-     */
-    public Color getAlgorithmColor() {
-        return algorithm.getCategory().getColor(0.1f, 0.9f);
-    }
-
-    public Color getAlgorithmBorderColor() {
-        return algorithm.getCategory().getColor(0.1f, 0.5f);
     }
 
     /**
