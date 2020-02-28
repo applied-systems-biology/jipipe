@@ -192,7 +192,8 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     public void mouseClicked(MouseEvent mouseEvent) {
         if(SwingUtilities.isLeftMouseButton(mouseEvent) && mouseEvent.getClickCount() == 2) {
             ACAQAlgorithmUI ui = pickComponent(mouseEvent);
-            eventBus.post(new DefaultUIActionRequestedEvent(ui));
+            if(ui != null)
+                eventBus.post(new DefaultUIActionRequestedEvent(ui));
         }
     }
 
@@ -200,10 +201,12 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     public void mousePressed(MouseEvent mouseEvent) {
         if(SwingUtilities.isLeftMouseButton(mouseEvent)) {
             ACAQAlgorithmUI ui = pickComponent(mouseEvent);
-            currentlyDragged = ui;
-            currentlyDraggedOffset.x = ui.getX() - mouseEvent.getX();
-            currentlyDraggedOffset.y = ui.getY() - mouseEvent.getY();
-            eventBus.post(new OpenSettingsUIRequestedEvent(ui));
+            if(ui != null) {
+                currentlyDragged = ui;
+                currentlyDraggedOffset.x = ui.getX() - mouseEvent.getX();
+                currentlyDraggedOffset.y = ui.getY() - mouseEvent.getY();
+                eventBus.post(new OpenSettingsUIRequestedEvent(ui));
+            }
         }
     }
 
