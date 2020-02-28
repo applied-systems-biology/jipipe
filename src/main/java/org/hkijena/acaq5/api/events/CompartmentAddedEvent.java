@@ -1,18 +1,18 @@
 package org.hkijena.acaq5.api.events;
 
-import org.hkijena.acaq5.api.ACAQProjectCompartment;
+import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 
 /**
  * Triggered when a sample is added to an {@link org.hkijena.acaq5.api.ACAQProject}
  */
 public class CompartmentAddedEvent {
-    private ACAQProjectCompartment sample;
+    private ACAQProjectCompartment compartment;
 
-    public CompartmentAddedEvent(ACAQProjectCompartment sample) {
-        this.sample = sample;
+    public CompartmentAddedEvent(ACAQProjectCompartment compartment) {
+        this.compartment = compartment;
     }
 
-    public ACAQProjectCompartment getSample() {
-        return sample;
+    public ACAQProjectCompartment getCompartment() {
+        return compartment;
     }
 }

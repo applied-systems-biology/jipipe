@@ -1,18 +1,18 @@
 package org.hkijena.acaq5.api.events;
 
-import org.hkijena.acaq5.api.ACAQProjectCompartment;
+import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 
 /**
  * Triggered when a sample is removed from an {@link org.hkijena.acaq5.api.ACAQProject}
  */
 public class CompartmentRemovedEvent {
-    private ACAQProjectCompartment sample;
+    private ACAQProjectCompartment compartment;
 
-    public CompartmentRemovedEvent(ACAQProjectCompartment sample) {
-        this.sample = sample;
+    public CompartmentRemovedEvent(ACAQProjectCompartment compartment) {
+        this.compartment = compartment;
     }
 
-    public ACAQProjectCompartment getSample() {
-        return sample;
+    public ACAQProjectCompartment getCompartment() {
+        return compartment;
     }
 }

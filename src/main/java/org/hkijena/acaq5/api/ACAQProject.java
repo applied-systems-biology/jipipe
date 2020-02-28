@@ -9,21 +9,31 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
+import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
+import org.hkijena.acaq5.api.compartments.datatypes.ACAQCompartmentOutputData;
+import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.CompartmentAddedEvent;
 import org.hkijena.acaq5.api.events.CompartmentRemovedEvent;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.utils.JsonUtils;
+import org.hkijena.acaq5.utils.StringUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * An ACAQ5 project.
@@ -35,10 +45,11 @@ public class ACAQProject implements ACAQValidatable {
     private EventBus eventBus = new EventBus();
 
     private ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
+    private ACAQAlgorithmGraph compartmentGraph = new ACAQAlgorithmGraph();
     private BiMap<String, ACAQProjectCompartment> compartments = HashBiMap.create();
-    private List<String> compartmentOrder = new ArrayList<>();
 
     public ACAQProject() {
+        compartmentGraph.getEventBus().register(this);
     }
 
     public EventBus getEventBus() {
@@ -62,34 +73,31 @@ public class ACAQProject implements ACAQValidatable {
         return ImmutableBiMap.copyOf(compartments);
     }
 
-    public ACAQProjectCompartment addCompartmentAfter(String name, String parent) {
-        if(compartments.containsKey(name)) {
-            return compartments.get(name);
+    public ACAQProjectCompartment addCompartment(String name) {
+        ACAQProjectCompartment compartment = (ACAQProjectCompartment) ACAQAlgorithmRegistry.getInstance().getDefaultDeclarationFor(ACAQProjectCompartment.class).newInstance();
+        compartment.setProject(this);
+        compartment.setCustomName(name);
+        compartmentGraph.insertNode(compartment, ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
+        return compartment;
+    }
+
+    public void connectCompartments(ACAQProjectCompartment source, ACAQProjectCompartment target) {
+        ACAQDataSlot sourceSlot = source.getFirstOutputSlot();
+        List<ACAQDataSlot> openInputSlots = target.getOpenInputSlots();
+        if(openInputSlots.isEmpty()) {
+            ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration)target.getSlotConfiguration();
+            slotConfiguration.addInputSlot(StringUtils.makeUniqueString(source.getName(), slotConfiguration::hasSlot), ACAQCompartmentOutputData.class);
+            openInputSlots = target.getOpenInputSlots();
         }
-        else {
-            ACAQProjectCompartment compartment = new ACAQProjectCompartment(this, name);
-            compartments.put(name, compartment);
-            if(parent == null)
-                compartmentOrder.add(name);
-            else {
-                int parentIndex = compartmentOrder.indexOf(parent);
-                if(parentIndex == compartmentOrder.size() - 1)
-                    compartmentOrder.add(name);
-                else
-                    compartmentOrder.add(parentIndex + 1, name);
-            }
-            initializeCompartment(compartment);
-            updateCompartmentVisibility();
-            eventBus.post(new CompartmentAddedEvent(compartment));
-            return compartment;
-        }
+        compartmentGraph.connect(sourceSlot, openInputSlots.get(0));
     }
 
     private void initializeCompartment(ACAQProjectCompartment compartment) {
         ACAQCompartmentOutput compartmentOutput = (ACAQCompartmentOutput) ACAQAlgorithmRegistry.getInstance().getDefaultDeclarationFor(ACAQCompartmentOutput.class).newInstance();
         compartmentOutput.setCustomName(compartment.getName() + " output");
-        compartmentOutput.setCompartment(compartment.getName());
-        compartment.insertNode(compartmentOutput);
+        compartmentOutput.setCompartment(compartment.getProjectCompartmentId());
+        compartment.setOutputNode(compartmentOutput);
+        graph.insertNode(compartmentOutput, compartment.getProjectCompartmentId());
     }
 
     private void updateCompartmentVisibility() {
@@ -97,36 +105,38 @@ public class ACAQProject implements ACAQValidatable {
             compartment.getOutputNode().getVisibleCompartments().clear();
         }
 
-        for(int i = 1; i < compartmentOrder.size(); ++i) {
-            ACAQProjectCompartment left = compartments.get(compartmentOrder.get(i - 1));
-            ACAQProjectCompartment right = compartments.get(compartmentOrder.get(i));
-
-            left.getOutputNode().getVisibleCompartments().add(right.getName());
+        for (ACAQAlgorithmGraphEdge edge : compartmentGraph.getGraph().edgeSet()) {
+            ACAQProjectCompartment source = (ACAQProjectCompartment) compartmentGraph.getGraph().getEdgeSource(edge).getAlgorithm();
+            ACAQProjectCompartment target = (ACAQProjectCompartment) compartmentGraph.getGraph().getEdgeTarget(edge).getAlgorithm();
+            source.getOutputNode().getVisibleCompartments().add(target.getProjectCompartmentId());
         }
+
+        // Remove invalid connections in the project graph
+        for (ACAQAlgorithmGraphEdge edge : ImmutableList.copyOf(graph.getGraph().edgeSet())) {
+            if(graph.getGraph().containsEdge(edge)) {
+                ACAQDataSlot source = graph.getGraph().getEdgeSource(edge);
+                ACAQDataSlot target = graph.getGraph().getEdgeTarget(edge);
+                if(!source.getAlgorithm().isVisibleIn(target.getAlgorithm().getCompartment())) {
+                    graph.disconnect(source, target, false);
+                }
+            }
+        }
+
+        graph.getEventBus().post(new AlgorithmGraphChangedEvent(graph));
     }
 
-    public boolean removeCompartment(ACAQProjectCompartment compartment) {
-        String name = compartment.getName();
-        if(compartments.containsKey(name)) {
-            compartments.remove(name);
-            compartmentOrder.remove(name);
-            eventBus.post(new CompartmentRemovedEvent(compartment));
-            return true;
+    @Subscribe
+    public void onCompartmentGraphChanged(AlgorithmGraphChangedEvent event) {
+        if(event.getAlgorithmGraph() == compartmentGraph) {
+            for (ACAQAlgorithm algorithm : compartmentGraph.getAlgorithmNodes().values()) {
+                ACAQProjectCompartment compartment = (ACAQProjectCompartment)algorithm;
+                if(!compartment.isInitialized()) {
+                    compartments.put(compartment.getProjectCompartmentId(), compartment);
+                    initializeCompartment(compartment);
+                }
+            }
+            updateCompartmentVisibility();
         }
-        return false;
-    }
-
-    public boolean renameCompartment(ACAQProjectCompartment sample, String name) {
-        return false;
-//        if(name == null)
-//            return false;
-//        name = name.trim();
-//        if(name.isEmpty() || samples.containsKey(name))
-//            return false;
-//        samples.remove(sample.getName());
-//        samples.put(name, sample);
-//        eventBus.post(new SampleRenamedEvent(sample));
-//        return true;
     }
 
     @Override
@@ -134,12 +144,14 @@ public class ACAQProject implements ACAQValidatable {
         graph.reportValidity(report);
     }
 
-    public List<String> getCompartmentOrder() {
-        return Collections.unmodifiableList(compartmentOrder);
+    public ACAQAlgorithmGraph getCompartmentGraph() {
+        return compartmentGraph;
     }
 
-    public void addCompartment(String compartmentName) {
-        addCompartmentAfter(compartmentName, null);
+    public void removeCompartment(ACAQProjectCompartment compartment) {
+        graph.removeCompartment(compartment.getProjectCompartmentId());
+        compartments.remove(compartment.getProjectCompartmentId());
+        updateCompartmentVisibility();
     }
 
     public static class Serializer extends JsonSerializer<ACAQProject> {
@@ -150,7 +162,7 @@ public class ACAQProject implements ACAQValidatable {
             jsonGenerator.writeObjectField("algorithm-graph", project.graph);
             jsonGenerator.writeFieldName("compartments");
             jsonGenerator.writeStartObject();
-            jsonGenerator.writeObjectField("order", project.compartmentOrder);
+            jsonGenerator.writeObjectField("compartment-graph", project.compartmentGraph);
             jsonGenerator.writeEndObject();
             jsonGenerator.writeEndObject();
         }
@@ -167,16 +179,13 @@ public class ACAQProject implements ACAQValidatable {
             // We must first load the graph, as we can infer compartments later
             project.graph.fromJson(node.get("algorithm-graph"));
 
-            // read compartment order
-            project.compartmentOrder.addAll(Arrays.asList(JsonUtils.getObjectMapper().readerFor(String[].class).readValue(node.get("compartments").get("order"))));
-
-            // Iterate through the graph to detect compartments
-            for (ACAQAlgorithm algorithm : project.graph.getAlgorithmNodes().values()) {
-                String compartmentName = algorithm.getCompartment();
-                if(!project.compartments.containsKey(compartmentName)) {
-                    ACAQProjectCompartment compartment = new ACAQProjectCompartment(project, compartmentName);
-                    project.compartments.put(compartmentName, compartment);
-                }
+            // read compartments
+            project.compartmentGraph.fromJson(node.get("compartments").get("compartment-graph"));
+            for (ACAQAlgorithm algorithm : project.compartmentGraph.getAlgorithmNodes().values()) {
+                ACAQProjectCompartment compartment = (ACAQProjectCompartment)algorithm;
+                compartment.setProject(project);
+                project.compartments.put(compartment.getProjectCompartmentId(), compartment);
+                project.initializeCompartment(compartment);
             }
 
             // Update node visibilities

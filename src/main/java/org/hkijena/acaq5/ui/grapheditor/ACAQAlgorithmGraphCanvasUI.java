@@ -61,7 +61,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     private void removeOldNodes() {
         Set<ACAQAlgorithm> toRemove = new HashSet<>();
         for(Map.Entry<ACAQAlgorithm, ACAQAlgorithmUI> kv : nodeUIs.entrySet()) {
-            if(!algorithmGraph.containsNode(kv.getKey()))
+            if(!algorithmGraph.containsNode(kv.getKey()) || !kv.getKey().isVisibleIn(compartment))
                 toRemove.add(kv.getKey());
         }
         for(ACAQAlgorithm algorithm : toRemove) {

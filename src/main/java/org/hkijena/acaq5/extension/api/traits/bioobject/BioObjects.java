@@ -3,10 +3,10 @@ package org.hkijena.acaq5.extension.api.traits.bioobject;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
-import org.hkijena.acaq5.api.traits.HiddenTrait;
+import org.hkijena.acaq5.api.ACAQHidden;
 
 @ACAQDocumentation(name = "Biological object")
-@HiddenTrait
+@ACAQHidden
 public class BioObjects implements ACAQTrait {
     private ACAQTraitDeclaration declaration;
 

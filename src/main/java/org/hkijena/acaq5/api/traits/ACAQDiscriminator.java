@@ -5,10 +5,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.hkijena.acaq5.api.ACAQHidden;
 
 import java.io.IOException;
 
-@HiddenTrait
+@ACAQHidden
 @JsonSerialize(using = ACAQDiscriminator.Serializer.class)
 public interface ACAQDiscriminator extends ACAQTrait {
     String getValue();

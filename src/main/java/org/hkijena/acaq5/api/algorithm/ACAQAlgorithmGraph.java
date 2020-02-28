@@ -38,6 +38,8 @@ import java.util.stream.Collectors;
 @JsonSerialize(using = ACAQAlgorithmGraph.Serializer.class)
 public class ACAQAlgorithmGraph implements ACAQValidatable {
 
+    public static final String COMPARTMENT_DEFAULT = "DEFAULT";
+
     private DefaultDirectedGraph<ACAQDataSlot, ACAQAlgorithmGraphEdge> graph = new DefaultDirectedGraph<>(ACAQAlgorithmGraphEdge.class);
     private BiMap<String, ACAQAlgorithm> algorithms = HashBiMap.create();
     private Map<ACAQAlgorithm, String> compartments = new HashMap<>();

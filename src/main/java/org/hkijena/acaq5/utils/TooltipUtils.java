@@ -34,6 +34,12 @@ public class TooltipUtils {
         builder.append("</tr>");
         builder.append("</table>");
 
+        builder.append("<br>Data type: <i>").append(ACAQData.getNameOf(slot.getAcceptedDataType())).append("</i><br>");
+        String description = ACAQData.getDescriptionOf(slot.getAcceptedDataType());
+        if(description != null && !description.isEmpty()) {
+            builder.append("<br>").append(description).append("<br><br/>");
+        }
+
         if(slot.isInput())
             builder.append("Input");
         else

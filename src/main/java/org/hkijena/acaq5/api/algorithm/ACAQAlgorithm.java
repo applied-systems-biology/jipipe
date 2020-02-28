@@ -355,6 +355,16 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
         return slot;
     }
 
+    public List<ACAQDataSlot> getOpenInputSlots() {
+        List<ACAQDataSlot> result = new ArrayList<>();
+        for (ACAQDataSlot inputSlot : getInputSlots()) {
+            if(graph.getSourceSlot(inputSlot) == null) {
+                result.add(inputSlot);
+            }
+        }
+        return result;
+    }
+
     public ACAQDataSlot getFirstOutputSlot() {
         return getOutputSlots().get(0);
     }

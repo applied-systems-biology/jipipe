@@ -2,8 +2,7 @@ package org.hkijena.acaq5.api.traits;
 
 import com.google.common.reflect.TypeToken;
 import org.hkijena.acaq5.api.ACAQDocumentation;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.algorithm.ACAQDefaultAlgorithmDeclaration;
+import org.hkijena.acaq5.api.ACAQHidden;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 
 import java.lang.reflect.InvocationTargetException;
@@ -109,6 +108,6 @@ public class ACAQDefaultTraitDeclaration extends ACAQMutableTraitDeclaration {
      * @return
      */
     static boolean isHidden(Class<? extends ACAQTrait> klass) {
-        return klass.getAnnotationsByType(HiddenTrait.class).length > 0;
+        return klass.getAnnotationsByType(ACAQHidden.class).length > 0;
     }
 }

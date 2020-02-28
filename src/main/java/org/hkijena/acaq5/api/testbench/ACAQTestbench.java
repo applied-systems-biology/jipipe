@@ -13,17 +13,15 @@ import java.util.function.Supplier;
 public class ACAQTestbench implements ACAQRunnable {
     private ACAQProject project;
     private ACAQAlgorithmGraph graph;
-    private ACAQProjectCompartment sample;
     private ACAQAlgorithm targetAlgorithm;
     private Path workDirectory;
 
     private ACAQRun testbenchRun;
     private ACAQAlgorithm benchedAlgorithm;
 
-    public ACAQTestbench(ACAQProject project, ACAQAlgorithmGraph graph, ACAQProjectCompartment sample, ACAQAlgorithm targetAlgorithm, Path workDirectory) {
+    public ACAQTestbench(ACAQProject project, ACAQAlgorithmGraph graph, ACAQAlgorithm targetAlgorithm, Path workDirectory) {
         this.project = project;
         this.graph = graph;
-        this.sample = sample;
         this.targetAlgorithm = targetAlgorithm;
         this.workDirectory = workDirectory;
 
@@ -49,10 +47,6 @@ public class ACAQTestbench implements ACAQRunnable {
 
     public ACAQProject getProject() {
         return project;
-    }
-
-    public ACAQProjectCompartment getSample() {
-        return sample;
     }
 
     public ACAQAlgorithm getTargetAlgorithm() {

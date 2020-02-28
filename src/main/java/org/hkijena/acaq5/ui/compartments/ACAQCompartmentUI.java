@@ -1,11 +1,10 @@
 package org.hkijena.acaq5.ui.compartments;
 
-import org.hkijena.acaq5.api.ACAQProjectCompartment;
+import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphUI;
 
-import javax.swing.*;
 import java.awt.BorderLayout;
 
 public class ACAQCompartmentUI extends ACAQUIPanel {
@@ -16,7 +15,6 @@ public class ACAQCompartmentUI extends ACAQUIPanel {
     public ACAQCompartmentUI(ACAQWorkbenchUI workbenchUI, ACAQProjectCompartment compartment) {
         super(workbenchUI);
         this.compartment = compartment;
-
         initialize();
     }
 
@@ -24,7 +22,7 @@ public class ACAQCompartmentUI extends ACAQUIPanel {
         setLayout(new BorderLayout());
         initializeToolbar();
 
-        graphUI = new ACAQAlgorithmGraphUI(getWorkbenchUI(), compartment.getProject().getGraph(), compartment.getName());
+        graphUI = new ACAQAlgorithmGraphUI(getWorkbenchUI(), compartment.getProject().getGraph(), compartment.getProjectCompartmentId());
         add(graphUI, BorderLayout.CENTER);
     }
 

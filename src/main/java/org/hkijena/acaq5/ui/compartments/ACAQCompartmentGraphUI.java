@@ -1,39 +1,42 @@
-package org.hkijena.acaq5.ui.grapheditor;
+package org.hkijena.acaq5.ui.compartments;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.ACAQRegistryService;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
-import org.hkijena.acaq5.api.data.ACAQData;
-import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
+import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
+import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
-import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.events.OpenSettingsUIRequestedEvent;
-import org.hkijena.acaq5.ui.grapheditor.settings.ACAQAlgorithmSettingsPanelUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Cursor;
+import java.awt.Point;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Set;
 
-public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, MouseMotionListener {
+import static org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph.COMPARTMENT_DEFAULT;
+
+public class ACAQCompartmentGraphUI extends ACAQUIPanel implements MouseListener, MouseMotionListener {
 
     private ACAQAlgorithmGraphCanvasUI graphUI;
     protected JMenuBar menuBar = new JMenuBar();
-    private ACAQAlgorithmGraph algorithmGraph;
-    private String compartment;
+    private ACAQAlgorithmGraph compartmentGraph;
 
     private JSplitPane splitPane;
     private JScrollPane scrollPane;
-    private ACAQAlgorithmSettingsPanelUI currentAlgorithmSettings;
+    private ACAQCompartmentSettingsPanelUI currentAlgorithmSettings;
     private JToggleButton autoLayoutButton;
 
     private Point panningOffset = null;
@@ -41,10 +44,9 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
     private boolean isPanning = false;
     private JToggleButton switchPanningDirectionButton;
 
-    public ACAQAlgorithmGraphUI(ACAQWorkbenchUI workbenchUI, ACAQAlgorithmGraph algorithmGraph, String compartment) {
+    public ACAQCompartmentGraphUI(ACAQWorkbenchUI workbenchUI) {
         super(workbenchUI);
-        this.algorithmGraph = algorithmGraph;
-        this.compartment = compartment;
+        this.compartmentGraph = workbenchUI.getProject().getCompartmentGraph();
         initialize();
     }
 
@@ -61,7 +63,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
             }
         });
 
-        graphUI = new ACAQAlgorithmGraphCanvasUI(algorithmGraph, compartment);
+        graphUI = new ACAQAlgorithmGraphCanvasUI(compartmentGraph, COMPARTMENT_DEFAULT);
         graphUI.getEventBus().register(this);
         graphUI.addMouseListener(this);
         graphUI.addMouseMotionListener(this);
@@ -74,7 +76,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
         splitPane.setLeftComponent(scrollPane);
         splitPane.setRightComponent(new MarkdownReader(false) {
             {
-                loadFromResource("documentation/algorithm-graph.md");
+                loadFromResource("documentation/compartment-graph.md");
             }
         });
         add(splitPane, BorderLayout.CENTER);
@@ -120,85 +122,30 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
     }
 
     protected void initializeAddNodesMenus() {
-        JMenu addDataSourceMenu = new JMenu("Add data");
-        addDataSourceMenu.setIcon(UIUtils.getIconFromResources("database.png"));
-        initializeAddDataSourceMenu(addDataSourceMenu);
-        menuBar.add(addDataSourceMenu);
-
-        JMenu addFilesystemMenu = new JMenu("Filesystem");
-        addFilesystemMenu.setIcon(UIUtils.getIconFromResources("tree.png"));
-        initializeMenuForCategory(addFilesystemMenu, ACAQAlgorithmCategory.FileSystem);
-        menuBar.add(addFilesystemMenu);
-
-        JMenu addEnhancerMenu = new JMenu("Enhance");
-        addEnhancerMenu.setIcon(UIUtils.getIconFromResources("magic.png"));
-        initializeMenuForCategory(addEnhancerMenu, ACAQAlgorithmCategory.Enhancer);
-        menuBar.add(addEnhancerMenu);
-
-        JMenu addSegmenterMenu = new JMenu("Segment");
-        addSegmenterMenu.setIcon(UIUtils.getIconFromResources("data-types/binary.png"));
-        initializeMenuForCategory(addSegmenterMenu, ACAQAlgorithmCategory.Segmenter);
-        menuBar.add(addSegmenterMenu);
-
-        JMenu addConverterMenu = new JMenu("Convert");
-        addConverterMenu.setIcon(UIUtils.getIconFromResources("convert.png"));
-        initializeMenuForCategory(addConverterMenu, ACAQAlgorithmCategory.Converter);
-        menuBar.add(addConverterMenu);
-
-        JMenu addQuantifierMenu = new JMenu("Quantify");
-        addQuantifierMenu.setIcon(UIUtils.getIconFromResources("statistics.png"));
-        initializeMenuForCategory(addQuantifierMenu, ACAQAlgorithmCategory.Quantififer);
-        menuBar.add(addQuantifierMenu);
+        ACAQAlgorithmDeclaration declaration = ACAQAlgorithmRegistry.getInstance().getDefaultDeclarationFor(ACAQProjectCompartment.class);
+        JButton addItem = new JButton("Add new compartment", UIUtils.getIconFromResources("add.png"));
+        UIUtils.makeFlat(addItem);
+        addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
+        addItem.addActionListener(e -> addCompartment());
+        menuBar.add(addItem);
     }
 
-    protected void initializeMenuForCategory(JMenu menu, ACAQAlgorithmCategory category) {
-        ACAQRegistryService registryService = ACAQRegistryService.getInstance();
-        boolean isEmpty = true;
-        Icon icon = new ColorIcon(16, 16, category.getColor(0.1f, 0.9f));
-        for(ACAQAlgorithmDeclaration declaration : registryService.getAlgorithmRegistry().getAlgorithmsOfCategory(category)) {
-            JMenuItem addItem = new JMenuItem(declaration.getName(), icon);
-            addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
-            addItem.addActionListener(e -> algorithmGraph.insertNode(declaration.newInstance(), compartment));
-            menu.add(addItem);
-            isEmpty = false;
-        }
-        if(isEmpty)
-            menu.setVisible(false);
-    }
-
-    private void initializeAddDataSourceMenu(JMenu menu) {
-        ACAQRegistryService registryService = ACAQRegistryService.getInstance();
-        for(Class<? extends ACAQData> dataClass : registryService.getDatatypeRegistry().getRegisteredDataTypes()) {
-            if(ACAQDatatypeRegistry.getInstance().isHidden(dataClass))
-                continue;
-            Set<ACAQAlgorithmDeclaration> dataSources = registryService.getAlgorithmRegistry().getDataSourcesFor(dataClass);
-            boolean isEmpty = true;
-            Icon icon = registryService.getUIDatatypeRegistry().getIconFor(dataClass);
-            JMenu dataMenu = new JMenu(ACAQData.getNameOf(dataClass));
-            dataMenu.setIcon(icon);
-
-            for(ACAQAlgorithmDeclaration declaration : dataSources) {
-                JMenuItem addItem = new JMenuItem(declaration.getName(), icon);
-                addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
-                addItem.addActionListener(e -> algorithmGraph.insertNode(declaration.newInstance(), compartment));
-                dataMenu.add(addItem);
-                isEmpty = false;
-            }
-
-            menu.add(dataMenu);
-            if(isEmpty)
-                dataMenu.setVisible(false);
+    private void addCompartment() {
+        String compartmentName = UIUtils.getUniqueStringByDialog(this, "Please enter the name of the compartment",
+                "Compartment", s -> getProject().getCompartments().containsKey(s));
+        if(compartmentName != null && !compartmentName.trim().isEmpty()) {
+            getProject().addCompartment(compartmentName);
         }
     }
 
-    public ACAQAlgorithmGraph getAlgorithmGraph() {
-        return algorithmGraph;
+    public ACAQAlgorithmGraph getCompartmentGraph() {
+        return compartmentGraph;
     }
 
     @Subscribe
     public void onOpenAlgorithmSettings(OpenSettingsUIRequestedEvent event) {
-        if(currentAlgorithmSettings == null || currentAlgorithmSettings.getAlgorithm() != event.getUi().getAlgorithm()) {
-            currentAlgorithmSettings = new ACAQAlgorithmSettingsPanelUI(getWorkbenchUI(), algorithmGraph, event.getUi().getAlgorithm());
+        if(currentAlgorithmSettings == null || currentAlgorithmSettings.getCompartment() != event.getUi().getAlgorithm()) {
+            currentAlgorithmSettings = new ACAQCompartmentSettingsPanelUI(getWorkbenchUI(), (ACAQProjectCompartment) event.getUi().getAlgorithm());
             int dividerLocation = splitPane.getDividerLocation();
             splitPane.setRightComponent(currentAlgorithmSettings);
             splitPane.setDividerLocation(dividerLocation);
@@ -262,9 +209,5 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
     @Override
     public void mouseMoved(MouseEvent e) {
 
-    }
-
-    public String getCompartment() {
-        return compartment;
     }
 }
