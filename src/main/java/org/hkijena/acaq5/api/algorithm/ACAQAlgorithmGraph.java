@@ -453,11 +453,13 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
             return;
 
         for (Map.Entry<String, JsonNode> kv : ImmutableList.copyOf(node.get("nodes").fields())) {
-            String declarationInfo = kv.getValue().get("acaq:algorithm-type").asText();
-            ACAQAlgorithmDeclaration declaration = ACAQAlgorithmRegistry.getInstance().getDeclarationById(declarationInfo);
-            ACAQAlgorithm algorithm = declaration.newInstance();
-            algorithm.fromJson(kv.getValue());
-            insertNode(StringUtils.jsonify(kv.getKey()), algorithm, algorithm.getCompartment());
+            if(!algorithms.containsKey(kv.getKey())) {
+                String declarationInfo = kv.getValue().get("acaq:algorithm-type").asText();
+                ACAQAlgorithmDeclaration declaration = ACAQAlgorithmRegistry.getInstance().getDeclarationById(declarationInfo);
+                ACAQAlgorithm algorithm = declaration.newInstance();
+                algorithm.fromJson(kv.getValue());
+                insertNode(StringUtils.jsonify(kv.getKey()), algorithm, algorithm.getCompartment());
+            }
         }
 
         // Load edges
@@ -466,7 +468,8 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
             ACAQAlgorithm targetAlgorithm = algorithms.get(StringUtils.jsonify(edgeNode.get("target-algorithm").asText()));
             ACAQDataSlot source = sourceAlgorithm.getSlots().get(StringUtils.makeFilesystemCompatible(edgeNode.get("source-slot").asText()));
             ACAQDataSlot target = targetAlgorithm.getSlots().get(StringUtils.makeFilesystemCompatible(edgeNode.get("target-slot").asText()));
-            connect(source, target);
+            if(!graph.containsEdge(source, target))
+                connect(source, target);
         }
     }
 

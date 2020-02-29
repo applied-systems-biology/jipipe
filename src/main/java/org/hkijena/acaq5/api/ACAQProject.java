@@ -194,6 +194,9 @@ public class ACAQProject implements ACAQValidatable {
                 project.initializeCompartment(compartment);
             }
 
+            // Reading compartments might break some connections. This will restore them
+            project.graph.fromJson(node.get("algorithm-graph"));
+
             // Update node visibilities
             project.updateCompartmentVisibility();
 
