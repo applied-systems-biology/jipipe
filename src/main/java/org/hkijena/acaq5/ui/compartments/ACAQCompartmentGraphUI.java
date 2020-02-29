@@ -96,11 +96,12 @@ public class ACAQCompartmentGraphUI extends ACAQUIPanel implements MouseListener
         menuBar.add(Box.createHorizontalGlue());
         switchPanningDirectionButton = new JToggleButton(UIUtils.getIconFromResources("cursor-arrow.png"));
         switchPanningDirectionButton.setToolTipText("Reverse panning direction");
-        UIUtils.makeFlat(switchPanningDirectionButton);
+        UIUtils.makeFlat25x25(switchPanningDirectionButton);
         switchPanningDirectionButton.setToolTipText("Changes the direction how panning (middle mouse button) affects the view.");
         menuBar.add(switchPanningDirectionButton);
 
         autoLayoutButton = new JToggleButton(UIUtils.getIconFromResources("sort.png"), true);
+        UIUtils.makeFlat25x25(autoLayoutButton);
         autoLayoutButton.setToolTipText("Auto layout");
         graphUI.setLayoutHelperEnabled(true);
         autoLayoutButton.addActionListener(e -> graphUI.setLayoutHelperEnabled(autoLayoutButton.isSelected()));
@@ -108,7 +109,7 @@ public class ACAQCompartmentGraphUI extends ACAQUIPanel implements MouseListener
 
         JButton createScreenshotButton = new JButton(UIUtils.getIconFromResources("filetype-image.png"));
         createScreenshotButton.setToolTipText("Export graph as *.png");
-        UIUtils.makeFlat(createScreenshotButton);
+        UIUtils.makeFlat25x25(createScreenshotButton);
         createScreenshotButton.addActionListener(e -> createScreenshot());
         menuBar.add(createScreenshotButton);
     }
