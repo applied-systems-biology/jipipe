@@ -19,6 +19,8 @@ import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -34,17 +36,18 @@ public class FileSelection extends JPanel {
     private IOMode ioMode;
     private PathMode pathMode;
     private Set<ActionListener> listeners = new HashSet<>();
+    private JButton generateRandomButton;
 
     public FileSelection() {
-        this.ioMode = IOMode.Open;
         setPathMode(PathMode.FilesOnly);
         initialize();
+        setIoMode(IOMode.Open);
     }
 
     public FileSelection(IOMode ioMode, PathMode pathMode) {
-        this.ioMode = ioMode;
         setPathMode(pathMode);
         initialize();
+        setIoMode(ioMode);
     }
 
     private void initialize() {
@@ -64,8 +67,11 @@ public class FileSelection extends JPanel {
             }
         });
 
-        JButton selectButton = new JButton(UIUtils.getIconFromResources("open.png"));
-        add(selectButton, new GridBagConstraints() {
+        generateRandomButton = new JButton(UIUtils.getIconFromResources("random.png"));
+        generateRandomButton.setToolTipText("Generate random file or folder");
+        UIUtils.makeFlat25x25(generateRandomButton);
+        generateRandomButton.addActionListener(e -> generateRandom());
+        add(generateRandomButton, new GridBagConstraints() {
             {
                 anchor = GridBagConstraints.PAGE_START;
                 gridx = 1;
@@ -73,18 +79,18 @@ public class FileSelection extends JPanel {
             }
         });
 
-        selectButton.addActionListener(actionEvent -> {
-            if(ioMode == ioMode.Open) {
-                if(getFileChooser().showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-                    pathEdit.setText(getFileChooser().getSelectedFile().toString());
-                }
-            }
-            else {
-                if(getFileChooser().showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-                    pathEdit.setText(getFileChooser().getSelectedFile().toString());
-                }
+        JButton selectButton = new JButton(UIUtils.getIconFromResources("open.png"));
+        selectButton.setToolTipText("Select from filesystem");
+        UIUtils.makeFlat25x25(selectButton);
+        add(selectButton, new GridBagConstraints() {
+            {
+                anchor = GridBagConstraints.PAGE_START;
+                gridx = 2;
+                gridy = 0;
             }
         });
+
+        selectButton.addActionListener(e -> selectFromFilesystem());
 
         pathEdit.getDocument().addDocumentListener(new DocumentChangeListener() {
             @Override
@@ -92,6 +98,32 @@ public class FileSelection extends JPanel {
                 postAction();
             }
         });
+    }
+
+    private void selectFromFilesystem() {
+        if(ioMode == IOMode.Open) {
+            if(getFileChooser().showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+                pathEdit.setText(getFileChooser().getSelectedFile().toString());
+            }
+        }
+        else {
+            if(getFileChooser().showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+                pathEdit.setText(getFileChooser().getSelectedFile().toString());
+            }
+        }
+    }
+
+    private void generateRandom() {
+        try {
+            if(pathMode == PathMode.DirectoriesOnly) {
+                setPath(Files.createTempDirectory("ACAQ5"));
+            }
+            else {
+                setPath(Files.createTempFile("ACAQ5", null));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void setPath(Path path) {
@@ -129,6 +161,7 @@ public class FileSelection extends JPanel {
 
     public void setIoMode(IOMode ioMode) {
         this.ioMode = ioMode;
+        generateRandomButton.setVisible(ioMode == IOMode.Save);
     }
 
     public PathMode getPathMode() {

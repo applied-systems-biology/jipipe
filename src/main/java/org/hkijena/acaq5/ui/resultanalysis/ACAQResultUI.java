@@ -7,11 +7,14 @@ import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.IOException;
 
 public class ACAQResultUI extends ACAQUIPanel {
     private ACAQRun run;
     private JSplitPane splitPane;
+    private ACAQResultAlgorithmTree algorithmTree;
 
     public ACAQResultUI(ACAQWorkbenchUI workbenchUI, ACAQRun run) {
         super(workbenchUI);
@@ -21,12 +24,26 @@ public class ACAQResultUI extends ACAQUIPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
+        algorithmTree = new ACAQResultAlgorithmTree(getWorkbenchUI(), run);
+
+        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, algorithmTree,
+        new JPanel());
+        splitPane.setDividerSize(3);
+        splitPane.setResizeWeight(0.33);
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                splitPane.setDividerLocation(0.33);
+            }
+        });
+        add(splitPane, BorderLayout.CENTER);
+
 //        ACAQResultSampleManagerUI sampleManagerUI = new ACAQResultSampleManagerUI(this);
 //
 //        MarkdownReader documentation = new MarkdownReader(false);
 //        documentation.loadFromResource("documentation/result-analysis.md");
-//        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sampleManagerUI,
-//                documentation);
+
 //        add(splitPane, BorderLayout.CENTER);
 //
 //        sampleManagerUI.getSampleTree().addTreeSelectionListener(e -> {

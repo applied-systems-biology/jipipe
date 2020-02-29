@@ -23,7 +23,7 @@ public class ACAQMutableRunConfiguration implements ACAQRunConfiguration {
     @Override
     @ACAQParameter("output-path")
     @ACAQDocumentation(name = "Output folder")
-    @FilePathParameterSettings(ioMode = FileSelection.IOMode.Open, pathMode = FileSelection.PathMode.DirectoriesOnly)
+    @FilePathParameterSettings(ioMode = FileSelection.IOMode.Save, pathMode = FileSelection.PathMode.DirectoriesOnly)
     public Path getOutputPath() {
         return outputPath;
     }

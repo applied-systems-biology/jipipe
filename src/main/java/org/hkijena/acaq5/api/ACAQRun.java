@@ -22,6 +22,7 @@ public class ACAQRun implements ACAQRunnable {
     private ACAQProject project;
     ACAQAlgorithmGraph algorithmGraph;
     private ACAQRunConfiguration configuration;
+    private List<ACAQAlgorithm> lastExecutedAlgorithms = new ArrayList<>();
 
     public ACAQRun(ACAQProject project, ACAQRunConfiguration configuration) {
         this.project = project;
@@ -96,6 +97,7 @@ public class ACAQRun implements ACAQRunnable {
     public void run(Consumer<ACAQRunnerStatus> onProgress, Supplier<Boolean> isCancelled) {
         prepare();
         Set<ACAQAlgorithm> executedAlgorithms = new HashSet<>();
+        lastExecutedAlgorithms.clear();
         List<ACAQDataSlot> traversedSlots = algorithmGraph.traverse();
 
         // Update algorithm limits that may be used by
@@ -135,6 +137,7 @@ public class ACAQRun implements ACAQRunnable {
                     onProgress.accept(new ACAQRunnerStatus(i, algorithmGraph.getSlotCount(), "Algorithm: " + slot.getAlgorithm().getName()));
                     slot.getAlgorithm().run();
                     executedAlgorithms.add(slot.getAlgorithm());
+                    lastExecutedAlgorithms.add(slot.getAlgorithm());
                 }
 
                 // Check if we can flush the output
@@ -187,4 +190,7 @@ public class ACAQRun implements ACAQRunnable {
     }
 
 
+    public List<ACAQAlgorithm> getLastExecutedAlgorithms() {
+        return lastExecutedAlgorithms;
+    }
 }
