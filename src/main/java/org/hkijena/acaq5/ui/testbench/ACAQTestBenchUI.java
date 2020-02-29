@@ -48,7 +48,7 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
         backupList.add(new ACAQAlgorithmBackup(runAlgorithm));
 
         // Force to only run the end algorithm
-        ((ACAQMutableRunConfiguration)run.getConfiguration()).setOnlyRunningEndAlgorithm(true);
+        ((ACAQMutableRunConfiguration) run.getConfiguration()).setOnlyRunningEndAlgorithm(true);
 
         initialize();
         updateBackupSelection();
@@ -84,7 +84,7 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
 
         toolBar.add(Box.createHorizontalStrut(8));
 
-        JLabel algorithmInfo = new JLabel(projectAlgorithm.getName(),  new ColorIcon(16, 16,
+        JLabel algorithmInfo = new JLabel(projectAlgorithm.getName(), new ColorIcon(16, 16,
                 UIUtils.getFillColorFor(projectAlgorithm.getDeclaration())), JLabel.LEFT);
         algorithmInfo.setToolTipText(TooltipUtils.getAlgorithmTooltip(projectAlgorithm.getDeclaration()));
         toolBar.add(algorithmInfo);
@@ -94,7 +94,7 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
         backupSelection = new JComboBox<>();
         backupSelection.setRenderer(new ACAQDataSlotBackupListCellRenderer());
         backupSelection.addActionListener(e -> {
-            if(backupSelection.getSelectedItem() != null)
+            if (backupSelection.getSelectedItem() != null)
                 loadBackup((ACAQAlgorithmBackup) backupSelection.getSelectedItem());
         });
         toolBar.add(backupSelection);
@@ -124,7 +124,7 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
     }
 
     private void copyParameters() {
-        if(backupSelection.getSelectedItem() instanceof ACAQAlgorithmBackup) {
+        if (backupSelection.getSelectedItem() instanceof ACAQAlgorithmBackup) {
             ACAQAlgorithmBackup backup = (ACAQAlgorithmBackup) backupSelection.getSelectedItem();
             backup.restoreParameters(projectAlgorithm);
             projectAlgorithm.getEventBus().post(new ReloadSettingsRequestedEvent(projectAlgorithm));
@@ -133,9 +133,9 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
     }
 
     private void renameCurrentBackup() {
-        if(backupSelection.getSelectedItem() instanceof ACAQAlgorithmBackup) {
+        if (backupSelection.getSelectedItem() instanceof ACAQAlgorithmBackup) {
             ACAQAlgorithmBackup backup = (ACAQAlgorithmBackup) backupSelection.getSelectedItem();
-            String newName = JOptionPane.showInputDialog(this,"Please enter a label", backup.getLabel());
+            String newName = JOptionPane.showInputDialog(this, "Please enter a label", backup.getLabel());
             backup.setLabel(newName);
             updateBackupSelection();
         }
@@ -150,7 +150,7 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
     private void updateBackupSelection() {
         Object currentSelection = backupSelection.getSelectedItem();
         DefaultComboBoxModel<ACAQAlgorithmBackup> model = new DefaultComboBoxModel<>(backupList.toArray(new ACAQAlgorithmBackup[0]));
-        if(currentSelection != null && backupList.contains(currentSelection))
+        if (currentSelection != null && backupList.contains(currentSelection))
             model.setSelectedItem(currentSelection);
         backupSelection.setModel(model);
     }
@@ -160,7 +160,7 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
         // Check if we are still valid
         ACAQValidityReport report = new ACAQValidityReport();
         runAlgorithm.reportValidity(report);
-        if(!report.isValid()) {
+        if (!report.isValid()) {
             UIUtils.openValidityReportDialog(this, report);
             return;
         }
@@ -173,15 +173,15 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
             outputPath = outputBasePath.resolve("test-" + index);
             ++index;
         }
-        while(Files.isDirectory(outputPath));
-        ((ACAQMutableRunConfiguration)run.getConfiguration()).setOutputPath(outputPath);
+        while (Files.isDirectory(outputPath));
+        ((ACAQMutableRunConfiguration) run.getConfiguration()).setOutputPath(outputPath);
 
         ACAQRunnerQueue.getInstance().enqueue(run);
     }
 
     @Subscribe
     public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
-        if(event.getRun() == run) {
+        if (event.getRun() == run) {
             newTestButton.setEnabled(true);
             backupList.add(new ACAQAlgorithmBackup(runAlgorithm));
             updateBackupSelection();
@@ -191,7 +191,7 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
 
     @Subscribe
     public void onWorkerInterrupted(RunUIWorkerInterruptedEvent event) {
-        if(event.getRun() == run) {
+        if (event.getRun() == run) {
             newTestButton.setEnabled(true);
             UIUtils.openErrorDialog(this, event.getException());
         }

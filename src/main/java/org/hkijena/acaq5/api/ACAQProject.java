@@ -20,7 +20,6 @@ import org.hkijena.acaq5.api.compartments.datatypes.ACAQCompartmentOutputData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
-import org.hkijena.acaq5.api.events.CompartmentAddedEvent;
 import org.hkijena.acaq5.api.events.CompartmentRemovedEvent;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.utils.JsonUtils;
@@ -28,12 +27,7 @@ import org.hkijena.acaq5.utils.StringUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * An ACAQ5 project.
@@ -65,10 +59,6 @@ public class ACAQProject implements ACAQValidatable {
         mapper.writerWithDefaultPrettyPrinter().writeValue(fileName.toFile(), this);
     }
 
-    public static ACAQProject loadProject(Path fileName) throws IOException {
-        return JsonUtils.getObjectMapper().readerFor(ACAQProject.class).readValue(fileName.toFile());
-    }
-
     public BiMap<String, ACAQProjectCompartment> getCompartments() {
         return ImmutableBiMap.copyOf(compartments);
     }
@@ -84,8 +74,8 @@ public class ACAQProject implements ACAQValidatable {
     public void connectCompartments(ACAQProjectCompartment source, ACAQProjectCompartment target) {
         ACAQDataSlot sourceSlot = source.getFirstOutputSlot();
         List<ACAQDataSlot> openInputSlots = target.getOpenInputSlots();
-        if(openInputSlots.isEmpty()) {
-            ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration)target.getSlotConfiguration();
+        if (openInputSlots.isEmpty()) {
+            ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) target.getSlotConfiguration();
             slotConfiguration.addInputSlot(StringUtils.makeUniqueString(source.getName(), slotConfiguration::hasSlot), ACAQCompartmentOutputData.class);
             openInputSlots = target.getOpenInputSlots();
         }
@@ -96,11 +86,11 @@ public class ACAQProject implements ACAQValidatable {
         compartment.setProject(this);
         ACAQCompartmentOutput compartmentOutput = null;
         for (ACAQAlgorithm algorithm : graph.getAlgorithmNodes().values()) {
-            if(algorithm instanceof ACAQCompartmentOutput && algorithm.getCompartment().equals(compartment.getProjectCompartmentId())) {
-                 compartmentOutput = (ACAQCompartmentOutput) algorithm;
+            if (algorithm instanceof ACAQCompartmentOutput && algorithm.getCompartment().equals(compartment.getProjectCompartmentId())) {
+                compartmentOutput = (ACAQCompartmentOutput) algorithm;
             }
         }
-        if(compartmentOutput == null) {
+        if (compartmentOutput == null) {
             compartmentOutput = (ACAQCompartmentOutput) ACAQAlgorithmRegistry.getInstance().getDefaultDeclarationFor(ACAQCompartmentOutput.class).newInstance();
             compartmentOutput.setCustomName(compartment.getName() + " output");
             compartmentOutput.setCompartment(compartment.getProjectCompartmentId());
@@ -123,10 +113,10 @@ public class ACAQProject implements ACAQValidatable {
 
         // Remove invalid connections in the project graph
         for (ACAQAlgorithmGraphEdge edge : ImmutableList.copyOf(graph.getGraph().edgeSet())) {
-            if(graph.getGraph().containsEdge(edge)) {
+            if (graph.getGraph().containsEdge(edge)) {
                 ACAQDataSlot source = graph.getGraph().getEdgeSource(edge);
                 ACAQDataSlot target = graph.getGraph().getEdgeTarget(edge);
-                if(!source.getAlgorithm().isVisibleIn(target.getAlgorithm().getCompartment())) {
+                if (!source.getAlgorithm().isVisibleIn(target.getAlgorithm().getCompartment())) {
                     graph.disconnect(source, target, false);
                 }
             }
@@ -137,10 +127,10 @@ public class ACAQProject implements ACAQValidatable {
 
     @Subscribe
     public void onCompartmentGraphChanged(AlgorithmGraphChangedEvent event) {
-        if(event.getAlgorithmGraph() == compartmentGraph) {
+        if (event.getAlgorithmGraph() == compartmentGraph) {
             for (ACAQAlgorithm algorithm : compartmentGraph.getAlgorithmNodes().values()) {
-                ACAQProjectCompartment compartment = (ACAQProjectCompartment)algorithm;
-                if(!compartment.isInitialized()) {
+                ACAQProjectCompartment compartment = (ACAQProjectCompartment) algorithm;
+                if (!compartment.isInitialized()) {
                     compartments.put(compartment.getProjectCompartmentId(), compartment);
                     initializeCompartment(compartment);
                 }
@@ -164,6 +154,10 @@ public class ACAQProject implements ACAQValidatable {
         updateCompartmentVisibility();
         compartmentGraph.removeNode(compartment);
         eventBus.post(new CompartmentRemovedEvent(compartment));
+    }
+
+    public static ACAQProject loadProject(Path fileName) throws IOException {
+        return JsonUtils.getObjectMapper().readerFor(ACAQProject.class).readValue(fileName.toFile());
     }
 
     public static class Serializer extends JsonSerializer<ACAQProject> {
@@ -194,7 +188,7 @@ public class ACAQProject implements ACAQValidatable {
             // read compartments
             project.compartmentGraph.fromJson(node.get("compartments").get("compartment-graph"));
             for (ACAQAlgorithm algorithm : project.compartmentGraph.getAlgorithmNodes().values()) {
-                ACAQProjectCompartment compartment = (ACAQProjectCompartment)algorithm;
+                ACAQProjectCompartment compartment = (ACAQProjectCompartment) algorithm;
                 compartment.setProject(project);
                 project.compartments.put(compartment.getProjectCompartmentId(), compartment);
                 project.initializeCompartment(compartment);

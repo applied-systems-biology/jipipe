@@ -1,7 +1,6 @@
 package org.hkijena.acaq5.ui.resultanalysis;
 
 import org.hkijena.acaq5.api.ACAQRun;
-import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
@@ -9,7 +8,6 @@ import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.TooltipUtils;
-import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
@@ -53,7 +51,7 @@ public class ACAQResultDataSlotUI extends ACAQUIPanel {
 
     private void showDataRows(int[] selectedRows) {
         rowUIList.clear();
-        for(int row : selectedRows) {
+        for (int row : selectedRows) {
             ACAQExportedDataTable.Row rowInstance = dataTable.getRowList().get(row);
             JLabel nameLabel = new JLabel(rowInstance.getLocation().toString(), ACAQUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()), JLabel.LEFT);
             nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot));

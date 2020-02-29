@@ -55,18 +55,17 @@ public class ACAQRunnerQueueUI extends JPanel {
     }
 
     private void cancelRun() {
-        if(ACAQRunnerQueue.getInstance().getCurrentRun() != null)
+        if (ACAQRunnerQueue.getInstance().getCurrentRun() != null)
             ACAQRunnerQueue.getInstance().cancel(ACAQRunnerQueue.getInstance().getCurrentRun());
     }
 
     public void updateStatus() {
-        if(ACAQRunnerQueue.getInstance().getCurrentRun() != null) {
+        if (ACAQRunnerQueue.getInstance().getCurrentRun() != null) {
             removeAll();
             add(runningQueuePanel, BorderLayout.EAST);
             revalidate();
             repaint();
-        }
-        else {
+        } else {
             removeAll();
             add(emptyQueuePanel, BorderLayout.EAST);
             revalidate();
@@ -93,7 +92,7 @@ public class ACAQRunnerQueueUI extends JPanel {
     public void onWorkerProgress(RunUIWorkerProgressEvent event) {
         runningQueueProgress.setMaximum(event.getStatus().getMaxProgress());
         runningQueueProgress.setValue(event.getStatus().getProgress());
-        if(event.getStatus().getMessage() != null)
+        if (event.getStatus().getMessage() != null)
             runningQueueProgress.setToolTipText("(" + runningQueueProgress.getValue() + "/" + runningQueueProgress.getMaximum() + ") " +
                     event.getStatus().getMessage());
     }

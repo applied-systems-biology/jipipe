@@ -43,38 +43,36 @@ public class ACAQDataSlotUI extends JPanel {
     private void reloadPopupMenu() {
         assignButtonMenu.removeAll();
 
-        if(slot.isInput()) {
-            if(graph.getSourceSlot(slot) == null) {
+        if (slot.isInput()) {
+            if (graph.getSourceSlot(slot) == null) {
                 Set<ACAQDataSlot> availableSources = graph.getAvailableSources(slot);
                 availableSources.removeIf(slot -> !slot.getAlgorithm().isVisibleIn(compartment));
-                for(ACAQDataSlot source : availableSources) {
-                    if(!source.getAlgorithm().isVisibleIn(compartment))
+                for (ACAQDataSlot source : availableSources) {
+                    if (!source.getAlgorithm().isVisibleIn(compartment))
                         continue;
                     JMenuItem connectButton = new JMenuItem(source.getNameWithAlgorithmName(),
                             ACAQUIDatatypeRegistry.getInstance().getIconFor(source.getAcceptedDataType()));
                     connectButton.addActionListener(e -> connectSlot(source, slot));
                     assignButtonMenu.add(connectButton);
                 }
-            }
-            else {
+            } else {
                 JMenuItem disconnectButton = new JMenuItem("Disconnect", UIUtils.getIconFromResources("remove.png"));
                 disconnectButton.addActionListener(e -> disconnectSlot());
                 assignButtonMenu.add(disconnectButton);
             }
-        }
-        else if(slot.isOutput()) {
+        } else if (slot.isOutput()) {
             Set<ACAQDataSlot> targetSlots = graph.getTargetSlots(slot);
-            if(!targetSlots.isEmpty()) {
+            if (!targetSlots.isEmpty()) {
 
                 boolean allowDisconnect = false;
                 for (ACAQDataSlot targetSlot : targetSlots) {
-                    if(graph.canUserDisconnect(slot, targetSlot)) {
+                    if (graph.canUserDisconnect(slot, targetSlot)) {
                         allowDisconnect = true;
                         break;
                     }
                 }
 
-                if(allowDisconnect) {
+                if (allowDisconnect) {
                     JMenuItem disconnectButton = new JMenuItem("Disconnect all", UIUtils.getIconFromResources("remove.png"));
                     disconnectButton.addActionListener(e -> disconnectSlot());
                     assignButtonMenu.add(disconnectButton);
@@ -89,10 +87,10 @@ public class ACAQDataSlotUI extends JPanel {
             findAlgorithmButton.setToolTipText("Opens a tool to find a matching algorithm based on the data");
             findAlgorithmButton.addActionListener(e -> findAlgorithm(slot));
             assignButtonMenu.add(findAlgorithmButton);
-            if(!availableTargets.isEmpty())
+            if (!availableTargets.isEmpty())
                 assignButtonMenu.addSeparator();
 
-            for(ACAQDataSlot target : availableTargets) {
+            for (ACAQDataSlot target : availableTargets) {
                 JMenuItem connectButton = new JMenuItem(target.getNameWithAlgorithmName(),
                         ACAQUIDatatypeRegistry.getInstance().getIconFor(target.getAcceptedDataType()));
                 connectButton.addActionListener(e -> connectSlot(slot, target));
@@ -123,26 +121,23 @@ public class ACAQDataSlotUI extends JPanel {
     }
 
     private void reloadButtonStatus() {
-        if(slot.isInput()) {
+        if (slot.isInput()) {
             if (graph.getSourceSlot(slot) == null) {
                 assignButton.setIcon(UIUtils.getIconFromResources("chevron-right-thin.png"));
-            }
-            else {
+            } else {
                 assignButton.setIcon(UIUtils.getIconFromResources("chevron-right.png"));
             }
-        }
-        else if(slot.isOutput()) {
+        } else if (slot.isOutput()) {
             if (graph.getTargetSlots(slot).isEmpty()) {
                 assignButton.setIcon(UIUtils.getIconFromResources("chevron-right-thin.png"));
-            }
-            else {
+            } else {
                 assignButton.setIcon(UIUtils.getIconFromResources("chevron-right.png"));
             }
         }
     }
 
     private void connectSlot(ACAQDataSlot source, ACAQDataSlot target) {
-        if(graph.canConnect(source, target)) {
+        if (graph.canConnect(source, target)) {
             graph.connect(source, target);
         }
     }
@@ -159,14 +154,13 @@ public class ACAQDataSlotUI extends JPanel {
         assignButtonMenu = UIUtils.addPopupMenuToComponent(assignButton);
         UIUtils.makeFlat(assignButton);
 
-        if(slot.getAlgorithm() instanceof ACAQCompartmentOutput) {
-            if(slot.getAlgorithm().getCompartment().equals(compartment)) {
-                if(slot.isOutput()) {
+        if (slot.getAlgorithm() instanceof ACAQCompartmentOutput) {
+            if (slot.getAlgorithm().getCompartment().equals(compartment)) {
+                if (slot.isOutput()) {
                     assignButton.setEnabled(false);
                 }
-            }
-            else {
-                if(slot.isInput()) {
+            } else {
+                if (slot.isInput()) {
                     assignButton.setEnabled(false);
                 }
             }
@@ -179,13 +173,13 @@ public class ACAQDataSlotUI extends JPanel {
 
         JLabel nameLabel = new JLabel(getDisplayedName());
         nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot, graph, false));
-        nameLabel.setBorder(BorderFactory.createEmptyBorder(0,5,0,5));
+        nameLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
         nameLabel.setIcon(ACAQUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()));
         centerPanel.add(nameLabel);
 //        add(nameLabel, BorderLayout.CENTER);
 
 
-        if(slot.isInput()) {
+        if (slot.isInput()) {
             add(assignButton, BorderLayout.WEST);
             nameLabel.setHorizontalAlignment(JLabel.LEFT);
             nameLabel.setHorizontalTextPosition(JLabel.RIGHT);
@@ -195,8 +189,7 @@ public class ACAQDataSlotUI extends JPanel {
 //                ACAQDataSlotTraitUI traitUI = new ACAQDataSlotTraitUI(graph, slot);
 //                add(traitUI, BorderLayout.EAST);
 //            }
-        }
-        else if(slot.isOutput()) {
+        } else if (slot.isOutput()) {
             add(assignButton, BorderLayout.EAST);
             nameLabel.setHorizontalAlignment(JLabel.RIGHT);
             nameLabel.setHorizontalTextPosition(JLabel.LEFT);
@@ -213,15 +206,13 @@ public class ACAQDataSlotUI extends JPanel {
     }
 
     public String getDisplayedName() {
-        if(slot.getAlgorithm() instanceof ACAQCompartmentOutput) {
-            if(slot.isOutput()) {
+        if (slot.getAlgorithm() instanceof ACAQCompartmentOutput) {
+            if (slot.isOutput()) {
                 return slot.getName().substring("Output ".length());
-            }
-            else {
+            } else {
                 return slot.getName();
             }
-        }
-        else {
+        } else {
             return slot.getName();
         }
     }
@@ -231,8 +222,8 @@ public class ACAQDataSlotUI extends JPanel {
         FontRenderContext frc = new FontRenderContext(null, false, false);
         TextLayout layout = new TextLayout(getDisplayedName(), getFont(), frc);
         double w = layout.getBounds().getWidth();
-        int labelWidth = (int)Math.ceil(w * 1.0 / SLOT_UI_WIDTH) * SLOT_UI_WIDTH;
-        int traitWidth = (int)Math.ceil(traitUI.calculateWidth() * 1.0 / SLOT_UI_WIDTH) * SLOT_UI_WIDTH;
+        int labelWidth = (int) Math.ceil(w * 1.0 / SLOT_UI_WIDTH) * SLOT_UI_WIDTH;
+        int traitWidth = (int) Math.ceil(traitUI.calculateWidth() * 1.0 / SLOT_UI_WIDTH) * SLOT_UI_WIDTH;
         int width = Math.max(labelWidth, traitWidth) + 75;
 
         return width;
@@ -244,7 +235,7 @@ public class ACAQDataSlotUI extends JPanel {
 
     @Subscribe
     public void onAlgorithmGraphChanged(AlgorithmGraphChangedEvent event) {
-        if(graph.containsNode(slot)) {
+        if (graph.containsNode(slot)) {
             reloadPopupMenu();
             reloadButtonStatus();
         }

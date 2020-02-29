@@ -49,7 +49,7 @@ public class ACAQAlgorithmSettingsPanelUI extends ACAQUIPanel {
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
 
-        if(algorithm.getCategory() != ACAQAlgorithmCategory.Internal) {
+        if (algorithm.getCategory() != ACAQAlgorithmCategory.Internal) {
             ACAQTestBenchSetupUI testBenchSetupUI = new ACAQTestBenchSetupUI(getWorkbenchUI(), algorithm, graph);
             tabbedPane.addTab("Testbench", UIUtils.getIconFromResources("testbench.png"),
                     testBenchSetupUI,

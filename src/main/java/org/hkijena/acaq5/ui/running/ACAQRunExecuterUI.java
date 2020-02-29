@@ -24,7 +24,7 @@ public class ACAQRunExecuterUI extends JPanel {
         setLayout(new BorderLayout(8, 8));
 
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(0,8,8,8));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 8, 8, 8));
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
         progressBar = new JProgressBar();
@@ -57,7 +57,7 @@ public class ACAQRunExecuterUI extends JPanel {
 
     @Subscribe
     public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
-        if(event.getRun() == run) {
+        if (event.getRun() == run) {
             cancelButton.setEnabled(false);
             progressBar.setString("Finished");
         }
@@ -65,7 +65,7 @@ public class ACAQRunExecuterUI extends JPanel {
 
     @Subscribe
     public void onWorkerInterrupted(RunUIWorkerFinishedEvent event) {
-        if(event.getRun() == run) {
+        if (event.getRun() == run) {
             cancelButton.setEnabled(false);
             progressBar.setString("Finished");
         }
@@ -73,7 +73,7 @@ public class ACAQRunExecuterUI extends JPanel {
 
     @Subscribe
     public void onWorkerProgress(RunUIWorkerProgressEvent event) {
-        if(event.getRun() == run) {
+        if (event.getRun() == run) {
             progressBar.setIndeterminate(false);
             progressBar.setMaximum(event.getStatus().getMaxProgress());
             progressBar.setValue(event.getStatus().getMaxProgress());

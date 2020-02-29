@@ -2,7 +2,6 @@ package org.hkijena.acaq5.ui.components;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
-import com.sun.org.apache.bcel.internal.classfile.ConstantString;
 import com.vladsch.flexmark.ast.Node;
 import com.vladsch.flexmark.ext.autolink.AutolinkExtension;
 import com.vladsch.flexmark.ext.tables.TablesExtension;
@@ -11,7 +10,6 @@ import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.options.MutableDataHolder;
 import com.vladsch.flexmark.util.options.MutableDataSet;
-import jdk.nashorn.internal.ir.debug.ClassHistogramElement;
 import org.hkijena.acaq5.utils.ResourceUtils;
 
 import java.io.IOException;
@@ -24,9 +22,6 @@ import java.util.Map;
 
 public class MarkdownDocument {
 
-    private static Map<Path, MarkdownDocument> fromFileCache = new HashMap<>();
-    private static Map<URL, MarkdownDocument> fromResourcesCache = new HashMap<>();
-
     static final MutableDataHolder OPTIONS = new MutableDataSet()
             .set(Parser.EXTENSIONS, Arrays.asList(TablesExtension.create(), AutolinkExtension.create(), TocExtension.create()));
     static final String[] CSS_RULES = {"body { font-family: \"Sans-serif\"; }",
@@ -36,7 +31,8 @@ public class MarkdownDocument {
             "h3 { padding-top: 30px; }",
             "th { border-bottom: 1px solid #c8c8c8; }",
             ".toc-list { list-style: none; }"};
-
+    private static Map<Path, MarkdownDocument> fromFileCache = new HashMap<>();
+    private static Map<URL, MarkdownDocument> fromResourcesCache = new HashMap<>();
     private String markdown;
     private String renderedHTML;
 
@@ -63,7 +59,7 @@ public class MarkdownDocument {
     public static MarkdownDocument fromFile(Path fileName) {
         try {
             MarkdownDocument existing = fromFileCache.getOrDefault(fileName, null);
-            if(existing != null)
+            if (existing != null)
                 return existing;
             String markdown = new String(Files.readAllBytes(fileName), Charsets.UTF_8);
             MarkdownDocument markdownDocument = new MarkdownDocument(markdown);
@@ -78,7 +74,7 @@ public class MarkdownDocument {
         try {
             URL resourcePath = ResourceUtils.getPluginResource(internalPath);
             MarkdownDocument existing = fromResourcesCache.getOrDefault(resourcePath, null);
-            if(existing != null)
+            if (existing != null)
                 return existing;
             String md = Resources.toString(resourcePath, Charsets.UTF_8);
             md = md.replace("image://", ResourceUtils.getPluginResource("").toString());

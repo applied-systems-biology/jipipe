@@ -6,11 +6,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.common.collect.ImmutableList;
-import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
 import org.hkijena.acaq5.api.events.TraitsChangedEvent;
-import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,12 +29,13 @@ public class ACAQMutableTraitGenerator extends ACAQTraitConfiguration {
 
     /**
      * Adds a trait to the specified output slot
+     *
      * @param outputSlotName
      * @param trait
      * @return
      */
     public ACAQMutableTraitGenerator addTraitTo(String outputSlotName, Class<? extends ACAQTrait> trait) {
-        if(!getSlotConfiguration().getSlots().containsKey(outputSlotName))
+        if (!getSlotConfiguration().getSlots().containsKey(outputSlotName))
             throw new IllegalArgumentException("Slot must exist!");
         modifyTasks.add(new ACAQMutableTraitModifier.ModifyTask(outputSlotName, ACAQMutableTraitModifier.ModificationType.ADD, trait));
         getEventBus().post(new TraitsChangedEvent(this));
@@ -46,6 +44,7 @@ public class ACAQMutableTraitGenerator extends ACAQTraitConfiguration {
 
     /**
      * Removes trait from specified output slot
+     *
      * @param outputSlotName
      * @param trait
      * @return
@@ -60,6 +59,7 @@ public class ACAQMutableTraitGenerator extends ACAQTraitConfiguration {
 
     /**
      * Returns the trais of specified slot
+     *
      * @param slotName
      * @return
      */
@@ -79,10 +79,11 @@ public class ACAQMutableTraitGenerator extends ACAQTraitConfiguration {
 
     /**
      * Transfers traits from an input slot to an output slot
+     *
      * @param sourceSlotName Input slot name
-     * @param source Input slot traits
+     * @param source         Input slot traits
      * @param targetSlotName Output slot name
-     * @param target Output slot traits
+     * @param target         Output slot traits
      */
     @Override
     public void transfer(String sourceSlotName, Set<Class<? extends ACAQTrait>> source,
@@ -92,14 +93,15 @@ public class ACAQMutableTraitGenerator extends ACAQTraitConfiguration {
     /**
      * Modifies the traits of a slot
      * This function is applied to output slots after transfer
+     *
      * @param slotName Output slot name
-     * @param target Existing output slot traits
+     * @param target   Existing output slot traits
      */
     @Override
     public void modify(String slotName, Set<Class<? extends ACAQTrait>> target) {
-        for(ACAQMutableTraitModifier.ModifyTask task : modifyTasks) {
-            if(task.getSlotName() == null || slotName.equals(task.getSlotName())) {
-                switch(task.getType()) {
+        for (ACAQMutableTraitModifier.ModifyTask task : modifyTasks) {
+            if (task.getSlotName() == null || slotName.equals(task.getSlotName())) {
+                switch (task.getType()) {
                     case ADD:
                         target.add(task.getTrait());
                         break;
@@ -115,7 +117,7 @@ public class ACAQMutableTraitGenerator extends ACAQTraitConfiguration {
     }
 
     public void fromJson(JsonNode node) {
-        if(node.has("traits")) {
+        if (node.has("traits")) {
 //            for(JsonNode trait : ImmutableList.copyOf(node.get("traits").elements())) {
 //                Class<? extends ACAQTrait> klass = ACAQTraitRegistry.getInstance().findTraitClass(trait.get("class").asText());
 //                String slotName = trait.get("slot-name").asText();
@@ -131,7 +133,7 @@ public class ACAQMutableTraitGenerator extends ACAQTraitConfiguration {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeFieldName("traits");
             jsonGenerator.writeStartArray();
-            for(ACAQMutableTraitModifier.ModifyTask task : configuration.modifyTasks) {
+            for (ACAQMutableTraitModifier.ModifyTask task : configuration.modifyTasks) {
                 jsonGenerator.writeStartObject();
                 jsonGenerator.writeStringField("class", task.getTrait().getCanonicalName());
                 jsonGenerator.writeStringField("slot-name", task.getSlotName());

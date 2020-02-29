@@ -18,14 +18,8 @@ import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Cursor;
-import java.awt.Point;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -33,8 +27,8 @@ import static org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph.COMPARTMENT_DEF
 
 public class ACAQCompartmentGraphUI extends ACAQUIPanel implements MouseListener, MouseMotionListener {
 
-    private ACAQAlgorithmGraphCanvasUI graphUI;
     protected JMenuBar menuBar = new JMenuBar();
+    private ACAQAlgorithmGraphCanvasUI graphUI;
     private ACAQAlgorithmGraph compartmentGraph;
 
     private JSplitPane splitPane;
@@ -118,7 +112,7 @@ public class ACAQCompartmentGraphUI extends ACAQUIPanel implements MouseListener
         BufferedImage screenshot = graphUI.createScreenshot();
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Export graph as *.png");
-        if(fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
                 ImageIO.write(screenshot, "PNG", fileChooser.getSelectedFile());
                 getWorkbenchUI().sendStatusBarText("Exported graph as " + fileChooser.getSelectedFile());
@@ -140,7 +134,7 @@ public class ACAQCompartmentGraphUI extends ACAQUIPanel implements MouseListener
     private void addCompartment() {
         String compartmentName = UIUtils.getUniqueStringByDialog(this, "Please enter the name of the compartment",
                 "Compartment", s -> getProject().getCompartments().containsKey(s));
-        if(compartmentName != null && !compartmentName.trim().isEmpty()) {
+        if (compartmentName != null && !compartmentName.trim().isEmpty()) {
             getProject().addCompartment(compartmentName);
         }
     }
@@ -151,7 +145,7 @@ public class ACAQCompartmentGraphUI extends ACAQUIPanel implements MouseListener
 
     @Subscribe
     public void onOpenAlgorithmSettings(OpenSettingsUIRequestedEvent event) {
-        if(currentSettings == null || currentSettings.getCompartment() != event.getUi().getAlgorithm()) {
+        if (currentSettings == null || currentSettings.getCompartment() != event.getUi().getAlgorithm()) {
             currentSettings = new ACAQCompartmentSettingsPanelUI(getWorkbenchUI(), (ACAQProjectCompartment) event.getUi().getAlgorithm());
             int dividerLocation = splitPane.getDividerLocation();
             splitPane.setRightComponent(currentSettings);
@@ -161,14 +155,14 @@ public class ACAQCompartmentGraphUI extends ACAQUIPanel implements MouseListener
 
     @Subscribe
     public void onOpenCompartment(DefaultUIActionRequestedEvent event) {
-        if(event.getUi() != null && event.getUi().getAlgorithm() instanceof ACAQProjectCompartment) {
+        if (event.getUi() != null && event.getUi().getAlgorithm() instanceof ACAQProjectCompartment) {
             getWorkbenchUI().openCompartmentGraph((ACAQProjectCompartment) event.getUi().getAlgorithm(), true);
         }
     }
 
     @Subscribe
     public void onGraphChanged(AlgorithmGraphChangedEvent event) {
-        if(currentSettings != null && !compartmentGraph.getAlgorithmNodes().containsValue(currentSettings.getCompartment())) {
+        if (currentSettings != null && !compartmentGraph.getAlgorithmNodes().containsValue(currentSettings.getCompartment())) {
             int dividerLocation = splitPane.getDividerLocation();
             splitPane.setRightComponent(documentationPanel);
             splitPane.setDividerLocation(dividerLocation);
@@ -182,7 +176,7 @@ public class ACAQCompartmentGraphUI extends ACAQUIPanel implements MouseListener
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if(SwingUtilities.isMiddleMouseButton(e)) {
+        if (SwingUtilities.isMiddleMouseButton(e)) {
             isPanning = true;
             int x = e.getX() - scrollPane.getHorizontalScrollBar().getValue();
             int y = e.getY() - scrollPane.getVerticalScrollBar().getValue();
@@ -195,7 +189,7 @@ public class ACAQCompartmentGraphUI extends ACAQUIPanel implements MouseListener
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if(isPanning) {
+        if (isPanning) {
             graphUI.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
         isPanning = false;
@@ -213,12 +207,12 @@ public class ACAQCompartmentGraphUI extends ACAQUIPanel implements MouseListener
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        if(isPanning && panningOffset != null && panningScrollbarOffset != null) {
+        if (isPanning && panningOffset != null && panningScrollbarOffset != null) {
             int x = e.getX() - scrollPane.getHorizontalScrollBar().getValue();
             int y = e.getY() - scrollPane.getVerticalScrollBar().getValue();
             int dx = x - panningOffset.x;
             int dy = y - panningOffset.y;
-            if(!switchPanningDirectionButton.isSelected()) {
+            if (!switchPanningDirectionButton.isSelected()) {
                 dx = -dx;
                 dy = -dy;
             }

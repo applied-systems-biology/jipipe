@@ -1,7 +1,6 @@
 package org.hkijena.acaq5.api.algorithm;
 
 import org.hkijena.acaq5.api.data.ACAQData;
-import org.hkijena.acaq5.api.data.ACAQDataSlot;
 
 import java.lang.annotation.*;
 
@@ -14,12 +13,14 @@ import java.lang.annotation.*;
 public @interface AlgorithmOutputSlot {
     /**
      * The data class
+     *
      * @return
      */
     Class<? extends ACAQData> value();
 
     /**
      * An optional slot name. Cannot be empty if autoCreate is true.
+     *
      * @return
      */
     String slotName() default "";
@@ -27,6 +28,7 @@ public @interface AlgorithmOutputSlot {
     /**
      * If true, {@link ACAQAlgorithm} automatically configures its slots based on annotations (unless a custom {@link org.hkijena.acaq5.api.data.ACAQSlotConfiguration}
      * is provided.
+     *
      * @return
      */
     boolean autoCreate() default false;

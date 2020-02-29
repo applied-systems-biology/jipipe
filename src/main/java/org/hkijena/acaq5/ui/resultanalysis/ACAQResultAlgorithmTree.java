@@ -32,13 +32,13 @@ public class ACAQResultAlgorithmTree extends ACAQUIPanel {
 
         DefaultMutableTreeNode root = new DefaultMutableTreeNode();
         for (ACAQProjectCompartment compartment : run.getProject().getCompartmentGraph().traverseAlgorithms()
-                .stream().map(a -> (ACAQProjectCompartment)a).collect(Collectors.toList())) {
+                .stream().map(a -> (ACAQProjectCompartment) a).collect(Collectors.toList())) {
             DefaultMutableTreeNode compartmentNode = new DefaultMutableTreeNode(compartment);
             for (ACAQAlgorithm algorithm : run.getGraph().traverseAlgorithms()) {
-                if(algorithm.getCompartment().equals(compartment.getProjectCompartmentId())) {
+                if (algorithm.getCompartment().equals(compartment.getProjectCompartmentId())) {
                     DefaultMutableTreeNode algorithmNode = new DefaultMutableTreeNode(algorithm);
                     for (ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
-                        if(!Files.exists(outputSlot.getStoragePath().resolve("data-table.json")))
+                        if (!Files.exists(outputSlot.getStoragePath().resolve("data-table.json")))
                             continue;
                         DefaultMutableTreeNode slotNode = new DefaultMutableTreeNode(outputSlot);
                         algorithmNode.add(slotNode);

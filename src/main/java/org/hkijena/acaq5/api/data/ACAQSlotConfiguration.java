@@ -21,17 +21,21 @@ import java.util.Map;
 @JsonSerialize(using = ACAQSlotConfiguration.Serializer.class)
 public abstract class ACAQSlotConfiguration {
     private EventBus eventBus = new EventBus();
+
     public abstract Map<String, ACAQSlotDefinition> getSlots();
+
     public abstract List<String> getInputSlotOrder();
+
     public abstract List<String> getOutputSlotOrder();
+
     public EventBus getEventBus() {
         return eventBus;
     }
 
     public Map<String, ACAQSlotDefinition> getInputSlots() {
         Map<String, ACAQSlotDefinition> result = new HashMap<>();
-        for(Map.Entry<String, ACAQSlotDefinition> kv : getSlots().entrySet()) {
-            if(kv.getValue().getSlotType() == ACAQDataSlot.SlotType.Input)
+        for (Map.Entry<String, ACAQSlotDefinition> kv : getSlots().entrySet()) {
+            if (kv.getValue().getSlotType() == ACAQDataSlot.SlotType.Input)
                 result.put(kv.getKey(), kv.getValue());
         }
         return result;
@@ -39,8 +43,8 @@ public abstract class ACAQSlotConfiguration {
 
     public Map<String, ACAQSlotDefinition> getOutputSlots() {
         Map<String, ACAQSlotDefinition> result = new HashMap<>();
-        for(Map.Entry<String, ACAQSlotDefinition> kv : getSlots().entrySet()) {
-            if(kv.getValue().getSlotType() == ACAQDataSlot.SlotType.Output)
+        for (Map.Entry<String, ACAQSlotDefinition> kv : getSlots().entrySet()) {
+            if (kv.getValue().getSlotType() == ACAQDataSlot.SlotType.Output)
                 result.put(kv.getKey(), kv.getValue());
         }
         return result;
@@ -48,6 +52,7 @@ public abstract class ACAQSlotConfiguration {
 
     /**
      * Returns the maximum of number(input slot) and number(output slots)
+     *
      * @return
      */
     public int getRows() {
@@ -56,12 +61,14 @@ public abstract class ACAQSlotConfiguration {
 
     /**
      * Makes this slot configuration equivalent to the provided one
+     *
      * @param configuration
      */
     public abstract void setTo(ACAQSlotConfiguration configuration);
 
     /**
      * Loads this configuration from JSON
+     *
      * @param jsonNode
      */
     public abstract void fromJson(JsonNode jsonNode);
@@ -75,10 +82,10 @@ public abstract class ACAQSlotConfiguration {
             Map<String, ACAQSlotDefinition> inputSlots = slotConfiguration.getInputSlots();
             Map<String, ACAQSlotDefinition> outputSlots = slotConfiguration.getOutputSlots();
 
-            for(String key : slotConfiguration.getInputSlotOrder()) {
+            for (String key : slotConfiguration.getInputSlotOrder()) {
                 jsonGenerator.writeObjectField(key, inputSlots.get(key));
             }
-            for(String key : slotConfiguration.getOutputSlotOrder()) {
+            for (String key : slotConfiguration.getOutputSlotOrder()) {
                 jsonGenerator.writeObjectField(key, outputSlots.get(key));
             }
 

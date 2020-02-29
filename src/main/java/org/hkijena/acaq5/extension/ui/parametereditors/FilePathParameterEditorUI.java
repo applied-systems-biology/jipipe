@@ -22,7 +22,7 @@ public class FilePathParameterEditorUI extends ACAQParameterEditorUI {
         setLayout(new BorderLayout());
         FileSelection fileSelection = new FileSelection(FileSelection.IOMode.Open, FileSelection.PathMode.FilesOnly);
         FilePathParameterSettings settings = getParameterAccess().getAnnotationOfType(FilePathParameterSettings.class);
-        if(settings != null) {
+        if (settings != null) {
             fileSelection.setIoMode(settings.ioMode());
             fileSelection.setPathMode(settings.pathMode());
         }
@@ -30,7 +30,7 @@ public class FilePathParameterEditorUI extends ACAQParameterEditorUI {
         fileSelection.setPath(getParameterAccess().get());
         add(fileSelection, BorderLayout.CENTER);
         fileSelection.addActionListener(e -> {
-            if(!getParameterAccess().set(fileSelection.getPath())) {
+            if (!getParameterAccess().set(fileSelection.getPath())) {
                 fileSelection.setPath(fileSelection.getPath());
             }
         });

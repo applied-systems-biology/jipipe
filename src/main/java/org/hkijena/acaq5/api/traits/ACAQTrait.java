@@ -22,57 +22,59 @@ public interface ACAQTrait {
 
     /**
      * Returns the declaration of this trait
+     *
      * @return
      */
     ACAQTraitDeclaration getDeclaration();
 
     /**
      * Returns the name of given trait
+     *
      * @param klass
      * @return
      */
     static String getNameOf(Class<? extends ACAQTrait> klass) {
         ACAQDocumentation[] annotations = klass.getAnnotationsByType(ACAQDocumentation.class);
-        if(annotations.length > 0) {
+        if (annotations.length > 0) {
             return annotations[0].name();
-        }
-        else {
+        } else {
             return klass.getSimpleName();
         }
     }
 
     /**
      * Returns the description of given trait
+     *
      * @param klass
      * @return
      */
     static String getDescriptionOf(Class<? extends ACAQTrait> klass) {
         ACAQDocumentation[] annotations = klass.getAnnotationsByType(ACAQDocumentation.class);
-        if(annotations.length > 0) {
+        if (annotations.length > 0) {
             return annotations[0].description();
-        }
-        else {
+        } else {
             return null;
         }
     }
 
     /**
      * Faster method to compare traits
+     *
      * @param first
      * @param second
      * @return
      */
     static boolean equals(ACAQTrait first, ACAQTrait second) {
-        if(first == null && second == null)
+        if (first == null && second == null)
             return true;
-        else if(first == null)
+        else if (first == null)
             return false;
-        else if(second == null)
+        else if (second == null)
             return false;
-        else if(first.getDeclaration() != second.getDeclaration())
+        else if (first.getDeclaration() != second.getDeclaration())
             return false;
-        else if(first.getDeclaration().isDiscriminator())
-            return Objects.equals(((ACAQDiscriminator) first).getValue(), ((ACAQDiscriminator)second).getValue());
+        else if (first.getDeclaration().isDiscriminator())
+            return Objects.equals(((ACAQDiscriminator) first).getValue(), ((ACAQDiscriminator) second).getValue());
         else
             return true;
     }

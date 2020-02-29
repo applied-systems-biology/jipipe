@@ -27,8 +27,35 @@ public class ACAQROIData implements ACAQData {
         this.roi = roi;
     }
 
+    public List<Roi> getROI() {
+        return roi;
+    }
+
+    @Override
+    public void saveTo(Path storageFilePath, String name) {
+        // Code adapted from ImageJ RoiManager class
+        try {
+            ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(storageFilePath.resolve(name + ".zip").toFile())));
+            DataOutputStream out = new DataOutputStream(new BufferedOutputStream(zos));
+            RoiEncoder re = new RoiEncoder(out);
+            for (int i = 0; i < this.roi.size(); i++) {
+                String label = name + "-" + i;
+                Roi roi = this.roi.get(i);
+                if (roi == null) continue;
+                if (!label.endsWith(".roi")) label += ".roi";
+                zos.putNextEntry(new ZipEntry(label));
+                re.write(roi);
+                out.flush();
+            }
+            out.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     /**
      * Loads a set of ROI from a zip file
+     *
      * @param fileName
      * @return
      */
@@ -77,31 +104,5 @@ public class ACAQROIData implements ACAQData {
                 }
         }
         return result;
-    }
-
-    public List<Roi> getROI() {
-        return roi;
-    }
-
-    @Override
-    public void saveTo(Path storageFilePath, String name) {
-        // Code adapted from ImageJ RoiManager class
-        try {
-            ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(storageFilePath.resolve(name + ".zip").toFile())));
-            DataOutputStream out = new DataOutputStream(new BufferedOutputStream(zos));
-            RoiEncoder re = new RoiEncoder(out);
-            for (int i = 0; i < this.roi.size(); i++) {
-                String label = name + "-" + i;
-                Roi roi = this.roi.get(i);
-                if (roi == null) continue;
-                if (!label.endsWith(".roi")) label += ".roi";
-                zos.putNextEntry(new ZipEntry(label));
-                re.write(roi);
-                out.flush();
-            }
-            out.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

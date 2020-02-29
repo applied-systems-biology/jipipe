@@ -1,13 +1,11 @@
 package org.hkijena.acaq5.ui.grapheditor.settings;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
-import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
@@ -67,13 +65,13 @@ public class ACAQSlotEditorUI extends JPanel {
         JToolBar toolBar = new JToolBar();
         add(toolBar, BorderLayout.NORTH);
 
-        if(canModifyInputSlots()) {
+        if (canModifyInputSlots()) {
             JButton addInputButton = new JButton("Add input", UIUtils.getIconFromResources("database.png"));
             initializeAddButton(addInputButton, ACAQDataSlot.SlotType.Input);
             toolBar.add(addInputButton);
         }
 
-        if(canModifyOutputSlots()) {
+        if (canModifyOutputSlots()) {
             JButton addOutputButton = new JButton("Add output", UIUtils.getIconFromResources("database.png"));
             initializeAddButton(addOutputButton, ACAQDataSlot.SlotType.Output);
             toolBar.add(addOutputButton);
@@ -81,7 +79,7 @@ public class ACAQSlotEditorUI extends JPanel {
 
         toolBar.add(Box.createHorizontalGlue());
 
-        if(algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
+        if (algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
             JButton moveUpButton = new JButton(UIUtils.getIconFromResources("arrow-up.png"));
             moveUpButton.setToolTipText("Move up");
             moveUpButton.addActionListener(e -> moveSlotUp());
@@ -93,8 +91,8 @@ public class ACAQSlotEditorUI extends JPanel {
             toolBar.add(moveDownButton);
         }
 
-        if(canModifyInputSlots() || canModifyOutputSlots()) {
-            JButton removeButton = new JButton( UIUtils.getIconFromResources("delete.png"));
+        if (canModifyInputSlots() || canModifyOutputSlots()) {
+            JButton removeButton = new JButton(UIUtils.getIconFromResources("delete.png"));
             removeButton.setToolTipText("Remove selected slots");
             removeButton.addActionListener(e -> removeSelectedSlots());
             toolBar.add(removeButton);
@@ -103,31 +101,31 @@ public class ACAQSlotEditorUI extends JPanel {
 
     private void moveSlotDown() {
         ACAQDataSlot slot = getSelectedSlot();
-        if(slot != null) {
-            ((ACAQMutableSlotConfiguration)algorithm.getSlotConfiguration()).moveDown(slot.getName());
+        if (slot != null) {
+            ((ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration()).moveDown(slot.getName());
         }
     }
 
     private void moveSlotUp() {
         ACAQDataSlot slot = getSelectedSlot();
-        if(slot != null) {
-            ((ACAQMutableSlotConfiguration)algorithm.getSlotConfiguration()).moveUp(slot.getName());
+        if (slot != null) {
+            ((ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration()).moveUp(slot.getName());
         }
     }
 
     public ACAQDataSlot getSelectedSlot() {
         ACAQDataSlot selectedSlot = null;
-        if(slotTree.getLastSelectedPathComponent() != null) {
+        if (slotTree.getLastSelectedPathComponent() != null) {
             DefaultMutableTreeNode nd = (DefaultMutableTreeNode) slotTree.getLastSelectedPathComponent();
-            if(nd.getUserObject() instanceof ACAQDataSlot) {
-                selectedSlot = (ACAQDataSlot)nd.getUserObject();
+            if (nd.getUserObject() instanceof ACAQDataSlot) {
+                selectedSlot = (ACAQDataSlot) nd.getUserObject();
             }
         }
         return selectedSlot;
     }
 
     private boolean canModifyOutputSlots() {
-        if( algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
+        if (algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
             return !((ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration()).isOutputSlotsSealed() &&
                     ((ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration()).allowsOutputSlots();
         }
@@ -135,7 +133,7 @@ public class ACAQSlotEditorUI extends JPanel {
     }
 
     private boolean canModifyInputSlots() {
-        if( algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
+        if (algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
             return !((ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration()).isInputSlotsSealed() &&
                     ((ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration()).allowsInputSlots();
         }
@@ -143,19 +141,19 @@ public class ACAQSlotEditorUI extends JPanel {
     }
 
     private void removeSelectedSlots() {
-        if(!canModifyInputSlots() && !canModifyOutputSlots())
+        if (!canModifyInputSlots() && !canModifyOutputSlots())
             return;
         Set<ACAQDataSlot> toRemove = new HashSet<>();
-        if(slotTree.getSelectionPaths() != null) {
-            for(TreePath path : slotTree.getSelectionPaths()) {
-                DefaultMutableTreeNode nd = (DefaultMutableTreeNode)path.getLastPathComponent();
-                if(nd.getUserObject() instanceof ACAQDataSlot) {
-                    toRemove.add((ACAQDataSlot)nd.getUserObject());
+        if (slotTree.getSelectionPaths() != null) {
+            for (TreePath path : slotTree.getSelectionPaths()) {
+                DefaultMutableTreeNode nd = (DefaultMutableTreeNode) path.getLastPathComponent();
+                if (nd.getUserObject() instanceof ACAQDataSlot) {
+                    toRemove.add((ACAQDataSlot) nd.getUserObject());
                 }
             }
         }
-        ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration)algorithm.getSlotConfiguration();
-        for(ACAQDataSlot sample : toRemove) {
+        ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
+        for (ACAQDataSlot sample : toRemove) {
             slotConfiguration.removeSlot(sample.getName());
         }
     }
@@ -172,15 +170,15 @@ public class ACAQSlotEditorUI extends JPanel {
 
         DefaultMutableTreeNode toSelect = null;
 
-        for(ACAQDataSlot slot : algorithm.getInputSlots()){
+        for (ACAQDataSlot slot : algorithm.getInputSlots()) {
             DefaultMutableTreeNode node = new DefaultMutableTreeNode(slot);
-            if(slot == selectedSlot)
+            if (slot == selectedSlot)
                 toSelect = node;
             inputNode.add(node);
         }
-        for(ACAQDataSlot slot : algorithm.getOutputSlots()){
+        for (ACAQDataSlot slot : algorithm.getOutputSlots()) {
             DefaultMutableTreeNode node = new DefaultMutableTreeNode(slot);
-            if(slot == selectedSlot)
+            if (slot == selectedSlot)
                 toSelect = node;
             outputNode.add(node);
         }
@@ -189,17 +187,17 @@ public class ACAQSlotEditorUI extends JPanel {
         slotTree.setModel(model);
         UIUtils.expandAllTree(slotTree);
 
-        if(toSelect != null) {
+        if (toSelect != null) {
             slotTree.setSelectionPath(new TreePath(model.getPathToRoot(toSelect)));
         }
     }
 
     private void initializeAddButton(JButton button, ACAQDataSlot.SlotType slotType) {
         JPopupMenu menu = UIUtils.addPopupMenuToComponent(button);
-        ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration)algorithm.getSlotConfiguration();
+        ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
 
         Set<Class<? extends ACAQData>> allowedSlotTypes;
-        switch(slotType) {
+        switch (slotType) {
             case Input:
                 allowedSlotTypes = slotConfiguration.getAllowedInputSlotTypes();
                 break;
@@ -210,7 +208,7 @@ public class ACAQSlotEditorUI extends JPanel {
                 throw new RuntimeException();
         }
 
-        for(Class<? extends ACAQData> dataClass : allowedSlotTypes) {
+        for (Class<? extends ACAQData> dataClass : allowedSlotTypes) {
             JMenuItem item = new JMenuItem(ACAQData.getNameOf(dataClass), ACAQUIDatatypeRegistry.getInstance().getIconFor(dataClass));
             item.addActionListener(e -> addNewSlot(slotType, dataClass));
             menu.add(item);
@@ -218,16 +216,16 @@ public class ACAQSlotEditorUI extends JPanel {
     }
 
     private void addNewSlot(ACAQDataSlot.SlotType slotType, Class<? extends ACAQData> klass) {
-        if(algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
+        if (algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
             ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
             int existingSlots = slotType == ACAQDataSlot.SlotType.Input ? algorithm.getInputSlots().size() : algorithm.getOutputSlots().size();
             String name = null;
-            while(name == null) {
-                String newName = JOptionPane.showInputDialog(this,"Please a data slot name", slotType + " data " + (existingSlots + 1));
-                if(newName == null || newName.trim().isEmpty())
+            while (name == null) {
+                String newName = JOptionPane.showInputDialog(this, "Please a data slot name", slotType + " data " + (existingSlots + 1));
+                if (newName == null || newName.trim().isEmpty())
                     return;
                 newName = StringUtils.makeFilesystemCompatible(newName);
-                if(slotConfiguration.hasSlot(newName))
+                if (slotConfiguration.hasSlot(newName))
                     continue;
                 name = newName;
             }

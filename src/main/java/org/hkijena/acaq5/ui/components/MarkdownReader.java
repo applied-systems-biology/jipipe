@@ -13,17 +13,13 @@
 package org.hkijena.acaq5.ui.components;
 
 import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
-import com.vladsch.flexmark.ast.Node;
 import com.vladsch.flexmark.ext.autolink.AutolinkExtension;
 import com.vladsch.flexmark.ext.tables.TablesExtension;
 import com.vladsch.flexmark.ext.toc.TocExtension;
-import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.pdf.converter.PdfConverterExtension;
 import com.vladsch.flexmark.util.options.MutableDataHolder;
 import com.vladsch.flexmark.util.options.MutableDataSet;
-import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -90,7 +86,7 @@ public class MarkdownReader extends JPanel {
         scrollPane = new JScrollPane(content);
         add(scrollPane, BorderLayout.CENTER);
 
-        if(withToolbar) {
+        if (withToolbar) {
             JToolBar toolBar = new JToolBar();
 
             JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("save.png"));
@@ -199,31 +195,31 @@ public class MarkdownReader extends JPanel {
         }
     }
 
+    public MarkdownDocument getDocument() {
+        return document;
+    }
+
     public void setDocument(MarkdownDocument document) {
         this.document = document;
-        if(document != null)
+        if (document != null)
             content.setText(document.getRenderedHTML());
         else
             content.setText("<html></html>");
         SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
     }
 
-    public MarkdownDocument getDocument() {
-        return document;
-    }
-
     /**
      * Sets the document to some temporary one without changing the reference to the main document
+     *
      * @param temporaryDocument if not null, render the temporary document. Otherwise render the main document
      */
     public void setTemporaryDocument(MarkdownDocument temporaryDocument) {
-        if(temporaryDocument == null) {
-            if(document != null)
+        if (temporaryDocument == null) {
+            if (document != null)
                 content.setText(document.getRenderedHTML());
             else
                 content.setText("<html></html>");
-        }
-        else {
+        } else {
             content.setText(temporaryDocument.getRenderedHTML());
         }
         SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));

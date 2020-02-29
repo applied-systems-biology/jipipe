@@ -37,17 +37,16 @@ public class ACAQRunSettingsUI extends ACAQUIPanel {
 
         ACAQValidityReport report = new ACAQValidityReport();
         getWorkbenchUI().getProject().reportValidity(report);
-        if(report.isValid()) {
+        if (report.isValid()) {
             initializeSetupGUI();
-        }
-        else {
+        } else {
             initializeValidityCheckUI(report);
         }
     }
 
     private void initializeValidityCheckUI(ACAQValidityReport report) {
         JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout(8,8));
+        panel.setLayout(new BorderLayout(8, 8));
         ACAQValidityReportUI reportUI = new ACAQValidityReportUI();
         reportUI.setReport(report);
 
@@ -68,7 +67,7 @@ public class ACAQRunSettingsUI extends ACAQUIPanel {
 
         // Create button panel
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(0,8,8,8));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 8, 8, 8));
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
         buttonPanel.add(Box.createHorizontalGlue());
@@ -78,7 +77,7 @@ public class ACAQRunSettingsUI extends ACAQUIPanel {
             report.clear();
             getWorkbenchUI().getProject().reportValidity(report);
             getWorkbenchUI().sendStatusBarText("Re-validated ACAQ5 project");
-            if(report.isValid())
+            if (report.isValid())
                 initializeSetupGUI();
             else
                 reportUI.setReport(report);
@@ -93,8 +92,7 @@ public class ACAQRunSettingsUI extends ACAQUIPanel {
 
         try {
             run = new ACAQRun(getWorkbenchUI().getProject(), new ACAQMutableRunConfiguration());
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             openError(e);
             return;
         }
@@ -109,7 +107,7 @@ public class ACAQRunSettingsUI extends ACAQUIPanel {
         setupPanel.add(formPanel, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(0,8,8,8));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 8, 8, 8));
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
         buttonPanel.add(Box.createHorizontalGlue());
@@ -135,13 +133,13 @@ public class ACAQRunSettingsUI extends ACAQUIPanel {
 
     @Subscribe
     public void onRunFinished(RunUIWorkerFinishedEvent event) {
-        if(event.getRun() == run)
+        if (event.getRun() == run)
             openResults();
     }
 
     @Subscribe
     public void onRunInterrupted(RunUIWorkerInterruptedEvent event) {
-        if(event.getRun() == run)
+        if (event.getRun() == run)
             openError(event.getException());
     }
 

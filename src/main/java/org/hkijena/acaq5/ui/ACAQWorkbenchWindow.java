@@ -46,7 +46,7 @@ public class ACAQWorkbenchWindow extends JFrame {
     public void newProject() {
         ACAQProject project = new ACAQProject();
         ACAQWorkbenchWindow window = openProjectInThisOrNewWindow("New project", project);
-        if(window == null)
+        if (window == null)
             return;
         window.getProjectUI().sendStatusBarText("Created new project");
     }
@@ -55,11 +55,11 @@ public class ACAQWorkbenchWindow extends JFrame {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fileChooser.setDialogTitle("Open project (*.json");
-        if(fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
                 ACAQProject project = ACAQProject.loadProject(fileChooser.getSelectedFile().toPath());
                 ACAQWorkbenchWindow window = openProjectInThisOrNewWindow("Open project", project);
-                if(window == null)
+                if (window == null)
                     return;
                 window.projectSavePath = fileChooser.getSelectedFile().toPath();
                 window.getProjectUI().sendStatusBarText("Opened project from " + window.projectSavePath);
@@ -74,11 +74,11 @@ public class ACAQWorkbenchWindow extends JFrame {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         fileChooser.setDialogTitle("Open project output folder");
-        if(fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
                 ACAQRun run = ACAQRun.loadFromFolder(fileChooser.getSelectedFile().toPath());
                 ACAQWorkbenchWindow window = openProjectInThisOrNewWindow("Open ACAQ output", run.getProject());
-                if(window == null)
+                if (window == null)
                     return;
                 window.projectSavePath = fileChooser.getSelectedFile().toPath().resolve("parameters.json");
                 window.getProjectUI().sendStatusBarText("Opened project from " + window.projectSavePath);
@@ -98,16 +98,15 @@ public class ACAQWorkbenchWindow extends JFrame {
 
     public void saveProjectAs(boolean avoidDialog) {
         Path savePath = null;
-        if(avoidDialog && projectSavePath != null)
+        if (avoidDialog && projectSavePath != null)
             savePath = projectSavePath;
-        if(savePath == null) {
+        if (savePath == null) {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             fileChooser.setDialogTitle("Save project (*.json");
-            if(fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
                 savePath = fileChooser.getSelectedFile().toPath();
-            }
-            else {
+            } else {
                 return;
             }
         }
@@ -123,13 +122,12 @@ public class ACAQWorkbenchWindow extends JFrame {
     }
 
     /**
-     *
      * @param messageTitle
      * @param project
      * @return
      */
     private ACAQWorkbenchWindow openProjectInThisOrNewWindow(String messageTitle, ACAQProject project) {
-        switch(UIUtils.askOpenInCurrentWindow(this, messageTitle)) {
+        switch (UIUtils.askOpenInCurrentWindow(this, messageTitle)) {
             case JOptionPane.YES_OPTION:
                 loadProject(project);
                 return this;
@@ -137,15 +135,6 @@ public class ACAQWorkbenchWindow extends JFrame {
                 return newWindow(command, project);
         }
         return null;
-    }
-
-    public static ACAQWorkbenchWindow newWindow(ACAQGUICommand command, ACAQProject project) {
-        ACAQWorkbenchWindow frame = new ACAQWorkbenchWindow(command, project);
-        frame.pack();
-        frame.setSize(1024, 768);
-        frame.setVisible(true);
-//        frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
-        return frame;
     }
 
     public ACAQGUICommand getCommand() {
@@ -162,5 +151,14 @@ public class ACAQWorkbenchWindow extends JFrame {
 
     public Path getProjectSavePath() {
         return projectSavePath;
+    }
+
+    public static ACAQWorkbenchWindow newWindow(ACAQGUICommand command, ACAQProject project) {
+        ACAQWorkbenchWindow frame = new ACAQWorkbenchWindow(command, project);
+        frame.pack();
+        frame.setSize(1024, 768);
+        frame.setVisible(true);
+//        frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+        return frame;
     }
 }

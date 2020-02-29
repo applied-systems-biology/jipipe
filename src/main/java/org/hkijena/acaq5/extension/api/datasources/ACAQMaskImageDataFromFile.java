@@ -1,11 +1,7 @@
 package org.hkijena.acaq5.extension.api.datasources;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
-import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.filesystem.dataypes.ACAQFileData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;

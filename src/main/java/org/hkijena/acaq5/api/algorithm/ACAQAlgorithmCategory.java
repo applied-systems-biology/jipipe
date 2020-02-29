@@ -37,9 +37,9 @@ public enum ACAQAlgorithmCategory {
 
     public Color getColor(float s, float v) {
         ACAQAlgorithmCategory[] values = ACAQAlgorithmCategory.values();
-        for(int i = 0; i < values.length; ++i) {
-            if(values[i] == this) {
-                return  Color.getHSBColor(i * 1.0f / values.length, s, v);
+        for (int i = 0; i < values.length; ++i) {
+            if (values[i] == this) {
+                return Color.getHSBColor(i * 1.0f / values.length, s, v);
             }
         }
         throw new IllegalArgumentException("Unknown category");

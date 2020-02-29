@@ -17,8 +17,8 @@ import java.util.function.Predicate;
 
 public class StringUtils {
 
-    public static final char[] INVALID_FILESYSTEM_CHARACTERS = new char[] { '<', '>', ':', '"', '/', '\\', '|', '?', '*', '{', '}' };
-    public static final char[] INVALID_JSONIFY_CHARACTERS = new char[] { '<', '>', ':', '"', '/', '\\', '|', '?', '*', '{', '}', ' ', '_' };
+    public static final char[] INVALID_FILESYSTEM_CHARACTERS = new char[]{'<', '>', ':', '"', '/', '\\', '|', '?', '*', '{', '}'};
+    public static final char[] INVALID_JSONIFY_CHARACTERS = new char[]{'<', '>', ':', '"', '/', '\\', '|', '?', '*', '{', '}', ' ', '_'};
 
     private StringUtils() {
 
@@ -27,17 +27,18 @@ public class StringUtils {
     /**
      * Removes all spaces, and filesystem-unsafe characters from the string and replaces them with dashes
      * Duplicate dashes are removed
+     *
      * @param input
      * @return
      */
     public static String jsonify(String input) {
-        if(input == null)
+        if (input == null)
             return null;
         input = input.trim().toLowerCase();
         for (char c : INVALID_JSONIFY_CHARACTERS) {
             input = input.replace(c, '-');
         }
-        while(input.contains("--")) {
+        while (input.contains("--")) {
             input = input.replace("--", "-");
         }
         return input;
@@ -45,36 +46,37 @@ public class StringUtils {
 
     /**
      * Replaces all characters invalid for filesystems with spaces
+     *
      * @param input
      * @return
      */
     public static String makeFilesystemCompatible(String input) {
-        if(input == null)
+        if (input == null)
             return null;
         for (char c : INVALID_FILESYSTEM_CHARACTERS) {
             input = input.replace(c, ' ');
         }
-        while(input.contains("  ")) {
+        while (input.contains("  ")) {
             input = input.replace("  ", " ");
         }
         return input;
     }
 
     public static String makeUniqueString(String input, Collection<String> existing) {
-        if(!existing.contains(input))
+        if (!existing.contains(input))
             return input;
         int index = 1;
-        while(existing.contains(input + " " + index)) {
+        while (existing.contains(input + " " + index)) {
             ++index;
         }
         return input + " " + index;
     }
 
     public static String makeUniqueString(String input, Predicate<String> existing) {
-        if(!existing.test(input))
+        if (!existing.test(input))
             return input;
         int index = 1;
-        while(existing.test(input + " " + index)) {
+        while (existing.test(input + " " + index)) {
             ++index;
         }
         return input + " " + index;

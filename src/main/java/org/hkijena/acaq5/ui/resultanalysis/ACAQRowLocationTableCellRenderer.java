@@ -1,8 +1,5 @@
 package org.hkijena.acaq5.ui.resultanalysis;
 
-import org.hkijena.acaq5.api.data.ACAQData;
-import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -21,15 +18,14 @@ public class ACAQRowLocationTableCellRenderer extends JLabel implements TableCel
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 
-        if(value instanceof Path) {
+        if (value instanceof Path) {
             setText(value.toString());
         }
 
-        if(isSelected) {
+        if (isSelected) {
             setBackground(new Color(184, 207, 229));
-        }
-        else {
-            setBackground(new Color(255,255,255));
+        } else {
+            setBackground(new Color(255, 255, 255));
         }
 
         return this;

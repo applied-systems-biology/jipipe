@@ -26,7 +26,7 @@ public class FloatParameterEditorUI extends ACAQParameterEditorUI {
         SpinnerNumberModel model = new SpinnerNumberModel(initialValue.doubleValue(), min, max, 1);
         JSpinner spinner = new JSpinner(model);
         spinner.addChangeListener(e -> {
-            if(!getParameterAccess().set(model.getNumber().floatValue())) {
+            if (!getParameterAccess().set(model.getNumber().floatValue())) {
                 spinner.setValue(getParameterAccess().get());
             }
         });

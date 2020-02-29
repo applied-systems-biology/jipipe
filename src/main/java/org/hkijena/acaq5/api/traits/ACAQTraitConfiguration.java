@@ -17,19 +17,21 @@ public abstract class ACAQTraitConfiguration {
 
     /**
      * Transfers traits from an input slot to an output slot
+     *
      * @param sourceSlotName Input slot name
-     * @param source Input slot traits
+     * @param source         Input slot traits
      * @param targetSlotName Output slot name
-     * @param target Output slot traits
+     * @param target         Output slot traits
      */
     public abstract void transfer(String sourceSlotName, Set<Class<? extends ACAQTrait>> source,
-                         String targetSlotName, Set<Class<? extends ACAQTrait>> target);
+                                  String targetSlotName, Set<Class<? extends ACAQTrait>> target);
 
     /**
      * Modifies the traits of a slot
      * This function is applied to output slots after transfer
+     *
      * @param slotName Output slot name
-     * @param target Existing output slot traits
+     * @param target   Existing output slot traits
      */
     public abstract void modify(String slotName, Set<Class<? extends ACAQTrait>> target);
 

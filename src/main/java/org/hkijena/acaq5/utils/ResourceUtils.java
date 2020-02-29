@@ -25,7 +25,7 @@ public class ResourceUtils {
     }
 
     public static String getResourcePath(String internalResourcePath) {
-        if(internalResourcePath.startsWith("/"))
+        if (internalResourcePath.startsWith("/"))
             internalResourcePath = internalResourcePath.substring(1);
         return getResourceBasePath() + "/" + internalResourcePath;
     }

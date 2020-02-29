@@ -19,6 +19,7 @@ public abstract class ACAQResultDataSlotRowUI extends ACAQUIPanel {
 
     /**
      * Returns the data slot
+     *
      * @return
      */
     public ACAQDataSlot getSlot() {
@@ -27,6 +28,7 @@ public abstract class ACAQResultDataSlotRowUI extends ACAQUIPanel {
 
     /**
      * Returns the data row that is displayed
+     *
      * @return
      */
     public ACAQExportedDataTable.Row getRow() {
@@ -35,6 +37,7 @@ public abstract class ACAQResultDataSlotRowUI extends ACAQUIPanel {
 
     /**
      * Returns the compartment name of the algorithm that generated the data
+     *
      * @return
      */
     public String getAlgorithmCompartment() {
@@ -43,6 +46,7 @@ public abstract class ACAQResultDataSlotRowUI extends ACAQUIPanel {
 
     /**
      * Returns the name of the algorithm that generated the data
+     *
      * @return
      */
     public String getAlgorithmName() {
@@ -51,6 +55,7 @@ public abstract class ACAQResultDataSlotRowUI extends ACAQUIPanel {
 
     /**
      * Returns a name that identifies this row
+     *
      * @return
      */
     public String getDisplayName() {
@@ -59,6 +64,7 @@ public abstract class ACAQResultDataSlotRowUI extends ACAQUIPanel {
 
     /**
      * Returns the folder where the data is stored
+     *
      * @return
      */
     public Path getRowStorageFolder() {

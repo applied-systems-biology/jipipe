@@ -24,12 +24,9 @@ public class ACAQUIDatatypeRegistry {
 
     }
 
-    public static ACAQUIDatatypeRegistry getInstance() {
-        return ACAQRegistryService.getInstance().getUIDatatypeRegistry();
-    }
-
     /**
      * Registers a custom icon for a datatype
+     *
      * @param klass
      * @param resourcePath
      */
@@ -39,6 +36,7 @@ public class ACAQUIDatatypeRegistry {
 
     /**
      * Registers a custom UI for a result data slot
+     *
      * @param klass
      * @param uiClass
      */
@@ -48,6 +46,7 @@ public class ACAQUIDatatypeRegistry {
 
     /**
      * Returns the icon for a datatype
+     *
      * @param klass
      * @return
      */
@@ -58,25 +57,29 @@ public class ACAQUIDatatypeRegistry {
 
     /**
      * Generates a UI for a result data slot
+     *
      * @param slot
      * @return
      */
     public ACAQResultDataSlotRowUI getUIForResultSlot(ACAQWorkbenchUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
         Class<? extends ACAQResultDataSlotRowUI> uiClass = resultUIs.getOrDefault(slot.getAcceptedDataType(), null);
-        if(uiClass != null) {
+        if (uiClass != null) {
             try {
                 return ConstructorUtils.getMatchingAccessibleConstructor(uiClass, ACAQWorkbenchUI.class, ACAQDataSlot.class, ACAQExportedDataTable.Row.class)
                         .newInstance(workbenchUI, slot, row);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
-        }
-        else {
+        } else {
             return new ACAQDefaultDataSlotResultDataSlotRowUI(workbenchUI, slot, row);
         }
     }
 
     public URL getIconURLFor(Class<? extends ACAQData> klass) {
         return icons.getOrDefault(klass, ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
+    }
+
+    public static ACAQUIDatatypeRegistry getInstance() {
+        return ACAQRegistryService.getInstance().getUIDatatypeRegistry();
     }
 }

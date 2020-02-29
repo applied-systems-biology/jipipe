@@ -2,11 +2,7 @@ package org.hkijena.acaq5.api.filesystem.datasources;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
-import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.filesystem.dataypes.ACAQFileData;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 
@@ -38,19 +34,19 @@ public class ACAQFileDataSource extends ACAQAlgorithm {
     }
 
     @ACAQParameter("file-name")
-    public void setFileName(Path fileName) {
-        this.fileName = fileName;
-    }
-
-    @ACAQParameter("file-name")
     @ACAQDocumentation(name = "File name")
     public Path getFileName() {
         return fileName;
     }
 
+    @ACAQParameter("file-name")
+    public void setFileName(Path fileName) {
+        this.fileName = fileName;
+    }
+
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        if(fileName == null ||!Files.isRegularFile(fileName))
+        if (fileName == null || !Files.isRegularFile(fileName))
             report.reportIsInvalid("Input file does not exist! Please provide a valid input file.");
     }
 }

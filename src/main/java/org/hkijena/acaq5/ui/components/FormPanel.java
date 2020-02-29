@@ -31,12 +31,12 @@ public class FormPanel extends JPanel {
         helpPanel.add(parameterHelp, BorderLayout.CENTER);
 
         Component content;
-        if(withScrolling)
+        if (withScrolling)
             content = new JScrollPane(forms);
         else
             content = forms;
 
-        if(withDocumentation) {
+        if (withDocumentation) {
             JSplitPane splitPane = new JSplitPane(documentationBelow ? JSplitPane.VERTICAL_SPLIT : JSplitPane.HORIZONTAL_SPLIT, content, helpPanel);
             splitPane.setDividerSize(3);
             splitPane.setResizeWeight(0.33);
@@ -48,8 +48,7 @@ public class FormPanel extends JPanel {
                 }
             });
             add(splitPane, BorderLayout.CENTER);
-        }
-        else {
+        } else {
             add(content, BorderLayout.CENTER);
         }
     }
@@ -132,7 +131,7 @@ public class FormPanel extends JPanel {
 
     private List<Component> getComponentListForCurrentGroup() {
         List<Component> result = componentGroups.getOrDefault(currentGroup, null);
-        if(result == null) {
+        if (result == null) {
             result = new ArrayList<>();
             componentGroups.put(currentGroup, result);
         }
@@ -172,7 +171,7 @@ public class FormPanel extends JPanel {
     }
 
     public void setGroupVisiblity(String group, boolean visible) {
-        for(Component component : componentGroups.get(group)) {
+        for (Component component : componentGroups.get(group)) {
             component.setVisible(visible);
         }
     }

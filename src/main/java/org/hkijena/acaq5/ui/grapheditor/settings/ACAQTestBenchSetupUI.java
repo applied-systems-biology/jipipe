@@ -104,10 +104,9 @@ public class ACAQTestBenchSetupUI extends ACAQUIPanel {
         ACAQValidityReport report = new ACAQValidityReport();
         getProject().reportValidity(report);
         removeAll();
-        if(report.isValid()) {
+        if (report.isValid()) {
             add(setupPanel, BorderLayout.CENTER);
-        }
-        else {
+        } else {
             add(validationReportPanel, BorderLayout.CENTER);
             validationReportUI.setReport(report);
         }
@@ -126,7 +125,8 @@ public class ACAQTestBenchSetupUI extends ACAQUIPanel {
         JPanel errorPanel = new JPanel(new BorderLayout());
         errorPanel.add(new JScrollPane(errorArea), BorderLayout.CENTER);
 
-        JToolBar toolBar = new JToolBar(); toolBar.setFloatable(false);
+        JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
         toolBar.add(Box.createHorizontalGlue());
 
         JButton refreshButton = new JButton("Retry", UIUtils.getIconFromResources("refresh.png"));
@@ -156,7 +156,7 @@ public class ACAQTestBenchSetupUI extends ACAQUIPanel {
 
     @Subscribe
     public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
-        if(event.getRun() == currentRun) {
+        if (event.getRun() == currentRun) {
             tryShowSetupPanel();
 
             try {
@@ -166,8 +166,7 @@ public class ACAQTestBenchSetupUI extends ACAQUIPanel {
                         testBenchUI, DocumentTabPane.CloseMode.withAskOnCloseButton, true);
                 getWorkbenchUI().getDocumentTabPane().switchToLastTab();
                 currentRun = null;
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 openError(e);
             }
         }
@@ -175,7 +174,7 @@ public class ACAQTestBenchSetupUI extends ACAQUIPanel {
 
     @Subscribe
     public void onWorkerInterrupted(RunUIWorkerInterruptedEvent event) {
-        if(event.getRun() == currentRun) {
+        if (event.getRun() == currentRun) {
             openError(event.getException());
         }
     }

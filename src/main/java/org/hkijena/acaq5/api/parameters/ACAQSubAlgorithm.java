@@ -14,6 +14,7 @@ import java.lang.annotation.Target;
 public @interface ACAQSubAlgorithm {
     /**
      * The name of the sub-algorithm
+     *
      * @return
      */
     String value();

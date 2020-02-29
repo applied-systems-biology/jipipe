@@ -4,6 +4,7 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultDataSlotResultDataSlotRowUI;
+import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableAnalyzerUI;
 import org.hkijena.acaq5.utils.PathUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -29,7 +30,10 @@ public class ResultsTableDataSlotResultDataSlotRowUI extends ACAQDefaultDataSlot
 
         Path csvFile = findResultsTableFile();
         if (csvFile != null) {
-            registerAction("Open", UIUtils.getIconFromResources("imagej.png"), e -> {
+            registerAction("Open in ACAQ5", UIUtils.getIconFromResources("acaq5.png"), e -> {
+                ACAQTableAnalyzerUI.importTableFromCSV(csvFile, getWorkbenchUI());
+            });
+            registerAction("Open in ImageJ", UIUtils.getIconFromResources("imagej.png"), e -> {
                 importCSV(csvFile);
             });
         }

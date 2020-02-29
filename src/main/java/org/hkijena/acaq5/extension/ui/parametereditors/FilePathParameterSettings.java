@@ -14,5 +14,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface FilePathParameterSettings {
     FileSelection.IOMode ioMode();
+
     FileSelection.PathMode pathMode();
 }

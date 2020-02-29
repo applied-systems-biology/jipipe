@@ -5,8 +5,6 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 

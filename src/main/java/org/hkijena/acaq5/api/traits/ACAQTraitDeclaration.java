@@ -6,18 +6,21 @@ public interface ACAQTraitDeclaration {
 
     /**
      * Generates an Id for this declaration
+     *
      * @return
      */
     String getId();
 
     /**
      * Gets the class of the generated trait
+     *
      * @return
      */
     Class<? extends ACAQTrait> getTraitClass();
 
     /**
      * Creates a new instance
+     *
      * @return
      */
     ACAQTrait newInstance();
@@ -25,6 +28,7 @@ public interface ACAQTraitDeclaration {
     /**
      * Creates a new instance with a discriminator value.
      * If the trait is not discriminating, ths returns the same as newInstance()
+     *
      * @param value
      * @return
      */
@@ -32,24 +36,28 @@ public interface ACAQTraitDeclaration {
 
     /**
      * Returns true if this trait is a discriminator
+     *
      * @return
      */
     boolean isDiscriminator();
 
     /**
      * Returns the algorithm name
+     *
      * @return
      */
     String getName();
 
     /**
      * Returns the algorithm description
+     *
      * @return
      */
     String getDescription();
 
     /**
      * Returns all declarations that are parents of this declaration
+     *
      * @return
      */
     Set<ACAQTraitDeclaration> getInherited();

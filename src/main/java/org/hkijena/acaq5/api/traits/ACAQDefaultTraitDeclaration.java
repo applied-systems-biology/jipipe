@@ -13,7 +13,7 @@ public class ACAQDefaultTraitDeclaration extends ACAQMutableTraitDeclaration {
 
     public ACAQDefaultTraitDeclaration(Class<? extends ACAQTrait> klass) {
 
-        if(klass.isInterface())
+        if (klass.isInterface())
             throw new IllegalArgumentException("Trait class instances cannot be interfaces!");
 
         setTraitClass(klass);
@@ -25,16 +25,12 @@ public class ACAQDefaultTraitDeclaration extends ACAQMutableTraitDeclaration {
         // Discover inherited traits
         for (Class<? extends ACAQTrait> inheritedTraitClass : getInheritedTraitClasses(klass)) {
             ACAQTraitDeclaration declaration = ACAQTraitRegistry.getInstance().getDefaultDeclarationFor(inheritedTraitClass);
-            if(declaration == null) {
+            if (declaration == null) {
                 ACAQTraitRegistry.getInstance().register(inheritedTraitClass);
                 declaration = ACAQTraitRegistry.getInstance().getDefaultDeclarationFor(inheritedTraitClass);
             }
             getInherited().add(declaration);
         }
-    }
-
-    public static String getDeclarationIdOf(Class<? extends ACAQTrait> klass) {
-        return "acaq:default:" + klass.getCanonicalName();
     }
 
     @Override
@@ -48,13 +44,17 @@ public class ACAQDefaultTraitDeclaration extends ACAQMutableTraitDeclaration {
 
     @Override
     public ACAQTrait newInstance(String value) {
-        if(!isDiscriminator())
+        if (!isDiscriminator())
             return newInstance();
         try {
             return getTraitClass().getConstructor(ACAQTraitDeclaration.class, String.class).newInstance(this, value);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static String getDeclarationIdOf(Class<? extends ACAQTrait> klass) {
+        return "acaq:default:" + klass.getCanonicalName();
     }
 
     /**
@@ -89,13 +89,14 @@ public class ACAQDefaultTraitDeclaration extends ACAQMutableTraitDeclaration {
 
     /**
      * Returns all inherited traits
+     *
      * @param klass
      * @return
      */
     static Set<Class<? extends ACAQTrait>> getInheritedTraitClasses(Class<? extends ACAQTrait> klass) {
         Set<Class<? extends ACAQTrait>> result = new HashSet<>();
-        for(TypeToken<?> type : TypeToken.of(klass).getTypes().interfaces()) {
-            if(!type.getRawType().isInterface()) {
+        for (TypeToken<?> type : TypeToken.of(klass).getTypes().interfaces()) {
+            if (!type.getRawType().isInterface()) {
                 result.add((Class<? extends ACAQTrait>) type.getRawType());
             }
         }
@@ -104,6 +105,7 @@ public class ACAQDefaultTraitDeclaration extends ACAQMutableTraitDeclaration {
 
     /**
      * Returns true if the trait is hidden from the user
+     *
      * @param klass
      * @return
      */

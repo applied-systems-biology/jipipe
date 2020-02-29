@@ -203,6 +203,16 @@ See the LICENSE file provided with this code for the full license.
             <artifactId>jgrapht-io</artifactId>
             <version>1.3.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+            <version>1.5.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreesvg</artifactId>
+            <version>3.4</version>
+        </dependency>
     </dependencies>
 
     <properties>

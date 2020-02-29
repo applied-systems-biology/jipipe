@@ -30,7 +30,7 @@ public class MacroFlag {
 
     @Override
     public String toString() {
-        if(visible)
+        if (visible)
             return key;
         else
             return "";

@@ -37,13 +37,13 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
     }
 
     public void addInputSlot(String name, Class<? extends ACAQData> klass) {
-        if(!allowedInputSlotTypes.contains(klass))
+        if (!allowedInputSlotTypes.contains(klass))
             throw new RuntimeException("Slot type is not accepted by this configuration!");
-        if(!allowInputSlots)
+        if (!allowInputSlots)
             throw new RuntimeException("Slot configuration does not allow input slots");
-        if(inputSlotsSealed)
+        if (inputSlotsSealed)
             throw new RuntimeException("Slot configuration is sealed!");
-        if(hasSlot(name))
+        if (hasSlot(name))
             throw new RuntimeException("Slot already exists!");
         slots.put(name, new ACAQSlotDefinition(klass, ACAQDataSlot.SlotType.Input, name));
         inputSlotOrder.add(name);
@@ -51,13 +51,13 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
     }
 
     public void addOutputSlot(String name, Class<? extends ACAQData> klass) {
-        if(!allowedOutputSlotTypes.contains(klass))
+        if (!allowedOutputSlotTypes.contains(klass))
             throw new RuntimeException("Slot type is not accepted by this configuration!");
-        if(!allowOutputSlots)
+        if (!allowOutputSlots)
             throw new RuntimeException("Slot configuration does not allow output slots");
-        if(outputSlotsSealed)
+        if (outputSlotsSealed)
             throw new RuntimeException("Slot configuration is sealed!");
-        if(hasSlot(name))
+        if (hasSlot(name))
             throw new RuntimeException("Slot already exists!");
         slots.put(name, new ACAQSlotDefinition(klass, ACAQDataSlot.SlotType.Output, name));
         outputSlotOrder.add(name);
@@ -67,14 +67,14 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
     public void removeSlot(String name) {
 
         ACAQSlotDefinition slot = slots.getOrDefault(name, null);
-        if(slot != null) {
+        if (slot != null) {
             switch (slot.getSlotType()) {
                 case Input:
-                    if(!canModifyInputSlots())
+                    if (!canModifyInputSlots())
                         throw new RuntimeException("Input slots can not be modified!");
                     break;
                 case Output:
-                    if(!canModifyOutputSlots())
+                    if (!canModifyOutputSlots())
                         throw new RuntimeException("Output slots can not be modified!");
                     break;
                 default:
@@ -116,11 +116,11 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
         slots.clear();
         List<String> newSlots = configuration.getSlots().keySet().stream().filter(s -> !slots.containsKey(s)).collect(Collectors.toList());
         List<String> removedSlots = slots.keySet().stream().filter(s -> !configuration.getSlots().containsKey(s)).collect(Collectors.toList());
-        for(Map.Entry<String, ACAQSlotDefinition> kv : configuration.getSlots().entrySet()) {
+        for (Map.Entry<String, ACAQSlotDefinition> kv : configuration.getSlots().entrySet()) {
             slots.put(kv.getKey(), new ACAQSlotDefinition(kv.getValue().getDataClass(), kv.getValue().getSlotType(), kv.getKey()));
         }
-        if(configuration instanceof ACAQMutableSlotConfiguration) {
-            ACAQMutableSlotConfiguration other = (ACAQMutableSlotConfiguration)configuration;
+        if (configuration instanceof ACAQMutableSlotConfiguration) {
+            ACAQMutableSlotConfiguration other = (ACAQMutableSlotConfiguration) configuration;
             this.allowedInputSlotTypes = new HashSet<>(other.allowedInputSlotTypes);
             this.allowedOutputSlotTypes = new HashSet<>(other.allowedOutputSlotTypes);
             this.allowInputSlots = other.allowInputSlots;
@@ -131,10 +131,10 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
         // Update slot order
         inputSlotOrder = new ArrayList<>(configuration.getInputSlotOrder());
         outputSlotOrder = new ArrayList<>(configuration.getOutputSlotOrder());
-        for(String name : newSlots) {
+        for (String name : newSlots) {
             getEventBus().post(new SlotAddedEvent(this, name));
         }
-        for(String name : removedSlots) {
+        for (String name : removedSlots) {
             getEventBus().post(new SlotRemovedEvent(this, name));
         }
         getEventBus().post(new SlotOrderChangedEvent(this));
@@ -142,15 +142,14 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
     @Override
     public void fromJson(JsonNode node) {
-        for(Map.Entry<String, JsonNode> kv : ImmutableList.copyOf(node.fields())) {
-            if(!slots.containsKey(kv.getKey())) {
+        for (Map.Entry<String, JsonNode> kv : ImmutableList.copyOf(node.fields())) {
+            if (!slots.containsKey(kv.getKey())) {
                 String name = kv.getValue().get("name").asText();
                 Class<? extends ACAQData> klass = ACAQDatatypeRegistry.getInstance()
                         .findDataClass(kv.getValue().get("slot-class").asText());
-                if(kv.getValue().get("slot-type").asText().equalsIgnoreCase("input")) {
+                if (kv.getValue().get("slot-type").asText().equalsIgnoreCase("input")) {
                     addInputSlot(name, klass);
-                }
-                else {
+                } else {
                     addOutputSlot(name, klass);
                 }
             }
@@ -160,7 +159,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
     public void moveUp(String slot) {
         ACAQDataSlot.SlotType type = slots.get(slot).getSlotType();
         List<String> order;
-        switch(type) {
+        switch (type) {
             case Input:
                 order = inputSlotOrder;
                 break;
@@ -172,7 +171,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
         }
 
         int index = order.indexOf(slot);
-        if(index > 0) {
+        if (index > 0) {
             String other = order.get(index - 1);
             order.set(index - 1, slot);
             order.set(index, other);
@@ -184,7 +183,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
     public void moveDown(String slot) {
         ACAQDataSlot.SlotType type = slots.get(slot).getSlotType();
         List<String> order;
-        switch(type) {
+        switch (type) {
             case Input:
                 order = inputSlotOrder;
                 break;
@@ -196,7 +195,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
         }
 
         int index = order.indexOf(slot);
-        if(index < order.size() - 1) {
+        if (index < order.size() - 1) {
             String other = order.get(index + 1);
             order.set(index + 1, slot);
             order.set(index, other);
@@ -211,10 +210,6 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
     public boolean allowsOutputSlots() {
         return allowOutputSlots;
-    }
-
-    public static Builder builder() {
-        return new Builder();
     }
 
     public boolean isInputSlotsSealed() {
@@ -250,13 +245,17 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
     }
 
     public boolean canCreateCompatibleInputSlot(Class<? extends ACAQData> acceptedDataType) {
-        if(!canModifyInputSlots())
+        if (!canModifyInputSlots())
             return false;
         for (Class<? extends ACAQData> allowedInputSlotType : allowedInputSlotTypes) {
-            if(allowedInputSlotType.isAssignableFrom(acceptedDataType))
+            if (allowedInputSlotType.isAssignableFrom(acceptedDataType))
                 return true;
         }
         return false;
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 
     public static class Builder {

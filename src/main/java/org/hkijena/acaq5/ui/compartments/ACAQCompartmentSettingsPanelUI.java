@@ -13,7 +13,7 @@ import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 
 public class ACAQCompartmentSettingsPanelUI extends ACAQUIPanel {
     private ACAQProjectCompartment compartment;
@@ -78,7 +78,7 @@ public class ACAQCompartmentSettingsPanelUI extends ACAQUIPanel {
     }
 
     private void deleteCompartment() {
-        if(JOptionPane.showConfirmDialog(this, "Do you really want to delete the compartment '" + compartment.getName() + "'?\n" +
+        if (JOptionPane.showConfirmDialog(this, "Do you really want to delete the compartment '" + compartment.getName() + "'?\n" +
                 "You will lose all nodes stored in this compartment.", "Delete compartment", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
             compartment.getProject().removeCompartment(compartment);
         }

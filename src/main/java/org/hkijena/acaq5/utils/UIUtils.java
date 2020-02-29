@@ -13,7 +13,6 @@
 package org.hkijena.acaq5.utils;
 
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
@@ -35,7 +34,7 @@ import java.util.function.Predicate;
 
 public class UIUtils {
 
-    public static final Insets UI_PADDING = new Insets(4,4,4,4);
+    public static final Insets UI_PADDING = new Insets(4, 4, 4, 4);
 
     public static JLabel createDescriptionLabelUI(JPanel panel, String text, int row, int column) {
         JLabel description = new JLabel(text);
@@ -111,7 +110,7 @@ public class UIUtils {
         double min = Math.min(r, Math.min(g, b));
 
         double v = (max + min) / 2.0;
-        if(v < 0.5) {
+        if (v < 0.5) {
             label.setForeground(Color.WHITE);
         }
 
@@ -119,7 +118,7 @@ public class UIUtils {
     }
 
     public static JLabel borderedJLabel(JLabel label) {
-        label.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+        label.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         return label;
     }
 
@@ -160,13 +159,12 @@ public class UIUtils {
         });
         target.addActionListener(e -> {
 
-            if(MouseInfo.getPointerInfo().getLocation().x >= target.getLocationOnScreen().x
+            if (MouseInfo.getPointerInfo().getLocation().x >= target.getLocationOnScreen().x
                     && MouseInfo.getPointerInfo().getLocation().x <= target.getLocationOnScreen().x + target.getWidth()
                     && MouseInfo.getPointerInfo().getLocation().y >= target.getLocationOnScreen().y
                     && MouseInfo.getPointerInfo().getLocation().y <= target.getLocationOnScreen().y + target.getHeight()) {
 
-            }
-            else {
+            } else {
                 popupMenu.show(target, 0, target.getHeight());
             }
         });
@@ -187,13 +185,12 @@ public class UIUtils {
         });
         target.addActionListener(e -> {
 
-            if(MouseInfo.getPointerInfo().getLocation().x >= target.getLocationOnScreen().x
+            if (MouseInfo.getPointerInfo().getLocation().x >= target.getLocationOnScreen().x
                     && MouseInfo.getPointerInfo().getLocation().x <= target.getLocationOnScreen().x + target.getWidth()
                     && MouseInfo.getPointerInfo().getLocation().y >= target.getLocationOnScreen().y
                     && MouseInfo.getPointerInfo().getLocation().y <= target.getLocationOnScreen().y + target.getHeight()) {
 
-            }
-            else {
+            } else {
                 Point l = target.getLocationOnScreen();
                 Popup popup = popupFactory.getPopup(target, panel, l.x, l.y + target.getHeight());
                 popup.show();
@@ -213,18 +210,18 @@ public class UIUtils {
         component.setBackground(Color.WHITE);
         component.setOpaque(false);
         Border margin = new EmptyBorder(5, 15, 5, 15);
-        Border compound = new CompoundBorder( BorderFactory.createEtchedBorder(), margin);
+        Border compound = new CompoundBorder(BorderFactory.createEtchedBorder(), margin);
         component.setBorder(compound);
     }
 
     public static void makeFlat25x25(AbstractButton component) {
         component.setBackground(Color.WHITE);
         component.setOpaque(false);
-        component.setPreferredSize(new Dimension(25,25));
-        component.setMinimumSize(new Dimension(25,25));
-        component.setMaximumSize(new Dimension(25,25));
+        component.setPreferredSize(new Dimension(25, 25));
+        component.setMinimumSize(new Dimension(25, 25));
+        component.setMaximumSize(new Dimension(25, 25));
         Border margin = new EmptyBorder(2, 2, 2, 2);
-        Border compound = new CompoundBorder( BorderFactory.createEtchedBorder(), margin);
+        Border compound = new CompoundBorder(BorderFactory.createEtchedBorder(), margin);
         component.setBorder(compound);
     }
 
@@ -239,7 +236,7 @@ public class UIUtils {
         window.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent windowEvent) {
-                if(JOptionPane.showConfirmDialog(windowEvent.getComponent(), message, title,
+                if (JOptionPane.showConfirmDialog(windowEvent.getComponent(), message, title,
                         JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
                     windowEvent.getWindow().dispose();
                 }
@@ -254,6 +251,7 @@ public class UIUtils {
 
     /**
      * Expands the whole tree
+     *
      * @param tree
      */
     public static void expandAllTree(JTree tree) {
@@ -275,6 +273,7 @@ public class UIUtils {
 
     /**
      * Creates a read-only "star-rating" label
+     *
      * @param stars
      * @param maximum
      * @return
@@ -283,13 +282,13 @@ public class UIUtils {
         StringBuilder builder = new StringBuilder();
         builder.append("<html>");
         builder.append("<table><tr>");
-        if(title != null && !title.isEmpty())
+        if (title != null && !title.isEmpty())
             builder.append("<td>").append(title).append("</td>");
         builder.append("<td>");
-        for(int i = 0; i < maximum; ++i) {
-            if(stars >= i + 1)
+        for (int i = 0; i < maximum; ++i) {
+            if (stars >= i + 1)
                 builder.append("<img style=\"vertical-align:middle\" src=\"").append(ResourceUtils.getPluginResource("icons/star.png")).append("\" />");
-            else if(stars >= i + 0.5)
+            else if (stars >= i + 0.5)
                 builder.append("<img style=\"vertical-align:middle\" src=\"").append(ResourceUtils.getPluginResource("icons/star-half-o.png")).append("\" />");
             else
                 builder.append("<img style=\"vertical-align:middle\" src=\"").append(ResourceUtils.getPluginResource("icons/star-o.png")).append("\" />");
@@ -311,7 +310,7 @@ public class UIUtils {
         dialog.setContentPane(errorArea);
         dialog.setModal(false);
         dialog.pack();
-        dialog.setSize(new Dimension(500,400));
+        dialog.setSize(new Dimension(500, 400));
         dialog.setLocationRelativeTo(parent);
         dialog.setVisible(true);
     }
@@ -324,20 +323,20 @@ public class UIUtils {
         dialog.setContentPane(ui);
         dialog.setModal(false);
         dialog.pack();
-        dialog.setSize(new Dimension(500,400));
+        dialog.setSize(new Dimension(500, 400));
         dialog.setLocationRelativeTo(parent);
         dialog.setVisible(true);
     }
 
     public static String getUniqueStringByDialog(Component parent, String message, String initialValue, Predicate<String> exists) {
-        if(initialValue != null)
+        if (initialValue != null)
             initialValue = StringUtils.makeUniqueString(initialValue, exists);
         String value = null;
-        while(value == null) {
-            String newValue = JOptionPane.showInputDialog(parent,message, initialValue);
-            if(newValue == null || newValue.trim().isEmpty())
+        while (value == null) {
+            String newValue = JOptionPane.showInputDialog(parent, message, initialValue);
+            if (newValue == null || newValue.trim().isEmpty())
                 return null;
-            if(exists.test(newValue))
+            if (exists.test(newValue))
                 continue;
             value = newValue;
         }
@@ -345,7 +344,7 @@ public class UIUtils {
     }
 
     public static Color getFillColorFor(ACAQAlgorithmDeclaration declaration) {
-        if(declaration.getAlgorithmClass() == ACAQProjectCompartment.class)
+        if (declaration.getAlgorithmClass() == ACAQProjectCompartment.class)
             return new Color(254, 254, 255);
         return declaration.getCategory().getColor(0.1f, 0.9f);
     }
@@ -355,7 +354,7 @@ public class UIUtils {
     }
 
     public static Color getBorderColorFor(ACAQAlgorithmDeclaration declaration) {
-        if(declaration.getAlgorithmClass() == ACAQProjectCompartment.class)
+        if (declaration.getAlgorithmClass() == ACAQProjectCompartment.class)
             return new Color(6, 20, 57);
         return declaration.getCategory().getColor(0.1f, 0.5f);
     }

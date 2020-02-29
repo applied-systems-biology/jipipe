@@ -38,13 +38,13 @@ public class ACAQValidityReportUI extends JPanel {
                 return getValueAt(0, columnIndex).getClass();
             }
         };
-        if(report != null) {
+        if (report != null) {
             model.addColumn("");
             model.addColumn("Location");
             model.addColumn("Message");
             ImageIcon icon = UIUtils.getIconFromResources("error.png");
             Map<String, String> messages = report.getMessages();
-            for(String key : report.getInvalidResponses()) {
+            for (String key : report.getInvalidResponses()) {
                 model.addRow(new Object[]{
                         icon,
                         key,

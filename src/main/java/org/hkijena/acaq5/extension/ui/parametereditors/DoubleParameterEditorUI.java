@@ -22,10 +22,10 @@ public class DoubleParameterEditorUI extends ACAQParameterEditorUI {
         setLayout(new BorderLayout());
         double min = Double.NEGATIVE_INFINITY;
         double max = Double.POSITIVE_INFINITY;
-        SpinnerNumberModel model = new SpinnerNumberModel((double)getParameterAccess().get(), min, max, 1);
+        SpinnerNumberModel model = new SpinnerNumberModel((double) getParameterAccess().get(), min, max, 1);
         JSpinner spinner = new JSpinner(model);
         spinner.addChangeListener(e -> {
-            if(!getParameterAccess().set(model.getNumber().doubleValue())) {
+            if (!getParameterAccess().set(model.getNumber().doubleValue())) {
                 spinner.setValue(getParameterAccess().get());
             }
         });

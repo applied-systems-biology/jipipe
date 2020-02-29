@@ -19,8 +19,7 @@ import java.awt.image.BufferedImage;
 /**
  * Icon that takes an existing image icon and uses it as mask for recoloring
  */
-public class MonochromeColorIcon implements Icon
-{
+public class MonochromeColorIcon implements Icon {
     private BufferedImage template;
     private Color color;
 
@@ -35,22 +34,19 @@ public class MonochromeColorIcon implements Icon
         this.color = color;
     }
 
-    public void setColor(Color c)
-    {
-        color = c;
-    }
-
-    public Color getColor()
-    {
+    public Color getColor() {
         return color;
     }
 
-    public void paintIcon(Component c, Graphics g, int x, int y)
-    {
+    public void setColor(Color c) {
+        color = c;
+    }
+
+    public void paintIcon(Component c, Graphics g, int x, int y) {
         int[] buf = new int[1];
 
-        for(int i = 0; i < getIconWidth(); ++i) {
-            for(int j = 0; j < getIconHeight(); ++j) {
+        for (int i = 0; i < getIconWidth(); ++i) {
+            for (int j = 0; j < getIconHeight(); ++j) {
                 template.getData().getPixel(j, i, buf);
                 Color tmp = new Color(color.getRed(), color.getGreen(), color.getBlue(), buf[0]);
                 g.setColor(tmp);

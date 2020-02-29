@@ -8,7 +8,6 @@ import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.utils.JsonUtils;
-import org.ojalgo.access.Structure2D;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -37,7 +36,7 @@ public class ACAQExportedDataTable implements TableModel {
         this.internalPath = slot.getStoragePath();
         this.acceptedDataType = slot.getAcceptedDataType();
         this.rowList = new ArrayList<>();
-        for(int row = 0; row < slot.getRowCount(); ++row) {
+        for (int row = 0; row < slot.getRowCount(); ++row) {
             Row rowInstance = new Row();
             rowInstance.location = dataOutputPaths.get(row);
             rowInstance.traits = slot.getAnnotations(row);
@@ -114,9 +113,9 @@ public class ACAQExportedDataTable implements TableModel {
             table.addValue("acaq:location", row.location.toString());
             for (ACAQTraitDeclaration traitColumn : getTraitColumns()) {
                 ACAQTrait existing = row.traits.stream().filter(t -> t.getDeclaration() == traitColumn).findFirst().orElse(null);
-                if(existing instanceof ACAQDiscriminator)
+                if (existing instanceof ACAQDiscriminator)
                     table.addValue(traitColumn.getName(), ((ACAQDiscriminator) existing).getValue());
-                else if(existing != null)
+                else if (existing != null)
                     table.addValue(traitColumn.getName(), 1);
                 else
                     table.addValue(traitColumn.getName(), 0);
@@ -126,7 +125,7 @@ public class ACAQExportedDataTable implements TableModel {
     }
 
     private List<ACAQTraitDeclaration> getTraitColumns() {
-        if(traitColumns == null) {
+        if (traitColumns == null) {
             Set<ACAQTraitDeclaration> registeredTraits = new HashSet<>();
             for (Row row : rowList) {
                 registeredTraits.addAll(row.traits.stream().map(ACAQTrait::getDeclaration).collect(Collectors.toSet()));
@@ -134,14 +133,6 @@ public class ACAQExportedDataTable implements TableModel {
             traitColumns = new ArrayList<>(registeredTraits);
         }
         return traitColumns;
-    }
-
-    public static ACAQExportedDataTable loadFromJson(Path fileName) {
-        try {
-            return JsonUtils.getObjectMapper().readerFor(ACAQExportedDataTable.class).readValue(fileName.toFile());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
@@ -156,7 +147,7 @@ public class ACAQExportedDataTable implements TableModel {
 
     @Override
     public String getColumnName(int columnIndex) {
-        if(columnIndex == 0)
+        if (columnIndex == 0)
             return "Data";
         else
             return traitColumns.get(columnIndex - 1).getName();
@@ -164,7 +155,7 @@ public class ACAQExportedDataTable implements TableModel {
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
-        if(columnIndex == 0)
+        if (columnIndex == 0)
             return Path.class;
         else
             return ACAQTrait.class;
@@ -177,7 +168,7 @@ public class ACAQExportedDataTable implements TableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        if(columnIndex == 0)
+        if (columnIndex == 0)
             return rowList.get(rowIndex).getLocation();
         else {
             ACAQTraitDeclaration traitColumn = traitColumns.get(columnIndex - 1);
@@ -198,6 +189,14 @@ public class ACAQExportedDataTable implements TableModel {
     @Override
     public void removeTableModelListener(TableModelListener l) {
 
+    }
+
+    public static ACAQExportedDataTable loadFromJson(Path fileName) {
+        try {
+            return JsonUtils.getObjectMapper().readerFor(ACAQExportedDataTable.class).readValue(fileName.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static class Row {

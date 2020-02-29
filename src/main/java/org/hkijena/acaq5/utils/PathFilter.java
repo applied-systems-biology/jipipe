@@ -37,7 +37,7 @@ public class PathFilter implements Predicate<Path>, ACAQValidatable {
     @JsonSetter
     public void setMode(Mode mode) {
         this.mode = mode;
-        if(mode == Mode.Glob)
+        if (mode == Mode.Glob)
             setFilterString(filterString);
     }
 
@@ -49,22 +49,20 @@ public class PathFilter implements Predicate<Path>, ACAQValidatable {
     @JsonSetter
     public void setFilterString(String filterString) {
         this.filterString = filterString;
-        if(mode == Mode.Glob && filterString != null && !filterString.isEmpty()) {
+        if (mode == Mode.Glob && filterString != null && !filterString.isEmpty()) {
             try {
                 globPathMatcher = FileSystems.getDefault().getPathMatcher("glob:" + filterString);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 globPathMatcher = null;
             }
-        }
-        else {
+        } else {
             globPathMatcher = null;
         }
     }
 
     @Override
     public boolean test(Path path) {
-        switch(mode) {
+        switch (mode) {
             case Contains:
                 return path.getFileName().toString().contains(filterString);
             case Glob:
@@ -78,7 +76,7 @@ public class PathFilter implements Predicate<Path>, ACAQValidatable {
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        if(mode == Mode.Glob && globPathMatcher == null) {
+        if (mode == Mode.Glob && globPathMatcher == null) {
             report.reportIsInvalid("The glob file filter '" + filterString + "' is invalid! Please change it to a valid filter string.");
         }
     }

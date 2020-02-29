@@ -44,7 +44,7 @@ public class ACAQAlgorithmFinderSlotUI extends JPanel {
 
         JLabel nameLabel = new JLabel(inputSlot.getName());
         nameLabel.setToolTipText(ACAQData.getNameOf(inputSlot.getAcceptedDataType()));
-        nameLabel.setBorder(BorderFactory.createEmptyBorder(0,5,0,5));
+        nameLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
         nameLabel.setIcon(ACAQUIDatatypeRegistry.getInstance().getIconFor(inputSlot.getAcceptedDataType()));
 
         add(nameLabel, BorderLayout.CENTER);
@@ -59,19 +59,17 @@ public class ACAQAlgorithmFinderSlotUI extends JPanel {
     private void reloadAssignMenu() {
         assignButtonMenu.removeAll();
 
-        if(isExistingInstance) {
-            if(graph.getSourceSlot(inputSlot) != null) {
+        if (isExistingInstance) {
+            if (graph.getSourceSlot(inputSlot) != null) {
                 JMenuItem disconnectExistingButton = new JMenuItem("Disconnect existing: " + graph.getSourceSlot(inputSlot).getNameWithAlgorithmName(), UIUtils.getIconFromResources("remove.png"));
                 disconnectExistingButton.addActionListener(e -> disconnectAllExistingInstance());
                 assignButtonMenu.add(disconnectExistingButton);
-            }
-            else {
+            } else {
                 JMenuItem connectButton = new JMenuItem(inputSlot.getNameWithAlgorithmName(), ACAQUIDatatypeRegistry.getInstance().getIconFor(inputSlot.getAcceptedDataType()));
                 connectButton.addActionListener(e -> connectToExistingInstance());
                 assignButtonMenu.add(connectButton);
             }
-        }
-        else {
+        } else {
             JMenuItem connectButton = new JMenuItem(inputSlot.getNameWithAlgorithmName(), ACAQUIDatatypeRegistry.getInstance().getIconFor(inputSlot.getAcceptedDataType()));
             connectButton.addActionListener(e -> connectToNewInstance());
             assignButtonMenu.add(connectButton);
@@ -90,11 +88,10 @@ public class ACAQAlgorithmFinderSlotUI extends JPanel {
     }
 
     private void connectToExistingInstance() {
-        if(graph.canConnect(outputSlot, inputSlot)) {
+        if (graph.canConnect(outputSlot, inputSlot)) {
             graph.connect(outputSlot, inputSlot);
             eventBus.post(new AlgorithmFinderSuccessEvent(outputSlot, inputSlot));
-        }
-        else {
+        } else {
             JOptionPane.showMessageDialog(this, "The data slots could not be connected. Is this connection causing loops?", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }

@@ -5,13 +5,8 @@ import org.hkijena.acaq5.api.traits.ACAQDefaultTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Contains all known {@link ACAQTrait} types
@@ -21,10 +16,6 @@ public class ACAQTraitRegistry {
 
     public ACAQTraitRegistry() {
 
-    }
-
-    public static ACAQTraitRegistry getInstance() {
-        return ACAQRegistryService.getInstance().getTraitRegistry();
     }
 
     public void register(Class<? extends ACAQTrait> klass) {
@@ -41,5 +32,9 @@ public class ACAQTraitRegistry {
 
     public ACAQTraitDeclaration getDeclarationById(String id) {
         return registeredTraits.get(id);
+    }
+
+    public static ACAQTraitRegistry getInstance() {
+        return ACAQRegistryService.getInstance().getTraitRegistry();
     }
 }

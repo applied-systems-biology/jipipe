@@ -32,8 +32,8 @@ public class ACAQValidityReport {
 
     public List<String> getInvalidResponses() {
         List<String> result = new ArrayList<>();
-        for(Map.Entry<String, Response> entry : responses.entrySet()) {
-            if(entry.getValue() == Response.Invalid)
+        for (Map.Entry<String, Response> entry : responses.entrySet()) {
+            if (entry.getValue() == Response.Invalid)
                 result.add(entry.getKey());
         }
         return result;

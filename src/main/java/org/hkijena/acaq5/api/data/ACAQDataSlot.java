@@ -1,24 +1,13 @@
 package org.hkijena.acaq5.api.data;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
-import ij.measure.ResultsTable;
-import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
-import org.hkijena.acaq5.utils.JsonUtils;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
-import javax.xml.soap.Text;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -53,22 +42,24 @@ public class ACAQDataSlot implements TableModel {
     }
 
     public boolean accepts(ACAQData data) {
-        if(data == null)
+        if (data == null)
             throw new NullPointerException("Data slots cannot accept null data!");
         return acceptedDataType.isAssignableFrom(data.getClass());
     }
 
     /**
      * Gets the data stored in a specific row
+     *
      * @param row
      * @return
      */
     public <T> T getData(int row) {
-        return (T)data.get(row);
+        return (T) data.get(row);
     }
 
     /**
      * Gets the list of annotations for a specific data row
+     *
      * @param row
      * @return
      */
@@ -76,7 +67,7 @@ public class ACAQDataSlot implements TableModel {
         List<ACAQTrait> result = new ArrayList<>();
         for (ACAQTraitDeclaration declaration : annotationColumns) {
             ACAQTrait trait = annotations.get(declaration).get(row);
-            if(trait != null)
+            if (trait != null)
                 result.add(trait);
         }
         return result;
@@ -84,20 +75,21 @@ public class ACAQDataSlot implements TableModel {
 
     /**
      * Adds a data row
+     *
      * @param value
      * @param traits
      */
     public void addData(ACAQData value, List<ACAQTrait> traits) {
-        if(!accepts(value))
+        if (!accepts(value))
             throw new IllegalArgumentException("Tried to add data of type " + value.getClass() + ", but slot only accepts " + acceptedDataType);
-        if(uniqueData) {
-            if(findRowWithTraits(traits) != -1) {
+        if (uniqueData) {
+            if (findRowWithTraits(traits) != -1) {
                 uniqueData = false;
             }
         }
         data.add(value);
         for (ACAQTrait trait : traits) {
-            if(!annotations.containsKey(trait.getDeclaration())) {
+            if (!annotations.containsKey(trait.getDeclaration())) {
                 annotationColumns.add(trait.getDeclaration());
                 annotations.put(trait.getDeclaration(), new ArrayList<>());
             }
@@ -107,6 +99,7 @@ public class ACAQDataSlot implements TableModel {
 
     /**
      * Adds a data row
+     *
      * @param value
      */
     public void addData(ACAQData value) {
@@ -115,27 +108,28 @@ public class ACAQDataSlot implements TableModel {
 
     /**
      * Finds the row that matches the given traits
+     *
      * @param traits
      * @return row index >= 0 if found, otherwise -1
      */
     public int findRowWithTraits(List<ACAQTrait> traits) {
         ACAQTraitDeclaration[] declarationMap = new ACAQTraitDeclaration[traits.size()];
-        for(int i = 0; i < traits.size(); ++i) {
+        for (int i = 0; i < traits.size(); ++i) {
             int declarationIndex = annotationColumns.indexOf(traits.get(i).getDeclaration());
-            if(declarationIndex == -1)
+            if (declarationIndex == -1)
                 return -1;
             declarationMap[i] = annotationColumns.get(declarationIndex);
         }
-        for(int row = 0; row < data.size(); ++row) {
+        for (int row = 0; row < data.size(); ++row) {
             boolean equal = true;
-            for(int i = 0; i < traits.size(); ++i) {
+            for (int i = 0; i < traits.size(); ++i) {
                 ACAQTraitDeclaration declaration = declarationMap[i];
                 ACAQTrait rowTrait = annotations.get(declaration).get(row);
-                if(!ACAQTrait.equals(traits.get(i), rowTrait)) {
+                if (!ACAQTrait.equals(traits.get(i), rowTrait)) {
                     equal = false;
                 }
             }
-            if(equal)
+            if (equal)
                 return row;
         }
         return -1;
@@ -143,6 +137,7 @@ public class ACAQDataSlot implements TableModel {
 
     /**
      * Returns true if all rows are unique according to their traits
+     *
      * @return
      */
     public boolean isDataUnique() {
@@ -171,13 +166,13 @@ public class ACAQDataSlot implements TableModel {
      */
     public void flush() {
         save();
-        for(int i = 0; i < data.size(); ++i) {
+        for (int i = 0; i < data.size(); ++i) {
             data.set(i, null);
         }
     }
 
     public boolean isInput() {
-        switch(slotType) {
+        switch (slotType) {
             case Input:
                 return true;
             case Output:
@@ -188,7 +183,7 @@ public class ACAQDataSlot implements TableModel {
     }
 
     public boolean isOutput() {
-        switch(slotType) {
+        switch (slotType) {
             case Input:
                 return false;
             case Output:
@@ -201,6 +196,7 @@ public class ACAQDataSlot implements TableModel {
     /**
      * Gets the storage path that is used during running the algorithm for saving the results
      * This is not used during project creation
+     *
      * @return
      */
     public Path getStoragePath() {
@@ -215,14 +211,14 @@ public class ACAQDataSlot implements TableModel {
      * Saves the data to the storage path
      */
     public void save() {
-        if(isOutput() && storagePath != null && data != null) {
+        if (isOutput() && storagePath != null && data != null) {
 
             // Save data
             List<Path> dataOutputPaths = new ArrayList<>();
-            for(int row = 0; row < getRowCount(); ++row) {
+            for (int row = 0; row < getRowCount(); ++row) {
                 Path pathName = Paths.get(getName() + " " + row);
                 Path path = storagePath.resolve(pathName);
-                if(!Files.isDirectory(path)) {
+                if (!Files.isDirectory(path)) {
                     try {
                         Files.createDirectories(path);
                     } catch (IOException e) {
@@ -246,6 +242,7 @@ public class ACAQDataSlot implements TableModel {
 
     /**
      * Returns all trait declarations, sorted by their information
+     *
      * @return
      */
     public List<ACAQTraitDeclaration> getTraitsSortedByInformation() {
@@ -258,28 +255,27 @@ public class ACAQDataSlot implements TableModel {
 
     /**
      * Calculates the information of a trait
+     *
      * @param traitDeclaration
      * @return
      */
     public double getInformationOf(ACAQTraitDeclaration traitDeclaration) {
         Map<Object, Integer> frequencies = new HashMap<>();
         for (ACAQTrait trait : annotations.get(traitDeclaration)) {
-            if(trait instanceof ACAQDiscriminator) {
+            if (trait instanceof ACAQDiscriminator) {
                 String value = ((ACAQDiscriminator) trait).getValue();
                 frequencies.put(value, frequencies.getOrDefault(value, 0) + 1);
-            }
-            else if(trait == null) {
+            } else if (trait == null) {
                 frequencies.put(false, frequencies.getOrDefault(false, 0) + 1);
-            }
-            else {
+            } else {
                 frequencies.put(true, frequencies.getOrDefault(true, 0) + 1);
             }
         }
         double I = 0;
         for (Map.Entry<Object, Integer> entry : frequencies.entrySet()) {
-            if(entry.getValue() == 0)
+            if (entry.getValue() == 0)
                 continue;
-            double Ie =  Math.log(1.0 / entry.getValue());
+            double Ie = Math.log(1.0 / entry.getValue());
             I += Ie;
         }
         return I;
@@ -287,17 +283,13 @@ public class ACAQDataSlot implements TableModel {
 
     /**
      * Copies the source slot into this slot
+     *
      * @param sourceSlot
      */
     public void copyFrom(ACAQDataSlot sourceSlot) {
-        for(int row = 0; row < sourceSlot.getRowCount(); ++row) {
+        for (int row = 0; row < sourceSlot.getRowCount(); ++row) {
             addData(sourceSlot.getData(row), sourceSlot.getAnnotations(row));
         }
-    }
-
-    public enum SlotType {
-        Input,
-        Output
     }
 
     @Override
@@ -312,7 +304,7 @@ public class ACAQDataSlot implements TableModel {
 
     @Override
     public String getColumnName(int columnIndex) {
-        if(columnIndex == 0)
+        if (columnIndex == 0)
             return "Data";
         else
             return annotationColumns.get(columnIndex - 1).getName();
@@ -320,11 +312,11 @@ public class ACAQDataSlot implements TableModel {
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
-        if(columnIndex == 0)
+        if (columnIndex == 0)
             return ACAQData.class;
         else {
             ACAQTraitDeclaration column = annotationColumns.get(columnIndex);
-            if(column.isDiscriminator())
+            if (column.isDiscriminator())
                 return ACAQDiscriminator.class;
             else
                 return ACAQTrait.class;
@@ -338,10 +330,9 @@ public class ACAQDataSlot implements TableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        if(columnIndex == 0) {
+        if (columnIndex == 0) {
             return data.get(rowIndex);
-        }
-        else {
+        } else {
             return annotations.get(annotationColumns.get(columnIndex)).get(rowIndex);
         }
     }
@@ -359,5 +350,10 @@ public class ACAQDataSlot implements TableModel {
     @Override
     public void removeTableModelListener(TableModelListener l) {
 
+    }
+
+    public enum SlotType {
+        Input,
+        Output
     }
 }

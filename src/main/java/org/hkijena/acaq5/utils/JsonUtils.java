@@ -13,7 +13,7 @@ public class JsonUtils {
     }
 
     public static ObjectMapper getObjectMapper() {
-        if(objectMapper == null) {
+        if (objectMapper == null) {
             objectMapper = new ObjectMapper();
             objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
         }

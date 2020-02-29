@@ -62,12 +62,12 @@ public class ACAQTraitEditorUI extends JPanel {
     }
 
     public void reloadList() {
-        ACAQDataSlot selectedSlot = slotSelection.getSelectedItem() != null ? (ACAQDataSlot)slotSelection.getSelectedItem() : null;
+        ACAQDataSlot selectedSlot = slotSelection.getSelectedItem() != null ? (ACAQDataSlot) slotSelection.getSelectedItem() : null;
         ArrayList<ACAQDataSlot> slots = new ArrayList<>();
         slots.addAll(algorithm.getInputSlots());
         slots.addAll(algorithm.getOutputSlots());
         DefaultComboBoxModel<ACAQDataSlot> model = new DefaultComboBoxModel<ACAQDataSlot>(slots.toArray(new ACAQDataSlot[0]));
-        if(algorithm.getSlots().containsValue(selectedSlot)) {
+        if (algorithm.getSlots().containsValue(selectedSlot)) {
             model.setSelectedItem(selectedSlot);
         }
         slotSelection.setModel(model);
@@ -75,9 +75,9 @@ public class ACAQTraitEditorUI extends JPanel {
     }
 
     public void updateEditor() {
-        if(slotSelection.getSelectedItem() != null) {
+        if (slotSelection.getSelectedItem() != null) {
             ACAQDataSlot selectedSlot = (ACAQDataSlot) slotSelection.getSelectedItem();
-            if(algorithm.getTraitConfiguration() instanceof ACAQMutableTraitGenerator)
+            if (algorithm.getTraitConfiguration() instanceof ACAQMutableTraitGenerator)
                 splitPane.setLeftComponent(new ACAQTraitGeneratorUI(selectedSlot.getName(), (ACAQMutableTraitGenerator) algorithm.getTraitConfiguration(), graph));
             else
                 splitPane.setLeftComponent(new ACAQTraitViewerUI(selectedSlot, graph));

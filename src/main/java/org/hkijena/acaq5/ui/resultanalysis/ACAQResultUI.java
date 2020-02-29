@@ -29,7 +29,7 @@ public class ACAQResultUI extends ACAQUIPanel {
         algorithmTree = new ACAQResultAlgorithmTree(getWorkbenchUI(), run);
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, algorithmTree,
-        new JPanel());
+                new JPanel());
         splitPane.setDividerSize(3);
         splitPane.setResizeWeight(0.33);
         addComponentListener(new ComponentAdapter() {
@@ -43,10 +43,10 @@ public class ACAQResultUI extends ACAQUIPanel {
 
         algorithmTree.getTree().addTreeSelectionListener(e -> {
             Object lastPathComponent = e.getPath().getLastPathComponent();
-            if(lastPathComponent instanceof DefaultMutableTreeNode) {
+            if (lastPathComponent instanceof DefaultMutableTreeNode) {
                 Object userObject = ((DefaultMutableTreeNode) lastPathComponent).getUserObject();
-                if(userObject instanceof ACAQDataSlot) {
-                    showDataSlot((ACAQDataSlot)userObject);
+                if (userObject instanceof ACAQDataSlot) {
+                    showDataSlot((ACAQDataSlot) userObject);
                 }
             }
         });

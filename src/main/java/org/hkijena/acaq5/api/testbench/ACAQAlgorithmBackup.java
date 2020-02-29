@@ -34,7 +34,7 @@ public class ACAQAlgorithmBackup {
     }
 
     private void backupData() {
-        for(ACAQDataSlot slot : algorithm.getOutputSlots()) {
+        for (ACAQDataSlot slot : algorithm.getOutputSlots()) {
             storagePathBackups.put(slot.getName(), slot.getStoragePath());
         }
     }
@@ -47,7 +47,7 @@ public class ACAQAlgorithmBackup {
     }
 
     public void restore(ACAQAlgorithm targetAlgorithm) {
-        for(ACAQDataSlot slot : targetAlgorithm.getOutputSlots()) {
+        for (ACAQDataSlot slot : targetAlgorithm.getOutputSlots()) {
             slot.setStoragePath(storagePathBackups.get(slot.getName()));
         }
         restoreParameters(targetAlgorithm);

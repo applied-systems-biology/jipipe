@@ -12,18 +12,18 @@ public class ACAQIOSlotConfiguration extends ACAQMutableSlotConfiguration {
     @Override
     public void addInputSlot(String name, Class<? extends ACAQData> klass) {
         super.addInputSlot(name, klass);
-        if(!getSlots().containsKey("Output " + name)) {
+        if (!getSlots().containsKey("Output " + name)) {
             addOutputSlot("Output " + name, klass);
         }
     }
 
     @Override
     public void addOutputSlot(String name, Class<? extends ACAQData> klass) {
-        if(!name.startsWith("Output "))
+        if (!name.startsWith("Output "))
             name = "Output " + name;
         super.addOutputSlot(name, klass);
         String inputName = name.substring("Output ".length());
-        if(!getSlots().containsKey(inputName))
+        if (!getSlots().containsKey(inputName))
             addInputSlot(inputName, klass);
     }
 
@@ -32,15 +32,14 @@ public class ACAQIOSlotConfiguration extends ACAQMutableSlotConfiguration {
         ACAQSlotDefinition slot = getSlots().get(name);
         super.removeSlot(name);
 
-        if(slot.getSlotType() == ACAQDataSlot.SlotType.Input) {
+        if (slot.getSlotType() == ACAQDataSlot.SlotType.Input) {
             String outputName = "Output " + name;
-            if(hasSlot(outputName)) {
+            if (hasSlot(outputName)) {
                 super.removeSlot(outputName);
             }
-        }
-        else if(slot.getSlotType() == ACAQDataSlot.SlotType.Output) {
+        } else if (slot.getSlotType() == ACAQDataSlot.SlotType.Output) {
             String inputName = name.substring("Output ".length());
-            if(hasSlot(inputName)) {
+            if (hasSlot(inputName)) {
                 super.removeSlot(inputName);
             }
         }

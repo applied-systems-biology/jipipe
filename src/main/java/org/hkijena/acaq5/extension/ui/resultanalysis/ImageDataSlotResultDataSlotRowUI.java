@@ -19,7 +19,7 @@ public class ImageDataSlotResultDataSlotRowUI extends ACAQDefaultDataSlotResultD
     }
 
     private Path findImageFile() {
-        if(getRowStorageFolder() != null && Files.isDirectory(getRowStorageFolder())) {
+        if (getRowStorageFolder() != null && Files.isDirectory(getRowStorageFolder())) {
             return PathUtils.findFileByExtensionIn(getRowStorageFolder(), ".tif");
         }
         return null;
@@ -30,10 +30,10 @@ public class ImageDataSlotResultDataSlotRowUI extends ACAQDefaultDataSlotResultD
         super.registerActions();
 
         Path imageFile = findImageFile();
-        if(imageFile != null) {
+        if (imageFile != null) {
             registerAction("Import", UIUtils.getIconFromResources("imagej.png"), e -> {
                 ImagePlus img = IJ.openImage(imageFile.toString());
-                if(img != null) {
+                if (img != null) {
                     img.show();
                     img.setTitle(getDisplayName());
                 }

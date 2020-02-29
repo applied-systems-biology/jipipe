@@ -101,13 +101,12 @@ public class FileSelection extends JPanel {
     }
 
     private void selectFromFilesystem() {
-        if(ioMode == IOMode.Open) {
-            if(getFileChooser().showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+        if (ioMode == IOMode.Open) {
+            if (getFileChooser().showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 pathEdit.setText(getFileChooser().getSelectedFile().toString());
             }
-        }
-        else {
-            if(getFileChooser().showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+        } else {
+            if (getFileChooser().showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
                 pathEdit.setText(getFileChooser().getSelectedFile().toString());
             }
         }
@@ -115,10 +114,9 @@ public class FileSelection extends JPanel {
 
     private void generateRandom() {
         try {
-            if(pathMode == PathMode.DirectoriesOnly) {
+            if (pathMode == PathMode.DirectoriesOnly) {
                 setPath(Files.createTempDirectory("ACAQ5"));
-            }
-            else {
+            } else {
                 setPath(Files.createTempFile("ACAQ5", null));
             }
         } catch (IOException e) {
@@ -126,15 +124,15 @@ public class FileSelection extends JPanel {
         }
     }
 
+    public Path getPath() {
+        return Paths.get(pathEdit.getText());
+    }
+
     public void setPath(Path path) {
-        if(path != null)
+        if (path != null)
             pathEdit.setText(path.toString());
         else
             pathEdit.setText("");
-    }
-
-    public Path getPath() {
-        return Paths.get(pathEdit.getText());
     }
 
     public JFileChooser getFileChooser() {
@@ -142,7 +140,7 @@ public class FileSelection extends JPanel {
     }
 
     private void postAction() {
-        for(ActionListener listener : listeners) {
+        for (ActionListener listener : listeners) {
             listener.actionPerformed(new ActionEvent(this, 0, "text-changed"));
         }
     }

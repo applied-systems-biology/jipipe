@@ -33,7 +33,7 @@ public class ACAQFilterFiles extends ACAQIteratingAlgorithm {
     @Override
     protected void runIteration(ACAQDataInterface dataInterface) {
         ACAQFileData inputData = dataInterface.getInputData("Files");
-        if(filter.test(inputData.getFilePath())) {
+        if (filter.test(inputData.getFilePath())) {
             dataInterface.addOutputData("Filtered files", inputData);
         }
     }

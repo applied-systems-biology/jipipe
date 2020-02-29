@@ -13,6 +13,7 @@ import java.lang.annotation.Target;
 public @interface AlgorithmMetadata {
     /**
      * The algorithm category
+     *
      * @return
      */
     ACAQAlgorithmCategory category();

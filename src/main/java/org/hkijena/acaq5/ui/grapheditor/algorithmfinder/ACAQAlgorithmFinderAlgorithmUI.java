@@ -2,7 +2,6 @@ package org.hkijena.acaq5.ui.grapheditor.algorithmfinder;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
@@ -11,7 +10,6 @@ import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
-import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.ui.events.AlgorithmFinderSuccessEvent;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.StringUtils;
@@ -66,14 +64,14 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
     }
 
     private void initializeUI() {
-        setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4,4,4,4),
+        setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4),
                 BorderFactory.createLineBorder(Color.DARK_GRAY, 1, true)));
         setLayout(new BorderLayout());
 
         JPanel centerPanel = new JPanel(new BorderLayout());
 
         StringBuilder title = new StringBuilder();
-        if(isExistingInstance)
+        if (isExistingInstance)
             title.append("<span style=\"color: red;\">Existing </span>");
         else
             title.append("<span style=\"color: grey;\">Create </span>");
@@ -84,7 +82,7 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
         centerPanel.add(starsLabel, BorderLayout.NORTH);
 
         JLabel label = new JLabel();
-        label.setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
+        label.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         label.setText(TooltipUtils.getAlgorithmTooltip(algorithm.getDeclaration(), false));
         centerPanel.add(label, BorderLayout.CENTER);
 
@@ -105,18 +103,18 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
 
         boolean createAddInputSlotButton = false;
 
-        if(algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
+        if (algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
             ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
             createAddInputSlotButton = slotConfiguration.allowsInputSlots() && !slotConfiguration.isInputSlotsSealed();
         }
 
-        for(ACAQDataSlot slot : algorithm.getInputSlots()) {
+        for (ACAQDataSlot slot : algorithm.getInputSlots()) {
             ACAQAlgorithmFinderSlotUI ui = new ACAQAlgorithmFinderSlotUI(outputSlot, graph, compartment, slot, isExistingInstance);
             ui.getEventBus().register(this);
             slotPanel.add(ui);
         }
 
-        if(createAddInputSlotButton) {
+        if (createAddInputSlotButton) {
             JButton addInputSlotButton = createAddSlotButton(ACAQDataSlot.SlotType.Input);
             addInputSlotButton.setPreferredSize(new Dimension(25, SLOT_UI_HEIGHT));
             JPanel panel = new JPanel(new BorderLayout());
@@ -135,10 +133,10 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
         UIUtils.makeFlat(button);
 
         JPopupMenu menu = UIUtils.addPopupMenuToComponent(button);
-        ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration)algorithm.getSlotConfiguration();
+        ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
 
         Set<Class<? extends ACAQData>> allowedSlotTypes;
-        switch(slotType) {
+        switch (slotType) {
             case Input:
                 allowedSlotTypes = slotConfiguration.getAllowedInputSlotTypes();
                 break;
@@ -149,7 +147,7 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
                 throw new RuntimeException();
         }
 
-        for(Class<? extends ACAQData> dataClass : allowedSlotTypes) {
+        for (Class<? extends ACAQData> dataClass : allowedSlotTypes) {
             JMenuItem item = new JMenuItem(ACAQData.getNameOf(dataClass), ACAQUIDatatypeRegistry.getInstance().getIconFor(dataClass));
             item.addActionListener(e -> addNewSlot(slotType, dataClass));
             menu.add(item);
@@ -159,24 +157,24 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
     }
 
     private void addNewSlot(ACAQDataSlot.SlotType slotType, Class<? extends ACAQData> klass) {
-        if(algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
+        if (algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
             ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
 
             int existingSlots = slotType == ACAQDataSlot.SlotType.Input ? algorithm.getInputSlots().size() : algorithm.getOutputSlots().size();
             String initialValue = slotType + " data ";
 
             // This is general
-            if(algorithm instanceof ACAQCompartmentOutput) {
+            if (algorithm instanceof ACAQCompartmentOutput) {
                 initialValue = "Data ";
             }
 
             String name = null;
-            while(name == null) {
-                String newName = JOptionPane.showInputDialog(this,"Please a data slot name", initialValue + (existingSlots + 1));
-                if(newName == null || newName.trim().isEmpty())
+            while (name == null) {
+                String newName = JOptionPane.showInputDialog(this, "Please a data slot name", initialValue + (existingSlots + 1));
+                if (newName == null || newName.trim().isEmpty())
                     return;
                 newName = StringUtils.makeFilesystemCompatible(newName);
-                if(slotConfiguration.hasSlot(newName))
+                if (slotConfiguration.hasSlot(newName))
                     continue;
                 name = newName;
             }

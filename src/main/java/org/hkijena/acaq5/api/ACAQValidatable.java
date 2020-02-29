@@ -20,6 +20,7 @@ public interface ACAQValidatable {
 
     /**
      * Generates a validity report
+     *
      * @return
      */
     void reportValidity(ACAQValidityReport report);

@@ -27,12 +27,6 @@ public class ACAQRunnerQueue {
 
     }
 
-    public static ACAQRunnerQueue getInstance() {
-        if(instance == null)
-            instance = new ACAQRunnerQueue();
-        return instance;
-    }
-
     public ACAQRunWorker enqueue(ACAQRun run) {
         ACAQRunWorker worker = new ACAQRunWorker(run);
         worker.getEventBus().register(this);
@@ -47,7 +41,7 @@ public class ACAQRunnerQueue {
     }
 
     public void tryDequeue() {
-        if(currentlyRunningWorker == null && !queue.isEmpty()) {
+        if (currentlyRunningWorker == null && !queue.isEmpty()) {
             currentlyRunningWorker = queue.remove();
             eventBus.post(new RunUIWorkerStartedEvent(currentlyRunningWorker.getRun(), currentlyRunningWorker));
             currentlyRunningWorker.execute();
@@ -55,14 +49,13 @@ public class ACAQRunnerQueue {
     }
 
     public void cancel(ACAQRunnable run) {
-        if(run == null)
+        if (run == null)
             return;
         ACAQRunWorker worker = findWorkerOf(run);
-        if(worker != null) {
-            if(currentlyRunningWorker == worker) {
+        if (worker != null) {
+            if (currentlyRunningWorker == worker) {
                 worker.cancel(true);
-            }
-            else {
+            } else {
                 queue.remove(worker);
                 eventBus.post(new RunUIWorkerInterruptedEvent(worker, new InterruptedException("Operation was cancelled.")));
             }
@@ -71,7 +64,7 @@ public class ACAQRunnerQueue {
 
     @Subscribe
     public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
-        if(event.getWorker() == currentlyRunningWorker) {
+        if (event.getWorker() == currentlyRunningWorker) {
             assignedWorkers.remove(currentlyRunningWorker.getRun());
             currentlyRunningWorker = null;
             tryDequeue();
@@ -81,7 +74,7 @@ public class ACAQRunnerQueue {
 
     @Subscribe
     public void onWorkerInterrupted(RunUIWorkerInterruptedEvent event) {
-        if(event.getWorker() == currentlyRunningWorker) {
+        if (event.getWorker() == currentlyRunningWorker) {
             assignedWorkers.remove(currentlyRunningWorker.getRun());
             currentlyRunningWorker = null;
             tryDequeue();
@@ -100,5 +93,11 @@ public class ACAQRunnerQueue {
 
     public ACAQRunnable getCurrentRun() {
         return currentlyRunningWorker != null ? currentlyRunningWorker.getRun() : null;
+    }
+
+    public static ACAQRunnerQueue getInstance() {
+        if (instance == null)
+            instance = new ACAQRunnerQueue();
+        return instance;
     }
 }

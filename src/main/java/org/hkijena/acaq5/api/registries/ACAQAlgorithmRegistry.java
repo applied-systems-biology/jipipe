@@ -1,20 +1,14 @@
 package org.hkijena.acaq5.api.registries;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQDefaultAlgorithmDeclaration;
 import org.hkijena.acaq5.api.data.ACAQData;
-import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.traits.*;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -27,13 +21,10 @@ public class ACAQAlgorithmRegistry {
 
     }
 
-    public static ACAQAlgorithmRegistry getInstance() {
-        return ACAQRegistryService.getInstance().getAlgorithmRegistry();
-    }
-
     /**
      * Registers an algorithm class
      * Automatically registers {@link GoodForTrait} and {@link BadForTrait} annotations
+     *
      * @param klass
      */
     public void register(Class<? extends ACAQAlgorithm> klass) {
@@ -42,6 +33,7 @@ public class ACAQAlgorithmRegistry {
 
     /**
      * Registers an algorithm declaration
+     *
      * @param declaration
      */
     public void register(ACAQAlgorithmDeclaration declaration) {
@@ -51,6 +43,7 @@ public class ACAQAlgorithmRegistry {
     /**
      * Returns an {@link ACAQDefaultAlgorithmDeclaration} instance for a class-based instance registration
      * Returns null if the algorithm class is not registered or defined by any other declaration method
+     *
      * @param klass
      * @return
      */
@@ -61,6 +54,7 @@ public class ACAQAlgorithmRegistry {
     /**
      * Registers that the specified algorithm adds the specified trait to all of its outputs.
      * This is equivalent to attaching {@link AddsTrait} to the class, although autoAdd is always enabled
+     *
      * @param klass
      * @param trait
      */
@@ -71,6 +65,7 @@ public class ACAQAlgorithmRegistry {
     /**
      * Registers that the specified algorithm removes the specified trait from all of its outputs.
      * This is equivalent to attaching {@link RemovesTrait} to the class, although autoRemove is always enabled
+     *
      * @param klass
      * @param trait
      */
@@ -81,6 +76,7 @@ public class ACAQAlgorithmRegistry {
     /**
      * Registers that the specified algorithm is effective for the specified trait.
      * Equivalent to {@link GoodForTrait} annotation
+     *
      * @param klass
      * @param trait
      */
@@ -91,6 +87,7 @@ public class ACAQAlgorithmRegistry {
     /**
      * Registers that the specified algorithm is ineffective for the specified trait.
      * Equivalent to {@link BadForTrait} annotation
+     *
      * @param klass
      * @param trait
      */
@@ -100,6 +97,7 @@ public class ACAQAlgorithmRegistry {
 
     /**
      * Gets the set of all known algorithms
+     *
      * @return
      */
     public Map<String, ACAQAlgorithmDeclaration> getRegisteredAlgorithms() {
@@ -108,15 +106,16 @@ public class ACAQAlgorithmRegistry {
 
     /**
      * Returns data source algorithms that can generate the specified data type
+     *
      * @param <T>
      * @param dataClass
      * @return
      */
     public <T extends ACAQData> Set<ACAQAlgorithmDeclaration> getDataSourcesFor(Class<? extends T> dataClass) {
         Set<ACAQAlgorithmDeclaration> result = new HashSet<>();
-        for(ACAQAlgorithmDeclaration declaration : registeredAlgorithms.values()) {
-            if(declaration.getCategory() == ACAQAlgorithmCategory.DataSource) {
-                if(declaration.getOutputSlots().stream().anyMatch(slot -> slot.value() == dataClass)) {
+        for (ACAQAlgorithmDeclaration declaration : registeredAlgorithms.values()) {
+            if (declaration.getCategory() == ACAQAlgorithmCategory.DataSource) {
+                if (declaration.getOutputSlots().stream().anyMatch(slot -> slot.value() == dataClass)) {
                     result.add(declaration);
                 }
             }
@@ -126,20 +125,26 @@ public class ACAQAlgorithmRegistry {
 
     /**
      * Gets all algorithms of specified category
+     *
      * @param category
      * @return
      */
     public Set<ACAQAlgorithmDeclaration> getAlgorithmsOfCategory(ACAQAlgorithmCategory category) {
-       return registeredAlgorithms.values().stream().filter(d -> d.getCategory() == category).collect(Collectors.toSet());
+        return registeredAlgorithms.values().stream().filter(d -> d.getCategory() == category).collect(Collectors.toSet());
     }
 
     /**
      * Gets a matching declaration by Id
+     *
      * @param id
      * @return
      */
     public ACAQAlgorithmDeclaration getDeclarationById(String id) {
         return registeredAlgorithms.get(id);
+    }
+
+    public static ACAQAlgorithmRegistry getInstance() {
+        return ACAQRegistryService.getInstance().getAlgorithmRegistry();
     }
 
 }

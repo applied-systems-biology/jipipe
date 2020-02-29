@@ -29,8 +29,7 @@ public class ACAQRunWorker extends SwingWorker<Exception, Object> {
     protected Exception doInBackground() throws Exception {
         try {
             run.run(this::onStatus, this::isCancelled);
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return e;
         }
@@ -41,8 +40,8 @@ public class ACAQRunWorker extends SwingWorker<Exception, Object> {
     @Override
     protected void process(List<Object> chunks) {
         super.process(chunks);
-        for(Object chunk : chunks) {
-            if(chunk instanceof ACAQRunnerStatus) {
+        for (Object chunk : chunks) {
+            if (chunk instanceof ACAQRunnerStatus) {
                 eventBus.post(new RunUIWorkerProgressEvent(this, (ACAQRunnerStatus) chunk));
             }
         }
@@ -51,14 +50,12 @@ public class ACAQRunWorker extends SwingWorker<Exception, Object> {
     @Override
     protected void done() {
         try {
-            if(isCancelled()) {
+            if (isCancelled()) {
                 postInterruptedEvent(new RuntimeException("Execution was cancelled by user!"));
-            }
-            else if(get() != null) {
+            } else if (get() != null) {
                 final Exception e = get();
                 postInterruptedEvent(e);
-            }
-            else {
+            } else {
                 postFinishedEvent();
             }
         } catch (InterruptedException | ExecutionException | CancellationException e) {

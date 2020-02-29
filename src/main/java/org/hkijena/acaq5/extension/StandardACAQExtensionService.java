@@ -3,11 +3,7 @@ package org.hkijena.acaq5.extension;
 import ij.process.AutoThresholder;
 import org.hkijena.acaq5.ACAQExtensionService;
 import org.hkijena.acaq5.ACAQRegistryService;
-import org.hkijena.acaq5.extension.api.datasources.ACAQGreyscaleImageDataFromFile;
-import org.hkijena.acaq5.extension.api.datasources.ACAQMaskImageDataFromFile;
-import org.hkijena.acaq5.extension.api.datasources.ACAQMultichannelImageDataFromFile;
-import org.hkijena.acaq5.extension.api.datasources.ACAQROIDataFromFile;
-import org.hkijena.acaq5.extension.api.datasources.ACAQResultsTableFromFile;
+import org.hkijena.acaq5.extension.api.datasources.*;
 import org.hkijena.acaq5.extension.api.datatypes.*;
 import org.hkijena.acaq5.extension.api.traits.Sample;
 import org.hkijena.acaq5.extension.api.traits.Subject;
@@ -25,11 +21,14 @@ import org.hkijena.acaq5.extension.api.traits.quality.LowBrightnessQuality;
 import org.hkijena.acaq5.extension.api.traits.quality.NonUniformBrightnessQuality;
 import org.hkijena.acaq5.extension.api.traits.quality.UniformBrightnessQuality;
 import org.hkijena.acaq5.extension.ui.parametereditors.*;
+import org.hkijena.acaq5.extension.ui.plotbuilder.*;
 import org.hkijena.acaq5.extension.ui.resultanalysis.ImageDataSlotResultDataSlotRowUI;
 import org.hkijena.acaq5.extension.ui.resultanalysis.ROIDataSlotResultDataSlotRowUI;
 import org.hkijena.acaq5.extension.ui.resultanalysis.ResultsTableDataSlotResultDataSlotRowUI;
+import org.hkijena.acaq5.extension.ui.tableanalyzer.*;
 import org.hkijena.acaq5.utils.PathFilter;
 import org.hkijena.acaq5.utils.ResourceUtils;
+import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 
@@ -105,6 +104,139 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
         registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQMaskData.class, ImageDataSlotResultDataSlotRowUI.class);
         registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQROIData.class, ROIDataSlotResultDataSlotRowUI.class);
         registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQResultsTableData.class, ResultsTableDataSlotResultDataSlotRowUI.class);
+
+        registerSpreadSheetOperations(registryService);
+        registerPlotTypes(registryService);
+    }
+
+    private void registerPlotTypes(ACAQRegistryService registryService) {
+        registryService.getPlotBuilderRegistry().register(DefaultBoxAndWhiskerBarCategoryPlot.class,
+                CategoryPlotSettingsUI.class,
+                "Box Plot",
+                UIUtils.getIconFromResources("bar-chart.png"));
+        registryService.getPlotBuilderRegistry().register(DefaultStatisticalLineCategoryPlot.class,
+                CategoryPlotSettingsUI.class,
+                "Statistical Line Plot",
+                UIUtils.getIconFromResources("line-chart.png"));
+        registryService.getPlotBuilderRegistry().register(DefaultStatisticalBarCategoryPlot.class,
+                CategoryPlotSettingsUI.class,
+                "Statistical Bar Plot",
+                UIUtils.getIconFromResources("bar-chart.png"));
+        registryService.getPlotBuilderRegistry().register(LineCategoryPlot.class,
+                CategoryPlotSettingsUI.class,
+                "Line Plot",
+                UIUtils.getIconFromResources("line-chart.png"));
+        registryService.getPlotBuilderRegistry().register(BarCategoryPlot.class,
+                CategoryPlotSettingsUI.class,
+                "Bar Plot",
+                UIUtils.getIconFromResources("bar-chart.png"));
+        registryService.getPlotBuilderRegistry().register(StackedBarCategoryPlot.class,
+                CategoryPlotSettingsUI.class,
+                "Stacked Bar Plot",
+                UIUtils.getIconFromResources("bar-chart.png"));
+        registryService.getPlotBuilderRegistry().register(Pie2DPlot.class,
+                PiePlotSettingsUI.class,
+                "2D Pie Plot",
+                UIUtils.getIconFromResources("pie-chart.png"));
+        registryService.getPlotBuilderRegistry().register(Pie3DPlot.class,
+                PiePlotSettingsUI.class,
+                "3D Pie Plot",
+                UIUtils.getIconFromResources("pie-chart.png"));
+        registryService.getPlotBuilderRegistry().register(LineXYPlot.class,
+                XYPlotSettingsUI.class,
+                "XY Line Plot",
+                UIUtils.getIconFromResources("line-chart.png"));
+        registryService.getPlotBuilderRegistry().register(ScatterXYPlot.class,
+                XYPlotSettingsUI.class,
+                "XY Scatter Plot",
+                UIUtils.getIconFromResources("scatter-chart.png"));
+        registryService.getPlotBuilderRegistry().register(HistogramPlot.class,
+                HistogramPlotSettingsUI.class,
+                "Histogram Plot",
+                UIUtils.getIconFromResources("bar-chart.png"));
+    }
+
+    private void registerSpreadSheetOperations(ACAQRegistryService registryService) {
+        // Register spreadsheet operations
+        registryService.getTableAnalyzerUIOperationRegistry().register(StatisticsCountVectorOperation.class,
+                null,
+                "Count",
+                "COUNT",
+                "Counts all entries",
+                UIUtils.getIconFromResources("statistics.png"));
+        registryService.getTableAnalyzerUIOperationRegistry().register(StatisticsCountNonNullVectorOperation.class,
+                null,
+                "Count Non-Empty",
+                "COUNT_NON_EMPTY",
+                "Counts all non-empty entries",
+                UIUtils.getIconFromResources("statistics.png"));
+        registryService.getTableAnalyzerUIOperationRegistry().register(StatisticsSumVectorOperation.class,
+                null,
+                "Sum",
+                "SUM",
+                "Summarizes all entries",
+                UIUtils.getIconFromResources("statistics.png"));
+        registryService.getTableAnalyzerUIOperationRegistry().register(StatisticsMinVectorOperation.class,
+                null,
+                "Minimum",
+                "MIN",
+                "Minimum value of entries",
+                UIUtils.getIconFromResources("statistics.png"));
+        registryService.getTableAnalyzerUIOperationRegistry().register(StatisticsMaxVectorOperation.class,
+                null,
+                "Maximum",
+                "MAX",
+                "Maximum value of entries",
+                UIUtils.getIconFromResources("statistics.png"));
+        registryService.getTableAnalyzerUIOperationRegistry().register(StatisticsMedianVectorOperation.class,
+                null,
+                "Median",
+                "MEDIAN",
+                "Median value of entries",
+                UIUtils.getIconFromResources("statistics.png"));
+        registryService.getTableAnalyzerUIOperationRegistry().register(StatisticsAverageVectorOperation.class,
+                null,
+                "Average",
+                "AVG",
+                "Average of entries",
+                UIUtils.getIconFromResources("statistics.png"));
+        registryService.getTableAnalyzerUIOperationRegistry().register(StatisticsVarianceVectorOperation.class,
+                null,
+                "Variance",
+                "VAR",
+                "Variance of entries",
+                UIUtils.getIconFromResources("statistics.png"));
+        registryService.getTableAnalyzerUIOperationRegistry().register(ConvertToOccurrencesVectorOperation.class,
+                null,
+                "Number of entries",
+                "COUNT",
+                "Returns the number of items",
+                UIUtils.getIconFromResources("statistics.png"));
+
+        registryService.getTableAnalyzerUIOperationRegistry().register(ConvertToNumericVectorOperation.class,
+                null,
+                "Convert to numbers",
+                "TO_NUMBERS",
+                "Ensures that all items are numbers. Non-numeric values are set to zero.",
+                UIUtils.getIconFromResources("inplace-function.png"));
+        registryService.getTableAnalyzerUIOperationRegistry().register(ConvertToNumericBooleanVectorOperation.class,
+                null,
+                "Convert to numeric boolean",
+                "TO_NUMERIC_BOOLEAN",
+                "Ensures that all items are numeric boolean values. Defaults to outputting zero if the value is not valid.",
+                UIUtils.getIconFromResources("inplace-function.png"));
+        registryService.getTableAnalyzerUIOperationRegistry().register(ConvertToOccurrencesVectorOperation.class,
+                null,
+                "Convert to number of occurrences",
+                "TO_OCCURENCES",
+                "Replaces the items by their number of occurrences within the list of items.",
+                UIUtils.getIconFromResources("inplace-function.png"));
+        registryService.getTableAnalyzerUIOperationRegistry().register(ConvertToNumericFactorOperation.class,
+                null,
+                "Convert to numeric factors",
+                "TO_FACTORS",
+                "Replaces each item with an ID that uniquely identifies the item.",
+                UIUtils.getIconFromResources("inplace-function.png"));
     }
 
     private void registerTraits(ACAQRegistryService registryService) {

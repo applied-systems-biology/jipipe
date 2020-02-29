@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.utils;
 
-import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
@@ -36,18 +35,18 @@ public class TooltipUtils {
 
         builder.append("<br>Data type: <i>").append(ACAQData.getNameOf(slot.getAcceptedDataType())).append("</i><br>");
         String description = ACAQData.getDescriptionOf(slot.getAcceptedDataType());
-        if(description != null && !description.isEmpty()) {
+        if (description != null && !description.isEmpty()) {
             builder.append("<br>").append(description).append("<br><br/>");
         }
 
-        if(slot.isInput())
+        if (slot.isInput())
             builder.append("Input");
         else
             builder.append("Output");
         builder.append(" of ").append(slot.getAlgorithm().getName()).append("<br/>");
 
         // Show annotations
-        if(withAnnotations) {
+        if (withAnnotations) {
             Set<Class<? extends ACAQTrait>> traits = graph.getAlgorithmTraits().getOrDefault(slot, Collections.emptySet());
             if (traits != null && !traits.isEmpty()) {
                 builder.append("<br/><br/><strong>Annotations<br/>");
@@ -67,18 +66,18 @@ public class TooltipUtils {
     public static String getAlgorithmTooltip(ACAQAlgorithmDeclaration declaration, boolean withTitle) {
         StringBuilder builder = new StringBuilder();
         builder.append("<html>");
-        if(withTitle)
+        if (withTitle)
             builder.append("<u><strong>").append(declaration.getName()).append("</strong></u><br/>");
 
         // Write algorithm slot info
         builder.append("<table>");
         builder.append("<tr><td>");
-        for(Class<? extends ACAQData> slot : declaration.getInputSlots().stream().map(AlgorithmInputSlot::value).collect(Collectors.toSet())) {
+        for (Class<? extends ACAQData> slot : declaration.getInputSlots().stream().map(AlgorithmInputSlot::value).collect(Collectors.toSet())) {
             builder.append("<img src=\"").append(ACAQUIDatatypeRegistry.getInstance().getIconURLFor(slot)).append("\"/>");
         }
         builder.append("</td>");
         builder.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/chevron-right.png")).append("\" /></td>");
-        for(Class<? extends ACAQData> slot : declaration.getOutputSlots().stream()
+        for (Class<? extends ACAQData> slot : declaration.getOutputSlots().stream()
                 .map(AlgorithmOutputSlot::value).collect(Collectors.toSet())) {
             builder.append("<img src=\"").append(ACAQUIDatatypeRegistry.getInstance().getIconURLFor(slot)).append("\"/>");
         }
@@ -87,7 +86,7 @@ public class TooltipUtils {
 
         // Write description
         String description = declaration.getDescription();
-        if(description != null && !description.isEmpty())
+        if (description != null && !description.isEmpty())
             builder.append(description).append("</br>");
 
         Set<Class<? extends ACAQTrait>> preferredTraits = declaration.getPreferredTraits();
@@ -97,19 +96,19 @@ public class TooltipUtils {
         Set<Class<? extends ACAQTrait>> removedTraits = declaration.getRemovedTraits()
                 .stream().map(RemovesTrait::value).collect(Collectors.toSet());
 
-        if(!preferredTraits.isEmpty()) {
+        if (!preferredTraits.isEmpty()) {
             builder.append("<br/><br/><strong>Good for<br/>");
             insertTraitTable(builder, preferredTraits);
         }
-        if(!unwantedTraits.isEmpty()) {
+        if (!unwantedTraits.isEmpty()) {
             builder.append("<br/><br/><strong>Bad for<br/>");
             insertTraitTable(builder, unwantedTraits);
         }
-        if(!removedTraits.isEmpty()) {
+        if (!removedTraits.isEmpty()) {
             builder.append("<br/><br/><strong>Removes<br/>");
             insertTraitTable(builder, removedTraits);
         }
-        if(!addedTraits.isEmpty()) {
+        if (!addedTraits.isEmpty()) {
             builder.append("<br/><br/><strong>Adds<br/>");
             insertTraitTable(builder, addedTraits);
         }
@@ -177,11 +176,11 @@ public class TooltipUtils {
 
         builder.append("<br>Data type: <i>").append(ACAQData.getNameOf(slot.getAcceptedDataType())).append("</i><br>");
         String description = ACAQData.getDescriptionOf(slot.getAcceptedDataType());
-        if(description != null && !description.isEmpty()) {
+        if (description != null && !description.isEmpty()) {
             builder.append("<br>").append(description).append("<br><br/>");
         }
 
-        if(slot.isInput())
+        if (slot.isInput())
             builder.append("Input");
         else
             builder.append("Output");

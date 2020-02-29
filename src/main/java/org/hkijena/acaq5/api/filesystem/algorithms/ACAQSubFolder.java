@@ -37,7 +37,7 @@ public class ACAQSubFolder extends ACAQIteratingAlgorithm {
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        if(subFolder == null || subFolder.isEmpty())
+        if (subFolder == null || subFolder.isEmpty())
             report.forCategory("Subfolder name").reportIsInvalid("The subfolder name is empty! Please enter a name.");
     }
 

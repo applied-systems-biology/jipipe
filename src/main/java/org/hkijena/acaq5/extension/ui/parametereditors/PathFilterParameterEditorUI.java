@@ -58,7 +58,7 @@ public class PathFilterParameterEditorUI extends ACAQParameterEditorUI {
         JToggleButton toggleButton = new JToggleButton(icon);
         UIUtils.makeFlat25x25(toggleButton);
         toggleButton.addActionListener(e -> {
-            if(toggleButton.isSelected())
+            if (toggleButton.isSelected())
                 filter.setMode(mode);
         });
         toggleButton.setToolTipText(description);

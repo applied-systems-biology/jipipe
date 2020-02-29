@@ -21,6 +21,7 @@ public interface ACAQExtensionService extends Service {
 
     /**
      * Registers custom modules into ACAQ5
+     *
      * @param registryService
      */
     void register(ACAQRegistryService registryService);

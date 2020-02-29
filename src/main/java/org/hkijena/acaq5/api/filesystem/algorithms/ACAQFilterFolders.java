@@ -33,7 +33,7 @@ public class ACAQFilterFolders extends ACAQIteratingAlgorithm {
     @Override
     protected void runIteration(ACAQDataInterface dataInterface) {
         ACAQFolderData inputData = dataInterface.getInputData("Folders");
-        if(filter.test(inputData.getFolderPath())) {
+        if (filter.test(inputData.getFolderPath())) {
             dataInterface.addOutputData("Filtered folders", inputData);
         }
     }

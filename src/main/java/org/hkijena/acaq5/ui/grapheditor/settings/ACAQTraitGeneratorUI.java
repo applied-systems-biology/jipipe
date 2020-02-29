@@ -1,15 +1,11 @@
 package org.hkijena.acaq5.ui.grapheditor.settings;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
-import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQMutableTraitGenerator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
-import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
-import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTextField;
 
@@ -72,12 +68,12 @@ public class ACAQTraitGeneratorUI extends JPanel {
 //        });
     }
 
-    private boolean searchStringsMatches(Class<? extends ACAQTrait> trait, String[] strings){
-        if(strings == null)
+    private boolean searchStringsMatches(Class<? extends ACAQTrait> trait, String[] strings) {
+        if (strings == null)
             return true;
         String traitName = trait.getName() + " " + trait.getCanonicalName();
-        for(String str : strings) {
-            if(traitName.toLowerCase().contains(str.toLowerCase()))
+        for (String str : strings) {
+            if (traitName.toLowerCase().contains(str.toLowerCase()))
                 return true;
         }
         return false;
@@ -85,9 +81,9 @@ public class ACAQTraitGeneratorUI extends JPanel {
 
     private String[] getSearchStrings() {
         String[] searchStrings = null;
-        if(searchField.getText() != null ) {
+        if (searchField.getText() != null) {
             String str = searchField.getText().trim();
-            if(!str.isEmpty()) {
+            if (!str.isEmpty()) {
                 searchStrings = str.split(" ");
             }
         }

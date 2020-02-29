@@ -3,7 +3,8 @@ package org.hkijena.acaq5.api.filesystem.algorithms;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.filesystem.dataypes.*;
+import org.hkijena.acaq5.api.filesystem.dataypes.ACAQFileData;
+import org.hkijena.acaq5.api.filesystem.dataypes.ACAQFolderData;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 
 import java.io.IOException;
@@ -34,8 +35,8 @@ public class ACAQListFiles extends ACAQIteratingAlgorithm {
     protected void runIteration(ACAQDataInterface dataInterface) {
         ACAQFolderData inputFolder = dataInterface.getInputData("Folders");
         try {
-            for(Path file : Files.list(inputFolder.getFolderPath()).filter(Files::isRegularFile).collect(Collectors.toList())) {
-               dataInterface.addOutputData("Files", new ACAQFileData(file));
+            for (Path file : Files.list(inputFolder.getFolderPath()).filter(Files::isRegularFile).collect(Collectors.toList())) {
+                dataInterface.addOutputData("Files", new ACAQFileData(file));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

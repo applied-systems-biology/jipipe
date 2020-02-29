@@ -7,6 +7,8 @@ import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
 
 public interface ACAQUIService extends ACAQAPIService {
     ACAQUIDatatypeRegistry getUIDatatypeRegistry();
+
     ACAQUIParametertypeRegistry getUIParametertypeRegistry();
+
     ACAQUITraitRegistry getUITraitRegistry();
 }

@@ -22,19 +22,19 @@ public class ImagePlusExternalPreviewer {
         backupLocationAndSize();
         hide();
         currentImage = newImage.duplicate();
-        if(currentImage != null) {
+        if (currentImage != null) {
             currentImage.setTitle("Preview");
         }
         show();
     }
 
     public void show() {
-        if(currentImage != null) {
+        if (currentImage != null) {
             currentImage.show();
-            if(currentImage.getWindow() == null) {
+            if (currentImage.getWindow() == null) {
                 IJ.wait(100);
             }
-            if(currentImage.getWindow() != null && lastWindowLocation != null && lastWindowSize != null) {
+            if (currentImage.getWindow() != null && lastWindowLocation != null && lastWindowSize != null) {
                 currentImage.getWindow().setBounds(lastWindowLocation.x,
                         lastWindowLocation.y,
                         lastWindowSize.width,
@@ -45,13 +45,13 @@ public class ImagePlusExternalPreviewer {
     }
 
     public void hide() {
-        if(currentImage != null) {
+        if (currentImage != null) {
             currentImage.hide();
         }
     }
 
     private void backupLocationAndSize() {
-        if(currentImage != null && currentImage.getWindow() != null) {
+        if (currentImage != null && currentImage.getWindow() != null) {
             lastWindowLocation = currentImage.getWindow().getLocation();
             lastWindowSize = currentImage.getWindow().getSize();
         }

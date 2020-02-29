@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.ui.events;
 
-import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.ACAQRunnable;
 import org.hkijena.acaq5.ui.running.ACAQRunWorker;
 

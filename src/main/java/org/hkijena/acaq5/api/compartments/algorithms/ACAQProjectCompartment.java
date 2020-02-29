@@ -33,14 +33,14 @@ public class ACAQProjectCompartment extends ACAQAlgorithm {
     }
 
     public boolean isInitialized() {
-        return  project != null && outputNode != null;
+        return project != null && outputNode != null;
     }
 
     @Override
     @ACAQParameter("name")
     public void setCustomName(String customName) {
         super.setCustomName(customName);
-        if(outputNode != null) {
+        if (outputNode != null) {
             outputNode.setCustomName(getName() + " output");
         }
     }
@@ -53,15 +53,6 @@ public class ACAQProjectCompartment extends ACAQAlgorithm {
     @Override
     public void reportValidity(ACAQValidityReport report) {
 
-    }
-
-    public static ACAQSlotConfiguration createSlotConfiguration() {
-        return ACAQMutableSlotConfiguration.builder()
-                .restrictInputTo(ACAQCompartmentOutputData.class)
-                .restrictOutputTo(ACAQCompartmentOutputData.class)
-                .addOutputSlot("Output", ACAQCompartmentOutputData.class)
-                .sealOutput()
-                .build();
     }
 
     public ACAQProject getProject() {
@@ -78,5 +69,14 @@ public class ACAQProjectCompartment extends ACAQAlgorithm {
 
     public void setOutputNode(ACAQCompartmentOutput outputNode) {
         this.outputNode = outputNode;
+    }
+
+    public static ACAQSlotConfiguration createSlotConfiguration() {
+        return ACAQMutableSlotConfiguration.builder()
+                .restrictInputTo(ACAQCompartmentOutputData.class)
+                .restrictOutputTo(ACAQCompartmentOutputData.class)
+                .addOutputSlot("Output", ACAQCompartmentOutputData.class)
+                .sealOutput()
+                .build();
     }
 }

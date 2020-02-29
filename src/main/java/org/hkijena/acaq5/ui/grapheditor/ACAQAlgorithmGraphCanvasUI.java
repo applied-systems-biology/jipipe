@@ -15,11 +15,7 @@ import org.hkijena.acaq5.utils.ScreenImage;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
 import java.util.HashSet;
@@ -61,16 +57,16 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
      */
     private void removeOldNodes() {
         Set<ACAQAlgorithm> toRemove = new HashSet<>();
-        for(Map.Entry<ACAQAlgorithm, ACAQAlgorithmUI> kv : nodeUIs.entrySet()) {
-            if(!algorithmGraph.containsNode(kv.getKey()) || !kv.getKey().isVisibleIn(compartment))
+        for (Map.Entry<ACAQAlgorithm, ACAQAlgorithmUI> kv : nodeUIs.entrySet()) {
+            if (!algorithmGraph.containsNode(kv.getKey()) || !kv.getKey().isVisibleIn(compartment))
                 toRemove.add(kv.getKey());
         }
-        for(ACAQAlgorithm algorithm : toRemove) {
+        for (ACAQAlgorithm algorithm : toRemove) {
             ACAQAlgorithmUI ui = nodeUIs.get(algorithm);
             remove(ui);
             nodeUIs.remove(algorithm);
         }
-        if(!toRemove.isEmpty()) {
+        if (!toRemove.isEmpty()) {
             revalidate();
             repaint();
         }
@@ -80,10 +76,10 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
      * Adds node UIs that are not in the canvas yet
      */
     private void addNewNodes() {
-        for(ACAQAlgorithm algorithm : algorithmGraph.traverseAlgorithms()) {
-            if(!algorithm.isVisibleIn(compartment))
+        for (ACAQAlgorithm algorithm : algorithmGraph.traverseAlgorithms()) {
+            if (!algorithm.isVisibleIn(compartment))
                 continue;
-            if(nodeUIs.containsKey(algorithm))
+            if (nodeUIs.containsKey(algorithm))
                 continue;
 
             ACAQAlgorithmUI ui = new ACAQAlgorithmUI(this, algorithm);
@@ -91,7 +87,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             add(ui);
             nodeUIs.put(algorithm, ui);
             Point location = algorithm.getLocationWithin(compartment);
-            if(location == null || !ui.trySetLocationNoGrid(location.x, location.y)) {
+            if (location == null || !ui.trySetLocationNoGrid(location.x, location.y)) {
                 autoPlaceAlgorithm(ui);
             }
             ui.addComponentListener(new ComponentAdapter() {
@@ -111,13 +107,13 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
      */
     private void removeComponentOverlaps() {
         List<ACAQAlgorithm> traversed = algorithmGraph.traverseAlgorithms();
-        for(int i = traversed.size() - 1; i >= 0; --i) {
+        for (int i = traversed.size() - 1; i >= 0; --i) {
             ACAQAlgorithm algorithm = traversed.get(i);
             if (!algorithm.isVisibleIn(compartment))
                 continue;
             ACAQAlgorithmUI ui = nodeUIs.getOrDefault(algorithm, null);
-            if(ui != null) {
-                if(ui.isOverlapping()) {
+            if (ui != null) {
+                if (ui.isOverlapping()) {
                     autoPlaceAlgorithm(ui);
                 }
             }
@@ -138,10 +134,10 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         ACAQAlgorithmUI rightMostSource = null;
         for (ACAQDataSlot target : targetAlgorithm.getInputSlots()) {
             ACAQDataSlot source = algorithmGraph.getSourceSlot(target);
-            if(source != null) {
+            if (source != null) {
                 ACAQAlgorithmUI sourceUI = nodeUIs.getOrDefault(source.getAlgorithm(), null);
-                if(sourceUI != null) {
-                    if(rightMostSource == null || sourceUI.getX() > rightMostSource.getX())
+                if (sourceUI != null) {
+                    if (rightMostSource == null || sourceUI.getX() > rightMostSource.getX())
                         rightMostSource = sourceUI;
                 }
             }
@@ -149,17 +145,17 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
         // Auto-place
         int minX = 4 * ACAQAlgorithmUI.SLOT_UI_WIDTH;
-        if(rightMostSource != null) {
+        if (rightMostSource != null) {
             minX += rightMostSource.getX() + rightMostSource.getWidth();
             minX += 4 * ACAQAlgorithmUI.SLOT_UI_WIDTH;
         }
 
         int minY = Math.max(ui.getY(), 2 * ACAQAlgorithmUI.SLOT_UI_HEIGHT);
 
-        if(ui.getX() < minX || ui.isOverlapping()) {
-            if(!ui.trySetLocationNoGrid(minX, minY)) {
+        if (ui.getX() < minX || ui.isOverlapping()) {
+            if (!ui.trySetLocationNoGrid(minX, minY)) {
                 int y = nodeUIs.values().stream().map(ACAQAlgorithmUI::getBottomY).max(Integer::compareTo).orElse(0);
-                if(y == 0)
+                if (y == 0)
                     y += 2 * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
                 else
                     y += ACAQAlgorithmUI.SLOT_UI_HEIGHT;
@@ -172,13 +168,13 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
     @Override
     public void mouseDragged(MouseEvent mouseEvent) {
-        if(currentlyDragged != null) {
+        if (currentlyDragged != null) {
             int x = Math.max(0, currentlyDraggedOffset.x + mouseEvent.getX());
             int y = Math.max(0, currentlyDraggedOffset.y + mouseEvent.getY());
             currentlyDragged.trySetLocationInGrid(x, y);
             repaint();
 //            updateEdgeUI();
-            if(getParent() != null)
+            if (getParent() != null)
                 getParent().revalidate();
         }
     }
@@ -190,18 +186,18 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
     @Override
     public void mouseClicked(MouseEvent mouseEvent) {
-        if(SwingUtilities.isLeftMouseButton(mouseEvent) && mouseEvent.getClickCount() == 2) {
+        if (SwingUtilities.isLeftMouseButton(mouseEvent) && mouseEvent.getClickCount() == 2) {
             ACAQAlgorithmUI ui = pickComponent(mouseEvent);
-            if(ui != null)
+            if (ui != null)
                 eventBus.post(new DefaultUIActionRequestedEvent(ui));
         }
     }
 
     @Override
     public void mousePressed(MouseEvent mouseEvent) {
-        if(SwingUtilities.isLeftMouseButton(mouseEvent)) {
+        if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
             ACAQAlgorithmUI ui = pickComponent(mouseEvent);
-            if(ui != null) {
+            if (ui != null) {
                 currentlyDragged = ui;
                 currentlyDraggedOffset.x = ui.getX() - mouseEvent.getX();
                 currentlyDraggedOffset.y = ui.getY() - mouseEvent.getY();
@@ -211,10 +207,10 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     }
 
     private ACAQAlgorithmUI pickComponent(MouseEvent mouseEvent) {
-        for(int i = 0; i < getComponentCount(); ++i) {
+        for (int i = 0; i < getComponentCount(); ++i) {
             Component component = getComponent(i);
-            if(component.getBounds().contains(mouseEvent.getX(), mouseEvent.getY())) {
-                if(component instanceof ACAQAlgorithmUI) {
+            if (component.getBounds().contains(mouseEvent.getX(), mouseEvent.getY())) {
+                if (component instanceof ACAQAlgorithmUI) {
                     return (ACAQAlgorithmUI) component;
                 }
             }
@@ -246,7 +242,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     public Dimension getPreferredSize() {
         int width = 0;
         int height = 0;
-        for(int i = 0; i < getComponentCount(); ++i) {
+        for (int i = 0; i < getComponentCount(); ++i) {
             Component component = getComponent(i);
             width = Math.max(width, component.getX() + 2 * component.getWidth());
             height = Math.max(height, component.getY() + 2 * component.getHeight());
@@ -265,7 +261,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         ACAQAlgorithmUI sourceNode = nodeUIs.getOrDefault(event.getSource().getAlgorithm(), null);
         ACAQAlgorithmUI targetNode = nodeUIs.getOrDefault(event.getTarget().getAlgorithm(), null);
 
-        if(sourceNode != null && targetNode != null && layoutHelperEnabled) {
+        if (sourceNode != null && targetNode != null && layoutHelperEnabled) {
             autoPlaceAlgorithm(targetNode);
         }
     }
@@ -283,7 +279,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
 
-        Graphics2D g = (Graphics2D)graphics;
+        Graphics2D g = (Graphics2D) graphics;
         RenderingHints rh = new RenderingHints(
                 RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
@@ -293,18 +289,17 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         g.setStroke(new BasicStroke(2));
         graphics.setColor(Color.LIGHT_GRAY);
         for (ACAQAlgorithmUI ui : nodeUIs.values()) {
-            if(!ui.getAlgorithm().getVisibleCompartments().isEmpty()) {
+            if (!ui.getAlgorithm().getVisibleCompartments().isEmpty()) {
                 int sourceY = 0;
                 int targetY = 0;
                 int sourceX = 0;
                 int targetX = 0;
-                if(compartment.equals(ui.getAlgorithm().getCompartment())) {
+                if (compartment.equals(ui.getAlgorithm().getCompartment())) {
                     sourceX = ui.getX() + ui.getWidth();
                     sourceY = ui.getY() + ACAQAlgorithmUI.SLOT_UI_HEIGHT / 2;
                     targetX = getWidth();
                     targetY = sourceY;
-                }
-                else {
+                } else {
                     sourceX = 0;
                     sourceY = ui.getY() + ACAQAlgorithmUI.SLOT_UI_HEIGHT / 2;
                     targetX = ui.getX();
@@ -314,20 +309,20 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
                 path.moveTo(sourceX, sourceY);
                 float dx = targetX - sourceX;
                 path.curveTo(sourceX + 0.4f * dx, sourceY,
-                        sourceX + 0.6f * dx , targetY,
+                        sourceX + 0.6f * dx, targetY,
                         targetX, targetY);
                 g.draw(path);
             }
         }
 
         graphics.setColor(Color.DARK_GRAY);
-        for(Map.Entry<ACAQDataSlot, ACAQDataSlot> kv : algorithmGraph.getSlotEdges()) {
+        for (Map.Entry<ACAQDataSlot, ACAQDataSlot> kv : algorithmGraph.getSlotEdges()) {
             ACAQDataSlot source = kv.getKey();
             ACAQDataSlot target = kv.getValue();
             ACAQAlgorithmUI sourceUI = nodeUIs.getOrDefault(source.getAlgorithm(), null);
             ACAQAlgorithmUI targetUI = nodeUIs.getOrDefault(target.getAlgorithm(), null);
 
-            if(sourceUI == null && targetUI == null)
+            if (sourceUI == null && targetUI == null)
                 continue;
 
             int sourceY = 0;
@@ -335,12 +330,11 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             int sourceX = 0;
             int targetX = 0;
 
-            if(sourceUI != null) {
-                if(source.isInput()) {
+            if (sourceUI != null) {
+                if (source.isInput()) {
                     sourceX = 0;
                     sourceY = source.getAlgorithm().getInputSlots().indexOf(source);
-                }
-                else if(source.isOutput()) {
+                } else if (source.isOutput()) {
                     sourceX = sourceUI.getWidth();
                     sourceY = source.getAlgorithm().getOutputSlots().indexOf(source);
                 }
@@ -353,12 +347,11 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
                 sourceY += sourceUI.getY();
             }
 
-            if(targetUI != null) {
-                if(target.isInput()) {
+            if (targetUI != null) {
+                if (target.isInput()) {
                     targetX = 0;
                     targetY = target.getAlgorithm().getInputSlots().indexOf(target);
-                }
-                else if(target.isOutput()) {
+                } else if (target.isOutput()) {
                     targetX = targetUI.getWidth();
                     targetY = target.getAlgorithm().getOutputSlots().indexOf(target);
                 }
@@ -371,11 +364,11 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
                 targetY += targetUI.getY();
             }
 
-            if(sourceUI == null) {
+            if (sourceUI == null) {
                 sourceX = 0;
                 sourceY = targetY;
             }
-            if(targetUI == null) {
+            if (targetUI == null) {
                 targetX = getWidth();
                 targetY = sourceY;
             }
@@ -385,7 +378,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             path.moveTo(sourceX, sourceY);
             float dx = targetX - sourceX;
             path.curveTo(sourceX + 0.4f * dx, sourceY,
-                    sourceX + 0.6f * dx , targetY,
+                    sourceX + 0.6f * dx, targetY,
                     targetX, targetY);
             g.draw(path);
 //            g.drawLine(sourceX, sourceY, targetX, targetY);
@@ -396,6 +389,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
     /**
      * Gets the X position where new entries are placed automatically
+     *
      * @return
      */
     public int getNewEntryLocationX() {
@@ -405,6 +399,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     /**
      * Sets the X position where new entries are placed automatically
      * This can be set by parent components to for example place algorithms into the current view
+     *
      * @param newEntryLocationX
      */
     public void setNewEntryLocationX(int newEntryLocationX) {

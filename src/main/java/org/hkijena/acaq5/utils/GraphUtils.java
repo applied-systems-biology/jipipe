@@ -15,6 +15,7 @@ public class GraphUtils {
 
     /**
      * Gets all successors of the vertex
+     *
      * @param graph
      * @param vertex
      * @param <V>
@@ -24,7 +25,7 @@ public class GraphUtils {
     public static <V, E> List<V> getAllSuccessors(Graph<V, E> graph, V vertex) {
         BreadthFirstIterator<V, E> breadthFirstIterator = new BreadthFirstIterator<>(graph, vertex);
         List<V> result = new ArrayList<>();
-        while(breadthFirstIterator.hasNext()) {
+        while (breadthFirstIterator.hasNext()) {
             result.add(breadthFirstIterator.next());
         }
 
@@ -33,6 +34,7 @@ public class GraphUtils {
 
     /**
      * Gets all parent nodes of the vertex
+     *
      * @param graph
      * @param vertex
      * @param <V>

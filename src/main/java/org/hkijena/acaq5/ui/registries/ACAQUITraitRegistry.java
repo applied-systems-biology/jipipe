@@ -16,12 +16,9 @@ public class ACAQUITraitRegistry {
 
     }
 
-    public static ACAQUITraitRegistry getInstance() {
-        return ACAQRegistryService.getInstance().getUITraitRegistry();
-    }
-
     /**
      * Registers a custom icon for a trait
+     *
      * @param klass
      * @param resourcePath
      */
@@ -31,6 +28,7 @@ public class ACAQUITraitRegistry {
 
     /**
      * Returns the icon resource path URL for a trait
+     *
      * @param klass
      * @return
      */
@@ -40,11 +38,16 @@ public class ACAQUITraitRegistry {
 
     /**
      * Returns the icon for a trait
+     *
      * @param klass
      * @return
      */
     public ImageIcon getIconFor(Class<? extends ACAQTrait> klass) {
         URL uri = icons.getOrDefault(klass, ResourceUtils.getPluginResource("icons/traits/trait.png"));
         return new ImageIcon(uri);
+    }
+
+    public static ACAQUITraitRegistry getInstance() {
+        return ACAQRegistryService.getInstance().getUITraitRegistry();
     }
 }

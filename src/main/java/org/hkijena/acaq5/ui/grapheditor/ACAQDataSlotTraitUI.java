@@ -1,19 +1,14 @@
 package org.hkijena.acaq5.ui.grapheditor;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.traits.ACAQMutableTraitGenerator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQTraitGeneratorUI;
-import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
-import org.hkijena.acaq5.utils.TooltipUtils;
-import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.Collections;
 import java.util.Set;
 
@@ -63,12 +58,12 @@ public class ACAQDataSlotTraitUI extends JPanel {
     }
 
     private void removeTrait(Class<? extends ACAQTrait> trait) {
-        ACAQMutableTraitGenerator traitConfiguration = (ACAQMutableTraitGenerator)slot.getAlgorithm().getTraitConfiguration();
+        ACAQMutableTraitGenerator traitConfiguration = (ACAQMutableTraitGenerator) slot.getAlgorithm().getTraitConfiguration();
         traitConfiguration.removeTraitFrom(slot.getName(), trait);
     }
 
     private void addTrait() {
-        ACAQMutableTraitGenerator traitConfiguration = (ACAQMutableTraitGenerator)slot.getAlgorithm().getTraitConfiguration();
+        ACAQMutableTraitGenerator traitConfiguration = (ACAQMutableTraitGenerator) slot.getAlgorithm().getTraitConfiguration();
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Annotate data");
         dialog.setModal(true);
         dialog.setContentPane(new ACAQTraitGeneratorUI(slot.getName(), traitConfiguration, graph));
@@ -86,7 +81,7 @@ public class ACAQDataSlotTraitUI extends JPanel {
 
     @Subscribe
     public void onAlgorithmGraphChanged(AlgorithmGraphChangedEvent event) {
-        if(event.getAlgorithmGraph().containsNode(slot)) {
+        if (event.getAlgorithmGraph().containsNode(slot)) {
             reloadButtons();
         }
     }
@@ -95,7 +90,7 @@ public class ACAQDataSlotTraitUI extends JPanel {
         Set<Class<? extends ACAQTrait>> traits = graph.getAlgorithmTraits().getOrDefault(slot, Collections.emptySet());
         boolean canEditTraits = slot.getAlgorithm().getTraitConfiguration() instanceof ACAQMutableTraitGenerator;
         int width = 25 * traits.size();
-        if(canEditTraits)
+        if (canEditTraits)
             width += 25;
         return width;
     }

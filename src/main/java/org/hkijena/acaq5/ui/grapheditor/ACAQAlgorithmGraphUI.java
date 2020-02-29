@@ -28,8 +28,8 @@ import java.util.Set;
 
 public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, MouseMotionListener {
 
-    private ACAQAlgorithmGraphCanvasUI graphUI;
     protected JMenuBar menuBar = new JMenuBar();
+    private ACAQAlgorithmGraphCanvasUI graphUI;
     private ACAQAlgorithmGraph algorithmGraph;
     private String compartment;
 
@@ -114,7 +114,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
         BufferedImage screenshot = graphUI.createScreenshot();
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Export graph as *.png");
-        if(fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
                 ImageIO.write(screenshot, "PNG", fileChooser.getSelectedFile());
                 getWorkbenchUI().sendStatusBarText("Exported graph as " + fileChooser.getSelectedFile());
@@ -160,21 +160,21 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
         ACAQRegistryService registryService = ACAQRegistryService.getInstance();
         boolean isEmpty = true;
         Icon icon = new ColorIcon(16, 16, UIUtils.getFillColorFor(category));
-        for(ACAQAlgorithmDeclaration declaration : registryService.getAlgorithmRegistry().getAlgorithmsOfCategory(category)) {
+        for (ACAQAlgorithmDeclaration declaration : registryService.getAlgorithmRegistry().getAlgorithmsOfCategory(category)) {
             JMenuItem addItem = new JMenuItem(declaration.getName(), icon);
             addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
             addItem.addActionListener(e -> algorithmGraph.insertNode(declaration.newInstance(), compartment));
             menu.add(addItem);
             isEmpty = false;
         }
-        if(isEmpty)
+        if (isEmpty)
             menu.setVisible(false);
     }
 
     private void initializeAddDataSourceMenu(JMenu menu) {
         ACAQRegistryService registryService = ACAQRegistryService.getInstance();
-        for(Class<? extends ACAQData> dataClass : registryService.getDatatypeRegistry().getRegisteredDataTypes()) {
-            if(ACAQDatatypeRegistry.getInstance().isHidden(dataClass))
+        for (Class<? extends ACAQData> dataClass : registryService.getDatatypeRegistry().getRegisteredDataTypes()) {
+            if (ACAQDatatypeRegistry.getInstance().isHidden(dataClass))
                 continue;
             Set<ACAQAlgorithmDeclaration> dataSources = registryService.getAlgorithmRegistry().getDataSourcesFor(dataClass);
             boolean isEmpty = true;
@@ -182,7 +182,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
             JMenu dataMenu = new JMenu(ACAQData.getNameOf(dataClass));
             dataMenu.setIcon(icon);
 
-            for(ACAQAlgorithmDeclaration declaration : dataSources) {
+            for (ACAQAlgorithmDeclaration declaration : dataSources) {
                 JMenuItem addItem = new JMenuItem(declaration.getName(), icon);
                 addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
                 addItem.addActionListener(e -> algorithmGraph.insertNode(declaration.newInstance(), compartment));
@@ -191,7 +191,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
             }
 
             menu.add(dataMenu);
-            if(isEmpty)
+            if (isEmpty)
                 dataMenu.setVisible(false);
         }
     }
@@ -202,7 +202,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
 
     @Subscribe
     public void onOpenAlgorithmSettings(OpenSettingsUIRequestedEvent event) {
-        if(currentAlgorithmSettings == null || currentAlgorithmSettings.getAlgorithm() != event.getUi().getAlgorithm()) {
+        if (currentAlgorithmSettings == null || currentAlgorithmSettings.getAlgorithm() != event.getUi().getAlgorithm()) {
             currentAlgorithmSettings = new ACAQAlgorithmSettingsPanelUI(getWorkbenchUI(), algorithmGraph, event.getUi().getAlgorithm());
             int dividerLocation = splitPane.getDividerLocation();
             splitPane.setRightComponent(currentAlgorithmSettings);
@@ -212,7 +212,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
 
     @Subscribe
     public void onGraphChanged(AlgorithmGraphChangedEvent event) {
-        if(currentAlgorithmSettings != null && !algorithmGraph.getAlgorithmNodes().containsValue(currentAlgorithmSettings.getAlgorithm())) {
+        if (currentAlgorithmSettings != null && !algorithmGraph.getAlgorithmNodes().containsValue(currentAlgorithmSettings.getAlgorithm())) {
             int dividerLocation = splitPane.getDividerLocation();
             splitPane.setRightComponent(documentationPanel);
             splitPane.setDividerLocation(dividerLocation);
@@ -226,7 +226,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if(SwingUtilities.isMiddleMouseButton(e)) {
+        if (SwingUtilities.isMiddleMouseButton(e)) {
             isPanning = true;
             int x = e.getX() - scrollPane.getHorizontalScrollBar().getValue();
             int y = e.getY() - scrollPane.getVerticalScrollBar().getValue();
@@ -239,7 +239,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if(isPanning) {
+        if (isPanning) {
             graphUI.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
         isPanning = false;
@@ -257,12 +257,12 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        if(isPanning && panningOffset != null && panningScrollbarOffset != null) {
+        if (isPanning && panningOffset != null && panningScrollbarOffset != null) {
             int x = e.getX() - scrollPane.getHorizontalScrollBar().getValue();
             int y = e.getY() - scrollPane.getVerticalScrollBar().getValue();
             int dx = x - panningOffset.x;
             int dy = y - panningOffset.y;
-            if(!switchPanningDirectionButton.isSelected()) {
+            if (!switchPanningDirectionButton.isSelected()) {
                 dx = -dx;
                 dy = -dy;
             }

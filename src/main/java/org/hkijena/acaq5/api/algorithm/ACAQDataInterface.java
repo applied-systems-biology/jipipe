@@ -28,9 +28,9 @@ public class ACAQDataInterface {
         inputSlotRows.put(referenceInputSlot, referenceInputSlotRow);
         annotations = referenceInputSlot.getAnnotations(referenceInputSlotRow);
         for (ACAQDataSlot inputSlot : algorithm.getInputSlots()) {
-            if(inputSlot != referenceInputSlot) {
+            if (inputSlot != referenceInputSlot) {
                 int row = inputSlot.findRowWithTraits(annotations);
-                if(row == -1)
+                if (row == -1)
                     throw new NullPointerException("Could not find matching input slot for provided annotations!");
                 inputSlotRows.put(inputSlot, row);
             }
@@ -39,30 +39,33 @@ public class ACAQDataInterface {
 
     /**
      * Gets stored data from an input slot
+     *
      * @param slotName
      * @param <T>
      * @return
      */
     public <T extends ACAQData> T getInputData(String slotName) {
-       return getInputData(algorithm.getInputSlot(slotName));
+        return getInputData(algorithm.getInputSlot(slotName));
     }
 
     /**
      * Gets stored data from an input slot
+     *
      * @param slot
      * @param <T>
      * @return
      */
     public <T extends ACAQData> T getInputData(ACAQDataSlot slot) {
-        if(slot.getAlgorithm() != algorithm)
+        if (slot.getAlgorithm() != algorithm)
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
-        if(!slot.isInput())
+        if (!slot.isInput())
             throw new IllegalArgumentException("Slot is not an input slot!");
-        return (T)slot.getData(inputSlotRows.get(slot));
+        return (T) slot.getData(inputSlotRows.get(slot));
     }
 
     /**
      * Gets the list of annotations
+     *
      * @return
      */
     public List<ACAQTrait> getAnnotations() {
@@ -72,6 +75,7 @@ public class ACAQDataInterface {
     /**
      * Adds an annotation to the annotation list
      * If there is already existing an annotation of the sample type, it will be overwritten
+     *
      * @param trait
      */
     public void addAnnotation(ACAQTrait trait) {
@@ -81,6 +85,7 @@ public class ACAQDataInterface {
 
     /**
      * Removes an annotation of provided type
+     *
      * @param declaration
      */
     public void removeAnnotation(ACAQTraitDeclaration declaration) {
@@ -89,6 +94,7 @@ public class ACAQDataInterface {
 
     /**
      * Returns an existing annotation
+     *
      * @param declaration
      * @return null if it does not exist
      */
@@ -99,6 +105,7 @@ public class ACAQDataInterface {
     /**
      * Writes output data into the provided slot
      * Please note that annotations should be set up till this point
+     *
      * @param slotName
      * @param data
      */
@@ -107,15 +114,16 @@ public class ACAQDataInterface {
     }
 
     /**
-     *  Writes output data into the provided slot
-     *  Please note that annotations should be set up till this point
+     * Writes output data into the provided slot
+     * Please note that annotations should be set up till this point
+     *
      * @param slot
      * @param data
      */
     public void addOutputData(ACAQDataSlot slot, ACAQData data) {
-        if(slot.getAlgorithm() != algorithm)
+        if (slot.getAlgorithm() != algorithm)
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
-        if(!slot.isOutput())
+        if (!slot.isOutput())
             throw new IllegalArgumentException("Slot is not an output slot!");
         slot.addData(data, annotations);
     }

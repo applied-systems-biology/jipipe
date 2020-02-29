@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.ACAQValidatable;
@@ -25,7 +24,6 @@ import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.awt.*;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
@@ -52,22 +50,22 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
     /**
      * Initializes this algorithm with a custom provided slot configuration and trait configuration
      *
-     * @param declaration Contains algorithm metadata
-     * @param slotConfiguration if null, generate the slot configuration
+     * @param declaration        Contains algorithm metadata
+     * @param slotConfiguration  if null, generate the slot configuration
      * @param traitConfiguration if null, defaults to {@link ACAQMutableTraitModifier}
      */
     public ACAQAlgorithm(ACAQAlgorithmDeclaration declaration, ACAQSlotConfiguration slotConfiguration, ACAQTraitConfiguration traitConfiguration) {
         this.declaration = declaration;
-        if(slotConfiguration == null) {
+        if (slotConfiguration == null) {
             ACAQMutableSlotConfiguration.Builder builder = ACAQMutableSlotConfiguration.builder();
 
-            for(AlgorithmInputSlot slot : getClass().getAnnotationsByType(AlgorithmInputSlot.class)) {
-                if(slot.autoCreate()) {
+            for (AlgorithmInputSlot slot : getClass().getAnnotationsByType(AlgorithmInputSlot.class)) {
+                if (slot.autoCreate()) {
                     builder.addInputSlot(slot.slotName(), slot.value());
                 }
             }
-            for(AlgorithmOutputSlot slot : getClass().getAnnotationsByType(AlgorithmOutputSlot.class)) {
-                if(slot.autoCreate()) {
+            for (AlgorithmOutputSlot slot : getClass().getAnnotationsByType(AlgorithmOutputSlot.class)) {
+                if (slot.autoCreate()) {
                     builder.addOutputSlot(slot.slotName(), slot.value());
                 }
             }
@@ -203,7 +201,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
     public List<ACAQDataSlot> getInputSlots() {
         List<ACAQDataSlot> result = new ArrayList<>();
         for (String key : getInputSlotOrder()) {
-            if(slots.containsKey(key))
+            if (slots.containsKey(key))
                 result.add(slots.get(key));
         }
         return Collections.unmodifiableList(result);
@@ -212,7 +210,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
     public List<ACAQDataSlot> getOutputSlots() {
         List<ACAQDataSlot> result = new ArrayList<>();
         for (String key : getOutputSlotOrder()) {
-            if(slots.containsKey(key))
+            if (slots.containsKey(key))
                 result.add(slots.get(key));
         }
         return Collections.unmodifiableList(result);
@@ -268,7 +266,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
             for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(node.get("acaq:algorithm-ui-location").fields())) {
                 JsonNode xValue = entry.getValue().path("x");
                 JsonNode yValue = entry.getValue().path("y");
-                if(!xValue.isMissingNode() && !yValue.isMissingNode()) {
+                if (!xValue.isMissingNode() && !yValue.isMissingNode()) {
                     locations.put(entry.getKey(), new Point(xValue.asInt(), yValue.asInt()));
                 }
             }
@@ -343,14 +341,14 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
 
     public ACAQDataSlot getOutputSlot(String name) {
         ACAQDataSlot slot = slots.get(name);
-        if(!slot.isOutput())
+        if (!slot.isOutput())
             throw new IllegalArgumentException("The slot " + name + " is not an output slot!");
         return slot;
     }
 
     public ACAQDataSlot getInputSlot(String name) {
         ACAQDataSlot slot = slots.get(name);
-        if(!slot.isInput())
+        if (!slot.isInput())
             throw new IllegalArgumentException("The slot " + name + " is not an input slot!");
         return slot;
     }
@@ -358,7 +356,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
     public List<ACAQDataSlot> getOpenInputSlots() {
         List<ACAQDataSlot> result = new ArrayList<>();
         for (ACAQDataSlot inputSlot : getInputSlots()) {
-            if(graph.getSourceSlot(inputSlot) == null) {
+            if (graph.getSourceSlot(inputSlot) == null) {
                 result.add(inputSlot);
             }
         }
@@ -393,7 +391,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
             jsonGenerator.writeFieldName("acaq:algorithm-ui-location");
             jsonGenerator.writeStartObject();
             for (Map.Entry<String, Point> entry : algorithm.locations.entrySet()) {
-                if(entry.getValue() != null) {
+                if (entry.getValue() != null) {
                     jsonGenerator.writeFieldName(entry.getKey());
                     jsonGenerator.writeStartObject();
                     jsonGenerator.writeNumberField("x", entry.getValue().x);

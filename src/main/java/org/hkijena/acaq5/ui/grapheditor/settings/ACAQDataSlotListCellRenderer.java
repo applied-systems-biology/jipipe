@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.ui.grapheditor.settings;
 
-import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 
@@ -16,27 +15,25 @@ public class ACAQDataSlotListCellRenderer extends JLabel implements ListCellRend
 
     @Override
     public Component getListCellRendererComponent(JList<? extends ACAQDataSlot> list, ACAQDataSlot slot, int index, boolean selected, boolean cellHasFocus) {
-        if(list.getFont() != null) {
+        if (list.getFont() != null) {
             setFont(list.getFont());
         }
 
-        if(slot != null) {
+        if (slot != null) {
             String type = slot.isInput() ? "Input:" : "Output:";
             setText(type + " " + slot.getName());
             setIcon(ACAQUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()));
-        }
-        else {
+        } else {
             setText("<No data slot selected>");
             setIcon(null);
         }
 
         // Update status
         // Update status
-        if(selected) {
+        if (selected) {
             setBackground(new Color(184, 207, 229));
-        }
-        else {
-            setBackground(new Color(255,255,255));
+        } else {
+            setBackground(new Color(255, 255, 255));
         }
         return this;
     }

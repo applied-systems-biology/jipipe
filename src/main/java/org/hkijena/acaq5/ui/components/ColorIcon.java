@@ -43,12 +43,12 @@ public class ColorIcon implements Icon {
         insets = new Insets(1, 1, 1, 1);
     }
 
-    public void setColor(Color c) {
-        color = c;
-    }
-
     public Color getColor() {
         return color;
+    }
+
+    public void setColor(Color c) {
+        color = c;
     }
 
     public void setBorderColor(Color c) {
