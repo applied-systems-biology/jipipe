@@ -14,8 +14,6 @@ import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import org.hkijena.acaq5.api.traits.GoodForTrait;
 import org.hkijena.acaq5.api.traits.RemovesTrait;
 import org.hkijena.acaq5.extension.api.algorithms.enhancers.CLAHEImageEnhancer;
-import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
-import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.MembraneLabeledBioObjects;
@@ -26,8 +24,8 @@ import org.hkijena.acaq5.utils.ImageJUtils;
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
 
 // Algorithm flow
-@AlgorithmInputSlot(value = ACAQGreyscaleImageDataSlot.class, slotName = "Image", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQMaskDataSlot.class, slotName = "Mask", autoCreate = true)
+@AlgorithmInputSlot(value = ACAQGreyscaleImageData.class, slotName = "Image", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQMaskData.class, slotName = "Mask", autoCreate = true)
 
 // Trait matching
 @GoodForTrait(MembraneLabeledBioObjects.class)
@@ -35,7 +33,7 @@ import org.hkijena.acaq5.utils.ImageJUtils;
 // Trait configuration
 @AutoTransferTraits
 @RemovesTrait(ImageQuality.class)
-public class InternalGradientSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQMaskData> {
+public class InternalGradientSegmenter extends ACAQIteratingAlgorithm {
 
     private double gaussSigma = 3;
     private int internalGradientRadius = 25;
@@ -71,23 +69,24 @@ public class InternalGradientSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscale
     }
 
     @Override
-    public void run() {
-        claheImageEnhancer.getInputSlot().setData(getInputSlot().getData());
+    protected void runIteration(ACAQDataInterface dataInterface) {
+
+        claheImageEnhancer.getFirstInputSlot().addData(dataInterface.getInputData(getFirstInputSlot()));
         claheImageEnhancer.run();
 
-        ImagePlus img = claheImageEnhancer.getOutputSlot().getData().getImage().duplicate();
+        ImagePlus img = ((ACAQMaskData) claheImageEnhancer.getFirstOutputSlot().getData(0)).getImage().duplicate();
         (new GaussianBlur()).blurGaussian(img.getProcessor(), gaussSigma);
         ImageJUtils.runOnImage(img, "8-bit");
         applyInternalGradient(img);
 
-        claheImageEnhancer.getInputSlot().setData(new ACAQGreyscaleImageData(img));
+        claheImageEnhancer.getFirstInputSlot().addData(new ACAQGreyscaleImageData(img));
         claheImageEnhancer.run();
-        img = claheImageEnhancer.getOutputSlot().getData().getImage();
+        img = ((ACAQGreyscaleImageData) claheImageEnhancer.getFirstOutputSlot().getData(0)).getImage();
 
         // Convert image to mask and threshold with given auto threshold method
-        autoThresholdSegmenter.getInputSlot().setData(new ACAQGreyscaleImageData(img));
+        autoThresholdSegmenter.getFirstInputSlot().addData(new ACAQGreyscaleImageData(img));
         autoThresholdSegmenter.run();
-        img = autoThresholdSegmenter.getOutputSlot().getData().getImage();
+        img = ((ACAQMaskData) autoThresholdSegmenter.getFirstOutputSlot().getData(0)).getImage();
 
         // Apply set of rank filters
         Binary binaryFilter = new Binary();
@@ -99,7 +98,7 @@ public class InternalGradientSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscale
         binaryFilter.run(img.getProcessor());
 
         binaryFilter.setup("dilate", null);
-        for(int i = 0; i < dilationIterations; ++i) {
+        for (int i = 0; i < dilationIterations; ++i) {
             binaryFilter.run(img.getProcessor());
         }
 
@@ -107,11 +106,11 @@ public class InternalGradientSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscale
         binaryFilter.run(img.getProcessor());
 
         binaryFilter.setup("erode", null);
-        for(int i = 0; i < erosionIterations; ++i) {
+        for (int i = 0; i < erosionIterations; ++i) {
             binaryFilter.run(img.getProcessor());
         }
 
-        setOutputData(new ACAQMaskData(img));
+        dataInterface.addOutputData(getFirstOutputSlot(), new ACAQMaskData(img));
     }
 
     @ACAQParameter("gauss-sigma")

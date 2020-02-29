@@ -1,12 +1,13 @@
-package org.hkijena.acaq5.api.filesystem;
+package org.hkijena.acaq5.filesystem;
 
 import org.hkijena.acaq5.ACAQExtensionService;
 import org.hkijena.acaq5.ACAQRegistryService;
-import org.hkijena.acaq5.api.filesystem.algorithms.*;
-import org.hkijena.acaq5.api.filesystem.datasources.ACAQFileDataSource;
-import org.hkijena.acaq5.api.filesystem.datasources.ACAQFolderDataSource;
-import org.hkijena.acaq5.api.filesystem.dataypes.ACAQFileData;
-import org.hkijena.acaq5.api.filesystem.dataypes.ACAQFolderData;
+import org.hkijena.acaq5.filesystem.api.algorithms.*;
+import org.hkijena.acaq5.filesystem.api.datasources.ACAQFileDataSource;
+import org.hkijena.acaq5.filesystem.api.datasources.ACAQFolderDataSource;
+import org.hkijena.acaq5.filesystem.api.dataypes.ACAQFileData;
+import org.hkijena.acaq5.filesystem.api.dataypes.ACAQFolderData;
+import org.hkijena.acaq5.filesystem.ui.resultanalysis.FilesystemDataSlotRowUI;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
@@ -64,5 +65,8 @@ public class ACAQFilesystemExtensionService extends AbstractService implements A
         registryService.getAlgorithmRegistry().register(ACAQListFiles.class);
         registryService.getAlgorithmRegistry().register(ACAQListSubfolders.class);
         registryService.getAlgorithmRegistry().register(ACAQSubFolder.class);
+
+        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQFileData.class, FilesystemDataSlotRowUI.class);
+        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQFolderData.class, FilesystemDataSlotRowUI.class);
     }
 }

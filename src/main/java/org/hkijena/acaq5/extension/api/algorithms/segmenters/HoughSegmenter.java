@@ -12,8 +12,6 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import org.hkijena.acaq5.api.traits.GoodForTrait;
 import org.hkijena.acaq5.api.traits.RemovesTrait;
-import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
-import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.traits.bioobject.count.ClusterBioObjects;
@@ -25,8 +23,8 @@ import org.hkijena.acaq5.utils.Hough_Circle;
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
 
 // Algorithm flow
-@AlgorithmInputSlot(value = ACAQGreyscaleImageDataSlot.class, slotName = "Image", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQMaskDataSlot.class, slotName = "Mask", autoCreate = true)
+@AlgorithmInputSlot(value = ACAQGreyscaleImageData.class, slotName = "Image", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQMaskData.class, slotName = "Mask", autoCreate = true)
 
 // Trait matching
 @GoodForTrait(RoundBioObjects.class)
@@ -35,7 +33,7 @@ import org.hkijena.acaq5.utils.Hough_Circle;
 @AutoTransferTraits
 @RemovesTrait(ImageQuality.class)
 @RemovesTrait(ClusterBioObjects.class)
-public class HoughSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQMaskData> {
+public class HoughSegmenter extends ACAQIteratingAlgorithm {
 
     private int minRadius = 7;
     private int maxRadius = 25;
@@ -80,24 +78,24 @@ public class HoughSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, 
 
     private ImagePlus drawCircleMask(ImagePlus img, ResultsTable table) {
 
-        int nCircles = (int)table.getValue("nCircles", 0);
+        int nCircles = (int) table.getValue("nCircles", 0);
         int width = img.getWidth();
         int height = img.getHeight();
 
         byte[] circleMaskPixels = new byte[width * height];
-        for(int l = 0; l < nCircles; ++l) {
-            int i = (int)table.getValue("X (" + img.getCalibration().getUnits() + ")", l);
-            int j = (int)table.getValue("Y (" + img.getCalibration().getUnits() + ")", l);
-            int radius = (int)table.getValue("Radius (" + img.getCalibration().getUnits() + ")", l);
-            short ID = (short)(int)table.getValue("ID", l);
-            float score = (float)(int)table.getValue("Score", l) / (float)this.resolution;
+        for (int l = 0; l < nCircles; ++l) {
+            int i = (int) table.getValue("X (" + img.getCalibration().getUnits() + ")", l);
+            int j = (int) table.getValue("Y (" + img.getCalibration().getUnits() + ")", l);
+            int radius = (int) table.getValue("Radius (" + img.getCalibration().getUnits() + ")", l);
+            short ID = (short) (int) table.getValue("ID", l);
+            float score = (float) (int) table.getValue("Score", l) / (float) this.resolution;
             int rSquared = radius * radius;
 
-            for(int y = -1 * radius; y <= radius; ++y) {
-                for(int x = -1 * radius; x <= radius; ++x) {
+            for (int y = -1 * radius; y <= radius; ++y) {
+                for (int x = -1 * radius; x <= radius; ++x) {
                     if (x * x + y * y <= rSquared) {
                         if (!this.outOfBounds(width, height, j + y, i + x)) {
-                            circleMaskPixels[(j + y) * width + i + x] = (byte)255;
+                            circleMaskPixels[(j + y) * width + i + x] = (byte) 255;
                         }
                     }
                 }
@@ -111,8 +109,9 @@ public class HoughSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, 
     }
 
     @Override
-    public void run() {
-        ImagePlus img = getInputSlot().getData().getImage();
+    protected void runIteration(ACAQDataInterface dataInterface) {
+        ACAQGreyscaleImageData inputData = dataInterface.getInputData(getFirstInputSlot());
+        ImagePlus img = inputData.getImage();
 
         // Apply Hough circle transform
         Hough_Circle hough_circle = new Hough_Circle();
@@ -142,7 +141,7 @@ public class HoughSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, 
         ResultsTable resultsTable = Analyzer.getResultsTable();
         ImagePlus result = drawCircleMask(img, resultsTable);
 
-        getOutputSlot().setData(new ACAQMaskData(result));
+        dataInterface.addOutputData(getFirstOutputSlot(), new ACAQMaskData(result));
     }
 
     @ACAQParameter("min-radius")

@@ -11,7 +11,6 @@ import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import org.hkijena.acaq5.api.traits.BadForTrait;
 import org.hkijena.acaq5.api.traits.GoodForTrait;
 import org.hkijena.acaq5.api.traits.RemovesTrait;
-import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.traits.bioobject.count.ClusterBioObjects;
 import org.hkijena.acaq5.extension.api.traits.bioobject.morphology.RoundBioObjects;
@@ -22,8 +21,8 @@ import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.Un
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
 
 // Algorithm flow
-@AlgorithmInputSlot(value = ACAQMaskDataSlot.class, slotName = "Input image", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQMaskDataSlot.class, slotName = "Output image", autoCreate = true)
+@AlgorithmInputSlot(value = ACAQMaskData.class, slotName = "Input image", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQMaskData.class, slotName = "Output image", autoCreate = true)
 
 // Trait matching
 @GoodForTrait(RoundBioObjects.class)
@@ -34,7 +33,7 @@ import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.Un
 // Trait configuration
 @AutoTransferTraits
 @RemovesTrait(ClusterBioObjects.class)
-public class WatershedMaskEnhancer extends ACAQSimpleAlgorithm<ACAQMaskData, ACAQMaskData> {
+public class WatershedMaskEnhancer extends ACAQIteratingAlgorithm {
 
     private int erosionIterations = 0;
 
@@ -49,7 +48,13 @@ public class WatershedMaskEnhancer extends ACAQSimpleAlgorithm<ACAQMaskData, ACA
 
     @Override
     public void run() {
-        ImagePlus img = getInputSlot().getData().getImage();
+
+    }
+
+    @Override
+    protected void runIteration(ACAQDataInterface dataInterface) {
+        ACAQMaskData inputData = dataInterface.getInputData(getFirstInputSlot());
+        ImagePlus img = inputData.getImage();
 
         EDM watershed = new EDM();
         ImagePlus result = img.duplicate();
@@ -58,11 +63,11 @@ public class WatershedMaskEnhancer extends ACAQSimpleAlgorithm<ACAQMaskData, ACA
         // Optional erosion steps
         Binary binaryFilter = new Binary();
         binaryFilter.setup("erode", null);
-        for(int i = 0; i < erosionIterations; ++i) {
+        for (int i = 0; i < erosionIterations; ++i) {
             binaryFilter.run(result.getProcessor());
         }
 
-        getOutputSlot().setData(new ACAQMaskData(result));
+        dataInterface.addOutputData(getFirstOutputSlot(), new ACAQMaskData(result));
     }
 
     @ACAQParameter("erosion-iterations")

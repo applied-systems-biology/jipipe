@@ -16,11 +16,11 @@ import java.util.function.Consumer;
 /**
  * Provides a standard result slot UI that can be also further extended
  */
-public class ACAQDefaultDataSlotResultDataSlotRowUI extends ACAQResultDataSlotRowUI {
+public class ACAQDefaultResultDataSlotRowUI extends ACAQResultDataSlotRowUI {
 
     private List<SlotAction> registeredSlotActions = new ArrayList<>();
 
-    public ACAQDefaultDataSlotResultDataSlotRowUI(ACAQWorkbenchUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
+    public ACAQDefaultResultDataSlotRowUI(ACAQWorkbenchUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
         super(workbenchUI, slot, row);
         registerActions();
         initialize();
@@ -33,6 +33,7 @@ public class ACAQDefaultDataSlotResultDataSlotRowUI extends ACAQResultDataSlotRo
         if (!registeredSlotActions.isEmpty()) {
             SlotAction mainSlotAction = registeredSlotActions.get(registeredSlotActions.size() - 1);
             JButton mainActionButton = new JButton(mainSlotAction.getName(), mainSlotAction.getIcon());
+            mainActionButton.setToolTipText(mainSlotAction.getDescription());
             mainActionButton.addActionListener(e -> mainSlotAction.action.accept(getSlot()));
             add(mainActionButton);
 
@@ -41,9 +42,10 @@ public class ACAQDefaultDataSlotResultDataSlotRowUI extends ACAQResultDataSlotRo
                 menuButton.setMaximumSize(new Dimension(1, (int) mainActionButton.getPreferredSize().getHeight()));
                 menuButton.setToolTipText("More actions ...");
                 JPopupMenu menu = UIUtils.addPopupMenuToComponent(menuButton);
-                for (int i = 0; i < registeredSlotActions.size() - 1; ++i) {
+                for (int i = registeredSlotActions.size() - 2; i >= 0; --i) {
                     SlotAction otherSlotAction = registeredSlotActions.get(i);
                     JMenuItem item = new JMenuItem(otherSlotAction.getName(), otherSlotAction.getIcon());
+                    item.setToolTipText(otherSlotAction.getDescription());
                     item.addActionListener(e -> otherSlotAction.getAction().accept(getSlot()));
                     menu.add(item);
                 }
@@ -58,7 +60,7 @@ public class ACAQDefaultDataSlotResultDataSlotRowUI extends ACAQResultDataSlotRo
      */
     protected void registerActions() {
         if (getSlot().getStoragePath() != null) {
-            registerAction("Open folder", UIUtils.getIconFromResources("open.png"), s -> openFolder());
+            registerAction("Open folder", "Opens the folder that contains the data files.", UIUtils.getIconFromResources("open.png"), s -> openFolder());
         }
     }
 
@@ -66,11 +68,12 @@ public class ACAQDefaultDataSlotResultDataSlotRowUI extends ACAQResultDataSlotRo
      * Registers an action for the data slot
      *
      * @param name
+     * @param description
      * @param icon
      * @param action
      */
-    protected void registerAction(String name, Icon icon, Consumer<ACAQDataSlot> action) {
-        registeredSlotActions.add(new SlotAction(name, icon, action));
+    protected void registerAction(String name, String description, Icon icon, Consumer<ACAQDataSlot> action) {
+        registeredSlotActions.add(new SlotAction(name, description, icon, action));
     }
 
     private void openFolder() {
@@ -83,11 +86,13 @@ public class ACAQDefaultDataSlotResultDataSlotRowUI extends ACAQResultDataSlotRo
 
     private static class SlotAction {
         private String name;
+        private String description;
         private Icon icon;
         private Consumer<ACAQDataSlot> action;
 
-        private SlotAction(String name, Icon icon, Consumer<ACAQDataSlot> action) {
+        private SlotAction(String name, String description, Icon icon, Consumer<ACAQDataSlot> action) {
             this.name = name;
+            this.description = description;
             this.icon = icon;
             this.action = action;
         }
@@ -102,6 +107,10 @@ public class ACAQDefaultDataSlotResultDataSlotRowUI extends ACAQResultDataSlotRo
 
         public Consumer<ACAQDataSlot> getAction() {
             return action;
+        }
+
+        public String getDescription() {
+            return description;
         }
     }
 }

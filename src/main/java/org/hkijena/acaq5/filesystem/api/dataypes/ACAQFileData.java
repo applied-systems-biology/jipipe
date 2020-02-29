@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.api.filesystem.dataypes;
+package org.hkijena.acaq5.filesystem.api.dataypes;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
@@ -9,13 +9,17 @@ import org.hkijena.acaq5.utils.JsonUtils;
 import java.io.IOException;
 import java.nio.file.Path;
 
-@ACAQDocumentation(name = "Folder")
-public class ACAQFolderData implements ACAQData {
+@ACAQDocumentation(name = "File")
+public class ACAQFileData implements ACAQData {
 
-    private Path folderPath;
+    private Path filePath;
 
-    public ACAQFolderData(Path folderPath) {
-        this.folderPath = folderPath;
+    public ACAQFileData(Path filePath) {
+        this.filePath = filePath;
+    }
+
+    private ACAQFileData() {
+
     }
 
     @Override
@@ -33,13 +37,13 @@ public class ACAQFolderData implements ACAQData {
         return getClass().getCanonicalName();
     }
 
-    @JsonGetter("folder-path")
-    public Path getFolderPath() {
-        return folderPath;
+    @JsonGetter("file-path")
+    public Path getFilePath() {
+        return filePath;
     }
 
-    @JsonSetter("folder-path")
-    private void setFolderPath(Path path) {
-        this.folderPath = path;
+    @JsonSetter("file-path")
+    private void setFilePath(Path path) {
+        this.filePath = path;
     }
 }

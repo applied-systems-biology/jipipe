@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.extension.api.algorithms.converters;
 
-import ij.ImagePlus;
 import ij.measure.ResultsTable;
 import ij.plugin.filter.ParticleAnalyzer;
 import ij.plugin.frame.RoiManager;
@@ -9,9 +8,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
-import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
-import org.hkijena.acaq5.extension.api.dataslots.ACAQROIDataSlot;
-import org.hkijena.acaq5.extension.api.dataslots.ACAQResultsTableDataSlot;
+import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQROIData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQResultsTableData;
 
@@ -22,13 +19,13 @@ import java.util.Arrays;
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Converter)
 
 // Algorithm data flow
-@AlgorithmInputSlot(value = ACAQMaskDataSlot.class, slotName = "Mask", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQROIDataSlot.class, slotName = "ROI", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQResultsTableDataSlot.class, slotName = "Measurements", autoCreate = true)
+@AlgorithmInputSlot(value = ACAQMaskData.class, slotName = "Mask", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQROIData.class, slotName = "ROI", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQResultsTableData.class, slotName = "Measurements", autoCreate = true)
 
 // Algorithm traits
 @AutoTransferTraits
-public class MaskToParticleConverter extends ACAQAlgorithm {
+public class MaskToParticleConverter extends ACAQIteratingAlgorithm {
     private double minParticleSize = 0;
     private double maxParticleSize = Double.MAX_VALUE;
     private double minParticleCircularity = 0;
@@ -49,8 +46,8 @@ public class MaskToParticleConverter extends ACAQAlgorithm {
     }
 
     @Override
-    public void run() {
-        ImagePlus inputImage = (((ACAQMaskDataSlot)getInputSlots().get(0))).getData().getImage();
+    protected void runIteration(ACAQDataInterface dataInterface) {
+        ACAQMaskData inputData = dataInterface.getInputData(getFirstInputSlot());
 
         ResultsTable resultsTable = new ResultsTable();
         RoiManager manager = new RoiManager(true);
@@ -58,10 +55,10 @@ public class MaskToParticleConverter extends ACAQAlgorithm {
         ParticleAnalyzer.setRoiManager(manager);
         ParticleAnalyzer.setResultsTable(table);
         ParticleAnalyzer analyzer = new ParticleAnalyzer(0, 0, resultsTable, minParticleSize, maxParticleSize, minParticleCircularity, maxParticleCircularity);
-        analyzer.analyze(inputImage);
+        analyzer.analyze(inputData.getImage());
 
-        getSlots().get("ROI").setData(new ACAQROIData(Arrays.asList(manager.getRoisAsArray())));
-        getSlots().get("Measurements").setData(new ACAQResultsTableData(table));
+        dataInterface.addOutputData("ROI", new ACAQROIData(Arrays.asList(manager.getRoisAsArray())));
+        dataInterface.addOutputData("Measurements", new ACAQResultsTableData(table));
     }
 
     @ACAQParameter("min-particle-size")
@@ -94,7 +91,7 @@ public class MaskToParticleConverter extends ACAQAlgorithm {
 
     @ACAQParameter("min-particle-circularity")
     public boolean setMinParticleCircularity(double minParticleCircularity) {
-        if(minParticleCircularity < 0 || minParticleCircularity > 1)
+        if (minParticleCircularity < 0 || minParticleCircularity > 1)
             return false;
         this.minParticleCircularity = minParticleCircularity;
         return true;
@@ -108,7 +105,7 @@ public class MaskToParticleConverter extends ACAQAlgorithm {
 
     @ACAQParameter("max-particle-circularity")
     public boolean setMaxParticleCircularity(double maxParticleCircularity) {
-        if(maxParticleCircularity < 0 || maxParticleCircularity > 1)
+        if (maxParticleCircularity < 0 || maxParticleCircularity > 1)
             return false;
         this.maxParticleCircularity = maxParticleCircularity;
         return true;

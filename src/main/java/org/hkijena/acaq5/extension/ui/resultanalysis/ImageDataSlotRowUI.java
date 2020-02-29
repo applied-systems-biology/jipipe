@@ -5,16 +5,16 @@ import ij.ImagePlus;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
-import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultDataSlotResultDataSlotRowUI;
+import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultResultDataSlotRowUI;
 import org.hkijena.acaq5.utils.PathUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class ImageDataSlotResultDataSlotRowUI extends ACAQDefaultDataSlotResultDataSlotRowUI {
+public class ImageDataSlotRowUI extends ACAQDefaultResultDataSlotRowUI {
 
-    public ImageDataSlotResultDataSlotRowUI(ACAQWorkbenchUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
+    public ImageDataSlotRowUI(ACAQWorkbenchUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
         super(workbenchUI, slot, row);
     }
 
@@ -31,13 +31,14 @@ public class ImageDataSlotResultDataSlotRowUI extends ACAQDefaultDataSlotResultD
 
         Path imageFile = findImageFile();
         if (imageFile != null) {
-            registerAction("Import", UIUtils.getIconFromResources("imagej.png"), e -> {
-                ImagePlus img = IJ.openImage(imageFile.toString());
-                if (img != null) {
-                    img.show();
-                    img.setTitle(getDisplayName());
-                }
-            });
+            registerAction("Import", "Imports the image '" + imageFile + "' into ImageJ",
+                    UIUtils.getIconFromResources("imagej.png"), e -> {
+                        ImagePlus img = IJ.openImage(imageFile.toString());
+                        if (img != null) {
+                            img.show();
+                            img.setTitle(getDisplayName());
+                        }
+                    });
         }
     }
 }

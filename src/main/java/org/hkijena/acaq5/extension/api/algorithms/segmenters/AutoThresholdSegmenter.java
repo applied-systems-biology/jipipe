@@ -9,8 +9,6 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.*;
-import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
-import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.traits.bioobject.count.ClusterBioObjects;
@@ -26,8 +24,8 @@ import org.hkijena.acaq5.utils.ImageJUtils;
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
 
 // Algorithm flow
-@AlgorithmInputSlot(value = ACAQGreyscaleImageDataSlot.class, slotName = "Image", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQMaskDataSlot.class, slotName = "Mask", autoCreate = true)
+@AlgorithmInputSlot(value = ACAQGreyscaleImageData.class, slotName = "Image", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQMaskData.class, slotName = "Mask", autoCreate = true)
 
 // Trait matching
 @GoodForTrait(UniformlyLabeledBioObjects.class)
@@ -37,7 +35,7 @@ import org.hkijena.acaq5.utils.ImageJUtils;
 @AutoTransferTraits
 @RemovesTrait(ImageQuality.class)
 @AddsTrait(ClusterBioObjects.class)
-public class AutoThresholdSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQMaskData> {
+public class AutoThresholdSegmenter extends ACAQIteratingAlgorithm {
 
     private AutoThresholder.Method method = AutoThresholder.Method.Default;
 
@@ -51,15 +49,16 @@ public class AutoThresholdSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleIma
     }
 
     @Override
-    public void run() {
-        ImagePlus img = getInputSlot().getData().getImage();
+    protected void runIteration(ACAQDataInterface dataInterface) {
+        ACAQGreyscaleImageData inputData = dataInterface.getInputData(getFirstInputSlot());
+        ImagePlus img = inputData.getImage();
         ImagePlus result = img.duplicate();
 
         Thresholder.setMethod(method.name());
         Prefs.blackBackground = true;
         ImageJUtils.runOnImage(result, new Thresholder());
 
-        getOutputSlot().setData(new ACAQMaskData(result));
+        dataInterface.addOutputData(getFirstOutputSlot(), new ACAQMaskData(result));
     }
 
     @ACAQParameter("method")

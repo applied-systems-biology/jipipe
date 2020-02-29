@@ -3,6 +3,13 @@ package org.hkijena.acaq5.extension;
 import ij.process.AutoThresholder;
 import org.hkijena.acaq5.ACAQExtensionService;
 import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.extension.api.algorithms.converters.MaskToParticleConverter;
+import org.hkijena.acaq5.extension.api.algorithms.converters.MultiChannelSplitterConverter;
+import org.hkijena.acaq5.extension.api.algorithms.enhancers.CLAHEImageEnhancer;
+import org.hkijena.acaq5.extension.api.algorithms.enhancers.IlluminationCorrectionEnhancer;
+import org.hkijena.acaq5.extension.api.algorithms.enhancers.MergeROIEnhancer;
+import org.hkijena.acaq5.extension.api.algorithms.enhancers.WatershedMaskEnhancer;
+import org.hkijena.acaq5.extension.api.algorithms.segmenters.*;
 import org.hkijena.acaq5.extension.api.datasources.*;
 import org.hkijena.acaq5.extension.api.datatypes.*;
 import org.hkijena.acaq5.extension.api.traits.Sample;
@@ -22,9 +29,9 @@ import org.hkijena.acaq5.extension.api.traits.quality.NonUniformBrightnessQualit
 import org.hkijena.acaq5.extension.api.traits.quality.UniformBrightnessQuality;
 import org.hkijena.acaq5.extension.ui.parametereditors.*;
 import org.hkijena.acaq5.extension.ui.plotbuilder.*;
-import org.hkijena.acaq5.extension.ui.resultanalysis.ImageDataSlotResultDataSlotRowUI;
-import org.hkijena.acaq5.extension.ui.resultanalysis.ROIDataSlotResultDataSlotRowUI;
-import org.hkijena.acaq5.extension.ui.resultanalysis.ResultsTableDataSlotResultDataSlotRowUI;
+import org.hkijena.acaq5.extension.ui.resultanalysis.ImageDataSlotRowUI;
+import org.hkijena.acaq5.extension.ui.resultanalysis.ROIDataSlotRowUI;
+import org.hkijena.acaq5.extension.ui.resultanalysis.ResultsTableDataSlotRowUI;
 import org.hkijena.acaq5.extension.ui.tableanalyzer.*;
 import org.hkijena.acaq5.utils.PathFilter;
 import org.hkijena.acaq5.utils.ResourceUtils;
@@ -99,11 +106,12 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
         registryService.getUIParametertypeRegistry().registerParameterEditor(PathFilter.class, PathFilterParameterEditorUI.class);
 
         // Register result data slot UIs
-        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQMultichannelImageData.class, ImageDataSlotResultDataSlotRowUI.class);
-        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQGreyscaleImageData.class, ImageDataSlotResultDataSlotRowUI.class);
-        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQMaskData.class, ImageDataSlotResultDataSlotRowUI.class);
-        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQROIData.class, ROIDataSlotResultDataSlotRowUI.class);
-        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQResultsTableData.class, ResultsTableDataSlotResultDataSlotRowUI.class);
+        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQMultichannelImageData.class, ImageDataSlotRowUI.class);
+        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQGreyscaleImageData.class, ImageDataSlotRowUI.class);
+        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQMaskData.class, ImageDataSlotRowUI.class);
+        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQROIData.class, ROIDataSlotRowUI.class);
+        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQResultsTableData.class, ResultsTableDataSlotRowUI.class);
+        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQResultsTableData.class, ResultsTableDataSlotRowUI.class);
 
         registerSpreadSheetOperations(registryService);
         registerPlotTypes(registryService);
@@ -303,17 +311,17 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
     }
 
     private void registerAlgorithms(ACAQRegistryService registryService) {
-//        registryService.getAlgorithmRegistry().register(MaskToParticleConverter.class);
-//        registryService.getAlgorithmRegistry().register(CLAHEImageEnhancer.class);
-//        registryService.getAlgorithmRegistry().register(IlluminationCorrectionEnhancer.class);
-//        registryService.getAlgorithmRegistry().register(WatershedMaskEnhancer.class);
-//        registryService.getAlgorithmRegistry().register(AutoThresholdSegmenter.class);
-//        registryService.getAlgorithmRegistry().register(BrightSpotsSegmenter.class);
-//        registryService.getAlgorithmRegistry().register(HoughSegmenter.class);
-//        registryService.getAlgorithmRegistry().register(InternalGradientSegmenter.class);
-//        registryService.getAlgorithmRegistry().register(MultiChannelSplitterConverter.class);
-//        registryService.getAlgorithmRegistry().register(MergeROIEnhancer.class);
-//        registryService.getAlgorithmRegistry().register(HessianSegmenter.class);
+        registryService.getAlgorithmRegistry().register(MaskToParticleConverter.class);
+        registryService.getAlgorithmRegistry().register(CLAHEImageEnhancer.class);
+        registryService.getAlgorithmRegistry().register(IlluminationCorrectionEnhancer.class);
+        registryService.getAlgorithmRegistry().register(WatershedMaskEnhancer.class);
+        registryService.getAlgorithmRegistry().register(AutoThresholdSegmenter.class);
+        registryService.getAlgorithmRegistry().register(BrightSpotsSegmenter.class);
+        registryService.getAlgorithmRegistry().register(HoughSegmenter.class);
+        registryService.getAlgorithmRegistry().register(InternalGradientSegmenter.class);
+        registryService.getAlgorithmRegistry().register(MultiChannelSplitterConverter.class);
+        registryService.getAlgorithmRegistry().register(MergeROIEnhancer.class);
+        registryService.getAlgorithmRegistry().register(HessianSegmenter.class);
     }
 
     private void registerDataTypes(ACAQRegistryService registryService) {

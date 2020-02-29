@@ -9,7 +9,6 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import org.hkijena.acaq5.api.traits.GoodForTrait;
 import org.hkijena.acaq5.api.traits.RemovesTrait;
-import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.MembraneLabeledBioObjects;
 import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.UniformlyLabeledBioObjects;
@@ -20,8 +19,8 @@ import org.hkijena.acaq5.extension.api.traits.quality.NonUniformBrightnessQualit
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
 
 // Algorithm flow
-@AlgorithmInputSlot(value = ACAQGreyscaleImageDataSlot.class, slotName = "Input image", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQGreyscaleImageDataSlot.class, slotName = "Output image", autoCreate = true)
+@AlgorithmInputSlot(value = ACAQGreyscaleImageData.class, slotName = "Input image", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQGreyscaleImageData.class, slotName = "Output image", autoCreate = true)
 
 // Trait matching
 @GoodForTrait(UniformlyLabeledBioObjects.class)
@@ -33,8 +32,7 @@ import org.hkijena.acaq5.extension.api.traits.quality.NonUniformBrightnessQualit
 @AutoTransferTraits
 @RemovesTrait(LowBrightnessQuality.class)
 @RemovesTrait(NonUniformBrightnessQuality.class)
-public class CLAHEImageEnhancer extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData,
-        ACAQGreyscaleImageData> {
+public class CLAHEImageEnhancer extends ACAQIteratingAlgorithm {
 
     private int blocks = 127;
     private int bins = 256;
@@ -54,13 +52,12 @@ public class CLAHEImageEnhancer extends ACAQSimpleAlgorithm<ACAQGreyscaleImageDa
     }
 
     @Override
-    public void run() {
-        ImagePlus img = getInputSlot().getData().getImage();
-
-        ImagePlus result = img.duplicate();
+    protected void runIteration(ACAQDataInterface dataInterface) {
+        ACAQGreyscaleImageData inputData = dataInterface.getInputData(getFirstInputSlot());
+        ImagePlus result = inputData.getImage().duplicate();
         Flat clahe = fastMode ? Flat.getFastInstance() : Flat.getInstance();
         clahe.run(result, blocks, bins, maxSlope, null, true);
-        getOutputSlot().setData(new ACAQGreyscaleImageData(result));
+        dataInterface.addOutputData(getFirstOutputSlot(), new ACAQGreyscaleImageData(result));
     }
 
     @ACAQParameter("blocks")

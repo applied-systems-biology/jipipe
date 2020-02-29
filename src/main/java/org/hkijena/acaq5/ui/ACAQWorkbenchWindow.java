@@ -28,7 +28,7 @@ public class ACAQWorkbenchWindow extends JFrame {
     private void initialize() {
         getContentPane().setLayout(new BorderLayout(8, 8));
         super.setTitle("ACAQ5");
-        setIconImage(UIUtils.getIconFromResources("acaq5.png").getImage());
+        setIconImage(UIUtils.getIconFromResources("acaq5-128.png").getImage());
         UIUtils.setToAskOnClose(this, "Do you really want to close ACAQ5?", "Close window");
     }
 

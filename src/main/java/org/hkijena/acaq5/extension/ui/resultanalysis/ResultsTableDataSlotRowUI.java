@@ -1,19 +1,21 @@
 package org.hkijena.acaq5.extension.ui.resultanalysis;
 
+import ij.measure.ResultsTable;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
-import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultDataSlotResultDataSlotRowUI;
+import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultResultDataSlotRowUI;
 import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableAnalyzerUI;
 import org.hkijena.acaq5.utils.PathUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class ResultsTableDataSlotResultDataSlotRowUI extends ACAQDefaultDataSlotResultDataSlotRowUI {
+public class ResultsTableDataSlotRowUI extends ACAQDefaultResultDataSlotRowUI {
 
-    public ResultsTableDataSlotResultDataSlotRowUI(ACAQWorkbenchUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
+    public ResultsTableDataSlotRowUI(ACAQWorkbenchUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
         super(workbenchUI, slot, row);
     }
 
@@ -30,20 +32,21 @@ public class ResultsTableDataSlotResultDataSlotRowUI extends ACAQDefaultDataSlot
 
         Path csvFile = findResultsTableFile();
         if (csvFile != null) {
-            registerAction("Open in ACAQ5", UIUtils.getIconFromResources("acaq5.png"), e -> {
+            registerAction("Open in ACAQ5", "Opens the table in ACAQ5", UIUtils.getIconFromResources("acaq5.png"), e -> {
                 ACAQTableAnalyzerUI.importTableFromCSV(csvFile, getWorkbenchUI());
+                getWorkbenchUI().getDocumentTabPane().switchToLastTab();
             });
-            registerAction("Open in ImageJ", UIUtils.getIconFromResources("imagej.png"), e -> {
+            registerAction("Open in ImageJ", "Imports the table '" + csvFile + "' into ImageJ", UIUtils.getIconFromResources("imagej.png"), e -> {
                 importCSV(csvFile);
             });
         }
     }
 
     private void importCSV(Path roiFile) {
-//        try {
-//            ResultsTable.open(roiFile.toString()).show(getSample().getName() + "/" + getSlot().getAlgorithm().getName() + "/" + getSlot().getName());
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
+        try {
+            ResultsTable.open(roiFile.toString()).show(getDisplayName());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

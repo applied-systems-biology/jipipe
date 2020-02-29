@@ -6,7 +6,7 @@ import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
-import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultDataSlotResultDataSlotRowUI;
+import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultResultDataSlotRowUI;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultDataSlotRowUI;
 import org.hkijena.acaq5.utils.ResourceUtils;
 
@@ -71,7 +71,7 @@ public class ACAQUIDatatypeRegistry {
                 throw new RuntimeException(e);
             }
         } else {
-            return new ACAQDefaultDataSlotResultDataSlotRowUI(workbenchUI, slot, row);
+            return new ACAQDefaultResultDataSlotRowUI(workbenchUI, slot, row);
         }
     }
 

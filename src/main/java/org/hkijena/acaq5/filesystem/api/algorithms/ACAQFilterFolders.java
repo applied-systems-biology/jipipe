@@ -1,11 +1,11 @@
-package org.hkijena.acaq5.api.filesystem.algorithms;
+package org.hkijena.acaq5.filesystem.api.algorithms;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.filesystem.dataypes.ACAQFolderData;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
+import org.hkijena.acaq5.filesystem.api.dataypes.ACAQFolderData;
 import org.hkijena.acaq5.utils.PathFilter;
 
 @ACAQDocumentation(name = "Filter folders", description = "Filters the input folders by their name")

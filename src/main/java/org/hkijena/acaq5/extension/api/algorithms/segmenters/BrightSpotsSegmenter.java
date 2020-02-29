@@ -13,8 +13,6 @@ import org.hkijena.acaq5.api.traits.AddsTrait;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import org.hkijena.acaq5.api.traits.BadForTrait;
 import org.hkijena.acaq5.api.traits.RemovesTrait;
-import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
-import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.traits.bioobject.count.ClusterBioObjects;
@@ -25,8 +23,8 @@ import org.hkijena.acaq5.extension.api.traits.quality.NonUniformBrightnessQualit
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
 
 // Algorithm flow
-@AlgorithmInputSlot(value = ACAQGreyscaleImageDataSlot.class, slotName = "Image", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQMaskDataSlot.class, slotName = "Mask", autoCreate = true)
+@AlgorithmInputSlot(value = ACAQGreyscaleImageData.class, slotName = "Image", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQMaskData.class, slotName = "Mask", autoCreate = true)
 
 // Trait matching
 @BadForTrait(NonUniformBrightnessQuality.class)
@@ -35,7 +33,7 @@ import org.hkijena.acaq5.extension.api.traits.quality.NonUniformBrightnessQualit
 @AutoTransferTraits
 @RemovesTrait(ImageQuality.class)
 @AddsTrait(ClusterBioObjects.class)
-public class BrightSpotsSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQMaskData> {
+public class BrightSpotsSegmenter extends ACAQIteratingAlgorithm {
 
     private int rollingBallRadius = 20;
     private int dilationErodeSteps = 2;
@@ -56,8 +54,8 @@ public class BrightSpotsSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImage
     }
 
     @Override
-    public void run() {
-        ImagePlus img = getInputSlot().getData().getImage();
+    protected void runIteration(ACAQDataInterface dataInterface) {
+        ImagePlus img = ((ACAQGreyscaleImageData) dataInterface.getInputData(getFirstInputSlot())).getImage();
 
         ImagePlus result = img.duplicate();
 
@@ -72,15 +70,15 @@ public class BrightSpotsSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImage
                 true);
 
         // Apply auto threshold
-        autoThresholdSegmenter.getInputSlot().setData(new ACAQGreyscaleImageData(result));
+        autoThresholdSegmenter.getFirstOutputSlot().addData(new ACAQGreyscaleImageData(result));
         autoThresholdSegmenter.run();
-        result = autoThresholdSegmenter.getOutputSlot().getData().getImage();
+        result = ((ACAQMaskData) autoThresholdSegmenter.getFirstOutputSlot().getData(0)).getImage();
 
         // Apply morphologial operations
         Binary binaryFilter = new Binary();
 
         binaryFilter.setup("dilate", null);
-        for(int i = 0; i < dilationErodeSteps; ++i) {
+        for (int i = 0; i < dilationErodeSteps; ++i) {
             binaryFilter.run(result.getProcessor());
         }
 
@@ -88,21 +86,21 @@ public class BrightSpotsSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImage
         binaryFilter.run(result.getProcessor());
 
         binaryFilter.setup("erode", null);
-        for(int i = 0; i < dilationErodeSteps; ++i) {
+        for (int i = 0; i < dilationErodeSteps; ++i) {
             binaryFilter.run(result.getProcessor());
         }
 
         // Smooth the spots and re-threshold them
-        if(gaussianSigma > 0) {
+        if (gaussianSigma > 0) {
             GaussianBlur gaussianBlur = new GaussianBlur();
             gaussianBlur.blurGaussian(result.getProcessor(), gaussianSigma);
 
-            autoThresholdSegmenter.getInputSlot().setData(new ACAQGreyscaleImageData(result));
+            autoThresholdSegmenter.getFirstInputSlot().addData(new ACAQGreyscaleImageData(result));
             autoThresholdSegmenter.run();
-            result = autoThresholdSegmenter.getOutputSlot().getData().getImage();
+            result = ((ACAQMaskData) autoThresholdSegmenter.getFirstOutputSlot().getData(0)).getImage();
         }
 
-        getOutputSlot().setData(new ACAQMaskData(result));
+        dataInterface.addOutputData(getFirstOutputSlot(), new ACAQMaskData(result));
     }
 
     @ACAQParameter("rolling-ball-radius")

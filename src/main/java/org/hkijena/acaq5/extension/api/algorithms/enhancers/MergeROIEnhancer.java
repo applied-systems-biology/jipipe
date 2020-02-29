@@ -7,7 +7,6 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
-import org.hkijena.acaq5.extension.api.dataslots.ACAQROIDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQROIData;
 
 import java.util.ArrayList;
@@ -17,16 +16,16 @@ import java.util.List;
 @ACAQDocumentation(name = "Merge ROI")
 
 // Data flow
-@AlgorithmInputSlot(ACAQROIDataSlot.class)
-@AlgorithmOutputSlot(ACAQROIDataSlot.class)
+@AlgorithmInputSlot(ACAQROIData.class)
+@AlgorithmOutputSlot(ACAQROIData.class)
 
 // Traits
 @AutoTransferTraits
-public class MergeROIEnhancer extends ACAQAlgorithm {
+public class MergeROIEnhancer extends ACAQIteratingAlgorithm {
     public MergeROIEnhancer(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, ACAQMutableSlotConfiguration.builder().restrictInputTo(ACAQROIDataSlot.class)
-        .addOutputSlot("ROI", ACAQROIDataSlot.class)
-        .sealOutput().build(), null);
+        super(declaration, ACAQMutableSlotConfiguration.builder().restrictInputTo(ACAQROIData.class)
+                .addOutputSlot("ROI", ACAQROIData.class)
+                .sealOutput().build(), null);
     }
 
     public MergeROIEnhancer(MergeROIEnhancer other) {
@@ -34,14 +33,14 @@ public class MergeROIEnhancer extends ACAQAlgorithm {
     }
 
     @Override
-    public void run() {
+    protected void runIteration(ACAQDataInterface dataInterface) {
         List<Roi> inputROI = new ArrayList<>();
-        for(ACAQDataSlot<?> slot : getInputSlots()) {
-            inputROI.addAll(((ACAQROIDataSlot)slot).getData().getROI());
+        for (ACAQDataSlot slot : getInputSlots()) {
+            ACAQROIData data = dataInterface.getInputData(slot);
+            inputROI.addAll(data.getROI());
         }
 
-        ACAQROIDataSlot outputSlot = (ACAQROIDataSlot)getOutputSlots().get(0);
-        outputSlot.setData(new ACAQROIData(inputROI));
+        dataInterface.addOutputData(getFirstOutputSlot(), new ACAQROIData(inputROI));
     }
 
     @Override

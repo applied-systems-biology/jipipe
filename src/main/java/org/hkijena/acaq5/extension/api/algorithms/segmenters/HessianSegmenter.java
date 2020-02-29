@@ -14,8 +14,6 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQSubAlgorithm;
 import org.hkijena.acaq5.api.traits.AutoTransferTraits;
 import org.hkijena.acaq5.api.traits.RemovesTrait;
-import org.hkijena.acaq5.extension.api.dataslots.ACAQGreyscaleImageDataSlot;
-import org.hkijena.acaq5.extension.api.dataslots.ACAQMaskDataSlot;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.traits.quality.ImageQuality;
@@ -26,13 +24,13 @@ import java.util.Vector;
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
 
 // Algorithm flow
-@AlgorithmInputSlot(value = ACAQGreyscaleImageDataSlot.class, slotName = "Image", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQMaskDataSlot.class, slotName = "Mask", autoCreate = true)
+@AlgorithmInputSlot(value = ACAQGreyscaleImageData.class, slotName = "Image", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQMaskData.class, slotName = "Mask", autoCreate = true)
 
 // Traits
 @AutoTransferTraits
 @RemovesTrait(ImageQuality.class)
-public class HessianSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData, ACAQMaskData> {
+public class HessianSegmenter extends ACAQIteratingAlgorithm {
 
     private double smoothing = 1.0;
     private double gradientRadius = 1;
@@ -53,7 +51,7 @@ public class HessianSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData
         final Image image = Image.wrap(input);
         image.aspects(new Aspects());
         final Hessian hessian = new Hessian();
-        final Vector<Image> eigenimages = hessian.run(new FloatImage(image),smoothing,true);
+        final Vector<Image> eigenimages = hessian.run(new FloatImage(image), smoothing, true);
         Image largest = eigenimages.get(0);
         return largest.imageplus();
     }
@@ -71,14 +69,15 @@ public class HessianSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData
 
     private void applyDespeckle(ImagePlus img, int iterations) {
         RankFilters rankFilters = new RankFilters();
-        for(int i = 0; i < iterations; ++i) {
+        for (int i = 0; i < iterations; ++i) {
             rankFilters.rank(img.getProcessor(), 1, RankFilters.MEDIAN);
         }
     }
 
     @Override
-    public void run() {
-        ImagePlus img = getInputSlot().getData().getImage();
+    protected void runIteration(ACAQDataInterface dataInterface) {
+        ACAQGreyscaleImageData inputImage = dataInterface.getInputData(getFirstInputSlot());
+        ImagePlus img = inputImage.getImage();
 
         // Apply hessian
         ImagePlus result = applyHessian(img);
@@ -87,14 +86,14 @@ public class HessianSegmenter extends ACAQSimpleAlgorithm<ACAQGreyscaleImageData
         applyInternalGradient(result);
 
         // Convert to mask
-        autoThresholdSegmenter.getInputSlot().setData(new ACAQGreyscaleImageData(result));
+        autoThresholdSegmenter.getFirstInputSlot().addData(new ACAQGreyscaleImageData(result));
         autoThresholdSegmenter.run();
-        result = autoThresholdSegmenter.getOutputSlot().getData().getImage();
+        result = ((ACAQMaskData) autoThresholdSegmenter.getFirstOutputSlot().getData(0)).getImage();
 
         // Despeckle x2
         applyDespeckle(result, 2);
 
-        getOutputSlot().setData(new ACAQMaskData(result));
+        dataInterface.addOutputData(getFirstOutputSlot(), new ACAQMaskData(result));
     }
 
     @ACAQParameter("smoothing")
