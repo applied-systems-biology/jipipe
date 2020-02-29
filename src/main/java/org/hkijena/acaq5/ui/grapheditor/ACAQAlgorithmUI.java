@@ -186,7 +186,7 @@ public class ACAQAlgorithmUI extends JPanel {
             List<ACAQDataSlot> slots = algorithm.getInputSlots();
             for(int i = 0; i < slots.size(); ++i) {
                 int bottomBorder = 0;
-                if(i < getDisplayedRows() - 1 || createAddInputSlotButton || createAddOutputSlotButton)
+                if(i < getDisplayedRows() - 1)
                     bottomBorder = 1;
 
                 ACAQDataSlot slot = slots.get(i);
@@ -201,7 +201,7 @@ public class ACAQAlgorithmUI extends JPanel {
             List<ACAQDataSlot> slots = algorithm.getOutputSlots();
             for(int i = 0; i < slots.size(); ++i) {
                 int bottomBorder = 0;
-                if(i < getDisplayedRows() - 1 || createAddInputSlotButton || createAddOutputSlotButton)
+                if(i < getDisplayedRows() - 1)
                     bottomBorder = 1;
                 ACAQDataSlot slot = slots.get(i);
                 ACAQDataSlotUI ui = new ACAQDataSlotUI(graphUI.getAlgorithmGraph(), graphUI.getCompartment(), slot);
@@ -269,27 +269,22 @@ public class ACAQAlgorithmUI extends JPanel {
     }
 
     /**
-     * Returns the number of rows that contain the slots
-     * @return
-     */
-    private int getSlotRows() {
-        return Math.max(algorithm.getInputSlots().size(), algorithm.getOutputSlots().size());
-    }
-
-    /**
      * Contains the number of displayed rows. This includes the number of slot rows, and optionally additional rows for adding
      * @return
      */
     private int getDisplayedRows() {
-        int rows = getSlotRows();
+        int inputRows = algorithm.getInputSlots().size();
+        int outputRows = algorithm.getOutputSlots().size();
         if(algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
             ACAQMutableSlotConfiguration configuration = (ACAQMutableSlotConfiguration)algorithm.getSlotConfiguration();
-            if(configuration.canModifyInputSlots() && algorithm.getInputSlots().size() > 0 ||
-                    configuration.canModifyOutputSlots() && algorithm.getOutputSlots().size() > 0) {
-                rows += 1;
+            if(configuration.canModifyInputSlots() && algorithm.getInputSlots().size() > 0 ) {
+                inputRows += 1;
+            }
+            if(configuration.canModifyOutputSlots() && algorithm.getOutputSlots().size() > 0) {
+                outputRows += 1;
             }
         }
-        return rows;
+        return Math.max(inputRows, outputRows);
     }
 
     private int calculateHeight() {
