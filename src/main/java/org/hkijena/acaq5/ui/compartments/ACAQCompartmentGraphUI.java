@@ -8,6 +8,7 @@ import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.events.DefaultUIActionRequestedEvent;
 import org.hkijena.acaq5.ui.events.OpenSettingsUIRequestedEvent;
@@ -68,7 +69,7 @@ public class ACAQCompartmentGraphUI extends ACAQUIPanel implements MouseListener
         });
 
         documentationPanel = new MarkdownReader(false);
-        documentationPanel.loadFromResource("documentation/compartment-graph.md");
+        documentationPanel.setDocument(MarkdownDocument.fromPluginResource("documentation/compartment-graph.md"));
 
         graphUI = new ACAQAlgorithmGraphCanvasUI(compartmentGraph, COMPARTMENT_DEFAULT);
         graphUI.getEventBus().register(this);

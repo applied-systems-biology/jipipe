@@ -6,6 +6,7 @@ import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
+import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQAlgorithmParametersUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQSlotEditorUI;
 import org.hkijena.acaq5.utils.TooltipUtils;
@@ -27,7 +28,8 @@ public class ACAQCompartmentSettingsPanelUI extends ACAQUIPanel {
         setLayout(new BorderLayout());
         DocumentTabPane tabbedPane = new DocumentTabPane();
 
-        ACAQAlgorithmParametersUI parametersUI = new ACAQAlgorithmParametersUI(compartment,"documentation/compartment-graph.md",
+        ACAQAlgorithmParametersUI parametersUI = new ACAQAlgorithmParametersUI(compartment,
+                MarkdownDocument.fromPluginResource("documentation/compartment-graph.md"),
                 true, true);
         tabbedPane.addTab("Parameters", UIUtils.getIconFromResources("cog.png"),
                 parametersUI,

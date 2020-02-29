@@ -55,8 +55,7 @@ public class MarkdownReader extends JPanel {
 
     private JScrollPane scrollPane;
     private JTextPane content;
-    private String markdown;
-    private String defaultDocumentMarkdown;
+    private MarkdownDocument document;
 
     public MarkdownReader(boolean withToolbar) {
         initialize(withToolbar);
@@ -103,7 +102,7 @@ public class MarkdownReader extends JPanel {
                 fileChooser.setDialogTitle("Save as Markdown");
                 if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
                     try {
-                        Files.write(fileChooser.getSelectedFile().toPath(), markdown.getBytes(Charsets.UTF_8));
+                        Files.write(fileChooser.getSelectedFile().toPath(), document.getMarkdown().getBytes(Charsets.UTF_8));
                     } catch (IOException e1) {
                         throw new RuntimeException(e1);
                     }
@@ -200,56 +199,33 @@ public class MarkdownReader extends JPanel {
         }
     }
 
-    public void setMarkdown(String markdown) {
-        if(markdown == null)
-            markdown = "";
-        if(markdown.equals(this.markdown))
-            return;
-        this.markdown = markdown;
-        Parser parser = Parser.builder(OPTIONS).build();
-        Node document = parser.parse(markdown);
-        HtmlRenderer renderer = HtmlRenderer.builder(OPTIONS).build();
-        String html = renderer.render(document);
-        content.setText(html);
+    public void setDocument(MarkdownDocument document) {
+        this.document = document;
+        if(document != null)
+            content.setText(document.getRenderedHTML());
+        else
+            content.setText("<html></html>");
         SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
     }
 
-    public void loadFromResource(String resourcePath) {
-        if(resourcePath == null) {
-            setMarkdown(defaultDocumentMarkdown);
-            return;
+    public MarkdownDocument getDocument() {
+        return document;
+    }
+
+    /**
+     * Sets the document to some temporary one without changing the reference to the main document
+     * @param temporaryDocument if not null, render the temporary document. Otherwise render the main document
+     */
+    public void setTemporaryDocument(MarkdownDocument temporaryDocument) {
+        if(temporaryDocument == null) {
+            if(document != null)
+                content.setText(document.getRenderedHTML());
+            else
+                content.setText("<html></html>");
         }
-        try {
-            String md = Resources.toString(ResourceUtils.getPluginResource(resourcePath), Charsets.UTF_8);
-            md = md.replace("image://", ResourceUtils.getPluginResource("").toString());
-            setMarkdown(md);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        else {
+            content.setText(temporaryDocument.getRenderedHTML());
         }
-    }
-
-    public String getMarkdown() {
-        return markdown;
-    }
-
-    public String getDefaultDocumentMarkdown() {
-        return defaultDocumentMarkdown;
-    }
-
-    public void setDefaultDocumentMarkdown(String defaultDocumentMarkdown) {
-        this.defaultDocumentMarkdown = defaultDocumentMarkdown;
-        setMarkdown(defaultDocumentMarkdown);
-    }
-
-    public void loadDefaultDocument(String resourcePath) {
-        if(resourcePath == null)
-            return;
-        try {
-            String md = Resources.toString(ResourceUtils.getPluginResource(resourcePath), Charsets.UTF_8);
-            md = md.replace("image://", ResourceUtils.getPluginResource("").toString());
-            setDefaultDocumentMarkdown(md);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
     }
 }

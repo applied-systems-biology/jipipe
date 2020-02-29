@@ -11,6 +11,7 @@ import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
+import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.events.OpenSettingsUIRequestedEvent;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQAlgorithmSettingsPanelUI;
@@ -65,7 +66,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
         });
 
         documentationPanel = new MarkdownReader(false);
-        documentationPanel.loadFromResource("documentation/algorithm-graph.md");
+        documentationPanel.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md"));
 
         graphUI = new ACAQAlgorithmGraphCanvasUI(algorithmGraph, compartment);
         graphUI.getEventBus().register(this);

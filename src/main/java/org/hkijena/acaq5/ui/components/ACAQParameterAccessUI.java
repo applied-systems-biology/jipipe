@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 public class ACAQParameterAccessUI extends FormPanel {
     private Object parameterHolder;
 
-    public ACAQParameterAccessUI(Object parameterHolder, String defaultHelpDocumentPath, boolean documentationBelow, boolean withDocumentation) {
-        super(defaultHelpDocumentPath, documentationBelow, withDocumentation);
+    public ACAQParameterAccessUI(Object parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
+        super(documentation, documentationBelow, withDocumentation);
         this.parameterHolder = parameterHolder;
         reloadForm();
     }

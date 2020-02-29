@@ -6,6 +6,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.traits.ACAQMutableTraitGenerator;
+import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 
 import javax.swing.*;
@@ -45,7 +46,7 @@ public class ACAQTraitEditorUI extends JPanel {
         add(toolBar, BorderLayout.NORTH);
 
         helpPanel = new MarkdownReader(false);
-        helpPanel.loadDefaultDocument("documentation/algorithm-traits.md");
+        helpPanel.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-traits.md"));
 
         splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, new JPanel(), helpPanel);
         splitPane.setDividerSize(3);

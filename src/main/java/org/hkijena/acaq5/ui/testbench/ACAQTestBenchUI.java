@@ -11,6 +11,7 @@ import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.ConfirmingButton;
+import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.events.ReloadSettingsRequestedEvent;
 import org.hkijena.acaq5.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.acaq5.ui.events.RunUIWorkerInterruptedEvent;
@@ -201,7 +202,8 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
         int dividerLocation = splitPane.getDividerLocation();
 
         backup.restore(runAlgorithm);
-        ACAQParameterAccessUI parameters = new ACAQParameterAccessUI(runAlgorithm, "documentation/testbench.md",
+        ACAQParameterAccessUI parameters = new ACAQParameterAccessUI(runAlgorithm,
+                MarkdownDocument.fromPluginResource("documentation/testbench.md"),
                 true, true);
         splitPane.setLeftComponent(parameters);
 

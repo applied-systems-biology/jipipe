@@ -8,6 +8,7 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
+import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.StringUtils;
@@ -45,7 +46,7 @@ public class ACAQSlotEditorUI extends JPanel {
         slotTree.setCellRenderer(new ACAQDataSlotTreeCellRenderer());
 
         helpPanel = new MarkdownReader(false);
-        helpPanel.loadDefaultDocument("documentation/algorithm-slots.md");
+        helpPanel.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-slots.md"));
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, new JScrollPane(slotTree), helpPanel);
         splitPane.setDividerSize(3);

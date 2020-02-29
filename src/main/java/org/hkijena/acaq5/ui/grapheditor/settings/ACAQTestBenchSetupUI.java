@@ -53,7 +53,9 @@ public class ACAQTestBenchSetupUI extends ACAQUIPanel {
         validationReportPanel = new JPanel();
         validationReportPanel.setLayout(new BorderLayout());
         validationReportUI = new ACAQValidityReportUI();
-        DocumentedComponent pane = new DocumentedComponent(true, "documentation/testbench.md", validationReportUI);
+        DocumentedComponent pane = new DocumentedComponent(true,
+                MarkdownDocument.fromPluginResource("documentation/testbench.md"),
+                validationReportUI);
         validationReportPanel.add(pane, BorderLayout.CENTER);
 
         JToolBar toolBar = new JToolBar();
@@ -71,7 +73,7 @@ public class ACAQTestBenchSetupUI extends ACAQUIPanel {
         setupPanel = new JPanel();
         setupPanel.setLayout(new BorderLayout());
 
-        FormPanel formPanel = new FormPanel("documentation/testbench.md", true);
+        FormPanel formPanel = new FormPanel(MarkdownDocument.fromPluginResource("documentation/testbench.md"), true);
         setupPanel.add(formPanel, BorderLayout.CENTER);
 
         // Let the user choose where temporary data is saved

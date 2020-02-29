@@ -9,11 +9,11 @@ public class DocumentedComponent extends JSplitPane {
 
     private MarkdownReader documentationPanel;
 
-    public DocumentedComponent(boolean documentationBelow, String documentationPath, Component content) {
+    public DocumentedComponent(boolean documentationBelow, MarkdownDocument documentation, Component content) {
         super(documentationBelow ? JSplitPane.VERTICAL_SPLIT : JSplitPane.HORIZONTAL_SPLIT);
 
         documentationPanel = new MarkdownReader(false);
-        documentationPanel.loadDefaultDocument(documentationPath);
+        documentationPanel.setDocument(documentation);
 
         setDividerSize(3);
         setResizeWeight(0.33);

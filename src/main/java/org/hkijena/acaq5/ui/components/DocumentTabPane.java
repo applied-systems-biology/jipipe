@@ -83,7 +83,7 @@ public class DocumentTabPane extends JTabbedPane {
             tabPanel.add(renameButton);
         }
         if(closeMode != CloseMode.withoutCloseButton) {
-            JButton closeButton = new JButton(UIUtils.getIconFromResources("remove.png"));
+            JButton closeButton = new JButton(UIUtils.getIconFromResources("close-tab.png"));
             closeButton.setToolTipText("Close tab");
             closeButton.setBorder(null);
             closeButton.setBackground(Color.WHITE);

@@ -21,13 +21,13 @@ public class FormPanel extends JPanel {
     private JPanel forms = new JPanel();
     private MarkdownReader parameterHelp;
 
-    public FormPanel(String defaultHelpDocumentPath, boolean documentationBelow, boolean withDocumentation) {
+    public FormPanel(MarkdownDocument document, boolean documentationBelow, boolean withDocumentation) {
         setLayout(new BorderLayout());
         forms.setLayout(new GridBagLayout());
 
         JPanel helpPanel = new JPanel(new BorderLayout());
         parameterHelp = new MarkdownReader(false);
-        parameterHelp.loadDefaultDocument(defaultHelpDocumentPath);
+        parameterHelp.setDocument(document);
         helpPanel.add(parameterHelp, BorderLayout.CENTER);
 
         JScrollPane scrollPane = new JScrollPane(forms);
@@ -49,32 +49,32 @@ public class FormPanel extends JPanel {
         }
     }
 
-    public FormPanel(String defaultHelpDocumentPath, boolean documentationBelow) {
-        this(defaultHelpDocumentPath, documentationBelow, true);
+    public FormPanel(MarkdownDocument document, boolean documentationBelow) {
+        this(document, documentationBelow, true);
     }
 
     public FormPanel() {
         this(null, false);
     }
 
-    private void documentComponent(Component component, String documentationPath) {
+    private void documentComponent(Component component, MarkdownDocument componentDocument) {
         component.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
                 super.mouseEntered(e);
-                parameterHelp.loadFromResource(documentationPath);
+                parameterHelp.setTemporaryDocument(componentDocument);
             }
         });
         component.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
                 super.focusGained(e);
-                parameterHelp.loadFromResource(documentationPath);
+                parameterHelp.setTemporaryDocument(componentDocument);
             }
         });
     }
 
-    public <T extends Component> T addToForm(T component, String documentationPath) {
+    public <T extends Component> T addToForm(T component, MarkdownDocument documentation) {
         forms.add(component, new GridBagConstraints() {
             {
                 anchor = GridBagConstraints.WEST;
@@ -88,11 +88,11 @@ public class FormPanel extends JPanel {
         });
         ++numRows;
         getComponentListForCurrentGroup().add(component);
-        documentComponent(component, documentationPath);
+        documentComponent(component, documentation);
         return component;
     }
 
-    public <T extends Component> T addToForm(T component, JLabel description, String documentationPath) {
+    public <T extends Component> T addToForm(T component, JLabel description, MarkdownDocument documentation) {
         forms.add(component, new GridBagConstraints() {
             {
                 anchor = GridBagConstraints.WEST;
@@ -116,8 +116,8 @@ public class FormPanel extends JPanel {
         ++numRows;
         getComponentListForCurrentGroup().add(component);
         getComponentListForCurrentGroup().add(description);
-        documentComponent(component, documentationPath);
-        documentComponent(description, documentationPath);
+        documentComponent(component, documentation);
+        documentComponent(description, documentation);
         return component;
     }
 

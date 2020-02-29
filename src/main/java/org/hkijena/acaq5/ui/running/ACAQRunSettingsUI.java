@@ -8,6 +8,7 @@ import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.components.ACAQValidityReportUI;
+import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.acaq5.ui.events.RunUIWorkerInterruptedEvent;
@@ -51,7 +52,7 @@ public class ACAQRunSettingsUI extends ACAQUIPanel {
         reportUI.setReport(report);
 
         MarkdownReader help = new MarkdownReader(false);
-        help.loadDefaultDocument("documentation/validation.md");
+        help.setDocument(MarkdownDocument.fromPluginResource("documentation/validation.md"));
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, reportUI, help);
         splitPane.setDividerSize(3);
@@ -101,7 +102,7 @@ public class ACAQRunSettingsUI extends ACAQUIPanel {
         removeAll();
         JPanel setupPanel = new JPanel(new BorderLayout());
         ACAQParameterAccessUI formPanel = new ACAQParameterAccessUI(run.getConfiguration(),
-                "documentation/run.md",
+                MarkdownDocument.fromPluginResource("documentation/run.md"),
                 false,
                 true);
 
