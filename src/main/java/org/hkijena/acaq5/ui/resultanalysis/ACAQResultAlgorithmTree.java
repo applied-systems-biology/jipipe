@@ -12,6 +12,7 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
+import java.nio.file.Files;
 import java.util.stream.Collectors;
 
 public class ACAQResultAlgorithmTree extends ACAQUIPanel {
@@ -33,10 +34,12 @@ public class ACAQResultAlgorithmTree extends ACAQUIPanel {
         for (ACAQProjectCompartment compartment : run.getProject().getCompartmentGraph().traverseAlgorithms()
                 .stream().map(a -> (ACAQProjectCompartment)a).collect(Collectors.toList())) {
             DefaultMutableTreeNode compartmentNode = new DefaultMutableTreeNode(compartment);
-            for (ACAQAlgorithm algorithm : run.getLastExecutedAlgorithms()) {
+            for (ACAQAlgorithm algorithm : run.getGraph().traverseAlgorithms()) {
                 if(algorithm.getCompartment().equals(compartment.getProjectCompartmentId())) {
                     DefaultMutableTreeNode algorithmNode = new DefaultMutableTreeNode(algorithm);
                     for (ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
+                        if(!Files.exists(outputSlot.getStoragePath().resolve("data-table.json")))
+                            continue;
                         DefaultMutableTreeNode slotNode = new DefaultMutableTreeNode(outputSlot);
                         algorithmNode.add(slotNode);
                     }
