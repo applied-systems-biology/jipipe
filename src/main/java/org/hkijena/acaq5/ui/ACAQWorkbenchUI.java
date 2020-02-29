@@ -128,6 +128,8 @@ public class ACAQWorkbenchUI extends JPanel {
         newProjectButton.addActionListener(e -> window.newProject());
         projectMenu.add(newProjectButton);
 
+        projectMenu.addSeparator();
+
         // "Open project" entry
         JMenuItem openProjectButton = new JMenuItem("Open ...", UIUtils.getIconFromResources("open.png"));
         openProjectButton.setToolTipText("Opens a project from a parameter file");
@@ -142,6 +144,8 @@ public class ACAQWorkbenchUI extends JPanel {
         openProjectOutputButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK + KeyEvent.SHIFT_DOWN_MASK));
         openProjectOutputButton.addActionListener(e -> window.openProjectAndOutput());
         projectMenu.add(openProjectOutputButton);
+
+        projectMenu.addSeparator();
 
         // "Save project" entry
         JMenuItem saveProjectButton = new JMenuItem("Save ...", UIUtils.getIconFromResources("save.png"));

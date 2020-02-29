@@ -17,6 +17,9 @@ import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -100,6 +103,24 @@ public class DocumentTabPane extends JTabbedPane {
             });
             tabPanel.add(Box.createHorizontalStrut(8));
             tabPanel.add(closeButton);
+
+            tabPanel.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    if(SwingUtilities.isMiddleMouseButton(e)) {
+                        if(closeMode == CloseMode.withAskOnCloseButton &&
+                                JOptionPane.showConfirmDialog(component, "Do you really want to close this?",
+                                        "Close tab", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) != JOptionPane.YES_OPTION) {
+                            return;
+                        }
+                        remove(component);
+                        tabs.remove(tab);
+                    }
+                    else {
+                        setSelectedComponent(component);
+                    }
+                }
+            });
         }
 
         addTab(tab);
