@@ -36,6 +36,12 @@ public class ACAQCompartmentSettingsPanelUI extends ACAQUIPanel {
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
 
+        ACAQSlotEditorUI compartmentSlotEditorUI = new ACAQSlotEditorUI(compartment);
+        tabbedPane.addTab("Connections", UIUtils.getIconFromResources("graph-compartment.png"),
+                compartmentSlotEditorUI,
+                DocumentTabPane.CloseMode.withoutCloseButton,
+                false);
+
         ACAQSlotEditorUI slotEditorUI = new ACAQSlotEditorUI(compartment.getOutputNode());
         tabbedPane.addTab("Output data", UIUtils.getIconFromResources("database.png"),
                 slotEditorUI,
