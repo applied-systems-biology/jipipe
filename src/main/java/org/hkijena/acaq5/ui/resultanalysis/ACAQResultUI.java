@@ -1,11 +1,13 @@
 package org.hkijena.acaq5.ui.resultanalysis;
 
 import org.hkijena.acaq5.api.ACAQRun;
+import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -39,24 +41,23 @@ public class ACAQResultUI extends ACAQUIPanel {
         });
         add(splitPane, BorderLayout.CENTER);
 
-//        ACAQResultSampleManagerUI sampleManagerUI = new ACAQResultSampleManagerUI(this);
-//
-//        MarkdownReader documentation = new MarkdownReader(false);
-//        documentation.loadFromResource("documentation/result-analysis.md");
-
-//        add(splitPane, BorderLayout.CENTER);
-//
-//        sampleManagerUI.getSampleTree().addTreeSelectionListener(e -> {
-//            Object pathComponent = e.getPath().getLastPathComponent();
-//            if(pathComponent != null) {
-//                DefaultMutableTreeNode nd = (DefaultMutableTreeNode) pathComponent;
-//                if(nd.getUserObject() instanceof ACAQRunSample) {
-//                    setCurrentDisplayed((ACAQRunSample)nd.getUserObject());
-//                }
-//            }
-//        });
+        algorithmTree.getTree().addTreeSelectionListener(e -> {
+            Object lastPathComponent = e.getPath().getLastPathComponent();
+            if(lastPathComponent instanceof DefaultMutableTreeNode) {
+                Object userObject = ((DefaultMutableTreeNode) lastPathComponent).getUserObject();
+                if(userObject instanceof ACAQDataSlot) {
+                    showDataSlot((ACAQDataSlot)userObject);
+                }
+            }
+        });
 
         initializeToolbar();
+    }
+
+    private void showDataSlot(ACAQDataSlot dataSlot) {
+        ACAQResultDataSlotUI ui = new ACAQResultDataSlotUI(getWorkbenchUI(), run, dataSlot);
+        splitPane.setRightComponent(ui);
+        revalidate();
     }
 
     private void initializeToolbar() {

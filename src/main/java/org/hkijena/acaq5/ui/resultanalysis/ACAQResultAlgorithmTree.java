@@ -62,4 +62,8 @@ public class ACAQResultAlgorithmTree extends ACAQUIPanel {
         treeScollPane = new JScrollPane(tree);
         add(treeScollPane, BorderLayout.CENTER);
     }
+
+    public JTree getTree() {
+        return tree;
+    }
 }

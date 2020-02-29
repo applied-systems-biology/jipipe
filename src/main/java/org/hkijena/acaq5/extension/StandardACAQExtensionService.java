@@ -25,9 +25,9 @@ import org.hkijena.acaq5.extension.api.traits.quality.LowBrightnessQuality;
 import org.hkijena.acaq5.extension.api.traits.quality.NonUniformBrightnessQuality;
 import org.hkijena.acaq5.extension.api.traits.quality.UniformBrightnessQuality;
 import org.hkijena.acaq5.extension.ui.parametereditors.*;
-import org.hkijena.acaq5.extension.ui.resultanalysis.ImageDataSlotResultUI;
-import org.hkijena.acaq5.extension.ui.resultanalysis.ROIDataSlotResultUI;
-import org.hkijena.acaq5.extension.ui.resultanalysis.ResultsTableDataSlotResultUI;
+import org.hkijena.acaq5.extension.ui.resultanalysis.ImageDataSlotResultDataSlotRowUI;
+import org.hkijena.acaq5.extension.ui.resultanalysis.ROIDataSlotResultDataSlotRowUI;
+import org.hkijena.acaq5.extension.ui.resultanalysis.ResultsTableDataSlotResultDataSlotRowUI;
 import org.hkijena.acaq5.utils.PathFilter;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
@@ -100,11 +100,11 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
         registryService.getUIParametertypeRegistry().registerParameterEditor(PathFilter.class, PathFilterParameterEditorUI.class);
 
         // Register result data slot UIs
-        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQMultichannelImageData.class, ImageDataSlotResultUI.class);
-        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQGreyscaleImageData.class, ImageDataSlotResultUI.class);
-        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQMaskData.class, ImageDataSlotResultUI.class);
-        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQROIData.class, ROIDataSlotResultUI.class);
-        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQResultsTableData.class, ResultsTableDataSlotResultUI.class);
+        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQMultichannelImageData.class, ImageDataSlotResultDataSlotRowUI.class);
+        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQGreyscaleImageData.class, ImageDataSlotResultDataSlotRowUI.class);
+        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQMaskData.class, ImageDataSlotResultDataSlotRowUI.class);
+        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQROIData.class, ROIDataSlotResultDataSlotRowUI.class);
+        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQResultsTableData.class, ResultsTableDataSlotResultDataSlotRowUI.class);
     }
 
     private void registerTraits(ACAQRegistryService registryService) {

@@ -21,7 +21,7 @@ public class FormPanel extends JPanel {
     private JPanel forms = new JPanel();
     private MarkdownReader parameterHelp;
 
-    public FormPanel(MarkdownDocument document, boolean documentationBelow, boolean withDocumentation) {
+    public FormPanel(MarkdownDocument document, boolean documentationBelow, boolean withDocumentation, boolean withScrolling) {
         setLayout(new BorderLayout());
         forms.setLayout(new GridBagLayout());
 
@@ -30,9 +30,14 @@ public class FormPanel extends JPanel {
         parameterHelp.setDocument(document);
         helpPanel.add(parameterHelp, BorderLayout.CENTER);
 
-        JScrollPane scrollPane = new JScrollPane(forms);
+        Component content;
+        if(withScrolling)
+            content = new JScrollPane(forms);
+        else
+            content = forms;
+
         if(withDocumentation) {
-            JSplitPane splitPane = new JSplitPane(documentationBelow ? JSplitPane.VERTICAL_SPLIT : JSplitPane.HORIZONTAL_SPLIT, scrollPane, helpPanel);
+            JSplitPane splitPane = new JSplitPane(documentationBelow ? JSplitPane.VERTICAL_SPLIT : JSplitPane.HORIZONTAL_SPLIT, content, helpPanel);
             splitPane.setDividerSize(3);
             splitPane.setResizeWeight(0.33);
             addComponentListener(new ComponentAdapter() {
@@ -45,8 +50,12 @@ public class FormPanel extends JPanel {
             add(splitPane, BorderLayout.CENTER);
         }
         else {
-            add(scrollPane, BorderLayout.CENTER);
+            add(content, BorderLayout.CENTER);
         }
+    }
+
+    public FormPanel(MarkdownDocument document, boolean documentationBelow, boolean withDocumentation) {
+        this(document, documentationBelow, withDocumentation, true);
     }
 
     public FormPanel(MarkdownDocument document, boolean documentationBelow) {

@@ -220,7 +220,7 @@ public class ACAQDataSlot implements TableModel {
             // Save data
             List<Path> dataOutputPaths = new ArrayList<>();
             for(int row = 0; row < getRowCount(); ++row) {
-                Path pathName = Paths.get("" + row);
+                Path pathName = Paths.get(getName() + " " + row);
                 Path path = storagePath.resolve(pathName);
                 if(!Files.isDirectory(path)) {
                     try {
@@ -233,67 +233,14 @@ public class ACAQDataSlot implements TableModel {
                 dataOutputPaths.add(pathName);
                 data.get(row).saveTo(path, getName());
             }
-            saveDataJsonTable(dataOutputPaths);
-            saveDataCSVTable(dataOutputPaths);
-        }
-    }
 
-    private void saveDataCSVTable(List<Path> dataOutputPaths) {
-        ResultsTable table = new ResultsTable();
-        String algorithmId = algorithm.getIdInGraph();
-        String internalPath = algorithm.getInternalStoragePath().resolve(getName()).toString();
-        for(int row = 0; row < getRowCount(); ++row) {
-            table.incrementCounter();
-            table.addValue("acaq:algorithm-id", algorithmId);
-            table.addValue("acaq:slot", getName());
-            table.addValue("acaq:data-type", getAcceptedDataType().getCanonicalName());
-            table.addValue("acaq:internal-path", internalPath);
-            table.addValue("acaq:location", dataOutputPaths.get(row).toString());
-            for(int i = 0; i < annotationColumns.size(); ++i) {
-                ACAQTraitDeclaration declaration = annotationColumns.get(i);
-                ACAQTrait trait = annotations.get(declaration).get(i);
-                if(trait == null)
-                    table.addValue(declaration.getName(), 0);
-                else if(trait instanceof ACAQDiscriminator)
-                    table.addValue(declaration.getName(), ((ACAQDiscriminator) trait).getValue());
-                else
-                    table.addValue(declaration.getName(), 1);
+            ACAQExportedDataTable dataTable = new ACAQExportedDataTable(this, dataOutputPaths);
+            try {
+                dataTable.saveAsJson(storagePath.resolve("data-table.json"));
+                dataTable.saveAsCSV(storagePath.resolve("data-table.csv"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        }
-        try {
-            table.saveAs(storagePath.resolve("data-table.csv").toString());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void saveDataJsonTable(List<Path> dataOutputPaths) {
-        // Save data table with traits
-        ObjectMapper objectMapper = JsonUtils.getObjectMapper();
-        ObjectNode jsonTable = objectMapper.createObjectNode();
-        jsonTable.set("algorithm-id", new TextNode(algorithm.getIdInGraph()));
-        jsonTable.set("slot", new TextNode(getName()));
-        jsonTable.set("internal-path", new TextNode(algorithm.getInternalStoragePath().resolve(getName()).toString()));
-        jsonTable.set("data-type", new TextNode(getAcceptedDataType().getCanonicalName()));
-        ArrayNode jsonTableRows = objectMapper.createArrayNode();
-        for(int row = 0; row < getRowCount(); ++row) {
-            ObjectNode jsonRow = objectMapper.createObjectNode();
-            jsonRow.set("location", new TextNode(dataOutputPaths.get(row).toString()));
-
-            ArrayNode jsonTraits = objectMapper.createArrayNode();
-            for (ACAQTrait annotation : getAnnotations(row)) {
-                jsonTraits.add(objectMapper.convertValue(annotation, JsonNode.class));
-            }
-            jsonRow.set("traits", jsonTraits);
-
-            jsonTableRows.add(jsonRow);
-        }
-        jsonTable.set("rows", jsonTableRows);
-
-        try {
-            objectMapper.writerWithDefaultPrettyPrinter().writeValue(storagePath.resolve("data-table.json").toFile(), jsonTable);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -365,13 +312,16 @@ public class ACAQDataSlot implements TableModel {
 
     @Override
     public String getColumnName(int columnIndex) {
-        return null;
+        if(columnIndex == 0)
+            return "Data";
+        else
+            return annotationColumns.get(columnIndex - 1).getName();
     }
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
         if(columnIndex == 0)
-            return acceptedDataType;
+            return ACAQData.class;
         else {
             ACAQTraitDeclaration column = annotationColumns.get(columnIndex);
             if(column.isDiscriminator())

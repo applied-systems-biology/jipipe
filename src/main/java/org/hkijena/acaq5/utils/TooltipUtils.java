@@ -162,4 +162,33 @@ public class TooltipUtils {
         }
         builder.append("</table>");
     }
+
+    public static String getSlotInstanceTooltip(ACAQDataSlot slot) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("<html>");
+        builder.append("<table>");
+        builder.append("<tr>");
+        builder.append("<td>").append("<img src=\"")
+                .append(ACAQUIDatatypeRegistry.getInstance().getIconURLFor(slot.getAcceptedDataType()))
+                .append("\"/>").append("</td>");
+        builder.append("<td>").append(slot.getName()).append("</td>");
+        builder.append("</tr>");
+        builder.append("</table>");
+
+        builder.append("<br>Data type: <i>").append(ACAQData.getNameOf(slot.getAcceptedDataType())).append("</i><br>");
+        String description = ACAQData.getDescriptionOf(slot.getAcceptedDataType());
+        if(description != null && !description.isEmpty()) {
+            builder.append("<br>").append(description).append("<br><br/>");
+        }
+
+        if(slot.isInput())
+            builder.append("Input");
+        else
+            builder.append("Output");
+        builder.append(" of ").append(slot.getAlgorithm().getName()).append("<br/>");
+
+        builder.append("</html>");
+
+        return builder.toString();
+    }
 }

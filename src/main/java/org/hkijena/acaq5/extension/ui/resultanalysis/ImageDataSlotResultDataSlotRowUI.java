@@ -3,23 +3,24 @@ package org.hkijena.acaq5.extension.ui.resultanalysis;
 import ij.IJ;
 import ij.ImagePlus;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
-import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultDataSlotResultUI;
+import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultDataSlotResultDataSlotRowUI;
 import org.hkijena.acaq5.utils.PathUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class ImageDataSlotResultUI extends ACAQDefaultDataSlotResultUI {
+public class ImageDataSlotResultDataSlotRowUI extends ACAQDefaultDataSlotResultDataSlotRowUI {
 
-    public ImageDataSlotResultUI(ACAQWorkbenchUI workbenchUI, ACAQDataSlot slot) {
-        super(workbenchUI, slot);
+    public ImageDataSlotResultDataSlotRowUI(ACAQWorkbenchUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
+        super(workbenchUI, slot, row);
     }
 
     private Path findImageFile() {
-        if(getSlot().getStoragePath() != null && Files.isDirectory(getSlot().getStoragePath())) {
-            return PathUtils.findFileByExtensionIn(getSlot().getStoragePath(), ".tif");
+        if(getRowStorageFolder() != null && Files.isDirectory(getRowStorageFolder())) {
+            return PathUtils.findFileByExtensionIn(getRowStorageFolder(), ".tif");
         }
         return null;
     }
@@ -34,6 +35,7 @@ public class ImageDataSlotResultUI extends ACAQDefaultDataSlotResultUI {
                 ImagePlus img = IJ.openImage(imageFile.toString());
                 if(img != null) {
                     img.show();
+                    img.setTitle(getDisplayName());
                 }
             });
         }

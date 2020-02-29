@@ -4,10 +4,10 @@ import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
+import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
-import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultDataSlotResultUI;
-import org.hkijena.acaq5.ui.resultanalysis.ACAQResultDataSlotUI;
+import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultDataSlotResultDataSlotRowUI;
+import org.hkijena.acaq5.ui.resultanalysis.ACAQResultDataSlotRowUI;
 import org.hkijena.acaq5.utils.ResourceUtils;
 
 import javax.swing.*;
@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class ACAQUIDatatypeRegistry {
     private Map<Class<? extends ACAQData>, URL> icons = new HashMap<>();
-    private Map<Class<? extends ACAQData>, Class<? extends ACAQResultDataSlotUI<?>>> resultUIs = new HashMap<>();
+    private Map<Class<? extends ACAQData>, Class<? extends ACAQResultDataSlotRowUI>> resultUIs = new HashMap<>();
 
     public ACAQUIDatatypeRegistry() {
 
@@ -42,7 +42,7 @@ public class ACAQUIDatatypeRegistry {
      * @param klass
      * @param uiClass
      */
-    public void registerResultSlotUI(Class<? extends ACAQData> klass, Class<? extends ACAQResultDataSlotUI<?>> uiClass) {
+    public void registerResultSlotUI(Class<? extends ACAQData> klass, Class<? extends ACAQResultDataSlotRowUI> uiClass) {
         resultUIs.put(klass, uiClass);
     }
 
@@ -61,18 +61,18 @@ public class ACAQUIDatatypeRegistry {
      * @param slot
      * @return
      */
-    public ACAQResultDataSlotUI<?> getUIForResultSlot(ACAQWorkbenchUI workbenchUI,ACAQDataSlot slot) {
-        Class<? extends ACAQResultDataSlotUI<?>> uiClass = resultUIs.getOrDefault(slot.getClass(), null);
+    public ACAQResultDataSlotRowUI getUIForResultSlot(ACAQWorkbenchUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
+        Class<? extends ACAQResultDataSlotRowUI> uiClass = resultUIs.getOrDefault(slot.getAcceptedDataType(), null);
         if(uiClass != null) {
             try {
-                return ConstructorUtils.getMatchingAccessibleConstructor(uiClass, ACAQWorkbenchUI.class, slot.getClass())
-                        .newInstance(workbenchUI, slot);
+                return ConstructorUtils.getMatchingAccessibleConstructor(uiClass, ACAQWorkbenchUI.class, ACAQDataSlot.class, ACAQExportedDataTable.Row.class)
+                        .newInstance(workbenchUI, slot, row);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
         }
         else {
-            return new ACAQDefaultDataSlotResultUI(workbenchUI, slot);
+            return new ACAQDefaultDataSlotResultDataSlotRowUI(workbenchUI, slot, row);
         }
     }
 

@@ -8,9 +8,10 @@ import ij.gui.Roi;
 import ij.macro.Interpreter;
 import ij.plugin.frame.RoiManager;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQROIData;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
-import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultDataSlotResultUI;
+import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultDataSlotResultDataSlotRowUI;
 import org.hkijena.acaq5.utils.PathUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -19,15 +20,15 @@ import java.awt.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class ROIDataSlotResultUI extends ACAQDefaultDataSlotResultUI {
+public class ROIDataSlotResultDataSlotRowUI extends ACAQDefaultDataSlotResultDataSlotRowUI {
 
-    public ROIDataSlotResultUI(ACAQWorkbenchUI workbenchUI, ACAQDataSlot slot) {
-        super(workbenchUI, slot);
+    public ROIDataSlotResultDataSlotRowUI(ACAQWorkbenchUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
+        super(workbenchUI, slot, row);
     }
 
     private Path findROIFile() {
-        if (getSlot().getStoragePath() != null && Files.isDirectory(getSlot().getStoragePath())) {
-            return PathUtils.findFileByExtensionIn(getSlot().getStoragePath(), ".zip");
+        if (getRowStorageFolder() != null && Files.isDirectory(getRowStorageFolder())) {
+            return PathUtils.findFileByExtensionIn(getRowStorageFolder(), ".zip");
         }
         return null;
     }

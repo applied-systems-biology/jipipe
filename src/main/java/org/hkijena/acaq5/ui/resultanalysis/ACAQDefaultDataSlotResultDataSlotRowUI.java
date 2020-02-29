@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.ui.resultanalysis;
 
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -15,12 +16,12 @@ import java.util.function.Consumer;
 /**
  * Provides a standard result slot UI that can be also further extended
  */
-public class ACAQDefaultDataSlotResultUI extends ACAQResultDataSlotUI<ACAQDataSlot> {
+public class ACAQDefaultDataSlotResultDataSlotRowUI extends ACAQResultDataSlotRowUI {
 
     private List<SlotAction> registeredSlotActions = new ArrayList<>();
 
-    public ACAQDefaultDataSlotResultUI(ACAQWorkbenchUI workbenchUI, ACAQDataSlot slot) {
-        super(workbenchUI, slot);
+    public ACAQDefaultDataSlotResultDataSlotRowUI(ACAQWorkbenchUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
+        super(workbenchUI, slot, row);
         registerActions();
         initialize();
     }
@@ -73,7 +74,7 @@ public class ACAQDefaultDataSlotResultUI extends ACAQResultDataSlotUI<ACAQDataSl
 
     private void openFolder() {
         try {
-            Desktop.getDesktop().open(Objects.requireNonNull(getSlot().getStoragePath()).toFile());
+            Desktop.getDesktop().open(Objects.requireNonNull(getRowStorageFolder().toFile()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
