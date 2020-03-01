@@ -94,6 +94,7 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
         registryService.getAlgorithmRegistry().register(ACAQROIDataFromFile.class);
         registryService.getAlgorithmRegistry().register(ACAQMultichannelImageDataFromFile.class);
         registryService.getAlgorithmRegistry().register(ACAQResultsTableFromFile.class);
+        registryService.getAlgorithmRegistry().register(ACAQBioformatsImporter.class);
 
         // Register parameter editor UIs
         registryService.getUIParametertypeRegistry().registerParameterEditor(Path.class, FilePathParameterEditorUI.class);

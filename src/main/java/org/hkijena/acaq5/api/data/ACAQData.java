@@ -1,7 +1,9 @@
 package org.hkijena.acaq5.api.data;
 
+import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 
 /**
@@ -47,6 +49,22 @@ public interface ACAQData {
             return annotations[0].description();
         } else {
             return null;
+        }
+    }
+
+    /**
+     * Instantiates a data class with the provided parameters
+     * This method is helpful if output data is constructed based on slot types
+     * @param klass
+     * @param constructorParameters
+     * @param <T>
+     * @return
+     */
+    static <T extends ACAQData> T createInstance(Class<T> klass, Object... constructorParameters) {
+        try {
+            return ConstructorUtils.invokeConstructor(klass, constructorParameters);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+            throw new RuntimeException(e);
         }
     }
 }

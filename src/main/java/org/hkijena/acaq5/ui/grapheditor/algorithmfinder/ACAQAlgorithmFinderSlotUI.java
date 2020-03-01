@@ -4,6 +4,7 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.ui.events.AlgorithmFinderSuccessEvent;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -74,6 +75,22 @@ public class ACAQAlgorithmFinderSlotUI extends JPanel {
             connectButton.addActionListener(e -> connectToNewInstance());
             assignButtonMenu.add(connectButton);
         }
+
+        if(inputSlot.getAlgorithm().getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
+            ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) inputSlot.getAlgorithm().getSlotConfiguration();
+            if(slotConfiguration.canModifyInputSlots()) {
+                if(assignButtonMenu.getComponentCount() > 0)
+                    assignButtonMenu.addSeparator();
+                JMenuItem deleteButton = new JMenuItem("Delete this slot", UIUtils.getIconFromResources("remove.png"));
+                deleteButton.addActionListener(e -> deleteSlot());
+                assignButtonMenu.add(deleteButton);
+            }
+        }
+    }
+
+    private void deleteSlot() {
+        ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) inputSlot.getAlgorithm().getSlotConfiguration();
+        slotConfiguration.removeSlot(inputSlot.getName());
     }
 
     private void connectToNewInstance() {

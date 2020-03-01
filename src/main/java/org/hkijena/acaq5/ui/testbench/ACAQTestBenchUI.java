@@ -15,6 +15,7 @@ import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.events.ReloadSettingsRequestedEvent;
 import org.hkijena.acaq5.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.acaq5.ui.events.RunUIWorkerInterruptedEvent;
+import org.hkijena.acaq5.ui.resultanalysis.ACAQResultUI;
 import org.hkijena.acaq5.ui.running.ACAQRunnerQueue;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -207,7 +208,7 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
                 true, true);
         splitPane.setLeftComponent(parameters);
 
-        ACAQTestBenchResultUI resultUI = new ACAQTestBenchResultUI(getWorkbenchUI(), runAlgorithm);
+        ACAQResultUI resultUI = new ACAQResultUI(getWorkbenchUI(), run);
         splitPane.setRightComponent(resultUI);
 
         revalidate();

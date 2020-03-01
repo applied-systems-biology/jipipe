@@ -213,6 +213,10 @@ See the LICENSE file provided with this code for the full license.
             <artifactId>jfreesvg</artifactId>
             <version>3.4</version>
         </dependency>
+        <dependency>
+            <groupId>ome</groupId>
+            <artifactId>bio-formats_plugins</artifactId>
+        </dependency>
     </dependencies>
 
     <properties>
