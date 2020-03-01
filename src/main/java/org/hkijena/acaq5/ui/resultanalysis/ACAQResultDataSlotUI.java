@@ -36,8 +36,12 @@ public class ACAQResultDataSlotUI extends ACAQUIPanel {
         table = new JXTable();
         table.setRowHeight(25);
         table.setDefaultRenderer(Path.class, new ACAQRowLocationTableCellRenderer());
+        table.setDefaultRenderer(ACAQExportedDataTable.Row.class, new ACAQRowDataTableCellRenderer(getWorkbenchUI(), slot));
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-        add(new JScrollPane(table), BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.getViewport().setBackground(Color.WHITE);
+        add(scrollPane, BorderLayout.CENTER);
         add(table.getTableHeader(), BorderLayout.NORTH);
 
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -63,5 +67,6 @@ public class ACAQResultDataSlotUI extends ACAQUIPanel {
     private void reloadTable() {
         dataTable = ACAQExportedDataTable.loadFromJson(slot.getStoragePath().resolve("data-table.json"));
         table.setModel(dataTable);
+        table.packAll();
     }
 }

@@ -142,12 +142,14 @@ public class ACAQExportedDataTable implements TableModel {
 
     @Override
     public int getColumnCount() {
-        return getTraitColumns().size() + 1;
+        return getTraitColumns().size() + 2;
     }
 
     @Override
     public String getColumnName(int columnIndex) {
         if (columnIndex == 0)
+            return "Location";
+        else if (columnIndex == 1)
             return "Data";
         else
             return traitColumns.get(columnIndex - 1).getName();
@@ -157,6 +159,8 @@ public class ACAQExportedDataTable implements TableModel {
     public Class<?> getColumnClass(int columnIndex) {
         if (columnIndex == 0)
             return Path.class;
+        else if (columnIndex == 1)
+            return Row.class;
         else
             return ACAQTrait.class;
     }
@@ -170,6 +174,8 @@ public class ACAQExportedDataTable implements TableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         if (columnIndex == 0)
             return rowList.get(rowIndex).getLocation();
+        else if (columnIndex == 1)
+            return rowList.get(rowIndex);
         else {
             ACAQTraitDeclaration traitColumn = traitColumns.get(columnIndex - 1);
             return rowList.get(columnIndex - 1).traits.stream().filter(t -> t.getDeclaration() == traitColumn).findFirst().orElse(null);

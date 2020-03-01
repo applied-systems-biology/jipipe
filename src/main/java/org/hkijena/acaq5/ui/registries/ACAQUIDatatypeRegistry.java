@@ -6,7 +6,9 @@ import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultResultDataSlotCellUI;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultResultDataSlotRowUI;
+import org.hkijena.acaq5.ui.resultanalysis.ACAQResultDataSlotCellUI;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultDataSlotRowUI;
 import org.hkijena.acaq5.utils.ResourceUtils;
 
@@ -17,8 +19,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ACAQUIDatatypeRegistry {
+    private ACAQResultDataSlotCellUI defaultResultTableRowUI = new ACAQDefaultResultDataSlotCellUI();
     private Map<Class<? extends ACAQData>, URL> icons = new HashMap<>();
     private Map<Class<? extends ACAQData>, Class<? extends ACAQResultDataSlotRowUI>> resultUIs = new HashMap<>();
+    private Map<Class<? extends ACAQData>, ACAQResultDataSlotCellUI> resultTableCellUIs = new HashMap<>();
 
     public ACAQUIDatatypeRegistry() {
 
@@ -42,6 +46,16 @@ public class ACAQUIDatatypeRegistry {
      */
     public void registerResultSlotUI(Class<? extends ACAQData> klass, Class<? extends ACAQResultDataSlotRowUI> uiClass) {
         resultUIs.put(klass, uiClass);
+    }
+
+    /**
+     * Registers a custom renderer for the data displayed in the dataslot result table
+     *
+     * @param klass
+     * @param renderer
+     */
+    public void registerResultTableCellUI(Class<? extends ACAQData> klass, ACAQResultDataSlotCellUI renderer) {
+        resultTableCellUIs.put(klass, renderer);
     }
 
     /**
@@ -73,6 +87,16 @@ public class ACAQUIDatatypeRegistry {
         } else {
             return new ACAQDefaultResultDataSlotRowUI(workbenchUI, slot, row);
         }
+    }
+
+    /**
+     * Returns a cell renderer for dataslot result table
+     *
+     * @param klass
+     * @return
+     */
+    public ACAQResultDataSlotCellUI getCellRendererFor(Class<? extends ACAQData> klass) {
+        return resultTableCellUIs.getOrDefault(klass, defaultResultTableRowUI);
     }
 
     public URL getIconURLFor(Class<? extends ACAQData> klass) {

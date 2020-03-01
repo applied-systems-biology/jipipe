@@ -7,6 +7,11 @@ import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 
 import java.nio.file.Path;
 
+/**
+ * A UI that contains various actions for importing/processing output data
+ * Please note that the data is not present in the data slot anymore at this point, but instead
+ * stored in output files. The folder that contains the files can be accessed via getRowStorageFolder()
+ */
 public abstract class ACAQResultDataSlotRowUI extends ACAQUIPanel {
     private ACAQDataSlot slot;
     private ACAQExportedDataTable.Row row;
