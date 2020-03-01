@@ -19,11 +19,4 @@ public @interface RemovesTrait {
      * @return
      */
     Class<? extends ACAQTrait> value();
-
-    /**
-     * If true, {@link ACAQAlgorithm} will automatically remove the trait from all output
-     *
-     * @return
-     */
-    boolean autoRemove() default true;
 }

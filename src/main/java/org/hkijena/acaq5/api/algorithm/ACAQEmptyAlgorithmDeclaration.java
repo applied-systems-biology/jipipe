@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.acaq5.api.traits.*;
-import org.hkijena.acaq5.api.traits.global.ACAQTraitModificationTask;
+import org.hkijena.acaq5.api.traits.global.ACAQDataSlotTraitConfiguration;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -61,8 +61,8 @@ public class ACAQEmptyAlgorithmDeclaration implements ACAQAlgorithmDeclaration {
     }
 
     @Override
-    public List<ACAQTraitModificationTask> getTraitModificationTasks() {
-        return Collections.emptyList();
+    public ACAQDataSlotTraitConfiguration getSlotTraitConfiguration() {
+        return new ACAQDataSlotTraitConfiguration();
     }
 
     @Override

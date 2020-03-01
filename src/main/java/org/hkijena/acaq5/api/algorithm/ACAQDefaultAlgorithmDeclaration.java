@@ -47,18 +47,16 @@ public class ACAQDefaultAlgorithmDeclaration extends ACAQMutableAlgorithmDeclara
             getUnwantedTraits().add(ACAQTraitRegistry.getInstance().getDefaultDeclarationFor(trait.value()));
         }
         for (AddsTrait addsTrait : getAlgorithmClass().getAnnotationsByType(AddsTrait.class)) {
-            getTraitModificationTasks().add(new ACAQTraitModificationTask(
+            getSlotTraitConfiguration().set(
                     ACAQTraitRegistry.getInstance().getDefaultDeclarationFor(addsTrait.value()),
-                    ACAQTraitModificationTask.Operation.Add,
-                    !addsTrait.autoAdd()
-            ));
+                    ACAQTraitModificationOperation.Add
+            );
         }
         for (RemovesTrait removesTrait : getAlgorithmClass().getAnnotationsByType(RemovesTrait.class)) {
-            getTraitModificationTasks().add(new ACAQTraitModificationTask(
+            getSlotTraitConfiguration().set(
                     ACAQTraitRegistry.getInstance().getDefaultDeclarationFor(removesTrait.value()),
-                    ACAQTraitModificationTask.Operation.RemoveCategory,
-                    !removesTrait.autoRemove()
-            ));
+                    ACAQTraitModificationOperation.RemoveCategory
+            );
         }
     }
 

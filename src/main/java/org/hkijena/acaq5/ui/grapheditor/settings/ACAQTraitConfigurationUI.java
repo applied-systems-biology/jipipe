@@ -2,11 +2,11 @@ package org.hkijena.acaq5.ui.grapheditor.settings;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
+import org.hkijena.acaq5.api.events.SlotAnnotationsChanged;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.api.traits.global.ACAQMutableTraitConfiguration;
+import org.hkijena.acaq5.api.traits.global.ACAQTraitModificationOperation;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
 import org.hkijena.acaq5.utils.TooltipUtils;
@@ -28,6 +28,7 @@ public class ACAQTraitConfigurationUI extends JPanel {
         this.slot = slot;
         initialize();
         reloadTraitList();
+        slot.getEventBus().register(this);
     }
 
     private void reloadTraitList() {
@@ -64,11 +65,11 @@ public class ACAQTraitConfigurationUI extends JPanel {
     private void makeToggleToEditor(ACAQTraitDeclaration trait, JToggleButton traitButton) {
         traitButton.addActionListener(e -> {
             if(slot.getSlotAnnotations().contains(trait)) {
-                slot.removeSlotTrait(trait);
+                slot.setSlotTraitToTraitConfiguration(trait, ACAQTraitModificationOperation.Ignore);
                 traitButton.setSelected(false);
             }
             else {
-                slot.addSlotTrait(trait);
+                slot.setSlotTraitToTraitConfiguration(trait, ACAQTraitModificationOperation.Add);
                 traitButton.setSelected(true);
             }
         });
@@ -126,5 +127,10 @@ public class ACAQTraitConfigurationUI extends JPanel {
         };
         traitList.setLayout(new FlowLayout(FlowLayout.LEFT));
         add(new JScrollPane(traitList), BorderLayout.CENTER);
+    }
+
+    @Subscribe
+    public void onTraitsChanged(SlotAnnotationsChanged event) {
+        reloadTraitList();
     }
 }

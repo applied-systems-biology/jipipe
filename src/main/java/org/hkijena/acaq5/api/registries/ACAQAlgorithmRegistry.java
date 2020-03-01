@@ -54,28 +54,26 @@ public class ACAQAlgorithmRegistry {
 
     /**
      * Registers that the specified algorithm adds the specified trait to all of its outputs.
-     * This is equivalent to attaching {@link AddsTrait} to the class, although autoAdd is always enabled
+     * This is equivalent to attaching {@link AddsTrait} to the class
      *
      * @param klass
      * @param trait
      */
     public void registerAlgorithmAddsTrait(Class<? extends ACAQAlgorithm> klass, Class<? extends ACAQTrait> trait) {
-        getDefaultDeclarationFor(klass).getTraitModificationTasks().add(new ACAQTraitModificationTask(ACAQTraitRegistry.getInstance().getDefaultDeclarationFor(trait),
-                ACAQTraitModificationTask.Operation.Add,
-                true));
+        getDefaultDeclarationFor(klass).getSlotTraitConfiguration().set(ACAQTraitRegistry.getInstance().getDefaultDeclarationFor(trait),
+                ACAQTraitModificationOperation.Add);
     }
 
     /**
      * Registers that the specified algorithm removes the specified trait from all of its outputs.
-     * This is equivalent to attaching {@link RemovesTrait} to the class, although autoRemove is always enabled
+     * This is equivalent to attaching {@link RemovesTrait} to the class
      *
      * @param klass
      * @param trait
      */
     public void registerAlgorithmRemovesTrait(Class<? extends ACAQAlgorithm> klass, Class<? extends ACAQTrait> trait) {
-        getDefaultDeclarationFor(klass).getTraitModificationTasks().add(new ACAQTraitModificationTask(ACAQTraitRegistry.getInstance().getDefaultDeclarationFor(trait),
-                ACAQTraitModificationTask.Operation.RemoveCategory,
-                true));
+        getDefaultDeclarationFor(klass).getSlotTraitConfiguration().set(ACAQTraitRegistry.getInstance().getDefaultDeclarationFor(trait),
+                ACAQTraitModificationOperation.RemoveCategory);
     }
 
     /**

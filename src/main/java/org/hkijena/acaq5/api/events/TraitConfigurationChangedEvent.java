@@ -5,10 +5,10 @@ import org.hkijena.acaq5.api.traits.global.ACAQTraitConfiguration;
 /**
  * Triggered after an {@link ACAQTraitConfiguration} was changed
  */
-public class TraitsChangedEvent {
+public class TraitConfigurationChangedEvent {
     private ACAQTraitConfiguration source;
 
-    public TraitsChangedEvent(ACAQTraitConfiguration source) {
+    public TraitConfigurationChangedEvent(ACAQTraitConfiguration source) {
         this.source = source;
     }
 

@@ -15,7 +15,7 @@ public interface ACAQTraitConfiguration {
      * Returns a map from slot name to modification task
      * @return
      */
-    Map<String, List<ACAQTraitModificationTask>> getModificationTasks();
+    Map<String, ACAQDataSlotTraitConfiguration> getModificationTasks();
 
     /**
      * Returns all transfer tasks

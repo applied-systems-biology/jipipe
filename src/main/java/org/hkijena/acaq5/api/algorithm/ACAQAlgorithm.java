@@ -123,9 +123,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
             if (getClass().getAnnotationsByType(AutoTransferTraits.class).length > 0) {
                 traitConfiguration.setTransferAllToAll(true);
             }
-            for (ACAQTraitModificationTask task : getDeclaration().getTraitModificationTasks()) {
-                traitConfiguration.getMutableGlobalTraitModificationTasks().add(task);
-            }
+            traitConfiguration.getMutableGlobalTraitModificationTasks().merge(getDeclaration().getSlotTraitConfiguration());
             traitConfiguration.setTraitModificationsSealed(true);
             traitConfiguration.setTraitTransfersSealed(true);
         }
@@ -243,7 +241,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
     }
 
     @Subscribe
-    public void onTraitConfigurationChanged(TraitsChangedEvent event) {
+    public void onTraitConfigurationChanged(TraitConfigurationChangedEvent event) {
         getTraitConfiguration().apply();
     }
 

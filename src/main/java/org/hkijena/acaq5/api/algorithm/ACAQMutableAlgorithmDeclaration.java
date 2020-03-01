@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.api.algorithm;
 
 import org.hkijena.acaq5.api.traits.*;
-import org.hkijena.acaq5.api.traits.global.ACAQTraitModificationTask;
+import org.hkijena.acaq5.api.traits.global.ACAQDataSlotTraitConfiguration;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -20,7 +20,7 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
     private ACAQAlgorithmCategory category;
     private Set<ACAQTraitDeclaration> preferredTraits = new HashSet<>();
     private Set<ACAQTraitDeclaration> unwantedTraits = new HashSet<>();
-    private List<ACAQTraitModificationTask> traitModificationTasks = new ArrayList<>();
+    private ACAQDataSlotTraitConfiguration slotTraitConfiguration = new ACAQDataSlotTraitConfiguration();
     private List<AlgorithmInputSlot> inputSlots = new ArrayList<>();
     private List<AlgorithmOutputSlot> outputSlots = new ArrayList<>();
 
@@ -106,11 +106,11 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
     }
 
     @Override
-    public List<ACAQTraitModificationTask> getTraitModificationTasks() {
-        return traitModificationTasks;
+    public ACAQDataSlotTraitConfiguration getSlotTraitConfiguration() {
+        return slotTraitConfiguration;
     }
 
-    public void setTraitModificationTasks(List<ACAQTraitModificationTask> traitModificationTasks) {
-        this.traitModificationTasks = traitModificationTasks;
+    public void setSlotTraitConfiguration(ACAQDataSlotTraitConfiguration slotTraitConfiguration) {
+        this.slotTraitConfiguration = slotTraitConfiguration;
     }
 }

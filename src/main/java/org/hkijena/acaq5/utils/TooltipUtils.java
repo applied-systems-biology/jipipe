@@ -7,7 +7,6 @@ import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.traits.*;
-import org.hkijena.acaq5.api.traits.global.ACAQTraitModificationTask;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
 
@@ -89,14 +88,8 @@ public class TooltipUtils {
 
         Set<ACAQTraitDeclaration> preferredTraits = declaration.getPreferredTraits();
         Set<ACAQTraitDeclaration> unwantedTraits = declaration.getUnwantedTraits();
-        Set<ACAQTraitDeclaration> addedTraits = declaration.getTraitModificationTasks()
-                .stream().filter(ACAQTraitModificationTask::isAddingTraits)
-                .map(ACAQTraitModificationTask::getTraitDeclaration)
-                .collect(Collectors.toSet());
-        Set<ACAQTraitDeclaration> removedTraits = declaration.getTraitModificationTasks()
-                .stream().filter(ACAQTraitModificationTask::isRemovingTraits)
-                .map(ACAQTraitModificationTask::getTraitDeclaration)
-                .collect(Collectors.toSet());
+        Set<ACAQTraitDeclaration> addedTraits = declaration.getSlotTraitConfiguration().getAddedTraits();
+        Set<ACAQTraitDeclaration> removedTraits = declaration.getSlotTraitConfiguration().getRemovedTraits();
 
         if (!preferredTraits.isEmpty()) {
             builder.append("<br/><br/><strong>Good for<br/>");

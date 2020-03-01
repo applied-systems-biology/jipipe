@@ -19,11 +19,4 @@ public @interface AddsTrait {
      * @return
      */
     Class<? extends ACAQTrait> value();
-
-    /**
-     * If true, {@link ACAQAlgorithm} automatically adds the trait to all output slots
-     *
-     * @return
-     */
-    boolean autoAdd() default true;
 }

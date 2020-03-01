@@ -7,7 +7,7 @@ import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.api.traits.global.ACAQMutableTraitConfiguration;
-import org.hkijena.acaq5.api.traits.global.ACAQTraitModificationTask;
+import org.hkijena.acaq5.api.traits.global.ACAQTraitModificationOperation;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -413,21 +413,9 @@ public class ACAQDataSlot implements TableModel {
      * Updates the trait declaration to add this trait
      * @param declaration
      */
-    public void addSlotTrait(ACAQTraitDeclaration declaration) {
+    public void setSlotTraitToTraitConfiguration(ACAQTraitDeclaration declaration, ACAQTraitModificationOperation operation) {
         if(algorithm.getTraitConfiguration() instanceof ACAQMutableTraitConfiguration) {
-            ((ACAQMutableTraitConfiguration) algorithm.getTraitConfiguration()).addTraitModification(getName(),
-                    new ACAQTraitModificationTask(declaration, ACAQTraitModificationTask.Operation.Add, false));
-        }
-    }
-
-    /**
-     * Updates the trait declaration to remove this trait
-     * @param declaration
-     */
-    public void removeSlotTrait(ACAQTraitDeclaration declaration) {
-        if(algorithm.getTraitConfiguration() instanceof ACAQMutableTraitConfiguration) {
-            ((ACAQMutableTraitConfiguration) algorithm.getTraitConfiguration()).removeTraitModification(getName(),
-                    new ACAQTraitModificationTask(declaration, ACAQTraitModificationTask.Operation.RemoveCategory, false));
+            ((ACAQMutableTraitConfiguration) algorithm.getTraitConfiguration()).setTraitModification(getName(), declaration, operation);
         }
     }
 

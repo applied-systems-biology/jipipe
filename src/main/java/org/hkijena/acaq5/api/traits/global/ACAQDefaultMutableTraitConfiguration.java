@@ -11,8 +11,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.events.TraitsChangedEvent;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
+import org.hkijena.acaq5.api.events.TraitConfigurationChangedEvent;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.utils.JsonUtils;
 
@@ -28,8 +27,8 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
 
     private EventBus eventBus = new EventBus();
     private ACAQAlgorithm algorithm;
-    private Map<String, List<ACAQTraitModificationTask>> slotTraitModificationTasks = new HashMap<>();
-    private List<ACAQTraitModificationTask> globalTraitModificationTasks = new ArrayList<>();
+    private Map<String, ACAQDataSlotTraitConfiguration> slotTraitModificationTasks = new HashMap<>();
+    private ACAQDataSlotTraitConfiguration globalTraitModificationTasks = new ACAQDataSlotTraitConfiguration();
     private List<ACAQTraitTransferTask> transferTasks = new ArrayList<>();
     private boolean transferAllToAll = false;
 
@@ -41,13 +40,13 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
     }
 
     @Override
-    public Map<String, List<ACAQTraitModificationTask>> getModificationTasks() {
-        Map<String, List<ACAQTraitModificationTask>> result = new HashMap<>();
+    public Map<String, ACAQDataSlotTraitConfiguration> getModificationTasks() {
+        Map<String, ACAQDataSlotTraitConfiguration> result = new HashMap<>();
         for (ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
-            List<ACAQTraitModificationTask> tasks = new ArrayList<>();
-            tasks.addAll(globalTraitModificationTasks);
-            tasks.addAll(slotTraitModificationTasks.getOrDefault(outputSlot.getName(), Collections.emptyList()));
-            result.put(outputSlot.getName(), tasks);
+            ACAQDataSlotTraitConfiguration configuration = new ACAQDataSlotTraitConfiguration();
+            configuration.merge(globalTraitModificationTasks);
+            configuration.merge(slotTraitModificationTasks.getOrDefault(outputSlot.getName(), new ACAQDataSlotTraitConfiguration()));
+            result.put(outputSlot.getName(), configuration);
         }
         return result;
     }
@@ -79,15 +78,9 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
     }
 
     private void applyModification() {
-        for (ACAQTraitModificationTask task : globalTraitModificationTasks) {
-            for (ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
-                task.applyTo(outputSlot);
-            }
-        }
         for (ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
-            for (ACAQTraitModificationTask task : slotTraitModificationTasks.getOrDefault(outputSlot.getName(), Collections.emptyList())) {
-                task.applyTo(outputSlot);
-            }
+            globalTraitModificationTasks.applyTo(outputSlot);
+            slotTraitModificationTasks.getOrDefault(outputSlot.getName(), new ACAQDataSlotTraitConfiguration()).applyTo(outputSlot);
         }
     }
 
@@ -122,23 +115,6 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
         postChangedEvent();
     }
 
-    public Map<String, List<ACAQTraitModificationTask>> getMutableSlotTraitModificationTasks() {
-        return slotTraitModificationTasks;
-    }
-
-    public void setMutableSlotTraitModificationTasks(Map<String, List<ACAQTraitModificationTask>> slotTraitModificationTasks) {
-        this.slotTraitModificationTasks = slotTraitModificationTasks;
-        postChangedEvent();
-    }
-
-    public List<ACAQTraitModificationTask> getMutableGlobalTraitModificationTasks() {
-        return globalTraitModificationTasks;
-    }
-
-    public void setMutableGlobalTraitModificationTasks(List<ACAQTraitModificationTask> globalTraitModificationTasks) {
-        this.globalTraitModificationTasks = globalTraitModificationTasks;
-    }
-
     public List<ACAQTraitTransferTask> getMutableTransferTasks() {
         return transferTasks;
     }
@@ -154,13 +130,13 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
         JsonNode modificationNode = jsonNode.path("modification");
         if(!modificationNode.isMissingNode()) {
             try {
-                TypeReference<HashMap<String,ACAQTraitModificationTask>> typeRef = new TypeReference<HashMap<String,ACAQTraitModificationTask>>() {};
+                TypeReference<HashMap<String,ACAQDataSlotTraitConfiguration>> typeRef = new TypeReference<HashMap<String,ACAQDataSlotTraitConfiguration>>() {};
                 this.slotTraitModificationTasks = objectMapper.readerFor(typeRef).readValue(modificationNode.get("per-slot"));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
             try {
-                TypeReference<ArrayList<ACAQTraitModificationTask>> typeRef = new TypeReference<ArrayList<ACAQTraitModificationTask>>() {};
+                TypeReference<ACAQDataSlotTraitConfiguration> typeRef = new TypeReference<ACAQDataSlotTraitConfiguration>() {};
                 this.globalTraitModificationTasks = objectMapper.readerFor(typeRef).readValue(modificationNode.get("global"));
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -179,10 +155,10 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
         }
     }
 
-    public List<ACAQTraitModificationTask> getSlotModificationTasksFor(String slotName) {
-        List<ACAQTraitModificationTask> result = slotTraitModificationTasks.getOrDefault(slotName, null);
+    public ACAQDataSlotTraitConfiguration getConfigurationForSlot(String slotName) {
+        ACAQDataSlotTraitConfiguration result = slotTraitModificationTasks.getOrDefault(slotName, null);
         if(result == null) {
-            result = new ArrayList<>();
+            result = new ACAQDataSlotTraitConfiguration();
             slotTraitModificationTasks.put(slotName, result);
         }
         return result;
@@ -191,18 +167,6 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
     @Override
     public boolean isTraitModificationsSealed() {
         return traitModificationsSealed;
-    }
-
-    @Override
-    public void addTraitModification(String slotName, ACAQTraitModificationTask task) {
-        getSlotModificationTasksFor(slotName).add(task);
-        postChangedEvent();
-    }
-
-    @Override
-    public void removeTraitModification(String slotName, ACAQTraitModificationTask task) {
-        getSlotModificationTasksFor(slotName).removeIf(t -> t.equals(task));
-        postChangedEvent();
     }
 
     @Override
@@ -227,13 +191,37 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
         return traitTransfersSealed;
     }
 
+    @Override
+    public void setTraitModification(String slotName, ACAQTraitDeclaration traitDeclaration, ACAQTraitModificationOperation operation) {
+        getConfigurationForSlot(slotName).set(traitDeclaration, operation);
+        postChangedEvent();
+    }
+
     public void setTraitTransfersSealed(boolean traitTransfersSealed) {
         this.traitTransfersSealed = traitTransfersSealed;
         postChangedEvent();
     }
 
     public void postChangedEvent() {
-        eventBus.post(new TraitsChangedEvent(this));
+        eventBus.post(new TraitConfigurationChangedEvent(this));
+    }
+
+    public Map<String, ACAQDataSlotTraitConfiguration> getMutableSlotTraitModificationTasks() {
+        return slotTraitModificationTasks;
+    }
+
+    public void setMutableSlotTraitModificationTasks(Map<String, ACAQDataSlotTraitConfiguration> slotTraitModificationTasks) {
+        this.slotTraitModificationTasks = slotTraitModificationTasks;
+        postChangedEvent();
+    }
+
+    public ACAQDataSlotTraitConfiguration getMutableGlobalTraitModificationTasks() {
+        return globalTraitModificationTasks;
+    }
+
+    public void setMutableGlobalTraitModificationTasks(ACAQDataSlotTraitConfiguration globalTraitModificationTasks) {
+        this.globalTraitModificationTasks = globalTraitModificationTasks;
+        postChangedEvent();
     }
 
     public static class Serializer extends JsonSerializer<ACAQDefaultMutableTraitConfiguration> {

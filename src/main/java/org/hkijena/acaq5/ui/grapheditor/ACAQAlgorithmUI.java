@@ -9,7 +9,7 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmNameChanged;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
-import org.hkijena.acaq5.api.events.TraitsChangedEvent;
+import org.hkijena.acaq5.api.events.TraitConfigurationChangedEvent;
 import org.hkijena.acaq5.ui.events.OpenSettingsUIRequestedEvent;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.StringUtils;
@@ -416,7 +416,7 @@ public class ACAQAlgorithmUI extends JPanel {
     }
 
     @Subscribe
-    public void onTraitsChanged(TraitsChangedEvent event) {
+    public void onTraitsChanged(TraitConfigurationChangedEvent event) {
         setSize(calculateWidth(), calculateHeight());
         revalidate();
         repaint();
