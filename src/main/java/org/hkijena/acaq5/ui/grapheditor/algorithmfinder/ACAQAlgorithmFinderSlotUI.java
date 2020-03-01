@@ -76,10 +76,10 @@ public class ACAQAlgorithmFinderSlotUI extends JPanel {
             assignButtonMenu.add(connectButton);
         }
 
-        if(inputSlot.getAlgorithm().getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
+        if (inputSlot.getAlgorithm().getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
             ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) inputSlot.getAlgorithm().getSlotConfiguration();
-            if(slotConfiguration.canModifyInputSlots()) {
-                if(assignButtonMenu.getComponentCount() > 0)
+            if (slotConfiguration.canModifyInputSlots()) {
+                if (assignButtonMenu.getComponentCount() > 0)
                     assignButtonMenu.addSeparator();
                 JMenuItem deleteButton = new JMenuItem("Delete this slot", UIUtils.getIconFromResources("remove.png"));
                 deleteButton.addActionListener(e -> deleteSlot());

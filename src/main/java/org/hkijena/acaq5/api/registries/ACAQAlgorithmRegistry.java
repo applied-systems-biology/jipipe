@@ -6,8 +6,8 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQDefaultAlgorithmDeclaration;
 import org.hkijena.acaq5.api.data.ACAQData;
-import org.hkijena.acaq5.api.traits.*;
-import org.hkijena.acaq5.api.traits.global.*;
+import org.hkijena.acaq5.api.data.traits.*;
+import org.hkijena.acaq5.api.traits.ACAQTrait;
 
 import java.util.*;
 import java.util.stream.Collectors;

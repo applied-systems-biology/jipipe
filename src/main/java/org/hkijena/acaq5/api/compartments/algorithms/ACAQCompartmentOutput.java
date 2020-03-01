@@ -6,7 +6,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQIOSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.traits.global.AutoTransferTraits;
+import org.hkijena.acaq5.api.data.traits.AutoTransferTraits;
 
 @ACAQDocumentation(name = "Compartment output", description = "Output of a compartment")
 @AutoTransferTraits

@@ -26,10 +26,9 @@ public class ACAQDefaultTraitDeclaration extends ACAQMutableTraitDeclaration {
         // Discover inherited traits
         for (Class<? extends ACAQTrait> inheritedTraitClass : getInheritedTraitClasses(klass)) {
             ACAQTraitDeclaration declaration;
-            if(ACAQTraitRegistry.getInstance().hasDefaultDeclarationFor(klass)) {
+            if (ACAQTraitRegistry.getInstance().hasDefaultDeclarationFor(klass)) {
                 declaration = ACAQTraitRegistry.getInstance().getDefaultDeclarationFor(inheritedTraitClass);
-            }
-            else {
+            } else {
                 ACAQTraitRegistry.getInstance().register(inheritedTraitClass);
                 declaration = ACAQTraitRegistry.getInstance().getDefaultDeclarationFor(inheritedTraitClass);
             }

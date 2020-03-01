@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.api.events;
 
-import org.hkijena.acaq5.api.traits.global.ACAQTraitConfiguration;
+import org.hkijena.acaq5.api.data.traits.ACAQTraitConfiguration;
 
 /**
  * Triggered after an {@link ACAQTraitConfiguration} was changed

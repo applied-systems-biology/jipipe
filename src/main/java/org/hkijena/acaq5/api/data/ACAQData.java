@@ -55,6 +55,7 @@ public interface ACAQData {
     /**
      * Instantiates a data class with the provided parameters
      * This method is helpful if output data is constructed based on slot types
+     *
      * @param klass
      * @param constructorParameters
      * @param <T>

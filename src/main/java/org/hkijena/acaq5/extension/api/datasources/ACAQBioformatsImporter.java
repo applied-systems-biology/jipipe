@@ -9,8 +9,8 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.api.traits.global.ACAQDefaultMutableTraitConfiguration;
-import org.hkijena.acaq5.api.traits.global.AutoTransferTraits;
+import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
+import org.hkijena.acaq5.api.data.traits.AutoTransferTraits;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMultichannelImageData;
@@ -29,7 +29,7 @@ public class ACAQBioformatsImporter extends ACAQIteratingAlgorithm {
 
     public ACAQBioformatsImporter(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
-        ((ACAQMutableSlotConfiguration)getSlotConfiguration()).setOutputSealed(false);
+        ((ACAQMutableSlotConfiguration) getSlotConfiguration()).setOutputSealed(false);
     }
 
     public ACAQBioformatsImporter(ACAQBioformatsImporter other) {
@@ -39,7 +39,7 @@ public class ACAQBioformatsImporter extends ACAQIteratingAlgorithm {
     @Override
     protected void initializeTraits() {
         super.initializeTraits();
-        ((ACAQDefaultMutableTraitConfiguration)getTraitConfiguration()).setTraitModificationsSealed(false);
+        ((ACAQDefaultMutableTraitConfiguration) getTraitConfiguration()).setTraitModificationsSealed(false);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class ACAQBioformatsImporter extends ACAQIteratingAlgorithm {
             throw new RuntimeException(e);
         }
 
-        for(int i = 0; i < Math.min(getOutputSlots().size(), images.length); ++i) {
+        for (int i = 0; i < Math.min(getOutputSlots().size(), images.length); ++i) {
             ACAQDataSlot slot = getOutputSlots().get(i);
             dataInterface.addOutputData(slot, ACAQData.createInstance(slot.getAcceptedDataType(), images[i]));
         }

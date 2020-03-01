@@ -1,15 +1,15 @@
-package org.hkijena.acaq5.api.traits.global;
+package org.hkijena.acaq5.api.data.traits;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.common.collect.ImmutableList;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
-import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -59,7 +59,7 @@ public class ACAQDataSlotTraitConfiguration {
     public Set<ACAQTraitDeclaration> getAddedTraits() {
         Set<ACAQTraitDeclaration> result = new HashSet<>();
         for (Map.Entry<ACAQTraitDeclaration, ACAQTraitModificationOperation> entry : operations.entrySet()) {
-            if(entry.getValue() == ACAQTraitModificationOperation.Add)
+            if (entry.getValue() == ACAQTraitModificationOperation.Add)
                 result.add(entry.getKey());
         }
         return result;
@@ -68,7 +68,7 @@ public class ACAQDataSlotTraitConfiguration {
     public Set<ACAQTraitDeclaration> getRemovedTraits() {
         Set<ACAQTraitDeclaration> result = new HashSet<>();
         for (Map.Entry<ACAQTraitDeclaration, ACAQTraitModificationOperation> entry : operations.entrySet()) {
-            if(entry.getValue() == ACAQTraitModificationOperation.RemoveThis ||
+            if (entry.getValue() == ACAQTraitModificationOperation.RemoveThis ||
                     entry.getValue() == ACAQTraitModificationOperation.RemoveCategory)
                 result.add(entry.getKey());
         }
@@ -79,7 +79,10 @@ public class ACAQDataSlotTraitConfiguration {
         @Override
         public void serialize(ACAQDataSlotTraitConfiguration traitConfiguration, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             jsonGenerator.writeStartObject();
-            jsonGenerator.writeObjectField("operations", traitConfiguration.operations);
+            for (Map.Entry<ACAQTraitDeclaration, ACAQTraitModificationOperation> entry : traitConfiguration.operations.entrySet()) {
+                jsonGenerator.writeFieldName(entry.getKey().getId());
+                jsonGenerator.writeString(entry.getValue().name());
+            }
             jsonGenerator.writeEndObject();
         }
     }
@@ -89,10 +92,12 @@ public class ACAQDataSlotTraitConfiguration {
         public ACAQDataSlotTraitConfiguration deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             ACAQDataSlotTraitConfiguration configuration = new ACAQDataSlotTraitConfiguration();
             JsonNode root = jsonParser.readValueAsTree();
-            TypeReference<Map<ACAQTraitDeclaration, ACAQTraitModificationOperation>> typeReference =
-                    new TypeReference<Map<ACAQTraitDeclaration, ACAQTraitModificationOperation>>() {};
-            configuration.operations = JsonUtils.getObjectMapper().readerFor(typeReference).readValue(root.get("operations"));
-            return  configuration;
+            for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(root.fields())) {
+                ACAQTraitDeclaration declaration = ACAQTraitRegistry.getInstance().getDeclarationById(entry.getKey());
+                ACAQTraitModificationOperation operation = ACAQTraitModificationOperation.valueOf(entry.getValue().asText());
+                configuration.operations.put(declaration, operation);
+            }
+            return configuration;
         }
     }
 }

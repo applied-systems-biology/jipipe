@@ -1,15 +1,16 @@
-package org.hkijena.acaq5.api.traits.global;
+package org.hkijena.acaq5.api.data.traits;
 
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 
 import java.lang.annotation.*;
 
 /**
- * Annotates an ACAQAlgorithm to be ineffective against a specified trait
+ * Annotates an ACAQAlgorithm to be effective for a specified trait
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@Repeatable(BadForTraits.class)
-public @interface BadForTrait {
+@Repeatable(GoodForTraits.class)
+public @interface GoodForTrait {
     Class<? extends ACAQTrait> value();
 }
+

@@ -382,14 +382,13 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     public void updateDataSlotTraits() {
         Set<ACAQAlgorithm> executedAlgorithms = new HashSet<>();
         for (ACAQDataSlot slot : traverse()) {
-            if(slot.isInput()) {
+            if (slot.isInput()) {
                 // Execute trait configuration
-                if(!executedAlgorithms.contains(slot.getAlgorithm())) {
+                if (!executedAlgorithms.contains(slot.getAlgorithm())) {
                     slot.getAlgorithm().getTraitConfiguration().apply();
                     executedAlgorithms.add(slot.getAlgorithm());
                 }
-            }
-            else {
+            } else {
                 // Transfer traits from output to input
                 for (ACAQDataSlot targetSlot : getTargetSlots(slot)) {
                     targetSlot.clearSlotAnnotations();
@@ -435,7 +434,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
             return;
 
         for (Map.Entry<String, JsonNode> kv : ImmutableList.copyOf(node.get("nodes").fields())) {
-            if(!algorithms.containsKey(kv.getKey())) {
+            if (!algorithms.containsKey(kv.getKey())) {
                 String declarationInfo = kv.getValue().get("acaq:algorithm-type").asText();
                 ACAQAlgorithmDeclaration declaration = ACAQAlgorithmRegistry.getInstance().getDeclarationById(declarationInfo);
                 ACAQAlgorithm algorithm = declaration.newInstance();
@@ -450,7 +449,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
             ACAQAlgorithm targetAlgorithm = algorithms.get(StringUtils.jsonify(edgeNode.get("target-algorithm").asText()));
             ACAQDataSlot source = sourceAlgorithm.getSlots().get(StringUtils.makeFilesystemCompatible(edgeNode.get("source-slot").asText()));
             ACAQDataSlot target = targetAlgorithm.getSlots().get(StringUtils.makeFilesystemCompatible(edgeNode.get("target-slot").asText()));
-            if(!graph.containsEdge(source, target))
+            if (!graph.containsEdge(source, target))
                 connect(source, target);
         }
     }

@@ -16,11 +16,14 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
+import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
+import org.hkijena.acaq5.api.data.traits.ACAQMutableTraitConfiguration;
+import org.hkijena.acaq5.api.data.traits.ACAQTraitConfiguration;
+import org.hkijena.acaq5.api.data.traits.AutoTransferTraits;
 import org.hkijena.acaq5.api.events.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.traits.*;
-import org.hkijena.acaq5.api.traits.global.*;
+import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.awt.*;

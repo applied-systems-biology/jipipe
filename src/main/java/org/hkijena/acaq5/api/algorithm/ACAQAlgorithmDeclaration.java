@@ -1,8 +1,7 @@
 package org.hkijena.acaq5.api.algorithm;
 
-import org.hkijena.acaq5.api.traits.*;
-import org.hkijena.acaq5.api.traits.global.ACAQDataSlotTraitConfiguration;
-import org.hkijena.acaq5.api.traits.global.ACAQTraitModificationOperation;
+import org.hkijena.acaq5.api.data.traits.ACAQDataSlotTraitConfiguration;
+import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 
 import java.util.List;
 import java.util.Set;
@@ -75,6 +74,7 @@ public interface ACAQAlgorithmDeclaration {
 
     /**
      * Returns all algorithm-global trait modification tasks
+     *
      * @return
      */
     ACAQDataSlotTraitConfiguration getSlotTraitConfiguration();

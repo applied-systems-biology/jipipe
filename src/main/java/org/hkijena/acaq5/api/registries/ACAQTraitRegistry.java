@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.api.registries;
 
-import gnu.trove.map.TByteByteMap;
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.traits.ACAQDefaultTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTrait;

@@ -3,11 +3,9 @@ package org.hkijena.acaq5.ui.grapheditor;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
+import org.hkijena.acaq5.api.data.traits.ACAQMutableTraitConfiguration;
 import org.hkijena.acaq5.api.events.SlotAnnotationsChanged;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
-import org.hkijena.acaq5.api.traits.global.ACAQDefaultMutableTraitConfiguration;
-import org.hkijena.acaq5.api.traits.global.ACAQMutableTraitConfiguration;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQTraitConfigurationUI;
 import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
 import org.hkijena.acaq5.utils.TooltipUtils;
@@ -35,26 +33,25 @@ public class ACAQDataSlotTraitUI extends JPanel {
         boolean canEditTraits = slot.isOutput() && slot.getAlgorithm().getTraitConfiguration() instanceof ACAQMutableTraitConfiguration &&
                 !((ACAQMutableTraitConfiguration) slot.getAlgorithm().getTraitConfiguration()).isTraitModificationsSealed();
 
-        for(ACAQTraitDeclaration trait : traits) {
+        for (ACAQTraitDeclaration trait : traits) {
             JButton traitButton = new JButton(ACAQUITraitRegistry.getInstance().getIconFor(trait));
             traitButton.setToolTipText(TooltipUtils.getTraitTooltip(trait));
             traitButton.setPreferredSize(new Dimension(25, 25));
 
-            if(canEditTraits) {
+            if (canEditTraits) {
                 UIUtils.makeFlat25x25(traitButton);
                 JPopupMenu menu = UIUtils.addPopupMenuToComponent(traitButton);
                 JMenuItem removeTraitButton = new JMenuItem("Remove this annotation", UIUtils.getIconFromResources("remove.png"));
                 removeTraitButton.addActionListener(e -> removeTrait(trait));
                 menu.add(removeTraitButton);
-            }
-            else
+            } else
                 UIUtils.makeBorderlessWithoutMargin(traitButton);
 
             add(traitButton);
         }
 
         // Create button to add traits
-        if(canEditTraits) {
+        if (canEditTraits) {
             JButton addTraitButton = new JButton(UIUtils.getIconFromResources("label.png"));
             addTraitButton.setToolTipText("Annotate this data");
             addTraitButton.addActionListener(e -> addTrait());
@@ -91,7 +88,7 @@ public class ACAQDataSlotTraitUI extends JPanel {
     public int calculateWidth() {
         Set<ACAQTraitDeclaration> traits = slot.getSlotAnnotations();
         boolean canEditTraits = false;
-        if(slot.getAlgorithm().getTraitConfiguration() instanceof ACAQMutableTraitConfiguration) {
+        if (slot.getAlgorithm().getTraitConfiguration() instanceof ACAQMutableTraitConfiguration) {
             canEditTraits = !((ACAQMutableTraitConfiguration) slot.getAlgorithm().getTraitConfiguration()).isTraitModificationsSealed();
         }
         int width = 25 * traits.size();

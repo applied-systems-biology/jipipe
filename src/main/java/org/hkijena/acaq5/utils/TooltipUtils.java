@@ -6,7 +6,7 @@ import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.traits.*;
+import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
 
@@ -193,13 +193,13 @@ public class TooltipUtils {
         builder.append("<html><u><strong>");
         builder.append(name);
         builder.append("</u></strong>");
-        if(description != null && !description.isEmpty()) {
+        if (description != null && !description.isEmpty()) {
             builder.append("<br/>")
-                .append(description);
+                    .append(description);
         }
 
         Set<ACAQTraitDeclaration> categories = trait.getInherited();
-        if(!categories.isEmpty()) {
+        if (!categories.isEmpty()) {
             builder.append("<br/><br/>");
             builder.append("<strong>Inherited annotations</strong><br/>");
             builder.append("<table>");

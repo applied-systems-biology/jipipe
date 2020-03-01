@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.api.traits.global;
+package org.hkijena.acaq5.api.data.traits;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -14,7 +14,6 @@ import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,7 +26,6 @@ public class ACAQTraitTransferTask {
     private Set<ACAQTraitDeclaration> traitRestrictions;
 
     /**
-     *
      * @param inputSlotName
      * @param outputSlotName
      * @param traitRestrictions If empty, no restrictions apply
@@ -42,7 +40,7 @@ public class ACAQTraitTransferTask {
         ACAQDataSlot sourceSlot = algorithm.getInputSlot(getInputSlotName());
         ACAQDataSlot targetSlot = algorithm.getOutputSlot(getOutputSlotName());
         for (ACAQTraitDeclaration slotAnnotation : sourceSlot.getSlotAnnotations()) {
-            if(getTraitRestrictions().isEmpty() || getTraitRestrictions().contains(slotAnnotation)) {
+            if (getTraitRestrictions().isEmpty() || getTraitRestrictions().contains(slotAnnotation)) {
                 targetSlot.addSlotAnnotation(slotAnnotation);
             }
         }

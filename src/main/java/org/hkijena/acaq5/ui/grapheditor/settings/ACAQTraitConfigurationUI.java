@@ -2,11 +2,11 @@ package org.hkijena.acaq5.ui.grapheditor.settings;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.data.traits.ACAQMutableTraitConfiguration;
+import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
 import org.hkijena.acaq5.api.events.SlotAnnotationsChanged;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
-import org.hkijena.acaq5.api.traits.global.ACAQMutableTraitConfiguration;
-import org.hkijena.acaq5.api.traits.global.ACAQTraitModificationOperation;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
 import org.hkijena.acaq5.utils.TooltipUtils;
@@ -40,9 +40,9 @@ public class ACAQTraitConfigurationUI extends JPanel {
         Set<ACAQTraitDeclaration> selectedTraits = slot.getSlotAnnotations();
 
         for (ACAQTraitDeclaration trait : ACAQTraitRegistry.getInstance().getRegisteredTraits().values()) {
-            if(trait.isHidden())
+            if (trait.isHidden())
                 continue;
-            if(!searchStringsMatches(trait, searchStrings))
+            if (!searchStringsMatches(trait, searchStrings))
                 continue;
 
             JToggleButton traitButton = new JToggleButton(trait.getName(),
@@ -50,7 +50,7 @@ public class ACAQTraitConfigurationUI extends JPanel {
             traitButton.setSelected(selectedTraits.contains(trait));
             traitButton.setToolTipText(TooltipUtils.getTraitTooltip(trait));
             UIUtils.makeFlat(traitButton);
-            if(canEditTraits)
+            if (canEditTraits)
                 makeToggleToEditor(trait, traitButton);
             else
                 UIUtils.makeToggleReadonly(traitButton);
@@ -64,11 +64,10 @@ public class ACAQTraitConfigurationUI extends JPanel {
 
     private void makeToggleToEditor(ACAQTraitDeclaration trait, JToggleButton traitButton) {
         traitButton.addActionListener(e -> {
-            if(slot.getSlotAnnotations().contains(trait)) {
+            if (slot.getSlotAnnotations().contains(trait)) {
                 slot.setSlotTraitToTraitConfiguration(trait, ACAQTraitModificationOperation.Ignore);
                 traitButton.setSelected(false);
-            }
-            else {
+            } else {
                 slot.setSlotTraitToTraitConfiguration(trait, ACAQTraitModificationOperation.Add);
                 traitButton.setSelected(true);
             }

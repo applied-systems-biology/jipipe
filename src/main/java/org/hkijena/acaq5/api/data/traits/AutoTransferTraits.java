@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.api.traits.global;
+package org.hkijena.acaq5.api.data.traits;
 
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 

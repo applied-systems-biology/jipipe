@@ -2,12 +2,12 @@ package org.hkijena.acaq5.api.data;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.data.traits.ACAQMutableTraitConfiguration;
+import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
 import org.hkijena.acaq5.api.events.SlotAnnotationsChanged;
 import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
-import org.hkijena.acaq5.api.traits.global.ACAQMutableTraitConfiguration;
-import org.hkijena.acaq5.api.traits.global.ACAQTraitModificationOperation;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -361,6 +361,7 @@ public class ACAQDataSlot implements TableModel {
 
     /**
      * Returns all traits that are not associated to data, but instead associated to the slot itself
+     *
      * @return
      */
     public Set<ACAQTraitDeclaration> getSlotAnnotations() {
@@ -369,6 +370,7 @@ public class ACAQDataSlot implements TableModel {
 
     /**
      * Adds an annotation to this slot
+     *
      * @param declaration
      */
     public void addSlotAnnotation(ACAQTraitDeclaration declaration) {
@@ -378,20 +380,22 @@ public class ACAQDataSlot implements TableModel {
 
     /**
      * Removes an annotation from this slot
+     *
      * @param declaration
      */
     public void removeSlotAnnotation(ACAQTraitDeclaration declaration) {
-        if(slotAnnotations.remove(declaration))
+        if (slotAnnotations.remove(declaration))
             eventBus.post(new SlotAnnotationsChanged(this));
     }
 
     /**
      * Removes the annotation, as well as any other annotation that inherits from it from this slot
+     *
      * @param declaration
      */
     public void removeSlotAnnotationCategory(ACAQTraitDeclaration declaration) {
         slotAnnotations.remove(declaration);
-        if(slotAnnotations.removeIf(t -> t.getInherited().contains(declaration)))
+        if (slotAnnotations.removeIf(t -> t.getInherited().contains(declaration)))
             eventBus.post(new SlotAnnotationsChanged(this));
     }
 
@@ -399,7 +403,7 @@ public class ACAQDataSlot implements TableModel {
      * Removes all slot annotations
      */
     public void clearSlotAnnotations() {
-        if(!slotAnnotations.isEmpty()) {
+        if (!slotAnnotations.isEmpty()) {
             slotAnnotations.clear();
             eventBus.post(new SlotAnnotationsChanged(this));
         }
@@ -411,10 +415,11 @@ public class ACAQDataSlot implements TableModel {
 
     /**
      * Updates the trait declaration to add this trait
+     *
      * @param declaration
      */
     public void setSlotTraitToTraitConfiguration(ACAQTraitDeclaration declaration, ACAQTraitModificationOperation operation) {
-        if(algorithm.getTraitConfiguration() instanceof ACAQMutableTraitConfiguration) {
+        if (algorithm.getTraitConfiguration() instanceof ACAQMutableTraitConfiguration) {
             ((ACAQMutableTraitConfiguration) algorithm.getTraitConfiguration()).setTraitModification(getName(), declaration, operation);
         }
     }

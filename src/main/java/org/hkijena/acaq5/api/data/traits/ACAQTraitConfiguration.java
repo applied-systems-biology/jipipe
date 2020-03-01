@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.api.traits.global;
+package org.hkijena.acaq5.api.data.traits;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
@@ -13,12 +13,14 @@ public interface ACAQTraitConfiguration {
 
     /**
      * Returns a map from slot name to modification task
+     *
      * @return
      */
     Map<String, ACAQDataSlotTraitConfiguration> getModificationTasks();
 
     /**
      * Returns all transfer tasks
+     *
      * @return
      */
     List<ACAQTraitTransferTask> getTransferTasks();
@@ -30,6 +32,7 @@ public interface ACAQTraitConfiguration {
 
     /**
      * Returns the Event bus of this trait configuration
+     *
      * @return
      */
     EventBus getEventBus();

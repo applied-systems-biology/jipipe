@@ -43,6 +43,7 @@ public interface ACAQTraitDeclaration {
 
     /**
      * Returns true if the trait should be hidden from the user
+     *
      * @return
      */
     boolean isHidden();

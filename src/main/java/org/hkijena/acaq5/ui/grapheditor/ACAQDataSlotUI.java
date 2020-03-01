@@ -61,10 +61,10 @@ public class ACAQDataSlotUI extends JPanel {
                 disconnectButton.addActionListener(e -> disconnectSlot());
                 assignButtonMenu.add(disconnectButton);
             }
-            if(slot.getAlgorithm().getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
+            if (slot.getAlgorithm().getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
                 ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) slot.getAlgorithm().getSlotConfiguration();
-                if(slotConfiguration.canModifyInputSlots()) {
-                    if(assignButtonMenu.getComponentCount() > 0)
+                if (slotConfiguration.canModifyInputSlots()) {
+                    if (assignButtonMenu.getComponentCount() > 0)
                         assignButtonMenu.addSeparator();
                     JMenuItem deleteButton = new JMenuItem("Delete this slot", UIUtils.getIconFromResources("remove.png"));
                     deleteButton.addActionListener(e -> deleteSlot());
@@ -109,10 +109,10 @@ public class ACAQDataSlotUI extends JPanel {
                 assignButtonMenu.add(connectButton);
             }
 
-            if(slot.getAlgorithm().getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
+            if (slot.getAlgorithm().getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
                 ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) slot.getAlgorithm().getSlotConfiguration();
-                if(slotConfiguration.canModifyOutputSlots()) {
-                    if(assignButtonMenu.getComponentCount() > 0)
+                if (slotConfiguration.canModifyOutputSlots()) {
+                    if (assignButtonMenu.getComponentCount() > 0)
                         assignButtonMenu.addSeparator();
                     JMenuItem deleteButton = new JMenuItem("Delete this slot", UIUtils.getIconFromResources("remove.png"));
                     deleteButton.addActionListener(e -> deleteSlot());

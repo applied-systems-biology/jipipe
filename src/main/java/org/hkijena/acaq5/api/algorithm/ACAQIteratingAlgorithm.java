@@ -1,10 +1,8 @@
 package org.hkijena.acaq5.api.algorithm;
 
-import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
-import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.traits.global.ACAQTraitConfiguration;
+import org.hkijena.acaq5.api.data.traits.ACAQTraitConfiguration;
 
 import java.util.List;
 

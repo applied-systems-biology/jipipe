@@ -5,8 +5,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.hkijena.acaq5.api.traits.*;
-import org.hkijena.acaq5.api.traits.global.ACAQDataSlotTraitConfiguration;
+import org.hkijena.acaq5.api.data.traits.ACAQDataSlotTraitConfiguration;
+import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 
 import java.io.IOException;
 import java.util.Collections;
