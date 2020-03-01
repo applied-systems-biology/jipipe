@@ -240,12 +240,6 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
         eventBus.post(new AlgorithmSlotsChangedEvent(this));
     }
 
-    @Subscribe
-    public void onTraitConfigurationChanged(TraitConfigurationChangedEvent event) {
-        getTraitConfiguration().apply();
-    }
-
-
     public Map<String, Point> getLocations() {
         return locations;
     }

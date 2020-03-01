@@ -15,6 +15,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.*;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
+import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.cycle.CycleDetector;
@@ -374,7 +375,30 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
     @Subscribe
     public void onTraitsChanged(TraitConfigurationChangedEvent event) {
+        updateDataSlotTraits();
         eventBus.post(new AlgorithmGraphChangedEvent(this));
+    }
+
+    public void updateDataSlotTraits() {
+        Set<ACAQAlgorithm> executedAlgorithms = new HashSet<>();
+        for (ACAQDataSlot slot : traverse()) {
+            if(slot.isInput()) {
+                // Execute trait configuration
+                if(!executedAlgorithms.contains(slot.getAlgorithm())) {
+                    slot.getAlgorithm().getTraitConfiguration().apply();
+                    executedAlgorithms.add(slot.getAlgorithm());
+                }
+            }
+            else {
+                // Transfer traits from output to input
+                for (ACAQDataSlot targetSlot : getTargetSlots(slot)) {
+                    targetSlot.clearSlotAnnotations();
+                    for (ACAQTraitDeclaration slotAnnotation : slot.getSlotAnnotations()) {
+                        targetSlot.addSlotAnnotation(slotAnnotation);
+                    }
+                }
+            }
+        }
     }
 
     public EventBus getEventBus() {
