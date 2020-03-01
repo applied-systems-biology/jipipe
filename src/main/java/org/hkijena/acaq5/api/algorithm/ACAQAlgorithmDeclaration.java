@@ -1,8 +1,7 @@
 package org.hkijena.acaq5.api.algorithm;
 
-import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.api.traits.AddsTrait;
-import org.hkijena.acaq5.api.traits.RemovesTrait;
+import org.hkijena.acaq5.api.traits.*;
+import org.hkijena.acaq5.api.traits.global.ACAQTraitModificationTask;
 
 import java.util.List;
 import java.util.Set;
@@ -64,28 +63,20 @@ public interface ACAQAlgorithmDeclaration {
      *
      * @return
      */
-    Set<Class<? extends ACAQTrait>> getPreferredTraits();
+    Set<ACAQTraitDeclaration> getPreferredTraits();
 
     /**
      * Returns the unwanted traits
      *
      * @return
      */
-    Set<Class<? extends ACAQTrait>> getUnwantedTraits();
+    Set<ACAQTraitDeclaration> getUnwantedTraits();
 
     /**
-     * Returns which traits are added
-     *
+     * Returns all algorithm-global trait modification tasks
      * @return
      */
-    List<AddsTrait> getAddedTraits();
-
-    /**
-     * Returns which traits are removed
-     *
-     * @return
-     */
-    List<RemovesTrait> getRemovedTraits();
+    List<ACAQTraitModificationTask> getTraitModificationTasks();
 
     /**
      * Returns input data

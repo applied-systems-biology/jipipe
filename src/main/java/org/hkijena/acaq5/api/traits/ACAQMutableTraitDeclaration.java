@@ -7,6 +7,7 @@ public abstract class ACAQMutableTraitDeclaration implements ACAQTraitDeclaratio
     private String id;
     private Class<? extends ACAQTrait> traitClass;
     private boolean discriminator;
+    private boolean hidden;
     private String name;
     private String description;
     private Set<ACAQTraitDeclaration> inherited = new HashSet<>();
@@ -63,5 +64,14 @@ public abstract class ACAQMutableTraitDeclaration implements ACAQTraitDeclaratio
 
     public void setInherited(Set<ACAQTraitDeclaration> inherited) {
         this.inherited = inherited;
+    }
+
+    @Override
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
     }
 }

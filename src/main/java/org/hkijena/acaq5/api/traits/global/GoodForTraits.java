@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.api.traits;
+package org.hkijena.acaq5.api.traits.global;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

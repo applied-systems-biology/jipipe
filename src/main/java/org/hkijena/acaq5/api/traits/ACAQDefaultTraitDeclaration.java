@@ -21,14 +21,19 @@ public class ACAQDefaultTraitDeclaration extends ACAQMutableTraitDeclaration {
         setName(getNameOf(klass));
         setDescription(getDescriptionOf(klass));
         setId(getDeclarationIdOf(klass));
+        setHidden(getIsHidden(klass));
 
         // Discover inherited traits
         for (Class<? extends ACAQTrait> inheritedTraitClass : getInheritedTraitClasses(klass)) {
-            ACAQTraitDeclaration declaration = ACAQTraitRegistry.getInstance().getDefaultDeclarationFor(inheritedTraitClass);
-            if (declaration == null) {
+            ACAQTraitDeclaration declaration;
+            if(ACAQTraitRegistry.getInstance().hasDefaultDeclarationFor(klass)) {
+                declaration = ACAQTraitRegistry.getInstance().getDefaultDeclarationFor(inheritedTraitClass);
+            }
+            else {
                 ACAQTraitRegistry.getInstance().register(inheritedTraitClass);
                 declaration = ACAQTraitRegistry.getInstance().getDefaultDeclarationFor(inheritedTraitClass);
             }
+
             getInherited().add(declaration);
         }
     }
@@ -95,8 +100,8 @@ public class ACAQDefaultTraitDeclaration extends ACAQMutableTraitDeclaration {
      */
     static Set<Class<? extends ACAQTrait>> getInheritedTraitClasses(Class<? extends ACAQTrait> klass) {
         Set<Class<? extends ACAQTrait>> result = new HashSet<>();
-        for (TypeToken<?> type : TypeToken.of(klass).getTypes().interfaces()) {
-            if (!type.getRawType().isInterface()) {
+        for (TypeToken<?> type : TypeToken.of(klass).getTypes()) {
+            if (type.getRawType() != klass && ACAQTrait.class.isAssignableFrom(type.getRawType()) && !type.getRawType().isInterface()) {
                 result.add((Class<? extends ACAQTrait>) type.getRawType());
             }
         }
@@ -109,7 +114,7 @@ public class ACAQDefaultTraitDeclaration extends ACAQMutableTraitDeclaration {
      * @param klass
      * @return
      */
-    static boolean isHidden(Class<? extends ACAQTrait> klass) {
+    static boolean getIsHidden(Class<? extends ACAQTrait> klass) {
         return klass.getAnnotationsByType(ACAQHidden.class).length > 0;
     }
 }

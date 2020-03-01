@@ -7,6 +7,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQDefaultAlgorithmDeclaration;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.traits.*;
+import org.hkijena.acaq5.api.traits.global.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -59,7 +60,9 @@ public class ACAQAlgorithmRegistry {
      * @param trait
      */
     public void registerAlgorithmAddsTrait(Class<? extends ACAQAlgorithm> klass, Class<? extends ACAQTrait> trait) {
-        getDefaultDeclarationFor(klass).getAddedTraits().add(new DefaultAddsTrait(trait, true));
+        getDefaultDeclarationFor(klass).getTraitModificationTasks().add(new ACAQTraitModificationTask(ACAQTraitRegistry.getInstance().getDefaultDeclarationFor(trait),
+                ACAQTraitModificationTask.Operation.Add,
+                true));
     }
 
     /**
@@ -70,7 +73,9 @@ public class ACAQAlgorithmRegistry {
      * @param trait
      */
     public void registerAlgorithmRemovesTrait(Class<? extends ACAQAlgorithm> klass, Class<? extends ACAQTrait> trait) {
-        getDefaultDeclarationFor(klass).getRemovedTraits().add(new DefaultRemovesTrait(trait, true));
+        getDefaultDeclarationFor(klass).getTraitModificationTasks().add(new ACAQTraitModificationTask(ACAQTraitRegistry.getInstance().getDefaultDeclarationFor(trait),
+                ACAQTraitModificationTask.Operation.RemoveCategory,
+                true));
     }
 
     /**
@@ -81,7 +86,7 @@ public class ACAQAlgorithmRegistry {
      * @param trait
      */
     public void registerPreferredTraitFor(Class<? extends ACAQAlgorithm> klass, Class<? extends ACAQTrait> trait) {
-        getDefaultDeclarationFor(klass).getPreferredTraits().add(trait);
+        getDefaultDeclarationFor(klass).getPreferredTraits().add(ACAQTraitRegistry.getInstance().getDefaultDeclarationFor(trait));
     }
 
     /**
@@ -92,7 +97,7 @@ public class ACAQAlgorithmRegistry {
      * @param trait
      */
     public void registerUnwantedTraitFor(Class<? extends ACAQAlgorithm> klass, Class<? extends ACAQTrait> trait) {
-        getDefaultDeclarationFor(klass).getUnwantedTraits().add(trait);
+        getDefaultDeclarationFor(klass).getUnwantedTraits().add(ACAQTraitRegistry.getInstance().getDefaultDeclarationFor(trait));
     }
 
     /**

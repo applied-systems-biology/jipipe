@@ -7,14 +7,11 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.acaq5.api.ACAQDocumentation;
-import org.hkijena.acaq5.api.traits.AddsTrait;
-import org.hkijena.acaq5.api.traits.BadForTrait;
-import org.hkijena.acaq5.api.traits.GoodForTrait;
-import org.hkijena.acaq5.api.traits.RemovesTrait;
+import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
+import org.hkijena.acaq5.api.traits.global.*;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 
 /**
  * {@link ACAQAlgorithmDeclaration} for an algorithm that is defined in Java code
@@ -44,13 +41,25 @@ public class ACAQDefaultAlgorithmDeclaration extends ACAQMutableAlgorithmDeclara
 
     private void initializeTraits() {
         for (GoodForTrait trait : getAlgorithmClass().getAnnotationsByType(GoodForTrait.class)) {
-            getPreferredTraits().add(trait.value());
+            getPreferredTraits().add(ACAQTraitRegistry.getInstance().getDefaultDeclarationFor(trait.value()));
         }
         for (BadForTrait trait : getAlgorithmClass().getAnnotationsByType(BadForTrait.class)) {
-            getUnwantedTraits().add(trait.value());
+            getUnwantedTraits().add(ACAQTraitRegistry.getInstance().getDefaultDeclarationFor(trait.value()));
         }
-        getAddedTraits().addAll(Arrays.asList(getAlgorithmClass().getAnnotationsByType(AddsTrait.class)));
-        getRemovedTraits().addAll(Arrays.asList(getAlgorithmClass().getAnnotationsByType(RemovesTrait.class)));
+        for (AddsTrait addsTrait : getAlgorithmClass().getAnnotationsByType(AddsTrait.class)) {
+            getTraitModificationTasks().add(new ACAQTraitModificationTask(
+                    ACAQTraitRegistry.getInstance().getDefaultDeclarationFor(addsTrait.value()),
+                    ACAQTraitModificationTask.Operation.Add,
+                    !addsTrait.autoAdd()
+            ));
+        }
+        for (RemovesTrait removesTrait : getAlgorithmClass().getAnnotationsByType(RemovesTrait.class)) {
+            getTraitModificationTasks().add(new ACAQTraitModificationTask(
+                    ACAQTraitRegistry.getInstance().getDefaultDeclarationFor(removesTrait.value()),
+                    ACAQTraitModificationTask.Operation.RemoveCategory,
+                    !removesTrait.autoRemove()
+            ));
+        }
     }
 
     @Override

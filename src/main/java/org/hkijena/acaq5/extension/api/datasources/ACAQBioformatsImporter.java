@@ -9,6 +9,8 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.traits.global.ACAQDefaultMutableTraitConfiguration;
+import org.hkijena.acaq5.api.traits.global.AutoTransferTraits;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMultichannelImageData;
@@ -22,6 +24,7 @@ import java.io.IOException;
 @AlgorithmOutputSlot(value = ACAQGreyscaleImageData.class)
 @AlgorithmOutputSlot(value = ACAQMaskData.class)
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
+@AutoTransferTraits
 public class ACAQBioformatsImporter extends ACAQIteratingAlgorithm {
 
     public ACAQBioformatsImporter(ACAQAlgorithmDeclaration declaration) {
@@ -31,6 +34,12 @@ public class ACAQBioformatsImporter extends ACAQIteratingAlgorithm {
 
     public ACAQBioformatsImporter(ACAQBioformatsImporter other) {
         super(other);
+    }
+
+    @Override
+    protected void initializeTraits() {
+        super.initializeTraits();
+        ((ACAQDefaultMutableTraitConfiguration)getTraitConfiguration()).setTraitModificationsSealed(false);
     }
 
     @Override

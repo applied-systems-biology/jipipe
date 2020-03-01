@@ -1,12 +1,15 @@
 package org.hkijena.acaq5.api.registries;
 
+import gnu.trove.map.TByteByteMap;
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.traits.ACAQDefaultTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Contains all known {@link ACAQTrait} types
@@ -27,11 +30,19 @@ public class ACAQTraitRegistry {
     }
 
     public ACAQTraitDeclaration getDefaultDeclarationFor(Class<? extends ACAQTrait> klass) {
-        return registeredTraits.getOrDefault(ACAQDefaultTraitDeclaration.getDeclarationIdOf(klass), null);
+        return Objects.requireNonNull(registeredTraits.get(ACAQDefaultTraitDeclaration.getDeclarationIdOf(klass)));
+    }
+
+    public boolean hasDefaultDeclarationFor(Class<? extends ACAQTrait> klass) {
+        return registeredTraits.containsKey(ACAQDefaultTraitDeclaration.getDeclarationIdOf(klass));
     }
 
     public ACAQTraitDeclaration getDeclarationById(String id) {
-        return registeredTraits.get(id);
+        return Objects.requireNonNull(registeredTraits.get(id));
+    }
+
+    public Map<String, ACAQTraitDeclaration> getRegisteredTraits() {
+        return Collections.unmodifiableMap(registeredTraits);
     }
 
     public static ACAQTraitRegistry getInstance() {

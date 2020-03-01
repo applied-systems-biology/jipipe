@@ -1,9 +1,13 @@
 package org.hkijena.acaq5.api.data;
 
+import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.events.SlotAnnotationsChanged;
 import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
+import org.hkijena.acaq5.api.traits.global.ACAQMutableTraitConfiguration;
+import org.hkijena.acaq5.api.traits.global.ACAQTraitModificationTask;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -25,10 +29,13 @@ public class ACAQDataSlot implements TableModel {
     private SlotType slotType;
     private Path storagePath;
     private boolean uniqueData = true;
+    private EventBus eventBus = new EventBus();
 
     private ArrayList<ACAQData> data = new ArrayList<>();
     private List<ACAQTraitDeclaration> annotationColumns = new ArrayList<>();
     private Map<ACAQTraitDeclaration, ArrayList<ACAQTrait>> annotations = new HashMap<>();
+
+    private Set<ACAQTraitDeclaration> slotAnnotations = new HashSet<>();
 
     public ACAQDataSlot(ACAQAlgorithm algorithm, SlotType slotType, String name, Class<? extends ACAQData> acceptedDataType) {
         this.algorithm = algorithm;
@@ -350,6 +357,78 @@ public class ACAQDataSlot implements TableModel {
     @Override
     public void removeTableModelListener(TableModelListener l) {
 
+    }
+
+    /**
+     * Returns all traits that are not associated to data, but instead associated to the slot itself
+     * @return
+     */
+    public Set<ACAQTraitDeclaration> getSlotAnnotations() {
+        return Collections.unmodifiableSet(slotAnnotations);
+    }
+
+    /**
+     * Adds an annotation to this slot
+     * @param declaration
+     */
+    public void addSlotAnnotation(ACAQTraitDeclaration declaration) {
+        slotAnnotations.add(declaration);
+        eventBus.post(new SlotAnnotationsChanged(this));
+    }
+
+    /**
+     * Removes an annotation from this slot
+     * @param declaration
+     */
+    public void removeSlotAnnotation(ACAQTraitDeclaration declaration) {
+        if(slotAnnotations.remove(declaration))
+            eventBus.post(new SlotAnnotationsChanged(this));
+    }
+
+    /**
+     * Removes the annotation, as well as any other annotation that inherits from it from this slot
+     * @param declaration
+     */
+    public void removeSlotAnnotationCategory(ACAQTraitDeclaration declaration) {
+        slotAnnotations.remove(declaration);
+        if(slotAnnotations.removeIf(t -> t.getInherited().contains(declaration)))
+            eventBus.post(new SlotAnnotationsChanged(this));
+    }
+
+    /**
+     * Removes all slot annotations
+     */
+    public void clearSlotAnnotations() {
+        if(!slotAnnotations.isEmpty()) {
+            slotAnnotations.clear();
+            eventBus.post(new SlotAnnotationsChanged(this));
+        }
+    }
+
+    public EventBus getEventBus() {
+        return eventBus;
+    }
+
+    /**
+     * Updates the trait declaration to add this trait
+     * @param declaration
+     */
+    public void addSlotTrait(ACAQTraitDeclaration declaration) {
+        if(algorithm.getTraitConfiguration() instanceof ACAQMutableTraitConfiguration) {
+            ((ACAQMutableTraitConfiguration) algorithm.getTraitConfiguration()).addTraitModification(getName(),
+                    new ACAQTraitModificationTask(declaration, ACAQTraitModificationTask.Operation.Add, false));
+        }
+    }
+
+    /**
+     * Updates the trait declaration to remove this trait
+     * @param declaration
+     */
+    public void removeSlotTrait(ACAQTraitDeclaration declaration) {
+        if(algorithm.getTraitConfiguration() instanceof ACAQMutableTraitConfiguration) {
+            ((ACAQMutableTraitConfiguration) algorithm.getTraitConfiguration()).removeTraitModification(getName(),
+                    new ACAQTraitModificationTask(declaration, ACAQTraitModificationTask.Operation.RemoveCategory, false));
+        }
     }
 
     public enum SlotType {

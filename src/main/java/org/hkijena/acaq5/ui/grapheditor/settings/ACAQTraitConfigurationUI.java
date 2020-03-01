@@ -1,11 +1,15 @@
 package org.hkijena.acaq5.ui.grapheditor.settings;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
+import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
+import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
+import org.hkijena.acaq5.api.traits.global.ACAQMutableTraitConfiguration;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
+import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
+import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTextField;
 
@@ -14,64 +18,66 @@ import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.util.Set;
 
-public class ACAQTraitViewerUI extends JPanel {
+public class ACAQTraitConfigurationUI extends JPanel {
 
     private ACAQDataSlot slot;
-    private ACAQAlgorithmGraph graph;
     private JXTextField searchField;
     private JPanel traitList;
 
-    public ACAQTraitViewerUI(ACAQDataSlot slot, ACAQAlgorithmGraph graph) {
+    public ACAQTraitConfigurationUI(ACAQDataSlot slot) {
         this.slot = slot;
-        this.graph = graph;
         initialize();
         reloadTraitList();
-        graph.getEventBus().register(this);
     }
 
     private void reloadTraitList() {
         traitList.removeAll();
         String[] searchStrings = getSearchStrings();
-//        Set<Class<? extends ACAQTrait>> currentTraits = graph.getAlgorithmTraits().getOrDefault(slot, Collections.emptySet());
-//
-//        for(Class<? extends ACAQTrait> trait : ACAQTraitRegistry.getInstance().getSortedTraits()) {
-//            if(!searchStringsMatches(trait, searchStrings))
-//                continue;
-//
-//            JToggleButton traitButton = new JToggleButton(ACAQTrait.getNameOf(trait),
-//                    ACAQUITraitRegistry.getInstance().getIconFor(trait));
-////            traitButton.setBackground(new Color(189, 213, 243));
-////            traitButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(4, 57, 124), 1, true),
-////                    BorderFactory.createEmptyBorder(4,4,4,4)));
-//////            traitButton.setForeground(Color.WHITE);
-////            traitButton.setOpaque(true);
-//            UIUtils.makeFlat(traitButton);
-//            makeToggleToReadonly(trait, traitButton, currentTraits);
-//
-//            traitList.add(traitButton);
-//        }
+
+        boolean canEditTraits = slot.isOutput() && slot.getAlgorithm().getTraitConfiguration() instanceof ACAQMutableTraitConfiguration &&
+                !((ACAQMutableTraitConfiguration) slot.getAlgorithm().getTraitConfiguration()).isTraitModificationsSealed();
+        Set<ACAQTraitDeclaration> selectedTraits = slot.getSlotAnnotations();
+
+        for (ACAQTraitDeclaration trait : ACAQTraitRegistry.getInstance().getRegisteredTraits().values()) {
+            if(trait.isHidden())
+                continue;
+            if(!searchStringsMatches(trait, searchStrings))
+                continue;
+
+            JToggleButton traitButton = new JToggleButton(trait.getName(),
+                    ACAQUITraitRegistry.getInstance().getIconFor(trait));
+            traitButton.setSelected(selectedTraits.contains(trait));
+            traitButton.setToolTipText(TooltipUtils.getTraitTooltip(trait));
+            UIUtils.makeFlat(traitButton);
+            if(canEditTraits)
+                makeToggleToEditor(trait, traitButton);
+            else
+                UIUtils.makeToggleReadonly(traitButton);
+            traitList.add(traitButton);
+
+        }
 
         traitList.revalidate();
         traitList.repaint();
     }
 
-    @Subscribe
-    public void onAlgorithmGraphChanged(AlgorithmGraphChangedEvent event) {
-        reloadTraitList();
+    private void makeToggleToEditor(ACAQTraitDeclaration trait, JToggleButton traitButton) {
+        traitButton.addActionListener(e -> {
+            if(slot.getSlotAnnotations().contains(trait)) {
+                slot.removeSlotTrait(trait);
+                traitButton.setSelected(false);
+            }
+            else {
+                slot.addSlotTrait(trait);
+                traitButton.setSelected(true);
+            }
+        });
     }
 
-    private void makeToggleToReadonly(Class<? extends ACAQTrait> trait, JToggleButton traitButton, Set<Class<? extends ACAQTrait>> currentTraits) {
-//        traitButton.setToolTipText(TooltipUtils.getTraitTooltip(trait));
-//        traitButton.setSelected(currentTraits.contains(trait));
-//        traitButton.addActionListener(e -> {
-//           traitButton.setSelected(!traitButton.isSelected());
-//        });
-    }
-
-    private boolean searchStringsMatches(Class<? extends ACAQTrait> trait, String[] strings) {
+    private boolean searchStringsMatches(ACAQTraitDeclaration trait, String[] strings) {
         if (strings == null)
             return true;
-        String traitName = trait.getName() + " " + trait.getCanonicalName();
+        String traitName = trait.getName() + " " + trait.getDescription();
         for (String str : strings) {
             if (traitName.toLowerCase().contains(str.toLowerCase()))
                 return true;
@@ -114,7 +120,7 @@ public class ACAQTraitViewerUI extends JPanel {
         traitList = new JPanel() {
             @Override
             public Dimension getPreferredSize() {
-                return new Dimension(ACAQTraitViewerUI.this.getWidth() - 16,
+                return new Dimension(ACAQTraitConfigurationUI.this.getWidth() - 16,
                         super.getPreferredSize().height);
             }
         };

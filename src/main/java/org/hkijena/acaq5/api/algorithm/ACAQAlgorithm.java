@@ -20,6 +20,7 @@ import org.hkijena.acaq5.api.events.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.traits.*;
+import org.hkijena.acaq5.api.traits.global.*;
 import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.awt.*;
@@ -52,7 +53,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
      *
      * @param declaration        Contains algorithm metadata
      * @param slotConfiguration  if null, generate the slot configuration
-     * @param traitConfiguration if null, defaults to {@link ACAQMutableTraitModifier}
+     * @param traitConfiguration if null, defaults to {@link ACAQDefaultMutableTraitConfiguration}
      */
     public ACAQAlgorithm(ACAQAlgorithmDeclaration declaration, ACAQSlotConfiguration slotConfiguration, ACAQTraitConfiguration traitConfiguration) {
         this.declaration = declaration;
@@ -74,12 +75,13 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
             slotConfiguration = builder.build();
         }
         if (traitConfiguration == null) {
-            traitConfiguration = new ACAQMutableTraitModifier(slotConfiguration);
+            traitConfiguration = new ACAQDefaultMutableTraitConfiguration(this);
         }
 
         this.slotConfiguration = slotConfiguration;
         this.traitConfiguration = traitConfiguration;
         slotConfiguration.getEventBus().register(this);
+        traitConfiguration.getEventBus().register(this);
         initalize();
         initializeTraits();
     }
@@ -100,13 +102,33 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
     public ACAQAlgorithm(ACAQAlgorithm other) {
         this.declaration = other.declaration;
         this.slotConfiguration = copySlotConfiguration(other);
-        this.traitConfiguration = new ACAQMutableTraitModifier(slotConfiguration);
+        this.traitConfiguration = new ACAQDefaultMutableTraitConfiguration(this);
         this.locations = new HashMap<>(other.locations);
         this.compartment = other.compartment;
         this.visibleCompartments = new HashSet<>(other.visibleCompartments);
         slotConfiguration.getEventBus().register(this);
+        traitConfiguration.getEventBus().register(this);
         initalize();
         initializeTraits();
+    }
+
+    /**
+     * Initializes the trait configuration.
+     * This includes applying annotation-based trait assignments
+     */
+    protected void initializeTraits() {
+        if (getTraitConfiguration() instanceof ACAQDefaultMutableTraitConfiguration) {
+            ACAQDefaultMutableTraitConfiguration traitConfiguration = (ACAQDefaultMutableTraitConfiguration) getTraitConfiguration();
+            // Annotation-based trait configuration
+            if (getClass().getAnnotationsByType(AutoTransferTraits.class).length > 0) {
+                traitConfiguration.setTransferAllToAll(true);
+            }
+            for (ACAQTraitModificationTask task : getDeclaration().getTraitModificationTasks()) {
+                traitConfiguration.getMutableGlobalTraitModificationTasks().add(task);
+            }
+            traitConfiguration.setTraitModificationsSealed(true);
+            traitConfiguration.setTraitTransfersSealed(true);
+        }
     }
 
     /**
@@ -125,28 +147,6 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
     private void initalize() {
         for (Map.Entry<String, ACAQSlotDefinition> kv : slotConfiguration.getSlots().entrySet()) {
             slots.put(kv.getKey(), new ACAQDataSlot(this, kv.getValue().getSlotType(), kv.getKey(), kv.getValue().getDataClass()));
-        }
-    }
-
-    /**
-     * Initializes the trait configuration.
-     * This includes applying annotation-based trait assignments
-     */
-    protected void initializeTraits() {
-        if (getTraitConfiguration() instanceof ACAQMutableTraitModifier) {
-            ACAQMutableTraitModifier traitConfiguration = (ACAQMutableTraitModifier) getTraitConfiguration();
-            // Annotation-based trait configuration
-            if (getClass().getAnnotationsByType(AutoTransferTraits.class).length > 0) {
-                traitConfiguration.transferFromAllToAll();
-            }
-            for (AddsTrait trait : getDeclaration().getAddedTraits()) {
-                if (trait.autoAdd())
-                    traitConfiguration.addsTrait(trait.value());
-            }
-            for (RemovesTrait trait : getDeclaration().getRemovedTraits()) {
-                if (trait.autoRemove())
-                    traitConfiguration.removesTrait(trait.value());
-            }
         }
     }
 
@@ -174,11 +174,11 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
         return getDeclaration().getCategory();
     }
 
-    Set<Class<? extends ACAQTrait>> getPreferredTraits() {
+    Set<ACAQTraitDeclaration> getPreferredTraits() {
         return getDeclaration().getPreferredTraits();
     }
 
-    Set<Class<? extends ACAQTrait>> getUnwantedTraits() {
+    Set<ACAQTraitDeclaration> getUnwantedTraits() {
         return getDeclaration().getUnwantedTraits();
     }
 
@@ -242,6 +242,11 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
         eventBus.post(new AlgorithmSlotsChangedEvent(this));
     }
 
+    @Subscribe
+    public void onTraitConfigurationChanged(TraitsChangedEvent event) {
+        getTraitConfiguration().apply();
+    }
+
 
     public Map<String, Point> getLocations() {
         return locations;
@@ -271,8 +276,8 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
                 }
             }
         }
-        if (node.has("acaq:trait-generation") && getTraitConfiguration() instanceof ACAQMutableTraitGenerator) {
-            ((ACAQMutableTraitGenerator) getTraitConfiguration()).fromJson(node.get("acaq:trait-generation"));
+        if (node.has("acaq:trait-generation") && getTraitConfiguration() instanceof ACAQMutableTraitConfiguration) {
+            ((ACAQDefaultMutableTraitConfiguration) getTraitConfiguration()).fromJson(node.get("acaq:trait-generation"));
         }
 
         // Deserialize algorithm-specific parameters
@@ -405,7 +410,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
             for (Map.Entry<String, ACAQParameterAccess> kv : ACAQParameterAccess.getParameters(algorithm).entrySet()) {
                 jsonGenerator.writeObjectField(kv.getKey(), kv.getValue().get());
             }
-            if (algorithm.getTraitConfiguration() instanceof ACAQMutableTraitGenerator) {
+            if (algorithm.getTraitConfiguration() instanceof ACAQMutableTraitConfiguration) {
                 jsonGenerator.writeObjectField("acaq:trait-generation", algorithm.getTraitConfiguration());
             }
             jsonGenerator.writeEndObject();

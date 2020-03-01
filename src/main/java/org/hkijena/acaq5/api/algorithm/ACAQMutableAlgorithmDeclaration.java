@@ -1,8 +1,7 @@
 package org.hkijena.acaq5.api.algorithm;
 
-import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.api.traits.AddsTrait;
-import org.hkijena.acaq5.api.traits.RemovesTrait;
+import org.hkijena.acaq5.api.traits.*;
+import org.hkijena.acaq5.api.traits.global.ACAQTraitModificationTask;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -19,10 +18,9 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
     private String name;
     private String description;
     private ACAQAlgorithmCategory category;
-    private Set<Class<? extends ACAQTrait>> preferredTraits = new HashSet<>();
-    private Set<Class<? extends ACAQTrait>> unwantedTraits = new HashSet<>();
-    private List<AddsTrait> addedTraits = new ArrayList<>();
-    private List<RemovesTrait> removedTraits = new ArrayList<>();
+    private Set<ACAQTraitDeclaration> preferredTraits = new HashSet<>();
+    private Set<ACAQTraitDeclaration> unwantedTraits = new HashSet<>();
+    private List<ACAQTraitModificationTask> traitModificationTasks = new ArrayList<>();
     private List<AlgorithmInputSlot> inputSlots = new ArrayList<>();
     private List<AlgorithmOutputSlot> outputSlots = new ArrayList<>();
 
@@ -63,39 +61,21 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
     }
 
     @Override
-    public Set<Class<? extends ACAQTrait>> getPreferredTraits() {
+    public Set<ACAQTraitDeclaration> getPreferredTraits() {
         return preferredTraits;
     }
 
-    public void setPreferredTraits(Set<Class<? extends ACAQTrait>> preferredTraits) {
+    public void setPreferredTraits(Set<ACAQTraitDeclaration> preferredTraits) {
         this.preferredTraits = preferredTraits;
     }
 
     @Override
-    public Set<Class<? extends ACAQTrait>> getUnwantedTraits() {
+    public Set<ACAQTraitDeclaration> getUnwantedTraits() {
         return unwantedTraits;
     }
 
-    public void setUnwantedTraits(Set<Class<? extends ACAQTrait>> unwantedTraits) {
+    public void setUnwantedTraits(Set<ACAQTraitDeclaration> unwantedTraits) {
         this.unwantedTraits = unwantedTraits;
-    }
-
-    @Override
-    public List<AddsTrait> getAddedTraits() {
-        return addedTraits;
-    }
-
-    public void setAddedTraits(List<AddsTrait> addedTraits) {
-        this.addedTraits = addedTraits;
-    }
-
-    @Override
-    public List<RemovesTrait> getRemovedTraits() {
-        return removedTraits;
-    }
-
-    public void setRemovedTraits(List<RemovesTrait> removedTraits) {
-        this.removedTraits = removedTraits;
     }
 
     @Override
@@ -123,5 +103,14 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    @Override
+    public List<ACAQTraitModificationTask> getTraitModificationTasks() {
+        return traitModificationTasks;
+    }
+
+    public void setTraitModificationTasks(List<ACAQTraitModificationTask> traitModificationTasks) {
+        this.traitModificationTasks = traitModificationTasks;
     }
 }

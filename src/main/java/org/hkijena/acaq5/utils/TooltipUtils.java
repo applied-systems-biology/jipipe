@@ -6,13 +6,11 @@ import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.api.traits.AddsTrait;
-import org.hkijena.acaq5.api.traits.RemovesTrait;
+import org.hkijena.acaq5.api.traits.*;
+import org.hkijena.acaq5.api.traits.global.ACAQTraitModificationTask;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
 
-import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -47,10 +45,10 @@ public class TooltipUtils {
 
         // Show annotations
         if (withAnnotations) {
-            Set<Class<? extends ACAQTrait>> traits = graph.getAlgorithmTraits().getOrDefault(slot, Collections.emptySet());
-            if (traits != null && !traits.isEmpty()) {
+            Set<ACAQTraitDeclaration> slotAnnotations = slot.getSlotAnnotations();
+            if (!slotAnnotations.isEmpty()) {
                 builder.append("<br/><br/><strong>Annotations<br/>");
-                insertTraitTable(builder, traits);
+                insertTraitTable(builder, slotAnnotations);
             }
         }
 
@@ -89,12 +87,16 @@ public class TooltipUtils {
         if (description != null && !description.isEmpty())
             builder.append(description).append("</br>");
 
-        Set<Class<? extends ACAQTrait>> preferredTraits = declaration.getPreferredTraits();
-        Set<Class<? extends ACAQTrait>> unwantedTraits = declaration.getUnwantedTraits();
-        Set<Class<? extends ACAQTrait>> addedTraits = declaration.getAddedTraits()
-                .stream().map(AddsTrait::value).collect(Collectors.toSet());
-        Set<Class<? extends ACAQTrait>> removedTraits = declaration.getRemovedTraits()
-                .stream().map(RemovesTrait::value).collect(Collectors.toSet());
+        Set<ACAQTraitDeclaration> preferredTraits = declaration.getPreferredTraits();
+        Set<ACAQTraitDeclaration> unwantedTraits = declaration.getUnwantedTraits();
+        Set<ACAQTraitDeclaration> addedTraits = declaration.getTraitModificationTasks()
+                .stream().filter(ACAQTraitModificationTask::isAddingTraits)
+                .map(ACAQTraitModificationTask::getTraitDeclaration)
+                .collect(Collectors.toSet());
+        Set<ACAQTraitDeclaration> removedTraits = declaration.getTraitModificationTasks()
+                .stream().filter(ACAQTraitModificationTask::isRemovingTraits)
+                .map(ACAQTraitModificationTask::getTraitDeclaration)
+                .collect(Collectors.toSet());
 
         if (!preferredTraits.isEmpty()) {
             builder.append("<br/><br/><strong>Good for<br/>");
@@ -149,14 +151,14 @@ public class TooltipUtils {
 //        return builder.toString();
 //    }
 
-    public static void insertTraitTable(StringBuilder builder, Set<Class<? extends ACAQTrait>> traits) {
+    public static void insertTraitTable(StringBuilder builder, Set<ACAQTraitDeclaration> traits) {
         builder.append("<table>");
-        for (Class<? extends ACAQTrait> trait : traits) {
+        for (ACAQTraitDeclaration trait : traits) {
             builder.append("<tr>");
             builder.append("<td>").append("<img src=\"")
                     .append(ACAQUITraitRegistry.getInstance().getIconURLFor(trait))
                     .append("\"/>").append("</td>");
-            builder.append("<td>").append(ACAQTrait.getNameOf(trait)).append("</td>");
+            builder.append("<td>").append(trait.getName()).append("</td>");
             builder.append("</tr>");
         }
         builder.append("</table>");
@@ -186,6 +188,38 @@ public class TooltipUtils {
             builder.append("Output");
         builder.append(" of ").append(slot.getAlgorithm().getName()).append("<br/>");
 
+        builder.append("</html>");
+
+        return builder.toString();
+    }
+
+    public static String getTraitTooltip(ACAQTraitDeclaration trait) {
+        String name = trait.getName();
+        String description = trait.getDescription();
+        StringBuilder builder = new StringBuilder();
+        builder.append("<html><u><strong>");
+        builder.append(name);
+        builder.append("</u></strong>");
+        if(description != null && !description.isEmpty()) {
+            builder.append("<br/>")
+                .append(description);
+        }
+
+        Set<ACAQTraitDeclaration> categories = trait.getInherited();
+        if(!categories.isEmpty()) {
+            builder.append("<br/><br/>");
+            builder.append("<strong>Inherited annotations</strong><br/>");
+            builder.append("<table>");
+            for (ACAQTraitDeclaration inherited : categories) {
+                builder.append("<tr>");
+                builder.append("<td>").append("<img src=\"")
+                        .append(ACAQUITraitRegistry.getInstance().getIconURLFor(inherited))
+                        .append("\"/>").append("</td>");
+                builder.append("<td>").append(inherited.getName()).append("</td>");
+                builder.append("</tr>");
+            }
+            builder.append("</table>");
+        }
         builder.append("</html>");
 
         return builder.toString();

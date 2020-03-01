@@ -10,7 +10,7 @@ import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
+import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.components.FormPanel;
@@ -196,10 +196,10 @@ public class ACAQAlgorithmFinderUI extends JPanel {
     }
 
     public static int scoreAlgorithmForOutputSlot(ACAQAlgorithmDeclaration declaration, ACAQDataSlot slot, ACAQAlgorithmGraph graph) {
-        Set<Class<? extends ACAQTrait>> preferredTraits = declaration.getPreferredTraits();
-        Set<Class<? extends ACAQTrait>> unwantedTraits = declaration.getUnwantedTraits();
+        Set<ACAQTraitDeclaration> preferredTraits = declaration.getPreferredTraits();
+        Set<ACAQTraitDeclaration> unwantedTraits = declaration.getUnwantedTraits();
         int score = 0;
-        for (Class<? extends ACAQTrait> trait : graph.getAlgorithmTraits().getOrDefault(slot, Collections.emptySet())) {
+        for (ACAQTraitDeclaration trait : slot.getSlotAnnotations()) {
             if (preferredTraits.contains(trait)) {
                 score += 10;
             } else if (unwantedTraits.contains(trait)) {

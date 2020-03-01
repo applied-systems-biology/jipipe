@@ -5,7 +5,6 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
-import org.hkijena.acaq5.api.traits.ACAQMutableTraitGenerator;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 
@@ -21,14 +20,12 @@ import java.util.ArrayList;
  */
 public class ACAQTraitEditorUI extends JPanel {
     private ACAQAlgorithm algorithm;
-    private ACAQAlgorithmGraph graph;
     private JComboBox<ACAQDataSlot> slotSelection;
     private MarkdownReader helpPanel;
     private JSplitPane splitPane;
 
-    public ACAQTraitEditorUI(ACAQAlgorithm algorithm, ACAQAlgorithmGraph graph) {
+    public ACAQTraitEditorUI(ACAQAlgorithm algorithm) {
         this.algorithm = algorithm;
-        this.graph = graph;
         initialize();
         reloadList();
         algorithm.getEventBus().register(this);
@@ -77,10 +74,7 @@ public class ACAQTraitEditorUI extends JPanel {
     public void updateEditor() {
         if (slotSelection.getSelectedItem() != null) {
             ACAQDataSlot selectedSlot = (ACAQDataSlot) slotSelection.getSelectedItem();
-            if (algorithm.getTraitConfiguration() instanceof ACAQMutableTraitGenerator)
-                splitPane.setLeftComponent(new ACAQTraitGeneratorUI(selectedSlot.getName(), (ACAQMutableTraitGenerator) algorithm.getTraitConfiguration(), graph));
-            else
-                splitPane.setLeftComponent(new ACAQTraitViewerUI(selectedSlot, graph));
+            splitPane.setLeftComponent(new ACAQTraitConfigurationUI(selectedSlot));
             revalidate();
             repaint();
         }

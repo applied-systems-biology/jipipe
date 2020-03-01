@@ -42,6 +42,12 @@ public interface ACAQTraitDeclaration {
     boolean isDiscriminator();
 
     /**
+     * Returns true if the trait should be hidden from the user
+     * @return
+     */
+    boolean isHidden();
+
+    /**
      * Returns the algorithm name
      *
      * @return

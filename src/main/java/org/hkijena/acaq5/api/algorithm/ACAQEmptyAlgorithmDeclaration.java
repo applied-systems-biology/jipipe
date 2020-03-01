@@ -5,9 +5,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.api.traits.AddsTrait;
-import org.hkijena.acaq5.api.traits.RemovesTrait;
+import org.hkijena.acaq5.api.traits.*;
+import org.hkijena.acaq5.api.traits.global.ACAQTraitModificationTask;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -52,22 +51,17 @@ public class ACAQEmptyAlgorithmDeclaration implements ACAQAlgorithmDeclaration {
     }
 
     @Override
-    public Set<Class<? extends ACAQTrait>> getPreferredTraits() {
+    public Set<ACAQTraitDeclaration> getPreferredTraits() {
         return Collections.emptySet();
     }
 
     @Override
-    public Set<Class<? extends ACAQTrait>> getUnwantedTraits() {
+    public Set<ACAQTraitDeclaration> getUnwantedTraits() {
         return Collections.emptySet();
     }
 
     @Override
-    public List<AddsTrait> getAddedTraits() {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public List<RemovesTrait> getRemovedTraits() {
+    public List<ACAQTraitModificationTask> getTraitModificationTasks() {
         return Collections.emptyList();
     }
 

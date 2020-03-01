@@ -358,4 +358,8 @@ public class UIUtils {
             return new Color(6, 20, 57);
         return declaration.getCategory().getColor(0.1f, 0.5f);
     }
+
+    public static void makeToggleReadonly(JToggleButton toggleButton) {
+        toggleButton.addActionListener(e -> toggleButton.setSelected(!toggleButton.isSelected()));
+    }
 }

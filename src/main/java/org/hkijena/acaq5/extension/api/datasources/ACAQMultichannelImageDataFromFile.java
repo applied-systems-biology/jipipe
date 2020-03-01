@@ -5,6 +5,9 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.api.traits.global.ACAQDefaultMutableTraitConfiguration;
+import org.hkijena.acaq5.api.traits.global.ACAQMutableTraitConfiguration;
+import org.hkijena.acaq5.api.traits.global.AutoTransferTraits;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMultichannelImageData;
 import org.hkijena.acaq5.filesystem.api.dataypes.ACAQFileData;
 
@@ -17,6 +20,7 @@ import java.nio.file.Path;
 @AlgorithmInputSlot(value = ACAQFileData.class, slotName = "Files", autoCreate = true)
 @AlgorithmOutputSlot(value = ACAQMultichannelImageData.class, slotName = "Multichannel Image", autoCreate = true)
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
+@AutoTransferTraits
 public class ACAQMultichannelImageDataFromFile extends ACAQIteratingAlgorithm {
 
     public ACAQMultichannelImageDataFromFile(ACAQAlgorithmDeclaration declaration) {
@@ -25,6 +29,12 @@ public class ACAQMultichannelImageDataFromFile extends ACAQIteratingAlgorithm {
 
     public ACAQMultichannelImageDataFromFile(ACAQMultichannelImageDataFromFile other) {
         super(other);
+    }
+
+    @Override
+    protected void initializeTraits() {
+        super.initializeTraits();
+        ((ACAQDefaultMutableTraitConfiguration)getTraitConfiguration()).setTraitModificationsSealed(false);
     }
 
     @Override
