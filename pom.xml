@@ -252,7 +252,7 @@ See the LICENSE file provided with this code for the full license.
                             <overWriteSnapshots>false</overWriteSnapshots>
                             <overWriteIfNewer>true</overWriteIfNewer>
                             <excludeGroupIds>net.imagej, net.imglib2, org.scijava, com.google.code.gson,
-                                com.google.guava, org.swinglabs, org.jfree, ome
+                                com.google.guava, org.swinglabs, ome
                             </excludeGroupIds>
                         </configuration>
                     </execution>
