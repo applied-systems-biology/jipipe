@@ -1,11 +1,10 @@
 package org.hkijena.acaq5.ui.grapheditor.settings;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.api.ACAQMutableRunConfiguration;
-import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.testbench.ACAQTestbench;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.*;
@@ -31,7 +30,7 @@ public class ACAQTestBenchSetupUI extends ACAQUIPanel {
     private JPanel setupPanel;
     private JPanel validationReportPanel;
     private ACAQValidityReportUI validationReportUI;
-    private ACAQRun currentRun;
+    private ACAQTestbench currentTestBench;
 
     public ACAQTestBenchSetupUI(ACAQWorkbenchUI workbenchUI, ACAQAlgorithm algorithm, ACAQAlgorithmGraph graph) {
         super(workbenchUI);
@@ -140,14 +139,11 @@ public class ACAQTestBenchSetupUI extends ACAQUIPanel {
     }
 
     private void generateTestBench(Path outputPath) {
-        ACAQMutableRunConfiguration configuration = new ACAQMutableRunConfiguration();
-        configuration.setOutputPath(outputPath.resolve("initial"));
 
-        currentRun = new ACAQRun(getProject(), configuration);
-        configuration.setEndAlgorithmId(algorithm.getIdInGraph());
+        currentTestBench = new ACAQTestbench(getProject(), algorithm, outputPath);
 
         removeAll();
-        ACAQRunExecuterUI executerUI = new ACAQRunExecuterUI(currentRun);
+        ACAQRunExecuterUI executerUI = new ACAQRunExecuterUI(currentTestBench);
         add(executerUI, BorderLayout.SOUTH);
         revalidate();
         repaint();
@@ -156,16 +152,16 @@ public class ACAQTestBenchSetupUI extends ACAQUIPanel {
 
     @Subscribe
     public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
-        if (event.getRun() == currentRun) {
+        if (event.getRun() == currentTestBench) {
             tryShowSetupPanel();
 
             try {
-                ACAQTestBenchUI testBenchUI = new ACAQTestBenchUI(getWorkbenchUI(), algorithm, currentRun);
+                ACAQTestBenchUI testBenchUI = new ACAQTestBenchUI(getWorkbenchUI(), currentTestBench);
                 String name = "Testbench: " + algorithm.getName();
                 getWorkbenchUI().getDocumentTabPane().addTab(name, UIUtils.getIconFromResources("testbench.png"),
                         testBenchUI, DocumentTabPane.CloseMode.withAskOnCloseButton, true);
                 getWorkbenchUI().getDocumentTabPane().switchToLastTab();
-                currentRun = null;
+                currentTestBench = null;
             } catch (Exception e) {
                 openError(e);
             }
@@ -174,7 +170,7 @@ public class ACAQTestBenchSetupUI extends ACAQUIPanel {
 
     @Subscribe
     public void onWorkerInterrupted(RunUIWorkerInterruptedEvent event) {
-        if (event.getRun() == currentRun) {
+        if (event.getRun() == currentTestBench) {
             openError(event.getException());
         }
     }

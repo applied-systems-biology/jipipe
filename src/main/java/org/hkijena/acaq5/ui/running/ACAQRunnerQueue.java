@@ -20,14 +20,14 @@ public class ACAQRunnerQueue {
 
     private ACAQRunWorker currentlyRunningWorker = null;
     private Queue<ACAQRunWorker> queue = new ArrayDeque<>();
-    private Map<ACAQRun, ACAQRunWorker> assignedWorkers = new HashMap<>();
+    private Map<ACAQRunnable, ACAQRunWorker> assignedWorkers = new HashMap<>();
     private EventBus eventBus = new EventBus();
 
     private ACAQRunnerQueue() {
 
     }
 
-    public ACAQRunWorker enqueue(ACAQRun run) {
+    public ACAQRunWorker enqueue(ACAQRunnable run) {
         ACAQRunWorker worker = new ACAQRunWorker(run);
         worker.getEventBus().register(this);
         assignedWorkers.put(run, worker);

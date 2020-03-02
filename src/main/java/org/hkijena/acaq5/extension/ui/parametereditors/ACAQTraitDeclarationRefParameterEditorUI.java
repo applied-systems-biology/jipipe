@@ -54,7 +54,7 @@ public class ACAQTraitDeclarationRefParameterEditorUI extends ACAQParameterEdito
         pickerDialog = new JDialog();
         pickerDialog.setTitle("Select annotation");
         pickerDialog.setContentPane(picker);
-        pickerDialog.setModal(true);
+        pickerDialog.setModal(false);
     }
 
     private void refreshCurrentlyDisplayed() {

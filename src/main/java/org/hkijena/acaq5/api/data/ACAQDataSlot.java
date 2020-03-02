@@ -423,6 +423,12 @@ public class ACAQDataSlot implements TableModel {
         }
     }
 
+    public void clearData() {
+        data.clear();
+        annotationColumns.clear();
+        annotations.clear();
+    }
+
     public enum SlotType {
         Input,
         Output
