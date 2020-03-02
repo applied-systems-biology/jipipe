@@ -49,7 +49,7 @@ public class ACAQFolderAnnotationGenerator extends ACAQIteratingAlgorithm {
     @Override
     protected void runIteration(ACAQDataInterface dataInterface) {
         if(generatedAnnotation.getDeclaration() != null) {
-            ACAQFolderData inputData =dataInterface.getInputData(getFirstInputSlot());
+            ACAQFolderData inputData = dataInterface.getInputData(getFirstInputSlot());
             String discriminator = inputData.getFolderPath().getFileName().toString();
             dataInterface.addAnnotation(generatedAnnotation.getDeclaration().newInstance(discriminator));
             dataInterface.addOutputData(getFirstOutputSlot(), inputData);

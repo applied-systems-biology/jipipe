@@ -178,7 +178,7 @@ public class ACAQExportedDataTable implements TableModel {
             return rowList.get(rowIndex);
         else {
             ACAQTraitDeclaration traitColumn = traitColumns.get(columnIndex - 2);
-            return rowList.get(columnIndex - 2).traits.stream().filter(t -> t.getDeclaration() == traitColumn).findFirst().orElse(null);
+            return rowList.get(rowIndex).traits.stream().filter(t -> t.getDeclaration() == traitColumn).findFirst().orElse(null);
         }
     }
 
