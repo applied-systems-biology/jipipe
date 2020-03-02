@@ -36,7 +36,6 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
     private JSplitPane splitPane;
     private JScrollPane scrollPane;
     private ACAQAlgorithmSettingsPanelUI currentAlgorithmSettings;
-    private JToggleButton autoLayoutButton;
 
     private Point panningOffset = null;
     private Point panningScrollbarOffset = null;
@@ -89,19 +88,28 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
 
     protected void initializeToolbar() {
         initializeAddNodesMenus();
+
         menuBar.add(Box.createHorizontalGlue());
+
+        JButton autoLayoutButton = new JButton(UIUtils.getIconFromResources("auto-layout-all.png"));
+        autoLayoutButton.setToolTipText("Auto-layout all nodes");
+        UIUtils.makeFlat25x25(autoLayoutButton);
+        autoLayoutButton.addActionListener(e -> graphUI.autoLayoutAll());
+        menuBar.add(autoLayoutButton);
+
         switchPanningDirectionButton = new JToggleButton(UIUtils.getIconFromResources("cursor-arrow.png"));
         switchPanningDirectionButton.setToolTipText("Reverse panning direction");
         UIUtils.makeFlat25x25(switchPanningDirectionButton);
         switchPanningDirectionButton.setToolTipText("Changes the direction how panning (middle mouse button) affects the view.");
         menuBar.add(switchPanningDirectionButton);
 
-        autoLayoutButton = new JToggleButton(UIUtils.getIconFromResources("sort.png"), true);
-        UIUtils.makeFlat25x25(autoLayoutButton);
-        autoLayoutButton.setToolTipText("Auto layout");
+        JToggleButton layoutHelperButton;
+        layoutHelperButton = new JToggleButton(UIUtils.getIconFromResources("auto-layout-connections.png"), true);
+        UIUtils.makeFlat25x25(layoutHelperButton);
+        layoutHelperButton.setToolTipText("Auto-layout layout on making data slot connections");
         graphUI.setLayoutHelperEnabled(true);
-        autoLayoutButton.addActionListener(e -> graphUI.setLayoutHelperEnabled(autoLayoutButton.isSelected()));
-        menuBar.add(autoLayoutButton);
+        layoutHelperButton.addActionListener(e -> graphUI.setLayoutHelperEnabled(layoutHelperButton.isSelected()));
+        menuBar.add(layoutHelperButton);
 
         JButton createScreenshotButton = new JButton(UIUtils.getIconFromResources("filetype-image.png"));
         createScreenshotButton.setToolTipText("Export graph as *.png");

@@ -225,6 +225,17 @@ public class UIUtils {
         component.setBorder(compound);
     }
 
+    public static void makeFlatH25(AbstractButton component) {
+        component.setBackground(Color.WHITE);
+        component.setOpaque(false);
+        component.setPreferredSize(new Dimension(25, 25));
+        component.setMinimumSize(new Dimension(25, 25));
+        component.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
+        Border margin = new EmptyBorder(2, 2, 2, 2);
+        Border compound = new CompoundBorder(BorderFactory.createEtchedBorder(), margin);
+        component.setBorder(compound);
+    }
+
     public static void makeBorderlessWithoutMargin(AbstractButton component) {
         component.setBackground(Color.WHITE);
         component.setOpaque(false);

@@ -2,6 +2,7 @@ package org.hkijena.acaq5.ui.grapheditor;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
@@ -124,7 +125,12 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
      * Auto-layouts all UIs
      */
     public void autoLayoutAll() {
-
+        for (ACAQAlgorithm algorithm : ImmutableList.copyOf(nodeUIs.keySet())) {
+            algorithm.setLocationWithin(compartment, null);
+            remove(nodeUIs.get(algorithm));
+        }
+        nodeUIs.clear();
+        addNewNodes();
     }
 
     private void autoPlaceAlgorithm(ACAQAlgorithmUI ui) {
