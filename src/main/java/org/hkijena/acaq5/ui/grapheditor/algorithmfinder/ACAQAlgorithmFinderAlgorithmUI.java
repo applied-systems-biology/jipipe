@@ -5,7 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
-import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
+import org.hkijena.acaq5.api.algorithm.ACAQIOSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
@@ -17,7 +17,9 @@ import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.util.Set;
 
 import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_HEIGHT;
@@ -105,7 +107,7 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
 
         if (algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
             ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
-            createAddInputSlotButton = slotConfiguration.allowsInputSlots() && !slotConfiguration.isInputSlotsSealed();
+            createAddInputSlotButton = slotConfiguration.canAddInputSlot();
         }
 
         for (ACAQDataSlot slot : algorithm.getInputSlots()) {
@@ -164,7 +166,7 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
             String initialValue = slotType + " data ";
 
             // This is general
-            if (algorithm instanceof ACAQCompartmentOutput) {
+            if (slotConfiguration instanceof ACAQIOSlotConfiguration) {
                 initialValue = "Data ";
             }
 

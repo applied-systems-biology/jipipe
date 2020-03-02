@@ -22,7 +22,8 @@ import org.jdesktop.swingx.JXTable;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.util.Vector;
 
 public class ACAQMergeTableColumnsDialogUI extends JDialog {

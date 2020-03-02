@@ -193,6 +193,11 @@ public class TooltipUtils {
         builder.append("<html><u><strong>");
         builder.append(name);
         builder.append("</u></strong>");
+
+        if (trait.isDiscriminator()) {
+            builder.append("<br/><u>This annotation type allows to store a discriminating value</u><br/>");
+        }
+
         if (description != null && !description.isEmpty()) {
             builder.append("<br/>")
                     .append(description);

@@ -3,6 +3,7 @@ package org.hkijena.acaq5.ui.grapheditor;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQIOSlotConfiguration;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
@@ -165,8 +166,8 @@ public class ACAQAlgorithmUI extends JPanel {
 
         if (algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
             ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
-            createAddInputSlotButton = slotConfiguration.allowsInputSlots() && !slotConfiguration.isInputSlotsSealed();
-            createAddOutputSlotButton = slotConfiguration.allowsOutputSlots() && !slotConfiguration.isOutputSlotsSealed();
+            createAddInputSlotButton = slotConfiguration.canAddInputSlot();
+            createAddOutputSlotButton = slotConfiguration.canAddOutputSlot();
         }
 
         // For ACAQCompartmentOutput, we want to hide creating outputs / inputs depending on the current compartment
@@ -241,7 +242,7 @@ public class ACAQAlgorithmUI extends JPanel {
             String initialValue = slotType + " data ";
 
             // This is general
-            if (getAlgorithm() instanceof ACAQCompartmentOutput) {
+            if (getAlgorithm().getSlotConfiguration() instanceof ACAQIOSlotConfiguration) {
                 initialValue = "Data ";
             }
 

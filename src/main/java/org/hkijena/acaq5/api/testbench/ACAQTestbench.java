@@ -1,8 +1,13 @@
 package org.hkijena.acaq5.api.testbench;
 
-import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.ACAQMutableRunConfiguration;
+import org.hkijena.acaq5.api.ACAQProject;
+import org.hkijena.acaq5.api.ACAQRun;
+import org.hkijena.acaq5.api.ACAQRunnable;
+import org.hkijena.acaq5.api.ACAQRunnerStatus;
+import org.hkijena.acaq5.api.ACAQValidatable;
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 
 import java.nio.file.Files;
@@ -97,7 +102,7 @@ public class ACAQTestbench implements ACAQRunnable, ACAQValidatable {
     public void newTest() {
         ACAQValidityReport report = new ACAQValidityReport();
         reportValidity(report);
-        if(!report.isValid())
+        if (!report.isValid())
             throw new RuntimeException("Testbench is not valid!");
 
         Path outputBasePath = testbenchRun.getConfiguration().getOutputPath().getParent();

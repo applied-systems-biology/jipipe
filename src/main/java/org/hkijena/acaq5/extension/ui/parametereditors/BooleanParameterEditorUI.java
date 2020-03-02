@@ -4,7 +4,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 
 public class BooleanParameterEditorUI extends ACAQParameterEditorUI {
 

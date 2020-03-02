@@ -20,17 +20,27 @@ import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQMutableTraitConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQTraitConfiguration;
 import org.hkijena.acaq5.api.data.traits.AutoTransferTraits;
-import org.hkijena.acaq5.api.events.*;
+import org.hkijena.acaq5.api.events.AlgorithmNameChanged;
+import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
+import org.hkijena.acaq5.api.events.SlotAddedEvent;
+import org.hkijena.acaq5.api.events.SlotOrderChangedEvent;
+import org.hkijena.acaq5.api.events.SlotRemovedEvent;
+import org.hkijena.acaq5.api.events.SlotRenamedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.utils.JsonUtils;
 
-import java.awt.*;
+import java.awt.Point;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * An algorithm is is a set of input and output data slots, and a run() function
@@ -369,6 +379,16 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
 
     public ACAQDataSlot getFirstInputSlot() {
         return getInputSlots().get(0);
+    }
+
+    public ACAQDataSlot getLastOutputSlot() {
+        List<ACAQDataSlot> outputSlots = getOutputSlots();
+        return outputSlots.get(outputSlots.size() - 1);
+    }
+
+    public ACAQDataSlot getLastInputSlot() {
+        List<ACAQDataSlot> inputSlots = getInputSlots();
+        return inputSlots.get(inputSlots.size() - 1);
     }
 
     public ACAQAlgorithmGraph getGraph() {

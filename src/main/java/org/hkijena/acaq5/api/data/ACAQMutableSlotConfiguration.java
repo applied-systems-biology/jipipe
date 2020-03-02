@@ -8,7 +8,14 @@ import org.hkijena.acaq5.api.events.SlotOrderChangedEvent;
 import org.hkijena.acaq5.api.events.SlotRemovedEvent;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -26,6 +33,8 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
     private boolean allowOutputSlots = true;
     private Set<Class<? extends ACAQData>> allowedInputSlotTypes;
     private Set<Class<? extends ACAQData>> allowedOutputSlotTypes;
+    private int maxInputSlots = 32;
+    private int maxOutputSlots = 32;
 
     public ACAQMutableSlotConfiguration() {
         allowedInputSlotTypes = new HashSet<>(ACAQDatatypeRegistry.getInstance().getUnhiddenRegisteredDataTypes());
@@ -45,6 +54,8 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
             throw new RuntimeException("Slot configuration is sealed!");
         if (hasSlot(name))
             throw new RuntimeException("Slot already exists!");
+        if (inputSlotOrder.size() >= maxInputSlots)
+            throw new RuntimeException("Slot already reached the limit of input slots!");
         slots.put(name, new ACAQSlotDefinition(klass, ACAQDataSlot.SlotType.Input, name));
         inputSlotOrder.add(name);
         getEventBus().post(new SlotAddedEvent(this, name));
@@ -59,6 +70,8 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
             throw new RuntimeException("Slot configuration is sealed!");
         if (hasSlot(name))
             throw new RuntimeException("Slot already exists!");
+        if (outputSlotOrder.size() >= maxOutputSlots)
+            throw new RuntimeException("Slot already reached the limit of output slots!");
         slots.put(name, new ACAQSlotDefinition(klass, ACAQDataSlot.SlotType.Output, name));
         outputSlotOrder.add(name);
         getEventBus().post(new SlotAddedEvent(this, name));
@@ -254,6 +267,30 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
         return false;
     }
 
+    public int getMaxInputSlots() {
+        return maxInputSlots;
+    }
+
+    public void setMaxInputSlots(int maxInputSlots) {
+        this.maxInputSlots = maxInputSlots;
+    }
+
+    public int getMaxOutputSlots() {
+        return maxOutputSlots;
+    }
+
+    public void setMaxOutputSlots(int maxOutputSlots) {
+        this.maxOutputSlots = maxOutputSlots;
+    }
+
+    public boolean canAddInputSlot() {
+        return allowsInputSlots() && !isInputSlotsSealed() && inputSlotOrder.size() < maxInputSlots;
+    }
+
+    public boolean canAddOutputSlot() {
+        return allowsOutputSlots() && !isOutputSlotsSealed() && outputSlotOrder.size() < maxOutputSlots;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -272,6 +309,16 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
         public Builder addOutputSlot(String name, Class<? extends ACAQData> klass) {
             object.addOutputSlot(name, klass);
+            return this;
+        }
+
+        public Builder restrictInputSlotCount(int maxCount) {
+            object.maxInputSlots = maxCount;
+            return this;
+        }
+
+        public Builder restrictOutputSlotCount(int maxCount) {
+            object.maxOutputSlots = maxCount;
             return this;
         }
 

@@ -5,7 +5,7 @@ import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphUI;
 
-import java.awt.*;
+import java.awt.BorderLayout;
 
 public class ACAQCompartmentUI extends ACAQUIPanel {
 

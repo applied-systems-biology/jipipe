@@ -13,7 +13,11 @@
 package org.hkijena.acaq5.extension.ui.plotbuilder;
 
 import com.google.common.primitives.Doubles;
-import org.hkijena.acaq5.ui.plotbuilder.*;
+import org.hkijena.acaq5.ui.plotbuilder.ACAQNumericPlotSeriesColumn;
+import org.hkijena.acaq5.ui.plotbuilder.ACAQPlot;
+import org.hkijena.acaq5.ui.plotbuilder.ACAQPlotSeries;
+import org.hkijena.acaq5.ui.plotbuilder.ACAQPlotSeriesData;
+import org.hkijena.acaq5.ui.plotbuilder.ACAQPlotSeriesGenerator;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;

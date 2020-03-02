@@ -23,7 +23,14 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -228,9 +235,9 @@ public class UIUtils {
     public static void makeFlatH25(AbstractButton component) {
         component.setBackground(Color.WHITE);
         component.setOpaque(false);
-        component.setPreferredSize(new Dimension(25, 25));
-        component.setMinimumSize(new Dimension(25, 25));
-        component.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
+//        component.setPreferredSize(new Dimension(component.getPreferredSize().width, 25));
+//        component.setMinimumSize(new Dimension(25, 25));
+//        component.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
         Border margin = new EmptyBorder(2, 2, 2, 2);
         Border compound = new CompoundBorder(BorderFactory.createEtchedBorder(), margin);
         component.setBorder(compound);

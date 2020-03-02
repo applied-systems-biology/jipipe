@@ -14,7 +14,8 @@ import org.jdesktop.swingx.JXTable;
 import javax.swing.*;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.nio.file.Path;
 
 public class ACAQResultDataSlotUI extends ACAQUIPanel {
@@ -74,7 +75,7 @@ public class ACAQResultDataSlotUI extends ACAQUIPanel {
         table.setModel(dataTable);
 
         TableColumnModel columnModel = table.getColumnModel();
-        for(int i = 0; i < columnModel.getColumnCount(); ++i) {
+        for (int i = 0; i < columnModel.getColumnCount(); ++i) {
             TableColumn column = columnModel.getColumn(i);
             column.setHeaderRenderer(new ACAQDataSlotTableColumnHeaderRenderer(dataTable));
         }

@@ -98,7 +98,7 @@ public class ACAQTraitPicker extends JPanel {
             } else {
                 selectTrait(trait);
             }
-            if(mode != Mode.Single)
+            if (mode != Mode.Single)
                 traitButton.setSelected(selectedTraits.contains(trait));
             else
                 refreshTraitList();
@@ -106,9 +106,9 @@ public class ACAQTraitPicker extends JPanel {
     }
 
     public void selectTrait(ACAQTraitDeclaration traitDeclaration) {
-        if(selectedTraits.contains(traitDeclaration))
+        if (selectedTraits.contains(traitDeclaration))
             return;
-        if(mode == Mode.Single && selectedTraits.size() > 0) {
+        if (mode == Mode.Single && selectedTraits.size() > 0) {
             for (ACAQTraitDeclaration declaration : ImmutableList.copyOf(selectedTraits)) {
                 deselectTrait(declaration);
             }
@@ -119,7 +119,7 @@ public class ACAQTraitPicker extends JPanel {
     }
 
     public void deselectTrait(ACAQTraitDeclaration traitDeclaration) {
-        if(!selectedTraits.contains(traitDeclaration))
+        if (!selectedTraits.contains(traitDeclaration))
             return;
         selectedTraits.remove(traitDeclaration);
         eventBus.post(new TraitDeselectedEvent(this, traitDeclaration));

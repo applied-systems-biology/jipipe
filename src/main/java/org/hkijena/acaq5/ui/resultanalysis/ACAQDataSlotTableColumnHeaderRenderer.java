@@ -2,7 +2,6 @@ package org.hkijena.acaq5.ui.resultanalysis;
 
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
-import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
 
 import javax.swing.*;
@@ -19,10 +18,9 @@ public class ACAQDataSlotTableColumnHeaderRenderer implements TableCellRenderer 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         TableCellRenderer defaultRenderer = table.getTableHeader().getDefaultRenderer();
-        if(column < 2) {
+        if (column < 2) {
             return defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-        }
-        else {
+        } else {
             ACAQTraitDeclaration declaration = dataTable.getTraitColumns().get(column - 2);
             String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
                     ACAQUITraitRegistry.getInstance().getIconURLFor(declaration).toString(),

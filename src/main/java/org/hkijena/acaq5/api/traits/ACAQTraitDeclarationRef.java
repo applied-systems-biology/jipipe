@@ -10,8 +10,9 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.hkijena.acaq5.api.ACAQValidatable;
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
-import org.hkijena.acaq5.utils.UIUtils;
 
 import java.io.IOException;
 
@@ -20,7 +21,7 @@ import java.io.IOException;
  */
 @JsonSerialize(using = ACAQTraitDeclarationRef.Serializer.class)
 @JsonDeserialize(using = ACAQTraitDeclarationRef.Deserializer.class)
-public class ACAQTraitDeclarationRef {
+public class ACAQTraitDeclarationRef implements ACAQValidatable {
 
     private ACAQTraitDeclaration declaration;
 
@@ -40,6 +41,12 @@ public class ACAQTraitDeclarationRef {
         this.declaration = declaration;
     }
 
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+        if (declaration == null)
+            report.reportIsInvalid("No annotation type is selected! Please select an annotation type.");
+    }
+
     public static class Serializer extends JsonSerializer<ACAQTraitDeclarationRef> {
 
         @Override
@@ -55,7 +62,7 @@ public class ACAQTraitDeclarationRef {
         public ACAQTraitDeclarationRef deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JsonNode node = jsonParser.readValueAsTree();
             ACAQTraitDeclarationRef result = new ACAQTraitDeclarationRef();
-            if(!node.isNull()) {
+            if (!node.isNull()) {
                 result.setDeclaration(ACAQTraitRegistry.getInstance().getDeclarationById(node.asText()));
             }
             return result;

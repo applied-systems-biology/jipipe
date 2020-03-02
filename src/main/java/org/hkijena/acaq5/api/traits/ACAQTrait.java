@@ -103,10 +103,9 @@ public interface ACAQTrait {
             String traitTypeId = node.get("acaq:trait-type").asText();
             ACAQTraitDeclaration declaration = ACAQTraitRegistry.getInstance().getDeclarationById(traitTypeId);
             JsonNode valueNode = node.path("value");
-            if(valueNode.isMissingNode()) {
+            if (valueNode.isMissingNode()) {
                 return declaration.newInstance();
-            }
-            else {
+            } else {
                 return declaration.newInstance(valueNode.asText());
             }
         }

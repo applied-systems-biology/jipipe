@@ -15,7 +15,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -101,6 +108,38 @@ public class ACAQDataSlot implements TableModel {
                 annotations.put(trait.getDeclaration(), new ArrayList<>());
             }
             annotations.get(trait.getDeclaration()).add(trait);
+        }
+    }
+
+    /**
+     * Adds an annotation to all existing data
+     *
+     * @param trait
+     * @param overwrite If false, existing annotations of the same type are not overwritten
+     */
+    public void addAnnotationToAllData(ACAQTrait trait, boolean overwrite) {
+        if (!annotations.containsKey(trait.getDeclaration())) {
+            annotationColumns.add(trait.getDeclaration());
+            annotations.put(trait.getDeclaration(), new ArrayList<>());
+        }
+        ArrayList<ACAQTrait> traitArray = annotations.get(trait.getDeclaration());
+        for (int i = 0; i < getRowCount(); ++i) {
+            if (!overwrite && traitArray.get(i) != null)
+                continue;
+            traitArray.set(i, trait);
+        }
+    }
+
+    /**
+     * Removes an annotation column from the data
+     *
+     * @param declaration
+     */
+    public void removeAllAnnotationsFromData(ACAQTraitDeclaration declaration) {
+        int columnIndex = annotationColumns.indexOf(declaration);
+        if (columnIndex != -1) {
+            annotationColumns.remove(columnIndex);
+            annotations.remove(declaration);
         }
     }
 
@@ -394,7 +433,7 @@ public class ACAQDataSlot implements TableModel {
      * @param declaration
      */
     public void removeSlotAnnotationCategory(ACAQTraitDeclaration declaration) {
-        if ( slotAnnotations.remove(declaration) || slotAnnotations.removeIf(t -> t.getInherited().contains(declaration)))
+        if (slotAnnotations.remove(declaration) || slotAnnotations.removeIf(t -> t.getInherited().contains(declaration)))
             eventBus.post(new SlotAnnotationsChanged(this));
     }
 
@@ -428,6 +467,7 @@ public class ACAQDataSlot implements TableModel {
         annotationColumns.clear();
         annotations.clear();
     }
+
 
     public enum SlotType {
         Input,

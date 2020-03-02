@@ -1,10 +1,7 @@
 package org.hkijena.acaq5.ui.testbench;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.api.ACAQMutableRunConfiguration;
-import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.testbench.ACAQAlgorithmBackup;
 import org.hkijena.acaq5.api.testbench.ACAQTestbench;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
@@ -22,13 +19,9 @@ import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ACAQTestBenchUI extends ACAQUIPanel {
 

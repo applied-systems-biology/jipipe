@@ -16,7 +16,7 @@ package org.hkijena.acaq5.ui.tableanalyzer;
 import org.hkijena.acaq5.ACAQRegistryService;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 
 public class ACAQTableVectorOperationDialogUI extends JDialog {
 

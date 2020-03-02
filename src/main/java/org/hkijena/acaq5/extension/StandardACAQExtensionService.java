@@ -3,16 +3,33 @@ package org.hkijena.acaq5.extension;
 import ij.process.AutoThresholder;
 import org.hkijena.acaq5.ACAQExtensionService;
 import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
+import org.hkijena.acaq5.extension.api.algorithms.annotation.AnnotateAll;
+import org.hkijena.acaq5.extension.api.algorithms.annotation.RemoveAnnotations;
+import org.hkijena.acaq5.extension.api.algorithms.annotation.SplitByAnnotation;
 import org.hkijena.acaq5.extension.api.algorithms.converters.MaskToParticleConverter;
 import org.hkijena.acaq5.extension.api.algorithms.converters.MultiChannelSplitterConverter;
 import org.hkijena.acaq5.extension.api.algorithms.enhancers.CLAHEImageEnhancer;
 import org.hkijena.acaq5.extension.api.algorithms.enhancers.IlluminationCorrectionEnhancer;
 import org.hkijena.acaq5.extension.api.algorithms.enhancers.MergeROIEnhancer;
 import org.hkijena.acaq5.extension.api.algorithms.enhancers.WatershedMaskEnhancer;
-import org.hkijena.acaq5.extension.api.algorithms.segmenters.*;
-import org.hkijena.acaq5.extension.api.datasources.*;
-import org.hkijena.acaq5.extension.api.datatypes.*;
+import org.hkijena.acaq5.extension.api.algorithms.segmenters.AutoThresholdSegmenter;
+import org.hkijena.acaq5.extension.api.algorithms.segmenters.BrightSpotsSegmenter;
+import org.hkijena.acaq5.extension.api.algorithms.segmenters.HessianSegmenter;
+import org.hkijena.acaq5.extension.api.algorithms.segmenters.HoughSegmenter;
+import org.hkijena.acaq5.extension.api.algorithms.segmenters.InternalGradientSegmenter;
+import org.hkijena.acaq5.extension.api.datasources.ACAQBioformatsImporter;
+import org.hkijena.acaq5.extension.api.datasources.ACAQGreyscaleImageDataFromFile;
+import org.hkijena.acaq5.extension.api.datasources.ACAQMaskImageDataFromFile;
+import org.hkijena.acaq5.extension.api.datasources.ACAQMultichannelImageDataFromFile;
+import org.hkijena.acaq5.extension.api.datasources.ACAQROIDataFromFile;
+import org.hkijena.acaq5.extension.api.datasources.ACAQResultsTableFromFile;
+import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
+import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
+import org.hkijena.acaq5.extension.api.datatypes.ACAQMultichannelImageData;
+import org.hkijena.acaq5.extension.api.datatypes.ACAQROIData;
+import org.hkijena.acaq5.extension.api.datatypes.ACAQResultsTableData;
 import org.hkijena.acaq5.extension.api.traits.Sample;
 import org.hkijena.acaq5.extension.api.traits.Subject;
 import org.hkijena.acaq5.extension.api.traits.Treatment;
@@ -109,6 +126,7 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
         registryService.getUIParametertypeRegistry().registerParameterEditor(ACAQBioformatsImporter.Order.class, EnumParameterEditorUI.class);
         registryService.getUIParametertypeRegistry().registerParameterEditor(PathFilter.class, PathFilterParameterEditorUI.class);
         registryService.getUIParametertypeRegistry().registerParameterEditor(ACAQTraitDeclarationRef.class, ACAQTraitDeclarationRefParameterEditorUI.class);
+        registryService.getUIParametertypeRegistry().registerParameterEditor(ACAQTrait.class, ACAQTraitParameterEditorUI.class);
 
         // Register result data slot UIs
         registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQMultichannelImageData.class, ImageDataSlotRowUI.class);
@@ -327,6 +345,9 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
         registryService.getAlgorithmRegistry().register(MultiChannelSplitterConverter.class);
         registryService.getAlgorithmRegistry().register(MergeROIEnhancer.class);
         registryService.getAlgorithmRegistry().register(HessianSegmenter.class);
+        registryService.getAlgorithmRegistry().register(AnnotateAll.class);
+        registryService.getAlgorithmRegistry().register(RemoveAnnotations.class);
+        registryService.getAlgorithmRegistry().register(SplitByAnnotation.class);
     }
 
     private void registerDataTypes(ACAQRegistryService registryService) {

@@ -6,10 +6,18 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQDefaultAlgorithmDeclaration;
 import org.hkijena.acaq5.api.data.ACAQData;
-import org.hkijena.acaq5.api.data.traits.*;
+import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
+import org.hkijena.acaq5.api.data.traits.AddsTrait;
+import org.hkijena.acaq5.api.data.traits.BadForTrait;
+import org.hkijena.acaq5.api.data.traits.GoodForTrait;
+import org.hkijena.acaq5.api.data.traits.RemovesTrait;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**

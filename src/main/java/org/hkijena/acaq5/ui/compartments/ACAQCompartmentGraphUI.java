@@ -18,8 +18,14 @@ import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Cursor;
+import java.awt.Point;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -89,7 +95,7 @@ public class ACAQCompartmentGraphUI extends ACAQUIPanel implements MouseListener
 
         menuBar.add(Box.createHorizontalGlue());
 
-        JButton autoLayoutButton = new JButton( UIUtils.getIconFromResources("auto-layout-all.png"));
+        JButton autoLayoutButton = new JButton(UIUtils.getIconFromResources("auto-layout-all.png"));
         autoLayoutButton.setToolTipText("Auto-layout all nodes");
         UIUtils.makeFlat25x25(autoLayoutButton);
         autoLayoutButton.addActionListener(e -> graphUI.autoLayoutAll());

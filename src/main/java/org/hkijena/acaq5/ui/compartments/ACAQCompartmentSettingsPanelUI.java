@@ -13,7 +13,7 @@ import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 
 public class ACAQCompartmentSettingsPanelUI extends ACAQUIPanel {
     private ACAQProjectCompartment compartment;

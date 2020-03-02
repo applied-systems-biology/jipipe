@@ -14,13 +14,9 @@ import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
 import org.hkijena.acaq5.api.data.traits.AutoTransferTraits;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
-import org.hkijena.acaq5.api.traits.ACAQMutableTraitDeclaration;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.extension.ui.parametereditors.ACAQTraitDeclarationRefParameterSettings;
 import org.hkijena.acaq5.filesystem.api.dataypes.ACAQFolderData;
-
-import java.nio.file.Path;
 
 @ACAQDocumentation(name = "Folders to annotations", description = "Creates an annotation for each folder")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Annotation)
@@ -48,7 +44,7 @@ public class ACAQFolderAnnotationGenerator extends ACAQIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface) {
-        if(generatedAnnotation.getDeclaration() != null) {
+        if (generatedAnnotation.getDeclaration() != null) {
             ACAQFolderData inputData = dataInterface.getInputData(getFirstInputSlot());
             String discriminator = inputData.getFolderPath().getFileName().toString();
             dataInterface.addAnnotation(generatedAnnotation.getDeclaration().newInstance(discriminator));
@@ -58,13 +54,13 @@ public class ACAQFolderAnnotationGenerator extends ACAQIteratingAlgorithm {
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-
+        report.forCategory("Generated annotation").report(generatedAnnotation);
     }
 
     private void updateSlotTraits() {
-        ACAQDefaultMutableTraitConfiguration traitConfiguration = (ACAQDefaultMutableTraitConfiguration)getTraitConfiguration();
+        ACAQDefaultMutableTraitConfiguration traitConfiguration = (ACAQDefaultMutableTraitConfiguration) getTraitConfiguration();
         traitConfiguration.getMutableGlobalTraitModificationTasks().clear();
-        if(generatedAnnotation.getDeclaration() != null)
+        if (generatedAnnotation.getDeclaration() != null)
             traitConfiguration.getMutableGlobalTraitModificationTasks().set(generatedAnnotation.getDeclaration(), ACAQTraitModificationOperation.Add);
         traitConfiguration.postChangedEvent();
     }

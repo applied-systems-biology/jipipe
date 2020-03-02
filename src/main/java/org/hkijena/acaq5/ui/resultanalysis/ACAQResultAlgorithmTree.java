@@ -11,7 +11,7 @@ import org.hkijena.acaq5.utils.UIUtils;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.nio.file.Files;
 import java.util.stream.Collectors;
 

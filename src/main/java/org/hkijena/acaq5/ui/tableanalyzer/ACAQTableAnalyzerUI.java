@@ -28,11 +28,20 @@ import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.io.*;
+import java.awt.BorderLayout;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
-import java.util.*;
+import java.util.Objects;
+import java.util.Stack;
+import java.util.Vector;
 
 public class ACAQTableAnalyzerUI extends ACAQUIPanel {
     private static final int MAX_UNDO = 10;

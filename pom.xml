@@ -10,8 +10,8 @@ Adolf-Reichwein-Straße 23, 07745 Jena, Germany
 This code is licensed under BSD 2-Clause
 See the LICENSE file provided with this code for the full license.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -75,7 +75,7 @@ See the LICENSE file provided with this code for the full license.
         <groupId>org.scijava</groupId>
         <artifactId>pom-scijava</artifactId>
         <version>26.0.0</version>
-        <relativePath />
+        <relativePath/>
     </parent>
 
     <repositories>
@@ -245,7 +245,9 @@ See the LICENSE file provided with this code for the full license.
                             <overWriteReleases>false</overWriteReleases>
                             <overWriteSnapshots>false</overWriteSnapshots>
                             <overWriteIfNewer>true</overWriteIfNewer>
-                            <excludeGroupIds>net.imagej, net.imglib2, org.scijava, com.google.code.gson, com.google.guava, org.swinglabs, org.jfree, ome</excludeGroupIds>
+                            <excludeGroupIds>net.imagej, net.imglib2, org.scijava, com.google.code.gson,
+                                com.google.guava, org.swinglabs, org.jfree, ome
+                            </excludeGroupIds>
                         </configuration>
                     </execution>
                 </executions>
