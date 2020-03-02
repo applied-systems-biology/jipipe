@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.traits.ACAQMutableTraitConfiguration;
+import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
 import org.hkijena.acaq5.api.events.SlotAnnotationsChanged;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQTraitConfigurationUI;
@@ -61,7 +62,7 @@ public class ACAQDataSlotTraitUI extends JPanel {
     }
 
     private void removeTrait(ACAQTraitDeclaration trait) {
-        slot.removeSlotAnnotation(trait);
+        slot.setSlotTraitToTraitConfiguration(trait, ACAQTraitModificationOperation.Ignore);
     }
 
     private void addTrait() {

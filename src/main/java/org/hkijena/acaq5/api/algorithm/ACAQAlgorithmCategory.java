@@ -31,6 +31,10 @@ public enum ACAQAlgorithmCategory {
      */
     FileSystem,
     /**
+     * Algorithms associated to annotating data
+     */
+    Annotation,
+    /**
      * Internal algorithms are only used internally within a project
      */
     Internal;

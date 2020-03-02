@@ -394,8 +394,7 @@ public class ACAQDataSlot implements TableModel {
      * @param declaration
      */
     public void removeSlotAnnotationCategory(ACAQTraitDeclaration declaration) {
-        slotAnnotations.remove(declaration);
-        if (slotAnnotations.removeIf(t -> t.getInherited().contains(declaration)))
+        if ( slotAnnotations.remove(declaration) || slotAnnotations.removeIf(t -> t.getInherited().contains(declaration)))
             eventBus.post(new SlotAnnotationsChanged(this));
     }
 

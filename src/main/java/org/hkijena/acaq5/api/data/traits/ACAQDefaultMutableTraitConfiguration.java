@@ -89,6 +89,7 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
                 for (ACAQDataSlot targetSlot : algorithm.getOutputSlots()) {
                     for (ACAQTraitDeclaration slotAnnotation : sourceSlot.getSlotAnnotations()) {
                         targetSlot.addSlotAnnotation(slotAnnotation);
+//                        System.out.println("TRANSFER " + slotAnnotation.getName() + " FROM " + sourceSlot.getNameWithAlgorithmName() + " TO " + targetSlot.getNameWithAlgorithmName());
                     }
                 }
             }

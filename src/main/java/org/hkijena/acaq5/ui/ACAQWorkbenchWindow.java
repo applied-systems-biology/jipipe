@@ -48,6 +48,8 @@ public class ACAQWorkbenchWindow extends JFrame {
         ACAQWorkbenchWindow window = openProjectInThisOrNewWindow("New project", project);
         if (window == null)
             return;
+        window.projectSavePath = null;
+        window.setTitle("New project");
         window.getProjectUI().sendStatusBarText("Created new project");
     }
 

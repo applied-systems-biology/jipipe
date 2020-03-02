@@ -135,6 +135,11 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
         initializeMenuForCategory(addFilesystemMenu, ACAQAlgorithmCategory.FileSystem);
         menuBar.add(addFilesystemMenu);
 
+        JMenu addAnnotationMenu = new JMenu("Annotation");
+        addAnnotationMenu.setIcon(UIUtils.getIconFromResources("label.png"));
+        initializeMenuForCategory(addAnnotationMenu, ACAQAlgorithmCategory.Annotation);
+        menuBar.add(addAnnotationMenu);
+
         JMenu addEnhancerMenu = new JMenu("Enhance");
         addEnhancerMenu.setIcon(UIUtils.getIconFromResources("magic.png"));
         initializeMenuForCategory(addEnhancerMenu, ACAQAlgorithmCategory.Enhancer);

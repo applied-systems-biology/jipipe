@@ -192,6 +192,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         graph.addEdge(source, target, new ACAQAlgorithmGraphEdge(userDisconnectable));
         getEventBus().post(new AlgorithmGraphChangedEvent(this));
         getEventBus().post(new AlgorithmGraphConnectedEvent(this, source, target));
+        updateDataSlotTraits();
     }
 
     public void repairGraph() {
@@ -335,6 +336,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
             graph.removeEdge(source, target);
             getEventBus().post(new AlgorithmGraphDisconnectedEvent(this, source, target));
             getEventBus().post(new AlgorithmGraphChangedEvent(this));
+            updateDataSlotTraits();
             return true;
         }
         return false;
@@ -383,6 +385,11 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         Set<ACAQAlgorithm> executedAlgorithms = new HashSet<>();
         for (ACAQDataSlot slot : traverse()) {
             if (slot.isInput()) {
+                slot.clearSlotAnnotations();
+            }
+        }
+        for (ACAQDataSlot slot : traverse()) {
+            if (slot.isInput()) {
                 // Execute trait configuration
                 if (!executedAlgorithms.contains(slot.getAlgorithm())) {
                     slot.getAlgorithm().getTraitConfiguration().apply();
@@ -393,6 +400,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
                 for (ACAQDataSlot targetSlot : getTargetSlots(slot)) {
                     targetSlot.clearSlotAnnotations();
                     for (ACAQTraitDeclaration slotAnnotation : slot.getSlotAnnotations()) {
+//                        System.out.println("GRAPHTRANSFER " + slotAnnotation.getName() + " FROM " + slot.getNameWithAlgorithmName() + " TO " + targetSlot.getNameWithAlgorithmName());
                         targetSlot.addSlotAnnotation(slotAnnotation);
                     }
                 }

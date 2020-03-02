@@ -124,7 +124,7 @@ public class ACAQExportedDataTable implements TableModel {
         table.saveAs(fileName.toString());
     }
 
-    private List<ACAQTraitDeclaration> getTraitColumns() {
+    public List<ACAQTraitDeclaration> getTraitColumns() {
         if (traitColumns == null) {
             Set<ACAQTraitDeclaration> registeredTraits = new HashSet<>();
             for (Row row : rowList) {
@@ -152,7 +152,7 @@ public class ACAQExportedDataTable implements TableModel {
         else if (columnIndex == 1)
             return "Data";
         else
-            return traitColumns.get(columnIndex - 1).getName();
+            return traitColumns.get(columnIndex - 2).getName();
     }
 
     @Override
@@ -177,8 +177,8 @@ public class ACAQExportedDataTable implements TableModel {
         else if (columnIndex == 1)
             return rowList.get(rowIndex);
         else {
-            ACAQTraitDeclaration traitColumn = traitColumns.get(columnIndex - 1);
-            return rowList.get(columnIndex - 1).traits.stream().filter(t -> t.getDeclaration() == traitColumn).findFirst().orElse(null);
+            ACAQTraitDeclaration traitColumn = traitColumns.get(columnIndex - 2);
+            return rowList.get(columnIndex - 2).traits.stream().filter(t -> t.getDeclaration() == traitColumn).findFirst().orElse(null);
         }
     }
 

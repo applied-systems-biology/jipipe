@@ -1,12 +1,18 @@
 package org.hkijena.acaq5.api.traits;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQHidden;
+import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -18,6 +24,7 @@ import java.util.Objects;
  */
 @ACAQHidden
 @JsonSerialize(using = ACAQTrait.Serializer.class)
+@JsonDeserialize(using = ACAQTrait.Deserializer.class)
 public interface ACAQTrait {
 
     /**
@@ -86,6 +93,22 @@ public interface ACAQTrait {
             jsonGenerator.writeStringField("acaq:trait-type", trait.getDeclaration().getId());
             jsonGenerator.writeStringField("name", trait.getDeclaration().getName());
             jsonGenerator.writeEndObject();
+        }
+    }
+
+    class Deserializer extends JsonDeserializer<ACAQTrait> {
+        @Override
+        public ACAQTrait deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+            JsonNode node = jsonParser.readValueAsTree();
+            String traitTypeId = node.get("acaq:trait-type").asText();
+            ACAQTraitDeclaration declaration = ACAQTraitRegistry.getInstance().getDeclarationById(traitTypeId);
+            JsonNode valueNode = node.path("value");
+            if(valueNode.isMissingNode()) {
+                return declaration.newInstance();
+            }
+            else {
+                return declaration.newInstance(valueNode.asText());
+            }
         }
     }
 }

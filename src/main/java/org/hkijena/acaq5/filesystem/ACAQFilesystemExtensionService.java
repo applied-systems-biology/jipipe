@@ -3,6 +3,7 @@ package org.hkijena.acaq5.filesystem;
 import org.hkijena.acaq5.ACAQExtensionService;
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.filesystem.api.algorithms.*;
+import org.hkijena.acaq5.filesystem.api.annotation.ACAQFolderAnnotationGenerator;
 import org.hkijena.acaq5.filesystem.api.datasources.ACAQFileDataSource;
 import org.hkijena.acaq5.filesystem.api.datasources.ACAQFolderDataSource;
 import org.hkijena.acaq5.filesystem.api.dataypes.ACAQFileData;
@@ -66,6 +67,8 @@ public class ACAQFilesystemExtensionService extends AbstractService implements A
         registryService.getAlgorithmRegistry().register(ACAQListFiles.class);
         registryService.getAlgorithmRegistry().register(ACAQListSubfolders.class);
         registryService.getAlgorithmRegistry().register(ACAQSubFolder.class);
+
+        registryService.getAlgorithmRegistry().register(ACAQFolderAnnotationGenerator.class);
 
         registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQFileData.class, FilesystemDataSlotRowUI.class);
         registryService.getUIDatatypeRegistry().registerResultTableCellUI(ACAQFileData.class, new FilesystemDataSlotCellUI());

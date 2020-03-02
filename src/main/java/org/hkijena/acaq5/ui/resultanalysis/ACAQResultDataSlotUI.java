@@ -3,6 +3,7 @@ package org.hkijena.acaq5.ui.resultanalysis;
 import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
+import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.FormPanel;
@@ -11,6 +12,8 @@ import org.hkijena.acaq5.utils.TooltipUtils;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.nio.file.Path;
 
@@ -37,6 +40,7 @@ public class ACAQResultDataSlotUI extends ACAQUIPanel {
         table.setRowHeight(25);
         table.setDefaultRenderer(Path.class, new ACAQRowLocationTableCellRenderer());
         table.setDefaultRenderer(ACAQExportedDataTable.Row.class, new ACAQRowDataTableCellRenderer(getWorkbenchUI(), slot));
+        table.setDefaultRenderer(ACAQTrait.class, new ACAQTraitTableCellRenderer());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
         JScrollPane scrollPane = new JScrollPane(table);
@@ -55,7 +59,8 @@ public class ACAQResultDataSlotUI extends ACAQUIPanel {
 
     private void showDataRows(int[] selectedRows) {
         rowUIList.clear();
-        for (int row : selectedRows) {
+        for (int viewRow : selectedRows) {
+            int row = table.getRowSorter().convertRowIndexToModel(viewRow);
             ACAQExportedDataTable.Row rowInstance = dataTable.getRowList().get(row);
             JLabel nameLabel = new JLabel(rowInstance.getLocation().toString(), ACAQUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()), JLabel.LEFT);
             nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot));
@@ -67,6 +72,14 @@ public class ACAQResultDataSlotUI extends ACAQUIPanel {
     private void reloadTable() {
         dataTable = ACAQExportedDataTable.loadFromJson(slot.getStoragePath().resolve("data-table.json"));
         table.setModel(dataTable);
+
+        TableColumnModel columnModel = table.getColumnModel();
+        for(int i = 0; i < columnModel.getColumnCount(); ++i) {
+            TableColumn column = columnModel.getColumn(i);
+            column.setHeaderRenderer(new ACAQDataSlotTableColumnHeaderRenderer(dataTable));
+        }
+        table.setAutoCreateRowSorter(true);
+
         table.packAll();
     }
 }

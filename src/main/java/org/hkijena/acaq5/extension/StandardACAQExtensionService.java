@@ -3,6 +3,7 @@ package org.hkijena.acaq5.extension;
 import ij.process.AutoThresholder;
 import org.hkijena.acaq5.ACAQExtensionService;
 import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.extension.api.algorithms.converters.MaskToParticleConverter;
 import org.hkijena.acaq5.extension.api.algorithms.converters.MultiChannelSplitterConverter;
 import org.hkijena.acaq5.extension.api.algorithms.enhancers.CLAHEImageEnhancer;
@@ -107,6 +108,7 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
         registryService.getUIParametertypeRegistry().registerParameterEditor(ACAQBioformatsImporter.ColorMode.class, EnumParameterEditorUI.class);
         registryService.getUIParametertypeRegistry().registerParameterEditor(ACAQBioformatsImporter.Order.class, EnumParameterEditorUI.class);
         registryService.getUIParametertypeRegistry().registerParameterEditor(PathFilter.class, PathFilterParameterEditorUI.class);
+        registryService.getUIParametertypeRegistry().registerParameterEditor(ACAQTraitDeclarationRef.class, ACAQTraitDeclarationRefParameterEditorUI.class);
 
         // Register result data slot UIs
         registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQMultichannelImageData.class, ImageDataSlotRowUI.class);

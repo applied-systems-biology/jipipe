@@ -1,5 +1,7 @@
 package org.hkijena.acaq5.api.traits;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import java.util.Set;
 
 public interface ACAQTraitDeclaration {

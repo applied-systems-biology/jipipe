@@ -34,6 +34,7 @@ public class ACAQDataSlotTraitConfiguration {
 
     public void applyTo(ACAQDataSlot slot) {
         for (Map.Entry<ACAQTraitDeclaration, ACAQTraitModificationOperation> entry : operations.entrySet()) {
+//            System.out.println(entry.getValue().toString().toUpperCase() + " " + entry.getKey().getName() + " @ " + slot.getNameWithAlgorithmName());
             switch (entry.getValue()) {
                 case Add:
                     slot.addSlotAnnotation(entry.getKey());
