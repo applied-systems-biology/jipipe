@@ -53,11 +53,6 @@ public class WatershedMaskEnhancer extends ACAQIteratingAlgorithm {
     }
 
     @Override
-    public void run() {
-
-    }
-
-    @Override
     protected void runIteration(ACAQDataInterface dataInterface) {
         ACAQMaskData inputData = dataInterface.getInputData(getFirstInputSlot());
         ImagePlus img = inputData.getImage();

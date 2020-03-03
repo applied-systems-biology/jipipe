@@ -45,8 +45,9 @@ public class ACAQRegistryService extends AbstractService implements ACAQService 
                 .sorted(ACAQRegistryService::comparePlugins).collect(Collectors.toList())) {
             System.out.println("ACAQ5: Registering plugin " + info);
             try {
-                ACAQExtensionService service = (ACAQExtensionService) info.createInstance();
+                ACAQExtensionService service = info.createInstance();
                 service.register(this);
+                registeredExtensions.add(service);
             } catch (InstantiableException e) {
                 throw new RuntimeException(e);
             }
