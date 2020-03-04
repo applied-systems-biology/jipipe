@@ -482,6 +482,26 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         }
     }
 
+    /**
+     * Merges another graph into this graph
+     * @param otherGraph
+     * @return A map from ID in source graph to algorithm in target graph
+     */
+    public Map<String, ACAQAlgorithm> mergeWith(ACAQAlgorithmGraph otherGraph) {
+        Map<String, ACAQAlgorithm> copies = new HashMap<>();
+        for (ACAQAlgorithm algorithm : otherGraph.getAlgorithmNodes().values()) {
+            ACAQAlgorithm copy = algorithm.getDeclaration().clone(algorithm);
+            insertNode(copy, copy.getCompartment());
+            copies.put(algorithm.getIdInGraph(), copy);
+        }
+        for (Map.Entry<ACAQDataSlot, ACAQDataSlot> edge : otherGraph.getSlotEdges()) {
+            ACAQAlgorithm copySource = copies.get(edge.getKey().getAlgorithm().getIdInGraph());
+            ACAQAlgorithm copyTarget = copies.get(edge.getValue().getAlgorithm().getIdInGraph());
+            connect(copySource.getSlots().get(edge.getKey().getName()), copyTarget.getSlots().get(edge.getValue().getName()));
+        }
+        return copies;
+    }
+
     public int getAlgorithmCount() {
         return algorithms.size();
     }

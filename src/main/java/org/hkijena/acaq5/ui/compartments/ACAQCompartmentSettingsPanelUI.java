@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.ui.compartments;
 
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.compartments.ACAQExportedCompartment;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
@@ -14,6 +15,8 @@ import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
+import java.io.IOException;
+import java.nio.file.Path;
 
 public class ACAQCompartmentSettingsPanelUI extends ACAQUIPanel {
     private ACAQProjectCompartment compartment;
@@ -65,12 +68,31 @@ public class ACAQCompartmentSettingsPanelUI extends ACAQUIPanel {
         openButton.addActionListener(e -> openInEditor());
         toolBar.add(openButton);
 
+        JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("export.png"));
+        exportButton.addActionListener(e -> exportCompartment());
+        toolBar.add(exportButton);
+
         JButton deleteButton = new JButton(UIUtils.getIconFromResources("delete.png"));
         deleteButton.setToolTipText("Delete compartment");
         deleteButton.addActionListener(e -> deleteCompartment());
         toolBar.add(deleteButton);
 
         add(toolBar, BorderLayout.NORTH);
+    }
+
+    private void exportCompartment() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setDialogTitle("Save compartment (*.json");
+        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            Path savePath = fileChooser.getSelectedFile().toPath();
+            try {
+                ACAQExportedCompartment exportedCompartment = new ACAQExportedCompartment(compartment);
+                exportedCompartment.saveToJson(savePath);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     private void openInEditor() {
