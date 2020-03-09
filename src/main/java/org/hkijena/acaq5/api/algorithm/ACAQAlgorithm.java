@@ -119,6 +119,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
         this.locations = new HashMap<>(other.locations);
         this.compartment = other.compartment;
         this.visibleCompartments = new HashSet<>(other.visibleCompartments);
+        this.customName = other.customName;
         slotConfiguration.getEventBus().register(this);
         traitConfiguration.getEventBus().register(this);
         initalize();
