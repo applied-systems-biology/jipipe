@@ -5,6 +5,7 @@ import org.hkijena.acaq5.api.compartments.ACAQExportedCompartment;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
@@ -81,16 +82,27 @@ public class ACAQCompartmentSettingsPanelUI extends ACAQUIPanel {
     }
 
     private void exportCompartment() {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fileChooser.setDialogTitle("Save compartment (*.json");
-        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-            Path savePath = fileChooser.getSelectedFile().toPath();
-            try {
-                ACAQExportedCompartment exportedCompartment = new ACAQExportedCompartment(compartment);
-                exportedCompartment.saveToJson(savePath);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+        ACAQExportedCompartment exportedCompartment = new ACAQExportedCompartment(compartment);
+        exportedCompartment.getMetadata().setName(compartment.getName());
+        exportedCompartment.getMetadata().setDescription("An exported ACAQ5 compartment");
+        ACAQParameterAccessUI metadataEditor = new ACAQParameterAccessUI(exportedCompartment.getMetadata(),
+                null,
+                false,
+                false);
+
+        if(JOptionPane.showConfirmDialog(this, metadataEditor, "Export compartment",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION) {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            fileChooser.setDialogTitle("Save compartment (*.json");
+            if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+                Path savePath = fileChooser.getSelectedFile().toPath();
+                try {
+                    exportedCompartment.saveToJson(savePath);
+                    getWorkbenchUI().sendStatusBarText("Exported compartment '" + compartment.getName() + "' to " + savePath);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }

@@ -36,8 +36,9 @@ public class ACAQExportedCompartment {
     private void initializeGraphFromProject(ACAQProjectCompartment compartment) {
         ACAQAlgorithmGraph sourceGraph = compartment.getProject().getGraph();
         Map<String, ACAQAlgorithm> copies = new HashMap<>();
+        String compartmentId = compartment.getProjectCompartmentId();
         for (ACAQAlgorithm algorithm : sourceGraph.getAlgorithmNodes().values()) {
-            if(!algorithm.getCompartment().equals(compartment))
+            if(!algorithm.getCompartment().equals(compartmentId))
                 continue;
             ACAQAlgorithm copy = algorithm.getDeclaration().clone(algorithm);
             graph.insertNode(copy, copy.getCompartment());
@@ -46,9 +47,9 @@ public class ACAQExportedCompartment {
         for (Map.Entry<ACAQDataSlot, ACAQDataSlot> edge : sourceGraph.getSlotEdges()) {
             ACAQAlgorithm copySource = copies.get(edge.getKey().getAlgorithm().getIdInGraph());
             ACAQAlgorithm copyTarget = copies.get(edge.getValue().getAlgorithm().getIdInGraph());
-            if(!copySource.getCompartment().equals(compartment))
+            if(!copySource.getCompartment().equals(compartmentId))
                 continue;
-            if(!copyTarget.getCompartment().equals(compartment))
+            if(!copyTarget.getCompartment().equals(compartmentId))
                 continue;
             graph.connect(copySource.getSlots().get(edge.getKey().getName()), copyTarget.getSlots().get(edge.getValue().getName()));
         }
@@ -101,7 +102,7 @@ public class ACAQExportedCompartment {
         this.metadata = metadata;
     }
 
-    public class Serializer extends JsonSerializer<ACAQExportedCompartment> {
+    public static class Serializer extends JsonSerializer<ACAQExportedCompartment> {
         @Override
         public void serialize(ACAQExportedCompartment exportedCompartment, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             jsonGenerator.writeStartObject();
@@ -112,7 +113,7 @@ public class ACAQExportedCompartment {
         }
     }
 
-    public class Deserializer extends JsonDeserializer<ACAQExportedCompartment> {
+    public static class Deserializer extends JsonDeserializer<ACAQExportedCompartment> {
         @Override
         public ACAQExportedCompartment deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             ACAQExportedCompartment exportedCompartment = new ACAQExportedCompartment();
