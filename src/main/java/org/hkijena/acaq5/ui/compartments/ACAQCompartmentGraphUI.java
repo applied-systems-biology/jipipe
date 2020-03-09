@@ -1,8 +1,11 @@
 package org.hkijena.acaq5.ui.compartments;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.compartments.ACAQExportedCompartment;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
@@ -13,6 +16,7 @@ import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.events.DefaultUIActionRequestedEvent;
 import org.hkijena.acaq5.ui.events.OpenSettingsUIRequestedEvent;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
+import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -138,11 +142,36 @@ public class ACAQCompartmentGraphUI extends ACAQUIPanel implements MouseListener
 
     protected void initializeAddNodesMenus() {
         ACAQAlgorithmDeclaration declaration = ACAQAlgorithmRegistry.getInstance().getDefaultDeclarationFor(ACAQProjectCompartment.class);
+
         JButton addItem = new JButton("Add new compartment", UIUtils.getIconFromResources("add.png"));
         UIUtils.makeFlat(addItem);
         addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
         addItem.addActionListener(e -> addCompartment());
         menuBar.add(addItem);
+
+        JButton importItem = new JButton("Import compartment", UIUtils.getIconFromResources("open.png"));
+        UIUtils.makeFlat(importItem);
+        importItem.setToolTipText("Imports a compartment from a *.json file");
+        importItem.addActionListener(e -> importCompartment());
+        menuBar.add(importItem);
+    }
+
+    private void importCompartment() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Import compartment *.json");
+        if(fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            try {
+                ObjectMapper objectMapper = JsonUtils.getObjectMapper();
+                ACAQExportedCompartment exportedCompartment = objectMapper.readerFor(ACAQExportedCompartment.class).readValue(fileChooser.getSelectedFile());
+
+                String name = UIUtils.getUniqueStringByDialog(this, "Please enter the name of the new compartment:",
+                        exportedCompartment.getSuggestedName(), s -> getProject().getCompartments().containsKey(s));
+                if(name != null && !name.isEmpty()) {
+                    exportedCompartment.addTo(getProject(), name);
+                }
+            } catch (IOException e) {
+            }
+        }
     }
 
     private void addCompartment() {

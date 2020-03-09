@@ -66,7 +66,8 @@ public class ACAQExportedCompartment {
         if(project.getCompartments().containsKey(compartmentName))
             throw new RuntimeException("Compartment " + compartmentName + " already exists!");
         ACAQProjectCompartment compartment = project.addCompartment(compartmentName);
-        ACAQAlgorithm projectOutputNode = compartment.getOutputNode();
+        compartmentName = compartment.getProjectCompartmentId();
+        ACAQCompartmentOutput projectOutputNode = compartment.getOutputNode();
 
         for (ACAQAlgorithm algorithm : graph.getAlgorithmNodes().values()) {
             algorithm.setCompartment(compartmentName);
@@ -76,6 +77,9 @@ public class ACAQExportedCompartment {
         for (ACAQAlgorithm algorithm : graph.getAlgorithmNodes().values()) {
             if(algorithm instanceof ACAQCompartmentOutput) {
                 copies.put(algorithm.getIdInGraph(), projectOutputNode);
+
+                // Copy the slot configuration over
+                projectOutputNode.getSlotConfiguration().setTo(algorithm.getSlotConfiguration());
             }
             else {
                 ACAQAlgorithm copy = algorithm.getDeclaration().clone(algorithm);
