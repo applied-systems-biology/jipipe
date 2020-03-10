@@ -12,7 +12,6 @@ import org.hkijena.acaq5.api.algorithm.ACAQIteratingAlgorithm;
 import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
-import org.hkijena.acaq5.api.data.traits.AutoTransferTraits;
 import org.hkijena.acaq5.api.data.traits.BadForTrait;
 import org.hkijena.acaq5.api.data.traits.GoodForTrait;
 import org.hkijena.acaq5.api.data.traits.RemovesTrait;
@@ -37,7 +36,6 @@ import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.Un
 @GoodForTrait(ClusterBioObjects.class)
 
 // Trait configuration
-@AutoTransferTraits
 @RemovesTrait(ClusterBioObjects.class)
 public class WatershedMaskEnhancer extends ACAQIteratingAlgorithm {
 

@@ -10,7 +10,6 @@ import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
-import org.hkijena.acaq5.api.data.traits.AutoTransferTraits;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
@@ -19,7 +18,6 @@ import org.hkijena.acaq5.api.traits.ACAQTrait;
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Annotation)
 
 // Traits
-@AutoTransferTraits
 public class AnnotateAll extends ACAQAlgorithm {
 
     private ACAQTrait annotation;

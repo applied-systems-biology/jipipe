@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.extension.ui.parametereditors;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
 import org.jdesktop.swingx.JXTextArea;
@@ -11,8 +12,8 @@ import java.awt.BorderLayout;
 
 public class StringParameterEditorUI extends ACAQParameterEditorUI {
 
-    public StringParameterEditorUI(ACAQParameterAccess parameterAccess) {
-        super(parameterAccess);
+    public StringParameterEditorUI(ACAQWorkbenchUI workbenchUI, ACAQParameterAccess parameterAccess) {
+        super(workbenchUI, parameterAccess);
         initialize();
     }
 

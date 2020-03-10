@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.extension.ui.parametereditors;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
 
 import javax.swing.*;
@@ -9,8 +10,8 @@ import java.awt.Dimension;
 
 public class IntegerParameterEditorUI extends ACAQParameterEditorUI {
 
-    public IntegerParameterEditorUI(ACAQParameterAccess parameterAccess) {
-        super(parameterAccess);
+    public IntegerParameterEditorUI(ACAQWorkbenchUI workbenchUI, ACAQParameterAccess parameterAccess) {
+        super(workbenchUI, parameterAccess);
         initialize();
     }
 

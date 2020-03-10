@@ -8,7 +8,6 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.api.data.traits.AutoTransferTraits;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
@@ -22,7 +21,6 @@ import java.util.List;
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Annotation)
 
 // Algorithm traits
-@AutoTransferTraits
 public class SplitByAnnotation extends ACAQAlgorithm {
 
     private ACAQTraitDeclarationRef annotationType = new ACAQTraitDeclarationRef();

@@ -14,7 +14,6 @@ import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.traits.AddsTrait;
-import org.hkijena.acaq5.api.data.traits.AutoTransferTraits;
 import org.hkijena.acaq5.api.data.traits.BadForTrait;
 import org.hkijena.acaq5.api.data.traits.GoodForTrait;
 import org.hkijena.acaq5.api.data.traits.RemovesTrait;
@@ -42,7 +41,6 @@ import org.hkijena.acaq5.utils.ImageJUtils;
 @BadForTrait(NonUniformBrightnessQuality.class)
 
 // Trait configuration
-@AutoTransferTraits
 @RemovesTrait(ImageQuality.class)
 @AddsTrait(ClusterBioObjects.class)
 public class AutoThresholdSegmenter extends ACAQIteratingAlgorithm {

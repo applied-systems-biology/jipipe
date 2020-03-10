@@ -2,6 +2,7 @@ package org.hkijena.acaq5.ui.components;
 
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -10,10 +11,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ACAQParameterAccessUI extends FormPanel {
+    private ACAQWorkbenchUI workbenchUI;
     private Object parameterHolder;
 
-    public ACAQParameterAccessUI(Object parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
+    public ACAQParameterAccessUI(ACAQWorkbenchUI workbenchUI, Object parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
         super(documentation, documentationBelow, withDocumentation);
+        this.workbenchUI = workbenchUI;
         this.parameterHolder = parameterHolder;
         reloadForm();
     }
@@ -27,7 +30,7 @@ public class ACAQParameterAccessUI extends FormPanel {
             if (parameterAccess.isHidden())
                 continue;
             ACAQParameterEditorUI ui = ACAQRegistryService.getInstance()
-                    .getUIParametertypeRegistry().createEditorFor(parameterAccess);
+                    .getUIParametertypeRegistry().createEditorFor(workbenchUI, parameterAccess);
 
             if (ui.isUILabelEnabled())
                 addToForm(ui, new JLabel(parameterAccess.getName()), null);

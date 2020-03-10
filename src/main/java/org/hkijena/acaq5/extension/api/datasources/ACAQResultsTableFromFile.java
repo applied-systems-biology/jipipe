@@ -10,7 +10,6 @@ import org.hkijena.acaq5.api.algorithm.ACAQIteratingAlgorithm;
 import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
-import org.hkijena.acaq5.api.data.traits.AutoTransferTraits;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQResultsTableData;
 import org.hkijena.acaq5.filesystem.api.dataypes.ACAQFileData;
 
@@ -20,7 +19,6 @@ import java.io.IOException;
 @AlgorithmInputSlot(value = ACAQFileData.class, slotName = "Files", autoCreate = true)
 @AlgorithmOutputSlot(value = ACAQResultsTableData.class, slotName = "Results table", autoCreate = true)
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
-@AutoTransferTraits
 public class ACAQResultsTableFromFile extends ACAQIteratingAlgorithm {
 
     public ACAQResultsTableFromFile(ACAQAlgorithmDeclaration declaration) {

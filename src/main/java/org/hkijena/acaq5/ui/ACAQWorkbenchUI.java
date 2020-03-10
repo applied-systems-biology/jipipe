@@ -12,6 +12,7 @@ import org.hkijena.acaq5.ui.running.ACAQRunSettingsUI;
 import org.hkijena.acaq5.ui.running.ACAQRunnerQueueUI;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXStatusBar;
+import org.scijava.Context;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
@@ -30,11 +31,13 @@ public class ACAQWorkbenchUI extends JPanel {
     private ACAQGUICommand command;
     private ACAQInfoUI infoUI;
     private JLabel statusText;
+    private Context context;
 
     public ACAQWorkbenchUI(ACAQWorkbenchWindow window, ACAQGUICommand command, ACAQProject project) {
         this.window = window;
         this.project = project;
         this.command = command;
+        this.context = command.getContext();
         initialize();
         initializeDefaultProject();
         project.getEventBus().register(this);
@@ -249,4 +252,11 @@ public class ACAQWorkbenchUI extends JPanel {
         }
     }
 
+    public Context getContext() {
+        return context;
+    }
+
+    public ACAQGUICommand getCommand() {
+        return command;
+    }
 }

@@ -1,13 +1,16 @@
 package org.hkijena.acaq5.ui.grapheditor.settings;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.ui.ACAQUIPanel;
+import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 
 import javax.swing.*;
 
-public abstract class ACAQParameterEditorUI extends JPanel {
+public abstract class ACAQParameterEditorUI extends ACAQUIPanel {
     private ACAQParameterAccess parameterAccess;
 
-    public ACAQParameterEditorUI(ACAQParameterAccess parameterAccess) {
+    public ACAQParameterEditorUI(ACAQWorkbenchUI workbenchUI, ACAQParameterAccess parameterAccess) {
+        super(workbenchUI);
         this.parameterAccess = parameterAccess;
     }
 

@@ -14,7 +14,6 @@ import org.hkijena.acaq5.api.algorithm.ACAQIteratingAlgorithm;
 import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
-import org.hkijena.acaq5.api.data.traits.AutoTransferTraits;
 import org.hkijena.acaq5.api.data.traits.GoodForTrait;
 import org.hkijena.acaq5.api.data.traits.RemovesTrait;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
@@ -36,7 +35,6 @@ import org.hkijena.acaq5.utils.Hough_Circle;
 @GoodForTrait(RoundBioObjects.class)
 
 // Trait configuration
-@AutoTransferTraits
 @RemovesTrait(ImageQuality.class)
 @RemovesTrait(ClusterBioObjects.class)
 public class HoughSegmenter extends ACAQIteratingAlgorithm {

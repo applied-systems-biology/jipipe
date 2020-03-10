@@ -17,7 +17,7 @@ import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.api.data.traits.AutoTransferTraits;
+import org.hkijena.acaq5.api.data.traits.ConfigTraits;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
@@ -44,10 +44,11 @@ import java.util.List;
 @AlgorithmOutputSlot(ACAQMaskData.class)
 @AlgorithmOutputSlot(ACAQROIData.class)
 @AlgorithmOutputSlot(ACAQResultsTableData.class)
-@AutoTransferTraits
+@ConfigTraits(allowModify = true)
 public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
 
     private MacroCode code = new MacroCode();
+    private boolean strictMode = true;
 
     private List<ImagePlus> initiallyOpenedImages = new ArrayList<>();
 
@@ -159,6 +160,22 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
         if(resultsTableOutputSlotCount > 1) {
             report.reportIsInvalid("Too many results table outputs! Please make sure to only have at most one results table data output.");
         }
+        if(strictMode) {
+            for (ACAQDataSlot inputSlot : getInputSlots()) {
+                if (ACAQMultichannelImageData.class.isAssignableFrom(inputSlot.getAcceptedDataType())) {
+                    if (!code.getCode().contains("\"" + inputSlot.getName() + "\"")) {
+                        report.reportIsInvalid("Input image '" + inputSlot.getName() + "' is not used! You can use selectWindow(\"" + inputSlot.getName() + "\"); to process the image. Disable strict mode to stop this message.");
+                    }
+                }
+            }
+            for (ACAQDataSlot outputSlot : getOutputSlots()) {
+                if (ACAQMultichannelImageData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
+                    if (!code.getCode().contains("\"" + outputSlot.getName() + "\"")) {
+                        report.reportIsInvalid("Output image '" + outputSlot.getName() + "' is not used! You should rename an output image via rename(\"" + outputSlot.getName() + "\"); to allow ACAQ5 to find it. Disable strict mode to stop this message.");
+                    }
+                }
+            }
+        }
     }
 
     @ACAQDocumentation(name = "Code")
@@ -170,5 +187,16 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
     @ACAQParameter("code")
     public void setCode(MacroCode code) {
         this.code = code;
+    }
+
+    @ACAQDocumentation(name = "Strict mode", description = "If enabled, macro code is scanned for common mistakes and an error is generated.")
+    @ACAQParameter("strict-mode")
+    public boolean isStrictMode() {
+        return strictMode;
+    }
+
+    @ACAQParameter("strict-mode")
+    public void setStrictMode(boolean strictMode) {
+        this.strictMode = strictMode;
     }
 }

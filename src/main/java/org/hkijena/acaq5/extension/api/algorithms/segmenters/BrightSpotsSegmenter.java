@@ -15,7 +15,6 @@ import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.traits.AddsTrait;
-import org.hkijena.acaq5.api.data.traits.AutoTransferTraits;
 import org.hkijena.acaq5.api.data.traits.BadForTrait;
 import org.hkijena.acaq5.api.data.traits.RemovesTrait;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
@@ -37,7 +36,6 @@ import org.hkijena.acaq5.extension.api.traits.quality.NonUniformBrightnessQualit
 @BadForTrait(NonUniformBrightnessQuality.class)
 
 // Trait configuration
-@AutoTransferTraits
 @RemovesTrait(ImageQuality.class)
 @AddsTrait(ClusterBioObjects.class)
 public class BrightSpotsSegmenter extends ACAQIteratingAlgorithm {

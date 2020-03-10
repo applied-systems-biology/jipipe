@@ -13,7 +13,7 @@ import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.api.data.traits.AutoTransferTraits;
+import org.hkijena.acaq5.api.data.traits.ConfigTraits;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMultichannelImageData;
 
@@ -26,7 +26,7 @@ import org.hkijena.acaq5.extension.api.datatypes.ACAQMultichannelImageData;
 @AlgorithmOutputSlot(ACAQGreyscaleImageData.class)
 
 // Algorithm traits
-@AutoTransferTraits
+@ConfigTraits(allowModify = true)
 public class MultiChannelSplitterConverter extends ACAQIteratingAlgorithm {
 
     public MultiChannelSplitterConverter(ACAQAlgorithmDeclaration declaration) {

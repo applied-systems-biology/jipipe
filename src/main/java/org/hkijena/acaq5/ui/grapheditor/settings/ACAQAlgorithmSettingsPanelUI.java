@@ -29,7 +29,8 @@ public class ACAQAlgorithmSettingsPanelUI extends ACAQUIPanel {
         setLayout(new BorderLayout());
         DocumentTabPane tabbedPane = new DocumentTabPane();
 
-        ACAQAlgorithmParametersUI parametersUI = new ACAQAlgorithmParametersUI(algorithm,
+        ACAQAlgorithmParametersUI parametersUI = new ACAQAlgorithmParametersUI(getWorkbenchUI(),
+                algorithm,
                 MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md"),
                 true, true);
         tabbedPane.addTab("Parameters", UIUtils.getIconFromResources("cog.png"),

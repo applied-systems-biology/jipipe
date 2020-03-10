@@ -181,7 +181,7 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
         int dividerLocation = splitPane.getDividerLocation();
 
         backup.restore(testbench.getBenchedAlgorithm());
-        ACAQParameterAccessUI parameters = new ACAQParameterAccessUI(testbench.getBenchedAlgorithm(),
+        ACAQParameterAccessUI parameters = new ACAQParameterAccessUI(getWorkbenchUI(), testbench.getBenchedAlgorithm(),
                 MarkdownDocument.fromPluginResource("documentation/testbench.md"),
                 true, true);
         splitPane.setLeftComponent(parameters);

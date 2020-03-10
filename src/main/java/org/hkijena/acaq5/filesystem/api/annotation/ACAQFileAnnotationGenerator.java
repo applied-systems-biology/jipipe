@@ -5,13 +5,11 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
-import org.hkijena.acaq5.api.data.traits.AutoTransferTraits;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.extension.ui.parametereditors.ACAQTraitDeclarationRefParameterSettings;
 import org.hkijena.acaq5.filesystem.api.dataypes.ACAQFileData;
-import org.hkijena.acaq5.filesystem.api.dataypes.ACAQFolderData;
 
 @ACAQDocumentation(name = "Files to annotations", description = "Creates an annotation for each file based on its file name")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Annotation)
@@ -21,7 +19,6 @@ import org.hkijena.acaq5.filesystem.api.dataypes.ACAQFolderData;
 @AlgorithmOutputSlot(value = ACAQFileData.class, slotName = "Annotated files", autoCreate = true)
 
 // Traits
-@AutoTransferTraits
 public class ACAQFileAnnotationGenerator extends ACAQIteratingAlgorithm {
 
     private ACAQTraitDeclarationRef generatedAnnotation = new ACAQTraitDeclarationRef();

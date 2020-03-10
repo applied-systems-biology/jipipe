@@ -20,7 +20,6 @@ import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
-import org.hkijena.acaq5.api.data.traits.AutoTransferTraits;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
@@ -35,7 +34,6 @@ import java.io.IOException;
 @AlgorithmOutputSlot(value = ACAQGreyscaleImageData.class)
 @AlgorithmOutputSlot(value = ACAQMaskData.class)
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
-@AutoTransferTraits
 public class ACAQBioformatsImporter extends ACAQIteratingAlgorithm {
 
     private ColorMode colorMode = ColorMode.Default;

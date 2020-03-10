@@ -17,7 +17,6 @@ import org.hkijena.acaq5.api.algorithm.ACAQIteratingAlgorithm;
 import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
-import org.hkijena.acaq5.api.data.traits.AutoTransferTraits;
 import org.hkijena.acaq5.api.data.traits.RemovesTrait;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQSubAlgorithm;
@@ -35,7 +34,6 @@ import java.util.Vector;
 @AlgorithmOutputSlot(value = ACAQMaskData.class, slotName = "Mask", autoCreate = true)
 
 // Traits
-@AutoTransferTraits
 @RemovesTrait(ImageQuality.class)
 public class HessianSegmenter extends ACAQIteratingAlgorithm {
 

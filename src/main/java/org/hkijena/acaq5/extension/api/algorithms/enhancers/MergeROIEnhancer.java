@@ -12,7 +12,6 @@ import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.api.data.traits.AutoTransferTraits;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQROIData;
 
 import java.util.ArrayList;
@@ -26,7 +25,6 @@ import java.util.List;
 @AlgorithmOutputSlot(ACAQROIData.class)
 
 // Traits
-@AutoTransferTraits
 public class MergeROIEnhancer extends ACAQIteratingAlgorithm {
     public MergeROIEnhancer(ACAQAlgorithmDeclaration declaration) {
         super(declaration, ACAQMutableSlotConfiguration.builder().restrictInputTo(ACAQROIData.class)

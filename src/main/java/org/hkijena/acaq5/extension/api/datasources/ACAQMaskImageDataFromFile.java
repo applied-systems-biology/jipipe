@@ -7,7 +7,6 @@ import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQData;
-import org.hkijena.acaq5.api.data.traits.AutoTransferTraits;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMultichannelImageData;
 import org.hkijena.acaq5.filesystem.api.dataypes.ACAQFileData;
@@ -21,7 +20,6 @@ import java.nio.file.Path;
 @AlgorithmInputSlot(value = ACAQFileData.class, slotName = "Files", autoCreate = true)
 @AlgorithmOutputSlot(value = ACAQMaskData.class, slotName = "Mask", autoCreate = true)
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
-@AutoTransferTraits
 public class ACAQMaskImageDataFromFile extends ACAQMultichannelImageDataFromFile {
 
     public ACAQMaskImageDataFromFile(ACAQAlgorithmDeclaration declaration) {

@@ -223,6 +223,10 @@ See the LICENSE file provided with this code for the full license.
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>org.scijava</groupId>
+            <artifactId>script-editor</artifactId>
+        </dependency>
     </dependencies>
 
     <properties>

@@ -12,7 +12,6 @@ import org.hkijena.acaq5.api.algorithm.ACAQIteratingAlgorithm;
 import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
-import org.hkijena.acaq5.api.data.traits.AutoTransferTraits;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQROIData;
@@ -30,7 +29,6 @@ import java.util.Arrays;
 @AlgorithmOutputSlot(value = ACAQResultsTableData.class, slotName = "Measurements", autoCreate = true)
 
 // Algorithm traits
-@AutoTransferTraits
 public class MaskToParticleConverter extends ACAQIteratingAlgorithm {
     private double minParticleSize = 0;
     private double maxParticleSize = Double.MAX_VALUE;

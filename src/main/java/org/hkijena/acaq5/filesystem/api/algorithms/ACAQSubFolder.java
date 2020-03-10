@@ -9,7 +9,6 @@ import org.hkijena.acaq5.api.algorithm.ACAQIteratingAlgorithm;
 import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
-import org.hkijena.acaq5.api.data.traits.AutoTransferTraits;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.filesystem.api.dataypes.ACAQFolderData;
 
@@ -21,7 +20,6 @@ import org.hkijena.acaq5.filesystem.api.dataypes.ACAQFolderData;
 @AlgorithmOutputSlot(value = ACAQFolderData.class, slotName = "Subfolders", autoCreate = true)
 
 // Traits
-@AutoTransferTraits
 public class ACAQSubFolder extends ACAQIteratingAlgorithm {
 
     private String subFolder;

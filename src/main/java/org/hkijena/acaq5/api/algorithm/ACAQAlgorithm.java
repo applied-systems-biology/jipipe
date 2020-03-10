@@ -19,7 +19,7 @@ import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
 import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQMutableTraitConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQTraitConfiguration;
-import org.hkijena.acaq5.api.data.traits.AutoTransferTraits;
+import org.hkijena.acaq5.api.data.traits.ConfigTraits;
 import org.hkijena.acaq5.api.events.AlgorithmNameChanged;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.events.SlotAddedEvent;
@@ -134,11 +134,17 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
         if (getTraitConfiguration() instanceof ACAQDefaultMutableTraitConfiguration) {
             ACAQDefaultMutableTraitConfiguration traitConfiguration = (ACAQDefaultMutableTraitConfiguration) getTraitConfiguration();
             // Annotation-based trait configuration
-            if (getClass().getAnnotationsByType(AutoTransferTraits.class).length > 0) {
-                traitConfiguration.setTransferAllToAll(true);
+            if (getClass().getAnnotationsByType(ConfigTraits.class).length > 0) {
+                ConfigTraits configTraits = getClass().getAnnotationsByType(ConfigTraits.class)[0];
+                traitConfiguration.setTransferAllToAll(configTraits.autoTransfer());
+                traitConfiguration.getMutableGlobalTraitModificationTasks().merge(getDeclaration().getSlotTraitConfiguration());
+                traitConfiguration.setTraitModificationsSealed(!configTraits.allowModify());
             }
-            traitConfiguration.getMutableGlobalTraitModificationTasks().merge(getDeclaration().getSlotTraitConfiguration());
-            traitConfiguration.setTraitModificationsSealed(true);
+            else {
+                traitConfiguration.setTransferAllToAll(true);
+                traitConfiguration.getMutableGlobalTraitModificationTasks().merge(getDeclaration().getSlotTraitConfiguration());
+                traitConfiguration.setTraitModificationsSealed(true);
+            }
             traitConfiguration.setTraitTransfersSealed(true);
         }
     }

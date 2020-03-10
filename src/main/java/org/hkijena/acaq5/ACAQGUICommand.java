@@ -6,6 +6,7 @@ import net.imagej.ImageJ;
 import net.imagej.ops.OpService;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.ui.ACAQWorkbenchWindow;
+import org.scijava.Context;
 import org.scijava.app.StatusService;
 import org.scijava.command.Command;
 import org.scijava.command.CommandService;
@@ -55,6 +56,9 @@ public class ACAQGUICommand implements Command {
     @Parameter
     private OptionsService optionsService;
 
+    @Parameter
+    private Context context;
+
     @Override
     public void run() {
         ACAQRegistryService.instantiate(pluginService);
@@ -100,6 +104,10 @@ public class ACAQGUICommand implements Command {
 
     public OptionsService getOptionsService() {
         return optionsService;
+    }
+
+    public Context getContext() {
+        return context;
     }
 
     public static void main(final String... args) {

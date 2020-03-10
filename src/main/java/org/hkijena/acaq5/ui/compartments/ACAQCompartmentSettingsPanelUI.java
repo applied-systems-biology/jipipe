@@ -32,7 +32,8 @@ public class ACAQCompartmentSettingsPanelUI extends ACAQUIPanel {
         setLayout(new BorderLayout());
         DocumentTabPane tabbedPane = new DocumentTabPane();
 
-        ACAQAlgorithmParametersUI parametersUI = new ACAQAlgorithmParametersUI(compartment,
+        ACAQAlgorithmParametersUI parametersUI = new ACAQAlgorithmParametersUI(getWorkbenchUI(),
+                compartment,
                 MarkdownDocument.fromPluginResource("documentation/compartment-graph.md"),
                 true, true);
         tabbedPane.addTab("Parameters", UIUtils.getIconFromResources("cog.png"),
@@ -85,7 +86,7 @@ public class ACAQCompartmentSettingsPanelUI extends ACAQUIPanel {
         ACAQExportedCompartment exportedCompartment = new ACAQExportedCompartment(compartment);
         exportedCompartment.getMetadata().setName(compartment.getName());
         exportedCompartment.getMetadata().setDescription("An exported ACAQ5 compartment");
-        ACAQParameterAccessUI metadataEditor = new ACAQParameterAccessUI(exportedCompartment.getMetadata(),
+        ACAQParameterAccessUI metadataEditor = new ACAQParameterAccessUI(getWorkbenchUI(), exportedCompartment.getMetadata(),
                 null,
                 false,
                 false);
