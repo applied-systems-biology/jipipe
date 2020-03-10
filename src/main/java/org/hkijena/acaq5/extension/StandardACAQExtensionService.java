@@ -14,6 +14,7 @@ import org.hkijena.acaq5.extension.api.algorithms.enhancers.CLAHEImageEnhancer;
 import org.hkijena.acaq5.extension.api.algorithms.enhancers.IlluminationCorrectionEnhancer;
 import org.hkijena.acaq5.extension.api.algorithms.enhancers.MergeROIEnhancer;
 import org.hkijena.acaq5.extension.api.algorithms.enhancers.WatershedMaskEnhancer;
+import org.hkijena.acaq5.extension.api.algorithms.macro.MacroWrapperAlgorithm;
 import org.hkijena.acaq5.extension.api.algorithms.segmenters.AutoThresholdSegmenter;
 import org.hkijena.acaq5.extension.api.algorithms.segmenters.BrightSpotsSegmenter;
 import org.hkijena.acaq5.extension.api.algorithms.segmenters.HessianSegmenter;
@@ -30,6 +31,7 @@ import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMultichannelImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQROIData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQResultsTableData;
+import org.hkijena.acaq5.extension.api.macro.MacroCode;
 import org.hkijena.acaq5.extension.api.traits.Sample;
 import org.hkijena.acaq5.extension.api.traits.Subject;
 import org.hkijena.acaq5.extension.api.traits.Treatment;
@@ -121,6 +123,7 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
         registryService.getUIParametertypeRegistry().registerParameterEditor(float.class, FloatParameterEditorUI.class);
         registryService.getUIParametertypeRegistry().registerParameterEditor(boolean.class, BooleanParameterEditorUI.class);
         registryService.getUIParametertypeRegistry().registerParameterEditor(String.class, StringParameterEditorUI.class);
+        registryService.getUIParametertypeRegistry().registerParameterEditor(MacroCode.class, MacroParameterEditorUI.class);
         registryService.getUIParametertypeRegistry().registerParameterEditor(AutoThresholder.Method.class, EnumParameterEditorUI.class);
         registryService.getUIParametertypeRegistry().registerParameterEditor(ACAQBioformatsImporter.ColorMode.class, EnumParameterEditorUI.class);
         registryService.getUIParametertypeRegistry().registerParameterEditor(ACAQBioformatsImporter.Order.class, EnumParameterEditorUI.class);
@@ -348,6 +351,7 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
         registryService.getAlgorithmRegistry().register(AnnotateAll.class);
         registryService.getAlgorithmRegistry().register(RemoveAnnotations.class);
         registryService.getAlgorithmRegistry().register(SplitByAnnotation.class);
+        registryService.getAlgorithmRegistry().register(MacroWrapperAlgorithm.class);
     }
 
     private void registerDataTypes(ACAQRegistryService registryService) {

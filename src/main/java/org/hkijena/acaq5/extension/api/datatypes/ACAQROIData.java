@@ -3,6 +3,7 @@ package org.hkijena.acaq5.extension.api.datatypes;
 import ij.gui.Roi;
 import ij.io.RoiDecoder;
 import ij.io.RoiEncoder;
+import ij.plugin.frame.RoiManager;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.utils.PathUtils;
@@ -15,6 +16,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -30,6 +32,11 @@ public class ACAQROIData implements ACAQData {
 
     public ACAQROIData(List<Roi> roi) {
         this.roi = roi;
+    }
+
+    public ACAQROIData(RoiManager roiManager) {
+        this.roi = new ArrayList<>();
+        this.roi.addAll(Arrays.asList(roiManager.getRoisAsArray()));
     }
 
     public List<Roi> getROI() {
@@ -109,5 +116,14 @@ public class ACAQROIData implements ACAQData {
                 }
         }
         return result;
+    }
+
+    /**
+     * Adds the ROI to an existing ROI manager instance
+     */
+    public void addToRoiManager(RoiManager roiManager) {
+        for (Roi roi : getROI()) {
+            roiManager.add(roi, -1);
+        }
     }
 }

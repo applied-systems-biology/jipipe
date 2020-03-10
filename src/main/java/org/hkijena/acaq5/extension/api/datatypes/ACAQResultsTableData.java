@@ -33,4 +33,17 @@ public class ACAQResultsTableData implements ACAQData {
     public ResultsTable getTable() {
         return table;
     }
+
+    /**
+     * Adds the table to an existing table
+     * @param destination
+     */
+    public void addToTable(ResultsTable destination) {
+        for(int row = 0; row < table.size(); ++row) {
+            destination.incrementCounter();
+            for(int columnIndex = 0; columnIndex < table.getLastColumn(); ++columnIndex) {
+                destination.addValue(table.getColumnHeading(columnIndex), table.getValue(table.getColumnHeading(columnIndex), row));
+            }
+        }
+    }
 }

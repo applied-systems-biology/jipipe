@@ -16,6 +16,8 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.nio.file.Path;
 
 public class ACAQResultDataSlotUI extends ACAQUIPanel {
@@ -53,9 +55,26 @@ public class ACAQResultDataSlotUI extends ACAQUIPanel {
         table.getSelectionModel().addListSelectionListener(e -> {
             showDataRows(table.getSelectedRows());
         });
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(e.getClickCount() == 2) {
+                    int[] selectedRows = table.getSelectedRows();
+                    if(selectedRows.length > 0)
+                        handleSlotRowDefaultAction(selectedRows[0]);
+                }
+            }
+        });
 
         rowUIList = new FormPanel(null, false, false, true);
         add(rowUIList, BorderLayout.SOUTH);
+    }
+
+    private void handleSlotRowDefaultAction(int selectedRow) {
+        int row = table.getRowSorter().convertRowIndexToModel(selectedRow);
+        ACAQExportedDataTable.Row rowInstance = dataTable.getRowList().get(row);
+        ACAQResultDataSlotRowUI ui = ACAQUIDatatypeRegistry.getInstance().getUIForResultSlot(getWorkbenchUI(), slot, rowInstance);
+        ui.handleDefaultAction();
     }
 
     private void showDataRows(int[] selectedRows) {
@@ -82,5 +101,9 @@ public class ACAQResultDataSlotUI extends ACAQUIPanel {
         table.setAutoCreateRowSorter(true);
 
         table.packAll();
+
+        if(dataTable.getRowCount() == 1) {
+            table.setRowSelectionInterval(0, 0);
+        }
     }
 }

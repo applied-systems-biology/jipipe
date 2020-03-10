@@ -35,6 +35,10 @@ public enum ACAQAlgorithmCategory {
      */
     Annotation,
     /**
+     * Any other algorithm
+     */
+    Miscellaneous,
+    /**
      * Internal algorithms are only used internally within a project
      */
     Internal;

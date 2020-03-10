@@ -23,6 +23,11 @@ public abstract class ACAQResultDataSlotRowUI extends ACAQUIPanel {
     }
 
     /**
+     * Action that is triggered when the user double-clicks on the entry in the table
+     */
+    public abstract void handleDefaultAction();
+
+    /**
      * Returns the data slot
      *
      * @return
