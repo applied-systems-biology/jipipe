@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface ACAQSubAlgorithm {
+public @interface ACAQSubParameters {
     /**
      * The name of the sub-algorithm
      *

@@ -19,7 +19,7 @@ import org.hkijena.acaq5.api.data.traits.AutoTransferTraits;
 import org.hkijena.acaq5.api.data.traits.GoodForTrait;
 import org.hkijena.acaq5.api.data.traits.RemovesTrait;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.parameters.ACAQSubAlgorithm;
+import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
 import org.hkijena.acaq5.extension.api.algorithms.enhancers.CLAHEImageEnhancer;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
@@ -164,12 +164,12 @@ public class InternalGradientSegmenter extends ACAQIteratingAlgorithm {
         this.erosionIterations = erosionIterations;
     }
 
-    @ACAQSubAlgorithm("auto-thresholding")
+    @ACAQSubParameters("auto-thresholding")
     public AutoThresholdSegmenter getAutoThresholdSegmenter() {
         return autoThresholdSegmenter;
     }
 
-    @ACAQSubAlgorithm("clahe-enhancing")
+    @ACAQSubParameters("clahe-enhancing")
     public CLAHEImageEnhancer getClaheImageEnhancer() {
         return claheImageEnhancer;
     }

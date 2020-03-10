@@ -20,7 +20,7 @@ import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.traits.AutoTransferTraits;
 import org.hkijena.acaq5.api.data.traits.RemovesTrait;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.parameters.ACAQSubAlgorithm;
+import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.traits.quality.ImageQuality;
@@ -125,7 +125,7 @@ public class HessianSegmenter extends ACAQIteratingAlgorithm {
         this.gradientRadius = gradientRadius;
     }
 
-    @ACAQSubAlgorithm("auto-thresholding")
+    @ACAQSubParameters("auto-thresholding")
     public AutoThresholdSegmenter getAutoThresholdSegmenter() {
         return autoThresholdSegmenter;
     }
