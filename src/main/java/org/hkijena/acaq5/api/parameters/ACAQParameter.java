@@ -12,5 +12,18 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface ACAQParameter {
+    /**
+     * The unique key of this parameter
+     *
+     * @return
+     */
     String value();
+
+    /**
+     * Sets if the parameter is visible to the user or only exported into JSON
+     * Lower visibilities override higher visibilities.
+     *
+     * @return
+     */
+    ACAQParameterVisibility visibility() default ACAQParameterVisibility.TransitiveVisible;
 }

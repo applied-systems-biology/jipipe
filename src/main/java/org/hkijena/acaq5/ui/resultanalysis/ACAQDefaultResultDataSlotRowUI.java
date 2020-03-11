@@ -87,7 +87,7 @@ public class ACAQDefaultResultDataSlotRowUI extends ACAQResultDataSlotRowUI {
 
     @Override
     public void handleDefaultAction() {
-        if(!registeredSlotActions.isEmpty()) {
+        if (!registeredSlotActions.isEmpty()) {
             SlotAction mainSlotAction = registeredSlotActions.get(registeredSlotActions.size() - 1);
             mainSlotAction.action.accept(getSlot());
         }

@@ -58,9 +58,9 @@ public class ACAQResultDataSlotUI extends ACAQUIPanel {
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(e.getClickCount() == 2) {
+                if (e.getClickCount() == 2) {
                     int[] selectedRows = table.getSelectedRows();
-                    if(selectedRows.length > 0)
+                    if (selectedRows.length > 0)
                         handleSlotRowDefaultAction(selectedRows[0]);
                 }
             }
@@ -102,7 +102,7 @@ public class ACAQResultDataSlotUI extends ACAQUIPanel {
 
         table.packAll();
 
-        if(dataTable.getRowCount() == 1) {
+        if (dataTable.getRowCount() == 1) {
             table.setRowSelectionInterval(0, 0);
         }
     }

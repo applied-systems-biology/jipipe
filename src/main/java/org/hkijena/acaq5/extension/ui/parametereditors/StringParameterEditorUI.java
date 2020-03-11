@@ -4,7 +4,6 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
-import org.jdesktop.swingx.JXTextArea;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -21,7 +20,7 @@ public class StringParameterEditorUI extends ACAQParameterEditorUI {
         setLayout(new BorderLayout());
 
         StringParameterSettings settings = getParameterAccess().getAnnotationOfType(StringParameterSettings.class);
-        if(settings != null && settings.multiline()) {
+        if (settings != null && settings.multiline()) {
             JTextArea textArea = new JTextArea("" + getParameterAccess().get());
             textArea.setBorder(BorderFactory.createEtchedBorder());
             textArea.getDocument().addDocumentListener(new DocumentChangeListener() {
@@ -31,8 +30,7 @@ public class StringParameterEditorUI extends ACAQParameterEditorUI {
                 }
             });
             add(textArea, BorderLayout.CENTER);
-        }
-        else {
+        } else {
             JTextField textField = new JTextField("" + getParameterAccess().get());
             textField.getDocument().addDocumentListener(new DocumentChangeListener() {
                 @Override

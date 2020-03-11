@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.ui.compartments;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
@@ -159,14 +158,14 @@ public class ACAQCompartmentGraphUI extends ACAQUIPanel implements MouseListener
     private void importCompartment() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Import compartment *.json");
-        if(fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
                 ObjectMapper objectMapper = JsonUtils.getObjectMapper();
                 ACAQExportedCompartment exportedCompartment = objectMapper.readerFor(ACAQExportedCompartment.class).readValue(fileChooser.getSelectedFile());
 
                 String name = UIUtils.getUniqueStringByDialog(this, "Please enter the name of the new compartment:",
                         exportedCompartment.getSuggestedName(), s -> getProject().getCompartments().containsKey(s));
-                if(name != null && !name.isEmpty()) {
+                if (name != null && !name.isEmpty()) {
                     exportedCompartment.addTo(getProject(), name);
                 }
             } catch (IOException e) {

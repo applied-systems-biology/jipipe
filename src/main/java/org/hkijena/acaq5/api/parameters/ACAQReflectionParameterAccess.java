@@ -1,7 +1,6 @@
 package org.hkijena.acaq5.api.parameters;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -16,6 +15,7 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
     private Method setter;
     private ACAQDocumentation documentation;
     private Object parameterHolder;
+    private ACAQParameterVisibility visibility = ACAQParameterVisibility.TransitiveVisible;
 
     @Override
     public String getKey() {
@@ -36,15 +36,8 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
         return null;
     }
 
-    @Override
     public ACAQDocumentation getDocumentation() {
         return documentation;
-    }
-
-    @Override
-    public boolean isHidden() {
-        return getter.getAnnotationsByType(ACAQHiddenParameter.class).length > 0 ||
-                setter.getAnnotationsByType(ACAQHiddenParameter.class).length > 0;
     }
 
     @Override
@@ -88,6 +81,11 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
         return parameterHolder;
     }
 
+    @Override
+    public ACAQParameterVisibility getVisibility() {
+        return visibility;
+    }
+
     /**
      * Extracts parameters from an object
      *
@@ -104,6 +102,7 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
                 if (access == null)
                     access = (ACAQReflectionParameterAccess) result.get(parameterAnnotation.value());
                 access.parameterHolder = parameterHolder;
+                access.visibility = access.visibility.mergeWith(parameterAnnotation.visibility());
                 if (method.getParameters().length == 1) {
                     // Is a setter
                     access.setter = method;
@@ -129,11 +128,6 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
                     ACAQSubParameters subAlgorithmAnnotation = subAlgorithms[0];
                     Object subAlgorithm = method.invoke(parameterHolder);
                     for (Map.Entry<String, ACAQParameterAccess> kv : ACAQParameterAccess.getParameters(subAlgorithm).entrySet()) {
-
-                        // Do not allow name parameter
-                        if (kv.getKey().equals("name"))
-                            continue;
-
                         result.put(subAlgorithmAnnotation.value() + "/" + kv.getKey(), kv.getValue());
                     }
                 } catch (IllegalAccessException | InvocationTargetException e) {

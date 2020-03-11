@@ -47,16 +47,14 @@ import java.util.List;
 @ConfigTraits(allowModify = true)
 public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
 
-    private MacroCode code = new MacroCode();
-    private boolean strictMode = true;
-
-    private List<ImagePlus> initiallyOpenedImages = new ArrayList<>();
-
     public static List<Class<? extends ACAQData>> IMAGEJ_DATA_CLASSES = Arrays.asList(ACAQMultichannelImageData.class,
             ACAQGreyscaleImageData.class,
             ACAQMaskData.class,
             ACAQROIData.class,
             ACAQResultsTableData.class);
+    private MacroCode code = new MacroCode();
+    private boolean strictMode = true;
+    private List<ImagePlus> initiallyOpenedImages = new ArrayList<>();
 
     public MacroWrapperAlgorithm(ACAQAlgorithmDeclaration declaration) {
         super(declaration, ACAQMutableSlotConfiguration.builder().restrictInputTo(IMAGEJ_DATA_CLASSES.toArray(new Class[0]))
@@ -81,18 +79,16 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
 
     private void passOutputData(ACAQDataInterface dataInterface) {
         for (ACAQDataSlot outputSlot : getOutputSlots()) {
-            if(ACAQMultichannelImageData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
+            if (ACAQMultichannelImageData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
                 ImagePlus image = WindowManager.getImage(outputSlot.getName());
                 try {
                     dataInterface.addOutputData(outputSlot, outputSlot.getAcceptedDataType().getConstructor(ImagePlus.class).newInstance(image.duplicate()));
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                     throw new RuntimeException(e);
                 }
-            }
-            else if(ACAQROIData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
+            } else if (ACAQROIData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
                 dataInterface.addOutputData(outputSlot, new ACAQROIData(RoiManager.getRoiManager()));
-            }
-            else if(ACAQResultsTableData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
+            } else if (ACAQResultsTableData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
                 ResultsTable table = ResultsTable.getResultsTable();
                 dataInterface.addOutputData(outputSlot, new ACAQResultsTableData((ResultsTable) table.clone()));
             }
@@ -103,9 +99,9 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
         RoiManager.getRoiManager().reset();
         RoiManager.getRoiManager().close();
         ResultsTable.getResultsTable().reset();
-        for(int i = 0; i < WindowManager.getImageCount(); ++i) {
+        for (int i = 0; i < WindowManager.getImageCount(); ++i) {
             ImagePlus image = WindowManager.getImage(i + 1);
-            if(!initiallyOpenedImages.contains(image)) {
+            if (!initiallyOpenedImages.contains(image)) {
                 image.close();
             }
         }
@@ -117,26 +113,23 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
     private void prepareInputData(ACAQDataInterface dataInterface) {
 //        long imageInputSlotCount = getInputSlots().stream().filter(slot -> ACAQMultichannelImageData.class.isAssignableFrom(slot.getAcceptedDataType())).count();
         initiallyOpenedImages.clear();
-        for(int i = 0; i < WindowManager.getImageCount(); ++i) {
+        for (int i = 0; i < WindowManager.getImageCount(); ++i) {
             initiallyOpenedImages.add(WindowManager.getImage(i + 1));
         }
         for (ACAQDataSlot inputSlot : getInputSlots()) {
             ACAQData data = dataInterface.getInputData(inputSlot);
-            if(data instanceof ACAQMultichannelImageData) {
+            if (data instanceof ACAQMultichannelImageData) {
                 ImagePlus img = ((ACAQMultichannelImageData) data).getImage().duplicate();
                 img.setTitle(inputSlot.getName());
                 img.show();
                 WindowManager.setTempCurrentImage(img);
-            }
-            else if(data instanceof ACAQROIData) {
+            } else if (data instanceof ACAQROIData) {
                 RoiManager.getRoiManager().reset();
                 ((ACAQROIData) data).addToRoiManager(RoiManager.getRoiManager());
-            }
-            else if(data instanceof ACAQResultsTableData) {
+            } else if (data instanceof ACAQResultsTableData) {
                 ResultsTable.getResultsTable().reset();
-                ((ACAQResultsTableData)data).addToTable(ResultsTable.getResultsTable());
-            }
-            else {
+                ((ACAQResultsTableData) data).addToTable(ResultsTable.getResultsTable());
+            } else {
                 throw new RuntimeException("Unsupported data: " + data);
             }
         }
@@ -148,19 +141,19 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
         long roiOutputSlotCount = getOutputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ACAQROIData.class).count();
         long resultsTableInputSlotCount = getInputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ACAQResultsTableData.class).count();
         long resultsTableOutputSlotCount = getOutputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ACAQResultsTableData.class).count();
-        if(roiInputSlotCount > 1) {
+        if (roiInputSlotCount > 1) {
             report.reportIsInvalid("Too many ROI inputs! Please make sure to only have at most one ROI data input.");
         }
-        if(roiOutputSlotCount > 1) {
+        if (roiOutputSlotCount > 1) {
             report.reportIsInvalid("Too many ROI outputs! Please make sure to only have at most one ROI data output.");
         }
-        if(resultsTableInputSlotCount > 1) {
+        if (resultsTableInputSlotCount > 1) {
             report.reportIsInvalid("Too many results table inputs! Please make sure to only have at most one results table data input.");
         }
-        if(resultsTableOutputSlotCount > 1) {
+        if (resultsTableOutputSlotCount > 1) {
             report.reportIsInvalid("Too many results table outputs! Please make sure to only have at most one results table data output.");
         }
-        if(strictMode) {
+        if (strictMode) {
             for (ACAQDataSlot inputSlot : getInputSlots()) {
                 if (ACAQMultichannelImageData.class.isAssignableFrom(inputSlot.getAcceptedDataType())) {
                     if (!code.getCode().contains("\"" + inputSlot.getName() + "\"")) {

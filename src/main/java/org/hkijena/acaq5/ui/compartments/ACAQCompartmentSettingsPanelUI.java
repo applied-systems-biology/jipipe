@@ -91,7 +91,7 @@ public class ACAQCompartmentSettingsPanelUI extends ACAQUIPanel {
                 false,
                 false);
 
-        if(JOptionPane.showConfirmDialog(this, metadataEditor, "Export compartment",
+        if (JOptionPane.showConfirmDialog(this, metadataEditor, "Export compartment",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION) {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);

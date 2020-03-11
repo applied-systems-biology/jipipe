@@ -4,8 +4,6 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 
-import javax.swing.*;
-
 public abstract class ACAQParameterEditorUI extends ACAQUIPanel {
     private ACAQParameterAccess parameterAccess;
 

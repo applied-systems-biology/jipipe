@@ -10,6 +10,7 @@ import java.lang.annotation.Target;
 public @interface StringParameterSettings {
     /**
      * If true, the editor allows to create multiple lines
+     *
      * @return
      */
     boolean multiline() default false;

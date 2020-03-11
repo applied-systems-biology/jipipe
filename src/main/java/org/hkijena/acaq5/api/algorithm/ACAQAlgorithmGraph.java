@@ -103,7 +103,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         repairGraph();
 
         // Sometimes we have algorithms with no slots, so trigger manually
-        if(algorithm.getSlots().isEmpty()) {
+        if (algorithm.getSlots().isEmpty()) {
             getEventBus().post(new AlgorithmGraphChangedEvent(this));
         }
     }
@@ -484,6 +484,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
     /**
      * Merges another graph into this graph
+     *
      * @param otherGraph
      * @return A map from ID in source graph to algorithm in target graph
      */

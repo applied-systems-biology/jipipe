@@ -28,6 +28,7 @@ import org.hkijena.acaq5.api.events.SlotRemovedEvent;
 import org.hkijena.acaq5.api.events.SlotRenamedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.utils.JsonUtils;
 
@@ -139,8 +140,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
                 traitConfiguration.setTransferAllToAll(configTraits.autoTransfer());
                 traitConfiguration.getMutableGlobalTraitModificationTasks().merge(getDeclaration().getSlotTraitConfiguration());
                 traitConfiguration.setTraitModificationsSealed(!configTraits.allowModify());
-            }
-            else {
+            } else {
                 traitConfiguration.setTransferAllToAll(true);
                 traitConfiguration.getMutableGlobalTraitModificationTasks().merge(getDeclaration().getSlotTraitConfiguration());
                 traitConfiguration.setTraitModificationsSealed(true);
@@ -174,7 +174,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
         return eventBus;
     }
 
-    @ACAQParameter("name")
+    @ACAQParameter(value = "name", visibility = ACAQParameterVisibility.Visible)
     @ACAQDocumentation(name = "Name")
     public String getName() {
         if (customName == null || customName.isEmpty())

@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.api.data;
 
-import ij.plugin.frame.RoiManager;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 

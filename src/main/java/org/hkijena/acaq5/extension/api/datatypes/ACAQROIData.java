@@ -66,6 +66,15 @@ public class ACAQROIData implements ACAQData {
     }
 
     /**
+     * Adds the ROI to an existing ROI manager instance
+     */
+    public void addToRoiManager(RoiManager roiManager) {
+        for (Roi roi : getROI()) {
+            roiManager.add(roi, -1);
+        }
+    }
+
+    /**
      * Loads a set of ROI from a zip file
      *
      * @param fileName
@@ -116,14 +125,5 @@ public class ACAQROIData implements ACAQData {
                 }
         }
         return result;
-    }
-
-    /**
-     * Adds the ROI to an existing ROI manager instance
-     */
-    public void addToRoiManager(RoiManager roiManager) {
-        for (Roi roi : getROI()) {
-            roiManager.add(roi, -1);
-        }
     }
 }

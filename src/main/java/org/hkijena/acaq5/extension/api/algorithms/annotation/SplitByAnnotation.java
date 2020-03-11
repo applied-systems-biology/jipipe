@@ -63,8 +63,7 @@ public class SplitByAnnotation extends ACAQAlgorithm {
     public void reportValidity(ACAQValidityReport report) {
         if (annotationType.getDeclaration() == null) {
             report.forCategory("Removed annotation").reportIsInvalid("No annotation provided! Please setup an annotation that is removed from the data.");
-        }
-        else {
+        } else {
             if (getOutputSlots().size() < 2) {
                 if (annotationType.getDeclaration().isDiscriminator())
                     report.forCategory("Output slots").reportIsInvalid("Invalid slot configuration. Please create a slot for data that has the annotation, and a second one for unannotated data.");
