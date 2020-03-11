@@ -24,8 +24,12 @@ public class FloatParameterEditorUI extends ACAQParameterEditorUI {
         setLayout(new BorderLayout());
         float min = Float.NEGATIVE_INFINITY;
         float max = Float.POSITIVE_INFINITY;
-        Float initialValue = getParameterAccess().get();
-        SpinnerNumberModel model = new SpinnerNumberModel(initialValue.doubleValue(), min, max, 1);
+        Object value = getParameterAccess().get();
+        float floatValue = 0;
+        if (value != null) {
+            floatValue = (float) value;
+        }
+        SpinnerNumberModel model = new SpinnerNumberModel(floatValue, min, max, 1);
         JSpinner spinner = new JSpinner(model);
         spinner.addChangeListener(e -> {
             if (!getParameterAccess().set(model.getNumber().floatValue())) {

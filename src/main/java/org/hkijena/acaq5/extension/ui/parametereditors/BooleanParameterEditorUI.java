@@ -21,8 +21,12 @@ public class BooleanParameterEditorUI extends ACAQParameterEditorUI {
 
     private void initialize() {
         setLayout(new BorderLayout());
+        Object value = getParameterAccess().get();
+        boolean booleanValue = false;
+        if (value != null)
+            booleanValue = (boolean) value;
         JCheckBox checkBox = new JCheckBox(getParameterAccess().getName());
-        checkBox.setSelected(getParameterAccess().get());
+        checkBox.setSelected(booleanValue);
         add(checkBox, BorderLayout.CENTER);
         checkBox.addActionListener(e -> getParameterAccess().set(checkBox.isSelected()));
     }

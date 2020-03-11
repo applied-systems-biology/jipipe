@@ -21,7 +21,7 @@ public enum ACAQParameterVisibility {
     }
 
     public ACAQParameterVisibility mergeWith(ACAQParameterVisibility other) {
-        if(other.order > order)
+        if (other.order > order)
             return other;
         else
             return this;

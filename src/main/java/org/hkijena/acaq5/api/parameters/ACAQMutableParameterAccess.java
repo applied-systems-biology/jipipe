@@ -7,6 +7,8 @@ import java.lang.annotation.Annotation;
 
 public class ACAQMutableParameterAccess implements ACAQParameterAccess {
     private Object parameterHolder;
+    private String holderName;
+    private String holderDescription;
     private String key;
     private String name;
     private String description;
@@ -14,10 +16,25 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
     private Class<?> fieldClass;
     private Object value;
 
+    public ACAQMutableParameterAccess() {
+    }
+
     public ACAQMutableParameterAccess(Object parameterHolder, String key, Class<?> fieldClass) {
         this.parameterHolder = parameterHolder;
         this.key = key;
         this.fieldClass = fieldClass;
+    }
+
+    public ACAQMutableParameterAccess(ACAQMutableParameterAccess other) {
+        this.parameterHolder = other.parameterHolder;
+        this.holderName = other.holderName;
+        this.holderDescription = other.holderDescription;
+        this.key = other.key;
+        this.name = other.name;
+        this.description = other.description;
+        this.visibility = other.visibility;
+        this.fieldClass = other.fieldClass;
+        this.value = other.value;
     }
 
     @Override
@@ -116,4 +133,21 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
     }
 
 
+    @Override
+    public String getHolderDescription() {
+        return holderDescription;
+    }
+
+    public void setHolderDescription(String holderDescription) {
+        this.holderDescription = holderDescription;
+    }
+
+    @Override
+    public String getHolderName() {
+        return holderName;
+    }
+
+    public void setHolderName(String holderName) {
+        this.holderName = holderName;
+    }
 }

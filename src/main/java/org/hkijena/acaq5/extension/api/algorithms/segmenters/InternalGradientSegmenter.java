@@ -163,11 +163,13 @@ public class InternalGradientSegmenter extends ACAQIteratingAlgorithm {
     }
 
     @ACAQSubParameters("auto-thresholding")
+    @ACAQDocumentation(name = "Auto thresholding", description = "Parameters for underlying auto thresholding")
     public AutoThresholdSegmenter getAutoThresholdSegmenter() {
         return autoThresholdSegmenter;
     }
 
     @ACAQSubParameters("clahe-enhancing")
+    @ACAQDocumentation(name = "CLAHE Enhancer", description = "Parameters for underlying CLAHE Enhancing algorithm")
     public CLAHEImageEnhancer getClaheImageEnhancer() {
         return claheImageEnhancer;
     }

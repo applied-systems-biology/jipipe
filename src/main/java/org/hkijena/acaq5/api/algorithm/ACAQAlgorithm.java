@@ -26,6 +26,7 @@ import org.hkijena.acaq5.api.events.SlotAddedEvent;
 import org.hkijena.acaq5.api.events.SlotOrderChangedEvent;
 import org.hkijena.acaq5.api.events.SlotRemovedEvent;
 import org.hkijena.acaq5.api.events.SlotRenamedEvent;
+import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterHolder;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
@@ -292,6 +293,15 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
             ((ACAQDefaultMutableTraitConfiguration) getTraitConfiguration()).fromJson(node.get("acaq:trait-generation"));
         }
 
+        // Deserialize dynamic parameters
+        Map<String, ACAQDynamicParameterHolder> dynamicParameterHolders = ACAQDynamicParameterHolder.findDynamicParameterHolders(this);
+        for (Map.Entry<String, ACAQDynamicParameterHolder> entry : dynamicParameterHolders.entrySet()) {
+            JsonNode entryNode = node.path("acaq:dynamic-parameters").path(entry.getKey());
+            if (!entryNode.isMissingNode()) {
+                entry.getValue().fromJson(entryNode);
+            }
+        }
+
         // Deserialize algorithm-specific parameters
         for (Map.Entry<String, ACAQParameterAccess> kv : ACAQParameterAccess.getParameters(this).entrySet()) {
             if (node.has(kv.getKey())) {
@@ -435,6 +445,16 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
             if (algorithm.getTraitConfiguration() instanceof ACAQMutableTraitConfiguration) {
                 jsonGenerator.writeObjectField("acaq:trait-generation", algorithm.getTraitConfiguration());
             }
+
+            // Save dynamic parameter storages
+            jsonGenerator.writeFieldName("acaq:dynamic-parameters");
+            jsonGenerator.writeStartObject();
+            Map<String, ACAQDynamicParameterHolder> dynamicParameterHolders = ACAQDynamicParameterHolder.findDynamicParameterHolders(algorithm);
+            for (Map.Entry<String, ACAQDynamicParameterHolder> entry : dynamicParameterHolders.entrySet()) {
+                jsonGenerator.writeObjectField(entry.getKey(), entry.getValue());
+            }
+            jsonGenerator.writeEndObject();
+
             jsonGenerator.writeEndObject();
         }
     }

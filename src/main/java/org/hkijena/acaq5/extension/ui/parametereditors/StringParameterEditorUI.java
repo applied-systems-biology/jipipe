@@ -20,8 +20,13 @@ public class StringParameterEditorUI extends ACAQParameterEditorUI {
         setLayout(new BorderLayout());
 
         StringParameterSettings settings = getParameterAccess().getAnnotationOfType(StringParameterSettings.class);
+        Object value = getParameterAccess().get();
+        String stringValue = "";
+        if (value != null) {
+            stringValue = "" + value;
+        }
         if (settings != null && settings.multiline()) {
-            JTextArea textArea = new JTextArea("" + getParameterAccess().get());
+            JTextArea textArea = new JTextArea(stringValue);
             textArea.setBorder(BorderFactory.createEtchedBorder());
             textArea.getDocument().addDocumentListener(new DocumentChangeListener() {
                 @Override
@@ -31,7 +36,7 @@ public class StringParameterEditorUI extends ACAQParameterEditorUI {
             });
             add(textArea, BorderLayout.CENTER);
         } else {
-            JTextField textField = new JTextField("" + getParameterAccess().get());
+            JTextField textField = new JTextField(stringValue);
             textField.getDocument().addDocumentListener(new DocumentChangeListener() {
                 @Override
                 public void changed(DocumentEvent documentEvent) {

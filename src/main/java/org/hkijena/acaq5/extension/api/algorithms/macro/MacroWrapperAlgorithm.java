@@ -18,7 +18,9 @@ import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.traits.ConfigTraits;
+import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterHolder;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMultichannelImageData;
@@ -27,6 +29,7 @@ import org.hkijena.acaq5.extension.api.datatypes.ACAQResultsTableData;
 import org.hkijena.acaq5.extension.api.macro.MacroCode;
 
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -52,8 +55,18 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
             ACAQMaskData.class,
             ACAQROIData.class,
             ACAQResultsTableData.class);
+    public static Class<?>[] ALLOWED_PARAMETER_CLASSES = new Class[]{
+            String.class,
+            Integer.class,
+            Double.class,
+            Float.class,
+            Path.class
+    };
+
     private MacroCode code = new MacroCode();
     private boolean strictMode = true;
+    private ACAQDynamicParameterHolder macroParameters = new ACAQDynamicParameterHolder(ALLOWED_PARAMETER_CLASSES);
+
     private List<ImagePlus> initiallyOpenedImages = new ArrayList<>();
 
     public MacroWrapperAlgorithm(ACAQAlgorithmDeclaration declaration) {
@@ -64,6 +77,7 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
     public MacroWrapperAlgorithm(MacroWrapperAlgorithm other) {
         super(other);
         this.code = new MacroCode(other.code);
+        this.macroParameters = new ACAQDynamicParameterHolder(other.macroParameters);
     }
 
     @Override
@@ -191,5 +205,11 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
     @ACAQParameter("strict-mode")
     public void setStrictMode(boolean strictMode) {
         this.strictMode = strictMode;
+    }
+
+    @ACAQSubParameters("macro-parameters")
+    @ACAQDocumentation(name = "Macro parameters", description = "Parameters that are passed as variables to the macro")
+    public ACAQDynamicParameterHolder getMacroParameters() {
+        return macroParameters;
     }
 }

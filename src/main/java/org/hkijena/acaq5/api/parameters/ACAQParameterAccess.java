@@ -75,6 +75,20 @@ public interface ACAQParameterAccess {
     Object getParameterHolder();
 
     /**
+     * A name for the parameter holder
+     *
+     * @return
+     */
+    String getHolderName();
+
+    /**
+     * A description for the parameter holder
+     *
+     * @return
+     */
+    String getHolderDescription();
+
+    /**
      * Finds all parameters of the provided object
      * This includes dynamic parameters
      *

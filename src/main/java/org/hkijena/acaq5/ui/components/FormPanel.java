@@ -109,7 +109,7 @@ public class FormPanel extends JPanel {
         return component;
     }
 
-    public <T extends Component> T addToForm(T component, JLabel description, MarkdownDocument documentation) {
+    public <T extends Component> T addToForm(T component, Component description, MarkdownDocument documentation) {
         forms.add(component, new GridBagConstraints() {
             {
                 anchor = GridBagConstraints.WEST;

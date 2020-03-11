@@ -124,6 +124,7 @@ public class HessianSegmenter extends ACAQIteratingAlgorithm {
     }
 
     @ACAQSubParameters("auto-thresholding")
+    @ACAQDocumentation(name = "Auto thresholding", description = "Parameters for underlying auto thresholding")
     public AutoThresholdSegmenter getAutoThresholdSegmenter() {
         return autoThresholdSegmenter;
     }

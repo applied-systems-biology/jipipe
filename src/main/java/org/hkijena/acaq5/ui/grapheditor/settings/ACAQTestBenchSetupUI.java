@@ -147,7 +147,7 @@ public class ACAQTestBenchSetupUI extends ACAQUIPanel {
 
         ACAQValidityReport report = new ACAQValidityReport();
         getProject().reportValidity(report);
-        if(!report.isValid()) {
+        if (!report.isValid()) {
             tryShowSetupPanel();
             return;
         }

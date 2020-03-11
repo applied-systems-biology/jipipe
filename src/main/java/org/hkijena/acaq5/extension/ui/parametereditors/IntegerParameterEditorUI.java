@@ -24,8 +24,12 @@ public class IntegerParameterEditorUI extends ACAQParameterEditorUI {
         setLayout(new BorderLayout());
         double min = Integer.MIN_VALUE;
         double max = Integer.MAX_VALUE;
-        Integer initialValue = getParameterAccess().get();
-        SpinnerNumberModel model = new SpinnerNumberModel(initialValue.doubleValue(), min, max, 1);
+        Object value = getParameterAccess().get();
+        int intValue = 0;
+        if (value != null) {
+            intValue = (int) value;
+        }
+        SpinnerNumberModel model = new SpinnerNumberModel(intValue, min, max, 1);
         JSpinner spinner = new JSpinner(model);
         spinner.addChangeListener(e -> {
             if (!getParameterAccess().set(model.getNumber().intValue())) {

@@ -122,6 +122,10 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
         registryService.getUIParametertypeRegistry().registerParameterEditor(double.class, DoubleParameterEditorUI.class);
         registryService.getUIParametertypeRegistry().registerParameterEditor(float.class, FloatParameterEditorUI.class);
         registryService.getUIParametertypeRegistry().registerParameterEditor(boolean.class, BooleanParameterEditorUI.class);
+        registryService.getUIParametertypeRegistry().registerParameterEditor(Integer.class, IntegerParameterEditorUI.class);
+        registryService.getUIParametertypeRegistry().registerParameterEditor(Double.class, DoubleParameterEditorUI.class);
+        registryService.getUIParametertypeRegistry().registerParameterEditor(Float.class, FloatParameterEditorUI.class);
+        registryService.getUIParametertypeRegistry().registerParameterEditor(Boolean.class, BooleanParameterEditorUI.class);
         registryService.getUIParametertypeRegistry().registerParameterEditor(String.class, StringParameterEditorUI.class);
         registryService.getUIParametertypeRegistry().registerParameterEditor(MacroCode.class, MacroParameterEditorUI.class);
         registryService.getUIParametertypeRegistry().registerParameterEditor(AutoThresholder.Method.class, EnumParameterEditorUI.class);
