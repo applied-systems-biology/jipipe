@@ -145,6 +145,13 @@ public class ACAQTestBenchSetupUI extends ACAQUIPanel {
 
     private void generateTestBench(Path outputPath) {
 
+        ACAQValidityReport report = new ACAQValidityReport();
+        getProject().reportValidity(report);
+        if(!report.isValid()) {
+            tryShowSetupPanel();
+            return;
+        }
+
         currentTestBench = new ACAQTestbench(getProject(), algorithm, outputPath);
 
         removeAll();
