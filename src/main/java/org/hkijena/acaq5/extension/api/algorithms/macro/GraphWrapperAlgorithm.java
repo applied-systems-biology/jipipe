@@ -34,18 +34,16 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm {
         ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration)getSlotConfiguration();
         slotConfiguration.setInputSealed(false);
         slotConfiguration.setOutputSealed(false);
-        for (ACAQDataSlot slot : graph.traverse()) {
+        for (ACAQDataSlot slot : graph.getUnconnectedSlots()) {
             if(slot.isInput()) {
-                if(graph.getSourceSlot(slot) == null) {
-                    String name = StringUtils.makeUniqueString(slot.getName(), s -> slotConfiguration.getSlots().containsKey(s));
-                    slotConfiguration.addInputSlot(name, slot.getAcceptedDataType());
-                }
+                String name = StringUtils.makeUniqueString(slot.getName(), s -> slotConfiguration.getSlots().containsKey(s));
+                slotConfiguration.addInputSlot(name, slot.getAcceptedDataType());
+                graphSlots.put(name, slot);
             }
             else if(slot.isOutput()) {
-                if(graph.getTargetSlots(slot).isEmpty()) {
-                    String name = StringUtils.makeUniqueString(slot.getName(), s -> slotConfiguration.getSlots().containsKey(s));
-                    slotConfiguration.addOutputSlot(name, slot.getAcceptedDataType());
-                }
+                String name = StringUtils.makeUniqueString(slot.getName(), s -> slotConfiguration.getSlots().containsKey(s));
+                slotConfiguration.addOutputSlot(name, slot.getAcceptedDataType());
+                graphSlots.put(name, slot);
             }
         }
         slotConfiguration.setInputSealed(true);

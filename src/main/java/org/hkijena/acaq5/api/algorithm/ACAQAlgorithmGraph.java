@@ -604,6 +604,22 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         return compartments.get(algorithm);
     }
 
+    public List<ACAQDataSlot> getUnconnectedSlots() {
+        List<ACAQDataSlot> result = new ArrayList<>();
+        for (ACAQDataSlot slot : traverse()) {
+            if(slot.isInput()) {
+                if(getSourceSlot(slot) == null)
+                    result.add(slot);
+            }
+            else if(slot.isOutput()) {
+                if(getTargetSlots(slot).isEmpty())
+                    result.add(slot);
+            }
+        }
+
+        return result;
+    }
+
     public static class Serializer extends JsonSerializer<ACAQAlgorithmGraph> {
         @Override
         public void serialize(ACAQAlgorithmGraph algorithmGraph, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {

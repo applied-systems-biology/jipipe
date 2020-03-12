@@ -154,6 +154,15 @@ public class ACAQAlgorithmRegistry {
         return registeredAlgorithms.get(id);
     }
 
+    /**
+     * Returns true if the algorithm ID already exists
+     * @param id
+     * @return
+     */
+    public boolean hasAlgorithmWithId(String id) {
+        return registeredAlgorithms.containsKey(id);
+    }
+
     public static ACAQAlgorithmRegistry getInstance() {
         return ACAQRegistryService.getInstance().getAlgorithmRegistry();
     }
