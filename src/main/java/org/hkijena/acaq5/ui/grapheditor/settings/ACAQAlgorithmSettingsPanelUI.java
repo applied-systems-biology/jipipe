@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.ui.grapheditor.settings;
 
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
@@ -8,6 +9,7 @@ import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
+import org.hkijena.acaq5.ui.settings.ACAQGraphWrapperAlgorithmExporter;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -87,7 +89,21 @@ public class ACAQAlgorithmSettingsPanelUI extends ACAQUIPanel {
     }
 
     private void exportAlgorithm() {
+        ACAQValidityReport report = new ACAQValidityReport();
+        algorithm.reportValidity(report);
+        if(!report.isValid()) {
+            UIUtils.openValidityReportDialog(this, report);
+            return;
+        }
 
+        ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
+        graph.insertNode(algorithm.getDeclaration().clone(algorithm), ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
+        ACAQGraphWrapperAlgorithmExporter exporter = new ACAQGraphWrapperAlgorithmExporter(getWorkbenchUI(), graph);
+        getWorkbenchUI().getDocumentTabPane().addTab("Export algorithm '" + algorithm.getName() + "'",
+                UIUtils.getIconFromResources("export.png"),
+                exporter,
+                DocumentTabPane.CloseMode.withAskOnCloseButton);
+        getWorkbenchUI().getDocumentTabPane().switchToLastTab();
     }
 
     private void deleteAlgorithm() {

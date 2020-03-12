@@ -1,10 +1,14 @@
 package org.hkijena.acaq5.api.algorithm;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -49,6 +53,7 @@ import java.util.stream.Collectors;
  * Manages multiple {@link ACAQAlgorithm} instances as graph
  */
 @JsonSerialize(using = ACAQAlgorithmGraph.Serializer.class)
+@JsonDeserialize(using = ACAQAlgorithmGraph.Deserializer.class)
 public class ACAQAlgorithmGraph implements ACAQValidatable {
 
     public static final String COMPARTMENT_DEFAULT = "DEFAULT";
@@ -632,6 +637,15 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
                 jsonGenerator.writeStringField("target-slot", StringUtils.makeFilesystemCompatible(edge.getValue().getName()));
                 jsonGenerator.writeEndObject();
             }
+        }
+    }
+
+    public static class Deserializer extends JsonDeserializer<ACAQAlgorithmGraph> {
+        @Override
+        public ACAQAlgorithmGraph deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+            ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
+            graph.fromJson(jsonParser.readValueAsTree());
+            return graph;
         }
     }
 }

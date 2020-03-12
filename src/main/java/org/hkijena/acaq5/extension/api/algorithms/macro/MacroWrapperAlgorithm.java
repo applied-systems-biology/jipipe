@@ -3,6 +3,7 @@ package org.hkijena.acaq5.extension.api.algorithms.macro;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.macro.Interpreter;
+import ij.macro.MacroConstants;
 import ij.measure.ResultsTable;
 import ij.plugin.frame.RoiManager;
 import org.hkijena.acaq5.api.ACAQDocumentation;
@@ -20,6 +21,7 @@ import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.traits.ConfigTraits;
 import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterHolder;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
@@ -27,12 +29,14 @@ import org.hkijena.acaq5.extension.api.datatypes.ACAQMultichannelImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQROIData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQResultsTableData;
 import org.hkijena.acaq5.extension.api.macro.MacroCode;
+import org.hkijena.acaq5.utils.MacroUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * An algorithm that wraps around an ImageJ macro
@@ -84,11 +88,52 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
     protected void runIteration(ACAQDataInterface dataInterface) {
         prepareInputData(dataInterface);
 
-        Interpreter interpreter = new Interpreter();
-        interpreter.run(code.getCode());
+        StringBuilder finalCode = new StringBuilder();
+        // Inject parameters
+        for (Map.Entry<String, ACAQParameterAccess> entry : macroParameters.getDynamicParameters().entrySet()) {
+            if(!MacroUtils.isValidVariableName(entry.getKey()))
+                throw new IllegalArgumentException("Invalid variable name " + entry.getKey());
+            finalCode.append("var ").append(entry.getKey()).append(" = ");
+            if(entry.getValue().getFieldClass() == Integer.class) {
+                int value = 0;
+                if(entry.getValue().get() != null)
+                    value = entry.getValue().get();
+                finalCode.append(value);
+            }
+            else if(entry.getValue().getFieldClass() == Double.class) {
+                double value = 0;
+                if(entry.getValue().get() != null)
+                    value = entry.getValue().get();
+                finalCode.append(value);
+            }
+            else if(entry.getValue().getFieldClass() == Float.class) {
+                float value = 0;
+                if(entry.getValue().get() != null)
+                    value = entry.getValue().get();
+                finalCode.append(value);
+            }
+            else {
+                String value = "";
+                if(entry.getValue().get() != null)
+                    value = "" + entry.getValue().get();
+                finalCode.append("\"").append(MacroUtils.escapeString(value)).append("\"");
+            }
+            finalCode.append(";\n");
+        }
 
-        passOutputData(dataInterface);
-        clearData(dataInterface);
+        finalCode.append("\n").append(code.getCode());
+
+        Interpreter interpreter = new Interpreter();
+        try {
+            interpreter.run(finalCode.toString());
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            passOutputData(dataInterface);
+            clearData(dataInterface);
+        }
     }
 
     private void passOutputData(ACAQDataInterface dataInterface) {
@@ -167,6 +212,12 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
         if (resultsTableOutputSlotCount > 1) {
             report.reportIsInvalid("Too many results table outputs! Please make sure to only have at most one results table data output.");
         }
+        for (String key : macroParameters.getDynamicParameters().keySet()) {
+            if(!MacroUtils.isValidVariableName(key)) {
+                report.forCategory("Macro Parameters").forCategory(key).reportIsInvalid("'" + key + "' is an invalid ImageJ macro variable name! Please ensure that macro variables are compatible with the ImageJ macro language.");
+            }
+        }
+
         if (strictMode) {
             for (ACAQDataSlot inputSlot : getInputSlots()) {
                 if (ACAQMultichannelImageData.class.isAssignableFrom(inputSlot.getAcceptedDataType())) {
