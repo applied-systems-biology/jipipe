@@ -71,6 +71,12 @@ public class ACAQAlgorithmSettingsPanelUI extends ACAQUIPanel {
 
         toolBar.add(Box.createHorizontalGlue());
 
+        JButton exportButton = new JButton(UIUtils.getIconFromResources("export.png"));
+        exportButton.setToolTipText("Export algorithm");
+        exportButton.setEnabled(algorithm.getCategory() != ACAQAlgorithmCategory.Internal);
+        exportButton.addActionListener(e -> exportAlgorithm());
+        toolBar.add(exportButton);
+
         JButton deleteButton = new JButton(UIUtils.getIconFromResources("delete.png"));
         deleteButton.setToolTipText("Delete algorithm");
         deleteButton.setEnabled(graph.canUserDelete(algorithm));
@@ -80,8 +86,16 @@ public class ACAQAlgorithmSettingsPanelUI extends ACAQUIPanel {
         add(toolBar, BorderLayout.NORTH);
     }
 
+    private void exportAlgorithm() {
+
+    }
+
     private void deleteAlgorithm() {
-        graph.removeNode(algorithm);
+        if(JOptionPane.showConfirmDialog(this,
+                "Do you really want to remove the algorithm '" + algorithm.getName() + "'?", "Delete algorithm",
+                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            graph.removeNode(algorithm);
+        }
     }
 
     public ACAQAlgorithm getAlgorithm() {

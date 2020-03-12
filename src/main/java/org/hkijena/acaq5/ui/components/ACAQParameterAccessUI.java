@@ -77,7 +77,7 @@ public class ACAQParameterAccessUI extends FormPanel {
             subAlgorithmGroupTitle.add(holderNameLabel, BorderLayout.CENTER);
             addToForm(subAlgorithmGroupTitle, null);
 
-            if (parameterHolder instanceof ACAQDynamicParameterHolder) {
+            if (parameterHolder instanceof ACAQDynamicParameterHolder && ((ACAQDynamicParameterHolder) parameterHolder).isAllowModification()) {
                 holderNameLabel.setText(((ACAQDynamicParameterHolder) parameterHolder).getName());
                 holderNameLabel.setToolTipText(((ACAQDynamicParameterHolder) parameterHolder).getDescription());
                 holderNameLabel.setIcon(UIUtils.getIconFromResources("cog.png"));
@@ -107,7 +107,7 @@ public class ACAQParameterAccessUI extends FormPanel {
                 JPanel labelPanel = new JPanel(new BorderLayout());
                 if (ui.isUILabelEnabled())
                     labelPanel.add(new JLabel(parameterAccess.getName()));
-                if (parameterHolder instanceof ACAQDynamicParameterHolder) {
+                if (parameterHolder instanceof ACAQDynamicParameterHolder && ((ACAQDynamicParameterHolder) parameterHolder).isAllowModification()) {
                     JButton removeButton = new JButton(UIUtils.getIconFromResources("close-tab.png"));
                     removeButton.setToolTipText("Remove this parameter");
                     UIUtils.makeBorderlessWithoutMargin(removeButton);

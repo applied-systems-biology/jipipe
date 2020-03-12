@@ -28,6 +28,7 @@ public class ACAQDynamicParameterHolder {
     private Set<Class<?>> allowedTypes = new HashSet<>();
     private String name;
     private String description;
+    private boolean allowModification = true;
 
     public ACAQDynamicParameterHolder(Class<?>... allowedTypes) {
         this.allowedTypes.addAll(Arrays.asList(allowedTypes));
@@ -109,6 +110,14 @@ public class ACAQDynamicParameterHolder {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    public boolean isAllowModification() {
+        return allowModification;
+    }
+
+    public void setAllowModification(boolean allowModification) {
+        this.allowModification = allowModification;
     }
 
     /**
