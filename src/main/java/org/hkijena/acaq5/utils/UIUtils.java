@@ -348,7 +348,7 @@ public class UIUtils {
 
     public static String getUniqueStringByDialog(Component parent, String message, String initialValue, Predicate<String> exists) {
         if (initialValue != null)
-            initialValue = StringUtils.makeUniqueString(initialValue, exists);
+            initialValue = StringUtils.makeUniqueString(initialValue, " ", exists);
         String value = null;
         while (value == null) {
             String newValue = JOptionPane.showInputDialog(parent, message, initialValue);

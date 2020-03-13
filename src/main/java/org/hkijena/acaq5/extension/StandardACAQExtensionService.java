@@ -3,8 +3,10 @@ package org.hkijena.acaq5.extension;
 import ij.process.AutoThresholder;
 import org.hkijena.acaq5.ACAQExtensionService;
 import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
+import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefCollection;
 import org.hkijena.acaq5.extension.api.algorithms.annotation.AnnotateAll;
 import org.hkijena.acaq5.extension.api.algorithms.annotation.RemoveAnnotations;
 import org.hkijena.acaq5.extension.api.algorithms.annotation.SplitByAnnotation;
@@ -131,8 +133,10 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
         registryService.getUIParametertypeRegistry().registerParameterEditor(AutoThresholder.Method.class, EnumParameterEditorUI.class);
         registryService.getUIParametertypeRegistry().registerParameterEditor(ACAQBioformatsImporter.ColorMode.class, EnumParameterEditorUI.class);
         registryService.getUIParametertypeRegistry().registerParameterEditor(ACAQBioformatsImporter.Order.class, EnumParameterEditorUI.class);
+        registryService.getUIParametertypeRegistry().registerParameterEditor(ACAQAlgorithmCategory.class, EnumParameterEditorUI.class);
         registryService.getUIParametertypeRegistry().registerParameterEditor(PathFilter.class, PathFilterParameterEditorUI.class);
         registryService.getUIParametertypeRegistry().registerParameterEditor(ACAQTraitDeclarationRef.class, ACAQTraitDeclarationRefParameterEditorUI.class);
+        registryService.getUIParametertypeRegistry().registerParameterEditor(ACAQTraitDeclarationRefCollection.class, ACAQTraitDeclarationRefCollectionParameterEditorUI.class);
         registryService.getUIParametertypeRegistry().registerParameterEditor(ACAQTrait.class, ACAQTraitParameterEditorUI.class);
 
         // Register result data slot UIs

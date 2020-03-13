@@ -120,7 +120,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * @param algorithm
      */
     public void insertNode(ACAQAlgorithm algorithm, String compartment) {
-        String uniqueName = StringUtils.makeUniqueString(StringUtils.jsonify(compartment + "-" + algorithm.getName()), algorithms.keySet());
+        String uniqueName = StringUtils.makeUniqueString(StringUtils.jsonify(compartment + "-" + algorithm.getName()), " ", algorithms.keySet());
         insertNode(uniqueName, algorithm, compartment);
     }
 

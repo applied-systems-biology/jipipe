@@ -1,9 +1,7 @@
 package org.hkijena.acaq5.extension.api.algorithms.macro;
 
-import org.hkijena.acaq5.api.ACAQRunnerStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
@@ -36,12 +34,12 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm {
         slotConfiguration.setOutputSealed(false);
         for (ACAQDataSlot slot : graph.getUnconnectedSlots()) {
             if(slot.isInput()) {
-                String name = StringUtils.makeUniqueString(slot.getName(), s -> slotConfiguration.getSlots().containsKey(s));
+                String name = StringUtils.makeUniqueString(slot.getName(), " ", s -> slotConfiguration.getSlots().containsKey(s));
                 slotConfiguration.addInputSlot(name, slot.getAcceptedDataType());
                 graphSlots.put(name, slot);
             }
             else if(slot.isOutput()) {
-                String name = StringUtils.makeUniqueString(slot.getName(), s -> slotConfiguration.getSlots().containsKey(s));
+                String name = StringUtils.makeUniqueString(slot.getName(), " ", s -> slotConfiguration.getSlots().containsKey(s));
                 slotConfiguration.addOutputSlot(name, slot.getAcceptedDataType());
                 graphSlots.put(name, slot);
             }

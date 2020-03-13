@@ -2,6 +2,7 @@ package org.hkijena.acaq5.extension.api.algorithms.macro;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQProjectMetadata;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
@@ -15,9 +16,13 @@ import org.hkijena.acaq5.api.algorithm.DefaultAlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.DefaultAlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.traits.ACAQDataSlotTraitConfiguration;
+import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
+import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
+import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefCollection;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -41,12 +46,15 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     public GraphWrapperAlgorithmDeclaration() {
     }
 
+    @ACAQDocumentation(name = "Algorithm ID", description = "An unique identifier for the algorithm")
+    @ACAQParameter("id")
     @JsonGetter("id")
     @Override
     public String getId() {
         return id;
     }
 
+    @ACAQParameter("id")
     @JsonSetter("id")
     public void setId(String id) {
         this.id = id;
@@ -77,11 +85,15 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
         return metadata.getDescription();
     }
 
+    @ACAQDocumentation(name = "Algorithm category", description = "A general category for the algorithm.")
+    @ACAQParameter("category")
+    @JsonGetter("category")
     @Override
     public ACAQAlgorithmCategory getCategory() {
         return category;
     }
 
+    @ACAQParameter("category")
     @JsonSetter("category")
     public void setCategory(ACAQAlgorithmCategory category) {
         this.category = category;
@@ -124,31 +136,41 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
         return outputSlots;
     }
 
+    @ACAQDocumentation(name = "Preferred annotations", description = "Marks the algorithm as good for handling the specified annotations")
+    @ACAQParameter("preferred-traits")
     @JsonGetter("preferred-traits")
-    public List<String> getPreferredTraitIds() {
-        return preferredTraits.stream().map(ACAQTraitDeclaration::getId).collect(Collectors.toList());
+    public ACAQTraitDeclarationRefCollection getPreferredTraitIds() {
+        return new ACAQTraitDeclarationRefCollection(preferredTraits.stream().map(ACAQTraitDeclarationRef::new).collect(Collectors.toList()));
     }
 
+    @ACAQParameter("preferred-traits")
     @JsonGetter("preferred-traits")
-    public void setPreferredTraitIds(List<String> ids) {
-        for (String id : ids) {
-            preferredTraits.add(ACAQTraitRegistry.getInstance().getDeclarationById(id));
+    public void setPreferredTraitIds(ACAQTraitDeclarationRefCollection ids) {
+        preferredTraits.clear();
+        for (ACAQTraitDeclarationRef declarationRef : ids) {
+            preferredTraits.add(declarationRef.getDeclaration());
         }
     }
 
+    @ACAQDocumentation(name = "Unwanted annotations", description = "Marks the algorithm as bad for handling the specified annotations")
+    @ACAQParameter("unwanted-traits")
     @JsonGetter("unwanted-traits")
-    public List<String> getUnwantedTraitIds() {
-        return unwantedTraits.stream().map(ACAQTraitDeclaration::getId).collect(Collectors.toList());
+    public ACAQTraitDeclarationRefCollection getUnwantedTraitIds() {
+        return new ACAQTraitDeclarationRefCollection(unwantedTraits.stream().map(ACAQTraitDeclarationRef::new).collect(Collectors.toList()));
     }
 
+    @ACAQParameter("unwanted-traits")
     @JsonGetter("unwanted-traits")
-    public void setUnwantedTraitIds(List<String> ids) {
-        for (String id : ids) {
-            unwantedTraits.add(ACAQTraitRegistry.getInstance().getDeclarationById(id));
+    public void setUnwantedTraitIds(ACAQTraitDeclarationRefCollection ids) {
+        unwantedTraits.clear();
+        for (ACAQTraitDeclarationRef declarationRef : ids) {
+            unwantedTraits.add(declarationRef.getDeclaration());
         }
     }
 
     @JsonGetter("metadata")
+    @ACAQSubParameters("metadata")
+    @ACAQDocumentation(name = "Algorithm metadata", description = "General metadata")
     public ACAQProjectMetadata getMetadata() {
         return metadata;
     }
@@ -176,12 +198,12 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
         Set<String> existingSlots = new HashSet<>();
         for (ACAQDataSlot slot : graph.getUnconnectedSlots()) {
             if(slot.isInput()) {
-                String name = StringUtils.makeUniqueString(slot.getName(), existingSlots::contains);
+                String name = StringUtils.makeUniqueString(slot.getName(), " ", existingSlots::contains);
                 inputSlots.add(new DefaultAlgorithmInputSlot(slot.getAcceptedDataType(), name, false));
                 existingSlots.add(name);
             }
             else if(slot.isOutput()) {
-                String name = StringUtils.makeUniqueString(slot.getName(), existingSlots::contains);
+                String name = StringUtils.makeUniqueString(slot.getName(), " ", existingSlots::contains);
                 outputSlots.add(new DefaultAlgorithmOutputSlot(slot.getAcceptedDataType(), name, false));
                 existingSlots.add(name);
             }
@@ -200,6 +222,9 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
         }
         else if(ACAQAlgorithmRegistry.getInstance().hasAlgorithmWithId(id)) {
             report.reportIsInvalid("The ID already exists! Please provide a unique ID.");
+        }
+        if(category == ACAQAlgorithmCategory.Internal) {
+            report.reportIsInvalid("The category cannot be 'Internal'! Please choose another algorithm category.");
         }
     }
 }

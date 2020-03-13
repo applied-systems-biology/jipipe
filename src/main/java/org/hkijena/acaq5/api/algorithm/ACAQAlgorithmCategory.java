@@ -21,7 +21,7 @@ public enum ACAQAlgorithmCategory {
     /**
      * Algorithms that produce tabular, relational, or any quantification result data
      */
-    Quantififer,
+    Quantifier,
     /**
      * Algorithms that read data from filesystem
      */

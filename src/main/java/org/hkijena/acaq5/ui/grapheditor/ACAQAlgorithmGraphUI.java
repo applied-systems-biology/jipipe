@@ -171,7 +171,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
 
         JMenu addQuantifierMenu = new JMenu("Quantify");
         addQuantifierMenu.setIcon(UIUtils.getIconFromResources("statistics.png"));
-        initializeMenuForCategory(addQuantifierMenu, ACAQAlgorithmCategory.Quantififer);
+        initializeMenuForCategory(addQuantifierMenu, ACAQAlgorithmCategory.Quantifier);
         menuBar.add(addQuantifierMenu);
 
         JMenu addMiscMenu = new JMenu("Miscellaneous");

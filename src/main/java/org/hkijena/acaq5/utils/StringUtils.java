@@ -62,23 +62,23 @@ public class StringUtils {
         return input;
     }
 
-    public static String makeUniqueString(String input, Collection<String> existing) {
+    public static String makeUniqueString(String input, String spaceCharacter, Collection<String> existing) {
         if (!existing.contains(input))
             return input;
         int index = 1;
-        while (existing.contains(input + " " + index)) {
+        while (existing.contains(input + spaceCharacter + index)) {
             ++index;
         }
-        return input + " " + index;
+        return input + spaceCharacter + index;
     }
 
-    public static String makeUniqueString(String input, Predicate<String> existing) {
+    public static String makeUniqueString(String input, String spaceCharacter, Predicate<String> existing) {
         if (!existing.test(input))
             return input;
         int index = 1;
-        while (existing.test(input + " " + index)) {
+        while (existing.test(input + spaceCharacter + index)) {
             ++index;
         }
-        return input + " " + index;
+        return input + spaceCharacter + index;
     }
 }

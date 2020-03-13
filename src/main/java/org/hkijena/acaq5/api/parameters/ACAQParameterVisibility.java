@@ -20,10 +20,24 @@ public enum ACAQParameterVisibility {
         this.order = order;
     }
 
-    public ACAQParameterVisibility mergeWith(ACAQParameterVisibility other) {
+    /**
+     * Gets the lower visibility of this one one the other one
+     * @param other
+     * @return
+     */
+    public ACAQParameterVisibility intersectWith(ACAQParameterVisibility other) {
         if (other.order > order)
             return other;
         else
             return this;
+    }
+
+    /**
+     * Returns true if this visibility is visible in a container with a minimum visibility
+     * @param container
+     * @return
+     */
+    public boolean isVisibleIn(ACAQParameterVisibility container) {
+        return this.order <= container.order;
     }
 }

@@ -1,15 +1,15 @@
 package org.hkijena.acaq5.ui.settings;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import ij.IJ;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.extension.api.algorithms.macro.GraphWrapperAlgorithmDeclaration;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.utils.JsonUtils;
+import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -19,24 +19,26 @@ import java.io.IOException;
 public class ACAQGraphWrapperAlgorithmExporter extends ACAQUIPanel {
 
     private GraphWrapperAlgorithmDeclaration algorithmDeclaration;
+    private ACAQParameterAccessUI parameterAccessUI;
 
     public ACAQGraphWrapperAlgorithmExporter(ACAQWorkbenchUI workbenchUI, ACAQAlgorithmGraph wrappedGraph) {
         super(workbenchUI);
         algorithmDeclaration = new GraphWrapperAlgorithmDeclaration();
         algorithmDeclaration.setGraph(wrappedGraph);
+        algorithmDeclaration.getMetadata().setName("My algorithm");
+        algorithmDeclaration.getMetadata().setDescription("An ACAQ5 algorithm");
         initialize();
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
 
-        ACAQParameterAccessUI parameterAccessUI = new ACAQParameterAccessUI(getWorkbenchUI(),
-                algorithmDeclaration.getMetadata(),
+        parameterAccessUI = new ACAQParameterAccessUI(getWorkbenchUI(),
+                algorithmDeclaration,
                 MarkdownDocument.fromPluginResource("documentation/exporting-algorithms.md"),
                 false,
                 true);
         add(parameterAccessUI, BorderLayout.CENTER);
-
 
         initializeToolBar();
     }
@@ -44,6 +46,10 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQUIPanel {
     private void initializeToolBar() {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
+
+        JButton createRandomIdButton = new JButton("Create random ID", UIUtils.getIconFromResources("random.png"));
+        createRandomIdButton.addActionListener(e -> createRandomId());
+        toolBar.add(createRandomIdButton);
 
         toolBar.add(Box.createHorizontalGlue());
 
@@ -53,6 +59,17 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQUIPanel {
         toolBar.add(exportToFileButton);
 
         add(toolBar, BorderLayout.NORTH);
+    }
+
+    private void createRandomId() {
+        String name = algorithmDeclaration.getName();
+        if(name == null || name.isEmpty()) {
+            name = "my-algorithm";
+        }
+        name = StringUtils.jsonify(name);
+        name = StringUtils.makeUniqueString(name, "-", id -> ACAQAlgorithmRegistry.getInstance().hasAlgorithmWithId(id));
+        algorithmDeclaration.setId(name);
+        parameterAccessUI.reloadForm();
     }
 
     private boolean checkValidity() {

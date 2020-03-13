@@ -67,7 +67,7 @@ public abstract class XYPlot extends ACAQPlot {
         for (ACAQPlotSeries seriesEntry : series) {
             if (!seriesEntry.isEnabled())
                 continue;
-            String name = StringUtils.makeUniqueString(seriesEntry.getParameterValue("Name").toString(), existingSeries);
+            String name = StringUtils.makeUniqueString(seriesEntry.getParameterValue("Name").toString(), " ", existingSeries);
             XYSeries chartSeries = new XYSeries(name, true);
 
             int rowCount = seriesEntry.getMaximumRequiredRowCount();

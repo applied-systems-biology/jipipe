@@ -98,6 +98,7 @@ public class ACAQParameterAccessUI extends FormPanel {
 
                 if (!foundHolderName) {
                     holderNameLabel.setText(parameterAccess.getHolderName());
+                    holderNameLabel.setIcon(UIUtils.getIconFromResources("cog.png"));
                     foundHolderName = true;
                 }
 

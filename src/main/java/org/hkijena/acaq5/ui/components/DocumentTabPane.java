@@ -55,7 +55,7 @@ public class DocumentTabPane extends JTabbedPane {
      */
     public DocumentTab addTab(String title, Icon icon, Component component, CloseMode closeMode, boolean allowRename) {
 
-        title = StringUtils.makeUniqueString(title, tabs.stream().map(documentTab -> documentTab.getTitle()).collect(Collectors.toList()));
+        title = StringUtils.makeUniqueString(title, " ", tabs.stream().map(documentTab -> documentTab.getTitle()).collect(Collectors.toList()));
 
         // Create tab panel
         JPanel tabPanel = new JPanel();

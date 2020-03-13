@@ -122,7 +122,7 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
                 if (access == null)
                     access = (ACAQReflectionParameterAccess) result.get(parameterAnnotation.value());
                 access.parameterHolder = parameterHolder;
-                access.visibility = access.visibility.mergeWith(parameterAnnotation.visibility());
+                access.visibility = access.visibility.intersectWith(parameterAnnotation.visibility());
                 if (method.getParameters().length == 1) {
                     // Is a setter
                     access.setter = method;

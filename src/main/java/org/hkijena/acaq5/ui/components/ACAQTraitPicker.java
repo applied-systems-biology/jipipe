@@ -3,6 +3,7 @@ package org.hkijena.acaq5.ui.components;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
+import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -13,6 +14,7 @@ import javax.swing.event.DocumentEvent;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -165,6 +167,10 @@ public class ACAQTraitPicker extends JPanel {
     public void setMode(Mode mode) {
         this.mode = mode;
         refreshTraitList();
+    }
+
+    public Set<ACAQTraitDeclaration> getSelectedTraits() {
+        return Collections.unmodifiableSet(selectedTraits);
     }
 
     public enum Mode {
