@@ -97,8 +97,8 @@ public interface ACAQParameterAccess {
      */
     static Map<String, ACAQParameterAccess> getParameters(Object parameterHolder) {
         Map<String, ACAQParameterAccess> result = new HashMap<>();
-        if (parameterHolder instanceof ACAQDynamicParameterHolder) {
-            for (Map.Entry<String, ACAQParameterAccess> entry : ((ACAQDynamicParameterHolder) parameterHolder).getDynamicParameters().entrySet()) {
+        if (parameterHolder instanceof ACAQCustomParameterHolder) {
+            for (Map.Entry<String, ACAQParameterAccess> entry : ((ACAQCustomParameterHolder) parameterHolder).getCustomParameters().entrySet()) {
                 result.put(entry.getKey(), entry.getValue());
             }
         } else {

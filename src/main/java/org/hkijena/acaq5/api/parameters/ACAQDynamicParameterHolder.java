@@ -22,7 +22,7 @@ import java.util.Set;
 /**
  * Holds a user-definable set of parameters
  */
-public class ACAQDynamicParameterHolder {
+public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
 
     private BiMap<String, ACAQMutableParameterAccess> parameters = HashBiMap.create();
     private Set<Class<?>> allowedTypes = new HashSet<>();
@@ -43,7 +43,8 @@ public class ACAQDynamicParameterHolder {
         }
     }
 
-    public Map<String, ACAQParameterAccess> getDynamicParameters() {
+    @Override
+    public Map<String, ACAQParameterAccess> getCustomParameters() {
         return Collections.unmodifiableMap(parameters);
     }
 

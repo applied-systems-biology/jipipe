@@ -5,6 +5,9 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.parameters.ACAQCustomParameterHolder;
+import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterHolder;
+import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.HashMap;
@@ -16,16 +19,34 @@ import java.util.Set;
 /**
  * An algorithm that wraps another algorithm graph
  */
-public class GraphWrapperAlgorithm extends ACAQAlgorithm {
+public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomParameterHolder {
 
     private ACAQAlgorithmGraph graph;
     private Map<String, ACAQDataSlot> graphSlots = new HashMap<>();
+    private Map<String, ACAQParameterAccess> parameterAccessMap = new HashMap<>();
 
     public GraphWrapperAlgorithm(GraphWrapperAlgorithmDeclaration declaration) {
         super(declaration, new ACAQMutableSlotConfiguration());
         this.graph = new ACAQAlgorithmGraph(declaration.getGraph());
 
         initializeSlots();
+        initializeParameters();
+    }
+
+    public GraphWrapperAlgorithm(GraphWrapperAlgorithm other) {
+        super(other);
+        this.graph = new ACAQAlgorithmGraph(other.getGraph());
+        initializeSlots();
+        initializeParameters();
+    }
+
+    private void initializeParameters() {
+        for (ACAQAlgorithm algorithm : graph.traverseAlgorithms()) {
+            for (Map.Entry<String, ACAQParameterAccess> entry : ACAQParameterAccess.getParameters(algorithm).entrySet()) {
+                String newId = algorithm.getIdInGraph() + "/" + entry.getKey();
+                parameterAccessMap.put(newId, entry.getValue());
+            }
+        }
     }
 
     private void initializeSlots() {
@@ -46,12 +67,6 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm {
         }
         slotConfiguration.setInputSealed(true);
         slotConfiguration.setOutputSealed(true);
-    }
-
-    public GraphWrapperAlgorithm(GraphWrapperAlgorithm other) {
-        super(other);
-        this.graph = new ACAQAlgorithmGraph(other.getGraph());
-        initializeSlots();
     }
 
     @Override
@@ -114,5 +129,10 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm {
     @Override
     public void reportValidity(ACAQValidityReport report) {
 
+    }
+
+    @Override
+    public Map<String, ACAQParameterAccess> getCustomParameters() {
+        return parameterAccessMap;
     }
 }

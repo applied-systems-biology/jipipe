@@ -2,6 +2,7 @@ package org.hkijena.acaq5.extension.api.algorithms.macro;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import gnu.trove.map.TByteByteMap;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQProjectMetadata;
 import org.hkijena.acaq5.api.ACAQValidatable;
@@ -17,6 +18,8 @@ import org.hkijena.acaq5.api.algorithm.DefaultAlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.traits.ACAQDataSlotTraitConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.api.parameters.ACAQParameterCollectionVisibilities;
 import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
@@ -26,8 +29,10 @@ import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefCollection;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -41,6 +46,7 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     private ACAQDataSlotTraitConfiguration dataSlotTraitConfiguration;
     private List<AlgorithmInputSlot> inputSlots = new ArrayList<>();
     private List<AlgorithmOutputSlot> outputSlots = new ArrayList<>();
+    private ACAQParameterCollectionVisibilities parameterCollectionVisibilities = new ACAQParameterCollectionVisibilities();
     private ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
 
     public GraphWrapperAlgorithmDeclaration() {
@@ -210,6 +216,21 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
         }
     }
 
+    /**
+     * Gets the available parameters in the graph
+     * @return
+     */
+    public Map<String, ACAQParameterAccess> getAvailableParameters() {
+        Map<String, ACAQParameterAccess> parameterAccessMap = new HashMap<>();
+        for (ACAQAlgorithm algorithm : graph.traverseAlgorithms()) {
+            for (Map.Entry<String, ACAQParameterAccess> entry : ACAQParameterAccess.getParameters(algorithm).entrySet()) {
+                String newId = algorithm.getIdInGraph() + "/" + entry.getKey();
+                parameterAccessMap.put(newId, entry.getValue());
+            }
+        }
+        return parameterAccessMap;
+    }
+
     @JsonGetter("acaq:project-type")
     public String getProjectType() {
         return "graph-wrapper-algorithm";
@@ -226,5 +247,20 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
         if(category == ACAQAlgorithmCategory.Internal) {
             report.reportIsInvalid("The category cannot be 'Internal'! Please choose another algorithm category.");
         }
+    }
+
+    @ACAQDocumentation(name = "Exported parameters", description = "Determines which parameters are exported to the users.")
+    @ACAQParameter("parameter-visibilities")
+    @JsonGetter("parameter-visibilities")
+    public ACAQParameterCollectionVisibilities getParameterCollectionVisibilities() {
+        if(graph != null && parameterCollectionVisibilities.getAvailableParameters() == null)
+            parameterCollectionVisibilities.setAvailableParameters(getAvailableParameters());
+        return parameterCollectionVisibilities;
+    }
+
+    @ACAQParameter("parameter-visibilities")
+    @JsonSetter("parameter-visibilities")
+    public void setParameterCollectionVisibilities(ACAQParameterCollectionVisibilities parameterCollectionVisibilities) {
+        this.parameterCollectionVisibilities = parameterCollectionVisibilities;
     }
 }

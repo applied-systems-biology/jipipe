@@ -153,7 +153,7 @@ public class ACAQParameterAccessUI extends FormPanel {
 
     private void addDynamicParameter(ACAQDynamicParameterHolder parameterHolder, Class<?> fieldType) {
         String name = UIUtils.getUniqueStringByDialog(this, "Please set the parameter name: ", fieldType.getSimpleName(),
-                s -> parameterHolder.getDynamicParameters().values().stream().anyMatch(p -> Objects.equals(p.getName(), s)));
+                s -> parameterHolder.getCustomParameters().values().stream().anyMatch(p -> Objects.equals(p.getName(), s)));
         if (name != null) {
             ACAQMutableParameterAccess parameterAccess = parameterHolder.addParameter(name, fieldType);
             parameterAccess.setName(name);

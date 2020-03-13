@@ -4,6 +4,7 @@ import ij.process.AutoThresholder;
 import org.hkijena.acaq5.ACAQExtensionService;
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.api.parameters.ACAQParameterCollectionVisibilities;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefCollection;
@@ -138,6 +139,7 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
         registryService.getUIParametertypeRegistry().registerParameterEditor(ACAQTraitDeclarationRef.class, ACAQTraitDeclarationRefParameterEditorUI.class);
         registryService.getUIParametertypeRegistry().registerParameterEditor(ACAQTraitDeclarationRefCollection.class, ACAQTraitDeclarationRefCollectionParameterEditorUI.class);
         registryService.getUIParametertypeRegistry().registerParameterEditor(ACAQTrait.class, ACAQTraitParameterEditorUI.class);
+        registryService.getUIParametertypeRegistry().registerParameterEditor(ACAQParameterCollectionVisibilities.class, ACAQParameterCollectionVisibilitiesParameterEditorUI.class);
 
         // Register result data slot UIs
         registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQMultichannelImageData.class, ImageDataSlotRowUI.class);

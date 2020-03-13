@@ -90,7 +90,7 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
 
         StringBuilder finalCode = new StringBuilder();
         // Inject parameters
-        for (Map.Entry<String, ACAQParameterAccess> entry : macroParameters.getDynamicParameters().entrySet()) {
+        for (Map.Entry<String, ACAQParameterAccess> entry : macroParameters.getCustomParameters().entrySet()) {
             if(!MacroUtils.isValidVariableName(entry.getKey()))
                 throw new IllegalArgumentException("Invalid variable name " + entry.getKey());
             finalCode.append("var ").append(entry.getKey()).append(" = ");
@@ -212,7 +212,7 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
         if (resultsTableOutputSlotCount > 1) {
             report.reportIsInvalid("Too many results table outputs! Please make sure to only have at most one results table data output.");
         }
-        for (String key : macroParameters.getDynamicParameters().keySet()) {
+        for (String key : macroParameters.getCustomParameters().keySet()) {
             if(!MacroUtils.isValidVariableName(key)) {
                 report.forCategory("Macro Parameters").forCategory(key).reportIsInvalid("'" + key + "' is an invalid ImageJ macro variable name! Please ensure that macro variables are compatible with the ImageJ macro language.");
             }
