@@ -247,5 +247,7 @@
     <orderEntry type="library" name="Maven: com.miglayout:miglayout:swing:3.7.4" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:batch-processor:0.4.1" level="project" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.6" level="project" />
+    <orderEntry type="library" name="Maven: org.reflections:reflections:0.9.12" level="project" />
+    <orderEntry type="library" name="Maven: org.javassist:javassist:3.25.0-GA" level="project" />
   </component>
 </module>

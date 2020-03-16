@@ -420,6 +420,13 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
         return graph.getIdOf(this);
     }
 
+    /**
+     * Removes all location information added via setLocationWithin()
+     */
+    public void clearLocations() {
+        locations.clear();
+    }
+
     public static class Serializer extends JsonSerializer<ACAQAlgorithm> {
         @Override
         public void serialize(ACAQAlgorithm algorithm, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {

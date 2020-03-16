@@ -138,6 +138,19 @@ public class FormPanel extends JPanel {
         return component;
     }
 
+    public JPanel addGroupHeader(String text, Icon icon) {
+        JPanel subAlgorithmGroupTitle = new JPanel(new BorderLayout());
+        subAlgorithmGroupTitle.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createEmptyBorder(8, 0, 4, 0),
+                BorderFactory.createMatteBorder(1, 0, 0, 0, Color.DARK_GRAY)),
+                BorderFactory.createEmptyBorder(4, 4, 4, 4)
+        ));
+        JLabel holderNameLabel = new JLabel(text, icon, JLabel.LEFT);
+        subAlgorithmGroupTitle.add(holderNameLabel, BorderLayout.CENTER);
+        addToForm(subAlgorithmGroupTitle, null);
+        return subAlgorithmGroupTitle;
+    }
+
     private List<Component> getComponentListForCurrentGroup() {
         List<Component> result = componentGroups.getOrDefault(currentGroup, null);
         if (result == null) {

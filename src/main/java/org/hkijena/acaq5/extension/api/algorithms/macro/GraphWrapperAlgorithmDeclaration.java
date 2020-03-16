@@ -43,7 +43,7 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     private ACAQAlgorithmCategory category = ACAQAlgorithmCategory.Miscellaneous;
     private Set<ACAQTraitDeclaration> preferredTraits = new HashSet<>();
     private Set<ACAQTraitDeclaration> unwantedTraits = new HashSet<>();
-    private ACAQDataSlotTraitConfiguration dataSlotTraitConfiguration;
+    private ACAQDataSlotTraitConfiguration dataSlotTraitConfiguration = new ACAQDataSlotTraitConfiguration();
     private List<AlgorithmInputSlot> inputSlots = new ArrayList<>();
     private List<AlgorithmOutputSlot> outputSlots = new ArrayList<>();
     private ACAQParameterCollectionVisibilities parameterCollectionVisibilities = new ACAQParameterCollectionVisibilities();

@@ -1,0 +1,74 @@
+{
+  "id" : "gaussian-filter",
+  "metadata" : {
+    "name" : "Gaussian filter",
+    "description" : "Applies a gaussian filter",
+    "authors" : "",
+    "website" : "",
+    "license" : "",
+    "citation" : ""
+  },
+  "category" : "Enhancer",
+  "parameter-visibilities" : {
+    "visible-keys" : [ "default-imagej-macro/macro-parameters/Sigma" ]
+  },
+  "graph" : {
+    "nodes" : {
+      "default-imagej-macro" : {
+        "acaq:slot-configuration" : {
+          "Input data 1" : {
+            "slot-class" : "org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData",
+            "slot-type" : "Input",
+            "name" : "Input data 1"
+          },
+          "Output data 1" : {
+            "slot-class" : "org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData",
+            "slot-type" : "Output",
+            "name" : "Output data 1"
+          }
+        },
+        "acaq:algorithm-ui-location" : {
+          "default-preprocessing" : {
+            "x" : 1400,
+            "y" : 100
+          }
+        },
+        "acaq:algorithm-type" : "acaq:default:org.hkijena.acaq5.extension.api.algorithms.macro.MacroWrapperAlgorithm",
+        "acaq:algorithm-compartment" : "DEFAULT",
+        "macro-parameters/Sigma" : 9.0,
+        "code" : {
+          "code" : "// Apply gaussian blur\nselectWindow(\"Input data 1\");\nrun(\"Gaussian Blur...\", \"sigma=\" + Sigma);\nrename(\"Output data 1\");"
+        },
+        "strict-mode" : true,
+        "name" : "ImageJ Macro",
+        "acaq:trait-generation" : {
+          "modification" : {
+            "per-slot" : { },
+            "global" : { }
+          },
+          "transfer" : {
+            "transfers" : [ ],
+            "transfer-all-to-all" : true
+          }
+        },
+        "acaq:dynamic-parameters" : {
+          "macro-parameters" : {
+            "parameters" : {
+              "Sigma" : {
+                "name" : "Sigma",
+                "description" : null,
+                "visibility" : null,
+                "field-class" : "java.lang.Double",
+                "value" : 9.0
+              }
+            }
+          }
+        }
+      }
+    },
+    "edges" : [ ]
+  },
+  "unwanted-traits" : [ ],
+  "acaq:project-type" : "graph-wrapper-algorithm",
+  "preferred-traits" : [ ]
+}

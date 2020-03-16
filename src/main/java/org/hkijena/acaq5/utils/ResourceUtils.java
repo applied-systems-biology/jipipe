@@ -12,8 +12,16 @@
 
 package org.hkijena.acaq5.utils;
 
+import org.reflections.Reflections;
+import org.reflections.scanners.ResourcesScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
+
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Functions for resource access
@@ -36,6 +44,22 @@ public class ResourceUtils {
 
     public static InputStream getPluginResourceAsStream(String internalResourcePath) {
         return ResourceUtils.class.getResourceAsStream(getResourcePath(internalResourcePath));
+    }
+
+    public static Set<String> walkInternalResourceFolder(String folder) {
+        String globalFolder = getResourceBasePath() + "/" + folder;
+        Reflections reflections = new Reflections(new ConfigurationBuilder()
+        .setUrls(ClasspathHelper.forPackage("org.hkijena.acaq5"))
+        .setScanners(new ResourcesScanner()));
+
+        Set<String> allResources = reflections.getResources(Pattern.compile(".*"));
+        allResources = allResources.stream().map(s -> {
+            if(!s.startsWith("/"))
+                return "/" + s;
+            else
+                return s;
+        }).collect(Collectors.toSet());
+        return allResources.stream().filter(s -> s.startsWith(globalFolder)).collect(Collectors.toSet());
     }
 
 }

@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.ui.settings;
 
 import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.extension.api.algorithms.macro.GraphWrapperAlgorithmDeclaration;
@@ -27,6 +28,10 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQUIPanel {
         algorithmDeclaration.setGraph(wrappedGraph);
         algorithmDeclaration.getMetadata().setName("My algorithm");
         algorithmDeclaration.getMetadata().setDescription("An ACAQ5 algorithm");
+        for (ACAQAlgorithm algorithm : wrappedGraph.getAlgorithmNodes().values()) {
+            algorithm.clearLocations();
+        }
+
         initialize();
     }
 
@@ -89,6 +94,7 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQUIPanel {
         if(fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
                 JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(fileChooser.getSelectedFile(), algorithmDeclaration);
+                getWorkbenchUI().sendStatusBarText("Exported custom algorithm '" + algorithmDeclaration.getName() + "' to " + fileChooser.getSelectedFile());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

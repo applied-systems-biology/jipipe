@@ -21,13 +21,13 @@ import java.util.Set;
  */
 public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomParameterHolder {
 
-    private ACAQAlgorithmGraph graph;
+    private ACAQAlgorithmGraph wrappedGraph;
     private Map<String, ACAQDataSlot> graphSlots = new HashMap<>();
     private Map<String, ACAQParameterAccess> parameterAccessMap = new HashMap<>();
 
     public GraphWrapperAlgorithm(GraphWrapperAlgorithmDeclaration declaration) {
         super(declaration, new ACAQMutableSlotConfiguration());
-        this.graph = new ACAQAlgorithmGraph(declaration.getGraph());
+        this.wrappedGraph = new ACAQAlgorithmGraph(declaration.getGraph());
 
         initializeSlots();
         initializeParameters();
@@ -35,15 +35,28 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
 
     public GraphWrapperAlgorithm(GraphWrapperAlgorithm other) {
         super(other);
-        this.graph = new ACAQAlgorithmGraph(other.getGraph());
-        initializeSlots();
+        this.wrappedGraph = new ACAQAlgorithmGraph(other.wrappedGraph);
         initializeParameters();
+        for (Map.Entry<String, ACAQParameterAccess> entry : other.parameterAccessMap.entrySet()) {
+            parameterAccessMap.get(entry.getKey()).set(entry.getValue().get());
+        }
     }
 
     private void initializeParameters() {
-        for (ACAQAlgorithm algorithm : graph.traverseAlgorithms()) {
+        GraphWrapperAlgorithmDeclaration declaration = (GraphWrapperAlgorithmDeclaration)getDeclaration();
+
+        for (ACAQAlgorithm algorithm : wrappedGraph.traverseAlgorithms()) {
             for (Map.Entry<String, ACAQParameterAccess> entry : ACAQParameterAccess.getParameters(algorithm).entrySet()) {
+
                 String newId = algorithm.getIdInGraph() + "/" + entry.getKey();
+
+                if(!declaration.getParameterCollectionVisibilities().isVisible(newId)) {
+                    continue;
+                }
+                if(entry.getValue().getParameterHolder() instanceof ACAQDynamicParameterHolder) {
+                    ((ACAQDynamicParameterHolder) entry.getValue().getParameterHolder()).setAllowModification(false);
+                }
+
                 parameterAccessMap.put(newId, entry.getValue());
             }
         }
@@ -53,7 +66,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
         ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration)getSlotConfiguration();
         slotConfiguration.setInputSealed(false);
         slotConfiguration.setOutputSealed(false);
-        for (ACAQDataSlot slot : graph.getUnconnectedSlots()) {
+        for (ACAQDataSlot slot : wrappedGraph.getUnconnectedSlots()) {
             if(slot.isInput()) {
                 String name = StringUtils.makeUniqueString(slot.getName(), " ", s -> slotConfiguration.getSlots().containsKey(s));
                 slotConfiguration.addInputSlot(name, slot.getAcceptedDataType());
@@ -73,7 +86,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
     public void run() {
         transferInputData();
 
-        List<ACAQDataSlot> traversedSlots = graph.traverse();
+        List<ACAQDataSlot> traversedSlots = wrappedGraph.traverse();
         Set<ACAQAlgorithm> executedAlgorithms = new HashSet<>();
 
         for (int i = 0; i < traversedSlots.size(); ++i) {
@@ -81,7 +94,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
 
             if (slot.isInput()) {
                 // Copy data from source
-                ACAQDataSlot sourceSlot = graph.getSourceSlot(slot);
+                ACAQDataSlot sourceSlot = wrappedGraph.getSourceSlot(slot);
                 slot.copyFrom(sourceSlot);
             } else if (slot.isOutput()) {
                 // Ensure the algorithm has run
@@ -93,11 +106,11 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
         }
         
         transferOutputData();
-        clearGraphData();
+        clearWrappedGraphData();
     }
 
-    private void clearGraphData() {
-        for (ACAQDataSlot slot : graph.traverse()) {
+    private void clearWrappedGraphData() {
+        for (ACAQDataSlot slot : wrappedGraph.traverse()) {
             slot.clearData();
         }
     }
@@ -134,5 +147,9 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
     @Override
     public Map<String, ACAQParameterAccess> getCustomParameters() {
         return parameterAccessMap;
+    }
+
+    public ACAQAlgorithmGraph getWrappedGraph() {
+        return wrappedGraph;
     }
 }

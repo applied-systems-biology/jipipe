@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.extension;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import ij.process.AutoThresholder;
 import org.hkijena.acaq5.ACAQExtensionService;
 import org.hkijena.acaq5.ACAQRegistryService;
@@ -35,6 +36,7 @@ import org.hkijena.acaq5.extension.api.datatypes.ACAQMultichannelImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQROIData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQResultsTableData;
 import org.hkijena.acaq5.extension.api.macro.MacroCode;
+import org.hkijena.acaq5.extension.api.registries.GraphWrapperAlgorithmRegistrationTask;
 import org.hkijena.acaq5.extension.api.traits.Sample;
 import org.hkijena.acaq5.extension.api.traits.Subject;
 import org.hkijena.acaq5.extension.api.traits.Treatment;
@@ -56,16 +58,21 @@ import org.hkijena.acaq5.extension.ui.resultanalysis.ImageDataSlotRowUI;
 import org.hkijena.acaq5.extension.ui.resultanalysis.ROIDataSlotRowUI;
 import org.hkijena.acaq5.extension.ui.resultanalysis.ResultsTableDataSlotRowUI;
 import org.hkijena.acaq5.extension.ui.tableanalyzer.*;
+import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.PathFilter;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 @Plugin(type = ACAQExtensionService.class)
 public class StandardACAQExtensionService extends AbstractService implements ACAQExtensionService {
@@ -110,6 +117,7 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
 
         // Register algorithms
         registerAlgorithms(registryService);
+        registerAlgorithmResources(registryService);
 
         // Register data sources
         registryService.getAlgorithmRegistry().register(ACAQGreyscaleImageDataFromFile.class);
@@ -151,6 +159,19 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
 
         registerSpreadSheetOperations(registryService);
         registerPlotTypes(registryService);
+    }
+
+    private void registerAlgorithmResources(ACAQRegistryService registryService) {
+        Set<String> algorithmFiles = ResourceUtils.walkInternalResourceFolder("extension/api/algorithms");
+        for (String resourceFile : algorithmFiles) {
+            try {
+                JsonNode node = JsonUtils.getObjectMapper().readValue(ResourceUtils.class.getResource(resourceFile), JsonNode.class);
+                GraphWrapperAlgorithmRegistrationTask task = new GraphWrapperAlgorithmRegistrationTask(node);
+                registryService.getAlgorithmRegistry().scheduleRegister(task);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     private void registerPlotTypes(ACAQRegistryService registryService) {

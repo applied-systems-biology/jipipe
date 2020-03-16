@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.api.registries;
 
+import com.google.common.collect.ImmutableList;
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
@@ -25,9 +26,43 @@ import java.util.stream.Collectors;
  */
 public class ACAQAlgorithmRegistry {
     private Map<String, ACAQAlgorithmDeclaration> registeredAlgorithms = new HashMap<>();
+    private Set<ACAQAlgorithmRegistrationTask> registrationTasks = new HashSet<>();
 
     public ACAQAlgorithmRegistry() {
 
+    }
+
+    /**
+     * Schedules registration after all dependencies of the registration task are satisfied
+     * @param task
+     */
+    public void scheduleRegister(ACAQAlgorithmRegistrationTask task) {
+        registrationTasks.add(task);
+        runRegistrationTasks();
+    }
+
+    /**
+     * Attempts to run registration tasks that have registered dependecies
+     */
+    public void runRegistrationTasks() {
+        if(registrationTasks.isEmpty())
+            return;
+        boolean changed = true;
+        while(changed) {
+            changed = false;
+
+            for (ACAQAlgorithmRegistrationTask task : ImmutableList.copyOf(registrationTasks)) {
+                if(task.canRegister()) {
+                    registrationTasks.remove(task);
+                    task.register();
+                    changed = true;
+                }
+            }
+        }
+    }
+
+    public Set<ACAQAlgorithmRegistrationTask> getScheduledRegistrationTasks() {
+        return Collections.unmodifiableSet(registrationTasks);
     }
 
     /**
@@ -47,6 +82,7 @@ public class ACAQAlgorithmRegistry {
      */
     public void register(ACAQAlgorithmDeclaration declaration) {
         registeredAlgorithms.put(declaration.getId(), declaration);
+        runRegistrationTasks();
     }
 
     /**
