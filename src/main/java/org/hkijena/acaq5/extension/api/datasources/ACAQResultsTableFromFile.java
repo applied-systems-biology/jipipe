@@ -3,13 +3,7 @@ package org.hkijena.acaq5.extension.api.datasources;
 import ij.measure.ResultsTable;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.ACAQDataInterface;
-import org.hkijena.acaq5.api.algorithm.ACAQIteratingAlgorithm;
-import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
-import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQResultsTableData;
 import org.hkijena.acaq5.filesystem.api.dataypes.ACAQFileData;
 

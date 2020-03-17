@@ -1,7 +1,6 @@
 package org.hkijena.acaq5.extension.ui.parametereditors;
 
 import org.hkijena.acaq5.ACAQRegistryService;
-import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterHolder;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollectionVisibilities;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
@@ -11,14 +10,12 @@ import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.util.Comparator;
+import java.awt.*;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class ACAQParameterCollectionVisibilitiesParameterEditorUI  extends ACAQParameterEditorUI {
+public class ACAQParameterCollectionVisibilitiesParameterEditorUI extends ACAQParameterEditorUI {
 
     public ACAQParameterCollectionVisibilitiesParameterEditorUI(ACAQWorkbenchUI workbenchUI, ACAQParameterAccess parameterAccess) {
         super(workbenchUI, parameterAccess);
@@ -64,7 +61,7 @@ public class ACAQParameterCollectionVisibilitiesParameterEditorUI  extends ACAQP
                 ACAQParameterEditorUI ui = ACAQRegistryService.getInstance()
                         .getUIParametertypeRegistry().createEditorFor(getWorkbenchUI(), parameterAccess);
 
-                JPanel labelPanel = new JPanel(new BorderLayout(8,8));
+                JPanel labelPanel = new JPanel(new BorderLayout(8, 8));
                 JToggleButton exportParameterToggle = new JToggleButton(UIUtils.getIconFromResources("eye.png"));
                 UIUtils.makeFlat25x25(exportParameterToggle);
                 exportParameterToggle.setToolTipText("If enabled, the parameter can be changed by the user.");
@@ -79,7 +76,7 @@ public class ACAQParameterCollectionVisibilitiesParameterEditorUI  extends ACAQP
                 if (ui.isUILabelEnabled())
                     labelPanel.add(new JLabel(parameterAccess.getName()));
 
-                formPanel.addToForm(ui, labelPanel,null);
+                formPanel.addToForm(ui, labelPanel, null);
             }
         }
 

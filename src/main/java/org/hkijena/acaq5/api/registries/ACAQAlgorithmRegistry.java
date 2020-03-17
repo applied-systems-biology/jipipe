@@ -7,18 +7,10 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQDefaultAlgorithmDeclaration;
 import org.hkijena.acaq5.api.data.ACAQData;
-import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
-import org.hkijena.acaq5.api.data.traits.AddsTrait;
-import org.hkijena.acaq5.api.data.traits.BadForTrait;
-import org.hkijena.acaq5.api.data.traits.GoodForTrait;
-import org.hkijena.acaq5.api.data.traits.RemovesTrait;
+import org.hkijena.acaq5.api.data.traits.*;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -34,6 +26,7 @@ public class ACAQAlgorithmRegistry {
 
     /**
      * Schedules registration after all dependencies of the registration task are satisfied
+     *
      * @param task
      */
     public void scheduleRegister(ACAQAlgorithmRegistrationTask task) {
@@ -45,14 +38,14 @@ public class ACAQAlgorithmRegistry {
      * Attempts to run registration tasks that have registered dependecies
      */
     public void runRegistrationTasks() {
-        if(registrationTasks.isEmpty())
+        if (registrationTasks.isEmpty())
             return;
         boolean changed = true;
-        while(changed) {
+        while (changed) {
             changed = false;
 
             for (ACAQAlgorithmRegistrationTask task : ImmutableList.copyOf(registrationTasks)) {
-                if(task.canRegister()) {
+                if (task.canRegister()) {
                     registrationTasks.remove(task);
                     task.register();
                     changed = true;
@@ -192,6 +185,7 @@ public class ACAQAlgorithmRegistry {
 
     /**
      * Returns true if the algorithm ID already exists
+     *
      * @param id
      * @return
      */

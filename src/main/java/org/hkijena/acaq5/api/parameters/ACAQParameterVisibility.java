@@ -22,6 +22,7 @@ public enum ACAQParameterVisibility {
 
     /**
      * Gets the lower visibility of this one one the other one
+     *
      * @param other
      * @return
      */
@@ -34,6 +35,7 @@ public enum ACAQParameterVisibility {
 
     /**
      * Returns true if this visibility is visible in a container with a minimum visibility
+     *
      * @param container
      * @return
      */

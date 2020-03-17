@@ -7,12 +7,10 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
-import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Color;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -68,14 +66,13 @@ public class ACAQParameterAccessUI extends FormPanel {
             boolean foundHolderName = false;
 
             JPanel subAlgorithmGroupTitle = new JPanel(new BorderLayout());
-            if(hasElements) {
+            if (hasElements) {
                 subAlgorithmGroupTitle.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createCompoundBorder(
                         BorderFactory.createEmptyBorder(8, 0, 4, 0),
                         BorderFactory.createMatteBorder(1, 0, 0, 0, Color.DARK_GRAY)),
                         BorderFactory.createEmptyBorder(4, 4, 4, 4)
                 ));
-            }
-            else {
+            } else {
                 subAlgorithmGroupTitle.setBorder(BorderFactory.createEmptyBorder(12, 4, 8, 4));
             }
             JLabel holderNameLabel = new JLabel();
@@ -141,10 +138,9 @@ public class ACAQParameterAccessUI extends FormPanel {
     private MarkdownDocument generateParameterDocumentation(ACAQParameterAccess access) {
         StringBuilder markdownString = new StringBuilder();
         markdownString.append("# Parameter '" + access.getName() + "'\n\n");
-        if(access.getDescription() != null && !access.getDescription().isEmpty()) {
+        if (access.getDescription() != null && !access.getDescription().isEmpty()) {
             markdownString.append(access.getDescription());
-        }
-        else {
+        } else {
             markdownString.append("No description provided.");
         }
         return new MarkdownDocument(markdownString.toString());

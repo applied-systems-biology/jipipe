@@ -1,9 +1,7 @@
 package org.hkijena.acaq5.ui.components;
 
 import javax.swing.*;
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Image;
+import java.awt.*;
 
 public class ImageLogo extends JPanel {
     private Image image;

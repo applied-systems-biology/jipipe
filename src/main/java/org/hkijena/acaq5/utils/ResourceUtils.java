@@ -49,12 +49,12 @@ public class ResourceUtils {
     public static Set<String> walkInternalResourceFolder(String folder) {
         String globalFolder = getResourceBasePath() + "/" + folder;
         Reflections reflections = new Reflections(new ConfigurationBuilder()
-        .setUrls(ClasspathHelper.forPackage("org.hkijena.acaq5"))
-        .setScanners(new ResourcesScanner()));
+                .setUrls(ClasspathHelper.forPackage("org.hkijena.acaq5"))
+                .setScanners(new ResourcesScanner()));
 
         Set<String> allResources = reflections.getResources(Pattern.compile(".*"));
         allResources = allResources.stream().map(s -> {
-            if(!s.startsWith("/"))
+            if (!s.startsWith("/"))
                 return "/" + s;
             else
                 return s;

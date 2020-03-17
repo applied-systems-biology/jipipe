@@ -9,6 +9,7 @@ import java.util.Map;
 public interface ACAQCustomParameterHolder {
     /**
      * Returns all parameters
+     *
      * @return
      */
     Map<String, ACAQParameterAccess> getCustomParameters();

@@ -3,7 +3,7 @@ package org.hkijena.acaq5.ui;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 
 public class ACAQInfoUI extends ACAQUIPanel {
 

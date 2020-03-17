@@ -5,8 +5,7 @@ import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.*;
 
 public class DoubleParameterEditorUI extends ACAQParameterEditorUI {
 

@@ -7,7 +7,7 @@ import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import java.awt.BorderLayout;
+import java.awt.*;
 
 public class StringParameterEditorUI extends ACAQParameterEditorUI {
 

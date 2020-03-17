@@ -13,12 +13,7 @@
 package org.hkijena.acaq5.extension.ui.plotbuilder;
 
 
-import org.hkijena.acaq5.ui.plotbuilder.ACAQNumericPlotSeriesColumn;
-import org.hkijena.acaq5.ui.plotbuilder.ACAQPlot;
-import org.hkijena.acaq5.ui.plotbuilder.ACAQPlotSeries;
-import org.hkijena.acaq5.ui.plotbuilder.ACAQPlotSeriesData;
-import org.hkijena.acaq5.ui.plotbuilder.ACAQPlotSeriesGenerator;
-import org.hkijena.acaq5.ui.plotbuilder.ACAQStringPlotSeriesColumn;
+import org.hkijena.acaq5.ui.plotbuilder.*;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.category.CategoryDataset;
 

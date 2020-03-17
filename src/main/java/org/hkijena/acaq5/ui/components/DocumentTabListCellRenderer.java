@@ -13,7 +13,7 @@
 package org.hkijena.acaq5.ui.components;
 
 import javax.swing.*;
-import java.awt.Component;
+import java.awt.*;
 
 public class DocumentTabListCellRenderer extends JLabel implements ListCellRenderer<DocumentTabPane.DocumentTab> {
 

@@ -10,11 +10,7 @@ import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterHolder;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.utils.StringUtils;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * An algorithm that wraps another algorithm graph
@@ -44,17 +40,17 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
     }
 
     private void initializeParameters() {
-        GraphWrapperAlgorithmDeclaration declaration = (GraphWrapperAlgorithmDeclaration)getDeclaration();
+        GraphWrapperAlgorithmDeclaration declaration = (GraphWrapperAlgorithmDeclaration) getDeclaration();
 
         for (ACAQAlgorithm algorithm : wrappedGraph.traverseAlgorithms()) {
             for (Map.Entry<String, ACAQParameterAccess> entry : ACAQParameterAccess.getParameters(algorithm).entrySet()) {
 
                 String newId = algorithm.getIdInGraph() + "/" + entry.getKey();
 
-                if(!declaration.getParameterCollectionVisibilities().isVisible(newId)) {
+                if (!declaration.getParameterCollectionVisibilities().isVisible(newId)) {
                     continue;
                 }
-                if(entry.getValue().getParameterHolder() instanceof ACAQDynamicParameterHolder) {
+                if (entry.getValue().getParameterHolder() instanceof ACAQDynamicParameterHolder) {
                     ((ACAQDynamicParameterHolder) entry.getValue().getParameterHolder()).setAllowModification(false);
                 }
 
@@ -64,18 +60,17 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
     }
 
     private void initializeSlots() {
-        ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration)getSlotConfiguration();
+        ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) getSlotConfiguration();
         slotConfiguration.setInputSealed(false);
         slotConfiguration.setOutputSealed(false);
         slotConfiguration.clearInputSlots();
         slotConfiguration.clearOutputSlots();
         for (ACAQDataSlot slot : wrappedGraph.getUnconnectedSlots()) {
-            if(slot.isInput()) {
+            if (slot.isInput()) {
                 String name = StringUtils.makeUniqueString(slot.getName(), " ", s -> slotConfiguration.getSlots().containsKey(s));
                 slotConfiguration.addInputSlot(name, slot.getAcceptedDataType());
                 graphSlots.put(name, slot);
-            }
-            else if(slot.isOutput()) {
+            } else if (slot.isOutput()) {
                 String name = StringUtils.makeUniqueString(slot.getName(), " ", s -> slotConfiguration.getSlots().containsKey(s));
                 slotConfiguration.addOutputSlot(name, slot.getAcceptedDataType());
                 graphSlots.put(name, slot);
@@ -98,7 +93,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
             if (slot.isInput()) {
                 // Copy data from source
                 ACAQDataSlot sourceSlot = wrappedGraph.getSourceSlot(slot);
-                if(sourceSlot != null)
+                if (sourceSlot != null)
                     slot.copyFrom(sourceSlot);
             } else if (slot.isOutput()) {
                 // Ensure the algorithm has run
@@ -108,7 +103,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
                 }
             }
         }
-        
+
         transferOutputData();
         clearWrappedGraphData();
     }
@@ -121,10 +116,10 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
 
     private void transferOutputData() {
         for (Map.Entry<String, ACAQDataSlot> entry : graphSlots.entrySet()) {
-            if(entry.getValue().isOutput()) {
+            if (entry.getValue().isOutput()) {
                 ACAQDataSlot sourceSlot = entry.getValue();
                 ACAQDataSlot targetSlot = getOutputSlot(entry.getKey());
-                for(int row = 0; row < sourceSlot.getRowCount(); ++row) {
+                for (int row = 0; row < sourceSlot.getRowCount(); ++row) {
                     targetSlot.addData(sourceSlot.getData(row), sourceSlot.getAnnotations(row));
                 }
             }
@@ -133,10 +128,10 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
 
     private void transferInputData() {
         for (Map.Entry<String, ACAQDataSlot> entry : graphSlots.entrySet()) {
-            if(entry.getValue().isInput()) {
+            if (entry.getValue().isInput()) {
                 ACAQDataSlot targetSlot = entry.getValue();
                 ACAQDataSlot sourceSlot = getInputSlot(entry.getKey());
-                for(int row = 0; row < sourceSlot.getRowCount(); ++row) {
+                for (int row = 0; row < sourceSlot.getRowCount(); ++row) {
                     targetSlot.addData(sourceSlot.getData(row), sourceSlot.getAnnotations(row));
                 }
             }

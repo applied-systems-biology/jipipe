@@ -5,7 +5,7 @@ import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 
 /**
  * A parameter editor UI that works for all enumerations

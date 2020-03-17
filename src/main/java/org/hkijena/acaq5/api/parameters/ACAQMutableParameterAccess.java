@@ -76,7 +76,7 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
     @Override
     @JsonGetter("visibility")
     public ACAQParameterVisibility getVisibility() {
-        if(visibility == null)
+        if (visibility == null)
             return ACAQParameterVisibility.TransitiveVisible;
         return visibility;
     }

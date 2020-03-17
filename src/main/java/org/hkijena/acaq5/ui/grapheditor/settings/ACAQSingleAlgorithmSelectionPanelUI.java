@@ -14,7 +14,7 @@ import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 
 public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQUIPanel {
     private ACAQAlgorithmGraph graph;
@@ -91,7 +91,7 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQUIPanel {
     private void exportAlgorithm() {
         ACAQValidityReport report = new ACAQValidityReport();
         algorithm.reportValidity(report);
-        if(!report.isValid()) {
+        if (!report.isValid()) {
             UIUtils.openValidityReportDialog(this, report);
             return;
         }
@@ -107,7 +107,7 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQUIPanel {
     }
 
     private void deleteAlgorithm() {
-        if(JOptionPane.showConfirmDialog(this,
+        if (JOptionPane.showConfirmDialog(this,
                 "Do you really want to remove the algorithm '" + algorithm.getName() + "'?", "Delete algorithm",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             graph.removeNode(algorithm);

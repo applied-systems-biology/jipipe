@@ -6,11 +6,8 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
-import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
-import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.settings.ACAQGraphWrapperAlgorithmExporter;
-import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -62,14 +59,14 @@ public class ACAQMultiAlgorithmSelectionPanelUI extends ACAQUIPanel {
         for (ACAQAlgorithm algorithm : algorithms) {
             algorithm.reportValidity(report.forCategory(algorithm.getName()));
         }
-        if(!report.isValid()) {
+        if (!report.isValid()) {
             UIUtils.openValidityReportDialog(this, report);
             return;
         }
 
         ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
         for (ACAQAlgorithm algorithm : algorithms) {
-            if(algorithm.getCategory() == ACAQAlgorithmCategory.Internal)
+            if (algorithm.getCategory() == ACAQAlgorithmCategory.Internal)
                 continue;
             graph.insertNode(algorithm.getIdInGraph(), algorithm.getDeclaration().clone(algorithm), ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
         }
@@ -82,7 +79,7 @@ public class ACAQMultiAlgorithmSelectionPanelUI extends ACAQUIPanel {
     }
 
     private void deleteAlgorithms() {
-        if(JOptionPane.showConfirmDialog(this,
+        if (JOptionPane.showConfirmDialog(this,
                 "Do you really want to remove the following algorithms: " +
                         algorithms.stream().map(a -> "'" + a.getName() + "'").collect(Collectors.joining(", "))
                         + "?", "Delete algorithm",

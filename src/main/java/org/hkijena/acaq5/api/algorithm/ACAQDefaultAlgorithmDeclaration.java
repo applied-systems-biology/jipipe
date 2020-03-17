@@ -7,11 +7,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.acaq5.api.ACAQDocumentation;
-import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
-import org.hkijena.acaq5.api.data.traits.AddsTrait;
-import org.hkijena.acaq5.api.data.traits.BadForTrait;
-import org.hkijena.acaq5.api.data.traits.GoodForTrait;
-import org.hkijena.acaq5.api.data.traits.RemovesTrait;
+import org.hkijena.acaq5.api.data.traits.*;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 
 import java.io.IOException;

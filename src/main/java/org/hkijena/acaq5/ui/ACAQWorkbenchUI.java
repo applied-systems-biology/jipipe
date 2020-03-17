@@ -15,8 +15,7 @@ import org.jdesktop.swingx.JXStatusBar;
 import org.scijava.Context;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Frame;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

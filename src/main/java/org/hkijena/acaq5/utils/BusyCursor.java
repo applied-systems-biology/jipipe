@@ -13,9 +13,7 @@
 package org.hkijena.acaq5.utils;
 
 import javax.swing.*;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Window;
+import java.awt.*;
 
 public class BusyCursor implements AutoCloseable {
 

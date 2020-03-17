@@ -3,8 +3,7 @@ package org.hkijena.acaq5.ui.components;
 import ij.IJ;
 import ij.ImagePlus;
 
-import java.awt.Dimension;
-import java.awt.Point;
+import java.awt.*;
 
 public class ImagePlusExternalPreviewer {
     private ImagePlus currentImage;

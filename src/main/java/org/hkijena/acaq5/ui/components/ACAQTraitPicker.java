@@ -3,7 +3,6 @@ package org.hkijena.acaq5.ui.components;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -11,9 +10,7 @@ import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.*;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -150,12 +147,6 @@ public class ACAQTraitPicker extends JPanel {
         return searchStrings;
     }
 
-    public void setSelectedTraits(Set<ACAQTraitDeclaration> traits) {
-        this.selectedTraits = new HashSet<>(traits);
-        eventBus.post(new SelectedTraitsChangedEvent(this));
-        refreshTraitList();
-    }
-
     public EventBus getEventBus() {
         return eventBus;
     }
@@ -171,6 +162,12 @@ public class ACAQTraitPicker extends JPanel {
 
     public Set<ACAQTraitDeclaration> getSelectedTraits() {
         return Collections.unmodifiableSet(selectedTraits);
+    }
+
+    public void setSelectedTraits(Set<ACAQTraitDeclaration> traits) {
+        this.selectedTraits = new HashSet<>(traits);
+        eventBus.post(new SelectedTraitsChangedEvent(this));
+        refreshTraitList();
     }
 
     public enum Mode {

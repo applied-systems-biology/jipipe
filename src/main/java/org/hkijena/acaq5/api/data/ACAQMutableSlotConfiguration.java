@@ -8,14 +8,7 @@ import org.hkijena.acaq5.api.events.SlotOrderChangedEvent;
 import org.hkijena.acaq5.api.events.SlotRemovedEvent;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -292,20 +285,20 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
     }
 
     public void clearInputSlots() {
-        if(!canModifyInputSlots())
+        if (!canModifyInputSlots())
             throw new UnsupportedOperationException("Cannot modify input slots!");
         for (Map.Entry<String, ACAQSlotDefinition> entry : ImmutableList.copyOf(slots.entrySet())) {
-            if(entry.getValue().getSlotType() == ACAQDataSlot.SlotType.Input) {
+            if (entry.getValue().getSlotType() == ACAQDataSlot.SlotType.Input) {
                 removeSlot(entry.getKey());
             }
         }
     }
 
     public void clearOutputSlots() {
-        if(!canModifyOutputSlots())
+        if (!canModifyOutputSlots())
             throw new UnsupportedOperationException("Cannot modify output slots!");
         for (Map.Entry<String, ACAQSlotDefinition> entry : ImmutableList.copyOf(slots.entrySet())) {
-            if(entry.getValue().getSlotType() == ACAQDataSlot.SlotType.Output) {
+            if (entry.getValue().getSlotType() == ACAQDataSlot.SlotType.Output) {
                 removeSlot(entry.getKey());
             }
         }

@@ -5,7 +5,7 @@ import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.FileSelection;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 
 public class FilePathParameterEditorUI extends ACAQParameterEditorUI {
 

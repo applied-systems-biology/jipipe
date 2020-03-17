@@ -5,5 +5,6 @@ package org.hkijena.acaq5.api.registries;
  */
 public interface ACAQAlgorithmRegistrationTask {
     void register();
+
     boolean canRegister();
 }

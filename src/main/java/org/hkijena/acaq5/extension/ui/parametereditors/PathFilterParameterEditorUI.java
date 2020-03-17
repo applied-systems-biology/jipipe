@@ -9,7 +9,7 @@ import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import java.awt.Font;
+import java.awt.*;
 
 public class PathFilterParameterEditorUI extends ACAQParameterEditorUI {
 

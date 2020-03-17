@@ -7,7 +7,7 @@ import org.hkijena.acaq5.ui.events.RunUIWorkerProgressEvent;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 
 public class ACAQRunExecuterUI extends JPanel {
     private ACAQRunnable run;

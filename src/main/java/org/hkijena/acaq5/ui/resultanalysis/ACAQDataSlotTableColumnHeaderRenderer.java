@@ -6,7 +6,7 @@ import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
-import java.awt.Component;
+import java.awt.*;
 
 public class ACAQDataSlotTableColumnHeaderRenderer implements TableCellRenderer {
     private ACAQExportedDataTable dataTable;

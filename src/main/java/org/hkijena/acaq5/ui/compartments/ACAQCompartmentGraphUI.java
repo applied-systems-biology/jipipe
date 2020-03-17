@@ -12,25 +12,18 @@ import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
-import org.hkijena.acaq5.ui.events.DefaultUIActionRequestedEvent;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
+import org.hkijena.acaq5.ui.events.DefaultUIActionRequestedEvent;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
-import org.hkijena.acaq5.ui.grapheditor.settings.ACAQMultiAlgorithmSelectionPanelUI;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Cursor;
-import java.awt.Point;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashSet;
@@ -201,13 +194,12 @@ public class ACAQCompartmentGraphUI extends ACAQUIPanel implements MouseListener
 
     @Subscribe
     public void onAlgorithmSelected(AlgorithmSelectedEvent event) {
-        if(event.getUi() != null) {
-            if(event.isAddToSelection())
+        if (event.getUi() != null) {
+            if (event.isAddToSelection())
                 addToSelection(event.getUi());
             else
                 selectOnly(event.getUi());
-        }
-        else {
+        } else {
             clearSelection();
         }
     }
@@ -223,16 +215,14 @@ public class ACAQCompartmentGraphUI extends ACAQUIPanel implements MouseListener
     }
 
     public void selectOnly(ACAQAlgorithmUI ui) {
-        if(selection.isEmpty()) {
+        if (selection.isEmpty()) {
             addToSelection(ui);
-        }
-        else if(selection.size() == 1) {
-            if(selection.iterator().next() != ui) {
+        } else if (selection.size() == 1) {
+            if (selection.iterator().next() != ui) {
                 clearSelection();
                 addToSelection(ui);
             }
-        }
-        else {
+        } else {
             clearSelection();
             addToSelection(ui);
         }
@@ -241,15 +231,14 @@ public class ACAQCompartmentGraphUI extends ACAQUIPanel implements MouseListener
     public void addToSelection(ACAQAlgorithmUI ui) {
         selection.add(ui);
         ui.setSelected(true);
-        if(selection.size() == 1) {
+        if (selection.size() == 1) {
             int dividerLocation = splitPane.getDividerLocation();
             splitPane.setRightComponent(new ACAQSingleCompartmentSelectionPanelUI(getWorkbenchUI(), (ACAQProjectCompartment) ui.getAlgorithm()));
             splitPane.setDividerLocation(dividerLocation);
-        }
-        else {
+        } else {
             int dividerLocation = splitPane.getDividerLocation();
             splitPane.setRightComponent(new ACAQMultiCompartmentSelectionPanelUI(getWorkbenchUI(),
-                    selection.stream().map(a -> (ACAQProjectCompartment)a.getAlgorithm()).collect(Collectors.toSet())));
+                    selection.stream().map(a -> (ACAQProjectCompartment) a.getAlgorithm()).collect(Collectors.toSet())));
             splitPane.setDividerLocation(dividerLocation);
         }
     }

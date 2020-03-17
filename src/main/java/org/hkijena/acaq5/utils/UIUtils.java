@@ -18,20 +18,12 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.ui.components.ACAQValidityReportUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.awt.MouseInfo;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -185,7 +177,7 @@ public class UIUtils {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
                 super.mouseClicked(mouseEvent);
-                if(SwingUtilities.isRightMouseButton(mouseEvent)) {
+                if (SwingUtilities.isRightMouseButton(mouseEvent)) {
                     popupMenu.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());
                 }
             }

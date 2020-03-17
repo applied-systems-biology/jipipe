@@ -15,9 +15,7 @@ import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.util.Collections;
+import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -61,16 +59,14 @@ public class ACAQTraitDeclarationRefCollectionParameterEditorUI extends ACAQPara
     private void refreshCurrentlyDisplayed() {
         ACAQTraitDeclarationRefCollection declarationRefs = getParameterAccess().get();
         currentlyDisplayed.removeAll();
-        if(declarationRefs.isEmpty()) {
+        if (declarationRefs.isEmpty()) {
             currentlyDisplayed.add(new JLabel("None selected"));
-        }
-        else if(declarationRefs.size() == 1) {
+        } else if (declarationRefs.size() == 1) {
             ACAQTraitDeclaration declaration = declarationRefs.get(0).getDeclaration();
             JLabel label = new JLabel(declaration.getName(), ACAQUITraitRegistry.getInstance().getIconFor(declaration), JLabel.LEFT);
             label.setToolTipText(TooltipUtils.getTraitTooltip(declaration));
             currentlyDisplayed.add(label);
-        }
-        else {
+        } else {
             for (ACAQTraitDeclarationRef declarationRef : declarationRefs) {
                 ACAQTraitDeclaration declaration = declarationRef.getDeclaration();
                 JLabel label = new JLabel();

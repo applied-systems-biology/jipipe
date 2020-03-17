@@ -8,7 +8,6 @@ import org.hkijena.acaq5.extension.api.algorithms.macro.GraphWrapperAlgorithmDec
 import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -19,7 +18,6 @@ public class GraphWrapperAlgorithmRegistrationTask implements ACAQAlgorithmRegis
     private Set<String> dependencyAlgorithms;
 
     /**
-     *
      * @param jsonNode The JSON serialized graph wrapper algorithm
      */
     public GraphWrapperAlgorithmRegistrationTask(JsonNode jsonNode) {

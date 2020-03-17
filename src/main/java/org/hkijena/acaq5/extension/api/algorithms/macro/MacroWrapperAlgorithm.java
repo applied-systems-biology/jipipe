@@ -3,18 +3,11 @@ package org.hkijena.acaq5.extension.api.algorithms.macro;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.macro.Interpreter;
-import ij.macro.MacroConstants;
 import ij.measure.ResultsTable;
 import ij.plugin.frame.RoiManager;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.ACAQDataInterface;
-import org.hkijena.acaq5.api.algorithm.ACAQIteratingAlgorithm;
-import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
-import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
@@ -23,11 +16,7 @@ import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterHolder;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
-import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
-import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
-import org.hkijena.acaq5.extension.api.datatypes.ACAQMultichannelImageData;
-import org.hkijena.acaq5.extension.api.datatypes.ACAQROIData;
-import org.hkijena.acaq5.extension.api.datatypes.ACAQResultsTableData;
+import org.hkijena.acaq5.extension.api.datatypes.*;
 import org.hkijena.acaq5.extension.api.macro.MacroCode;
 import org.hkijena.acaq5.utils.MacroUtils;
 
@@ -91,30 +80,27 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
         StringBuilder finalCode = new StringBuilder();
         // Inject parameters
         for (Map.Entry<String, ACAQParameterAccess> entry : macroParameters.getCustomParameters().entrySet()) {
-            if(!MacroUtils.isValidVariableName(entry.getKey()))
+            if (!MacroUtils.isValidVariableName(entry.getKey()))
                 throw new IllegalArgumentException("Invalid variable name " + entry.getKey());
             finalCode.append("var ").append(entry.getKey()).append(" = ");
-            if(entry.getValue().getFieldClass() == Integer.class) {
+            if (entry.getValue().getFieldClass() == Integer.class) {
                 int value = 0;
-                if(entry.getValue().get() != null)
+                if (entry.getValue().get() != null)
                     value = entry.getValue().get();
                 finalCode.append(value);
-            }
-            else if(entry.getValue().getFieldClass() == Double.class) {
+            } else if (entry.getValue().getFieldClass() == Double.class) {
                 double value = 0;
-                if(entry.getValue().get() != null)
+                if (entry.getValue().get() != null)
                     value = entry.getValue().get();
                 finalCode.append(value);
-            }
-            else if(entry.getValue().getFieldClass() == Float.class) {
+            } else if (entry.getValue().getFieldClass() == Float.class) {
                 float value = 0;
-                if(entry.getValue().get() != null)
+                if (entry.getValue().get() != null)
                     value = entry.getValue().get();
                 finalCode.append(value);
-            }
-            else {
+            } else {
                 String value = "";
-                if(entry.getValue().get() != null)
+                if (entry.getValue().get() != null)
                     value = "" + entry.getValue().get();
                 finalCode.append("\"").append(MacroUtils.escapeString(value)).append("\"");
             }
@@ -126,11 +112,9 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
         Interpreter interpreter = new Interpreter();
         try {
             interpreter.run(finalCode.toString());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
-        }
-        finally {
+        } finally {
             passOutputData(dataInterface);
             clearData(dataInterface);
         }
@@ -213,7 +197,7 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
             report.reportIsInvalid("Too many results table outputs! Please make sure to only have at most one results table data output.");
         }
         for (String key : macroParameters.getCustomParameters().keySet()) {
-            if(!MacroUtils.isValidVariableName(key)) {
+            if (!MacroUtils.isValidVariableName(key)) {
                 report.forCategory("Macro Parameters").forCategory(key).reportIsInvalid("'" + key + "' is an invalid ImageJ macro variable name! Please ensure that macro variables are compatible with the ImageJ macro language.");
             }
         }

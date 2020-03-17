@@ -126,7 +126,7 @@ public class ACAQAlgorithmUI extends JPanel {
     }
 
     private void removeAlgorithm() {
-        if(JOptionPane.showConfirmDialog(this,
+        if (JOptionPane.showConfirmDialog(this,
                 "Do you really want to remove the algorithm '" + algorithm.getName() + "'?", "Delete algorithm",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             graphUI.getAlgorithmGraph().removeNode(algorithm);
@@ -486,10 +486,9 @@ public class ACAQAlgorithmUI extends JPanel {
     }
 
     private void updateBorder() {
-        if(selected) {
+        if (selected) {
             setBorder(BorderFactory.createLineBorder(borderColor, 2));
-        }
-        else {
+        } else {
             setBorder(BorderFactory.createLineBorder(borderColor));
         }
     }

@@ -6,8 +6,7 @@ import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
-import java.awt.Color;
-import java.awt.Component;
+import java.awt.*;
 
 public class ACAQDataSlotTreeCellRenderer extends JLabel implements TreeCellRenderer {
 

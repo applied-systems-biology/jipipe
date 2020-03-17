@@ -14,7 +14,7 @@ import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.io.IOException;
 
 public class ACAQGraphWrapperAlgorithmExporter extends ACAQUIPanel {
@@ -68,7 +68,7 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQUIPanel {
 
     private void createRandomId() {
         String name = algorithmDeclaration.getName();
-        if(name == null || name.isEmpty()) {
+        if (name == null || name.isEmpty()) {
             name = "my-algorithm";
         }
         name = StringUtils.jsonify(name);
@@ -80,18 +80,18 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQUIPanel {
     private boolean checkValidity() {
         ACAQValidityReport report = new ACAQValidityReport();
         algorithmDeclaration.reportValidity(report);
-        if(!report.isValid()) {
+        if (!report.isValid()) {
             UIUtils.openValidityReportDialog(this, report);
         }
         return report.isValid();
     }
 
     private void exportToFile() {
-        if(!checkValidity())
+        if (!checkValidity())
             return;
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Export as *.json");
-        if(fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
                 JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(fileChooser.getSelectedFile(), algorithmDeclaration);
                 getWorkbenchUI().sendStatusBarText("Exported custom algorithm '" + algorithmDeclaration.getName() + "' to " + fileChooser.getSelectedFile());

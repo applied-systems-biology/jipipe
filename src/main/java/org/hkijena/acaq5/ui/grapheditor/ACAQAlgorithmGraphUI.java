@@ -21,14 +21,8 @@ import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Cursor;
-import java.awt.Point;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Comparator;
@@ -189,7 +183,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
         boolean isEmpty = true;
         Icon icon = new ColorIcon(16, 16, UIUtils.getFillColorFor(category));
         for (ACAQAlgorithmDeclaration declaration : registryService.getAlgorithmRegistry().getAlgorithmsOfCategory(category)
-        .stream().sorted(Comparator.comparing(ACAQAlgorithmDeclaration::getName)).collect(Collectors.toList())) {
+                .stream().sorted(Comparator.comparing(ACAQAlgorithmDeclaration::getName)).collect(Collectors.toList())) {
             JMenuItem addItem = new JMenuItem(declaration.getName(), icon);
             addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
             addItem.addActionListener(e -> algorithmGraph.insertNode(declaration.newInstance(), compartment));
@@ -232,13 +226,12 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
 
     @Subscribe
     public void onAlgorithmSelected(AlgorithmSelectedEvent event) {
-        if(event.getUi() != null) {
-            if(event.isAddToSelection())
+        if (event.getUi() != null) {
+            if (event.isAddToSelection())
                 addToSelection(event.getUi());
             else
                 selectOnly(event.getUi());
-        }
-        else {
+        } else {
             clearSelection();
         }
     }
@@ -254,16 +247,14 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
     }
 
     public void selectOnly(ACAQAlgorithmUI ui) {
-        if(selection.isEmpty()) {
+        if (selection.isEmpty()) {
             addToSelection(ui);
-        }
-        else if(selection.size() == 1) {
-            if(selection.iterator().next() != ui) {
+        } else if (selection.size() == 1) {
+            if (selection.iterator().next() != ui) {
                 clearSelection();
                 addToSelection(ui);
             }
-        }
-        else {
+        } else {
             clearSelection();
             addToSelection(ui);
         }
@@ -272,12 +263,11 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
     public void addToSelection(ACAQAlgorithmUI ui) {
         selection.add(ui);
         ui.setSelected(true);
-        if(selection.size() == 1) {
+        if (selection.size() == 1) {
             int dividerLocation = splitPane.getDividerLocation();
             splitPane.setRightComponent(new ACAQSingleAlgorithmSelectionPanelUI(getWorkbenchUI(), algorithmGraph, ui.getAlgorithm()));
             splitPane.setDividerLocation(dividerLocation);
-        }
-        else {
+        } else {
             int dividerLocation = splitPane.getDividerLocation();
             splitPane.setRightComponent(new ACAQMultiAlgorithmSelectionPanelUI(getWorkbenchUI(), algorithmGraph,
                     selection.stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet())));
@@ -288,7 +278,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
     @Subscribe
     public void onGraphChanged(AlgorithmGraphChangedEvent event) {
         if (selection.stream().anyMatch(ui -> !algorithmGraph.getAlgorithmNodes().containsValue(ui.getAlgorithm()))) {
-           clearSelection();
+            clearSelection();
         }
     }
 

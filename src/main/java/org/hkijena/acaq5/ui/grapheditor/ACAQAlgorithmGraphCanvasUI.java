@@ -10,8 +10,8 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.AlgorithmGraphConnectedEvent;
-import org.hkijena.acaq5.ui.events.DefaultUIActionRequestedEvent;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
+import org.hkijena.acaq5.ui.events.DefaultUIActionRequestedEvent;
 import org.hkijena.acaq5.utils.ScreenImage;
 
 import javax.swing.*;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionListener, MouseListener{
+public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionListener, MouseListener {
     private ACAQAlgorithmGraph algorithmGraph;
     private ACAQAlgorithmUI currentlyDragged;
     private Point currentlyDraggedOffset = new Point();

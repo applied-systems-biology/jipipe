@@ -2,11 +2,7 @@ package org.hkijena.acaq5.filesystem;
 
 import org.hkijena.acaq5.ACAQExtensionService;
 import org.hkijena.acaq5.ACAQRegistryService;
-import org.hkijena.acaq5.filesystem.api.algorithms.ACAQFilterFiles;
-import org.hkijena.acaq5.filesystem.api.algorithms.ACAQFilterFolders;
-import org.hkijena.acaq5.filesystem.api.algorithms.ACAQListFiles;
-import org.hkijena.acaq5.filesystem.api.algorithms.ACAQListSubfolders;
-import org.hkijena.acaq5.filesystem.api.algorithms.ACAQSubFolder;
+import org.hkijena.acaq5.filesystem.api.algorithms.*;
 import org.hkijena.acaq5.filesystem.api.annotation.ACAQFileAnnotationGenerator;
 import org.hkijena.acaq5.filesystem.api.annotation.ACAQFolderAnnotationGenerator;
 import org.hkijena.acaq5.filesystem.api.datasources.ACAQFileDataSource;

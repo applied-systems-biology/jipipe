@@ -21,6 +21,7 @@ public class ACAQParameterCollectionVisibilities {
 
     /**
      * An optional reference of all available parameters. This is not serialized and can be null
+     *
      * @return
      */
     public Map<String, ACAQParameterAccess> getAvailableParameters() {
@@ -32,7 +33,7 @@ public class ACAQParameterCollectionVisibilities {
     }
 
     public void setVisibility(String key, boolean visible) {
-        if(visible)
+        if (visible)
             visibleParameters.add(key);
         else
             visibleParameters.remove(key);

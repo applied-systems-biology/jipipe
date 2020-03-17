@@ -5,8 +5,7 @@ import org.hkijena.acaq5.api.traits.ACAQTrait;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
-import java.awt.Color;
-import java.awt.Component;
+import java.awt.*;
 
 public class ACAQTraitTableCellRenderer extends JLabel implements TableCellRenderer {
 
