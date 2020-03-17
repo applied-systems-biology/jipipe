@@ -56,7 +56,7 @@ public class ACAQWorkbenchWindow extends JFrame {
     public void openProject() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fileChooser.setDialogTitle("Open project (*.json");
+        fileChooser.setDialogTitle("Open project (*.json)");
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
                 ACAQProject project = ACAQProject.loadProject(fileChooser.getSelectedFile().toPath());
@@ -105,7 +105,7 @@ public class ACAQWorkbenchWindow extends JFrame {
         if (savePath == null) {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            fileChooser.setDialogTitle("Save project (*.json");
+            fileChooser.setDialogTitle("Save project (*.json)");
             if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
                 savePath = fileChooser.getSelectedFile().toPath();
             } else {

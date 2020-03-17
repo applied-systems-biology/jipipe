@@ -7,11 +7,15 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
+import org.hkijena.acaq5.ui.components.MarkdownDocument;
+import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.settings.ACAQGraphWrapperAlgorithmExporter;
+import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,6 +32,17 @@ public class ACAQMultiAlgorithmSelectionPanelUI extends ACAQUIPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
+        MarkdownReader content = new MarkdownReader(false);
+        add(content, BorderLayout.CENTER);
+
+        StringBuilder markdownContent = new StringBuilder();
+        for (ACAQAlgorithm algorithm : algorithms.stream().sorted(Comparator.comparing(ACAQAlgorithm::getName)).collect(Collectors.toList())) {
+            markdownContent.append(TooltipUtils.getAlgorithmTooltip(algorithm.getDeclaration())
+                    .replace("<html>", "<div style=\"border: 1px solid gray; border-radius: 4px; margin: 4px; padding: 4px;\">")
+                    .replace("</html>", "</div>"));
+            markdownContent.append("\n\n");
+        }
+        content.setDocument(new MarkdownDocument(markdownContent.toString()));
 
         initializeToolbar();
     }

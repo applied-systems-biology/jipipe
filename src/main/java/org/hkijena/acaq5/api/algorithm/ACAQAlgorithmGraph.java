@@ -600,6 +600,15 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         return result;
     }
 
+    public Set<ACAQAlgorithm> getAlgorithmsWithCompartment(String compartmentId) {
+        Set<ACAQAlgorithm> result = new HashSet<>();
+        for (ACAQAlgorithm algorithm : algorithms.values()) {
+            if(algorithm.getCompartment().equals(compartmentId))
+                result.add(algorithm);
+        }
+        return result;
+    }
+
     public static class Serializer extends JsonSerializer<ACAQAlgorithmGraph> {
         @Override
         public void serialize(ACAQAlgorithmGraph algorithmGraph, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {

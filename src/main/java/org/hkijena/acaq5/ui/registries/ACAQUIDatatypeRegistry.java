@@ -2,6 +2,7 @@ package org.hkijena.acaq5.ui.registries;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
@@ -97,6 +98,27 @@ public class ACAQUIDatatypeRegistry {
      */
     public ACAQResultDataSlotCellUI getCellRendererFor(Class<? extends ACAQData> klass) {
         return resultTableCellUIs.getOrDefault(klass, defaultResultTableRowUI);
+    }
+
+    public URL getIconURLFor(ACAQAlgorithmCategory category) {
+        switch (category) {
+            case DataSource:
+                return ResourceUtils.getPluginResource("icons/database.png");
+            case FileSystem:
+                return ResourceUtils.getPluginResource("icons/tree.png");
+            case Annotation:
+                return ResourceUtils.getPluginResource("icons/label.png");
+            case Enhancer:
+                return ResourceUtils.getPluginResource("icons/magic.png");
+            case Segmenter:
+                return ResourceUtils.getPluginResource("icons/binary.png");
+            case Converter:
+                return ResourceUtils.getPluginResource("icons/convert.png");
+            case Quantifier:
+                return ResourceUtils.getPluginResource("icons/statistics.png");
+            default:
+                return ResourceUtils.getPluginResource("icons/module.png");
+        }
     }
 
     public URL getIconURLFor(Class<? extends ACAQData> klass) {

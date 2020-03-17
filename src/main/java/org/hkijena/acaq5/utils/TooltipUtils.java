@@ -1,9 +1,7 @@
 package org.hkijena.acaq5.utils;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
-import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
@@ -16,6 +14,26 @@ import java.util.stream.Collectors;
 public class TooltipUtils {
     private TooltipUtils() {
 
+    }
+
+    public static String getProjectCompartmentTooltip(ACAQProjectCompartment compartment, ACAQAlgorithmGraph projectGraph) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("<html>");
+        builder.append("<u><strong>").append(compartment.getName()).append("</strong></u><br/>");
+        builder.append("Contains ").append(projectGraph.getAlgorithmsWithCompartment(compartment.getProjectCompartmentId()).size()).append(" algorithms<br/>");
+        builder.append("<table>");
+        for (ACAQAlgorithm algorithm : projectGraph.getAlgorithmsWithCompartment(compartment.getProjectCompartmentId())) {
+            builder.append("<tr>");
+            builder.append("<td>").append("<img src=\"")
+                    .append(ACAQUIDatatypeRegistry.getInstance().getIconURLFor(algorithm.getCategory()))
+                    .append("\"/>").append("</td>");
+            builder.append("<td>").append(algorithm.getName()).append("</td>");
+            builder.append("</tr>");
+        }
+        builder.append("</table>");
+        builder.append("</html>");
+
+        return builder.toString();
     }
 
     public static String getSlotInstanceTooltip(ACAQDataSlot slot, ACAQAlgorithmGraph graph, boolean withAnnotations) {

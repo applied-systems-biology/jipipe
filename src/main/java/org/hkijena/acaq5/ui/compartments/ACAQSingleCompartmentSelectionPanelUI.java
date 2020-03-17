@@ -61,7 +61,7 @@ public class ACAQSingleCompartmentSelectionPanelUI extends ACAQUIPanel {
     private void initializeToolbar() {
         JToolBar toolBar = new JToolBar();
         JLabel nameLabel = new JLabel(compartment.getName(), new ColorIcon(16, 16, UIUtils.getFillColorFor(compartment.getDeclaration())), JLabel.LEFT);
-        nameLabel.setToolTipText(TooltipUtils.getAlgorithmTooltip(compartment.getDeclaration()));
+        nameLabel.setToolTipText(TooltipUtils.getProjectCompartmentTooltip(compartment, getProject().getGraph()));
         toolBar.add(nameLabel);
 
         toolBar.add(Box.createHorizontalGlue());
@@ -95,7 +95,7 @@ public class ACAQSingleCompartmentSelectionPanelUI extends ACAQUIPanel {
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION) {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            fileChooser.setDialogTitle("Save compartment (*.json");
+            fileChooser.setDialogTitle("Save compartment (*.json)");
             if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
                 Path savePath = fileChooser.getSelectedFile().toPath();
                 try {
