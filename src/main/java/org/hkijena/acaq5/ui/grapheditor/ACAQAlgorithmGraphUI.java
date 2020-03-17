@@ -32,7 +32,9 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, MouseMotionListener {
 
@@ -186,7 +188,8 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
         ACAQRegistryService registryService = ACAQRegistryService.getInstance();
         boolean isEmpty = true;
         Icon icon = new ColorIcon(16, 16, UIUtils.getFillColorFor(category));
-        for (ACAQAlgorithmDeclaration declaration : registryService.getAlgorithmRegistry().getAlgorithmsOfCategory(category)) {
+        for (ACAQAlgorithmDeclaration declaration : registryService.getAlgorithmRegistry().getAlgorithmsOfCategory(category)
+        .stream().sorted(Comparator.comparing(ACAQAlgorithmDeclaration::getName)).collect(Collectors.toList())) {
             JMenuItem addItem = new JMenuItem(declaration.getName(), icon);
             addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
             addItem.addActionListener(e -> algorithmGraph.insertNode(declaration.newInstance(), compartment));
@@ -199,7 +202,8 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
 
     private void initializeAddDataSourceMenu(JMenu menu) {
         ACAQRegistryService registryService = ACAQRegistryService.getInstance();
-        for (Class<? extends ACAQData> dataClass : registryService.getDatatypeRegistry().getRegisteredDataTypes()) {
+        for (Class<? extends ACAQData> dataClass : registryService.getDatatypeRegistry().getRegisteredDataTypes().stream()
+                .sorted(Comparator.comparing(ACAQData::getNameOf)).collect(Collectors.toList())) {
             if (ACAQDatatypeRegistry.getInstance().isHidden(dataClass))
                 continue;
             Set<ACAQAlgorithmDeclaration> dataSources = registryService.getAlgorithmRegistry().getDataSourcesFor(dataClass);
