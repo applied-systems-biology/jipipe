@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.ui.testbench;
 
-import org.hkijena.acaq5.api.testbench.ACAQAlgorithmBackup;
+import org.hkijena.acaq5.api.testbench.ACAQTestbenchSnapshot;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -8,7 +8,7 @@ import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class ACAQDataSlotBackupListCellRenderer extends JLabel implements ListCellRenderer<ACAQAlgorithmBackup> {
+public class ACAQDataSlotBackupListCellRenderer extends JLabel implements ListCellRenderer<ACAQTestbenchSnapshot> {
 
     public ACAQDataSlotBackupListCellRenderer() {
         setOpaque(true);
@@ -17,7 +17,7 @@ public class ACAQDataSlotBackupListCellRenderer extends JLabel implements ListCe
     }
 
     @Override
-    public Component getListCellRendererComponent(JList<? extends ACAQAlgorithmBackup> list, ACAQAlgorithmBackup backup, int index, boolean selected, boolean cellHasFocus) {
+    public Component getListCellRendererComponent(JList<? extends ACAQTestbenchSnapshot> list, ACAQTestbenchSnapshot backup, int index, boolean selected, boolean cellHasFocus) {
         if (list.getFont() != null) {
             setFont(list.getFont());
         }

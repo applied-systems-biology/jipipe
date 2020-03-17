@@ -18,8 +18,9 @@ public class ACAQTestbench implements ACAQRunnable, ACAQValidatable {
 
     private ACAQRun testbenchRun;
     private ACAQAlgorithm benchedAlgorithm;
+    private volatile ACAQTestbenchSnapshot initialBackup;
 
-    private List<ACAQAlgorithmBackup> backupList = new ArrayList<>();
+    private List<ACAQTestbenchSnapshot> backupList = new ArrayList<>();
 
     public ACAQTestbench(ACAQProject project, ACAQAlgorithm targetAlgorithm, Path workDirectory) {
         this.project = project;
@@ -54,6 +55,12 @@ public class ACAQTestbench implements ACAQRunnable, ACAQValidatable {
 
         // Required after first run
         ((ACAQMutableRunConfiguration) testbenchRun.getConfiguration()).setOnlyRunningEndAlgorithm(true);
+
+        // Create initial backup
+        if(initialBackup == null) {
+            initialBackup = new ACAQTestbenchSnapshot(this);
+            backupList.add(initialBackup);
+        }
     }
 
     public ACAQProject getProject() {
@@ -76,15 +83,15 @@ public class ACAQTestbench implements ACAQRunnable, ACAQValidatable {
         return benchedAlgorithm;
     }
 
-    public List<ACAQAlgorithmBackup> getBackupList() {
+    public List<ACAQTestbenchSnapshot> getBackupList() {
         return backupList;
     }
 
     public void createBackup() {
-        backupList.add(new ACAQAlgorithmBackup(benchedAlgorithm));
+        backupList.add(new ACAQTestbenchSnapshot(this));
     }
 
-    public ACAQAlgorithmBackup getLatestBackup() {
+    public ACAQTestbenchSnapshot getLatestBackup() {
         return backupList.get(backupList.size() - 1);
     }
 
@@ -108,5 +115,9 @@ public class ACAQTestbench implements ACAQRunnable, ACAQValidatable {
         }
         while (Files.isDirectory(outputPath));
         ((ACAQMutableRunConfiguration) testbenchRun.getConfiguration()).setOutputPath(outputPath);
+    }
+
+    public ACAQTestbenchSnapshot getInitialBackup() {
+        return initialBackup;
     }
 }

@@ -2,7 +2,7 @@ package org.hkijena.acaq5.ui.testbench;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.testbench.ACAQAlgorithmBackup;
+import org.hkijena.acaq5.api.testbench.ACAQTestbenchSnapshot;
 import org.hkijena.acaq5.api.testbench.ACAQTestbench;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
@@ -26,16 +26,13 @@ import java.awt.event.ComponentEvent;
 public class ACAQTestBenchUI extends ACAQUIPanel {
 
     private ACAQTestbench testbench;
-    private JComboBox<ACAQAlgorithmBackup> backupSelection;
+    private JComboBox<ACAQTestbenchSnapshot> backupSelection;
     private JButton newTestButton;
     private JSplitPane splitPane;
 
     public ACAQTestBenchUI(ACAQWorkbenchUI workbenchUI, ACAQTestbench testbench) {
         super(workbenchUI);
         this.testbench = testbench;
-
-        // Do the initial backup
-        testbench.createBackup();
 
         initialize();
         updateBackupSelection();
@@ -82,7 +79,7 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
         backupSelection.setRenderer(new ACAQDataSlotBackupListCellRenderer());
         backupSelection.addActionListener(e -> {
             if (backupSelection.getSelectedItem() != null)
-                loadBackup((ACAQAlgorithmBackup) backupSelection.getSelectedItem());
+                loadBackup((ACAQTestbenchSnapshot) backupSelection.getSelectedItem());
         });
         toolBar.add(backupSelection);
 
@@ -111,17 +108,17 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
     }
 
     private void copyParameters() {
-        if (backupSelection.getSelectedItem() instanceof ACAQAlgorithmBackup) {
-            ACAQAlgorithmBackup backup = (ACAQAlgorithmBackup) backupSelection.getSelectedItem();
-            backup.restoreParameters(testbench.getTargetAlgorithm());
+        if (backupSelection.getSelectedItem() instanceof ACAQTestbenchSnapshot) {
+            ACAQTestbenchSnapshot backup = (ACAQTestbenchSnapshot) backupSelection.getSelectedItem();
+            backup.getAlgorithmBackup(testbench.getBenchedAlgorithm()).restoreParameters(testbench.getTargetAlgorithm());
             testbench.getTargetAlgorithm().getEventBus().post(new ReloadSettingsRequestedEvent(testbench.getTargetAlgorithm()));
             getWorkbenchUI().sendStatusBarText("Copied parameters from testbench to " + testbench.getTargetAlgorithm().getName());
         }
     }
 
     private void renameCurrentBackup() {
-        if (backupSelection.getSelectedItem() instanceof ACAQAlgorithmBackup) {
-            ACAQAlgorithmBackup backup = (ACAQAlgorithmBackup) backupSelection.getSelectedItem();
+        if (backupSelection.getSelectedItem() instanceof ACAQTestbenchSnapshot) {
+            ACAQTestbenchSnapshot backup = (ACAQTestbenchSnapshot) backupSelection.getSelectedItem();
             String newName = JOptionPane.showInputDialog(this, "Please enter a label", backup.getLabel());
             backup.setLabel(newName);
             updateBackupSelection();
@@ -130,13 +127,14 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
 
     private void clearBackups() {
         Object current = backupSelection.getSelectedItem();
+        ACAQTestbenchSnapshot initial = testbench.getInitialBackup();
         testbench.getBackupList().removeIf(b -> b != current);
         updateBackupSelection();
     }
 
     private void updateBackupSelection() {
         Object currentSelection = backupSelection.getSelectedItem();
-        DefaultComboBoxModel<ACAQAlgorithmBackup> model = new DefaultComboBoxModel<>(testbench.getBackupList().toArray(new ACAQAlgorithmBackup[0]));
+        DefaultComboBoxModel<ACAQTestbenchSnapshot> model = new DefaultComboBoxModel<>(testbench.getBackupList().toArray(new ACAQTestbenchSnapshot[0]));
         if (currentSelection != null && testbench.getBackupList().contains(currentSelection))
             model.setSelectedItem(currentSelection);
         backupSelection.setModel(model);
@@ -176,11 +174,12 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
         }
     }
 
-    private void loadBackup(ACAQAlgorithmBackup backup) {
+    private void loadBackup(ACAQTestbenchSnapshot backup) {
 
         int dividerLocation = splitPane.getDividerLocation();
 
-        backup.restore(testbench.getBenchedAlgorithm());
+        backup.restore();
+
         ACAQParameterAccessUI parameters = new ACAQParameterAccessUI(getWorkbenchUI(), testbench.getBenchedAlgorithm(),
                 MarkdownDocument.fromPluginResource("documentation/testbench.md"),
                 true, true);
