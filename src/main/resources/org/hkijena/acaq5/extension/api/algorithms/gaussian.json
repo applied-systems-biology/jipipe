@@ -56,8 +56,8 @@
             "parameters" : {
               "Sigma" : {
                 "name" : "Sigma",
-                "description" : null,
-                "visibility" : null,
+                "description" : "Standard deviation of the gaussian kernel.",
+                "visibility" : "TransitiveVisible",
                 "field-class" : "java.lang.Double",
                 "value" : 9.0
               }

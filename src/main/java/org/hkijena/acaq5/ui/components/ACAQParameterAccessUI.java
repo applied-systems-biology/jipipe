@@ -47,9 +47,9 @@ public class ACAQParameterAccessUI extends FormPanel {
                 ACAQParameterEditorUI ui = ACAQRegistryService.getInstance()
                         .getUIParametertypeRegistry().createEditorFor(workbenchUI, parameterAccess);
                 if (ui.isUILabelEnabled())
-                    addToForm(ui, new JLabel(parameterAccess.getName()), null);
+                    addToForm(ui, new JLabel(parameterAccess.getName()), generateParameterDocumentation(parameterAccess));
                 else
-                    addToForm(ui, null);
+                    addToForm(ui, generateParameterDocumentation(parameterAccess));
                 hasElements = true;
             }
         }
@@ -68,11 +68,16 @@ public class ACAQParameterAccessUI extends FormPanel {
             boolean foundHolderName = false;
 
             JPanel subAlgorithmGroupTitle = new JPanel(new BorderLayout());
-            subAlgorithmGroupTitle.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createEmptyBorder(8, 0, 4, 0),
-                    BorderFactory.createMatteBorder(1, 0, 0, 0, Color.DARK_GRAY)),
-                    BorderFactory.createEmptyBorder(4, 4, 4, 4)
-            ));
+            if(hasElements) {
+                subAlgorithmGroupTitle.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createEmptyBorder(8, 0, 4, 0),
+                        BorderFactory.createMatteBorder(1, 0, 0, 0, Color.DARK_GRAY)),
+                        BorderFactory.createEmptyBorder(4, 4, 4, 4)
+                ));
+            }
+            else {
+                subAlgorithmGroupTitle.setBorder(BorderFactory.createEmptyBorder(12, 4, 8, 4));
+            }
             JLabel holderNameLabel = new JLabel();
             subAlgorithmGroupTitle.add(holderNameLabel, BorderLayout.CENTER);
             addToForm(subAlgorithmGroupTitle, null);
@@ -117,9 +122,9 @@ public class ACAQParameterAccessUI extends FormPanel {
                 }
 
                 if (ui.isUILabelEnabled() || parameterHolder instanceof ACAQDynamicParameterHolder)
-                    addToForm(ui, labelPanel, null);
+                    addToForm(ui, labelPanel, generateParameterDocumentation(parameterAccess));
                 else
-                    addToForm(ui, null);
+                    addToForm(ui, generateParameterDocumentation(parameterAccess));
 
                 hasElements = true;
             }
@@ -131,6 +136,18 @@ public class ACAQParameterAccessUI extends FormPanel {
                     null);
         }
         addVerticalGlue();
+    }
+
+    private MarkdownDocument generateParameterDocumentation(ACAQParameterAccess access) {
+        StringBuilder markdownString = new StringBuilder();
+        markdownString.append("# Parameter '" + access.getName() + "'\n\n");
+        if(access.getDescription() != null && !access.getDescription().isEmpty()) {
+            markdownString.append(access.getDescription());
+        }
+        else {
+            markdownString.append("No description provided.");
+        }
+        return new MarkdownDocument(markdownString.toString());
     }
 
     private void removeDynamicParameter(String key, ACAQDynamicParameterHolder parameterHolder) {

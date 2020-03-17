@@ -176,7 +176,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
     }
 
     @ACAQParameter(value = "name", visibility = ACAQParameterVisibility.Visible)
-    @ACAQDocumentation(name = "Name")
+    @ACAQDocumentation(name = "Name", description = "Custom algorithm name.")
     public String getName() {
         if (customName == null || customName.isEmpty())
             return getDeclaration().getName();
