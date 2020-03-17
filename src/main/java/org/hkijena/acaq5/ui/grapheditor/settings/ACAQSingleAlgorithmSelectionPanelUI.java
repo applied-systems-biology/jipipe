@@ -16,11 +16,11 @@ import org.hkijena.acaq5.utils.UIUtils;
 import javax.swing.*;
 import java.awt.BorderLayout;
 
-public class ACAQAlgorithmSettingsPanelUI extends ACAQUIPanel {
+public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQUIPanel {
     private ACAQAlgorithmGraph graph;
     private ACAQAlgorithm algorithm;
 
-    public ACAQAlgorithmSettingsPanelUI(ACAQWorkbenchUI workbenchUI, ACAQAlgorithmGraph graph, ACAQAlgorithm algorithm) {
+    public ACAQSingleAlgorithmSelectionPanelUI(ACAQWorkbenchUI workbenchUI, ACAQAlgorithmGraph graph, ACAQAlgorithm algorithm) {
         super(workbenchUI);
         this.graph = graph;
         this.algorithm = algorithm;

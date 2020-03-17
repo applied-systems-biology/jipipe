@@ -11,23 +11,12 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.AlgorithmGraphConnectedEvent;
 import org.hkijena.acaq5.ui.events.DefaultUIActionRequestedEvent;
-import org.hkijena.acaq5.ui.events.OpenSettingsUIRequestedEvent;
+import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.acaq5.utils.ScreenImage;
 
 import javax.swing.*;
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.RenderingHints;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
 import java.util.HashSet;
@@ -35,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionListener, MouseListener {
+public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionListener, MouseListener{
     private ACAQAlgorithmGraph algorithmGraph;
     private ACAQAlgorithmUI currentlyDragged;
     private Point currentlyDraggedOffset = new Point();
@@ -219,7 +208,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
                 currentlyDraggedOffset.x = ui.getX() - mouseEvent.getX();
                 currentlyDraggedOffset.y = ui.getY() - mouseEvent.getY();
             }
-            eventBus.post(new OpenSettingsUIRequestedEvent(ui));
+            eventBus.post(new AlgorithmSelectedEvent(ui, mouseEvent.isShiftDown()));
         }
     }
 
@@ -284,7 +273,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     }
 
     @Subscribe
-    public void onOpenAlgorithmSettings(OpenSettingsUIRequestedEvent event) {
+    public void onOpenAlgorithmSettings(AlgorithmSelectedEvent event) {
         eventBus.post(event);
     }
 

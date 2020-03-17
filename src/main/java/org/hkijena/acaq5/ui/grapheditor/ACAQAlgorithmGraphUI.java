@@ -5,18 +5,17 @@ import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
-import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
-import org.hkijena.acaq5.ui.compartments.ACAQCompartmentSettingsPanelUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
-import org.hkijena.acaq5.ui.events.OpenSettingsUIRequestedEvent;
-import org.hkijena.acaq5.ui.grapheditor.settings.ACAQAlgorithmSettingsPanelUI;
+import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
+import org.hkijena.acaq5.ui.grapheditor.settings.ACAQMultiAlgorithmSelectionPanelUI;
+import org.hkijena.acaq5.ui.grapheditor.settings.ACAQSingleAlgorithmSelectionPanelUI;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -33,6 +32,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -45,14 +45,14 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
 
     private JSplitPane splitPane;
     private JScrollPane scrollPane;
-    private ACAQAlgorithmSettingsPanelUI currentSettings;
-
     private Point panningOffset = null;
     private Point panningScrollbarOffset = null;
     private boolean isPanning = false;
     private JToggleButton switchPanningDirectionButton;
 
     private MarkdownReader documentationPanel;
+
+    private Set<ACAQAlgorithmUI> selection = new HashSet<>();
 
     public ACAQAlgorithmGraphUI(ACAQWorkbenchUI workbenchUI, ACAQAlgorithmGraph algorithmGraph, String compartment) {
         super(workbenchUI);
@@ -231,31 +231,64 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
     }
 
     @Subscribe
-    public void onOpenAlgorithmSettings(OpenSettingsUIRequestedEvent event) {
+    public void onAlgorithmSelected(AlgorithmSelectedEvent event) {
         if(event.getUi() != null) {
-            if (currentSettings == null || currentSettings.getAlgorithm() != event.getUi().getAlgorithm()) {
-                currentSettings = new ACAQAlgorithmSettingsPanelUI(getWorkbenchUI(), algorithmGraph, event.getUi().getAlgorithm());
-                int dividerLocation = splitPane.getDividerLocation();
-                splitPane.setRightComponent(currentSettings);
-                splitPane.setDividerLocation(dividerLocation);
+            if(event.isAddToSelection())
+                addToSelection(event.getUi());
+            else
+                selectOnly(event.getUi());
+        }
+        else {
+            clearSelection();
+        }
+    }
+
+    public void clearSelection() {
+        for (ACAQAlgorithmUI ui : selection) {
+            ui.setSelected(false);
+        }
+        selection.clear();
+        int dividerLocation = splitPane.getDividerLocation();
+        splitPane.setRightComponent(documentationPanel);
+        splitPane.setDividerLocation(dividerLocation);
+    }
+
+    public void selectOnly(ACAQAlgorithmUI ui) {
+        if(selection.isEmpty()) {
+            addToSelection(ui);
+        }
+        else if(selection.size() == 1) {
+            if(selection.iterator().next() != ui) {
+                clearSelection();
+                addToSelection(ui);
             }
         }
         else {
-            if(currentSettings != null) {
-                currentSettings = null;
-                int dividerLocation = splitPane.getDividerLocation();
-                splitPane.setRightComponent(documentationPanel);
-                splitPane.setDividerLocation(dividerLocation);
-            }
+            clearSelection();
+            addToSelection(ui);
+        }
+    }
+
+    public void addToSelection(ACAQAlgorithmUI ui) {
+        selection.add(ui);
+        ui.setSelected(true);
+        if(selection.size() == 1) {
+            int dividerLocation = splitPane.getDividerLocation();
+            splitPane.setRightComponent(new ACAQSingleAlgorithmSelectionPanelUI(getWorkbenchUI(), algorithmGraph, ui.getAlgorithm()));
+            splitPane.setDividerLocation(dividerLocation);
+        }
+        else {
+            int dividerLocation = splitPane.getDividerLocation();
+            splitPane.setRightComponent(new ACAQMultiAlgorithmSelectionPanelUI(getWorkbenchUI(), algorithmGraph,
+                    selection.stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet())));
+            splitPane.setDividerLocation(dividerLocation);
         }
     }
 
     @Subscribe
     public void onGraphChanged(AlgorithmGraphChangedEvent event) {
-        if (currentSettings != null && !algorithmGraph.getAlgorithmNodes().containsValue(currentSettings.getAlgorithm())) {
-            int dividerLocation = splitPane.getDividerLocation();
-            splitPane.setRightComponent(documentationPanel);
-            splitPane.setDividerLocation(dividerLocation);
+        if (selection.stream().anyMatch(ui -> !algorithmGraph.getAlgorithmNodes().containsValue(ui.getAlgorithm()))) {
+           clearSelection();
         }
     }
 

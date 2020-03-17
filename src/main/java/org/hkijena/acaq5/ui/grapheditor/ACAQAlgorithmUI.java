@@ -11,7 +11,7 @@ import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmNameChanged;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.events.TraitConfigurationChangedEvent;
-import org.hkijena.acaq5.ui.events.OpenSettingsUIRequestedEvent;
+import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -47,6 +47,8 @@ public class ACAQAlgorithmUI extends JPanel {
     private Color fillColor;
     private Color borderColor;
 
+    private boolean selected;
+
     public ACAQAlgorithmUI(ACAQAlgorithmGraphCanvasUI graphUI, ACAQAlgorithm algorithm) {
         this.graphUI = graphUI;
         this.algorithm = algorithm;
@@ -60,7 +62,7 @@ public class ACAQAlgorithmUI extends JPanel {
 
     private void initialize() {
         setBackground(fillColor);
-        setBorder(BorderFactory.createLineBorder(borderColor));
+        updateBorder();
         setSize(new Dimension(calculateWidth(), calculateHeight()));
         setLayout(new GridBagLayout());
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -73,7 +75,9 @@ public class ACAQAlgorithmUI extends JPanel {
         nameLabel = new JLabel(algorithm.getName());
         JButton openSettingsButton = new JButton(UIUtils.getIconFromResources("wrench.png"));
         UIUtils.makeFlat25x25(openSettingsButton);
-        openSettingsButton.addActionListener(e -> eventBus.post(new OpenSettingsUIRequestedEvent(this)));
+        initializeContextMenu(UIUtils.addPopupMenuToComponent(openSettingsButton));
+
+//        initializeContextMenu(UIUtils.addContextMenuToComponent(this));
 
         add(inputSlotPanel, new GridBagConstraints() {
             {
@@ -102,6 +106,31 @@ public class ACAQAlgorithmUI extends JPanel {
                 weighty = 1;
             }
         });
+    }
+
+    private void initializeContextMenu(JPopupMenu menu) {
+        JMenuItem selectOnlyButton = new JMenuItem("Open settings", UIUtils.getIconFromResources("cog.png"));
+        selectOnlyButton.addActionListener(e -> eventBus.post(new AlgorithmSelectedEvent(this, false)));
+        menu.add(selectOnlyButton);
+
+        JMenuItem addToSelectionButton = new JMenuItem("Add to selection", UIUtils.getIconFromResources("select.png"));
+        addToSelectionButton.addActionListener(e -> eventBus.post(new AlgorithmSelectedEvent(this, true)));
+        menu.add(addToSelectionButton);
+
+        menu.addSeparator();
+
+        JMenuItem deleteButton = new JMenuItem("Delete algorithm", UIUtils.getIconFromResources("delete.png"));
+        deleteButton.setEnabled(graphUI.getAlgorithmGraph().canUserDelete(algorithm));
+        deleteButton.addActionListener(e -> removeAlgorithm());
+        menu.add(deleteButton);
+    }
+
+    private void removeAlgorithm() {
+        if(JOptionPane.showConfirmDialog(this,
+                "Do you really want to remove the algorithm '" + algorithm.getName() + "'?", "Delete algorithm",
+                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            graphUI.getAlgorithmGraph().removeNode(algorithm);
+        }
     }
 
     private void addHorizontalGlue(int column) {
@@ -445,5 +474,23 @@ public class ACAQAlgorithmUI extends JPanel {
 
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+        updateBorder();
+    }
+
+    private void updateBorder() {
+        if(selected) {
+            setBorder(BorderFactory.createLineBorder(borderColor, 2));
+        }
+        else {
+            setBorder(BorderFactory.createLineBorder(borderColor));
+        }
     }
 }

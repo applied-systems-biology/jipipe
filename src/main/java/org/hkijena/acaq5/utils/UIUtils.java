@@ -18,6 +18,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.ui.components.ACAQValidityReportUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
+import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -173,6 +174,20 @@ public class UIUtils {
 
             } else {
                 popupMenu.show(target, 0, target.getHeight());
+            }
+        });
+        return popupMenu;
+    }
+
+    public static JPopupMenu addContextMenuToComponent(Component target) {
+        JPopupMenu popupMenu = new JPopupMenu();
+        target.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                super.mouseClicked(mouseEvent);
+                if(SwingUtilities.isRightMouseButton(mouseEvent)) {
+                    popupMenu.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());
+                }
             }
         });
         return popupMenu;
@@ -380,4 +395,6 @@ public class UIUtils {
     public static void makeToggleReadonly(JToggleButton toggleButton) {
         toggleButton.addActionListener(e -> toggleButton.setSelected(!toggleButton.isSelected()));
     }
+
+
 }

@@ -13,8 +13,10 @@ import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.events.DefaultUIActionRequestedEvent;
-import org.hkijena.acaq5.ui.events.OpenSettingsUIRequestedEvent;
+import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
+import org.hkijena.acaq5.ui.grapheditor.settings.ACAQMultiAlgorithmSelectionPanelUI;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -31,6 +33,9 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph.COMPARTMENT_DEFAULT;
 
@@ -42,7 +47,6 @@ public class ACAQCompartmentGraphUI extends ACAQUIPanel implements MouseListener
 
     private JSplitPane splitPane;
     private JScrollPane scrollPane;
-    private ACAQCompartmentSettingsPanelUI currentSettings;
 
     private Point panningOffset = null;
     private Point panningScrollbarOffset = null;
@@ -50,6 +54,8 @@ public class ACAQCompartmentGraphUI extends ACAQUIPanel implements MouseListener
     private JToggleButton switchPanningDirectionButton;
 
     private MarkdownReader documentationPanel;
+
+    private Set<ACAQAlgorithmUI> selection = new HashSet<>();
 
     public ACAQCompartmentGraphUI(ACAQWorkbenchUI workbenchUI) {
         super(workbenchUI);
@@ -185,25 +191,6 @@ public class ACAQCompartmentGraphUI extends ACAQUIPanel implements MouseListener
         return compartmentGraph;
     }
 
-    @Subscribe
-    public void onOpenAlgorithmSettings(OpenSettingsUIRequestedEvent event) {
-        if(event.getUi() != null) {
-            if (currentSettings == null || currentSettings.getCompartment() != event.getUi().getAlgorithm()) {
-                currentSettings = new ACAQCompartmentSettingsPanelUI(getWorkbenchUI(), (ACAQProjectCompartment) event.getUi().getAlgorithm());
-                int dividerLocation = splitPane.getDividerLocation();
-                splitPane.setRightComponent(currentSettings);
-                splitPane.setDividerLocation(dividerLocation);
-            }
-        }
-        else {
-            if(currentSettings != null) {
-                currentSettings = null;
-                int dividerLocation = splitPane.getDividerLocation();
-                splitPane.setRightComponent(documentationPanel);
-                splitPane.setDividerLocation(dividerLocation);
-            }
-        }
-    }
 
     @Subscribe
     public void onOpenCompartment(DefaultUIActionRequestedEvent event) {
@@ -213,11 +200,64 @@ public class ACAQCompartmentGraphUI extends ACAQUIPanel implements MouseListener
     }
 
     @Subscribe
-    public void onGraphChanged(AlgorithmGraphChangedEvent event) {
-        if (currentSettings != null && !compartmentGraph.getAlgorithmNodes().containsValue(currentSettings.getCompartment())) {
+    public void onAlgorithmSelected(AlgorithmSelectedEvent event) {
+        if(event.getUi() != null) {
+            if(event.isAddToSelection())
+                addToSelection(event.getUi());
+            else
+                selectOnly(event.getUi());
+        }
+        else {
+            clearSelection();
+        }
+    }
+
+    public void clearSelection() {
+        for (ACAQAlgorithmUI ui : selection) {
+            ui.setSelected(false);
+        }
+        selection.clear();
+        int dividerLocation = splitPane.getDividerLocation();
+        splitPane.setRightComponent(documentationPanel);
+        splitPane.setDividerLocation(dividerLocation);
+    }
+
+    public void selectOnly(ACAQAlgorithmUI ui) {
+        if(selection.isEmpty()) {
+            addToSelection(ui);
+        }
+        else if(selection.size() == 1) {
+            if(selection.iterator().next() != ui) {
+                clearSelection();
+                addToSelection(ui);
+            }
+        }
+        else {
+            clearSelection();
+            addToSelection(ui);
+        }
+    }
+
+    public void addToSelection(ACAQAlgorithmUI ui) {
+        selection.add(ui);
+        ui.setSelected(true);
+        if(selection.size() == 1) {
             int dividerLocation = splitPane.getDividerLocation();
-            splitPane.setRightComponent(documentationPanel);
+            splitPane.setRightComponent(new ACAQSingleCompartmentSelectionPanelUI(getWorkbenchUI(), (ACAQProjectCompartment) ui.getAlgorithm()));
             splitPane.setDividerLocation(dividerLocation);
+        }
+        else {
+            int dividerLocation = splitPane.getDividerLocation();
+            splitPane.setRightComponent(new ACAQMultiCompartmentSelectionPanelUI(getWorkbenchUI(),
+                    selection.stream().map(a -> (ACAQProjectCompartment)a.getAlgorithm()).collect(Collectors.toSet())));
+            splitPane.setDividerLocation(dividerLocation);
+        }
+    }
+
+    @Subscribe
+    public void onGraphChanged(AlgorithmGraphChangedEvent event) {
+        if (selection.stream().anyMatch(ui -> !compartmentGraph.getAlgorithmNodes().containsValue(ui.getAlgorithm()))) {
+            clearSelection();
         }
     }
 

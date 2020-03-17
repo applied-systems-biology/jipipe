@@ -19,10 +19,10 @@ import java.awt.BorderLayout;
 import java.io.IOException;
 import java.nio.file.Path;
 
-public class ACAQCompartmentSettingsPanelUI extends ACAQUIPanel {
+public class ACAQSingleCompartmentSelectionPanelUI extends ACAQUIPanel {
     private ACAQProjectCompartment compartment;
 
-    public ACAQCompartmentSettingsPanelUI(ACAQWorkbenchUI workbenchUI, ACAQProjectCompartment compartment) {
+    public ACAQSingleCompartmentSelectionPanelUI(ACAQWorkbenchUI workbenchUI, ACAQProjectCompartment compartment) {
         super(workbenchUI);
         this.compartment = compartment;
         initialize();
