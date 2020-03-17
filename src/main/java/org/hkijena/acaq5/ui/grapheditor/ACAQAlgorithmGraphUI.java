@@ -96,6 +96,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
     @Subscribe
     public void onAlgorithmRegistryChanged(AlgorithmRegistryChangedEvent event) {
         reloadMenuBar();
+        getWorkbenchUI().sendStatusBarText("Plugins were updated");
     }
 
     public void reloadMenuBar() {
