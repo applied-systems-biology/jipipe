@@ -291,6 +291,26 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
         return allowsOutputSlots() && !isOutputSlotsSealed() && outputSlotOrder.size() < maxOutputSlots;
     }
 
+    public void clearInputSlots() {
+        if(!canModifyInputSlots())
+            throw new UnsupportedOperationException("Cannot modify input slots!");
+        for (Map.Entry<String, ACAQSlotDefinition> entry : ImmutableList.copyOf(slots.entrySet())) {
+            if(entry.getValue().getSlotType() == ACAQDataSlot.SlotType.Input) {
+                removeSlot(entry.getKey());
+            }
+        }
+    }
+
+    public void clearOutputSlots() {
+        if(!canModifyOutputSlots())
+            throw new UnsupportedOperationException("Cannot modify output slots!");
+        for (Map.Entry<String, ACAQSlotDefinition> entry : ImmutableList.copyOf(slots.entrySet())) {
+            if(entry.getValue().getSlotType() == ACAQDataSlot.SlotType.Output) {
+                removeSlot(entry.getKey());
+            }
+        }
+    }
+
     public static Builder builder() {
         return new Builder();
     }

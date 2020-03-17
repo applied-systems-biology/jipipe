@@ -19,12 +19,12 @@
           "Input data 1" : {
             "slot-class" : "org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData",
             "slot-type" : "Input",
-            "name" : "Input data 1"
+            "name" : "Input"
           },
           "Output data 1" : {
             "slot-class" : "org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData",
             "slot-type" : "Output",
-            "name" : "Output data 1"
+            "name" : "Output"
           }
         },
         "acaq:algorithm-ui-location" : {
@@ -37,7 +37,7 @@
         "acaq:algorithm-compartment" : "DEFAULT",
         "macro-parameters/Sigma" : 9.0,
         "code" : {
-          "code" : "// Apply gaussian blur\nselectWindow(\"Input data 1\");\nrun(\"Gaussian Blur...\", \"sigma=\" + Sigma);\nrename(\"Output data 1\");"
+          "code" : "// Apply gaussian blur\nselectWindow(\"Input\");\nrun(\"Gaussian Blur...\", \"sigma=\" + Sigma);\nrename(\"Output\");"
         },
         "strict-mode" : true,
         "name" : "ImageJ Macro",

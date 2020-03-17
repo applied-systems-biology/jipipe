@@ -218,8 +218,8 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
                 currentlyDragged = ui;
                 currentlyDraggedOffset.x = ui.getX() - mouseEvent.getX();
                 currentlyDraggedOffset.y = ui.getY() - mouseEvent.getY();
-                eventBus.post(new OpenSettingsUIRequestedEvent(ui));
             }
+            eventBus.post(new OpenSettingsUIRequestedEvent(ui));
         }
     }
 

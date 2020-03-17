@@ -36,6 +36,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
     public GraphWrapperAlgorithm(GraphWrapperAlgorithm other) {
         super(other);
         this.wrappedGraph = new ACAQAlgorithmGraph(other.wrappedGraph);
+        initializeSlots();
         initializeParameters();
         for (Map.Entry<String, ACAQParameterAccess> entry : other.parameterAccessMap.entrySet()) {
             parameterAccessMap.get(entry.getKey()).set(entry.getValue().get());
@@ -66,6 +67,8 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
         ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration)getSlotConfiguration();
         slotConfiguration.setInputSealed(false);
         slotConfiguration.setOutputSealed(false);
+        slotConfiguration.clearInputSlots();
+        slotConfiguration.clearOutputSlots();
         for (ACAQDataSlot slot : wrappedGraph.getUnconnectedSlots()) {
             if(slot.isInput()) {
                 String name = StringUtils.makeUniqueString(slot.getName(), " ", s -> slotConfiguration.getSlots().containsKey(s));
@@ -95,7 +98,8 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
             if (slot.isInput()) {
                 // Copy data from source
                 ACAQDataSlot sourceSlot = wrappedGraph.getSourceSlot(slot);
-                slot.copyFrom(sourceSlot);
+                if(sourceSlot != null)
+                    slot.copyFrom(sourceSlot);
             } else if (slot.isOutput()) {
                 // Ensure the algorithm has run
                 if (!executedAlgorithms.contains(slot.getAlgorithm())) {

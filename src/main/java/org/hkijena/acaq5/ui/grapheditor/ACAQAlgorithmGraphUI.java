@@ -5,11 +5,13 @@ import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.compartments.ACAQCompartmentSettingsPanelUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
@@ -41,7 +43,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
 
     private JSplitPane splitPane;
     private JScrollPane scrollPane;
-    private ACAQAlgorithmSettingsPanelUI currentAlgorithmSettings;
+    private ACAQAlgorithmSettingsPanelUI currentSettings;
 
     private Point panningOffset = null;
     private Point panningScrollbarOffset = null;
@@ -226,17 +228,27 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
 
     @Subscribe
     public void onOpenAlgorithmSettings(OpenSettingsUIRequestedEvent event) {
-        if (currentAlgorithmSettings == null || currentAlgorithmSettings.getAlgorithm() != event.getUi().getAlgorithm()) {
-            currentAlgorithmSettings = new ACAQAlgorithmSettingsPanelUI(getWorkbenchUI(), algorithmGraph, event.getUi().getAlgorithm());
-            int dividerLocation = splitPane.getDividerLocation();
-            splitPane.setRightComponent(currentAlgorithmSettings);
-            splitPane.setDividerLocation(dividerLocation);
+        if(event.getUi() != null) {
+            if (currentSettings == null || currentSettings.getAlgorithm() != event.getUi().getAlgorithm()) {
+                currentSettings = new ACAQAlgorithmSettingsPanelUI(getWorkbenchUI(), algorithmGraph, event.getUi().getAlgorithm());
+                int dividerLocation = splitPane.getDividerLocation();
+                splitPane.setRightComponent(currentSettings);
+                splitPane.setDividerLocation(dividerLocation);
+            }
+        }
+        else {
+            if(currentSettings != null) {
+                currentSettings = null;
+                int dividerLocation = splitPane.getDividerLocation();
+                splitPane.setRightComponent(documentationPanel);
+                splitPane.setDividerLocation(dividerLocation);
+            }
         }
     }
 
     @Subscribe
     public void onGraphChanged(AlgorithmGraphChangedEvent event) {
-        if (currentAlgorithmSettings != null && !algorithmGraph.getAlgorithmNodes().containsValue(currentAlgorithmSettings.getAlgorithm())) {
+        if (currentSettings != null && !algorithmGraph.getAlgorithmNodes().containsValue(currentSettings.getAlgorithm())) {
             int dividerLocation = splitPane.getDividerLocation();
             splitPane.setRightComponent(documentationPanel);
             splitPane.setDividerLocation(dividerLocation);

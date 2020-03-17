@@ -12,7 +12,7 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
     private String key;
     private String name;
     private String description;
-    private ACAQParameterVisibility visibility;
+    private ACAQParameterVisibility visibility = ACAQParameterVisibility.TransitiveVisible;
     private Class<?> fieldClass;
     private Object value;
 
@@ -76,6 +76,8 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
     @Override
     @JsonGetter("visibility")
     public ACAQParameterVisibility getVisibility() {
+        if(visibility == null)
+            return ACAQParameterVisibility.TransitiveVisible;
         return visibility;
     }
 

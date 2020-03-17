@@ -187,11 +187,21 @@ public class ACAQCompartmentGraphUI extends ACAQUIPanel implements MouseListener
 
     @Subscribe
     public void onOpenAlgorithmSettings(OpenSettingsUIRequestedEvent event) {
-        if (currentSettings == null || currentSettings.getCompartment() != event.getUi().getAlgorithm()) {
-            currentSettings = new ACAQCompartmentSettingsPanelUI(getWorkbenchUI(), (ACAQProjectCompartment) event.getUi().getAlgorithm());
-            int dividerLocation = splitPane.getDividerLocation();
-            splitPane.setRightComponent(currentSettings);
-            splitPane.setDividerLocation(dividerLocation);
+        if(event.getUi() != null) {
+            if (currentSettings == null || currentSettings.getCompartment() != event.getUi().getAlgorithm()) {
+                currentSettings = new ACAQCompartmentSettingsPanelUI(getWorkbenchUI(), (ACAQProjectCompartment) event.getUi().getAlgorithm());
+                int dividerLocation = splitPane.getDividerLocation();
+                splitPane.setRightComponent(currentSettings);
+                splitPane.setDividerLocation(dividerLocation);
+            }
+        }
+        else {
+            if(currentSettings != null) {
+                currentSettings = null;
+                int dividerLocation = splitPane.getDividerLocation();
+                splitPane.setRightComponent(documentationPanel);
+                splitPane.setDividerLocation(dividerLocation);
+            }
         }
     }
 
