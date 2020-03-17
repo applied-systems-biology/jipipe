@@ -227,13 +227,16 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
     @Subscribe
     public void onAlgorithmSelected(AlgorithmSelectedEvent event) {
         if (event.getUi() != null) {
-            if (!selection.contains(event.getUi())) {
-                if (event.isAddToSelection())
+            if(event.isAddToSelection()) {
+                if (selection.contains(event.getUi())) {
+                    removeFromSelection(event.getUi());
+                }
+                else {
                     addToSelection(event.getUi());
-                else
-                    selectOnly(event.getUi());
-            } else {
-                removeFromSelection(event.getUi());
+                }
+            }
+            else {
+                selectOnly(event.getUi());
             }
         } else {
             clearSelection();
