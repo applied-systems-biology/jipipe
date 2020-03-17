@@ -603,7 +603,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     public Set<ACAQAlgorithm> getAlgorithmsWithCompartment(String compartmentId) {
         Set<ACAQAlgorithm> result = new HashSet<>();
         for (ACAQAlgorithm algorithm : algorithms.values()) {
-            if(algorithm.getCompartment().equals(compartmentId))
+            if (algorithm.getCompartment().equals(compartmentId))
                 result.add(algorithm);
         }
         return result;

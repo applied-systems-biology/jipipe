@@ -2,8 +2,8 @@ package org.hkijena.acaq5.ui.testbench;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.testbench.ACAQTestbenchSnapshot;
 import org.hkijena.acaq5.api.testbench.ACAQTestbench;
+import org.hkijena.acaq5.api.testbench.ACAQTestbenchSnapshot;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;

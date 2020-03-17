@@ -195,15 +195,13 @@ public class ACAQCompartmentGraphUI extends ACAQUIPanel implements MouseListener
     @Subscribe
     public void onAlgorithmSelected(AlgorithmSelectedEvent event) {
         if (event.getUi() != null) {
-            if(event.isAddToSelection()) {
+            if (event.isAddToSelection()) {
                 if (selection.contains(event.getUi())) {
                     removeFromSelection(event.getUi());
-                }
-                else {
+                } else {
                     addToSelection(event.getUi());
                 }
-            }
-            else {
+            } else {
                 selectOnly(event.getUi());
             }
         } else {

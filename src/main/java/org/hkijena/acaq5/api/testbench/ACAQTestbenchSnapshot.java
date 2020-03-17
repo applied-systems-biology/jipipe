@@ -33,9 +33,9 @@ public class ACAQTestbenchSnapshot {
         ((ACAQMutableRunConfiguration) this.testbench.getTestbenchRun().getConfiguration()).setOutputPath(outputFolderBackup);
         restore(testbench.getBenchedAlgorithm());
         ACAQTestbenchSnapshot initial = testbench.getInitialBackup();
-        if(this != initial) {
+        if (this != initial) {
             for (Map.Entry<ACAQAlgorithm, AlgorithmBackup> entry : initial.algorithmBackups.entrySet()) {
-                if(entry.getKey() != testbench.getBenchedAlgorithm())
+                if (entry.getKey() != testbench.getBenchedAlgorithm())
                     entry.getValue().restore();
             }
         }

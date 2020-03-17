@@ -101,4 +101,11 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQUIPanel {
         }
     }
 
+    public GraphWrapperAlgorithmDeclaration getAlgorithmDeclaration() {
+        return algorithmDeclaration;
+    }
+
+    public void refreshParameterAccess() {
+        parameterAccessUI.reloadForm();
+    }
 }

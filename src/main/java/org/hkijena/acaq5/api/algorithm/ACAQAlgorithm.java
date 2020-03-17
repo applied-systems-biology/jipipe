@@ -26,6 +26,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
+import org.hkijena.acaq5.extension.ui.parametereditors.StringParameterSettings;
 import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.awt.*;
@@ -49,6 +50,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
     private Path internalStoragePath;
     private Path storagePath;
     private String customName;
+    private String customDescription;
     private String compartment;
     private Set<String> visibleCompartments = new HashSet<>();
     private ACAQAlgorithmGraph graph;
@@ -415,6 +417,18 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
      */
     public void clearLocations() {
         locations.clear();
+    }
+
+    @ACAQDocumentation(name = "Description", description = "A custom description")
+    @StringParameterSettings(multiline = true)
+    @ACAQParameter(value = "description", visibility = ACAQParameterVisibility.Visible)
+    public String getCustomDescription() {
+        return customDescription;
+    }
+
+    @ACAQParameter("description")
+    public void setCustomDescription(String customDescription) {
+        this.customDescription = customDescription;
     }
 
     public static class Serializer extends JsonSerializer<ACAQAlgorithm> {

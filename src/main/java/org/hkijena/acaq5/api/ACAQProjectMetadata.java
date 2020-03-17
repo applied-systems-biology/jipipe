@@ -3,6 +3,7 @@ package org.hkijena.acaq5.api;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.extension.ui.parametereditors.StringParameterSettings;
 
 public class ACAQProjectMetadata {
     private String name = "New project";
@@ -27,6 +28,7 @@ public class ACAQProjectMetadata {
 
     @ACAQDocumentation(name = "Description")
     @ACAQParameter("description")
+    @StringParameterSettings(multiline = true)
     @JsonGetter("description")
     public String getDescription() {
         return description;

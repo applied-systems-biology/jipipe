@@ -120,12 +120,11 @@ public class ACAQAlgorithmUI extends JPanel {
 
         menu.addSeparator();
 
-        if(algorithm instanceof ACAQProjectCompartment) {
+        if (algorithm instanceof ACAQProjectCompartment) {
             JMenuItem deleteButton = new JMenuItem("Delete compartment", UIUtils.getIconFromResources("delete.png"));
             deleteButton.addActionListener(e -> removeCompartment());
             menu.add(deleteButton);
-        }
-        else {
+        } else {
             JMenuItem deleteButton = new JMenuItem("Delete algorithm", UIUtils.getIconFromResources("delete.png"));
             deleteButton.setEnabled(graphUI.getAlgorithmGraph().canUserDelete(algorithm));
             deleteButton.addActionListener(e -> removeAlgorithm());

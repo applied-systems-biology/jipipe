@@ -8,6 +8,7 @@ import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQCustomParameterHolder;
 import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterHolder;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.api.parameters.ACAQReflectionParameterAccess;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.*;
@@ -41,6 +42,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
 
     private void initializeParameters() {
         GraphWrapperAlgorithmDeclaration declaration = (GraphWrapperAlgorithmDeclaration) getDeclaration();
+        parameterAccessMap.putAll(ACAQReflectionParameterAccess.getReflectionParameters(this));
 
         for (ACAQAlgorithm algorithm : wrappedGraph.traverseAlgorithms()) {
             for (Map.Entry<String, ACAQParameterAccess> entry : ACAQParameterAccess.getParameters(algorithm).entrySet()) {

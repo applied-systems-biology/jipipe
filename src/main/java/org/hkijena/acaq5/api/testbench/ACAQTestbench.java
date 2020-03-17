@@ -57,7 +57,7 @@ public class ACAQTestbench implements ACAQRunnable, ACAQValidatable {
         ((ACAQMutableRunConfiguration) testbenchRun.getConfiguration()).setOnlyRunningEndAlgorithm(true);
 
         // Create initial backup
-        if(initialBackup == null) {
+        if (initialBackup == null) {
             initialBackup = new ACAQTestbenchSnapshot(this);
             backupList.add(initialBackup);
         }

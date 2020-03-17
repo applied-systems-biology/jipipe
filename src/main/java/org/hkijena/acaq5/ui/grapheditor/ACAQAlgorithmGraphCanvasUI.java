@@ -153,7 +153,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         }
 
         // Auto-place
-        int minX = (int)(newEntryLocationX * 1.0 / ACAQAlgorithmUI.SLOT_UI_WIDTH) * ACAQAlgorithmUI.SLOT_UI_WIDTH;
+        int minX = (int) (newEntryLocationX * 1.0 / ACAQAlgorithmUI.SLOT_UI_WIDTH) * ACAQAlgorithmUI.SLOT_UI_WIDTH;
         minX += ACAQAlgorithmUI.SLOT_UI_WIDTH * 4;
         if (rightMostSource != null) {
             minX = Math.max(minX, rightMostSource.getX() + rightMostSource.getWidth() + 2 * ACAQAlgorithmUI.SLOT_UI_WIDTH);
