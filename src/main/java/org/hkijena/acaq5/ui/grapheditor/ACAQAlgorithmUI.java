@@ -5,6 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQIOSlotConfiguration;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
+import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
@@ -119,10 +120,26 @@ public class ACAQAlgorithmUI extends JPanel {
 
         menu.addSeparator();
 
-        JMenuItem deleteButton = new JMenuItem("Delete algorithm", UIUtils.getIconFromResources("delete.png"));
-        deleteButton.setEnabled(graphUI.getAlgorithmGraph().canUserDelete(algorithm));
-        deleteButton.addActionListener(e -> removeAlgorithm());
-        menu.add(deleteButton);
+        if(algorithm instanceof ACAQProjectCompartment) {
+            JMenuItem deleteButton = new JMenuItem("Delete compartment", UIUtils.getIconFromResources("delete.png"));
+            deleteButton.addActionListener(e -> removeCompartment());
+            menu.add(deleteButton);
+        }
+        else {
+            JMenuItem deleteButton = new JMenuItem("Delete algorithm", UIUtils.getIconFromResources("delete.png"));
+            deleteButton.setEnabled(graphUI.getAlgorithmGraph().canUserDelete(algorithm));
+            deleteButton.addActionListener(e -> removeAlgorithm());
+            menu.add(deleteButton);
+        }
+
+    }
+
+    private void removeCompartment() {
+        ACAQProjectCompartment compartment = (ACAQProjectCompartment) algorithm;
+        if (JOptionPane.showConfirmDialog(this, "Do you really want to delete the compartment '" + compartment.getName() + "'?\n" +
+                "You will lose all nodes stored in this compartment.", "Delete compartment", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+            compartment.getProject().removeCompartment(compartment);
+        }
     }
 
     private void removeAlgorithm() {
