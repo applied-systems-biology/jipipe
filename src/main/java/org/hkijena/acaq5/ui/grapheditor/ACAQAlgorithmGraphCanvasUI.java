@@ -125,12 +125,15 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
      * Auto-layouts all UIs
      */
     public void autoLayoutAll() {
+        int backup = newEntryLocationX;
+        newEntryLocationX = 0;
         for (ACAQAlgorithm algorithm : ImmutableList.copyOf(nodeUIs.keySet())) {
             algorithm.setLocationWithin(compartment, null);
             remove(nodeUIs.get(algorithm));
         }
         nodeUIs.clear();
         addNewNodes();
+        newEntryLocationX = backup;
     }
 
     private void autoPlaceAlgorithm(ACAQAlgorithmUI ui) {
@@ -150,10 +153,10 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         }
 
         // Auto-place
-        int minX = 4 * ACAQAlgorithmUI.SLOT_UI_WIDTH;
+        int minX = (int)(newEntryLocationX * 1.0 / ACAQAlgorithmUI.SLOT_UI_WIDTH) * ACAQAlgorithmUI.SLOT_UI_WIDTH;
+        minX += ACAQAlgorithmUI.SLOT_UI_WIDTH * 4;
         if (rightMostSource != null) {
-            minX += rightMostSource.getX() + rightMostSource.getWidth();
-            minX += 4 * ACAQAlgorithmUI.SLOT_UI_WIDTH;
+            minX = Math.max(minX, rightMostSource.getX() + rightMostSource.getWidth() + 2 * ACAQAlgorithmUI.SLOT_UI_WIDTH);
         }
 
         int minY = Math.max(ui.getY(), 2 * ACAQAlgorithmUI.SLOT_UI_HEIGHT);
