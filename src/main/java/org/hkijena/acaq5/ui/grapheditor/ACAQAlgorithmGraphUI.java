@@ -227,10 +227,14 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
     @Subscribe
     public void onAlgorithmSelected(AlgorithmSelectedEvent event) {
         if (event.getUi() != null) {
-            if (event.isAddToSelection())
-                addToSelection(event.getUi());
-            else
-                selectOnly(event.getUi());
+            if (!selection.contains(event.getUi())) {
+                if (event.isAddToSelection())
+                    addToSelection(event.getUi());
+                else
+                    selectOnly(event.getUi());
+            } else {
+                removeFromSelection(event.getUi());
+            }
         } else {
             clearSelection();
         }
@@ -257,6 +261,24 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
         } else {
             clearSelection();
             addToSelection(ui);
+        }
+    }
+
+    public void removeFromSelection(ACAQAlgorithmUI ui) {
+        if (selection.contains(ui)) {
+            selection.remove(ui);
+            ui.setSelected(false);
+
+            int dividerLocation = splitPane.getDividerLocation();
+            if (selection.isEmpty()) {
+                splitPane.setRightComponent(documentationPanel);
+            } else if (selection.size() == 1) {
+                splitPane.setRightComponent(new ACAQSingleAlgorithmSelectionPanelUI(getWorkbenchUI(), algorithmGraph, ui.getAlgorithm()));
+            } else {
+                splitPane.setRightComponent(new ACAQMultiAlgorithmSelectionPanelUI(getWorkbenchUI(), algorithmGraph,
+                        selection.stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet())));
+            }
+            splitPane.setDividerLocation(dividerLocation);
         }
     }
 
