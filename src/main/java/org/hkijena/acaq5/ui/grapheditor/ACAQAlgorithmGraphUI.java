@@ -7,6 +7,8 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
+import org.hkijena.acaq5.api.events.AlgorithmRegistryChangedEvent;
+import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
@@ -53,6 +55,8 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
         this.algorithmGraph = algorithmGraph;
         this.compartment = compartment;
         initialize();
+        reloadMenuBar();
+        ACAQAlgorithmRegistry.getInstance().getEventBus().register(this);
     }
 
     private void initialize() {
@@ -86,8 +90,17 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
         add(splitPane, BorderLayout.CENTER);
 
         add(menuBar, BorderLayout.NORTH);
-        initializeToolbar();
         algorithmGraph.getEventBus().register(this);
+    }
+
+    @Subscribe
+    public void onAlgorithmRegistryChanged(AlgorithmRegistryChangedEvent event) {
+        reloadMenuBar();
+    }
+
+    public void reloadMenuBar() {
+        menuBar.removeAll();
+        initializeToolbar();
     }
 
     protected void initializeToolbar() {

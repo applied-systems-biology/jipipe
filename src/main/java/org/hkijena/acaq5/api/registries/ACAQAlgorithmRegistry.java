@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.api.registries;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
@@ -8,6 +9,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQDefaultAlgorithmDeclaration;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.traits.*;
+import org.hkijena.acaq5.api.events.AlgorithmRegistryChangedEvent;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 
 import java.util.*;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 public class ACAQAlgorithmRegistry {
     private Map<String, ACAQAlgorithmDeclaration> registeredAlgorithms = new HashMap<>();
     private Set<ACAQAlgorithmRegistrationTask> registrationTasks = new HashSet<>();
+    private EventBus eventBus = new EventBus();
 
     public ACAQAlgorithmRegistry() {
 
@@ -75,6 +78,7 @@ public class ACAQAlgorithmRegistry {
      */
     public void register(ACAQAlgorithmDeclaration declaration) {
         registeredAlgorithms.put(declaration.getId(), declaration);
+        eventBus.post(new AlgorithmRegistryChangedEvent());
         runRegistrationTasks();
     }
 
@@ -191,6 +195,10 @@ public class ACAQAlgorithmRegistry {
      */
     public boolean hasAlgorithmWithId(String id) {
         return registeredAlgorithms.containsKey(id);
+    }
+
+    public EventBus getEventBus() {
+        return eventBus;
     }
 
     public static ACAQAlgorithmRegistry getInstance() {
