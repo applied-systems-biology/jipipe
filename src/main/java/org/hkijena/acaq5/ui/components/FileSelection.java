@@ -100,7 +100,7 @@ public class FileSelection extends JPanel {
         });
     }
 
-    private void selectFromFilesystem() {
+    public void selectFromFilesystem() {
         if (ioMode == IOMode.Open) {
             if (getFileChooser().showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 pathEdit.setText(getFileChooser().getSelectedFile().toString());

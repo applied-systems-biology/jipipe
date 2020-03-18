@@ -6,7 +6,9 @@ import org.hkijena.acaq5.filesystem.api.algorithms.*;
 import org.hkijena.acaq5.filesystem.api.annotation.ACAQFileAnnotationGenerator;
 import org.hkijena.acaq5.filesystem.api.annotation.ACAQFolderAnnotationGenerator;
 import org.hkijena.acaq5.filesystem.api.datasources.ACAQFileDataSource;
+import org.hkijena.acaq5.filesystem.api.datasources.ACAQFileListDataSource;
 import org.hkijena.acaq5.filesystem.api.datasources.ACAQFolderDataSource;
+import org.hkijena.acaq5.filesystem.api.datasources.ACAQFolderListDataSource;
 import org.hkijena.acaq5.filesystem.api.dataypes.ACAQFileData;
 import org.hkijena.acaq5.filesystem.api.dataypes.ACAQFolderData;
 import org.hkijena.acaq5.filesystem.ui.resultanalysis.FilesystemDataSlotCellUI;
@@ -61,7 +63,9 @@ public class ACAQFilesystemExtensionService extends AbstractService implements A
                 ResourceUtils.getPluginResource("icons/data-types/folder.png"));
 
         registryService.getAlgorithmRegistry().register(ACAQFileDataSource.class);
+        registryService.getAlgorithmRegistry().register(ACAQFileListDataSource.class);
         registryService.getAlgorithmRegistry().register(ACAQFolderDataSource.class);
+        registryService.getAlgorithmRegistry().register(ACAQFolderListDataSource.class);
 
         registryService.getAlgorithmRegistry().register(ACAQFilterFiles.class);
         registryService.getAlgorithmRegistry().register(ACAQFilterFolders.class);

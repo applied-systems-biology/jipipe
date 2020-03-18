@@ -4,7 +4,9 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.extension.ui.parametereditors.FilePathParameterSettings;
 import org.hkijena.acaq5.filesystem.api.dataypes.ACAQFolderData;
+import org.hkijena.acaq5.ui.components.FileSelection;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,6 +37,7 @@ public class ACAQFolderDataSource extends ACAQAlgorithm {
 
     @ACAQParameter("folder-path")
     @ACAQDocumentation(name = "Folder path")
+    @FilePathParameterSettings(ioMode = FileSelection.IOMode.Open, pathMode = FileSelection.PathMode.DirectoriesOnly)
     public Path getFolderPath() {
         return folderPath;
     }

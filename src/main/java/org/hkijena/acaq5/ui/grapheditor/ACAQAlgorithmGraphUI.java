@@ -24,6 +24,7 @@ import org.hkijena.acaq5.utils.UIUtils;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.dnd.DropTarget;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -79,6 +80,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
         graphUI.getEventBus().register(this);
         graphUI.addMouseListener(this);
         graphUI.addMouseMotionListener(this);
+        ACAQAlgorithmGraphUIDragAndDrop.install(graphUI);
         scrollPane = new JScrollPane(graphUI);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
