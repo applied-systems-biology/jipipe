@@ -41,6 +41,7 @@ public class ACAQProject implements ACAQValidatable {
     private ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
     private ACAQAlgorithmGraph compartmentGraph = new ACAQAlgorithmGraph();
     private BiMap<String, ACAQProjectCompartment> compartments = HashBiMap.create();
+    private ACAQProjectMetadata metadata = new ACAQProjectMetadata();
 
     public ACAQProject() {
         compartmentGraph.getEventBus().register(this);
@@ -156,6 +157,10 @@ public class ACAQProject implements ACAQValidatable {
         eventBus.post(new CompartmentRemovedEvent(compartment));
     }
 
+    public ACAQProjectMetadata getMetadata() {
+        return metadata;
+    }
+
     public static ACAQProject loadProject(Path fileName) throws IOException {
         return JsonUtils.getObjectMapper().readerFor(ACAQProject.class).readValue(fileName.toFile());
     }
@@ -165,6 +170,7 @@ public class ACAQProject implements ACAQValidatable {
         public void serialize(ACAQProject project, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("acaq:project-type", "project");
+            jsonGenerator.writeObjectField("metadata", project.metadata);
             jsonGenerator.writeObjectField("algorithm-graph", project.graph);
             jsonGenerator.writeFieldName("compartments");
             jsonGenerator.writeStartObject();
@@ -181,6 +187,10 @@ public class ACAQProject implements ACAQValidatable {
             ACAQProject project = new ACAQProject();
 
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
+
+            if(node.has("metadata")) {
+                project.metadata = JsonUtils.getObjectMapper().readerFor(ACAQProjectMetadata.class).readValue(node.get("metadata"));
+            }
 
             // We must first load the graph, as we can infer compartments later
             project.graph.fromJson(node.get("algorithm-graph"));

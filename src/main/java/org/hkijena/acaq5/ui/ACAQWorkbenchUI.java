@@ -10,6 +10,7 @@ import org.hkijena.acaq5.ui.compartments.ACAQCompartmentUI;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.running.ACAQRunSettingsUI;
 import org.hkijena.acaq5.ui.running.ACAQRunnerQueueUI;
+import org.hkijena.acaq5.ui.settings.ACAQProjectSettingsUI;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXStatusBar;
 import org.scijava.Context;
@@ -28,7 +29,6 @@ public class ACAQWorkbenchUI extends JPanel {
     private ACAQWorkbenchWindow window;
     private ACAQProject project;
     private ACAQGUICommand command;
-    private ACAQInfoUI infoUI;
     private JLabel statusText;
     private Context context;
 
@@ -58,19 +58,22 @@ public class ACAQWorkbenchUI extends JPanel {
     private void initialize() {
         setLayout(new BorderLayout());
 
-        infoUI = new ACAQInfoUI(this);
-
         documentTabPane = new DocumentTabPane();
         documentTabPane.addSingletonTab("INTRODUCTION",
                 "Introduction",
                 UIUtils.getIconFromResources("info.png"),
-                infoUI,
+                new ACAQInfoUI(this),
                 false);
         documentTabPane.addSingletonTab("COMPARTMENT_EDITOR",
                 "Compartments",
                 UIUtils.getIconFromResources("connect.png"),
                 new ACAQCompartmentGraphUI(this),
                 false);
+        documentTabPane.addSingletonTab("PROJECT_SETTINGS",
+                "Project settings",
+                UIUtils.getIconFromResources("wrench.png"),
+                new ACAQProjectSettingsUI(this),
+                true);
         documentTabPane.selectSingletonTab("INTRODUCTION");
         add(documentTabPane, BorderLayout.CENTER);
 
@@ -162,6 +165,14 @@ public class ACAQWorkbenchUI extends JPanel {
         saveProjectAsButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK + KeyEvent.SHIFT_DOWN_MASK));
         saveProjectAsButton.addActionListener(e -> window.saveProjectAs(false));
         projectMenu.add(saveProjectAsButton);
+
+        projectMenu.addSeparator();
+
+        JMenuItem openProjectSettingsButton = new JMenuItem("Project settings", UIUtils.getIconFromResources("wrench.png"));
+        openProjectSettingsButton.setToolTipText("Opens the project settings");
+        openProjectSettingsButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK + KeyEvent.ALT_DOWN_MASK));
+        openProjectSettingsButton.addActionListener(e -> documentTabPane.selectSingletonTab("PROJECT_SETTINGS"));
+        projectMenu.add(openProjectSettingsButton);
 
         menu.add(projectMenu);
 
