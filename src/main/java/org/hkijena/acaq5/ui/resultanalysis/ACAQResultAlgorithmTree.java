@@ -11,9 +11,12 @@ import org.hkijena.acaq5.utils.UIUtils;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
+import java.util.List;
 
 public class ACAQResultAlgorithmTree extends ACAQUIPanel {
     private ACAQRun run;
@@ -30,7 +33,7 @@ public class ACAQResultAlgorithmTree extends ACAQUIPanel {
     private void refreshTree() {
         int scrollPosition = treeScollPane.getVerticalScrollBar().getValue();
 
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode();
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode(null);
         for (ACAQProjectCompartment compartment : run.getProject().getCompartmentGraph().traverseAlgorithms()
                 .stream().map(a -> (ACAQProjectCompartment) a).collect(Collectors.toList())) {
             DefaultMutableTreeNode compartmentNode = new DefaultMutableTreeNode(compartment);
@@ -53,6 +56,8 @@ public class ACAQResultAlgorithmTree extends ACAQUIPanel {
         DefaultTreeModel model = new DefaultTreeModel(root);
         tree.setModel(model);
         UIUtils.expandAllTree(tree);
+
+        tree.getSelectionModel().setSelectionPath(new TreePath(root));
 
         treeScollPane.getVerticalScrollBar().setValue(scrollPosition);
     }

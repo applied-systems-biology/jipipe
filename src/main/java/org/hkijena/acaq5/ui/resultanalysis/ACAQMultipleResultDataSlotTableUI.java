@@ -1,8 +1,11 @@
 package org.hkijena.acaq5.ui.resultanalysis;
 
 import org.hkijena.acaq5.api.ACAQRun;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
+import org.hkijena.acaq5.api.data.ACAQMergedExportedDataTable;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
@@ -18,19 +21,20 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
+import java.util.List;
 
-public class ACAQResultDataSlotUI extends ACAQUIPanel {
+public class ACAQMultipleResultDataSlotTableUI extends ACAQUIPanel {
 
     private ACAQRun run;
-    private ACAQDataSlot slot;
+    private final List<ACAQDataSlot> slots;
     private JXTable table;
-    private ACAQExportedDataTable dataTable;
+    private ACAQMergedExportedDataTable mergedDataTable;
     private FormPanel rowUIList;
 
-    public ACAQResultDataSlotUI(ACAQWorkbenchUI workbenchUI, ACAQRun run, ACAQDataSlot slot) {
+    public ACAQMultipleResultDataSlotTableUI(ACAQWorkbenchUI workbenchUI, ACAQRun run, List<ACAQDataSlot> slots) {
         super(workbenchUI);
         this.run = run;
-        this.slot = slot;
+        this.slots = slots;
 
         initialize();
         reloadTable();
@@ -41,7 +45,9 @@ public class ACAQResultDataSlotUI extends ACAQUIPanel {
         table = new JXTable();
         table.setRowHeight(25);
         table.setDefaultRenderer(Path.class, new ACAQRowLocationTableCellRenderer());
-        table.setDefaultRenderer(ACAQExportedDataTable.Row.class, new ACAQRowDataTableCellRenderer(getWorkbenchUI(), slot));
+        table.setDefaultRenderer(ACAQAlgorithm.class, new ACAQAlgorithmTableCellRenderer());
+        table.setDefaultRenderer(ACAQProjectCompartment.class, new ACAQProjectCompartmentTableCellRenderer());
+        table.setDefaultRenderer(ACAQExportedDataTable.Row.class, new ACAQRowDataMergedTableCellRenderer(getWorkbenchUI()));
         table.setDefaultRenderer(ACAQTrait.class, new ACAQTraitTableCellRenderer());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
@@ -71,7 +77,8 @@ public class ACAQResultDataSlotUI extends ACAQUIPanel {
 
     private void handleSlotRowDefaultAction(int selectedRow) {
         int row = table.getRowSorter().convertRowIndexToModel(selectedRow);
-        ACAQExportedDataTable.Row rowInstance = dataTable.getRowList().get(row);
+        ACAQExportedDataTable.Row rowInstance = mergedDataTable.getRowList().get(row);
+        ACAQDataSlot slot = mergedDataTable.getSlot(row);
         ACAQResultDataSlotRowUI ui = ACAQUIDatatypeRegistry.getInstance().getUIForResultSlot(getWorkbenchUI(), slot, rowInstance);
         ui.handleDefaultAction();
     }
@@ -80,7 +87,8 @@ public class ACAQResultDataSlotUI extends ACAQUIPanel {
         rowUIList.clear();
         for (int viewRow : selectedRows) {
             int row = table.getRowSorter().convertRowIndexToModel(viewRow);
-            ACAQExportedDataTable.Row rowInstance = dataTable.getRowList().get(row);
+            ACAQExportedDataTable.Row rowInstance = mergedDataTable.getRowList().get(row);
+            ACAQDataSlot slot = mergedDataTable.getSlot(row);
             JLabel nameLabel = new JLabel(rowInstance.getLocation().toString(), ACAQUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()), JLabel.LEFT);
             nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot));
             ACAQResultDataSlotRowUI rowUI = ACAQUIDatatypeRegistry.getInstance().getUIForResultSlot(getWorkbenchUI(), slot, rowInstance);
@@ -89,19 +97,23 @@ public class ACAQResultDataSlotUI extends ACAQUIPanel {
     }
 
     private void reloadTable() {
-        dataTable = ACAQExportedDataTable.loadFromJson(slot.getStoragePath().resolve("data-table.json"));
-        table.setModel(dataTable);
+        mergedDataTable = new ACAQMergedExportedDataTable();
+        for (ACAQDataSlot slot : this.slots) {
+            ACAQExportedDataTable dataTable = ACAQExportedDataTable.loadFromJson(slot.getStoragePath().resolve("data-table.json"));
+            mergedDataTable.add(getProject(), slot, dataTable);
+        }
+        table.setModel(mergedDataTable);
 
         TableColumnModel columnModel = table.getColumnModel();
         for (int i = 0; i < columnModel.getColumnCount(); ++i) {
             TableColumn column = columnModel.getColumn(i);
-            column.setHeaderRenderer(new ACAQDataSlotTableColumnHeaderRenderer(dataTable));
+            column.setHeaderRenderer(new ACAQMergedDataSlotTableColumnHeaderRenderer(mergedDataTable));
         }
         table.setAutoCreateRowSorter(true);
 
         table.packAll();
 
-        if (dataTable.getRowCount() == 1) {
+        if (mergedDataTable.getRowCount() == 1) {
             table.setRowSelectionInterval(0, 0);
         }
     }

@@ -1,7 +1,10 @@
 package org.hkijena.acaq5.ui.resultanalysis;
 
 import org.hkijena.acaq5.api.ACAQRun;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.data.ACAQMergedExportedDataTable;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -12,6 +15,9 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ACAQResultUI extends ACAQUIPanel {
     private ACAQRun run;
@@ -22,6 +28,7 @@ public class ACAQResultUI extends ACAQUIPanel {
         super(workbenchUI);
         this.run = run;
         initialize();
+        showAllDataSlots();
     }
 
     private void initialize() {
@@ -48,14 +55,65 @@ public class ACAQResultUI extends ACAQUIPanel {
                 if (userObject instanceof ACAQDataSlot) {
                     showDataSlot((ACAQDataSlot) userObject);
                 }
+                else if(userObject instanceof ACAQProjectCompartment) {
+                    showDataSlotsOfCompartment((ACAQProjectCompartment)userObject);
+                }
+                else if(userObject instanceof ACAQAlgorithm) {
+                    showDataSlotsOfAlgorithm((ACAQAlgorithm)userObject);
+                }
+                else {
+                    showAllDataSlots();
+                }
             }
         });
 
         initializeToolbar();
     }
 
+    private void showAllDataSlots() {
+        List<ACAQDataSlot> result = new ArrayList<>();
+        for (ACAQAlgorithm algorithm : run.getGraph().getAlgorithmNodes().values()) {
+            for (ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
+                if (Files.exists(outputSlot.getStoragePath().resolve("data-table.json"))) {
+                    result.add(outputSlot);
+                }
+            }
+        }
+        showDataSlots(result);
+    }
+
+    private void showDataSlotsOfAlgorithm(ACAQAlgorithm algorithm) {
+        List<ACAQDataSlot> result = new ArrayList<>();
+        for (ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
+            if (Files.exists(outputSlot.getStoragePath().resolve("data-table.json"))) {
+                result.add(outputSlot);
+            }
+        }
+        showDataSlots(result);
+    }
+
+    private void showDataSlotsOfCompartment(ACAQProjectCompartment compartment) {
+        List<ACAQDataSlot> result = new ArrayList<>();
+        for (ACAQAlgorithm algorithm : run.getGraph().getAlgorithmNodes().values()) {
+            if(algorithm.getCompartment().equals(compartment.getProjectCompartmentId())) {
+                for (ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
+                    if (Files.exists(outputSlot.getStoragePath().resolve("data-table.json"))) {
+                        result.add(outputSlot);
+                    }
+                }
+            }
+        }
+        showDataSlots(result);
+    }
+
+    private void showDataSlots(List<ACAQDataSlot> slots) {
+        ACAQMultipleResultDataSlotTableUI ui = new ACAQMultipleResultDataSlotTableUI(getWorkbenchUI(), run, slots);
+        splitPane.setRightComponent(ui);
+        revalidate();
+    }
+
     private void showDataSlot(ACAQDataSlot dataSlot) {
-        ACAQResultDataSlotUI ui = new ACAQResultDataSlotUI(getWorkbenchUI(), run, dataSlot);
+        ACAQResultDataSlotTableUI ui = new ACAQResultDataSlotTableUI(getWorkbenchUI(), run, dataSlot);
         splitPane.setRightComponent(ui);
         revalidate();
     }
