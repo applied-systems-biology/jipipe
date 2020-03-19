@@ -21,10 +21,7 @@ import org.hkijena.acaq5.api.data.traits.ACAQMutableTraitConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQTraitConfiguration;
 import org.hkijena.acaq5.api.data.traits.ConfigTraits;
 import org.hkijena.acaq5.api.events.*;
-import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterHolder;
-import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
+import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extension.ui.parametereditors.StringParameterSettings;
 import org.hkijena.acaq5.utils.JsonUtils;
@@ -40,7 +37,7 @@ import java.util.*;
  * It is part of the {@link ACAQAlgorithmGraph}
  */
 @JsonSerialize(using = ACAQAlgorithm.Serializer.class)
-public abstract class ACAQAlgorithm implements ACAQValidatable {
+public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHolder {
     private ACAQAlgorithmDeclaration declaration;
     private ACAQSlotConfiguration slotConfiguration;
     private ACAQTraitConfiguration traitConfiguration;
@@ -54,6 +51,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
     private String compartment;
     private Set<String> visibleCompartments = new HashSet<>();
     private ACAQAlgorithmGraph graph;
+    private Path workDirectory;
 
     /**
      * Initializes this algorithm with a custom provided slot configuration and trait configuration
@@ -178,7 +176,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
     @ACAQParameter("name")
     public void setCustomName(String customName) {
         this.customName = customName;
-        eventBus.post(new AlgorithmNameChanged(this));
+        getEventBus().post(new ParameterChangedEvent(this, "name"));
     }
 
     public ACAQAlgorithmCategory getCategory() {
@@ -429,6 +427,15 @@ public abstract class ACAQAlgorithm implements ACAQValidatable {
     @ACAQParameter("description")
     public void setCustomDescription(String customDescription) {
         this.customDescription = customDescription;
+    }
+
+    public Path getWorkDirectory() {
+        return workDirectory;
+    }
+
+    public void setWorkDirectory(Path workDirectory) {
+        this.workDirectory = workDirectory;
+        eventBus.post(new WorkDirectoryChangedEvent(workDirectory));
     }
 
     public static class Serializer extends JsonSerializer<ACAQAlgorithm> {

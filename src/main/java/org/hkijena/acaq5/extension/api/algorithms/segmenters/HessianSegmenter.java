@@ -11,6 +11,7 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.traits.RemovesTrait;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
@@ -103,6 +104,7 @@ public class HessianSegmenter extends ACAQIteratingAlgorithm {
     @ACAQParameter("smoothing")
     public void setSmoothing(double smoothing) {
         this.smoothing = smoothing;
+        getEventBus().post(new ParameterChangedEvent(this, "smoothing"));
     }
 
     @ACAQParameter("gradient-radius")
@@ -114,6 +116,7 @@ public class HessianSegmenter extends ACAQIteratingAlgorithm {
     @ACAQParameter("gradient-radius")
     public void setGradientRadius(double gradientRadius) {
         this.gradientRadius = gradientRadius;
+        getEventBus().post(new ParameterChangedEvent(this, "gradient-radius"));
     }
 
     @ACAQSubParameters("auto-thresholding")

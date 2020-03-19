@@ -1,5 +1,7 @@
 package org.hkijena.acaq5.extension.ui.parametereditors;
 
+import com.google.common.eventbus.Subscribe;
+import org.hkijena.acaq5.api.events.WorkDirectoryChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.FileSelection;
@@ -9,9 +11,14 @@ import java.awt.*;
 
 public class FilePathParameterEditorUI extends ACAQParameterEditorUI {
 
+    private boolean skipNextReload = false;
+    private boolean isReloading = false;
+    private FileSelection fileSelection;
+
     public FilePathParameterEditorUI(ACAQWorkbenchUI workbenchUI, ACAQParameterAccess parameterAccess) {
         super(workbenchUI, parameterAccess);
         initialize();
+        getWorkbenchUI().getProject().getEventBus().register(this);
     }
 
     @Override
@@ -19,9 +26,20 @@ public class FilePathParameterEditorUI extends ACAQParameterEditorUI {
         return true;
     }
 
+    @Override
+    public void reload() {
+        if (skipNextReload) {
+            skipNextReload = false;
+            return;
+        }
+        isReloading = true;
+        fileSelection.setPath(getParameterAccess().get());
+        isReloading = false;
+    }
+
     private void initialize() {
         setLayout(new BorderLayout());
-        FileSelection fileSelection = new FileSelection(FileSelection.IOMode.Open, FileSelection.PathMode.FilesOnly);
+        fileSelection = new FileSelection(FileSelection.IOMode.Open, FileSelection.PathMode.FilesOnly);
         FilePathParameterSettings settings = getParameterAccess().getAnnotationOfType(FilePathParameterSettings.class);
         if (settings != null) {
             fileSelection.setIoMode(settings.ioMode());
@@ -31,9 +49,19 @@ public class FilePathParameterEditorUI extends ACAQParameterEditorUI {
         fileSelection.setPath(getParameterAccess().get());
         add(fileSelection, BorderLayout.CENTER);
         fileSelection.addActionListener(e -> {
-            if (!getParameterAccess().set(fileSelection.getPath())) {
-                fileSelection.setPath(fileSelection.getPath());
+            if (!isReloading) {
+                skipNextReload = true;
+                if (!getParameterAccess().set(fileSelection.getPath())) {
+                    skipNextReload = false;
+                    reload();
+                }
             }
         });
+    }
+
+    @Subscribe
+    public void onWorkDirectoryChanged(WorkDirectoryChangedEvent event) {
+        if (event.getWorkDirectory() != null)
+            fileSelection.getFileChooser().setCurrentDirectory(event.getWorkDirectory().toFile());
     }
 }

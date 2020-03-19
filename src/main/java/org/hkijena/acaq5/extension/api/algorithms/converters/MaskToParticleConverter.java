@@ -6,6 +6,7 @@ import ij.plugin.frame.RoiManager;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQROIData;
@@ -68,6 +69,7 @@ public class MaskToParticleConverter extends ACAQIteratingAlgorithm {
     @ACAQParameter("min-particle-size")
     public void setMinParticleSize(double minParticleSize) {
         this.minParticleSize = minParticleSize;
+        getEventBus().post(new ParameterChangedEvent(this, "min-particle-size"));
     }
 
     @ACAQParameter("max-particle-size")
@@ -79,6 +81,7 @@ public class MaskToParticleConverter extends ACAQIteratingAlgorithm {
     @ACAQParameter("max-particle-size")
     public void setMaxParticleSize(double maxParticleSize) {
         this.maxParticleSize = maxParticleSize;
+        getEventBus().post(new ParameterChangedEvent(this, "max-particle-size"));
     }
 
     @ACAQParameter("min-particle-circularity")
@@ -92,6 +95,7 @@ public class MaskToParticleConverter extends ACAQIteratingAlgorithm {
         if (minParticleCircularity < 0 || minParticleCircularity > 1)
             return false;
         this.minParticleCircularity = minParticleCircularity;
+        getEventBus().post(new ParameterChangedEvent(this, "min-particle-circularity"));
         return true;
     }
 
@@ -106,6 +110,7 @@ public class MaskToParticleConverter extends ACAQIteratingAlgorithm {
         if (maxParticleCircularity < 0 || maxParticleCircularity > 1)
             return false;
         this.maxParticleCircularity = maxParticleCircularity;
+        getEventBus().post(new ParameterChangedEvent(this, "max-particle-circularity"));
         return true;
     }
 
@@ -118,6 +123,7 @@ public class MaskToParticleConverter extends ACAQIteratingAlgorithm {
     @ACAQParameter("exclude-edges")
     public void setExcludeEdges(boolean excludeEdges) {
         this.excludeEdges = excludeEdges;
+        getEventBus().post(new ParameterChangedEvent(this, "exclude-edges"));
     }
 
     @Override

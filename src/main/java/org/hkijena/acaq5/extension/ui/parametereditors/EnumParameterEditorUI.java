@@ -12,9 +12,14 @@ import java.awt.*;
  */
 public class EnumParameterEditorUI extends ACAQParameterEditorUI {
 
+    private boolean skipNextReload = false;
+    private boolean isReloading = false;
+    private JComboBox<Object> comboBox;
+
     public EnumParameterEditorUI(ACAQWorkbenchUI workbenchUI, ACAQParameterAccess parameterAccess) {
         super(workbenchUI, parameterAccess);
         initialize();
+        reload();
     }
 
     @Override
@@ -22,14 +27,29 @@ public class EnumParameterEditorUI extends ACAQParameterEditorUI {
         return true;
     }
 
+    @Override
+    public void reload() {
+        if (skipNextReload) {
+            skipNextReload = false;
+            return;
+        }
+        isReloading = true;
+        comboBox.setSelectedItem(getParameterAccess().get());
+        isReloading = false;
+    }
+
     private void initialize() {
         setLayout(new BorderLayout());
         Object[] values = getParameterAccess().getFieldClass().getEnumConstants();
-        JComboBox<Object> comboBox = new JComboBox<>(values);
+        comboBox = new JComboBox<>(values);
         comboBox.setSelectedItem(getParameterAccess().get());
         comboBox.addActionListener(e -> {
-            if (!getParameterAccess().set(comboBox.getSelectedItem())) {
-                comboBox.setSelectedItem(getParameterAccess().get());
+            if (!isReloading) {
+                skipNextReload = true;
+                if (!getParameterAccess().set(comboBox.getSelectedItem())) {
+                    skipNextReload = false;
+                    reload();
+                }
             }
         });
         add(comboBox, BorderLayout.CENTER);

@@ -9,6 +9,7 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.traits.BadForTrait;
 import org.hkijena.acaq5.api.data.traits.GoodForTrait;
 import org.hkijena.acaq5.api.data.traits.RemovesTrait;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extension.api.traits.bioobject.count.ClusterBioObjects;
@@ -72,6 +73,7 @@ public class WatershedMaskEnhancer extends ACAQIteratingAlgorithm {
     @ACAQParameter("erosion-iterations")
     public void setErosionIterations(int erosionIterations) {
         this.erosionIterations = erosionIterations;
+        getEventBus().post(new ParameterChangedEvent(this, "erosion-iterations"));
     }
 
     @Override

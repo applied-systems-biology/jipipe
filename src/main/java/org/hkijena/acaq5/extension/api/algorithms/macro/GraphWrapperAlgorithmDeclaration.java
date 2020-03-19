@@ -2,6 +2,7 @@ package org.hkijena.acaq5.extension.api.algorithms.macro;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQProjectMetadata;
 import org.hkijena.acaq5.api.ACAQValidatable;
@@ -9,10 +10,8 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.traits.ACAQDataSlotTraitConfiguration;
-import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQParameterCollectionVisibilities;
-import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
+import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
@@ -22,8 +21,9 @@ import org.hkijena.acaq5.utils.StringUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQValidatable {
+public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQValidatable, ACAQParameterHolder {
 
+    private EventBus eventBus = new EventBus();
     private String id;
     private ACAQProjectMetadata metadata = new ACAQProjectMetadata();
     private ACAQAlgorithmCategory category = ACAQAlgorithmCategory.Miscellaneous;
@@ -50,6 +50,7 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     @JsonSetter("id")
     public void setId(String id) {
         this.id = id;
+        getEventBus().post(new ParameterChangedEvent(this, "id"));
     }
 
     @Override
@@ -89,6 +90,7 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     @JsonSetter("category")
     public void setCategory(ACAQAlgorithmCategory category) {
         this.category = category;
+        getEventBus().post(new ParameterChangedEvent(this, "category"));
     }
 
     @Override
@@ -142,6 +144,7 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
         for (ACAQTraitDeclarationRef declarationRef : ids) {
             preferredTraits.add(declarationRef.getDeclaration());
         }
+        getEventBus().post(new ParameterChangedEvent(this, "preferred-traits"));
     }
 
     @ACAQDocumentation(name = "Unwanted annotations", description = "Marks the algorithm as bad for handling the specified annotations")
@@ -158,6 +161,7 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
         for (ACAQTraitDeclarationRef declarationRef : ids) {
             unwantedTraits.add(declarationRef.getDeclaration());
         }
+        getEventBus().post(new ParameterChangedEvent(this, "unwanted-traits"));
     }
 
     @JsonGetter("metadata")
@@ -247,5 +251,11 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     @JsonSetter("parameter-visibilities")
     public void setParameterCollectionVisibilities(ACAQParameterCollectionVisibilities parameterCollectionVisibilities) {
         this.parameterCollectionVisibilities = parameterCollectionVisibilities;
+        getEventBus().post(new ParameterChangedEvent(this, "parameter-visibilities"));
+    }
+
+    @Override
+    public EventBus getEventBus() {
+        return eventBus;
     }
 }

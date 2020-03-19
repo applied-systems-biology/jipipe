@@ -1,5 +1,7 @@
 package org.hkijena.acaq5.api;
 
+import com.google.common.eventbus.EventBus;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extension.ui.parametereditors.FilePathParameterSettings;
 import org.hkijena.acaq5.ui.components.FileSelection;
@@ -7,6 +9,7 @@ import org.hkijena.acaq5.ui.components.FileSelection;
 import java.nio.file.Path;
 
 public class ACAQMutableRunConfiguration implements ACAQRunConfiguration {
+    private EventBus eventBus = new EventBus();
     private Path outputPath;
     private boolean flushingEnabled = true;
     private String endAlgorithmId;
@@ -24,6 +27,7 @@ public class ACAQMutableRunConfiguration implements ACAQRunConfiguration {
     @ACAQParameter("output-path")
     public void setOutputPath(Path outputPath) {
         this.outputPath = outputPath;
+        getEventBus().post(new ParameterChangedEvent(this, "output-path"));
     }
 
     @Override
@@ -60,5 +64,10 @@ public class ACAQMutableRunConfiguration implements ACAQRunConfiguration {
 
     public void setEndAlgorithmId(String endAlgorithmId) {
         this.endAlgorithmId = endAlgorithmId;
+    }
+
+    @Override
+    public EventBus getEventBus() {
+        return eventBus;
     }
 }

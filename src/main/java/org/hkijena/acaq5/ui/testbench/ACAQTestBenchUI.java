@@ -10,7 +10,6 @@ import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.ConfirmingButton;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
-import org.hkijena.acaq5.ui.events.ReloadSettingsRequestedEvent;
 import org.hkijena.acaq5.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.acaq5.ui.events.RunUIWorkerInterruptedEvent;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultUI;
@@ -111,7 +110,6 @@ public class ACAQTestBenchUI extends ACAQUIPanel {
         if (backupSelection.getSelectedItem() instanceof ACAQTestbenchSnapshot) {
             ACAQTestbenchSnapshot backup = (ACAQTestbenchSnapshot) backupSelection.getSelectedItem();
             backup.getAlgorithmBackup(testbench.getBenchedAlgorithm()).restoreParameters(testbench.getTargetAlgorithm());
-            testbench.getTargetAlgorithm().getEventBus().post(new ReloadSettingsRequestedEvent(testbench.getTargetAlgorithm()));
             getWorkbenchUI().sendStatusBarText("Copied parameters from testbench to " + testbench.getTargetAlgorithm().getName());
         }
     }

@@ -7,6 +7,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.traits.GoodForTrait;
 import org.hkijena.acaq5.api.data.traits.RemovesTrait;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.UnlabeledBioObjects;
@@ -68,6 +69,7 @@ public class IlluminationCorrectionEnhancer extends ACAQIteratingAlgorithm {
     @ACAQParameter("gaussian-sigma")
     public void setGaussianSigma(int gaussianSigma) {
         this.gaussianSigma = gaussianSigma;
+        getEventBus().post(new ParameterChangedEvent(this, "gaussian-sigma"));
     }
 
     @Override

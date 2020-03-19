@@ -28,7 +28,7 @@ public class ACAQTraitDeclarationRefCollectionParameterEditorUI extends ACAQPara
     public ACAQTraitDeclarationRefCollectionParameterEditorUI(ACAQWorkbenchUI workbenchUI, ACAQParameterAccess parameterAccess) {
         super(workbenchUI, parameterAccess);
         initialize();
-        refreshCurrentlyDisplayed();
+        reload();
     }
 
     private void initialize() {
@@ -56,7 +56,8 @@ public class ACAQTraitDeclarationRefCollectionParameterEditorUI extends ACAQPara
         pickerDialog.setModal(false);
     }
 
-    private void refreshCurrentlyDisplayed() {
+    @Override
+    public void reload() {
         ACAQTraitDeclarationRefCollection declarationRefs = getParameterAccess().get();
         currentlyDisplayed.removeAll();
         if (declarationRefs.isEmpty()) {
@@ -114,7 +115,7 @@ public class ACAQTraitDeclarationRefCollectionParameterEditorUI extends ACAQPara
             }
 
             getParameterAccess().set(refs);
-            refreshCurrentlyDisplayed();
+            reload();
         }
     }
 
@@ -122,4 +123,5 @@ public class ACAQTraitDeclarationRefCollectionParameterEditorUI extends ACAQPara
     public boolean isUILabelEnabled() {
         return true;
     }
+
 }

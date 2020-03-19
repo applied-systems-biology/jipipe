@@ -21,6 +21,7 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.CompartmentRemovedEvent;
+import org.hkijena.acaq5.api.events.WorkDirectoryChangedEvent;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.StringUtils;
@@ -42,6 +43,7 @@ public class ACAQProject implements ACAQValidatable {
     private ACAQAlgorithmGraph compartmentGraph = new ACAQAlgorithmGraph();
     private BiMap<String, ACAQProjectCompartment> compartments = HashBiMap.create();
     private ACAQProjectMetadata metadata = new ACAQProjectMetadata();
+    private Path workDirectory;
 
     public ACAQProject() {
         compartmentGraph.getEventBus().register(this);
@@ -161,6 +163,29 @@ public class ACAQProject implements ACAQValidatable {
         return metadata;
     }
 
+    /**
+     * Gets the folder where the project is currently working in
+     *
+     * @return
+     */
+    public Path getWorkDirectory() {
+        return workDirectory;
+    }
+
+    /**
+     * Sets the folder where the project is currently working in.
+     * This information is passed to the algorithms to adapt to the work directory if needed (usually ony Filesystem nodes are affected)
+     *
+     * @param workDirectory
+     */
+    public void setWorkDirectory(Path workDirectory) {
+        this.workDirectory = workDirectory;
+        for (ACAQAlgorithm algorithm : graph.getAlgorithmNodes().values()) {
+            algorithm.setWorkDirectory(workDirectory);
+        }
+        eventBus.post(new WorkDirectoryChangedEvent(workDirectory));
+    }
+
     public static ACAQProject loadProject(Path fileName) throws IOException {
         return JsonUtils.getObjectMapper().readerFor(ACAQProject.class).readValue(fileName.toFile());
     }
@@ -188,7 +213,7 @@ public class ACAQProject implements ACAQValidatable {
 
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
 
-            if(node.has("metadata")) {
+            if (node.has("metadata")) {
                 project.metadata = JsonUtils.getObjectMapper().readerFor(ACAQProjectMetadata.class).readValue(node.get("metadata"));
             }
 

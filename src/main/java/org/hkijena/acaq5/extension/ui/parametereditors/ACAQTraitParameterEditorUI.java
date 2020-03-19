@@ -28,11 +28,13 @@ public class ACAQTraitParameterEditorUI extends ACAQParameterEditorUI {
     private JXTextField currentValue;
     private JButton currentlyDisplayed;
     private JDialog pickerDialog;
+    private boolean skipNextReload = false;
+    private boolean isReloading = false;
 
     public ACAQTraitParameterEditorUI(ACAQWorkbenchUI workbenchUI, ACAQParameterAccess parameterAccess) {
         super(workbenchUI, parameterAccess);
         initialize();
-        refreshCurrentlyDisplayed();
+        reload();
     }
 
     private void initialize() {
@@ -92,7 +94,13 @@ public class ACAQTraitParameterEditorUI extends ACAQParameterEditorUI {
         pickerDialog.setModal(false);
     }
 
-    private void refreshCurrentlyDisplayed() {
+    @Override
+    public void reload() {
+        if (skipNextReload) {
+            skipNextReload = false;
+            return;
+        }
+        isReloading = true;
         ACAQTrait trait = getParameterAccess().get();
         if (trait != null) {
             ACAQTraitDeclaration declaration = trait.getDeclaration();
@@ -116,6 +124,7 @@ public class ACAQTraitParameterEditorUI extends ACAQParameterEditorUI {
             currentValue.setEnabled(false);
             picker.setSelectedTraits(Collections.emptySet());
         }
+        isReloading = false;
     }
 
     private void initializePicker() {
@@ -148,15 +157,18 @@ public class ACAQTraitParameterEditorUI extends ACAQParameterEditorUI {
         if (pickerDialog.isVisible()) {
             ACAQTraitDeclaration declaration = event.getTraitDeclaration();
             getParameterAccess().set(declaration.newInstance());
-            refreshCurrentlyDisplayed();
+            reload();
         }
     }
 
     private void onCurrentValueChanged(String text) {
-        ACAQTrait trait = getParameterAccess().get();
-        if (trait instanceof ACAQDiscriminator) {
-            if (text != null && !text.isEmpty() && !text.equals(((ACAQDiscriminator) trait).getValue())) {
-                getParameterAccess().set(trait.getDeclaration().newInstance(text));
+        if (!isReloading) {
+            ACAQTrait trait = getParameterAccess().get();
+            if (trait instanceof ACAQDiscriminator) {
+                if (text != null && !text.isEmpty() && !text.equals(((ACAQDiscriminator) trait).getValue())) {
+                    skipNextReload = true;
+                    getParameterAccess().set(trait.getDeclaration().newInstance(text));
+                }
             }
         }
     }

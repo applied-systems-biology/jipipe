@@ -1,12 +1,12 @@
 package org.hkijena.acaq5.extension.ui.parametereditors;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.api.parameters.ACAQParameterHolder;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
 import org.hkijena.acaq5.api.parameters.CollectionParameter;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
-import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.ui.registries.ACAQUIParametertypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -21,7 +21,7 @@ public class CollectionParameterEditorUI extends ACAQParameterEditorUI {
     public CollectionParameterEditorUI(ACAQWorkbenchUI workbenchUI, ACAQParameterAccess parameterAccess) {
         super(workbenchUI, parameterAccess);
         initialize();
-        refreshList();
+        reload();
     }
 
     private void initialize() {
@@ -34,7 +34,7 @@ public class CollectionParameterEditorUI extends ACAQParameterEditorUI {
     private void addEntry() {
         CollectionParameter collectionParameter = getParameterAccess().get();
         collectionParameter.add(null);
-        refreshList();
+        reload();
     }
 
     @Override
@@ -42,10 +42,11 @@ public class CollectionParameterEditorUI extends ACAQParameterEditorUI {
         return true;
     }
 
-    private void refreshList() {
+    @Override
+    public void reload() {
         listPanel.clear();
         CollectionParameter collectionParameter = getParameterAccess().get();
-        for(int i = 0; i < collectionParameter.size(); ++i) {
+        for (int i = 0; i < collectionParameter.size(); ++i) {
             ACAQParameterAccess entryAccess = new EntryAccess(getParameterAccess(), collectionParameter, i);
             JButton removeButton = new JButton(UIUtils.getIconFromResources("delete.png"));
             UIUtils.makeFlat25x25(removeButton);
@@ -109,7 +110,7 @@ public class CollectionParameterEditorUI extends ACAQParameterEditorUI {
 
         @Override
         public <T> T get() {
-            return (T)collectionParameter.get(index);
+            return (T) collectionParameter.get(index);
         }
 
         @Override
@@ -119,7 +120,7 @@ public class CollectionParameterEditorUI extends ACAQParameterEditorUI {
         }
 
         @Override
-        public Object getParameterHolder() {
+        public ACAQParameterHolder getParameterHolder() {
             return parentAccess.getParameterHolder();
         }
 

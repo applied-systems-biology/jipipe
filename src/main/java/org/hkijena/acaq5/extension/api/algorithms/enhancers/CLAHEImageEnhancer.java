@@ -7,6 +7,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.traits.GoodForTrait;
 import org.hkijena.acaq5.api.data.traits.RemovesTrait;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.traits.bioobject.preparations.labeling.MembraneLabeledBioObjects;
@@ -67,6 +68,7 @@ public class CLAHEImageEnhancer extends ACAQIteratingAlgorithm {
     @ACAQParameter("blocks")
     public void setBlocks(int blocks) {
         this.blocks = blocks;
+        getEventBus().post(new ParameterChangedEvent(this, "blocks"));
     }
 
     @ACAQParameter("bins")
@@ -78,6 +80,7 @@ public class CLAHEImageEnhancer extends ACAQIteratingAlgorithm {
     @ACAQParameter("bins")
     public void setBins(int bins) {
         this.bins = bins;
+        getEventBus().post(new ParameterChangedEvent(this, "bins"));
     }
 
     @ACAQParameter("max-slope")
@@ -89,6 +92,7 @@ public class CLAHEImageEnhancer extends ACAQIteratingAlgorithm {
     @ACAQParameter("max-slope")
     public void setMaxSlope(float maxSlope) {
         this.maxSlope = maxSlope;
+        getEventBus().post(new ParameterChangedEvent(this, "max-slope"));
     }
 
     @ACAQParameter("fast-mode")
@@ -100,6 +104,7 @@ public class CLAHEImageEnhancer extends ACAQIteratingAlgorithm {
     @ACAQParameter("fast-mode")
     public void setFastMode(boolean fastMode) {
         this.fastMode = fastMode;
+        getEventBus().post(new ParameterChangedEvent(this, "fast-mode"));
     }
 
     @Override

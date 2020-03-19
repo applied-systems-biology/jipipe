@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
+import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.utils.JsonUtils;
 
@@ -19,6 +20,7 @@ import java.util.*;
  */
 public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
 
+    private EventBus eventBus = new EventBus();
     private BiMap<String, ACAQMutableParameterAccess> parameters = HashBiMap.create();
     private Set<Class<?>> allowedTypes = new HashSet<>();
     private String name;
@@ -114,6 +116,11 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
 
     public void setAllowModification(boolean allowModification) {
         this.allowModification = allowModification;
+    }
+
+    @Override
+    public EventBus getEventBus() {
+        return eventBus;
     }
 
     /**

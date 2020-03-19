@@ -101,7 +101,6 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQUIPanel {
         ACAQGraphWrapperAlgorithmExporter exporter = new ACAQGraphWrapperAlgorithmExporter(getWorkbenchUI(), graph);
         exporter.getAlgorithmDeclaration().getMetadata().setName(algorithm.getName());
         exporter.getAlgorithmDeclaration().getMetadata().setDescription(algorithm.getCustomDescription());
-        exporter.refreshParameterAccess();
         getWorkbenchUI().getDocumentTabPane().addTab("Export algorithm '" + algorithm.getName() + "'",
                 UIUtils.getIconFromResources("export.png"),
                 exporter,

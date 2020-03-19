@@ -23,16 +23,16 @@ public class ACAQUIParametertypeRegistry {
 
     public ACAQParameterEditorUI createEditorFor(ACAQWorkbenchUI workbenchUI, ACAQParameterAccess parameterAccess) {
         Class<? extends ACAQParameterEditorUI> uiClass = parameterTypes.getOrDefault(parameterAccess.getFieldClass(), null);
-        if(uiClass == null) {
+        if (uiClass == null) {
             // Search a matching one
             for (Map.Entry<Class<?>, Class<? extends ACAQParameterEditorUI>> entry : parameterTypes.entrySet()) {
-                if(entry.getKey().isAssignableFrom(parameterAccess.getFieldClass())) {
+                if (entry.getKey().isAssignableFrom(parameterAccess.getFieldClass())) {
                     uiClass = entry.getValue();
                     break;
                 }
             }
         }
-        if(uiClass == null) {
+        if (uiClass == null) {
             throw new NullPointerException("Could not find parameter editor for parameter class '" + parameterAccess.getFieldClass() + "'");
         }
         try {

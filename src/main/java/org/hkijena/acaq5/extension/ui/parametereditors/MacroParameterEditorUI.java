@@ -15,6 +15,10 @@ import java.awt.*;
 
 public class MacroParameterEditorUI extends ACAQParameterEditorUI {
 
+    private boolean skipNextReload = false;
+    private boolean isReloading = false;
+    private EditorPane textArea;
+
     public MacroParameterEditorUI(ACAQWorkbenchUI workbenchUI, ACAQParameterAccess parameterAccess) {
         super(workbenchUI, parameterAccess);
         registerIJMacroLanguage();
@@ -29,17 +33,7 @@ public class MacroParameterEditorUI extends ACAQParameterEditorUI {
     private void initialize() {
         setLayout(new BorderLayout());
         MacroCode code = getParameterAccess().get();
-//        JTextArea textArea = new JTextArea("" + code.getCode());
-//        textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-//        textArea.setBorder(BorderFactory.createEtchedBorder());
-//        textArea.getDocument().addDocumentListener(new DocumentChangeListener() {
-//            @Override
-//            public void changed(DocumentEvent documentEvent) {
-//                code.setCode(textArea.getText());
-//                getParameterAccess().set(code);
-//            }
-//        });
-        EditorPane textArea = new EditorPane();
+        textArea = new EditorPane();
         textArea.setBorder(BorderFactory.createEtchedBorder());
         getWorkbenchUI().getContext().inject(textArea);
         textArea.setText(code.getCode());
@@ -47,18 +41,29 @@ public class MacroParameterEditorUI extends ACAQParameterEditorUI {
         textArea.getDocument().addDocumentListener(new DocumentChangeListener() {
             @Override
             public void changed(DocumentEvent documentEvent) {
-                code.setCode(textArea.getText());
-                getParameterAccess().set(code);
+                if (!isReloading) {
+                    code.setCode(textArea.getText());
+                    getParameterAccess().set(code);
+                }
             }
         });
         add(textArea, BorderLayout.CENTER);
-
-//        TextEditor textEditor = new TextEditor(getWorkbenchUI().getContext());
-//        textEditor.setVisible(true);
     }
 
     @Override
     public boolean isUILabelEnabled() {
         return true;
+    }
+
+    @Override
+    public void reload() {
+        if (skipNextReload) {
+            skipNextReload = false;
+            return;
+        }
+        isReloading = true;
+        MacroCode code = getParameterAccess().get();
+        textArea.setText(code.getCode());
+        isReloading = false;
     }
 }

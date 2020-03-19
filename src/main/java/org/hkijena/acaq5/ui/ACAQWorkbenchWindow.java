@@ -60,6 +60,7 @@ public class ACAQWorkbenchWindow extends JFrame {
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
                 ACAQProject project = ACAQProject.loadProject(fileChooser.getSelectedFile().toPath());
+                project.setWorkDirectory(fileChooser.getSelectedFile().toPath().getParent());
                 ACAQWorkbenchWindow window = openProjectInThisOrNewWindow("Open project", project);
                 if (window == null)
                     return;
@@ -79,6 +80,7 @@ public class ACAQWorkbenchWindow extends JFrame {
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
                 ACAQRun run = ACAQRun.loadFromFolder(fileChooser.getSelectedFile().toPath());
+                run.getProject().setWorkDirectory(fileChooser.getSelectedFile().toPath());
                 ACAQWorkbenchWindow window = openProjectInThisOrNewWindow("Open ACAQ output", run.getProject());
                 if (window == null)
                     return;
@@ -114,6 +116,7 @@ public class ACAQWorkbenchWindow extends JFrame {
         }
 
         try {
+            getProject().setWorkDirectory(savePath.getParent());
             getProject().saveProject(savePath);
             setTitle(savePath.toString());
             projectSavePath = savePath;

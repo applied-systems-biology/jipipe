@@ -17,17 +17,31 @@ import java.util.stream.Collectors;
 
 public class ACAQParameterCollectionVisibilitiesParameterEditorUI extends ACAQParameterEditorUI {
 
+    private FormPanel formPanel;
+
     public ACAQParameterCollectionVisibilitiesParameterEditorUI(ACAQWorkbenchUI workbenchUI, ACAQParameterAccess parameterAccess) {
         super(workbenchUI, parameterAccess);
         initialize();
+        reload();
     }
 
     private void initialize() {
-        ACAQParameterCollectionVisibilities visibilities = getParameterAccess().get();
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEtchedBorder());
 
-        FormPanel formPanel = new FormPanel(null, false, false, false);
+        formPanel = new FormPanel(null, false, false, false);
+        add(formPanel, BorderLayout.CENTER);
+    }
+
+    @Override
+    public boolean isUILabelEnabled() {
+        return true;
+    }
+
+    @Override
+    public void reload() {
+        formPanel.clear();
+        ACAQParameterCollectionVisibilities visibilities = getParameterAccess().get();
         Map<String, ACAQParameterAccess> parameters = visibilities.getAvailableParameters();
         Map<Object, List<String>> groupedByHolder = parameters.keySet().stream().collect(Collectors.groupingBy(key -> parameters.get(key).getParameterHolder()));
 
@@ -36,6 +50,7 @@ public class ACAQParameterCollectionVisibilitiesParameterEditorUI extends ACAQPa
             boolean foundHolderName = false;
 
             JPanel subAlgorithmGroupTitle = new JPanel(new BorderLayout());
+
             subAlgorithmGroupTitle.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createCompoundBorder(
                     BorderFactory.createEmptyBorder(8, 0, 4, 0),
                     BorderFactory.createMatteBorder(1, 0, 0, 0, Color.DARK_GRAY)),
@@ -79,12 +94,5 @@ public class ACAQParameterCollectionVisibilitiesParameterEditorUI extends ACAQPa
                 formPanel.addToForm(ui, labelPanel, null);
             }
         }
-
-        add(formPanel, BorderLayout.CENTER);
-    }
-
-    @Override
-    public boolean isUILabelEnabled() {
-        return true;
     }
 }

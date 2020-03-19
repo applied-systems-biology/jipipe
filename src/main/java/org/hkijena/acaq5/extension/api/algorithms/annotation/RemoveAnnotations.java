@@ -6,6 +6,7 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
 
@@ -63,6 +64,7 @@ public class RemoveAnnotations extends ACAQAlgorithm {
     public void setAnnotationType(ACAQTraitDeclarationRef annotationType) {
         this.annotationType = annotationType;
         updateSlotTraits();
+        getEventBus().post(new ParameterChangedEvent(this, "annotation-type"));
     }
 
 }

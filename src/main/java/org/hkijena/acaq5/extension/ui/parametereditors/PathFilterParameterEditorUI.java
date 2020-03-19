@@ -15,7 +15,8 @@ public class PathFilterParameterEditorUI extends ACAQParameterEditorUI {
 
     public PathFilterParameterEditorUI(ACAQWorkbenchUI workbenchUI, ACAQParameterAccess parameterAccess) {
         super(workbenchUI, parameterAccess);
-        initialize();
+        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+        reload();
     }
 
     @Override
@@ -23,10 +24,10 @@ public class PathFilterParameterEditorUI extends ACAQParameterEditorUI {
         return true;
     }
 
-    private void initialize() {
-        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+    @Override
+    public void reload() {
+        removeAll();
         PathFilter filter = getParameterAccess().get();
-
         JTextField filterStringEditor = new JTextField(filter.getFilterString());
         filterStringEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         filterStringEditor.getDocument().addDocumentListener(new DocumentChangeListener() {
@@ -53,6 +54,8 @@ public class PathFilterParameterEditorUI extends ACAQParameterEditorUI {
                 UIUtils.getIconFromResources("regex.png"),
                 PathFilter.Mode.Regex,
                 "Filename matches Regex pattern (e.g. .*\\.txt)");
+        revalidate();
+        repaint();
     }
 
     private void addFilterModeSelection(PathFilter filter, ButtonGroup group, Icon icon, PathFilter.Mode mode, String description) {

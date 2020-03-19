@@ -2,11 +2,12 @@ package org.hkijena.acaq5.api.parameters;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 
 import java.lang.annotation.Annotation;
 
 public class ACAQMutableParameterAccess implements ACAQParameterAccess {
-    private Object parameterHolder;
+    private ACAQParameterHolder parameterHolder;
     private String holderName;
     private String holderDescription;
     private String key;
@@ -19,7 +20,7 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
     public ACAQMutableParameterAccess() {
     }
 
-    public ACAQMutableParameterAccess(Object parameterHolder, String key, Class<?> fieldClass) {
+    public ACAQMutableParameterAccess(ACAQParameterHolder parameterHolder, String key, Class<?> fieldClass) {
         this.parameterHolder = parameterHolder;
         this.key = key;
         this.fieldClass = fieldClass;
@@ -117,11 +118,15 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
     @JsonSetter("value")
     public <T> boolean set(T value) {
         this.value = value;
+
+        // Trigger change in parent parameter holder
+        if (parameterHolder != null)
+            parameterHolder.getEventBus().post(new ParameterChangedEvent(this, getKey()));
         return true;
     }
 
     @Override
-    public Object getParameterHolder() {
+    public ACAQParameterHolder getParameterHolder() {
         return parameterHolder;
     }
 
@@ -130,7 +135,7 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
      *
      * @param parameterHolder
      */
-    public void setParameterHolder(Object parameterHolder) {
+    public void setParameterHolder(ACAQParameterHolder parameterHolder) {
         this.parameterHolder = parameterHolder;
     }
 

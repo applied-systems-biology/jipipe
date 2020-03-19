@@ -8,15 +8,35 @@ import javax.swing.*;
 import java.awt.*;
 
 public class DoubleParameterEditorUI extends ACAQParameterEditorUI {
+    private JSpinner spinner;
+    private boolean skipNextReload = false;
+    private boolean isReloading = false;
 
     public DoubleParameterEditorUI(ACAQWorkbenchUI workbenchUI, ACAQParameterAccess parameterAccess) {
         super(workbenchUI, parameterAccess);
         initialize();
+        reload();
     }
 
     @Override
     public boolean isUILabelEnabled() {
         return true;
+    }
+
+    @Override
+    public void reload() {
+        if (skipNextReload) {
+            skipNextReload = false;
+            return;
+        }
+        isReloading = true;
+        Object value = getParameterAccess().get();
+        double doubleValue = 0;
+        if (value != null) {
+            doubleValue = (double) value;
+        }
+        spinner.setValue(doubleValue);
+        isReloading = false;
     }
 
     private void initialize() {
@@ -29,10 +49,14 @@ public class DoubleParameterEditorUI extends ACAQParameterEditorUI {
             doubleValue = (double) value;
         }
         SpinnerNumberModel model = new SpinnerNumberModel(doubleValue, min, max, 1);
-        JSpinner spinner = new JSpinner(model);
+        spinner = new JSpinner(model);
         spinner.addChangeListener(e -> {
-            if (!getParameterAccess().set(model.getNumber().doubleValue())) {
-                spinner.setValue(getParameterAccess().get());
+            if (!isReloading) {
+                skipNextReload = true;
+                if (!getParameterAccess().set(model.getNumber().doubleValue())) {
+                    skipNextReload = false;
+                    reload();
+                }
             }
         });
         spinner.setPreferredSize(new Dimension(100, spinner.getPreferredSize().height));

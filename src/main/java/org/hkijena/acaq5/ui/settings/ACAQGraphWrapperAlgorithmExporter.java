@@ -74,7 +74,6 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQUIPanel {
         name = StringUtils.jsonify(name);
         name = StringUtils.makeUniqueString(name, "-", id -> ACAQAlgorithmRegistry.getInstance().hasAlgorithmWithId(id));
         algorithmDeclaration.setId(name);
-        parameterAccessUI.reloadForm();
     }
 
     private boolean checkValidity() {
@@ -103,9 +102,5 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQUIPanel {
 
     public GraphWrapperAlgorithmDeclaration getAlgorithmDeclaration() {
         return algorithmDeclaration;
-    }
-
-    public void refreshParameterAccess() {
-        parameterAccessUI.reloadForm();
     }
 }

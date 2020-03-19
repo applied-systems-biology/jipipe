@@ -9,8 +9,8 @@ import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.api.events.AlgorithmNameChanged;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.events.TraitConfigurationChangedEvent;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
@@ -469,11 +469,13 @@ public class ACAQAlgorithmUI extends JPanel {
     }
 
     @Subscribe
-    public void onAlgorithmParametersChanged(AlgorithmNameChanged event) {
-        setSize(calculateWidth(), calculateHeight());
-        nameLabel.setText(algorithm.getName());
-        revalidate();
-        repaint();
+    public void onAlgorithmParametersChanged(ParameterChangedEvent event) {
+        if (event.getParameterHolder() == algorithm && "name".equals(event.getKey())) {
+            setSize(calculateWidth(), calculateHeight());
+            nameLabel.setText(algorithm.getName());
+            revalidate();
+            repaint();
+        }
     }
 
     @Override

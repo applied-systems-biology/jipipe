@@ -72,7 +72,7 @@ public interface ACAQParameterAccess {
      *
      * @return
      */
-    Object getParameterHolder();
+    ACAQParameterHolder getParameterHolder();
 
     /**
      * A name for the parameter holder
@@ -95,7 +95,7 @@ public interface ACAQParameterAccess {
      * @param parameterHolder
      * @return
      */
-    static Map<String, ACAQParameterAccess> getParameters(Object parameterHolder) {
+    static Map<String, ACAQParameterAccess> getParameters(ACAQParameterHolder parameterHolder) {
         Map<String, ACAQParameterAccess> result = new HashMap<>();
         if (parameterHolder instanceof ACAQCustomParameterHolder) {
             for (Map.Entry<String, ACAQParameterAccess> entry : ((ACAQCustomParameterHolder) parameterHolder).getCustomParameters().entrySet()) {

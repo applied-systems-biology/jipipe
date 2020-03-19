@@ -6,6 +6,7 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
@@ -69,6 +70,7 @@ public class AnnotateAll extends ACAQAlgorithm {
     public void setAnnotation(ACAQTrait annotation) {
         this.annotation = annotation;
         updateSlotTraits();
+        getEventBus().post(new ParameterChangedEvent(this, "generated-annotation"));
     }
 
     @ACAQDocumentation(name = "Overwrite existing annotations", description = "If disabled, any existing annotation of the same type (not value) is not replaced")
@@ -80,5 +82,6 @@ public class AnnotateAll extends ACAQAlgorithm {
     @ACAQParameter("overwrite")
     public void setOverwrite(boolean overwrite) {
         this.overwrite = overwrite;
+        getEventBus().post(new ParameterChangedEvent(this, "overwrite"));
     }
 }

@@ -1,20 +1,15 @@
 package org.hkijena.acaq5.extension.ui.parametereditors;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
-import org.hkijena.acaq5.api.parameters.CollectionParameter;
-import org.hkijena.acaq5.api.parameters.PathCollectionParameter;
+import org.hkijena.acaq5.api.parameters.PathCollection;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.FileSelection;
-import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
-import org.hkijena.acaq5.ui.registries.ACAQUIParametertypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
-import java.lang.annotation.Annotation;
 import java.nio.file.Path;
 import java.util.Arrays;
 
@@ -29,7 +24,7 @@ public class PathCollectionParameterEditorUI extends ACAQParameterEditorUI {
         super(workbenchUI, parameterAccess);
         initializeFileSelection();
         initialize();
-        refreshList();
+        reload();
     }
 
     private void initializeFileSelection() {
@@ -62,15 +57,15 @@ public class PathCollectionParameterEditorUI extends ACAQParameterEditorUI {
     }
 
     private void removeSelectedEntries() {
-        PathCollectionParameter parameter = getParameterAccess().get();
+        PathCollection parameter = getParameterAccess().get();
         int[] indicies = listPanel.getSelectedIndices();
         Arrays.sort(indicies);
 
-        for(int i = indicies.length - 1; i >= 0; --i) {
+        for (int i = indicies.length - 1; i >= 0; --i) {
             int index = indicies[i];
             parameter.remove(index);
         }
-        refreshList();
+        reload();
     }
 
     private void addEntry() {
@@ -85,20 +80,20 @@ public class PathCollectionParameterEditorUI extends ACAQParameterEditorUI {
                 fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
                 break;
         }
-        PathCollectionParameter parameter = getParameterAccess().get();
+        PathCollection parameter = getParameterAccess().get();
         if (ioMode == FileSelection.IOMode.Open) {
             if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 for (File selectedFile : fileChooser.getSelectedFiles()) {
                     parameter.add(selectedFile.toPath());
                 }
-                refreshList();
+                reload();
             }
         } else {
             if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
                 for (File selectedFile : fileChooser.getSelectedFiles()) {
                     parameter.add(selectedFile.toPath());
                 }
-                refreshList();
+                reload();
             }
         }
     }
@@ -109,9 +104,11 @@ public class PathCollectionParameterEditorUI extends ACAQParameterEditorUI {
         return true;
     }
 
-    private void refreshList() {
+
+    @Override
+    public void reload() {
         DefaultListModel<String> listModel = new DefaultListModel<>();
-        PathCollectionParameter parameter = getParameterAccess().get();
+        PathCollection parameter = getParameterAccess().get();
         for (Path path : parameter) {
             listModel.addElement(path.toString());
         }

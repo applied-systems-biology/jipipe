@@ -43,11 +43,11 @@ public class ACAQResultAlgorithmTree extends ACAQUIPanel {
                         DefaultMutableTreeNode slotNode = new DefaultMutableTreeNode(outputSlot);
                         algorithmNode.add(slotNode);
                     }
-                    if(algorithmNode.getChildCount() > 0)
+                    if (algorithmNode.getChildCount() > 0)
                         compartmentNode.add(algorithmNode);
                 }
             }
-            if(compartmentNode.getChildCount() > 0)
+            if (compartmentNode.getChildCount() > 0)
                 root.add(compartmentNode);
         }
         DefaultTreeModel model = new DefaultTreeModel(root);

@@ -1,13 +1,11 @@
 package org.hkijena.acaq5.extension;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import ij.process.AutoThresholder;
 import org.hkijena.acaq5.ACAQExtensionService;
 import org.hkijena.acaq5.ACAQRegistryService;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollectionVisibilities;
 import org.hkijena.acaq5.api.parameters.CollectionParameter;
-import org.hkijena.acaq5.api.parameters.PathCollectionParameter;
+import org.hkijena.acaq5.api.parameters.PathCollection;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefCollection;
@@ -128,7 +126,7 @@ public class StandardACAQExtensionService extends AbstractService implements ACA
         registryService.getUIParametertypeRegistry().registerParameterEditor(MacroCode.class, MacroParameterEditorUI.class);
         registryService.getUIParametertypeRegistry().registerParameterEditor(Enum.class, EnumParameterEditorUI.class);
         registryService.getUIParametertypeRegistry().registerParameterEditor(CollectionParameter.class, CollectionParameterEditorUI.class);
-        registryService.getUIParametertypeRegistry().registerParameterEditor(PathCollectionParameter.class, PathCollectionParameterEditorUI.class);
+        registryService.getUIParametertypeRegistry().registerParameterEditor(PathCollection.class, PathCollectionParameterEditorUI.class);
         registryService.getUIParametertypeRegistry().registerParameterEditor(PathFilter.class, PathFilterParameterEditorUI.class);
         registryService.getUIParametertypeRegistry().registerParameterEditor(ACAQTraitDeclarationRef.class, ACAQTraitDeclarationRefParameterEditorUI.class);
         registryService.getUIParametertypeRegistry().registerParameterEditor(ACAQTraitDeclarationRefCollection.class, ACAQTraitDeclarationRefCollectionParameterEditorUI.class);

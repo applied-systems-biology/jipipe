@@ -28,7 +28,7 @@ public class ACAQTraitDeclarationRefParameterEditorUI extends ACAQParameterEdito
     public ACAQTraitDeclarationRefParameterEditorUI(ACAQWorkbenchUI workbenchUI, ACAQParameterAccess parameterAccess) {
         super(workbenchUI, parameterAccess);
         initialize();
-        refreshCurrentlyDisplayed();
+        reload();
     }
 
     private void initialize() {
@@ -56,7 +56,8 @@ public class ACAQTraitDeclarationRefParameterEditorUI extends ACAQParameterEdito
         pickerDialog.setModal(false);
     }
 
-    private void refreshCurrentlyDisplayed() {
+    @Override
+    public void reload() {
         ACAQTraitDeclarationRef declarationRef = getParameterAccess().get();
         ACAQTraitDeclaration declaration = declarationRef.getDeclaration();
         if (declaration != null) {
@@ -103,7 +104,7 @@ public class ACAQTraitDeclarationRefParameterEditorUI extends ACAQParameterEdito
             ACAQTraitDeclarationRef declarationRef = getParameterAccess().get();
             declarationRef.setDeclaration(event.getTraitDeclaration());
             getParameterAccess().set(declarationRef);
-            refreshCurrentlyDisplayed();
+            reload();
         }
     }
 

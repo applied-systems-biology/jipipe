@@ -29,7 +29,14 @@ public class ACAQRun implements ACAQRunnable {
         this.project = project;
         this.configuration = configuration;
         this.algorithmGraph = new ACAQAlgorithmGraph(project.getGraph());
+        initializeRelativeDirectories();
         initializeInternalStoragePaths();
+    }
+
+    private void initializeRelativeDirectories() {
+        for (ACAQAlgorithm algorithm : algorithmGraph.getAlgorithmNodes().values()) {
+            algorithm.setWorkDirectory(null);
+        }
     }
 
     private void initializeInternalStoragePaths() {

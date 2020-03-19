@@ -10,6 +10,7 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.traits.AddsTrait;
 import org.hkijena.acaq5.api.data.traits.BadForTrait;
 import org.hkijena.acaq5.api.data.traits.RemovesTrait;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
@@ -110,6 +111,7 @@ public class BrightSpotsSegmenter extends ACAQIteratingAlgorithm {
     @ACAQParameter("rolling-ball-radius")
     public void setRollingBallRadius(int rollingBallRadius) {
         this.rollingBallRadius = rollingBallRadius;
+        getEventBus().post(new ParameterChangedEvent(this, "rolling-ball-radius"));
     }
 
     @ACAQParameter("dilation-erode-steps")
@@ -121,6 +123,7 @@ public class BrightSpotsSegmenter extends ACAQIteratingAlgorithm {
     @ACAQParameter("dilation-erode-steps")
     public void setDilationErodeSteps(int dilationErodeSteps) {
         this.dilationErodeSteps = dilationErodeSteps;
+        getEventBus().post(new ParameterChangedEvent(this, "dilation-erode-steps"));
     }
 
     @ACAQParameter("gaussian-sigma")
@@ -132,6 +135,7 @@ public class BrightSpotsSegmenter extends ACAQIteratingAlgorithm {
     @ACAQParameter("gaussian-sigma")
     public void setGaussianSigma(double gaussianSigma) {
         this.gaussianSigma = gaussianSigma;
+        getEventBus().post(new ParameterChangedEvent(this, "gaussian-sigma"));
     }
 
     @ACAQSubParameters("auto-thresholding")

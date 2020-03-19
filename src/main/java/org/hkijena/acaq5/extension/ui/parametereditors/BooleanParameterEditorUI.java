@@ -9,6 +9,10 @@ import java.awt.*;
 
 public class BooleanParameterEditorUI extends ACAQParameterEditorUI {
 
+    private JCheckBox checkBox;
+    private boolean skipNextReload = false;
+    private boolean isReloading = false;
+
     public BooleanParameterEditorUI(ACAQWorkbenchUI workbenchUI, ACAQParameterAccess parameterAccess) {
         super(workbenchUI, parameterAccess);
         initialize();
@@ -19,15 +23,35 @@ public class BooleanParameterEditorUI extends ACAQParameterEditorUI {
         return false;
     }
 
+    @Override
+    public void reload() {
+        if (skipNextReload) {
+            skipNextReload = false;
+            return;
+        }
+        isReloading = true;
+        Object value = getParameterAccess().get();
+        boolean booleanValue = false;
+        if (value != null)
+            booleanValue = (boolean) value;
+        checkBox.setSelected(booleanValue);
+        isReloading = false;
+    }
+
     private void initialize() {
         setLayout(new BorderLayout());
         Object value = getParameterAccess().get();
         boolean booleanValue = false;
         if (value != null)
             booleanValue = (boolean) value;
-        JCheckBox checkBox = new JCheckBox(getParameterAccess().getName());
+        checkBox = new JCheckBox(getParameterAccess().getName());
         checkBox.setSelected(booleanValue);
         add(checkBox, BorderLayout.CENTER);
-        checkBox.addActionListener(e -> getParameterAccess().set(checkBox.isSelected()));
+        checkBox.addActionListener(e -> {
+            if (!isReloading) {
+                skipNextReload = true;
+                getParameterAccess().set(checkBox.isSelected());
+            }
+        });
     }
 }

@@ -3,9 +3,9 @@ package org.hkijena.acaq5.filesystem.api.datasources;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.parameters.CollectionParameter;
-import org.hkijena.acaq5.api.parameters.PathCollectionParameter;
+import org.hkijena.acaq5.api.parameters.PathCollection;
 import org.hkijena.acaq5.extension.ui.parametereditors.FilePathParameterSettings;
 import org.hkijena.acaq5.filesystem.api.dataypes.ACAQFileData;
 import org.hkijena.acaq5.ui.components.FileSelection;
@@ -21,7 +21,8 @@ import java.nio.file.Path;
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
 public class ACAQFileListDataSource extends ACAQAlgorithm {
 
-    private PathCollectionParameter fileNames = new PathCollectionParameter();
+    private PathCollection fileNames = new PathCollection();
+    private Path currentWorkingDirectory;
 
     public ACAQFileListDataSource(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
@@ -30,6 +31,7 @@ public class ACAQFileListDataSource extends ACAQAlgorithm {
     public ACAQFileListDataSource(ACAQFileListDataSource other) {
         super(other);
         this.fileNames.addAll(other.fileNames);
+        this.currentWorkingDirectory = other.currentWorkingDirectory;
     }
 
     @Override
@@ -42,24 +44,73 @@ public class ACAQFileListDataSource extends ACAQAlgorithm {
     @ACAQParameter("file-names")
     @ACAQDocumentation(name = "File names")
     @FilePathParameterSettings(ioMode = FileSelection.IOMode.Open, pathMode = FileSelection.PathMode.FilesOnly)
-    public PathCollectionParameter getFileNames() {
+    public PathCollection getFileNames() {
         return fileNames;
     }
 
     @ACAQParameter("file-names")
-    public void setFileNames(PathCollectionParameter fileNames) {
+    public void setFileNames(PathCollection fileNames) {
         this.fileNames = fileNames;
+        getEventBus().post(new ParameterChangedEvent(this, "file-names"));
+    }
+
+    public PathCollection getAbsoluteFileNames() {
+        PathCollection result = new PathCollection();
+        for (Path fileName : fileNames) {
+            if (fileName == null)
+                result.add(null);
+            else if (currentWorkingDirectory != null)
+                result.add(currentWorkingDirectory.resolve(fileName));
+            else
+                result.add(fileName);
+        }
+        return result;
     }
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        for (Path fileName : fileNames) {
-            if(fileName == null) {
+        for (Path fileName : getAbsoluteFileNames()) {
+            if (fileName == null) {
                 report.reportIsInvalid("An input file does not exist! Please provide a valid input file.");
-            }
-            else if(!Files.isRegularFile(fileName)) {
+            } else if (!Files.isRegularFile(fileName)) {
                 report.reportIsInvalid("Input file '" + fileName + "' does not exist! Please provide a valid input file.");
             }
+        }
+    }
+
+    @Override
+    public void setWorkDirectory(Path workDirectory) {
+        super.setWorkDirectory(workDirectory);
+
+        boolean modified = false;
+        for (int i = 0; i < fileNames.size(); ++i) {
+            Path fileName = fileNames.get(i);
+            if (fileName != null) {
+                // Make absolute
+                if (!fileName.isAbsolute()) {
+                    if (currentWorkingDirectory != null) {
+                        fileName = currentWorkingDirectory.resolve(fileName);
+                        modified = true;
+                    } else if (workDirectory != null) {
+                        fileName = workDirectory.resolve(fileName);
+                        modified = true;
+                    }
+                }
+                // Make relative if already absolute and workDirectory != null
+                if (fileName.isAbsolute()) {
+                    if (workDirectory != null && fileName.startsWith(workDirectory)) {
+                        fileName = workDirectory.relativize(fileName);
+                        modified = true;
+                    }
+                }
+
+                if (modified)
+                    this.fileNames.set(i, fileName);
+            }
+        }
+        currentWorkingDirectory = workDirectory;
+        if (modified) {
+            getEventBus().post(new ParameterChangedEvent(this, "file-names"));
         }
     }
 }

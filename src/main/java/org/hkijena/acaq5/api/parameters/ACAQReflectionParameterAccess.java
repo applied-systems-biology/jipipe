@@ -14,7 +14,7 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
     private Method getter;
     private Method setter;
     private ACAQDocumentation documentation;
-    private Object parameterHolder;
+    private ACAQParameterHolder parameterHolder;
     private String holderName;
     private String holderDescription;
     private ACAQParameterVisibility visibility = ACAQParameterVisibility.TransitiveVisible;
@@ -79,7 +79,7 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
     }
 
     @Override
-    public Object getParameterHolder() {
+    public ACAQParameterHolder getParameterHolder() {
         return parameterHolder;
     }
 
@@ -112,7 +112,7 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
      * @param parameterHolder
      * @return
      */
-    public static Map<String, ACAQParameterAccess> getReflectionParameters(Object parameterHolder) {
+    public static Map<String, ACAQParameterAccess> getReflectionParameters(ACAQParameterHolder parameterHolder) {
         Map<String, ACAQParameterAccess> result = new HashMap<>();
         for (Method method : parameterHolder.getClass().getMethods()) {
             ACAQParameter[] parameterAnnotations = method.getAnnotationsByType(ACAQParameter.class);
@@ -146,7 +146,7 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
             if (subAlgorithms.length > 0) {
                 try {
                     ACAQSubParameters subAlgorithmAnnotation = subAlgorithms[0];
-                    Object subAlgorithm = method.invoke(parameterHolder);
+                    ACAQParameterHolder subAlgorithm = (ACAQParameterHolder) method.invoke(parameterHolder);
                     String subAlgorithmName = null;
                     String subAlgorithmDescription = null;
 

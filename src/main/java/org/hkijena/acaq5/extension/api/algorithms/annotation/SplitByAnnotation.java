@@ -8,6 +8,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
@@ -82,5 +83,6 @@ public class SplitByAnnotation extends ACAQAlgorithm {
     @ACAQParameter("annotation-type")
     public void setAnnotationType(ACAQTraitDeclarationRef annotationType) {
         this.annotationType = annotationType;
+        getEventBus().post(new ParameterChangedEvent(this, "annotation-type"));
     }
 }

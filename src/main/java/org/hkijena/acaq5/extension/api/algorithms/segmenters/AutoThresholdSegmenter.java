@@ -11,6 +11,7 @@ import org.hkijena.acaq5.api.data.traits.AddsTrait;
 import org.hkijena.acaq5.api.data.traits.BadForTrait;
 import org.hkijena.acaq5.api.data.traits.GoodForTrait;
 import org.hkijena.acaq5.api.data.traits.RemovesTrait;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQGreyscaleImageData;
 import org.hkijena.acaq5.extension.api.datatypes.ACAQMaskData;
@@ -72,6 +73,7 @@ public class AutoThresholdSegmenter extends ACAQIteratingAlgorithm {
     @ACAQParameter("method")
     public void setMethod(AutoThresholder.Method method) {
         this.method = method;
+        getEventBus().post(new ParameterChangedEvent(this, "method"));
     }
 
     @Override

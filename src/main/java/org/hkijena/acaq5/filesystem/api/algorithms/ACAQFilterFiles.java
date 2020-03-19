@@ -3,6 +3,7 @@ package org.hkijena.acaq5.filesystem.api.algorithms;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.filesystem.api.dataypes.ACAQFileData;
 import org.hkijena.acaq5.utils.PathFilter;
@@ -50,5 +51,6 @@ public class ACAQFilterFiles extends ACAQIteratingAlgorithm {
     @ACAQParameter("filter")
     public void setFilter(PathFilter filter) {
         this.filter = filter;
+        getEventBus().post(new ParameterChangedEvent(this, "filter"));
     }
 }

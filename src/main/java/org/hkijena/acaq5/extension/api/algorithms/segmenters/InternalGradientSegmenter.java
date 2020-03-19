@@ -10,6 +10,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.traits.GoodForTrait;
 import org.hkijena.acaq5.api.data.traits.RemovesTrait;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
 import org.hkijena.acaq5.extension.api.algorithms.enhancers.CLAHEImageEnhancer;
@@ -120,6 +121,7 @@ public class InternalGradientSegmenter extends ACAQIteratingAlgorithm {
     @ACAQParameter("gauss-sigma")
     public void setGaussSigma(double gaussSigma) {
         this.gaussSigma = gaussSigma;
+        getEventBus().post(new ParameterChangedEvent(this, "gauss-sigma"));
     }
 
     @ACAQParameter("internal-gradient-radius")
@@ -131,6 +133,7 @@ public class InternalGradientSegmenter extends ACAQIteratingAlgorithm {
     @ACAQParameter("internal-gradient-radius")
     public void setInternalGradientRadius(int internalGradientRadius) {
         this.internalGradientRadius = internalGradientRadius;
+        getEventBus().post(new ParameterChangedEvent(this, "internal-gradient-radius"));
     }
 
     @ACAQParameter("dilation-iterations")
@@ -142,6 +145,7 @@ public class InternalGradientSegmenter extends ACAQIteratingAlgorithm {
     @ACAQParameter("dilation-iterations")
     public void setDilationIterations(int dilationIterations) {
         this.dilationIterations = dilationIterations;
+        getEventBus().post(new ParameterChangedEvent(this, "dilation-iterations"));
     }
 
     @ACAQParameter("erosion-iterations")
@@ -153,6 +157,7 @@ public class InternalGradientSegmenter extends ACAQIteratingAlgorithm {
     @ACAQParameter("erosion-iterations")
     public void setErosionIterations(int erosionIterations) {
         this.erosionIterations = erosionIterations;
+        getEventBus().post(new ParameterChangedEvent(this, "erosion-iterations"));
     }
 
     @ACAQSubParameters("auto-thresholding")

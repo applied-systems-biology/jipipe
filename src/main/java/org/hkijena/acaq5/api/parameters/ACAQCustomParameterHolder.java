@@ -6,7 +6,7 @@ import java.util.Map;
  * If a class inherits from this interface, reflection-based parameter discovery is replaced by
  * the getCustomParameters() method result.
  */
-public interface ACAQCustomParameterHolder {
+public interface ACAQCustomParameterHolder extends ACAQParameterHolder {
     /**
      * Returns all parameters
      *

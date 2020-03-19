@@ -7,13 +7,19 @@ import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 
 public class StringParameterEditorUI extends ACAQParameterEditorUI {
 
+    private JTextComponent textComponent;
+    private boolean skipNextReload = false;
+    private boolean isReloading = false;
+
     public StringParameterEditorUI(ACAQWorkbenchUI workbenchUI, ACAQParameterAccess parameterAccess) {
         super(workbenchUI, parameterAccess);
         initialize();
+        reload();
     }
 
     private void initialize() {
@@ -28,27 +34,43 @@ public class StringParameterEditorUI extends ACAQParameterEditorUI {
         if (settings != null && settings.multiline()) {
             JTextArea textArea = new JTextArea(stringValue);
             textArea.setBorder(BorderFactory.createEtchedBorder());
-            textArea.getDocument().addDocumentListener(new DocumentChangeListener() {
-                @Override
-                public void changed(DocumentEvent documentEvent) {
-                    getParameterAccess().set(textArea.getText());
-                }
-            });
+            textComponent = textArea;
             add(textArea, BorderLayout.CENTER);
         } else {
             JTextField textField = new JTextField(stringValue);
-            textField.getDocument().addDocumentListener(new DocumentChangeListener() {
-                @Override
-                public void changed(DocumentEvent documentEvent) {
-                    getParameterAccess().set(textField.getText());
-                }
-            });
+            textComponent = textField;
             add(textField, BorderLayout.CENTER);
         }
+
+        textComponent.getDocument().addDocumentListener(new DocumentChangeListener() {
+            @Override
+            public void changed(DocumentEvent documentEvent) {
+                if (!isReloading) {
+                    skipNextReload = true;
+                    getParameterAccess().set(textComponent.getText());
+                }
+            }
+        });
     }
 
     @Override
     public boolean isUILabelEnabled() {
         return true;
+    }
+
+    @Override
+    public void reload() {
+        if (skipNextReload) {
+            skipNextReload = false;
+            return;
+        }
+        isReloading = true;
+        Object value = getParameterAccess().get();
+        String stringValue = "";
+        if (value != null) {
+            stringValue = "" + value;
+        }
+        textComponent.setText(stringValue);
+        isReloading = false;
     }
 }

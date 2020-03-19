@@ -1,10 +1,7 @@
 package org.hkijena.acaq5.ui.components;
 
 import org.hkijena.acaq5.ACAQRegistryService;
-import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterHolder;
-import org.hkijena.acaq5.api.parameters.ACAQMutableParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
+import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -19,9 +16,9 @@ import java.util.stream.Collectors;
 
 public class ACAQParameterAccessUI extends FormPanel {
     private ACAQWorkbenchUI workbenchUI;
-    private Object parameterHolder;
+    private ACAQParameterHolder parameterHolder;
 
-    public ACAQParameterAccessUI(ACAQWorkbenchUI workbenchUI, Object parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
+    public ACAQParameterAccessUI(ACAQWorkbenchUI workbenchUI, ACAQParameterHolder parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
         super(documentation, documentationBelow, withDocumentation);
         this.workbenchUI = workbenchUI;
         this.parameterHolder = parameterHolder;
@@ -33,7 +30,7 @@ public class ACAQParameterAccessUI extends FormPanel {
         Map<String, ACAQParameterAccess> parameters = ACAQParameterAccess.getParameters(getParameterHolder());
         boolean hasElements = false;
 
-        Map<Object, List<String>> groupedByHolder = parameters.keySet().stream().collect(Collectors.groupingBy(key -> parameters.get(key).getParameterHolder()));
+        Map<ACAQParameterHolder, List<String>> groupedByHolder = parameters.keySet().stream().collect(Collectors.groupingBy(key -> parameters.get(key).getParameterHolder()));
 
         // First display all parameters of the current holder
         if (groupedByHolder.containsKey(parameterHolder)) {
@@ -59,7 +56,7 @@ public class ACAQParameterAccessUI extends FormPanel {
         }
 
         // Display parameters of all other holders
-        for (Object parameterHolder : groupedByHolder.keySet()) {
+        for (ACAQParameterHolder parameterHolder : groupedByHolder.keySet()) {
             if (parameterHolder == this.parameterHolder)
                 continue;
 
@@ -174,7 +171,7 @@ public class ACAQParameterAccessUI extends FormPanel {
         }
     }
 
-    public Object getParameterHolder() {
+    public ACAQParameterHolder getParameterHolder() {
         return parameterHolder;
     }
 }
