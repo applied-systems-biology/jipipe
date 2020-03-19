@@ -1,0 +1,92 @@
+{
+  "id" : "list-and-filter-files-1",
+  "metadata" : {
+    "name" : "List and filter files",
+    "description" : "Lists all files in a directory and then filters them",
+    "authors" : "",
+    "website" : "",
+    "license" : "",
+    "citation" : ""
+  },
+  "category" : "FileSystem",
+  "parameter-visibilities" : {
+    "visible-keys" : [ "default-preprocessing-filter-files/filter" ]
+  },
+  "graph" : {
+    "nodes" : {
+      "default-preprocessing-filter-files" : {
+        "acaq:slot-configuration" : {
+          "Files" : {
+            "slot-class" : "org.hkijena.acaq5.filesystem.api.dataypes.ACAQFileData",
+            "slot-type" : "Input",
+            "name" : "Files"
+          },
+          "Filtered files" : {
+            "slot-class" : "org.hkijena.acaq5.filesystem.api.dataypes.ACAQFileData",
+            "slot-type" : "Output",
+            "name" : "Filtered files"
+          }
+        },
+        "acaq:algorithm-ui-location" : { },
+        "acaq:algorithm-type" : "acaq:default:org.hkijena.acaq5.filesystem.api.algorithms.ACAQFilterFiles",
+        "acaq:algorithm-compartment" : "DEFAULT",
+        "filter" : {
+          "mode" : "Contains",
+          "filterString" : null
+        },
+        "name" : "Filter files",
+        "description" : null,
+        "acaq:trait-generation" : {
+          "modification" : {
+            "per-slot" : { },
+            "global" : { }
+          },
+          "transfer" : {
+            "transfers" : [ ],
+            "transfer-all-to-all" : true
+          }
+        },
+        "acaq:dynamic-parameters" : { }
+      },
+      "default-preprocessing-list-files" : {
+        "acaq:slot-configuration" : {
+          "Folders" : {
+            "slot-class" : "org.hkijena.acaq5.filesystem.api.dataypes.ACAQFolderData",
+            "slot-type" : "Input",
+            "name" : "Folders"
+          },
+          "Files" : {
+            "slot-class" : "org.hkijena.acaq5.filesystem.api.dataypes.ACAQFileData",
+            "slot-type" : "Output",
+            "name" : "Files"
+          }
+        },
+        "acaq:algorithm-ui-location" : { },
+        "acaq:algorithm-type" : "acaq:default:org.hkijena.acaq5.filesystem.api.algorithms.ACAQListFiles",
+        "acaq:algorithm-compartment" : "DEFAULT",
+        "name" : "List files",
+        "description" : null,
+        "acaq:trait-generation" : {
+          "modification" : {
+            "per-slot" : { },
+            "global" : { }
+          },
+          "transfer" : {
+            "transfers" : [ ],
+            "transfer-all-to-all" : true
+          }
+        },
+        "acaq:dynamic-parameters" : { }
+      }
+    },
+    "edges" : [ {
+      "source-algorithm" : "default-preprocessing-list-files",
+      "target-algorithm" : "default-preprocessing-filter-files",
+      "source-slot" : "Files",
+      "target-slot" : "Files"
+    } ]
+  },
+  "preferred-traits" : [ ],
+  "unwanted-traits" : [ ],
+  "acaq:project-type" : "graph-wrapper-algorithm"
+}

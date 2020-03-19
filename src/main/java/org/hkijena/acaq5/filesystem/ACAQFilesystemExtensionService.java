@@ -1,7 +1,9 @@
 package org.hkijena.acaq5.filesystem;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.acaq5.ACAQExtensionService;
 import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.extension.api.registries.GraphWrapperAlgorithmRegistrationTask;
 import org.hkijena.acaq5.filesystem.api.algorithms.*;
 import org.hkijena.acaq5.filesystem.api.annotation.ACAQFileAnnotationGenerator;
 import org.hkijena.acaq5.filesystem.api.annotation.ACAQFolderAnnotationGenerator;
@@ -13,13 +15,16 @@ import org.hkijena.acaq5.filesystem.api.dataypes.ACAQFileData;
 import org.hkijena.acaq5.filesystem.api.dataypes.ACAQFolderData;
 import org.hkijena.acaq5.filesystem.ui.resultanalysis.FilesystemDataSlotCellUI;
 import org.hkijena.acaq5.filesystem.ui.resultanalysis.FilesystemDataSlotRowUI;
+import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 @Plugin(type = ACAQExtensionService.class)
 public class ACAQFilesystemExtensionService extends AbstractService implements ACAQExtensionService {
@@ -80,5 +85,20 @@ public class ACAQFilesystemExtensionService extends AbstractService implements A
         registryService.getUIDatatypeRegistry().registerResultTableCellUI(ACAQFileData.class, new FilesystemDataSlotCellUI());
         registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQFolderData.class, FilesystemDataSlotRowUI.class);
         registryService.getUIDatatypeRegistry().registerResultTableCellUI(ACAQFolderData.class, new FilesystemDataSlotCellUI());
+
+        registerAlgorithmResources(registryService);
+    }
+
+    private void registerAlgorithmResources(ACAQRegistryService registryService) {
+        Set<String> algorithmFiles = ResourceUtils.walkInternalResourceFolder("filesystem/api/algorithms");
+        for (String resourceFile : algorithmFiles) {
+            try {
+                JsonNode node = JsonUtils.getObjectMapper().readValue(ResourceUtils.class.getResource(resourceFile), JsonNode.class);
+                GraphWrapperAlgorithmRegistrationTask task = new GraphWrapperAlgorithmRegistrationTask(node);
+                registryService.getAlgorithmRegistry().scheduleRegister(task);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }
