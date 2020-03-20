@@ -30,8 +30,8 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
     private int maxOutputSlots = 32;
 
     public ACAQMutableSlotConfiguration() {
-        allowedInputSlotTypes = new HashSet<>(ACAQDatatypeRegistry.getInstance().getUnhiddenRegisteredDataTypes());
-        allowedOutputSlotTypes = new HashSet<>(ACAQDatatypeRegistry.getInstance().getUnhiddenRegisteredDataTypes());
+        allowedInputSlotTypes = new HashSet<>(ACAQDatatypeRegistry.getInstance().getUnhiddenRegisteredDataTypes().values());
+        allowedOutputSlotTypes = new HashSet<>(ACAQDatatypeRegistry.getInstance().getUnhiddenRegisteredDataTypes().values());
     }
 
     public boolean hasSlot(String name) {
@@ -152,7 +152,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
             if (!slots.containsKey(kv.getKey())) {
                 String name = kv.getValue().get("name").asText();
                 Class<? extends ACAQData> klass = ACAQDatatypeRegistry.getInstance()
-                        .findDataClass(kv.getValue().get("slot-class").asText());
+                        .getById(kv.getValue().get("slot-data-type").asText());
                 if (kv.getValue().get("slot-type").asText().equalsIgnoreCase("input")) {
                     addInputSlot(name, klass);
                 } else {

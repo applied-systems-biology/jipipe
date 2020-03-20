@@ -1,0 +1,116 @@
+package org.hkijena.acaq5.extensions.filesystem.api.datasources;
+
+import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
+import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.api.parameters.PathCollection;
+import org.hkijena.acaq5.extensions.filesystem.api.dataypes.ACAQFolderData;
+import org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors.FilePathParameterSettings;
+import org.hkijena.acaq5.ui.components.FileSelection;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+/**
+ * Provides an input folder
+ */
+@ACAQDocumentation(name = "Folder list")
+@AlgorithmOutputSlot(value = ACAQFolderData.class, slotName = "Folder paths", autoCreate = true)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
+public class ACAQFolderListDataSource extends ACAQAlgorithm {
+
+    private PathCollection folderPaths = new PathCollection();
+    private Path currentWorkingDirectory;
+
+    public ACAQFolderListDataSource(ACAQAlgorithmDeclaration declaration) {
+        super(declaration);
+    }
+
+    public ACAQFolderListDataSource(ACAQFolderListDataSource other) {
+        super(other);
+        this.folderPaths.addAll(other.folderPaths);
+        this.currentWorkingDirectory = other.currentWorkingDirectory;
+    }
+
+    @Override
+    public void run() {
+        for (Path folderPath : folderPaths) {
+            getFirstOutputSlot().addData(new ACAQFolderData(folderPath));
+        }
+    }
+
+    @ACAQParameter("folder-paths")
+    @ACAQDocumentation(name = "Folder paths")
+    @FilePathParameterSettings(ioMode = FileSelection.IOMode.Open, pathMode = FileSelection.PathMode.DirectoriesOnly)
+    public PathCollection getFolderPaths() {
+        return folderPaths;
+    }
+
+    @ACAQParameter("folder-paths")
+    public void setFolderPaths(PathCollection folderPaths) {
+        this.folderPaths = folderPaths;
+        getEventBus().post(new ParameterChangedEvent(this, "folder-paths"));
+    }
+
+    public PathCollection getAbsoluteFolderPaths() {
+        PathCollection result = new PathCollection();
+        for (Path folderPath : folderPaths) {
+            if (folderPath == null)
+                result.add(null);
+            else if (currentWorkingDirectory != null)
+                result.add(currentWorkingDirectory.resolve(folderPath));
+            else
+                result.add(folderPath);
+        }
+        return result;
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+        for (Path folderPath : getAbsoluteFolderPaths()) {
+            if (folderPath == null) {
+                report.reportIsInvalid("An input folder path does not exist! Please provide a valid path.");
+            } else if (!Files.isDirectory(folderPath)) {
+                report.reportIsInvalid("Input folder '" + folderPath + "' does not exist! Please provide a valid path.");
+            }
+        }
+    }
+
+    @Override
+    public void setWorkDirectory(Path workDirectory) {
+        super.setWorkDirectory(workDirectory);
+
+        boolean modified = false;
+        for (int i = 0; i < folderPaths.size(); ++i) {
+            Path folderPath = folderPaths.get(i);
+            if (folderPath != null) {
+                // Make absolute
+                if (!folderPath.isAbsolute()) {
+                    if (currentWorkingDirectory != null) {
+                        folderPath = currentWorkingDirectory.resolve(folderPath);
+                        modified = true;
+                    } else if (workDirectory != null) {
+                        folderPath = workDirectory.resolve(folderPath);
+                        modified = true;
+                    }
+                }
+                // Make relative if already absolute and workDirectory != null
+                if (folderPath.isAbsolute()) {
+                    if (workDirectory != null && folderPath.startsWith(workDirectory)) {
+                        folderPath = workDirectory.relativize(folderPath);
+                        modified = true;
+                    }
+                }
+
+                if (modified)
+                    this.folderPaths.set(i, folderPath);
+            }
+        }
+        currentWorkingDirectory = workDirectory;
+        if (modified) {
+            getEventBus().post(new ParameterChangedEvent(this, "folder-paths"));
+        }
+    }
+}

@@ -1,6 +1,8 @@
 package org.hkijena.acaq5.api.registries;
 
+import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.api.events.TraitRegisteredEvent;
 import org.hkijena.acaq5.api.traits.ACAQDefaultTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
@@ -15,6 +17,7 @@ import java.util.Objects;
  */
 public class ACAQTraitRegistry {
     private Map<String, ACAQTraitDeclaration> registeredTraits = new HashMap<>();
+    private EventBus eventBus = new EventBus();
 
     public ACAQTraitRegistry() {
 
@@ -26,6 +29,7 @@ public class ACAQTraitRegistry {
 
     public void register(ACAQTraitDeclaration declaration) {
         registeredTraits.put(declaration.getId(), declaration);
+        eventBus.post(new TraitRegisteredEvent(declaration));
     }
 
     public ACAQTraitDeclaration getDefaultDeclarationFor(Class<? extends ACAQTrait> klass) {
@@ -42,6 +46,14 @@ public class ACAQTraitRegistry {
 
     public Map<String, ACAQTraitDeclaration> getRegisteredTraits() {
         return Collections.unmodifiableMap(registeredTraits);
+    }
+
+    public boolean hasTraitWithId(String id) {
+        return registeredTraits.containsKey(id);
+    }
+
+    public EventBus getEventBus() {
+        return eventBus;
     }
 
     public static ACAQTraitRegistry getInstance() {

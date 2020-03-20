@@ -2,10 +2,10 @@ package org.hkijena.acaq5.ui.grapheditor;
 
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
-import org.hkijena.acaq5.filesystem.api.datasources.ACAQFileDataSource;
-import org.hkijena.acaq5.filesystem.api.datasources.ACAQFileListDataSource;
-import org.hkijena.acaq5.filesystem.api.datasources.ACAQFolderDataSource;
-import org.hkijena.acaq5.filesystem.api.datasources.ACAQFolderListDataSource;
+import org.hkijena.acaq5.extensions.filesystem.api.datasources.ACAQFileDataSource;
+import org.hkijena.acaq5.extensions.filesystem.api.datasources.ACAQFileListDataSource;
+import org.hkijena.acaq5.extensions.filesystem.api.datasources.ACAQFolderDataSource;
+import org.hkijena.acaq5.extensions.filesystem.api.datasources.ACAQFolderListDataSource;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;

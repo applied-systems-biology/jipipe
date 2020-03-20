@@ -1,0 +1,50 @@
+package org.hkijena.acaq5.extensions.imagejdatatypes.datasources;
+
+import ij.IJ;
+import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
+import org.hkijena.acaq5.extensions.filesystem.api.dataypes.ACAQFileData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ACAQMultichannelImageData;
+
+import java.nio.file.Path;
+
+/**
+ * Loads greyscale data from a file via IJ.openFile()
+ */
+@ACAQDocumentation(name = "Multichannel image from file")
+@AlgorithmInputSlot(value = ACAQFileData.class, slotName = "Files", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQMultichannelImageData.class, slotName = "Multichannel Image", autoCreate = true)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
+public class ACAQMultichannelImageDataFromFile extends ACAQIteratingAlgorithm {
+
+    public ACAQMultichannelImageDataFromFile(ACAQAlgorithmDeclaration declaration) {
+        super(declaration);
+    }
+
+    public ACAQMultichannelImageDataFromFile(ACAQMultichannelImageDataFromFile other) {
+        super(other);
+    }
+
+    @Override
+    protected void initializeTraits() {
+        super.initializeTraits();
+        ((ACAQDefaultMutableTraitConfiguration) getTraitConfiguration()).setTraitModificationsSealed(false);
+    }
+
+    @Override
+    protected void runIteration(ACAQDataInterface dataInterface) {
+        ACAQFileData fileData = dataInterface.getInputData(getFirstInputSlot());
+        dataInterface.addOutputData(getFirstOutputSlot(), readImageFrom(fileData.getFilePath()));
+    }
+
+    protected ACAQData readImageFrom(Path fileName) {
+        return new ACAQMultichannelImageData(IJ.openImage(fileName.toString()));
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+    }
+}

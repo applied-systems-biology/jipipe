@@ -26,7 +26,7 @@ public class ACAQExportedDataTable implements TableModel {
     private String algorithmId;
     private String slotName;
     private Path internalPath;
-    private Class<?> acceptedDataType;
+    private Class<? extends ACAQData> acceptedDataType;
     private List<Row> rowList;
     private List<ACAQTraitDeclaration> traitColumns;
 
@@ -79,13 +79,13 @@ public class ACAQExportedDataTable implements TableModel {
     }
 
     @JsonGetter("data-type")
-    public String getAcceptedDataTypeClassName() {
-        return acceptedDataType.getCanonicalName();
+    public String getAcceptedDataTypeId() {
+        return ACAQDatatypeRegistry.getInstance().getIdOf(acceptedDataType);
     }
 
     @JsonSetter("data-type")
-    public void setAcceptedDataTypeClassName(String className) {
-        this.acceptedDataType = ACAQDatatypeRegistry.getInstance().findDataClass(className);
+    public void setAcceptedDataTypeId(String id) {
+        this.acceptedDataType = ACAQDatatypeRegistry.getInstance().getById(id);
     }
 
     @JsonGetter("rows")
@@ -108,7 +108,7 @@ public class ACAQExportedDataTable implements TableModel {
             table.incrementCounter();
             table.addValue("acaq:algorithm-id", algorithmId);
             table.addValue("acaq:slot", slotName);
-            table.addValue("acaq:data-type", acceptedDataType.getCanonicalName());
+            table.addValue("acaq:data-type", ACAQDatatypeRegistry.getInstance().getIdOf(acceptedDataType));
             table.addValue("acaq:internal-path", internalPath.toString());
             table.addValue("acaq:location", row.location.toString());
             for (ACAQTraitDeclaration traitColumn : getTraitColumns()) {

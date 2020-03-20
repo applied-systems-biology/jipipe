@@ -21,15 +21,27 @@ import java.util.stream.Collectors;
 @Plugin(type = ACAQService.class)
 public class ACAQRegistryService extends AbstractService implements ACAQService {
     private static ACAQRegistryService instance;
-    private List<ACAQExtensionService> registeredExtensions = new ArrayList<>();
-    private ACAQAlgorithmRegistry algorithmRegistry = new ACAQAlgorithmRegistry();
-    private ACAQDatatypeRegistry datatypeRegistry = new ACAQDatatypeRegistry();
-    private ACAQTraitRegistry traitRegistry = new ACAQTraitRegistry();
-    private ACAQUIDatatypeRegistry uiDatatypeRegistry = new ACAQUIDatatypeRegistry();
-    private ACAQUIParametertypeRegistry uiParametertypeRegistry = new ACAQUIParametertypeRegistry();
-    private ACAQUITraitRegistry acaquiTraitRegistry = new ACAQUITraitRegistry();
-    private ACAQPlotBuilderRegistry plotBuilderRegistry = new ACAQPlotBuilderRegistry();
-    private ACAQTableAnalyzerUIOperationRegistry tableAnalyzerUIOperationRegistry = new ACAQTableAnalyzerUIOperationRegistry();
+    private List<ACAQExtensionService> registeredExtensions;
+    private ACAQAlgorithmRegistry algorithmRegistry;
+    private ACAQDatatypeRegistry datatypeRegistry;
+    private ACAQTraitRegistry traitRegistry;
+    private ACAQUIDatatypeRegistry uiDatatypeRegistry;
+    private ACAQUIParametertypeRegistry uiParametertypeRegistry;
+    private ACAQUITraitRegistry acaquiTraitRegistry;
+    private ACAQPlotBuilderRegistry plotBuilderRegistry;
+    private ACAQTableAnalyzerUIOperationRegistry tableAnalyzerUIOperationRegistry;
+
+    public ACAQRegistryService() {
+        registeredExtensions = new ArrayList<>();
+        traitRegistry = new ACAQTraitRegistry();
+        datatypeRegistry = new ACAQDatatypeRegistry();
+        algorithmRegistry = new ACAQAlgorithmRegistry();
+        uiDatatypeRegistry = new ACAQUIDatatypeRegistry();
+        uiParametertypeRegistry = new ACAQUIParametertypeRegistry();
+        acaquiTraitRegistry = new ACAQUITraitRegistry();
+        plotBuilderRegistry = new ACAQPlotBuilderRegistry();
+        tableAnalyzerUIOperationRegistry = new ACAQTableAnalyzerUIOperationRegistry();
+    }
 
     /**
      * Discovers extension services that provide new ACAQ5 modules
@@ -93,6 +105,10 @@ public class ACAQRegistryService extends AbstractService implements ACAQService 
         return tableAnalyzerUIOperationRegistry;
     }
 
+    private void installEvents() {
+        algorithmRegistry.installEvents();
+    }
+
     public static ACAQRegistryService getInstance() {
         return instance;
     }
@@ -106,6 +122,7 @@ public class ACAQRegistryService extends AbstractService implements ACAQService 
         if (instance == null) {
             try {
                 instance = (ACAQRegistryService) pluginService.getPlugin(ACAQRegistryService.class).createInstance();
+                instance.installEvents();
                 instance.discover(pluginService);
             } catch (InstantiableException e) {
                 throw new RuntimeException(e);

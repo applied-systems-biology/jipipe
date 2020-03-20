@@ -7,7 +7,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
-import org.hkijena.acaq5.api.events.AlgorithmRegistryChangedEvent;
+import org.hkijena.acaq5.api.events.AlgorithmRegisteredEvent;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
@@ -95,7 +95,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
     }
 
     @Subscribe
-    public void onAlgorithmRegistryChanged(AlgorithmRegistryChangedEvent event) {
+    public void onAlgorithmRegistryChanged(AlgorithmRegisteredEvent event) {
         reloadMenuBar();
         getWorkbenchUI().sendStatusBarText("Plugins were updated");
     }
@@ -211,7 +211,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
 
     private void initializeAddDataSourceMenu(JMenu menu) {
         ACAQRegistryService registryService = ACAQRegistryService.getInstance();
-        for (Class<? extends ACAQData> dataClass : registryService.getDatatypeRegistry().getRegisteredDataTypes().stream()
+        for (Class<? extends ACAQData> dataClass : registryService.getDatatypeRegistry().getRegisteredDataTypes().values().stream()
                 .sorted(Comparator.comparing(ACAQData::getNameOf)).collect(Collectors.toList())) {
             if (ACAQDatatypeRegistry.getInstance().isHidden(dataClass))
                 continue;

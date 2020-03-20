@@ -43,7 +43,7 @@ public class ACAQSlotDefinition {
         @Override
         public void serialize(ACAQSlotDefinition definition, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             jsonGenerator.writeStartObject();
-            jsonGenerator.writeStringField("slot-class", definition.dataClass.getCanonicalName());
+            jsonGenerator.writeStringField("slot-data-type", ACAQDatatypeRegistry.getInstance().getIdOf(definition.dataClass));
             jsonGenerator.writeStringField("slot-type", definition.slotType.name());
             jsonGenerator.writeStringField("name", definition.name);
             jsonGenerator.writeEndObject();
@@ -55,7 +55,7 @@ public class ACAQSlotDefinition {
         @Override
         public ACAQSlotDefinition deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-            return new ACAQSlotDefinition(ACAQDatatypeRegistry.getInstance().findDataClass(node.get("slot-class").asText()),
+            return new ACAQSlotDefinition(ACAQDatatypeRegistry.getInstance().getById(node.get("slot-data-type").asText()),
                     ACAQDataSlot.SlotType.valueOf(node.get("slot-type").asText()),
                     node.get("name").asText());
         }

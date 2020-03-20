@@ -50,7 +50,7 @@ public class ACAQCompartmentsExtensionService extends AbstractService implements
         registryService.getAlgorithmRegistry().register(ACAQCompartmentOutput.class);
         registryService.getAlgorithmRegistry().register(ACAQProjectCompartment.class);
 
-        registryService.getDatatypeRegistry().register(ACAQCompartmentOutputData.class);
+        registryService.getDatatypeRegistry().register("acaq:compartment-output", ACAQCompartmentOutputData.class);
         registryService.getUIDatatypeRegistry().registerIcon(ACAQCompartmentOutputData.class,
                 ResourceUtils.getPluginResource("icons/data-types/graph-compartment.png"));
     }

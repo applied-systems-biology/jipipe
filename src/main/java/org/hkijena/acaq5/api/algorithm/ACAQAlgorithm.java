@@ -23,7 +23,7 @@ import org.hkijena.acaq5.api.data.traits.ConfigTraits;
 import org.hkijena.acaq5.api.events.*;
 import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
-import org.hkijena.acaq5.extension.ui.parametereditors.StringParameterSettings;
+import org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors.StringParameterSettings;
 import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.awt.*;

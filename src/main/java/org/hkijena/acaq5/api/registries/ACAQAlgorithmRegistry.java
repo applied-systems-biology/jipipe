@@ -2,6 +2,7 @@ package org.hkijena.acaq5.api.registries;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQRegistryService;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
@@ -9,7 +10,8 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQDefaultAlgorithmDeclaration;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.traits.*;
-import org.hkijena.acaq5.api.events.AlgorithmRegistryChangedEvent;
+import org.hkijena.acaq5.api.events.AlgorithmRegisteredEvent;
+import org.hkijena.acaq5.api.events.TraitRegisteredEvent;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 
 import java.util.*;
@@ -43,6 +45,7 @@ public class ACAQAlgorithmRegistry {
     public void runRegistrationTasks() {
         if (registrationTasks.isEmpty())
             return;
+        System.out.println("There are still " + registrationTasks.size() + " unregistered algorithms waiting for dependencies");
         boolean changed = true;
         while (changed) {
             changed = false;
@@ -78,7 +81,8 @@ public class ACAQAlgorithmRegistry {
      */
     public void register(ACAQAlgorithmDeclaration declaration) {
         registeredAlgorithms.put(declaration.getId(), declaration);
-        eventBus.post(new AlgorithmRegistryChangedEvent());
+        eventBus.post(new AlgorithmRegisteredEvent(declaration));
+        System.out.println("Registered algorithm '" + declaration.getName() + "' [" + declaration.getId() + "]");
         runRegistrationTasks();
     }
 
@@ -199,6 +203,15 @@ public class ACAQAlgorithmRegistry {
 
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    public void installEvents() {
+        ACAQRegistryService.getInstance().getTraitRegistry().getEventBus().register(this);
+    }
+
+    @Subscribe
+    public void onTraitRegistered(TraitRegisteredEvent event) {
+        runRegistrationTasks();
     }
 
     public static ACAQAlgorithmRegistry getInstance() {
