@@ -10,6 +10,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.traits.ACAQDataSlotTraitConfiguration;
+import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
@@ -29,7 +30,9 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     private ACAQAlgorithmCategory category = ACAQAlgorithmCategory.Miscellaneous;
     private Set<ACAQTraitDeclaration> preferredTraits = new HashSet<>();
     private Set<ACAQTraitDeclaration> unwantedTraits = new HashSet<>();
-    private ACAQDataSlotTraitConfiguration dataSlotTraitConfiguration = new ACAQDataSlotTraitConfiguration();
+    private Set<ACAQTraitDeclaration> addedTraits = new HashSet<>();
+    private Set<ACAQTraitDeclaration> removedTraits = new HashSet<>();
+    private ACAQDataSlotTraitConfiguration dataSlotTraitConfiguration;
     private List<AlgorithmInputSlot> inputSlots = new ArrayList<>();
     private List<AlgorithmOutputSlot> outputSlots = new ArrayList<>();
     private ACAQParameterCollectionVisibilities parameterCollectionVisibilities = new ACAQParameterCollectionVisibilities();
@@ -113,11 +116,16 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
 
     @Override
     public ACAQDataSlotTraitConfiguration getSlotTraitConfiguration() {
+        if(dataSlotTraitConfiguration == null) {
+            dataSlotTraitConfiguration = new ACAQDataSlotTraitConfiguration();
+            for (ACAQTraitDeclaration addedTrait : addedTraits) {
+                dataSlotTraitConfiguration.set(addedTrait, ACAQTraitModificationOperation.Add);
+            }
+            for (ACAQTraitDeclaration removedTrait : removedTraits) {
+                dataSlotTraitConfiguration.set(removedTrait, ACAQTraitModificationOperation.RemoveCategory);
+            }
+        }
         return dataSlotTraitConfiguration;
-    }
-
-    public void setSlotTraitConfiguration(ACAQDataSlotTraitConfiguration dataSlotTraitConfiguration) {
-        this.dataSlotTraitConfiguration = dataSlotTraitConfiguration;
     }
 
     @Override
@@ -162,6 +170,40 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
             unwantedTraits.add(declarationRef.getDeclaration());
         }
         getEventBus().post(new ParameterChangedEvent(this, "unwanted-traits"));
+    }
+
+    @ACAQDocumentation(name = "Added annotations", description = "Annotations that are added to the algorithm outputs")
+    @ACAQParameter("added-traits")
+    @JsonGetter("added-traits")
+    public ACAQTraitDeclarationRefCollection getAddedTraitIds() {
+        return new ACAQTraitDeclarationRefCollection(addedTraits.stream().map(ACAQTraitDeclarationRef::new).collect(Collectors.toList()));
+    }
+
+    @ACAQParameter("added-traits")
+    @JsonGetter("added-traits")
+    public void setAddedTraitIds(ACAQTraitDeclarationRefCollection ids) {
+        addedTraits.clear();
+        for (ACAQTraitDeclarationRef declarationRef : ids) {
+            addedTraits.add(declarationRef.getDeclaration());
+        }
+        getEventBus().post(new ParameterChangedEvent(this, "added-traits"));
+    }
+
+    @ACAQDocumentation(name = "Removed annotations", description = "Annotations that are removed from algorithm inputs")
+    @ACAQParameter("removed-traits")
+    @JsonGetter("removed-traits")
+    public ACAQTraitDeclarationRefCollection getRemovedTraitIds() {
+        return new ACAQTraitDeclarationRefCollection(removedTraits.stream().map(ACAQTraitDeclarationRef::new).collect(Collectors.toList()));
+    }
+
+    @ACAQParameter("removed-traits")
+    @JsonGetter("removed-traits")
+    public void setRemovedTraitIds(ACAQTraitDeclarationRefCollection ids) {
+        removedTraits.clear();
+        for (ACAQTraitDeclarationRef declarationRef : ids) {
+            removedTraits.add(declarationRef.getDeclaration());
+        }
+        getEventBus().post(new ParameterChangedEvent(this, "removed-traits"));
     }
 
     @JsonGetter("metadata")
