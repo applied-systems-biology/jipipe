@@ -226,11 +226,15 @@ public class ACAQAlgorithmUI extends JPanel {
             }
         }
 
+        final int displayedRows = getDisplayedRows();
+        int createdOutputSlots = 0;
+        int createdInputSlots = 0;
+
         if (createInputSlots && algorithm.getInputSlots().size() > 0) {
             List<ACAQDataSlot> slots = algorithm.getInputSlots();
             for (int i = 0; i < slots.size(); ++i) {
                 int bottomBorder = 0;
-                if (i < getDisplayedRows() - 1)
+                if (i < displayedRows - 1)
                     bottomBorder = 1;
 
                 ACAQDataSlot slot = slots.get(i);
@@ -239,13 +243,14 @@ public class ACAQAlgorithmUI extends JPanel {
                         BorderFactory.createEmptyBorder(0, 0, 0, 4)));
                 slotUIList.add(ui);
                 inputSlotPanel.add(ui);
+                ++createdInputSlots;
             }
         }
         if (createOutputSlots && algorithm.getOutputSlots().size() > 0) {
             List<ACAQDataSlot> slots = algorithm.getOutputSlots();
             for (int i = 0; i < slots.size(); ++i) {
                 int bottomBorder = 0;
-                if (i < getDisplayedRows() - 1)
+                if (i < displayedRows - 1)
                     bottomBorder = 1;
                 ACAQDataSlot slot = slots.get(i);
                 ACAQDataSlotUI ui = new ACAQDataSlotUI(graphUI.getAlgorithmGraph(), graphUI.getCompartment(), slot);
@@ -253,22 +258,29 @@ public class ACAQAlgorithmUI extends JPanel {
                         BorderFactory.createEmptyBorder(0, 4, 0, 0)));
                 slotUIList.add(ui);
                 outputSlotPanel.add(ui);
+                ++createdOutputSlots;
             }
         }
 
         // Create slot for adding new output
         if (createAddInputSlotButton) {
+            int bottomBorder = 0;
+            if (createdInputSlots < displayedRows - 1)
+                bottomBorder = 1;
             JButton addInputSlotButton = createAddSlotButton(ACAQDataSlot.SlotType.Input);
             JPanel panel = new JPanel(new BorderLayout());
-            panel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, borderColor),
+            panel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, bottomBorder, 1, borderColor),
                     BorderFactory.createEmptyBorder(0, 0, 0, 4)));
             panel.add(addInputSlotButton, BorderLayout.WEST);
             inputSlotPanel.add(panel);
         }
         if (createAddOutputSlotButton) {
+            int bottomBorder = 0;
+            if (createdOutputSlots < displayedRows - 1)
+                bottomBorder = 1;
             JButton addOutputSlotButton = createAddSlotButton(ACAQDataSlot.SlotType.Output);
             JPanel panel = new JPanel(new BorderLayout());
-            panel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, borderColor),
+            panel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 1, bottomBorder, 0, borderColor),
                     BorderFactory.createEmptyBorder(0, 4, 0, 0)));
             panel.add(addOutputSlotButton, BorderLayout.EAST);
             outputSlotPanel.add(panel);
