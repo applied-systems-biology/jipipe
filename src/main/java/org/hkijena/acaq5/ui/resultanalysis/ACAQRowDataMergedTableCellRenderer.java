@@ -21,7 +21,7 @@ public class ACAQRowDataMergedTableCellRenderer implements TableCellRenderer {
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         if (value instanceof ACAQExportedDataTable.Row) {
-            ACAQMergedExportedDataTable model = (ACAQMergedExportedDataTable)table.getModel();
+            ACAQMergedExportedDataTable model = (ACAQMergedExportedDataTable) table.getModel();
             ACAQDataSlot slot = model.getSlot(row);
             ACAQResultDataSlotCellUI renderer = ACAQUIDatatypeRegistry.getInstance().getCellRendererFor(slot.getAcceptedDataType());
             renderer.render(workbenchUI, slot, (ACAQExportedDataTable.Row) value);

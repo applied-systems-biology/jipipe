@@ -19,7 +19,7 @@ public class ACAQProjectCompartmentTableCellRenderer extends JLabel implements T
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 
         if (value instanceof ACAQAlgorithm) {
-            ACAQAlgorithm algorithm = (ACAQAlgorithm)value;
+            ACAQAlgorithm algorithm = (ACAQAlgorithm) value;
             setText(algorithm.getName());
         }
 

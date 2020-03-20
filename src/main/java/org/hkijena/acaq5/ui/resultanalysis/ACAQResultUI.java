@@ -4,7 +4,6 @@ import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.data.ACAQMergedExportedDataTable;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -54,14 +53,11 @@ public class ACAQResultUI extends ACAQUIPanel {
                 Object userObject = ((DefaultMutableTreeNode) lastPathComponent).getUserObject();
                 if (userObject instanceof ACAQDataSlot) {
                     showDataSlot((ACAQDataSlot) userObject);
-                }
-                else if(userObject instanceof ACAQProjectCompartment) {
-                    showDataSlotsOfCompartment((ACAQProjectCompartment)userObject);
-                }
-                else if(userObject instanceof ACAQAlgorithm) {
-                    showDataSlotsOfAlgorithm((ACAQAlgorithm)userObject);
-                }
-                else {
+                } else if (userObject instanceof ACAQProjectCompartment) {
+                    showDataSlotsOfCompartment((ACAQProjectCompartment) userObject);
+                } else if (userObject instanceof ACAQAlgorithm) {
+                    showDataSlotsOfAlgorithm((ACAQAlgorithm) userObject);
+                } else {
                     showAllDataSlots();
                 }
             }
@@ -95,7 +91,7 @@ public class ACAQResultUI extends ACAQUIPanel {
     private void showDataSlotsOfCompartment(ACAQProjectCompartment compartment) {
         List<ACAQDataSlot> result = new ArrayList<>();
         for (ACAQAlgorithm algorithm : run.getGraph().getAlgorithmNodes().values()) {
-            if(algorithm.getCompartment().equals(compartment.getProjectCompartmentId())) {
+            if (algorithm.getCompartment().equals(compartment.getProjectCompartmentId())) {
                 for (ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
                     if (Files.exists(outputSlot.getStoragePath().resolve("data-table.json"))) {
                         result.add(outputSlot);

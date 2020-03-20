@@ -8,6 +8,7 @@ import org.hkijena.acaq5.api.events.CompartmentRemovedEvent;
 import org.hkijena.acaq5.ui.compartments.ACAQCompartmentGraphUI;
 import org.hkijena.acaq5.ui.compartments.ACAQCompartmentUI;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
+import org.hkijena.acaq5.ui.components.RecentProjectsMenu;
 import org.hkijena.acaq5.ui.running.ACAQRunSettingsUI;
 import org.hkijena.acaq5.ui.running.ACAQRunnerQueueUI;
 import org.hkijena.acaq5.ui.settings.ACAQProjectSettingsUI;
@@ -150,6 +151,9 @@ public class ACAQWorkbenchUI extends JPanel {
         openProjectOutputButton.addActionListener(e -> window.openProjectAndOutput());
         projectMenu.add(openProjectOutputButton);
 
+        // Recent projects entry
+        projectMenu.add(new RecentProjectsMenu("Recent projects", UIUtils.getIconFromResources("clock.png"), getWindow()));
+
         projectMenu.addSeparator();
 
         // "Save project" entry
@@ -251,7 +255,7 @@ public class ACAQWorkbenchUI extends JPanel {
         return project;
     }
 
-    public Frame getWindow() {
+    public ACAQWorkbenchWindow getWindow() {
         return window;
     }
 

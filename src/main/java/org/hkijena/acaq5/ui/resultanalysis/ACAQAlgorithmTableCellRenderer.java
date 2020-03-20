@@ -6,7 +6,6 @@ import org.hkijena.acaq5.utils.UIUtils;
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
-import java.nio.file.Path;
 
 public class ACAQAlgorithmTableCellRenderer extends JLabel implements TableCellRenderer {
 
@@ -19,7 +18,7 @@ public class ACAQAlgorithmTableCellRenderer extends JLabel implements TableCellR
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 
         if (value instanceof ACAQAlgorithm) {
-            ACAQAlgorithm algorithm = (ACAQAlgorithm)value;
+            ACAQAlgorithm algorithm = (ACAQAlgorithm) value;
             setIcon(UIUtils.getIconFromColor(UIUtils.getFillColorFor(algorithm.getDeclaration())));
             setText(algorithm.getName());
         }

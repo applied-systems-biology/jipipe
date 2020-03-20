@@ -14,9 +14,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.stream.Collectors;
-import java.util.List;
 
 public class ACAQResultAlgorithmTree extends ACAQUIPanel {
     private ACAQRun run;

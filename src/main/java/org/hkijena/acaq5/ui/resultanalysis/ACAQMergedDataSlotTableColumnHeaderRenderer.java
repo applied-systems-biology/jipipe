@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.ui.resultanalysis;
 
-import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
 import org.hkijena.acaq5.api.data.ACAQMergedExportedDataTable;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;

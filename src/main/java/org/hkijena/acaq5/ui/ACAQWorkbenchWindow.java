@@ -5,11 +5,13 @@ import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultUI;
+import org.hkijena.acaq5.ui.settings.ACAQApplicationSettings;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class ACAQWorkbenchWindow extends JFrame {
@@ -53,38 +55,29 @@ public class ACAQWorkbenchWindow extends JFrame {
         window.getProjectUI().sendStatusBarText("Created new project");
     }
 
-    public void openProject() {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fileChooser.setDialogTitle("Open project (*.json)");
-        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+    public void openProject(Path path) {
+        if (Files.isRegularFile(path)) {
             try {
-                ACAQProject project = ACAQProject.loadProject(fileChooser.getSelectedFile().toPath());
-                project.setWorkDirectory(fileChooser.getSelectedFile().toPath().getParent());
+                ACAQProject project = ACAQProject.loadProject(path);
+                project.setWorkDirectory(path.getParent());
                 ACAQWorkbenchWindow window = openProjectInThisOrNewWindow("Open project", project);
                 if (window == null)
                     return;
-                window.projectSavePath = fileChooser.getSelectedFile().toPath();
+                window.projectSavePath = path;
                 window.getProjectUI().sendStatusBarText("Opened project from " + window.projectSavePath);
                 window.setTitle(window.projectSavePath.toString());
+                ACAQApplicationSettings.getInstance().addRecentProject(path);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }
-    }
-
-    public void openProjectAndOutput() {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        fileChooser.setDialogTitle("Open project output folder");
-        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+        } else if (Files.isDirectory(path)) {
             try {
-                ACAQRun run = ACAQRun.loadFromFolder(fileChooser.getSelectedFile().toPath());
-                run.getProject().setWorkDirectory(fileChooser.getSelectedFile().toPath());
+                ACAQRun run = ACAQRun.loadFromFolder(path);
+                run.getProject().setWorkDirectory(path);
                 ACAQWorkbenchWindow window = openProjectInThisOrNewWindow("Open ACAQ output", run.getProject());
                 if (window == null)
                     return;
-                window.projectSavePath = fileChooser.getSelectedFile().toPath().resolve("parameters.json");
+                window.projectSavePath = path.resolve("parameters.json");
                 window.getProjectUI().sendStatusBarText("Opened project from " + window.projectSavePath);
                 window.setTitle(window.projectSavePath.toString());
 
@@ -94,9 +87,28 @@ public class ACAQWorkbenchWindow extends JFrame {
                         new ACAQResultUI(window.projectUI, run),
                         DocumentTabPane.CloseMode.withAskOnCloseButton,
                         true);
+                ACAQApplicationSettings.getInstance().addRecentProject(path);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    public void openProject() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setDialogTitle("Open project (*.json)");
+        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            openProject(fileChooser.getSelectedFile().toPath());
+        }
+    }
+
+    public void openProjectAndOutput() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fileChooser.setDialogTitle("Open project output folder");
+        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            openProject(fileChooser.getSelectedFile().toPath());
         }
     }
 

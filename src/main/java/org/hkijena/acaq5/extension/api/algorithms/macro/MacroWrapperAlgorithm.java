@@ -20,6 +20,7 @@ import org.hkijena.acaq5.extension.api.datatypes.*;
 import org.hkijena.acaq5.extension.api.macro.MacroCode;
 import org.hkijena.acaq5.utils.MacroUtils;
 
+import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -61,6 +62,7 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
     private ACAQDynamicParameterHolder macroParameters = new ACAQDynamicParameterHolder(ALLOWED_PARAMETER_CLASSES);
 
     private List<ImagePlus> initiallyOpenedImages = new ArrayList<>();
+    private List<Window> initiallyOpenedWindows = new ArrayList<>();
 
     public MacroWrapperAlgorithm(ACAQAlgorithmDeclaration declaration) {
         super(declaration, ACAQMutableSlotConfiguration.builder().restrictInputTo(IMAGEJ_DATA_CLASSES.toArray(new Class[0]))
@@ -75,6 +77,7 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface) {
+        backupWindows();
         prepareInputData(dataInterface);
 
         StringBuilder finalCode = new StringBuilder();
@@ -116,7 +119,7 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
             throw new RuntimeException(e);
         } finally {
             passOutputData(dataInterface);
-            clearData(dataInterface);
+            clearData();
         }
     }
 
@@ -138,7 +141,7 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
         }
     }
 
-    private void clearData(ACAQDataInterface dataInterface) {
+    private void clearData() {
         RoiManager.getRoiManager().reset();
         RoiManager.getRoiManager().close();
         ResultsTable.getResultsTable().reset();
@@ -146,6 +149,21 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
             ImagePlus image = WindowManager.getImage(i + 1);
             if (!initiallyOpenedImages.contains(image)) {
                 image.close();
+            }
+        }
+        closeAdditionalWindows();
+    }
+
+    private void backupWindows() {
+        initiallyOpenedWindows.clear();
+        initiallyOpenedWindows.addAll(Arrays.asList(WindowManager.getAllNonImageWindows()));
+    }
+
+    private void closeAdditionalWindows() {
+        for (Window window : WindowManager.getAllNonImageWindows()) {
+            if (!initiallyOpenedWindows.contains(window)) {
+                window.setVisible(false);
+                window.dispose();
             }
         }
     }

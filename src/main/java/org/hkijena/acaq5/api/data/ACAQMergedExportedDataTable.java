@@ -3,7 +3,6 @@ package org.hkijena.acaq5.api.data;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
-import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 
@@ -23,7 +22,7 @@ public class ACAQMergedExportedDataTable implements TableModel {
 
     public void add(ACAQProject project, ACAQDataSlot dataSlot, ACAQExportedDataTable table) {
         for (ACAQTraitDeclaration traitColumn : table.getTraitColumns()) {
-            if(!traitColumns.contains(traitColumn))
+            if (!traitColumns.contains(traitColumn))
                 traitColumns.add(traitColumn);
         }
         String compartmentName = dataSlot.getAlgorithm().getCompartment();
@@ -50,9 +49,9 @@ public class ACAQMergedExportedDataTable implements TableModel {
 
     @Override
     public String getColumnName(int columnIndex) {
-        if(columnIndex == 0)
+        if (columnIndex == 0)
             return "Compartment";
-        else if(columnIndex == 1)
+        else if (columnIndex == 1)
             return "Algorithm";
         if (columnIndex == 2)
             return "Location";
@@ -64,9 +63,9 @@ public class ACAQMergedExportedDataTable implements TableModel {
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
-        if(columnIndex == 0)
+        if (columnIndex == 0)
             return ACAQProjectCompartment.class;
-        else if(columnIndex == 1)
+        else if (columnIndex == 1)
             return ACAQAlgorithm.class;
         if (columnIndex == 2)
             return Path.class;
@@ -85,7 +84,7 @@ public class ACAQMergedExportedDataTable implements TableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         if (columnIndex == 0)
             return compartmentList.get(rowIndex);
-        else if(columnIndex == 1)
+        else if (columnIndex == 1)
             return algorithmList.get(rowIndex);
         else if (columnIndex == 2)
             return rowList.get(rowIndex).getLocation();

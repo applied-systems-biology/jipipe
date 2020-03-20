@@ -25,8 +25,8 @@ import java.util.List;
 
 public class ACAQMultipleResultDataSlotTableUI extends ACAQUIPanel {
 
-    private ACAQRun run;
     private final List<ACAQDataSlot> slots;
+    private ACAQRun run;
     private JXTable table;
     private ACAQMergedExportedDataTable mergedDataTable;
     private FormPanel rowUIList;
