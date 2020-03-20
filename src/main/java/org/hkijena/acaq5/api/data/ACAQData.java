@@ -2,9 +2,13 @@ package org.hkijena.acaq5.api.data;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQOrganization;
+import org.hkijena.acaq5.utils.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Base class for any ACAQ data wrapper class
@@ -50,6 +54,52 @@ public interface ACAQData {
         } else {
             return null;
         }
+    }
+
+    /**
+     * Returns the menu path of the data type
+     *
+     * @param klass
+     * @return
+     */
+    static String getMenuPathOf(Class<? extends ACAQData> klass) {
+        ACAQOrganization[] annotations = klass.getAnnotationsByType(ACAQOrganization.class);
+        if (annotations.length > 0) {
+            return annotations[0].menuPath();
+        } else {
+            return "";
+        }
+    }
+
+    /**
+     * Gets name sorted list of data classes
+     *
+     * @param classes
+     * @return
+     */
+    static List<Class<? extends ACAQData>> getSortedList(Collection<Class<? extends ACAQData>> classes) {
+        return classes.stream().sorted(Comparator.comparing(ACAQData::getNameOf)).collect(Collectors.toList());
+    }
+
+    /**
+     * Groups the data types by their menu path
+     *
+     * @param classes
+     * @return
+     */
+    static Map<String, Set<Class<? extends ACAQData>>> groupByMenuPath(Collection<Class<? extends ACAQData>> classes) {
+        Map<String, Set<Class<? extends ACAQData>>> result = new HashMap<>();
+        for (Class<? extends ACAQData> dataClass : classes) {
+            String menuPath = StringUtils.getCleanedMenuPath(ACAQData.getMenuPathOf(dataClass));
+            Set<Class<? extends ACAQData>> group = result.getOrDefault(menuPath, null);
+            if (group == null) {
+                group = new HashSet<>();
+                result.put(menuPath, group);
+            }
+            group.add(dataClass);
+        }
+
+        return result;
     }
 
     /**

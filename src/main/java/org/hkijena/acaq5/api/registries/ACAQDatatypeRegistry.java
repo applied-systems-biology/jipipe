@@ -68,6 +68,10 @@ public class ACAQDatatypeRegistry {
         return registeredDataTypes.get(id);
     }
 
+    public Map<String, Set<Class<? extends ACAQData>>> getDataTypesByMenuPaths() {
+        return ACAQData.groupByMenuPath(registeredDataTypes.values());
+    }
+
     public static ACAQDatatypeRegistry getInstance() {
         return ACAQRegistryService.getInstance().getDatatypeRegistry();
     }

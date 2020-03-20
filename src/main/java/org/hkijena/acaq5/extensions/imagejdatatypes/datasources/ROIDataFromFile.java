@@ -16,13 +16,13 @@ import java.util.List;
 @AlgorithmInputSlot(value = ACAQFileData.class, slotName = "Files", autoCreate = true)
 @AlgorithmOutputSlot(value = ACAQROIData.class, slotName = "Mask", autoCreate = true)
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
-public class ACAQROIDataFromFile extends ACAQIteratingAlgorithm {
+public class ROIDataFromFile extends ACAQIteratingAlgorithm {
 
-    public ACAQROIDataFromFile(ACAQAlgorithmDeclaration declaration) {
+    public ROIDataFromFile(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
     }
 
-    public ACAQROIDataFromFile(ACAQROIDataFromFile other) {
+    public ROIDataFromFile(ROIDataFromFile other) {
         super(other);
     }
 

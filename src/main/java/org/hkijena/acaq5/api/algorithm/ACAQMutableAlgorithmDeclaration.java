@@ -23,6 +23,7 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
     private ACAQDataSlotTraitConfiguration slotTraitConfiguration = new ACAQDataSlotTraitConfiguration();
     private List<AlgorithmInputSlot> inputSlots = new ArrayList<>();
     private List<AlgorithmOutputSlot> outputSlots = new ArrayList<>();
+    private String menuPath;
 
     @Override
     public Class<? extends ACAQAlgorithm> getAlgorithmClass() {
@@ -112,5 +113,14 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
 
     public void setSlotTraitConfiguration(ACAQDataSlotTraitConfiguration slotTraitConfiguration) {
         this.slotTraitConfiguration = slotTraitConfiguration;
+    }
+
+    @Override
+    public String getMenuPath() {
+        return menuPath;
+    }
+
+    public void setMenuPath(String menuPath) {
+        this.menuPath = menuPath;
     }
 }

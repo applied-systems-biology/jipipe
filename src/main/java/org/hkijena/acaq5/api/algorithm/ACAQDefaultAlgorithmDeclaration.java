@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.data.traits.*;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 
@@ -26,6 +27,7 @@ public class ACAQDefaultAlgorithmDeclaration extends ACAQMutableAlgorithmDeclara
         setName(getNameOf(algorithmClass));
         setDescription(getDescriptionOf(algorithmClass));
         setCategory(getCategoryOf(algorithmClass));
+        setMenuPath(getMenuPathOf(algorithmClass));
         initializeSlots();
         initializeTraits();
     }
@@ -120,6 +122,21 @@ public class ACAQDefaultAlgorithmDeclaration extends ACAQMutableAlgorithmDeclara
             return annotations[0].category();
         } else {
             return ACAQAlgorithmCategory.Internal;
+        }
+    }
+
+    /**
+     * Returns the menu path of the algorithm
+     *
+     * @param klass
+     * @return
+     */
+    static String getMenuPathOf(Class<? extends ACAQAlgorithm> klass) {
+        ACAQOrganization[] annotations = klass.getAnnotationsByType(ACAQOrganization.class);
+        if (annotations.length > 0) {
+            return annotations[0].menuPath();
+        } else {
+            return "";
         }
     }
 

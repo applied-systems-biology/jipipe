@@ -29,6 +29,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -173,7 +174,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
         menuBar.add(addEnhancerMenu);
 
         JMenu addSegmenterMenu = new JMenu("Segment");
-        addSegmenterMenu.setIcon(UIUtils.getIconFromResources("data-types/binary.png"));
+        addSegmenterMenu.setIcon(UIUtils.getIconFromResources("segment.png"));
         initializeMenuForCategory(addSegmenterMenu, ACAQAlgorithmCategory.Segmenter);
         menuBar.add(addSegmenterMenu);
 
@@ -211,27 +212,32 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
 
     private void initializeAddDataSourceMenu(JMenu menu) {
         ACAQRegistryService registryService = ACAQRegistryService.getInstance();
-        for (Class<? extends ACAQData> dataClass : registryService.getDatatypeRegistry().getRegisteredDataTypes().values().stream()
-                .sorted(Comparator.comparing(ACAQData::getNameOf)).collect(Collectors.toList())) {
-            if (ACAQDatatypeRegistry.getInstance().isHidden(dataClass))
-                continue;
-            Set<ACAQAlgorithmDeclaration> dataSources = registryService.getAlgorithmRegistry().getDataSourcesFor(dataClass);
-            boolean isEmpty = true;
-            Icon icon = registryService.getUIDatatypeRegistry().getIconFor(dataClass);
-            JMenu dataMenu = new JMenu(ACAQData.getNameOf(dataClass));
-            dataMenu.setIcon(icon);
+        Map<String, Set<Class<? extends ACAQData>>> dataTypesByMenuPaths = ACAQDatatypeRegistry.getInstance().getDataTypesByMenuPaths();
+        Map<String, JMenu> menuTree = UIUtils.createMenuTree(menu, dataTypesByMenuPaths.keySet());
 
-            for (ACAQAlgorithmDeclaration declaration : dataSources) {
-                JMenuItem addItem = new JMenuItem(declaration.getName(), icon);
-                addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
-                addItem.addActionListener(e -> algorithmGraph.insertNode(declaration.newInstance(), compartment));
-                dataMenu.add(addItem);
-                isEmpty = false;
+        for (Map.Entry<String, Set<Class<? extends ACAQData>>> entry : dataTypesByMenuPaths.entrySet()) {
+            JMenu subMenu = menuTree.get(entry.getKey());
+            for (Class<? extends ACAQData> dataClass : ACAQData.getSortedList(entry.getValue())) {
+                if (ACAQDatatypeRegistry.getInstance().isHidden(dataClass))
+                    continue;
+                Set<ACAQAlgorithmDeclaration> dataSources = registryService.getAlgorithmRegistry().getDataSourcesFor(dataClass);
+                boolean isEmpty = true;
+                Icon icon = registryService.getUIDatatypeRegistry().getIconFor(dataClass);
+                JMenu dataMenu = new JMenu(ACAQData.getNameOf(dataClass));
+                dataMenu.setIcon(icon);
+
+                for (ACAQAlgorithmDeclaration declaration : dataSources) {
+                    JMenuItem addItem = new JMenuItem(declaration.getName(), icon);
+                    addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
+                    addItem.addActionListener(e -> algorithmGraph.insertNode(declaration.newInstance(), compartment));
+                    dataMenu.add(addItem);
+                    isEmpty = false;
+                }
+
+                subMenu.add(dataMenu);
+                if (isEmpty)
+                    dataMenu.setVisible(false);
             }
-
-            menu.add(dataMenu);
-            if (isEmpty)
-                dataMenu.setVisible(false);
         }
     }
 

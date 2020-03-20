@@ -23,6 +23,7 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class ACAQAlgorithmUI extends JPanel {
@@ -188,10 +189,19 @@ public class ACAQAlgorithmUI extends JPanel {
                 throw new RuntimeException();
         }
 
-        for (Class<? extends ACAQData> dataClass : allowedDataTypes) {
-            JMenuItem item = new JMenuItem(ACAQData.getNameOf(dataClass), ACAQUIDatatypeRegistry.getInstance().getIconFor(dataClass));
-            item.addActionListener(e -> addNewSlot(slotType, dataClass));
-            menu.add(item);
+        Map<String, Set<Class<? extends ACAQData>>> dataTypesByMenuPaths = ACAQData.groupByMenuPath(allowedDataTypes);
+        Map<String, Object> menuTree = UIUtils.createPopupMenuTree(menu, dataTypesByMenuPaths.keySet());
+
+        for (Map.Entry<String, Set<Class<? extends ACAQData>>> entry : dataTypesByMenuPaths.entrySet()) {
+            Object parentMenu = menuTree.get(entry.getKey());
+            for (Class<? extends ACAQData> dataClass : ACAQData.getSortedList(entry.getValue())) {
+                JMenuItem item = new JMenuItem(ACAQData.getNameOf(dataClass), ACAQUIDatatypeRegistry.getInstance().getIconFor(dataClass));
+                item.addActionListener(e -> addNewSlot(slotType, dataClass));
+                if (parentMenu instanceof JMenu)
+                    ((JMenu) parentMenu).add(item);
+                else if (parentMenu instanceof JPopupMenu)
+                    ((JPopupMenu) parentMenu).add(item);
+            }
         }
 
         return button;
@@ -334,10 +344,10 @@ public class ACAQAlgorithmUI extends JPanel {
         int outputRows = algorithm.getOutputSlots().size();
         if (algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
             ACAQMutableSlotConfiguration configuration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
-            if (configuration.canModifyInputSlots() && algorithm.getInputSlots().size() > 0) {
+            if (configuration.canAddInputSlot() && algorithm.getInputSlots().size() > 0) {
                 inputRows += 1;
             }
-            if (configuration.canModifyOutputSlots() && algorithm.getOutputSlots().size() > 0) {
+            if (configuration.canAddOutputSlot() && algorithm.getOutputSlots().size() > 0) {
                 outputRows += 1;
             }
         }

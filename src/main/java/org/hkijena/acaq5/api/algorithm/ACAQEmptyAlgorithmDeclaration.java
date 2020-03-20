@@ -46,6 +46,11 @@ public class ACAQEmptyAlgorithmDeclaration implements ACAQAlgorithmDeclaration {
     }
 
     @Override
+    public String getMenuPath() {
+        return "";
+    }
+
+    @Override
     public ACAQAlgorithmCategory getCategory() {
         return ACAQAlgorithmCategory.Internal;
     }

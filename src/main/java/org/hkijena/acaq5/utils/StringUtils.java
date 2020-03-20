@@ -81,4 +81,16 @@ public class StringUtils {
         }
         return input + spaceCharacter + index;
     }
+
+    public static String getCleanedMenuPath(String menuPath) {
+        if (menuPath == null)
+            return "";
+        while (menuPath.contains("  ") || menuPath.contains("\n\n") || menuPath.contains("\n ") || menuPath.contains(" \n"))
+            menuPath = menuPath
+                    .replace("  ", " ")
+                    .replace("\n\n", "\n")
+                    .replace("\n ", "\n")
+                    .replace(" \n", "\n");
+        return menuPath;
+    }
 }

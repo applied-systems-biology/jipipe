@@ -52,6 +52,13 @@ public interface ACAQAlgorithmDeclaration {
     String getDescription();
 
     /**
+     * Gets the menu path of this algorithm
+     *
+     * @return
+     */
+    String getMenuPath();
+
+    /**
      * Returns the algorithm category
      *
      * @return

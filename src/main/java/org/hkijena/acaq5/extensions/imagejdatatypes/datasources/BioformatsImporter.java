@@ -13,19 +13,19 @@ import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.ACAQFileData;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ACAQGreyscaleImageData;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ACAQMaskData;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ACAQMultichannelImageData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleMaskData;
 
 import java.io.IOException;
 
 @ACAQDocumentation(name = "Bioformats importer")
 @AlgorithmInputSlot(value = ACAQFileData.class, slotName = "Files", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQMultichannelImageData.class, slotName = "Image", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQGreyscaleImageData.class)
-@AlgorithmOutputSlot(value = ACAQMaskData.class)
+@AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
+@AlgorithmOutputSlot(value = ImagePlus2DGreyscaleData.class)
+@AlgorithmOutputSlot(value = ImagePlus2DGreyscaleMaskData.class)
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
-public class ACAQBioformatsImporter extends ACAQIteratingAlgorithm {
+public class BioformatsImporter extends ACAQIteratingAlgorithm {
 
     private ColorMode colorMode = ColorMode.Default;
     private Order stackOrder = Order.XYCZT;
@@ -37,12 +37,12 @@ public class ACAQBioformatsImporter extends ACAQIteratingAlgorithm {
     private boolean crop;
     private boolean stitchTiles;
 
-    public ACAQBioformatsImporter(ACAQAlgorithmDeclaration declaration) {
+    public BioformatsImporter(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
         ((ACAQMutableSlotConfiguration) getSlotConfiguration()).setOutputSealed(false);
     }
 
-    public ACAQBioformatsImporter(ACAQBioformatsImporter other) {
+    public BioformatsImporter(BioformatsImporter other) {
         super(other);
         this.colorMode = other.colorMode;
         this.stackOrder = other.stackOrder;

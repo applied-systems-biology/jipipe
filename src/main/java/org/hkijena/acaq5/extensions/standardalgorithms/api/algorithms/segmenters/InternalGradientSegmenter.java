@@ -15,8 +15,8 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.preparations.labeling.MembraneLabeledBioObjects;
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.quality.ImageQuality;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ACAQGreyscaleImageData;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ACAQMaskData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleMaskData;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.enhancers.CLAHEImageEnhancer;
 import org.hkijena.acaq5.utils.ImageJUtils;
 
@@ -24,8 +24,8 @@ import org.hkijena.acaq5.utils.ImageJUtils;
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
 
 // Algorithm flow
-@AlgorithmInputSlot(value = ACAQGreyscaleImageData.class, slotName = "Image", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQMaskData.class, slotName = "Mask", autoCreate = true)
+@AlgorithmInputSlot(value = ImagePlus2DGreyscaleData.class, slotName = "Image", autoCreate = true)
+@AlgorithmOutputSlot(value = ImagePlus2DGreyscaleMaskData.class, slotName = "Mask", autoCreate = true)
 
 // Trait matching
 @GoodForTrait(MembraneLabeledBioObjects.class)
@@ -73,19 +73,19 @@ public class InternalGradientSegmenter extends ACAQIteratingAlgorithm {
         claheImageEnhancer.getFirstInputSlot().addData(dataInterface.getInputData(getFirstInputSlot()));
         claheImageEnhancer.run();
 
-        ImagePlus img = ((ACAQMaskData) claheImageEnhancer.getFirstOutputSlot().getData(0)).getImage().duplicate();
+        ImagePlus img = ((ImagePlus2DGreyscaleMaskData) claheImageEnhancer.getFirstOutputSlot().getData(0)).getImage().duplicate();
         (new GaussianBlur()).blurGaussian(img.getProcessor(), gaussSigma);
         ImageJUtils.runOnImage(img, "8-bit");
         applyInternalGradient(img);
 
-        claheImageEnhancer.getFirstInputSlot().addData(new ACAQGreyscaleImageData(img));
+        claheImageEnhancer.getFirstInputSlot().addData(new ImagePlus2DGreyscaleData(img));
         claheImageEnhancer.run();
-        img = ((ACAQGreyscaleImageData) claheImageEnhancer.getFirstOutputSlot().getData(0)).getImage();
+        img = ((ImagePlus2DGreyscaleData) claheImageEnhancer.getFirstOutputSlot().getData(0)).getImage();
 
         // Convert image to mask and threshold with given auto threshold method
-        autoThresholdSegmenter.getFirstInputSlot().addData(new ACAQGreyscaleImageData(img));
+        autoThresholdSegmenter.getFirstInputSlot().addData(new ImagePlus2DGreyscaleData(img));
         autoThresholdSegmenter.run();
-        img = ((ACAQMaskData) autoThresholdSegmenter.getFirstOutputSlot().getData(0)).getImage();
+        img = ((ImagePlus2DGreyscaleMaskData) autoThresholdSegmenter.getFirstOutputSlot().getData(0)).getImage();
 
         // Apply set of rank filters
         Binary binaryFilter = new Binary();
@@ -109,7 +109,7 @@ public class InternalGradientSegmenter extends ACAQIteratingAlgorithm {
             binaryFilter.run(img.getProcessor());
         }
 
-        dataInterface.addOutputData(getFirstOutputSlot(), new ACAQMaskData(img));
+        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlus2DGreyscaleMaskData(img));
     }
 
     @ACAQParameter("gauss-sigma")

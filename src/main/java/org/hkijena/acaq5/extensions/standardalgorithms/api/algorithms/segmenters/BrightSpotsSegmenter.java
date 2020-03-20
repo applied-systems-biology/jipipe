@@ -16,15 +16,15 @@ import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.count.ClusterBioObjects;
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.quality.ImageQuality;
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.quality.NonUniformBrightnessQuality;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ACAQGreyscaleImageData;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ACAQMaskData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleMaskData;
 
 @ACAQDocumentation(name = "Bright spots segmentation")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
 
 // Algorithm flow
-@AlgorithmInputSlot(value = ACAQGreyscaleImageData.class, slotName = "Image", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQMaskData.class, slotName = "Mask", autoCreate = true)
+@AlgorithmInputSlot(value = ImagePlus2DGreyscaleData.class, slotName = "Image", autoCreate = true)
+@AlgorithmOutputSlot(value = ImagePlus2DGreyscaleMaskData.class, slotName = "Mask", autoCreate = true)
 
 // Trait matching
 @BadForTrait(NonUniformBrightnessQuality.class)
@@ -54,7 +54,7 @@ public class BrightSpotsSegmenter extends ACAQIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface) {
-        ImagePlus img = ((ACAQGreyscaleImageData) dataInterface.getInputData(getFirstInputSlot())).getImage();
+        ImagePlus img = ((ImagePlus2DGreyscaleData) dataInterface.getInputData(getFirstInputSlot())).getImage();
 
         ImagePlus result = img.duplicate();
 
@@ -69,9 +69,9 @@ public class BrightSpotsSegmenter extends ACAQIteratingAlgorithm {
                 true);
 
         // Apply auto threshold
-        autoThresholdSegmenter.getFirstOutputSlot().addData(new ACAQGreyscaleImageData(result));
+        autoThresholdSegmenter.getFirstOutputSlot().addData(new ImagePlus2DGreyscaleData(result));
         autoThresholdSegmenter.run();
-        result = ((ACAQMaskData) autoThresholdSegmenter.getFirstOutputSlot().getData(0)).getImage();
+        result = ((ImagePlus2DGreyscaleMaskData) autoThresholdSegmenter.getFirstOutputSlot().getData(0)).getImage();
 
         // Apply morphologial operations
         Binary binaryFilter = new Binary();
@@ -94,12 +94,12 @@ public class BrightSpotsSegmenter extends ACAQIteratingAlgorithm {
             GaussianBlur gaussianBlur = new GaussianBlur();
             gaussianBlur.blurGaussian(result.getProcessor(), gaussianSigma);
 
-            autoThresholdSegmenter.getFirstInputSlot().addData(new ACAQGreyscaleImageData(result));
+            autoThresholdSegmenter.getFirstInputSlot().addData(new ImagePlus2DGreyscaleData(result));
             autoThresholdSegmenter.run();
-            result = ((ACAQMaskData) autoThresholdSegmenter.getFirstOutputSlot().getData(0)).getImage();
+            result = ((ImagePlus2DGreyscaleMaskData) autoThresholdSegmenter.getFirstOutputSlot().getData(0)).getImage();
         }
 
-        dataInterface.addOutputData(getFirstOutputSlot(), new ACAQMaskData(result));
+        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlus2DGreyscaleMaskData(result));
     }
 
     @ACAQParameter("rolling-ball-radius")

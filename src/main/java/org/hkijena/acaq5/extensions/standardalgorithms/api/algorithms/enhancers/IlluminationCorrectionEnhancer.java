@@ -11,7 +11,7 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.preparations.labeling.UnlabeledBioObjects;
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.quality.NonUniformBrightnessQuality;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ACAQGreyscaleImageData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleData;
 import org.hkijena.acaq5.utils.ImageJUtils;
 import org.hkijena.acaq5.utils.MacroSetting;
 
@@ -19,8 +19,8 @@ import org.hkijena.acaq5.utils.MacroSetting;
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
 
 // Algorithm flow
-@AlgorithmInputSlot(value = ACAQGreyscaleImageData.class, slotName = "Input image", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQGreyscaleImageData.class, slotName = "Output image", autoCreate = true)
+@AlgorithmInputSlot(value = ImagePlus2DGreyscaleData.class, slotName = "Input image", autoCreate = true)
+@AlgorithmOutputSlot(value = ImagePlus2DGreyscaleData.class, slotName = "Output image", autoCreate = true)
 
 // Trait matching
 @GoodForTrait(UnlabeledBioObjects.class)
@@ -43,7 +43,7 @@ public class IlluminationCorrectionEnhancer extends ACAQIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface) {
-        ACAQGreyscaleImageData inputData = dataInterface.getInputData(getFirstInputSlot());
+        ImagePlus2DGreyscaleData inputData = dataInterface.getInputData(getFirstInputSlot());
         ImagePlus img = inputData.getImage().duplicate();
 
         // Convert image to 32 bit
@@ -57,7 +57,7 @@ public class IlluminationCorrectionEnhancer extends ACAQIteratingAlgorithm {
         ImageCalculator calculator = new ImageCalculator();
         ImagePlus result = calculator.run("Divide create 32-bit", img, gaussian);
 
-        dataInterface.addOutputData(getFirstOutputSlot(), new ACAQGreyscaleImageData(result));
+        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlus2DGreyscaleData(result));
     }
 
     @ACAQParameter("gaussian-sigma")

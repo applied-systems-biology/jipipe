@@ -13,13 +13,13 @@ import java.io.IOException;
 @AlgorithmInputSlot(value = ACAQFileData.class, slotName = "Files", autoCreate = true)
 @AlgorithmOutputSlot(value = ACAQResultsTableData.class, slotName = "Results table", autoCreate = true)
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
-public class ACAQResultsTableFromFile extends ACAQIteratingAlgorithm {
+public class ResultsTableFromFile extends ACAQIteratingAlgorithm {
 
-    public ACAQResultsTableFromFile(ACAQAlgorithmDeclaration declaration) {
+    public ResultsTableFromFile(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
     }
 
-    public ACAQResultsTableFromFile(ACAQResultsTableFromFile other) {
+    public ResultsTableFromFile(ResultsTableFromFile other) {
         super(other);
     }
 

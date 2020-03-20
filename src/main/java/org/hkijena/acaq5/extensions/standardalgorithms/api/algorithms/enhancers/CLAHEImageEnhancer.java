@@ -13,14 +13,14 @@ import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.preparation
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.preparations.labeling.UniformlyLabeledBioObjects;
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.quality.LowBrightnessQuality;
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.quality.NonUniformBrightnessQuality;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ACAQGreyscaleImageData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleData;
 
 @ACAQDocumentation(name = "CLAHE enhancer")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
 
 // Algorithm flow
-@AlgorithmInputSlot(value = ACAQGreyscaleImageData.class, slotName = "Input image", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQGreyscaleImageData.class, slotName = "Output image", autoCreate = true)
+@AlgorithmInputSlot(value = ImagePlus2DGreyscaleData.class, slotName = "Input image", autoCreate = true)
+@AlgorithmOutputSlot(value = ImagePlus2DGreyscaleData.class, slotName = "Output image", autoCreate = true)
 
 // Trait matching
 @GoodForTrait(UniformlyLabeledBioObjects.class)
@@ -52,11 +52,11 @@ public class CLAHEImageEnhancer extends ACAQIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface) {
-        ACAQGreyscaleImageData inputData = dataInterface.getInputData(getFirstInputSlot());
+        ImagePlus2DGreyscaleData inputData = dataInterface.getInputData(getFirstInputSlot());
         ImagePlus result = inputData.getImage().duplicate();
         Flat clahe = fastMode ? Flat.getFastInstance() : Flat.getInstance();
         clahe.run(result, blocks, bins, maxSlope, null, true);
-        dataInterface.addOutputData(getFirstOutputSlot(), new ACAQGreyscaleImageData(result));
+        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlus2DGreyscaleData(result));
     }
 
     @ACAQParameter("blocks")

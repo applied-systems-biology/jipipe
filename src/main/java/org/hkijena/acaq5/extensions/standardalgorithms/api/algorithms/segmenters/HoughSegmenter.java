@@ -15,16 +15,16 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.count.ClusterBioObjects;
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.morphology.RoundBioObjects;
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.quality.ImageQuality;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ACAQGreyscaleImageData;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ACAQMaskData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleMaskData;
 import org.hkijena.acaq5.utils.Hough_Circle;
 
 @ACAQDocumentation(name = "Hough segmentation")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
 
 // Algorithm flow
-@AlgorithmInputSlot(value = ACAQGreyscaleImageData.class, slotName = "Image", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQMaskData.class, slotName = "Mask", autoCreate = true)
+@AlgorithmInputSlot(value = ImagePlus2DGreyscaleData.class, slotName = "Image", autoCreate = true)
+@AlgorithmOutputSlot(value = ImagePlus2DGreyscaleMaskData.class, slotName = "Mask", autoCreate = true)
 
 // Trait matching
 @GoodForTrait(RoundBioObjects.class)
@@ -109,7 +109,7 @@ public class HoughSegmenter extends ACAQIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface) {
-        ACAQGreyscaleImageData inputData = dataInterface.getInputData(getFirstInputSlot());
+        ImagePlus2DGreyscaleData inputData = dataInterface.getInputData(getFirstInputSlot());
         ImagePlus img = inputData.getImage();
 
         // Apply Hough circle transform
@@ -140,7 +140,7 @@ public class HoughSegmenter extends ACAQIteratingAlgorithm {
         ResultsTable resultsTable = Analyzer.getResultsTable();
         ImagePlus result = drawCircleMask(img, resultsTable);
 
-        dataInterface.addOutputData(getFirstOutputSlot(), new ACAQMaskData(result));
+        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlus2DGreyscaleMaskData(result));
     }
 
     @ACAQParameter("min-radius")

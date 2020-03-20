@@ -16,7 +16,9 @@ import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterHolder;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.*;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ACAQROIData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ACAQResultsTableData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.macro.MacroCode;
 import org.hkijena.acaq5.utils.MacroUtils;
 
@@ -33,22 +35,16 @@ import java.util.Map;
  */
 @ACAQDocumentation(name = "ImageJ Macro", description = "Runs a custom ImageJ macro")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Miscellaneous)
-@AlgorithmInputSlot(ACAQMultichannelImageData.class)
-@AlgorithmInputSlot(ACAQMaskData.class)
+@AlgorithmInputSlot(ImagePlusData.class)
 @AlgorithmInputSlot(ACAQROIData.class)
 @AlgorithmInputSlot(ACAQResultsTableData.class)
-@AlgorithmOutputSlot(ACAQMultichannelImageData.class)
-@AlgorithmOutputSlot(ACAQMaskData.class)
+@AlgorithmOutputSlot(ImagePlusData.class)
 @AlgorithmOutputSlot(ACAQROIData.class)
 @AlgorithmOutputSlot(ACAQResultsTableData.class)
 @ConfigTraits(allowModify = true)
 public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
 
-    public static List<Class<? extends ACAQData>> IMAGEJ_DATA_CLASSES = Arrays.asList(ACAQMultichannelImageData.class,
-            ACAQGreyscaleImageData.class,
-            ACAQMaskData.class,
-            ACAQROIData.class,
-            ACAQResultsTableData.class);
+    public static List<Class<? extends ACAQData>> IMAGEJ_DATA_CLASSES = new ArrayList<>();
     public static Class<?>[] ALLOWED_PARAMETER_CLASSES = new Class[]{
             String.class,
             Integer.class,
@@ -125,7 +121,7 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
 
     private void passOutputData(ACAQDataInterface dataInterface) {
         for (ACAQDataSlot outputSlot : getOutputSlots()) {
-            if (ACAQMultichannelImageData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
+            if (ImagePlusData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
                 ImagePlus image = WindowManager.getImage(outputSlot.getName());
                 try {
                     dataInterface.addOutputData(outputSlot, outputSlot.getAcceptedDataType().getConstructor(ImagePlus.class).newInstance(image.duplicate()));
@@ -179,8 +175,8 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
         }
         for (ACAQDataSlot inputSlot : getInputSlots()) {
             ACAQData data = dataInterface.getInputData(inputSlot);
-            if (data instanceof ACAQMultichannelImageData) {
-                ImagePlus img = ((ACAQMultichannelImageData) data).getImage().duplicate();
+            if (data instanceof ImagePlusData) {
+                ImagePlus img = ((ImagePlusData) data).getImage().duplicate();
                 img.setTitle(inputSlot.getName());
                 img.show();
                 WindowManager.setTempCurrentImage(img);
@@ -222,14 +218,14 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
 
         if (strictMode) {
             for (ACAQDataSlot inputSlot : getInputSlots()) {
-                if (ACAQMultichannelImageData.class.isAssignableFrom(inputSlot.getAcceptedDataType())) {
+                if (ImagePlusData.class.isAssignableFrom(inputSlot.getAcceptedDataType())) {
                     if (!code.getCode().contains("\"" + inputSlot.getName() + "\"")) {
                         report.reportIsInvalid("Input image '" + inputSlot.getName() + "' is not used! You can use selectWindow(\"" + inputSlot.getName() + "\"); to process the image. Disable strict mode to stop this message.");
                     }
                 }
             }
             for (ACAQDataSlot outputSlot : getOutputSlots()) {
-                if (ACAQMultichannelImageData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
+                if (ImagePlusData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
                     if (!code.getCode().contains("\"" + outputSlot.getName() + "\"")) {
                         report.reportIsInvalid("Output image '" + outputSlot.getName() + "' is not used! You should rename an output image via rename(\"" + outputSlot.getName() + "\"); to allow ACAQ5 to find it. Disable strict mode to stop this message.");
                     }
@@ -266,3 +262,4 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
         return macroParameters;
     }
 }
+

@@ -8,8 +8,8 @@ import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
 
+import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class TooltipUtils {
     private TooltipUtils() {
@@ -86,17 +86,29 @@ public class TooltipUtils {
 
         // Write algorithm slot info
         builder.append("<table>");
-        builder.append("<tr><td>");
-        for (Class<? extends ACAQData> slot : declaration.getInputSlots().stream().map(AlgorithmInputSlot::value).collect(Collectors.toSet())) {
-            builder.append("<img src=\"").append(ACAQUIDatatypeRegistry.getInstance().getIconURLFor(slot)).append("\"/>");
+        {
+            List<AlgorithmInputSlot> inputSlots = declaration.getInputSlots();
+            List<AlgorithmOutputSlot> outputSlots = declaration.getOutputSlots();
+
+            int displayedSlots = Math.max(inputSlots.size(), outputSlots.size());
+            if (displayedSlots > 0) {
+                builder.append("<tr><td></td><td><i>Input</i></td><td><i>Output</i></td><td></td></tr>");
+                for (int i = 0; i < displayedSlots; ++i) {
+                    Class<? extends ACAQData> inputSlot = i < inputSlots.size() ? inputSlots.get(i).value() : null;
+                    Class<? extends ACAQData> outputSlot = i < inputSlots.size() ? outputSlots.get(i).value() : null;
+                    builder.append("<tr>");
+                    if (inputSlot != null) {
+                        builder.append("<td><img src=\"").append(ACAQUIDatatypeRegistry.getInstance().getIconURLFor(inputSlot)).append("\"/></td>");
+                        builder.append("<td>").append(ACAQData.getNameOf(inputSlot)).append("</td>");
+                    }
+                    if (outputSlot != null) {
+                        builder.append("<td>").append(ACAQData.getNameOf(outputSlot)).append("</td>");
+                        builder.append("<td><img src=\"").append(ACAQUIDatatypeRegistry.getInstance().getIconURLFor(outputSlot)).append("\"/></td>");
+                    }
+                    builder.append("</tr>");
+                }
+            }
         }
-        builder.append("</td>");
-        builder.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/chevron-right.png")).append("\" /></td>");
-        for (Class<? extends ACAQData> slot : declaration.getOutputSlots().stream()
-                .map(AlgorithmOutputSlot::value).collect(Collectors.toSet())) {
-            builder.append("<img src=\"").append(ACAQUIDatatypeRegistry.getInstance().getIconURLFor(slot)).append("\"/>");
-        }
-        builder.append("</tr>");
         builder.append("</table>");
 
         // Write description

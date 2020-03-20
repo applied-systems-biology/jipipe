@@ -15,14 +15,14 @@ import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.count.Clust
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.morphology.RoundBioObjects;
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.preparations.labeling.BioObjectsLabeling;
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.preparations.labeling.UnlabeledBioObjects;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ACAQMaskData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleMaskData;
 
 @ACAQDocumentation(name = "Watershed enhancer")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
 
 // Algorithm flow
-@AlgorithmInputSlot(value = ACAQMaskData.class, slotName = "Input image", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQMaskData.class, slotName = "Output image", autoCreate = true)
+@AlgorithmInputSlot(value = ImagePlus2DGreyscaleMaskData.class, slotName = "Input image", autoCreate = true)
+@AlgorithmOutputSlot(value = ImagePlus2DGreyscaleMaskData.class, slotName = "Output image", autoCreate = true)
 
 // Trait matching
 @GoodForTrait(RoundBioObjects.class)
@@ -47,7 +47,7 @@ public class WatershedMaskEnhancer extends ACAQIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface) {
-        ACAQMaskData inputData = dataInterface.getInputData(getFirstInputSlot());
+        ImagePlus2DGreyscaleMaskData inputData = dataInterface.getInputData(getFirstInputSlot());
         ImagePlus img = inputData.getImage();
 
         EDM watershed = new EDM();
@@ -61,7 +61,7 @@ public class WatershedMaskEnhancer extends ACAQIteratingAlgorithm {
             binaryFilter.run(result.getProcessor());
         }
 
-        dataInterface.addOutputData(getFirstOutputSlot(), new ACAQMaskData(result));
+        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlus2DGreyscaleMaskData(result));
     }
 
     @ACAQParameter("erosion-iterations")

@@ -17,6 +17,7 @@ import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefCollection;
+import org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors.StringParameterSettings;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.*;
@@ -37,6 +38,7 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     private List<AlgorithmOutputSlot> outputSlots = new ArrayList<>();
     private ACAQParameterCollectionVisibilities parameterCollectionVisibilities = new ACAQParameterCollectionVisibilities();
     private ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
+    private String menuPath = "";
 
     public GraphWrapperAlgorithmDeclaration() {
     }
@@ -299,5 +301,20 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     @Override
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    @ACAQParameter("menu-path")
+    @JsonGetter("menu-path")
+    @ACAQDocumentation(name = "Menu path", description = "Menu path where the algorithm is placed. Each new line corresponds to one menu item")
+    @StringParameterSettings(multiline = true)
+    @Override
+    public String getMenuPath() {
+        return menuPath;
+    }
+
+    @ACAQParameter("menu-path")
+    @JsonSetter("menu-path")
+    public void setMenuPath(String menuPath) {
+        this.menuPath = menuPath;
     }
 }

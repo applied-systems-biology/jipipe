@@ -8,9 +8,9 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ACAQMaskData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ACAQROIData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ACAQResultsTableData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleMaskData;
 
 import java.util.Arrays;
 
@@ -19,7 +19,7 @@ import java.util.Arrays;
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Converter)
 
 // Algorithm data flow
-@AlgorithmInputSlot(value = ACAQMaskData.class, slotName = "Mask", autoCreate = true)
+@AlgorithmInputSlot(value = ImagePlus2DGreyscaleMaskData.class, slotName = "Mask", autoCreate = true)
 @AlgorithmOutputSlot(value = ACAQROIData.class, slotName = "ROI", autoCreate = true)
 @AlgorithmOutputSlot(value = ACAQResultsTableData.class, slotName = "Measurements", autoCreate = true)
 
@@ -46,7 +46,7 @@ public class MaskToParticleConverter extends ACAQIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface) {
-        ACAQMaskData inputData = dataInterface.getInputData(getFirstInputSlot());
+        ImagePlus2DGreyscaleMaskData inputData = dataInterface.getInputData(getFirstInputSlot());
 
         ResultsTable resultsTable = new ResultsTable();
         RoiManager manager = new RoiManager(true);

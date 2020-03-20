@@ -30,7 +30,10 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class UIUtils {
 
@@ -388,5 +391,80 @@ public class UIUtils {
         toggleButton.addActionListener(e -> toggleButton.setSelected(!toggleButton.isSelected()));
     }
 
+    public static Map<String, JMenu> createMenuTree(JMenu rootMenu, Set<String> menuPaths) {
+        Set<String> decomposedPaths = new HashSet<>();
+        for (String menuPath : menuPaths) {
+            String[] components = menuPath.split("\n");
+            String path = null;
+            for (String component : components) {
+                if (path == null)
+                    path = component;
+                else
+                    path += "\n" + component;
+                decomposedPaths.add(path);
+            }
+        }
 
+        Map<String, JMenu> result = new HashMap<>();
+        List<String> sortedMenuPaths = decomposedPaths.stream().sorted().collect(Collectors.toList());
+        result.put("", rootMenu);
+        for (String menuPath : sortedMenuPaths) {
+            if (menuPath != null && !menuPath.isEmpty()) {
+                if (!menuPath.contains("\n")) {
+                    JMenu menu = new JMenu(menuPath);
+                    rootMenu.add(menu);
+                    result.put(menuPath, menu);
+                } else {
+                    int lastNewLine = menuPath.lastIndexOf("\n");
+                    String parentMenuPath = menuPath.substring(0, lastNewLine);
+                    String lastComponent = menuPath.substring(lastNewLine + 1);
+                    JMenu parentMenu = result.get(parentMenuPath);
+                    JMenu menu = new JMenu(lastComponent);
+                    parentMenu.add(menu);
+                    result.put(menuPath, menu);
+                }
+            }
+        }
+        return result;
+    }
+
+    public static Map<String, Object> createPopupMenuTree(JPopupMenu rootMenu, Set<String> menuPaths) {
+        Set<String> decomposedPaths = new HashSet<>();
+        for (String menuPath : menuPaths) {
+            String[] components = menuPath.split("\n");
+            String path = null;
+            for (String component : components) {
+                if (path == null)
+                    path = component;
+                else
+                    path += "\n" + component;
+                decomposedPaths.add(path);
+            }
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        List<String> sortedMenuPaths = decomposedPaths.stream().sorted().collect(Collectors.toList());
+        result.put("", rootMenu);
+        for (String menuPath : sortedMenuPaths) {
+            if (menuPath != null && !menuPath.isEmpty()) {
+                if (!menuPath.contains("\n")) {
+                    JMenu menu = new JMenu(menuPath);
+                    rootMenu.add(menu);
+                    result.put(menuPath, menu);
+                } else {
+                    int lastNewLine = menuPath.lastIndexOf("\n");
+                    String parentMenuPath = menuPath.substring(0, lastNewLine);
+                    String lastComponent = menuPath.substring(lastNewLine + 1);
+                    JMenu menu = new JMenu(lastComponent);
+                    Object parentMenu = result.get(parentMenuPath);
+                    if (parentMenu instanceof JPopupMenu)
+                        ((JPopupMenu) parentMenu).add(menu);
+                    else if (parentMenu instanceof JMenu)
+                        ((JMenu) parentMenu).add(menu);
+                    result.put(menuPath, menu);
+                }
+            }
+        }
+        return result;
+    }
 }

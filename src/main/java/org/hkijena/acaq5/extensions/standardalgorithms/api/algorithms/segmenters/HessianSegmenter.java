@@ -15,8 +15,8 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.quality.ImageQuality;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ACAQGreyscaleImageData;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ACAQMaskData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleMaskData;
 
 import java.util.Vector;
 
@@ -24,8 +24,8 @@ import java.util.Vector;
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
 
 // Algorithm flow
-@AlgorithmInputSlot(value = ACAQGreyscaleImageData.class, slotName = "Image", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQMaskData.class, slotName = "Mask", autoCreate = true)
+@AlgorithmInputSlot(value = ImagePlus2DGreyscaleData.class, slotName = "Image", autoCreate = true)
+@AlgorithmOutputSlot(value = ImagePlus2DGreyscaleMaskData.class, slotName = "Mask", autoCreate = true)
 
 // Traits
 @RemovesTrait(ImageQuality.class)
@@ -75,7 +75,7 @@ public class HessianSegmenter extends ACAQIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface) {
-        ACAQGreyscaleImageData inputImage = dataInterface.getInputData(getFirstInputSlot());
+        ImagePlus2DGreyscaleData inputImage = dataInterface.getInputData(getFirstInputSlot());
         ImagePlus img = inputImage.getImage();
 
         // Apply hessian
@@ -85,14 +85,14 @@ public class HessianSegmenter extends ACAQIteratingAlgorithm {
         applyInternalGradient(result);
 
         // Convert to mask
-        autoThresholdSegmenter.getFirstInputSlot().addData(new ACAQGreyscaleImageData(result));
+        autoThresholdSegmenter.getFirstInputSlot().addData(new ImagePlus2DGreyscaleData(result));
         autoThresholdSegmenter.run();
-        result = ((ACAQMaskData) autoThresholdSegmenter.getFirstOutputSlot().getData(0)).getImage();
+        result = ((ImagePlus2DGreyscaleMaskData) autoThresholdSegmenter.getFirstOutputSlot().getData(0)).getImage();
 
         // Despeckle x2
         applyDespeckle(result, 2);
 
-        dataInterface.addOutputData(getFirstOutputSlot(), new ACAQMaskData(result));
+        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlus2DGreyscaleMaskData(result));
     }
 
     @ACAQParameter("smoothing")
