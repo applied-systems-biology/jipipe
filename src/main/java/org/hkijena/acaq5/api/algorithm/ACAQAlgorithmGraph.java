@@ -198,6 +198,8 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         graph.addEdge(source, target, new ACAQAlgorithmGraphEdge(userDisconnectable));
         getEventBus().post(new AlgorithmGraphChangedEvent(this));
         getEventBus().post(new AlgorithmGraphConnectedEvent(this, source, target));
+        source.getAlgorithm().onSlotConnected(new AlgorithmGraphConnectedEvent(this, source, target));
+        target.getAlgorithm().onSlotConnected(new AlgorithmGraphConnectedEvent(this, source, target));
         updateDataSlotTraits();
     }
 
@@ -342,6 +344,8 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
             graph.removeEdge(source, target);
             getEventBus().post(new AlgorithmGraphDisconnectedEvent(this, source, target));
             getEventBus().post(new AlgorithmGraphChangedEvent(this));
+            source.getAlgorithm().onSlotDisconnected(new AlgorithmGraphDisconnectedEvent(this, source, target));
+            target.getAlgorithm().onSlotDisconnected(new AlgorithmGraphDisconnectedEvent(this, source, target));
             updateDataSlotTraits();
             return true;
         }

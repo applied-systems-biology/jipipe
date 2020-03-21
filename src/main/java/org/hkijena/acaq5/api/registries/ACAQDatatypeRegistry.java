@@ -56,10 +56,6 @@ public class ACAQDatatypeRegistry {
         return hiddenDataTypeIds.contains(id);
     }
 
-    public boolean isHidden(Class<? extends ACAQData> klass) {
-        return hiddenDataTypeIds.contains(getIdOf(klass));
-    }
-
     public EventBus getEventBus() {
         return eventBus;
     }

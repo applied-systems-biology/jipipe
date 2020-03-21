@@ -2,6 +2,7 @@ package org.hkijena.acaq5.api.data;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQHidden;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.utils.StringUtils;
 
@@ -69,6 +70,15 @@ public interface ACAQData {
         } else {
             return "";
         }
+    }
+
+    /**
+     * Returns true if this data should be be accessible by the user
+     * @param klass
+     * @return
+     */
+    static boolean isHidden(Class<? extends ACAQData> klass) {
+        return klass.getAnnotationsByType(ACAQHidden.class).length > 0;
     }
 
     /**

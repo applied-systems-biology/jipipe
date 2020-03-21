@@ -438,6 +438,14 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
         eventBus.post(new WorkDirectoryChangedEvent(workDirectory));
     }
 
+    public void onSlotConnected(AlgorithmGraphConnectedEvent event) {
+
+    }
+
+    public void onSlotDisconnected(AlgorithmGraphDisconnectedEvent event) {
+
+    }
+
     public static class Serializer extends JsonSerializer<ACAQAlgorithm> {
         @Override
         public void serialize(ACAQAlgorithm algorithm, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
