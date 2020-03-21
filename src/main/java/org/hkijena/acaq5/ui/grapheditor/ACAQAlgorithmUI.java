@@ -3,18 +3,15 @@ package org.hkijena.acaq5.ui.grapheditor;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.algorithm.ACAQIOSlotConfiguration;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
-import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.events.TraitConfigurationChangedEvent;
+import org.hkijena.acaq5.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
-import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
-import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -23,8 +20,6 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class ACAQAlgorithmUI extends JPanel {
 
@@ -173,36 +168,7 @@ public class ACAQAlgorithmUI extends JPanel {
         JButton button = new JButton(UIUtils.getIconFromResources("add.png"));
         button.setPreferredSize(new Dimension(25, SLOT_UI_HEIGHT));
         UIUtils.makeFlat(button);
-
-        JPopupMenu menu = UIUtils.addPopupMenuToComponent(button);
-        ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
-
-        Set<Class<? extends ACAQData>> allowedDataTypes;
-        switch (slotType) {
-            case Input:
-                allowedDataTypes = slotConfiguration.getAllowedInputSlotTypes();
-                break;
-            case Output:
-                allowedDataTypes = slotConfiguration.getAllowedOutputSlotTypes();
-                break;
-            default:
-                throw new RuntimeException();
-        }
-
-        Map<String, Set<Class<? extends ACAQData>>> dataTypesByMenuPaths = ACAQData.groupByMenuPath(allowedDataTypes);
-        Map<String, Object> menuTree = UIUtils.createPopupMenuTree(menu, dataTypesByMenuPaths.keySet());
-
-        for (Map.Entry<String, Set<Class<? extends ACAQData>>> entry : dataTypesByMenuPaths.entrySet()) {
-            Object parentMenu = menuTree.get(entry.getKey());
-            for (Class<? extends ACAQData> dataClass : ACAQData.getSortedList(entry.getValue())) {
-                JMenuItem item = new JMenuItem(ACAQData.getNameOf(dataClass), ACAQUIDatatypeRegistry.getInstance().getIconFor(dataClass));
-                item.addActionListener(e -> addNewSlot(slotType, dataClass));
-                if (parentMenu instanceof JMenu)
-                    ((JMenu) parentMenu).add(item);
-                else if (parentMenu instanceof JPopupMenu)
-                    ((JPopupMenu) parentMenu).add(item);
-            }
-        }
+        button.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, algorithm, slotType));
 
         return button;
     }
@@ -299,39 +265,6 @@ public class ACAQAlgorithmUI extends JPanel {
         setSize(new Dimension(calculateWidth(), calculateHeight()));
         revalidate();
         repaint();
-    }
-
-    private void addNewSlot(ACAQDataSlot.SlotType slotType, Class<? extends ACAQData> klass) {
-        if (algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
-            ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
-
-            int existingSlots = slotType == ACAQDataSlot.SlotType.Input ? algorithm.getInputSlots().size() : algorithm.getOutputSlots().size();
-            String initialValue = slotType + " data ";
-
-            // This is general
-            if (getAlgorithm().getSlotConfiguration() instanceof ACAQIOSlotConfiguration) {
-                initialValue = "Data ";
-            }
-
-            String name = null;
-            while (name == null) {
-                String newName = JOptionPane.showInputDialog(this, "Please a data slot name", initialValue + (existingSlots + 1));
-                if (newName == null || newName.trim().isEmpty())
-                    return;
-                newName = StringUtils.makeFilesystemCompatible(newName);
-                if (slotConfiguration.hasSlot(newName))
-                    continue;
-                name = newName;
-            }
-            switch (slotType) {
-                case Input:
-                    slotConfiguration.addInputSlot(name, klass);
-                    break;
-                case Output:
-                    slotConfiguration.addOutputSlot(name, klass);
-                    break;
-            }
-        }
     }
 
     /**

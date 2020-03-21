@@ -218,7 +218,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
         for (Map.Entry<String, Set<Class<? extends ACAQData>>> entry : dataTypesByMenuPaths.entrySet()) {
             JMenu subMenu = menuTree.get(entry.getKey());
             for (Class<? extends ACAQData> dataClass : ACAQData.getSortedList(entry.getValue())) {
-                if (ACAQDatatypeRegistry.getInstance().isHidden(dataClass))
+                if (ACAQData.isHidden(dataClass))
                     continue;
                 Set<ACAQAlgorithmDeclaration> dataSources = registryService.getAlgorithmRegistry().getDataSourcesFor(dataClass);
                 boolean isEmpty = true;

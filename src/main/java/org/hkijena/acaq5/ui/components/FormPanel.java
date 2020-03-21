@@ -208,4 +208,8 @@ public class FormPanel extends JPanel {
         revalidate();
         repaint();
     }
+
+    public MarkdownReader getParameterHelp() {
+        return parameterHelp;
+    }
 }

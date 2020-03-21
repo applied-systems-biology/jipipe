@@ -130,6 +130,7 @@ public class ACAQDataSlotUI extends JPanel {
     private void findAlgorithm(ACAQDataSlot slot) {
         ACAQAlgorithmFinderUI algorithmFinderUI = new ACAQAlgorithmFinderUI(slot, graph, compartment);
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Find matching algorithm");
+        UIUtils.addEscapeListener(dialog);
         dialog.setModal(true);
         dialog.setContentPane(algorithmFinderUI);
         dialog.pack();

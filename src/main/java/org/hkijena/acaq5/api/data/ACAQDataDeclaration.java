@@ -1,7 +1,5 @@
 package org.hkijena.acaq5.api.data;
 
-import org.hkijena.acaq5.api.ACAQHidden;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,7 +50,7 @@ public class ACAQDataDeclaration implements Comparable<ACAQDataDeclaration> {
 
     public static ACAQDataDeclaration getInstance(Class<? extends ACAQData> klass) {
         ACAQDataDeclaration declaration = cache.getOrDefault(klass, null);
-        if(declaration == null) {
+        if (declaration == null) {
             declaration = new ACAQDataDeclaration(klass);
             cache.put(klass, declaration);
         }

@@ -74,6 +74,7 @@ public interface ACAQData {
 
     /**
      * Returns true if this data should be be accessible by the user
+     *
      * @param klass
      * @return
      */

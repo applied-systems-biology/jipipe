@@ -56,9 +56,6 @@ public class StringUtils {
         for (char c : INVALID_FILESYSTEM_CHARACTERS) {
             input = input.replace(c, ' ');
         }
-        while (input.contains("  ")) {
-            input = input.replace("  ", " ");
-        }
         return input;
     }
 
@@ -92,5 +89,14 @@ public class StringUtils {
                     .replace("\n ", "\n")
                     .replace(" \n", "\n");
         return menuPath;
+    }
+
+    public static boolean isFilesystemCompatible(String string) {
+        for (char c : INVALID_FILESYSTEM_CHARACTERS) {
+            if (string.contains(c + "")) {
+                return false;
+            }
+        }
+        return true;
     }
 }
