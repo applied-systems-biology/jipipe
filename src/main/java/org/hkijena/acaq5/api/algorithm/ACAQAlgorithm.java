@@ -452,13 +452,16 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
         if ("*".equals(inheritedSlotName) && !getInputSlots().isEmpty()) {
             inheritedSlotName = getInputSlotOrder().get(0);
         }
+
         ACAQDataSlot inheritedSlot = getSlots().getOrDefault(inheritedSlotName, null);
         if (inheritedSlot == null || inheritedSlot.getSlotType() != ACAQDataSlot.SlotType.Input)
             return slotInstance.getAcceptedDataType();
+
+        // Inherit from the inherited slot if there is no graph connection
         ACAQDataSlot sourceSlot = graph.getSourceSlot(inheritedSlot);
         if (sourceSlot == null)
-            return inheritedSlot.getAcceptedDataType();
-        return sourceSlot.getAcceptedDataType();
+            return ACAQSlotDefinition.applyInheritanceConversion(slotDefinition, inheritedSlot.getAcceptedDataType());
+        return ACAQSlotDefinition.applyInheritanceConversion(slotDefinition, sourceSlot.getAcceptedDataType());
     }
 
     public void updateSlotInheritance() {

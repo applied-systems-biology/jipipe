@@ -88,8 +88,10 @@ public class AddAlgorithmSlotPanel extends JPanel {
                 checkNameEditor();
             }
         });
+        formPanel.addToForm(nameEditor, new JLabel("Slot name"), null);
 
         if (slotType == ACAQDataSlot.SlotType.Output && slotConfiguration.isAllowInheritedOutputSlots()) {
+            formPanel.addGroupHeader("Inheritance", UIUtils.getIconFromResources("cog.png"));
             inheritedSlotList = new JComboBox<>();
             inheritedSlotList.setRenderer(new InheritedSlotListCellRenderer(algorithm));
             DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
@@ -104,7 +106,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
             inheritedSlotList.setToolTipText("Inherits the slot type from an input slot. This will adapt to which data is currently connected.");
         }
 
-        formPanel.addToForm(nameEditor, new JLabel("Slot name"), null);
+
 
         add(formPanel, BorderLayout.SOUTH);
         initializeButtonPanel();
