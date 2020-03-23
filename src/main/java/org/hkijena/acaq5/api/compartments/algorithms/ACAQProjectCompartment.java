@@ -75,7 +75,7 @@ public class ACAQProjectCompartment extends ACAQAlgorithm {
         return ACAQMutableSlotConfiguration.builder()
                 .restrictInputTo(ACAQCompartmentOutputData.class)
                 .restrictOutputTo(ACAQCompartmentOutputData.class)
-                .addOutputSlot("Output", ACAQCompartmentOutputData.class)
+                .addOutputSlot("Output", "", ACAQCompartmentOutputData.class)
                 .sealOutput()
                 .build();
     }

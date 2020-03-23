@@ -461,6 +461,15 @@ public class ACAQDataSlot implements TableModel {
         annotations.clear();
     }
 
+    /**
+     * Sets the accepted slot type
+     * Please note that this method can cause issues when running the graph
+     *
+     * @param slotDataType
+     */
+    public void setAcceptedSlotType(Class<? extends ACAQData> slotDataType) {
+        acceptedDataType = slotDataType;
+    }
 
     public enum SlotType {
         Input,

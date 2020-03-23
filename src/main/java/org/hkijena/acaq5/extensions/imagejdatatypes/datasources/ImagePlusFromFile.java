@@ -25,7 +25,7 @@ public class ImagePlusFromFile extends ACAQIteratingAlgorithm {
     public ImagePlusFromFile(ACAQAlgorithmDeclaration declaration, Class<? extends ACAQData> dataClass) {
         super(declaration,
                 ACAQMutableSlotConfiguration.builder().addInputSlot("Files", ACAQFileData.class)
-                        .addOutputSlot("Image", dataClass)
+                        .addOutputSlot("Image", "", dataClass)
                         .sealOutput()
                         .sealInput()
                         .build());

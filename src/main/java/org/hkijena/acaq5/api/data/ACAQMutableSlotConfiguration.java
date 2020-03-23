@@ -24,6 +24,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
     private boolean outputSlotsSealed = false;
     private boolean allowInputSlots = true;
     private boolean allowOutputSlots = true;
+    private boolean allowInheritedOutputSlots = false;
     private Set<Class<? extends ACAQData>> allowedInputSlotTypes;
     private Set<Class<? extends ACAQData>> allowedOutputSlotTypes;
     private int maxInputSlots = 32;
@@ -49,12 +50,12 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
             throw new RuntimeException("Slot already exists!");
         if (inputSlotOrder.size() >= maxInputSlots)
             throw new RuntimeException("Slot already reached the limit of input slots!");
-        slots.put(name, new ACAQSlotDefinition(klass, ACAQDataSlot.SlotType.Input, name));
+        slots.put(name, new ACAQSlotDefinition(klass, ACAQDataSlot.SlotType.Input, name, null));
         inputSlotOrder.add(name);
         getEventBus().post(new SlotAddedEvent(this, name));
     }
 
-    public void addOutputSlot(String name, Class<? extends ACAQData> klass) {
+    public void addOutputSlot(String name, String inheritedSlot, Class<? extends ACAQData> klass) {
         if (!allowedOutputSlotTypes.contains(klass))
             throw new RuntimeException("Slot type is not accepted by this configuration!");
         if (!allowOutputSlots)
@@ -65,7 +66,9 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
             throw new RuntimeException("Slot already exists!");
         if (outputSlotOrder.size() >= maxOutputSlots)
             throw new RuntimeException("Slot already reached the limit of output slots!");
-        slots.put(name, new ACAQSlotDefinition(klass, ACAQDataSlot.SlotType.Output, name));
+        if (!allowInheritedOutputSlots && inheritedSlot != null && !inheritedSlot.isEmpty())
+            throw new IllegalArgumentException("Slot configuration does not allow slot inheritance!");
+        slots.put(name, new ACAQSlotDefinition(klass, ACAQDataSlot.SlotType.Output, name, inheritedSlot));
         outputSlotOrder.add(name);
         getEventBus().post(new SlotAddedEvent(this, name));
     }
@@ -123,7 +126,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
         List<String> newSlots = configuration.getSlots().keySet().stream().filter(s -> !slots.containsKey(s)).collect(Collectors.toList());
         List<String> removedSlots = slots.keySet().stream().filter(s -> !configuration.getSlots().containsKey(s)).collect(Collectors.toList());
         for (Map.Entry<String, ACAQSlotDefinition> kv : configuration.getSlots().entrySet()) {
-            slots.put(kv.getKey(), new ACAQSlotDefinition(kv.getValue().getDataClass(), kv.getValue().getSlotType(), kv.getKey()));
+            slots.put(kv.getKey(), new ACAQSlotDefinition(kv.getValue().getDataClass(), kv.getValue().getSlotType(), kv.getKey(), ""));
         }
         if (configuration instanceof ACAQMutableSlotConfiguration) {
             ACAQMutableSlotConfiguration other = (ACAQMutableSlotConfiguration) configuration;
@@ -153,10 +156,14 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
                 String name = kv.getValue().get("name").asText();
                 Class<? extends ACAQData> klass = ACAQDatatypeRegistry.getInstance()
                         .getById(kv.getValue().get("slot-data-type").asText());
+                String inheritedSlot = null;
+                if (kv.getValue().has("inherited-slot")) {
+                    inheritedSlot = kv.getValue().get("inherited-slot").asText();
+                }
                 if (kv.getValue().get("slot-type").asText().equalsIgnoreCase("input")) {
                     addInputSlot(name, klass);
                 } else {
-                    addOutputSlot(name, klass);
+                    addOutputSlot(name, inheritedSlot, klass);
                 }
             }
         }
@@ -304,6 +311,14 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
         }
     }
 
+    public boolean isAllowInheritedOutputSlots() {
+        return allowInheritedOutputSlots;
+    }
+
+    public void setAllowInheritedOutputSlots(boolean allowInheritedOutputSlots) {
+        this.allowInheritedOutputSlots = allowInheritedOutputSlots;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -320,8 +335,8 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
             return this;
         }
 
-        public Builder addOutputSlot(String name, Class<? extends ACAQData> klass) {
-            object.addOutputSlot(name, klass);
+        public Builder addOutputSlot(String name, String inheritedSlot, Class<? extends ACAQData> klass) {
+            object.addOutputSlot(name, inheritedSlot, klass);
             return this;
         }
 
@@ -360,6 +375,11 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
         public Builder sealOutput() {
             object.outputSlotsSealed = true;
+            return this;
+        }
+
+        public Builder allowOutputSlotInheritance(boolean enabled) {
+            object.setAllowInheritedOutputSlots(enabled);
             return this;
         }
 

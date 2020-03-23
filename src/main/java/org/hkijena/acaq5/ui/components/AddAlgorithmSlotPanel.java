@@ -25,6 +25,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
     private ACAQDataSlot.SlotType slotType;
     private JXTextField searchField;
     private JList<ACAQDataDeclaration> datatypeList;
+    private JComboBox<String> inheritedSlotList;
     private JTextField nameEditor;
     private ACAQDataDeclaration selectedDeclaration;
     private FormPanel formPanel;
@@ -58,6 +59,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
     }
 
     private void initialize() {
+        ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
         setLayout(new BorderLayout());
         initializeToolBar();
 
@@ -86,6 +88,22 @@ public class AddAlgorithmSlotPanel extends JPanel {
                 checkNameEditor();
             }
         });
+
+        if (slotType == ACAQDataSlot.SlotType.Output && slotConfiguration.isAllowInheritedOutputSlots()) {
+            inheritedSlotList = new JComboBox<>();
+            inheritedSlotList.setRenderer(new InheritedSlotListCellRenderer(algorithm));
+            DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+            model.addElement("");
+            model.addElement("*");
+            for (String id : algorithm.getInputSlotOrder()) {
+                model.addElement(id);
+            }
+            inheritedSlotList.setModel(model);
+            inheritedSlotList.setSelectedIndex(0);
+            formPanel.addToForm(inheritedSlotList, new JLabel("Inherited slot"), null);
+            inheritedSlotList.setToolTipText("Inherits the slot type from an input slot. This will adapt to which data is currently connected.");
+        }
+
         formPanel.addToForm(nameEditor, new JLabel("Slot name"), null);
 
         add(formPanel, BorderLayout.SOUTH);
@@ -106,7 +124,11 @@ public class AddAlgorithmSlotPanel extends JPanel {
         buttonPanel.add(Box.createHorizontalGlue());
 
         JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("remove.png"));
-        cancelButton.addActionListener(e -> setVisible(false));
+        cancelButton.addActionListener(e -> {
+            if (dialog != null) {
+                dialog.setVisible(false);
+            }
+        });
         buttonPanel.add(cancelButton);
 
         confirmButton = new JButton("Add", UIUtils.getIconFromResources("add.png"));
@@ -130,7 +152,11 @@ public class AddAlgorithmSlotPanel extends JPanel {
         if (slotType == ACAQDataSlot.SlotType.Input) {
             slotConfiguration.addInputSlot(slotName, selectedDeclaration.getDataClass());
         } else if (slotType == ACAQDataSlot.SlotType.Output) {
-            slotConfiguration.addOutputSlot(slotName, selectedDeclaration.getDataClass());
+            String inheritedSlot = null;
+            if (inheritedSlotList != null && inheritedSlotList.getSelectedItem() != null) {
+                inheritedSlot = inheritedSlotList.getSelectedItem().toString();
+            }
+            slotConfiguration.addOutputSlot(slotName, inheritedSlot, selectedDeclaration.getDataClass());
         } else {
             throw new UnsupportedOperationException();
         }

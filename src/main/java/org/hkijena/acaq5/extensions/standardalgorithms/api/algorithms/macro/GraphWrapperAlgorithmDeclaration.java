@@ -243,7 +243,7 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
                 existingSlots.add(name);
             } else if (slot.isOutput()) {
                 String name = StringUtils.makeUniqueString(slot.getName(), " ", existingSlots::contains);
-                outputSlots.add(new DefaultAlgorithmOutputSlot(slot.getAcceptedDataType(), name, false));
+                outputSlots.add(new DefaultAlgorithmOutputSlot(slot.getAcceptedDataType(), name, "", false));
                 existingSlots.add(name);
             }
         }

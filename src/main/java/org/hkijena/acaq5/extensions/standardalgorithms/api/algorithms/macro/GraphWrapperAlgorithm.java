@@ -74,7 +74,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
                 graphSlots.put(name, slot);
             } else if (slot.isOutput()) {
                 String name = StringUtils.makeUniqueString(slot.getName(), " ", s -> slotConfiguration.getSlots().containsKey(s));
-                slotConfiguration.addOutputSlot(name, slot.getAcceptedDataType());
+                slotConfiguration.addOutputSlot(name, "", slot.getAcceptedDataType());
                 graphSlots.put(name, slot);
             }
         }

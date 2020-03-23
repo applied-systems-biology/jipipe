@@ -22,7 +22,7 @@ import java.util.List;
 public class MergeROIEnhancer extends ACAQIteratingAlgorithm {
     public MergeROIEnhancer(ACAQAlgorithmDeclaration declaration) {
         super(declaration, ACAQMutableSlotConfiguration.builder().restrictInputTo(ACAQROIData.class)
-                .addOutputSlot("ROI", ACAQROIData.class)
+                .addOutputSlot("ROI", "", ACAQROIData.class)
                 .sealOutput().build(), null);
     }
 

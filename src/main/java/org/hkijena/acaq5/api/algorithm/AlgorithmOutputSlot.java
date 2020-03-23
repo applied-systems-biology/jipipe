@@ -26,6 +26,15 @@ public @interface AlgorithmOutputSlot {
     String slotName() default "";
 
     /**
+     * An optional inherited slot. Used if autoCreate is true
+     * Either can be a valid input slot name to inherit the type of the input slot,
+     * or can be '*' to inherit the type of the first slot
+     *
+     * @return
+     */
+    String inheritedSlot() default "";
+
+    /**
      * If true, {@link ACAQAlgorithm} automatically configures its slots based on annotations (unless a custom {@link org.hkijena.acaq5.api.data.ACAQSlotConfiguration}
      * is provided.
      *

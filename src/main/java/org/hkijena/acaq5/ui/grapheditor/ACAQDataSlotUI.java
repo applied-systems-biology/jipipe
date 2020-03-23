@@ -3,6 +3,7 @@ package org.hkijena.acaq5.ui.grapheditor;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
+import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
@@ -202,7 +203,7 @@ public class ACAQDataSlotUI extends JPanel {
         JLabel nameLabel = new JLabel(getDisplayedName());
         nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot, graph, false));
         nameLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
-        nameLabel.setIcon(ACAQUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()));
+        nameLabel.setIcon(ACAQUIDatatypeRegistry.getInstance().getIconFor(getSlotDataType()));
         centerPanel.add(nameLabel);
 //        add(nameLabel, BorderLayout.CENTER);
 
@@ -231,6 +232,17 @@ public class ACAQDataSlotUI extends JPanel {
         centerPanel.add(traitUI);
 
         add(centerPanel, BorderLayout.CENTER);
+    }
+
+    private Class<? extends ACAQData> getSlotDataType() {
+        if (graph != null) {
+            if (graph.containsNode(slot)) {
+                ACAQDataSlot sourceSlot = graph.getSourceSlot(slot);
+                if (sourceSlot != null)
+                    return sourceSlot.getAcceptedDataType();
+            }
+        }
+        return slot.getAcceptedDataType();
     }
 
     public String getDisplayedName() {

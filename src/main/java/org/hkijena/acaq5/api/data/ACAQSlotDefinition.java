@@ -20,11 +20,13 @@ public class ACAQSlotDefinition {
     private Class<? extends ACAQData> dataClass;
     private ACAQDataSlot.SlotType slotType;
     private String name;
+    private String inheritedSlot;
 
-    public ACAQSlotDefinition(Class<? extends ACAQData> dataClass, ACAQDataSlot.SlotType slotType, String name) {
+    public ACAQSlotDefinition(Class<? extends ACAQData> dataClass, ACAQDataSlot.SlotType slotType, String name, String inheritedSlot) {
         this.dataClass = dataClass;
         this.slotType = slotType;
         this.name = name;
+        this.inheritedSlot = inheritedSlot;
     }
 
     public Class<? extends ACAQData> getDataClass() {
@@ -39,12 +41,24 @@ public class ACAQSlotDefinition {
         return name;
     }
 
+    /**
+     * Gets slot to inherit the data type from
+     * If null or empty, this slot does not inherit
+     * If it equals '*', the first available input slot is chosen
+     *
+     * @return
+     */
+    public String getInheritedSlot() {
+        return inheritedSlot;
+    }
+
     public static class Serializer extends JsonSerializer<ACAQSlotDefinition> {
         @Override
         public void serialize(ACAQSlotDefinition definition, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("slot-data-type", ACAQDatatypeRegistry.getInstance().getIdOf(definition.dataClass));
             jsonGenerator.writeStringField("slot-type", definition.slotType.name());
+            jsonGenerator.writeStringField("inherited-slot", definition.inheritedSlot);
             jsonGenerator.writeStringField("name", definition.name);
             jsonGenerator.writeEndObject();
         }
@@ -55,9 +69,11 @@ public class ACAQSlotDefinition {
         @Override
         public ACAQSlotDefinition deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
+            JsonNode inheritedSlotNode = node.path("inherited-slot");
             return new ACAQSlotDefinition(ACAQDatatypeRegistry.getInstance().getById(node.get("slot-data-type").asText()),
                     ACAQDataSlot.SlotType.valueOf(node.get("slot-type").asText()),
-                    node.get("name").asText());
+                    node.get("name").asText(),
+                    inheritedSlotNode.isMissingNode() ? "" : inheritedSlotNode.asText());
         }
     }
 }

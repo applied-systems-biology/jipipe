@@ -8,11 +8,13 @@ public class DefaultAlgorithmOutputSlot implements AlgorithmOutputSlot {
 
     private Class<? extends ACAQData> mValue;
     private String mSlotName;
+    private String mInheritedSlot;
     private boolean mAutoCreate;
 
-    public DefaultAlgorithmOutputSlot(Class<? extends ACAQData> mValue, String mSlotName, boolean mAutoCreate) {
+    public DefaultAlgorithmOutputSlot(Class<? extends ACAQData> mValue, String mSlotName, String mInheritedSlot, boolean mAutoCreate) {
         this.mValue = mValue;
         this.mSlotName = mSlotName;
+        this.mInheritedSlot = mInheritedSlot;
         this.mAutoCreate = mAutoCreate;
     }
 
@@ -24,6 +26,11 @@ public class DefaultAlgorithmOutputSlot implements AlgorithmOutputSlot {
     @Override
     public String slotName() {
         return mSlotName;
+    }
+
+    @Override
+    public String inheritedSlot() {
+        return mInheritedSlot;
     }
 
     @Override

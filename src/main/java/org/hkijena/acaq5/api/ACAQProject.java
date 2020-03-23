@@ -79,7 +79,8 @@ public class ACAQProject implements ACAQValidatable {
         List<ACAQDataSlot> openInputSlots = target.getOpenInputSlots();
         if (openInputSlots.isEmpty()) {
             ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) target.getSlotConfiguration();
-            slotConfiguration.addInputSlot(StringUtils.makeUniqueString(source.getName(), " ", slotConfiguration::hasSlot), ACAQCompartmentOutputData.class);
+            slotConfiguration.addInputSlot(StringUtils.makeUniqueString(source.getName(), " ", slotConfiguration::hasSlot),
+                    ACAQCompartmentOutputData.class);
             openInputSlots = target.getOpenInputSlots();
         }
         compartmentGraph.connect(sourceSlot, openInputSlots.get(0));

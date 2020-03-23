@@ -2,14 +2,12 @@ package org.hkijena.acaq5.ui.grapheditor.settings;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
+import org.hkijena.acaq5.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
-import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
-import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -67,13 +65,17 @@ public class ACAQSlotEditorUI extends JPanel {
 
         if (canModifyInputSlots()) {
             JButton addInputButton = new JButton("Add input", UIUtils.getIconFromResources("database.png"));
-            initializeAddButton(addInputButton, ACAQDataSlot.SlotType.Input);
+            addInputButton.addActionListener(e -> {
+                AddAlgorithmSlotPanel.showDialog(this, algorithm, ACAQDataSlot.SlotType.Input);
+            });
             toolBar.add(addInputButton);
         }
 
         if (canModifyOutputSlots()) {
             JButton addOutputButton = new JButton("Add output", UIUtils.getIconFromResources("database.png"));
-            initializeAddButton(addOutputButton, ACAQDataSlot.SlotType.Output);
+            addOutputButton.addActionListener(e -> {
+                AddAlgorithmSlotPanel.showDialog(this, algorithm, ACAQDataSlot.SlotType.Output);
+            });
             toolBar.add(addOutputButton);
         }
 
@@ -189,54 +191,6 @@ public class ACAQSlotEditorUI extends JPanel {
 
         if (toSelect != null) {
             slotTree.setSelectionPath(new TreePath(model.getPathToRoot(toSelect)));
-        }
-    }
-
-    private void initializeAddButton(JButton button, ACAQDataSlot.SlotType slotType) {
-        JPopupMenu menu = UIUtils.addPopupMenuToComponent(button);
-        ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
-
-        Set<Class<? extends ACAQData>> allowedSlotTypes;
-        switch (slotType) {
-            case Input:
-                allowedSlotTypes = slotConfiguration.getAllowedInputSlotTypes();
-                break;
-            case Output:
-                allowedSlotTypes = slotConfiguration.getAllowedOutputSlotTypes();
-                break;
-            default:
-                throw new RuntimeException();
-        }
-
-        for (Class<? extends ACAQData> dataClass : allowedSlotTypes) {
-            JMenuItem item = new JMenuItem(ACAQData.getNameOf(dataClass), ACAQUIDatatypeRegistry.getInstance().getIconFor(dataClass));
-            item.addActionListener(e -> addNewSlot(slotType, dataClass));
-            menu.add(item);
-        }
-    }
-
-    private void addNewSlot(ACAQDataSlot.SlotType slotType, Class<? extends ACAQData> klass) {
-        if (algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
-            ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
-            int existingSlots = slotType == ACAQDataSlot.SlotType.Input ? algorithm.getInputSlots().size() : algorithm.getOutputSlots().size();
-            String name = null;
-            while (name == null) {
-                String newName = JOptionPane.showInputDialog(this, "Please a data slot name", slotType + " data " + (existingSlots + 1));
-                if (newName == null || newName.trim().isEmpty())
-                    return;
-                newName = StringUtils.makeFilesystemCompatible(newName);
-                if (slotConfiguration.hasSlot(newName))
-                    continue;
-                name = newName;
-            }
-            switch (slotType) {
-                case Input:
-                    slotConfiguration.addInputSlot(name, klass);
-                    break;
-                case Output:
-                    slotConfiguration.addOutputSlot(name, klass);
-                    break;
-            }
         }
     }
 

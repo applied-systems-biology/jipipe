@@ -13,15 +13,15 @@ public class ACAQIOSlotConfiguration extends ACAQMutableSlotConfiguration {
     public void addInputSlot(String name, Class<? extends ACAQData> klass) {
         super.addInputSlot(name, klass);
         if (!getSlots().containsKey("Output " + name)) {
-            addOutputSlot("Output " + name, klass);
+            addOutputSlot("Output " + name, "", klass);
         }
     }
 
     @Override
-    public void addOutputSlot(String name, Class<? extends ACAQData> klass) {
+    public void addOutputSlot(String name, String inheritedSlot, Class<? extends ACAQData> klass) {
         if (!name.startsWith("Output "))
             name = "Output " + name;
-        super.addOutputSlot(name, klass);
+        super.addOutputSlot(name, null, klass);
         String inputName = name.substring("Output ".length());
         if (!getSlots().containsKey(inputName))
             addInputSlot(inputName, klass);

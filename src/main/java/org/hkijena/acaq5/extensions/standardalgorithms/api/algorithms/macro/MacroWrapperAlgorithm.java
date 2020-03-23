@@ -61,8 +61,11 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
     private List<Window> initiallyOpenedWindows = new ArrayList<>();
 
     public MacroWrapperAlgorithm(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, ACAQMutableSlotConfiguration.builder().restrictInputTo(IMAGEJ_DATA_CLASSES.toArray(new Class[0]))
-                .restrictOutputTo(IMAGEJ_DATA_CLASSES.toArray(new Class[0])).build());
+        super(declaration, ACAQMutableSlotConfiguration.builder()
+                .allowOutputSlotInheritance(true)
+                .restrictInputTo(IMAGEJ_DATA_CLASSES.toArray(new Class[0]))
+                .restrictOutputTo(IMAGEJ_DATA_CLASSES.toArray(new Class[0]))
+                .build());
     }
 
     public MacroWrapperAlgorithm(MacroWrapperAlgorithm other) {

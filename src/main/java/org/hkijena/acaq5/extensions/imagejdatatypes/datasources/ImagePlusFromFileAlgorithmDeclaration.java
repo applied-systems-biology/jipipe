@@ -23,7 +23,7 @@ public class ImagePlusFromFileAlgorithmDeclaration implements ACAQAlgorithmDecla
         this.dataClassId = dataClassId;
         this.dataClass = dataClass;
         inputSlots.add(new DefaultAlgorithmInputSlot(ACAQFileData.class, "Input", false));
-        outputSlots.add(new DefaultAlgorithmOutputSlot(dataClass, "Image", false));
+        outputSlots.add(new DefaultAlgorithmOutputSlot(dataClass, "Image", "", false));
     }
 
     @Override
