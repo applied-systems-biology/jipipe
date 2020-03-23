@@ -126,12 +126,16 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
         List<String> newSlots = configuration.getSlots().keySet().stream().filter(s -> !slots.containsKey(s)).collect(Collectors.toList());
         List<String> removedSlots = slots.keySet().stream().filter(s -> !configuration.getSlots().containsKey(s)).collect(Collectors.toList());
         for (Map.Entry<String, ACAQSlotDefinition> kv : configuration.getSlots().entrySet()) {
-            slots.put(kv.getKey(), new ACAQSlotDefinition(kv.getValue().getDataClass(), kv.getValue().getSlotType(), kv.getKey(), ""));
+            slots.put(kv.getKey(), new ACAQSlotDefinition(kv.getValue().getDataClass(),
+                    kv.getValue().getSlotType(),
+                    kv.getKey(),
+                    kv.getValue().getInheritedSlot()));
         }
         if (configuration instanceof ACAQMutableSlotConfiguration) {
             ACAQMutableSlotConfiguration other = (ACAQMutableSlotConfiguration) configuration;
             this.allowedInputSlotTypes = new HashSet<>(other.allowedInputSlotTypes);
             this.allowedOutputSlotTypes = new HashSet<>(other.allowedOutputSlotTypes);
+            this.allowInheritedOutputSlots = other.allowInheritedOutputSlots;
             this.allowInputSlots = other.allowInputSlots;
             this.allowOutputSlots = other.allowOutputSlots;
             this.inputSlotsSealed = other.inputSlotsSealed;

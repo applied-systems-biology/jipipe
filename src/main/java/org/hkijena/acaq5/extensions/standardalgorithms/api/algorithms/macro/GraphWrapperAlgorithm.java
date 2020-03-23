@@ -3,13 +3,16 @@ package org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
+import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQCustomParameterHolder;
 import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterHolder;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQReflectionParameterAccess;
-import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.*;
 
@@ -62,24 +65,84 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
     }
 
     private void initializeSlots() {
+        graphSlots.clear();
+        for (Map.Entry<ACAQDataSlot, String> entry : ((GraphWrapperAlgorithmDeclaration) getDeclaration()).getExportedSlotNames().entrySet()) {
+            ACAQAlgorithm localAlgorithm = wrappedGraph.getEquivalentOf(entry.getKey().getAlgorithm(), entry.getKey().getAlgorithm().getGraph());
+            ACAQDataSlot localSlot = localAlgorithm.getSlots().get(entry.getKey().getName());
+            graphSlots.put(entry.getValue(), localSlot);
+        }
+
         ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) getSlotConfiguration();
         slotConfiguration.setInputSealed(false);
         slotConfiguration.setOutputSealed(false);
+        slotConfiguration.setAllowInheritedOutputSlots(true);
         slotConfiguration.clearInputSlots();
         slotConfiguration.clearOutputSlots();
-        for (ACAQDataSlot slot : wrappedGraph.getUnconnectedSlots()) {
-            if (slot.isInput()) {
-                String name = StringUtils.makeUniqueString(slot.getName(), " ", s -> slotConfiguration.getSlots().containsKey(s));
-                slotConfiguration.addInputSlot(name, slot.getAcceptedDataType());
-                graphSlots.put(name, slot);
-            } else if (slot.isOutput()) {
-                String name = StringUtils.makeUniqueString(slot.getName(), " ", s -> slotConfiguration.getSlots().containsKey(s));
-                slotConfiguration.addOutputSlot(name, "", slot.getAcceptedDataType());
-                graphSlots.put(name, slot);
-            }
+        for (AlgorithmInputSlot slot : getDeclaration().getInputSlots()) {
+            slotConfiguration.addInputSlot(slot.slotName(), slot.value());
+        }
+        for (AlgorithmOutputSlot slot : getDeclaration().getOutputSlots()) {
+            slotConfiguration.addOutputSlot(slot.slotName(), slot.inheritedSlot(), slot.value());
         }
         slotConfiguration.setInputSealed(true);
         slotConfiguration.setOutputSealed(true);
+    }
+
+    @Override
+    public void updateSlotInheritance() {
+        if (getGraph() != null) {
+            // Pass the input type to the graph inputs
+            // Then propagate the change
+            // Then change the data type back
+            Set<ACAQAlgorithm> graphInputAlgorithms = new HashSet<>();
+            for (Map.Entry<String, ACAQDataSlot> entry : graphSlots.entrySet()) {
+                if (entry.getValue().isInput()) {
+                    graphInputAlgorithms.add(entry.getValue().getAlgorithm());
+                    ACAQDataSlot globalSlot = getInputSlot(entry.getKey());
+                    Class<? extends ACAQData> dataClass = getSlotConfiguration().getSlots().get(entry.getKey()).getDataClass();
+                    ACAQDataSlot globalSource = getGraph().getSourceSlot(globalSlot);
+                    if (globalSource != null) {
+                        dataClass = globalSource.getAcceptedDataType();
+                    }
+                    entry.getValue().setAcceptedDataType(dataClass);
+                }
+            }
+            for (ACAQAlgorithm graphInputAlgorithm : graphInputAlgorithms) {
+                graphInputAlgorithm.updateSlotInheritance();
+            }
+            for (Map.Entry<String, ACAQDataSlot> entry : graphSlots.entrySet()) {
+                if (entry.getValue().isInput()) {
+                    Class<? extends ACAQData> dataClass = getSlotConfiguration().getSlots().get(entry.getKey()).getDataClass();
+                    entry.getValue().setAcceptedDataType(dataClass);
+                }
+            }
+
+            // Pass the output data type to the global outputs
+            boolean modified = false;
+            for (Map.Entry<String, ACAQDataSlot> entry : graphSlots.entrySet()) {
+                ACAQDataSlot slotInstance = getSlots().getOrDefault(entry.getKey(), null);
+                if (slotInstance == null || slotInstance.getSlotType() != ACAQDataSlot.SlotType.Output)
+                    continue;
+
+                Class<? extends ACAQData> expectedSlotDataType = entry.getValue().getAcceptedDataType();
+                if (slotInstance.getAcceptedDataType() != expectedSlotDataType) {
+                    slotInstance.setAcceptedDataType(expectedSlotDataType);
+                    getEventBus().post(new AlgorithmSlotsChangedEvent(this));
+                    modified = true;
+                }
+            }
+            if (modified) {
+                Set<ACAQAlgorithm> algorithms = new HashSet<>();
+                for (ACAQDataSlot slot : getOutputSlots()) {
+                    for (ACAQDataSlot targetSlot : getGraph().getTargetSlots(slot)) {
+                        algorithms.add(targetSlot.getAlgorithm());
+                    }
+                }
+                for (ACAQAlgorithm algorithm : algorithms) {
+                    algorithm.updateSlotInheritance();
+                }
+            }
+        }
     }
 
     @Override

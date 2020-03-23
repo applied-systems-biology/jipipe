@@ -39,6 +39,7 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     private ACAQParameterCollectionVisibilities parameterCollectionVisibilities = new ACAQParameterCollectionVisibilities();
     private ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
     private String menuPath = "";
+    private Map<ACAQDataSlot, String> exportedSlotNames = new HashMap<>();
 
     public GraphWrapperAlgorithmDeclaration() {
     }
@@ -71,6 +72,10 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     @Override
     public ACAQAlgorithm clone(ACAQAlgorithm algorithm) {
         return new GraphWrapperAlgorithm((GraphWrapperAlgorithm) algorithm);
+    }
+
+    public Map<ACAQDataSlot, String> getExportedSlotNames() {
+        return exportedSlotNames;
     }
 
     @Override
@@ -236,15 +241,21 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
         outputSlots.clear();
 
         Set<String> existingSlots = new HashSet<>();
-        for (ACAQDataSlot slot : graph.getUnconnectedSlots()) {
-            if (slot.isInput()) {
-                String name = StringUtils.makeUniqueString(slot.getName(), " ", existingSlots::contains);
-                inputSlots.add(new DefaultAlgorithmInputSlot(slot.getAcceptedDataType(), name, false));
-                existingSlots.add(name);
-            } else if (slot.isOutput()) {
-                String name = StringUtils.makeUniqueString(slot.getName(), " ", existingSlots::contains);
-                outputSlots.add(new DefaultAlgorithmOutputSlot(slot.getAcceptedDataType(), name, "", false));
-                existingSlots.add(name);
+        Map<ACAQAlgorithm, List<ACAQDataSlot>> groupedByAlgorithm = graph.getUnconnectedSlots().stream().collect(Collectors.groupingBy(ACAQDataSlot::getAlgorithm));
+        exportedSlotNames.clear();
+        for (Map.Entry<ACAQAlgorithm, List<ACAQDataSlot>> entry : groupedByAlgorithm.entrySet()) {
+            for (ACAQDataSlot slot : entry.getValue()) {
+                if (slot.isInput()) {
+                    String name = StringUtils.makeUniqueString(slot.getName(), " ", existingSlots::contains);
+                    inputSlots.add(new DefaultAlgorithmInputSlot(slot.getAcceptedDataType(), name, false));
+                    existingSlots.add(name);
+                    exportedSlotNames.put(slot, name);
+                } else if (slot.isOutput()) {
+                    String name = StringUtils.makeUniqueString(slot.getName(), " ", existingSlots::contains);
+                    outputSlots.add(new DefaultAlgorithmOutputSlot(slot.getAcceptedDataType(), name, "", false));
+                    existingSlots.add(name);
+                    exportedSlotNames.put(slot, name);
+                }
             }
         }
     }

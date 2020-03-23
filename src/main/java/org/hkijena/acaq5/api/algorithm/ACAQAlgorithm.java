@@ -445,33 +445,46 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
         updateSlotInheritance();
     }
 
-    private Class<? extends ACAQData> getExpectedSlotDataType(ACAQSlotDefinition slotDefinition) {
+    private Class<? extends ACAQData> getExpectedSlotDataType(ACAQSlotDefinition slotDefinition, ACAQDataSlot slotInstance) {
         String inheritedSlotName = slotDefinition.getInheritedSlot();
         if (inheritedSlotName == null || inheritedSlotName.isEmpty())
-            return slotDefinition.getDataClass();
+            return slotInstance.getAcceptedDataType();
         if ("*".equals(inheritedSlotName) && !getInputSlots().isEmpty()) {
             inheritedSlotName = getInputSlotOrder().get(0);
         }
         ACAQDataSlot inheritedSlot = getSlots().getOrDefault(inheritedSlotName, null);
         if (inheritedSlot == null || inheritedSlot.getSlotType() != ACAQDataSlot.SlotType.Input)
-            return slotDefinition.getDataClass();
+            return slotInstance.getAcceptedDataType();
         ACAQDataSlot sourceSlot = graph.getSourceSlot(inheritedSlot);
         if (sourceSlot == null)
-            return slotDefinition.getDataClass();
+            return inheritedSlot.getAcceptedDataType();
         return sourceSlot.getAcceptedDataType();
     }
 
-    private void updateSlotInheritance() {
+    public void updateSlotInheritance() {
         if (graph != null) {
+            boolean modified = false;
             for (Map.Entry<String, ACAQSlotDefinition> entry : getSlotConfiguration().getOutputSlots().entrySet()) {
                 ACAQDataSlot slotInstance = getSlots().getOrDefault(entry.getKey(), null);
-                if (slotInstance == null || slotInstance.getSlotType() == ACAQDataSlot.SlotType.Input)
+                if (slotInstance == null || slotInstance.getSlotType() != ACAQDataSlot.SlotType.Output)
                     continue;
 
-                Class<? extends ACAQData> expectedSlotDataType = getExpectedSlotDataType(entry.getValue());
+                Class<? extends ACAQData> expectedSlotDataType = getExpectedSlotDataType(entry.getValue(), slotInstance);
                 if (slotInstance.getAcceptedDataType() != expectedSlotDataType) {
-                    slotInstance.setAcceptedSlotType(expectedSlotDataType);
+                    slotInstance.setAcceptedDataType(expectedSlotDataType);
                     eventBus.post(new AlgorithmSlotsChangedEvent(this));
+                    modified = true;
+                }
+            }
+            if (modified) {
+                Set<ACAQAlgorithm> algorithms = new HashSet<>();
+                for (ACAQDataSlot slot : getOutputSlots()) {
+                    for (ACAQDataSlot targetSlot : graph.getTargetSlots(slot)) {
+                        algorithms.add(targetSlot.getAlgorithm());
+                    }
+                }
+                for (ACAQAlgorithm algorithm : algorithms) {
+                    algorithm.updateSlotInheritance();
                 }
             }
         }

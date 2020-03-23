@@ -1,0 +1,75 @@
+{
+  "id" : "gaussian-blur",
+  "metadata" : {
+    "name" : "Gaussian blur",
+    "description" : "Applies gaussian blur to the input image",
+    "authors" : "",
+    "website" : "",
+    "license" : "",
+    "citation" : ""
+  },
+  "category" : "Enhancer",
+  "parameter-visibilities" : {
+    "visible-keys" : [ "default-gaussian-blur/macro-parameters/Sigma" ]
+  },
+  "graph" : {
+    "nodes" : {
+      "default-gaussian-blur" : {
+        "acaq:slot-configuration" : {
+          "Input" : {
+            "slot-data-type" : "imagej-imgplus-2d",
+            "slot-type" : "Input",
+            "inherited-slot" : "",
+            "name" : "Input"
+          },
+          "Output" : {
+            "slot-data-type" : "imagej-imgplus-2d",
+            "slot-type" : "Output",
+            "inherited-slot" : "Input",
+            "name" : "Output"
+          }
+        },
+        "acaq:algorithm-ui-location" : { },
+        "acaq:algorithm-type" : "acaq:default:org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro.MacroWrapperAlgorithm",
+        "acaq:algorithm-compartment" : "DEFAULT",
+        "macro-parameters/Sigma" : 1.0,
+        "code" : {
+          "code" : "// Apply gaussian blur\nselectWindow(\"Input\");\nrun(\"Gaussian Blur...\", \"sigma=\" + Sigma);\nrename(\"Output\");"
+        },
+        "strict-mode" : true,
+        "name" : "Gaussian blur",
+        "description" : null,
+        "acaq:trait-generation" : {
+          "modification" : {
+            "per-slot" : { },
+            "global" : { }
+          },
+          "transfer" : {
+            "transfers" : [ ],
+            "transfer-all-to-all" : true
+          }
+        },
+        "acaq:dynamic-parameters" : {
+          "macro-parameters" : {
+            "parameters" : {
+              "Sigma" : {
+                "name" : "Sigma",
+                "description" : null,
+                "visibility" : "TransitiveVisible",
+                "field-class" : "java.lang.Double",
+                "value" : 1.0
+              }
+            }
+          }
+        }
+      }
+    },
+    "edges" : [ ]
+  },
+  "menu-path" : "Blur",
+  "unwanted-traits" : [ ],
+  "added-traits" : [ ],
+  "removed-traits" : [ ],
+  "acaq:project-type" : "graph-wrapper-algorithm",
+  "preferred-traits" : [ ]
+}
