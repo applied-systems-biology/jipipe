@@ -64,9 +64,9 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
         if (definition.getSlotType() == ACAQDataSlot.SlotType.Output &&
                 !allowedOutputSlotTypes.contains(definition.getDataClass()))
             throw new RuntimeException("Slot type is not accepted by this configuration!");
-        if (definition.getSlotType() == ACAQDataSlot.SlotType.Output &&  !allowOutputSlots)
+        if (definition.getSlotType() == ACAQDataSlot.SlotType.Output && !allowOutputSlots)
             throw new RuntimeException("Slot configuration does not allow output slots");
-        if (definition.getSlotType() == ACAQDataSlot.SlotType.Output &&  outputSlotsSealed)
+        if (definition.getSlotType() == ACAQDataSlot.SlotType.Output && outputSlotsSealed)
             throw new RuntimeException("Slot configuration is sealed!");
         if (definition.getSlotType() == ACAQDataSlot.SlotType.Output &&
                 outputSlotOrder.size() >= maxOutputSlots)
@@ -79,9 +79,9 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
             throw new RuntimeException("Slot already exists!");
 
         slots.put(name, definition);
-        if(definition.getSlotType() == ACAQDataSlot.SlotType.Input)
+        if (definition.getSlotType() == ACAQDataSlot.SlotType.Input)
             inputSlotOrder.add(name);
-        else if(definition.getSlotType() == ACAQDataSlot.SlotType.Output)
+        else if (definition.getSlotType() == ACAQDataSlot.SlotType.Output)
             outputSlotOrder.add(name);
         else
             throw new IllegalArgumentException("Unknown slot type!");

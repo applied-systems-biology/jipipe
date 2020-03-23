@@ -3,13 +3,11 @@ package org.hkijena.acaq5.api.data;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
-import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -74,7 +72,7 @@ public class ACAQSlotDefinition {
         this.inheritanceConversions = inheritanceConversions;
     }
 
-    public static  Class<? extends ACAQData> applyInheritanceConversion(ACAQSlotDefinition definition,  Class<? extends ACAQData> dataClass) {
+    public static Class<? extends ACAQData> applyInheritanceConversion(ACAQSlotDefinition definition, Class<? extends ACAQData> dataClass) {
         return definition.inheritanceConversions.getOrDefault(ACAQDataDeclaration.getInstance(dataClass),
                 ACAQDataDeclaration.getInstance(dataClass)).getDataClass();
     }
@@ -108,7 +106,7 @@ public class ACAQSlotDefinition {
                     node.get("name").asText(),
                     inheritedSlotNode.isMissingNode() ? "" : inheritedSlotNode.asText(null));
             JsonNode conversionsNode = node.path("inheritance-conversions");
-            if(!conversionsNode.isMissingNode()) {
+            if (!conversionsNode.isMissingNode()) {
                 for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(conversionsNode.fields())) {
                     String idKey = entry.getKey();
                     String idValue = entry.getValue().asText();

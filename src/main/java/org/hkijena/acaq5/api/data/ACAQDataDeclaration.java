@@ -63,15 +63,6 @@ public class ACAQDataDeclaration implements Comparable<ACAQDataDeclaration> {
         return name.compareTo(o.name);
     }
 
-    public static ACAQDataDeclaration getInstance(Class<? extends ACAQData> klass) {
-        ACAQDataDeclaration declaration = cache.getOrDefault(klass, null);
-        if (declaration == null) {
-            declaration = new ACAQDataDeclaration(klass);
-            cache.put(klass, declaration);
-        }
-        return declaration;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -87,6 +78,15 @@ public class ACAQDataDeclaration implements Comparable<ACAQDataDeclaration> {
 
     public String getId() {
         return ACAQDatatypeRegistry.getInstance().getIdOf(dataClass);
+    }
+
+    public static ACAQDataDeclaration getInstance(Class<? extends ACAQData> klass) {
+        ACAQDataDeclaration declaration = cache.getOrDefault(klass, null);
+        if (declaration == null) {
+            declaration = new ACAQDataDeclaration(klass);
+            cache.put(klass, declaration);
+        }
+        return declaration;
     }
 
     public static ACAQDataDeclaration getInstance(String id) {

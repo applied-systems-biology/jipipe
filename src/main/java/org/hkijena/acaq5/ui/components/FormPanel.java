@@ -129,6 +129,24 @@ public class FormPanel extends JPanel {
         return component;
     }
 
+    public <T extends Component> T addWideToForm(T component, MarkdownDocument documentation) {
+        forms.add(component, new GridBagConstraints() {
+            {
+                anchor = GridBagConstraints.WEST;
+                gridx = 0;
+                gridwidth = 2;
+                gridy = numRows;
+                insets = UI_PADDING;
+                fill = GridBagConstraints.HORIZONTAL;
+                weightx = 1;
+            }
+        });
+        ++numRows;
+        getComponentListForCurrentGroup().add(component);
+        documentComponent(component, documentation);
+        return component;
+    }
+
     public JPanel addGroupHeader(String text, Icon icon) {
         JPanel subAlgorithmGroupTitle = new JPanel(new BorderLayout());
         subAlgorithmGroupTitle.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createCompoundBorder(
