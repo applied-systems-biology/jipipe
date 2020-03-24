@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.ui.registries;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
-import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
@@ -126,6 +126,6 @@ public class ACAQUIDatatypeRegistry {
     }
 
     public static ACAQUIDatatypeRegistry getInstance() {
-        return ACAQRegistryService.getInstance().getUIDatatypeRegistry();
+        return ACAQDefaultRegistry.getInstance().getUIDatatypeRegistry();
     }
 }

@@ -1,8 +1,9 @@
 package org.hkijena.acaq5.extensions.standardalgorithms;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.hkijena.acaq5.ACAQExtensionService;
-import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.ACAQDefaultRegistry;
+import org.hkijena.acaq5.ACAQJavaExtension;
+import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.annotation.AnnotateAll;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.annotation.RemoveAnnotations;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.annotation.SplitByAnnotation;
@@ -18,48 +19,35 @@ import org.hkijena.acaq5.extensions.standardalgorithms.api.registries.GraphWrapp
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
-import org.scijava.service.AbstractService;
 
 import java.io.IOException;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 
-@Plugin(type = ACAQExtensionService.class)
-public class StandardAlgorithmsExtension extends AbstractService implements ACAQExtensionService {
+@Plugin(type = ACAQJavaExtension.class)
+public class StandardAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtension {
+
     @Override
     public String getName() {
-        return "ACAQ5 standard library";
+        return "Standard algorithms";
     }
 
     @Override
     public String getDescription() {
-        return "Standard data types and algorithms";
+        return "A set of standard image processing algorithms";
     }
 
     @Override
-    public List<String> getAuthors() {
-        return Arrays.asList("Zoltán Cseresnyés", "Ruman Gerst");
+    public String getDependencyId() {
+        return "org.hkijena.acaq5:standard-algorithms";
     }
 
     @Override
-    public String getURL() {
-        return "https://applied-systems-biology.github.io/acaq5/";
+    public String getDependencyVersion() {
+        return "1.0.0";
     }
 
     @Override
-    public String getLicense() {
-        return "BSD-2";
-    }
-
-    @Override
-    public URL getIconURL() {
-        return ResourceUtils.getPluginResource("logo-400.png");
-    }
-
-    @Override
-    public void register(ACAQRegistryService registryService) {
+    public void register(ACAQDefaultRegistry registryService) {
 
         registryService.getAlgorithmRegistry().register(MaskToParticleConverter.class);
         registryService.getAlgorithmRegistry().register(CLAHEImageEnhancer.class);
@@ -80,7 +68,7 @@ public class StandardAlgorithmsExtension extends AbstractService implements ACAQ
         registerAlgorithmResources(registryService);
     }
 
-    private void registerAlgorithmResources(ACAQRegistryService registryService) {
+    private void registerAlgorithmResources(ACAQDefaultRegistry registryService) {
         Set<String> algorithmFiles = ResourceUtils.walkInternalResourceFolder("extensions/standardalgorithms/api/algorithms");
         for (String resourceFile : algorithmFiles) {
             try {

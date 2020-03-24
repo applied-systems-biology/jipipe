@@ -1,8 +1,9 @@
 package org.hkijena.acaq5.extensions.imagejdatatypes;
 
-import org.hkijena.acaq5.ACAQExtensionService;
-import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.ACAQDefaultRegistry;
+import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datasources.BioformatsImporter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datasources.ImagePlusFromFileAlgorithmDeclaration;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datasources.ROIDataFromFile;
@@ -20,48 +21,34 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.resultanalysis.ROIDataSlotRo
 import org.hkijena.acaq5.extensions.imagejdatatypes.resultanalysis.ResultsTableDataSlotRowUI;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
-import org.scijava.service.AbstractService;
-
-import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
 
 import static org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro.MacroWrapperAlgorithm.IMAGEJ_DATA_CLASSES;
 
-@Plugin(type = ACAQExtensionService.class)
-public class ImageJDataTypesExtension extends AbstractService implements ACAQExtensionService {
+@Plugin(type = ACAQJavaExtension.class)
+public class ImageJDataTypesExtension extends ACAQPrepackagedDefaultJavaExtension {
+
     @Override
     public String getName() {
-        return "ImageJ data types";
+        return "ImageJ integration";
     }
 
     @Override
     public String getDescription() {
-        return "Provides support for ImageJ data types";
+        return "Adds support for commonly used ImageJ data types";
     }
 
     @Override
-    public List<String> getAuthors() {
-        return Arrays.asList("Zoltán Cseresnyés", "Ruman Gerst");
+    public String getDependencyId() {
+        return "org.hkijena.acaq5:imagej-integration";
     }
 
     @Override
-    public String getURL() {
-        return "https://applied-systems-biology.github.io/acaq5/";
+    public String getDependencyVersion() {
+        return "1.0.0";
     }
 
     @Override
-    public String getLicense() {
-        return "BSD-2";
-    }
-
-    @Override
-    public URL getIconURL() {
-        return ResourceUtils.getPluginResource("logo-400.png");
-    }
-
-    @Override
-    public void register(ACAQRegistryService registryService) {
+    public void register(ACAQDefaultRegistry registryService) {
         // Register data types
         registerImageDataType(registryService, "imagej-imgplus", ImagePlusData.class, "icons/data-types/imgplus.png");
         registerImageDataType(registryService, "imagej-imgplus-2d", ImagePlus2DData.class, "icons/data-types/imgplus-2d.png");
@@ -94,7 +81,7 @@ public class ImageJDataTypesExtension extends AbstractService implements ACAQExt
 
     }
 
-    private void registerImageDataType(ACAQRegistryService registryService, String id, Class<? extends ACAQData> dataClass, String iconResource) {
+    private void registerImageDataType(ACAQDefaultRegistry registryService, String id, Class<? extends ACAQData> dataClass, String iconResource) {
         IMAGEJ_DATA_CLASSES.add(dataClass);
         registryService.getDatatypeRegistry().register(id, dataClass);
         registryService.getUIDatatypeRegistry().registerIcon(dataClass,

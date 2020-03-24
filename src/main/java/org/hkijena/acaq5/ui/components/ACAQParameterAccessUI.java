@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.ui.components;
 
-import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
@@ -39,7 +39,7 @@ public class ACAQParameterAccessUI extends FormPanel {
                 if (parameterAccess.getVisibility() == ACAQParameterVisibility.Hidden)
                     continue;
 
-                ACAQParameterEditorUI ui = ACAQRegistryService.getInstance()
+                ACAQParameterEditorUI ui = ACAQDefaultRegistry.getInstance()
                         .getUIParametertypeRegistry().createEditorFor(workbenchUI, parameterAccess);
                 if (ui.isUILabelEnabled())
                     addToForm(ui, new JLabel(parameterAccess.getName()), generateParameterDocumentation(parameterAccess));
@@ -101,7 +101,7 @@ public class ACAQParameterAccessUI extends FormPanel {
                     foundHolderName = true;
                 }
 
-                ACAQParameterEditorUI ui = ACAQRegistryService.getInstance()
+                ACAQParameterEditorUI ui = ACAQDefaultRegistry.getInstance()
                         .getUIParametertypeRegistry().createEditorFor(workbenchUI, parameterAccess);
 
                 JPanel labelPanel = new JPanel(new BorderLayout());

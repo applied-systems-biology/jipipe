@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors;
 
-import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollectionVisibilities;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
@@ -73,7 +73,7 @@ public class ACAQParameterCollectionVisibilitiesParameterEditorUI extends ACAQPa
                     foundHolderName = true;
                 }
 
-                ACAQParameterEditorUI ui = ACAQRegistryService.getInstance()
+                ACAQParameterEditorUI ui = ACAQDefaultRegistry.getInstance()
                         .getUIParametertypeRegistry().createEditorFor(getWorkbenchUI(), parameterAccess);
 
                 JPanel labelPanel = new JPanel(new BorderLayout(8, 8));

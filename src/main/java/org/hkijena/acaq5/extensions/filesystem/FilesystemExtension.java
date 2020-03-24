@@ -1,8 +1,9 @@
 package org.hkijena.acaq5.extensions.filesystem;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.hkijena.acaq5.ACAQExtensionService;
-import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.ACAQDefaultRegistry;
+import org.hkijena.acaq5.ACAQJavaExtension;
+import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.filesystem.api.algorithms.*;
 import org.hkijena.acaq5.extensions.filesystem.api.annotation.ACAQFileAnnotationGenerator;
 import org.hkijena.acaq5.extensions.filesystem.api.annotation.ACAQFolderAnnotationGenerator;
@@ -18,48 +19,35 @@ import org.hkijena.acaq5.extensions.standardalgorithms.api.registries.GraphWrapp
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
-import org.scijava.service.AbstractService;
 
 import java.io.IOException;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 
-@Plugin(type = ACAQExtensionService.class)
-public class FilesystemExtension extends AbstractService implements ACAQExtensionService {
+@Plugin(type = ACAQJavaExtension.class)
+public class FilesystemExtension extends ACAQPrepackagedDefaultJavaExtension {
+
     @Override
     public String getName() {
-        return "Filesystem";
+        return "Filesystem types and algorithms";
     }
 
     @Override
     public String getDescription() {
-        return "Basic types for filesystem handling";
+        return "Data types and algorithms for interacting with files and folders";
     }
 
     @Override
-    public List<String> getAuthors() {
-        return Arrays.asList("Zoltán Cseresnyés", "Ruman Gerst");
+    public String getDependencyId() {
+        return "org.hkijena.acaq5:filesystem";
     }
 
     @Override
-    public String getURL() {
-        return "https://applied-systems-biology.github.io/acaq5/";
+    public String getDependencyVersion() {
+        return "1.0.0";
     }
 
     @Override
-    public String getLicense() {
-        return "BSD-2";
-    }
-
-    @Override
-    public URL getIconURL() {
-        return ResourceUtils.getPluginResource("logo-400.png");
-    }
-
-    @Override
-    public void register(ACAQRegistryService registryService) {
+    public void register(ACAQDefaultRegistry registryService) {
         registryService.getDatatypeRegistry().register("file", ACAQFileData.class);
         registryService.getUIDatatypeRegistry().registerIcon(ACAQFileData.class,
                 ResourceUtils.getPluginResource("icons/data-types/file.png"));
@@ -89,7 +77,7 @@ public class FilesystemExtension extends AbstractService implements ACAQExtensio
         registerAlgorithmResources(registryService);
     }
 
-    private void registerAlgorithmResources(ACAQRegistryService registryService) {
+    private void registerAlgorithmResources(ACAQDefaultRegistry registryService) {
         Set<String> algorithmFiles = ResourceUtils.walkInternalResourceFolder("extensions/filesystem/api/algorithms");
         for (String resourceFile : algorithmFiles) {
             try {
@@ -101,4 +89,6 @@ public class FilesystemExtension extends AbstractService implements ACAQExtensio
             }
         }
     }
+
+
 }

@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.api.registries;
 
 import com.google.common.eventbus.EventBus;
-import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.api.events.TraitRegisteredEvent;
 import org.hkijena.acaq5.api.traits.ACAQDefaultTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
@@ -57,6 +57,6 @@ public class ACAQTraitRegistry {
     }
 
     public static ACAQTraitRegistry getInstance() {
-        return ACAQRegistryService.getInstance().getTraitRegistry();
+        return ACAQDefaultRegistry.getInstance().getTraitRegistry();
     }
 }

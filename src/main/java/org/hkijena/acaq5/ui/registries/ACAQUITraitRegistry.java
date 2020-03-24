@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.ui.registries;
 
-import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
@@ -60,6 +60,6 @@ public class ACAQUITraitRegistry {
     }
 
     public static ACAQUITraitRegistry getInstance() {
-        return ACAQRegistryService.getInstance().getUITraitRegistry();
+        return ACAQDefaultRegistry.getInstance().getUITraitRegistry();
     }
 }

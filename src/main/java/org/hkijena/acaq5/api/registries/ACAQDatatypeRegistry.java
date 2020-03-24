@@ -3,7 +3,7 @@ package org.hkijena.acaq5.api.registries;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.eventbus.EventBus;
-import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.api.ACAQHidden;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
@@ -69,6 +69,6 @@ public class ACAQDatatypeRegistry {
     }
 
     public static ACAQDatatypeRegistry getInstance() {
-        return ACAQRegistryService.getInstance().getDatatypeRegistry();
+        return ACAQDefaultRegistry.getInstance().getDatatypeRegistry();
     }
 }

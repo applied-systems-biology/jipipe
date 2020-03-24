@@ -13,7 +13,7 @@
 package org.hkijena.acaq5.ui.plotbuilder;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
@@ -91,7 +91,7 @@ public class ACAQPlotBuilderUI extends ACAQUIPanel {
 
         JComboBox<ACAQPlot> plotJComboBox = new JComboBox<>();
         plotJComboBox.setRenderer(new Renderer());
-        ACAQPlotBuilderRegistry registry = ACAQRegistryService.getInstance().getPlotBuilderRegistry();
+        ACAQPlotBuilderRegistry registry = ACAQDefaultRegistry.getInstance().getPlotBuilderRegistry();
         for (ACAQPlot plot : registry.createAllPlots(seriesDataList).stream().sorted(Comparator.comparing(registry::getNameOf)).collect(Collectors.toList())) {
             plot.getEventBus().register(this);
             plotJComboBox.addItem(plot);
@@ -174,7 +174,7 @@ public class ACAQPlotBuilderUI extends ACAQUIPanel {
         if (currentPlot != null) {
             // Update the settings
             plotSettingsPanel.removeAll();
-            plotSettingsPanel.add(ACAQRegistryService.getInstance().
+            plotSettingsPanel.add(ACAQDefaultRegistry.getInstance().
                     getPlotBuilderRegistry().createSettingsUIFor(currentPlot), BorderLayout.NORTH);
             plotSettingsPanel.revalidate();
             plotSettingsPanel.repaint();
@@ -249,8 +249,8 @@ public class ACAQPlotBuilderUI extends ACAQUIPanel {
                                                       int index, boolean isSelected, boolean cellHasFocus) {
 
             if (value != null) {
-                setText(ACAQRegistryService.getInstance().getPlotBuilderRegistry().getNameOf(value));
-                setIcon(ACAQRegistryService.getInstance().getPlotBuilderRegistry().getIconOf(value));
+                setText(ACAQDefaultRegistry.getInstance().getPlotBuilderRegistry().getNameOf(value));
+                setIcon(ACAQDefaultRegistry.getInstance().getPlotBuilderRegistry().getIconOf(value));
             }
 
             if (isSelected) {

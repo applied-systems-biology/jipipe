@@ -15,7 +15,7 @@ package org.hkijena.acaq5.ui.tableanalyzer;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.primitives.Ints;
-import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.ui.ACAQUIPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
@@ -348,7 +348,7 @@ public class ACAQTableAnalyzerUI extends ACAQUIPanel {
         final int cellCount = jxTable.getSelectedColumnCount() * jxTable.getSelectedRowCount();
 
         List<ACAQTableAnalyzerUIOperationRegistry.VectorOperationEntry> entries =
-                new ArrayList<>(ACAQRegistryService.getInstance().getTableAnalyzerUIOperationRegistry().getVectorOperationEntries());
+                new ArrayList<>(ACAQDefaultRegistry.getInstance().getTableAnalyzerUIOperationRegistry().getVectorOperationEntries());
         entries.sort(Comparator.comparing(ACAQTableAnalyzerUIOperationRegistry.VectorOperationEntry::getName));
 
         for (ACAQTableAnalyzerUIOperationRegistry.VectorOperationEntry vectorOperationEntry : entries) {

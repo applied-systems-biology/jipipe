@@ -18,10 +18,10 @@ import java.util.stream.Collectors;
 /**
  * A scijava service that discovers ACAQ5 plugins in the classpath
  */
-@Plugin(type = ACAQService.class)
-public class ACAQRegistryService extends AbstractService implements ACAQService {
-    private static ACAQRegistryService instance;
-    private List<ACAQExtensionService> registeredExtensions;
+@Plugin(type = ACAQRegistry.class)
+public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry {
+    private static ACAQDefaultRegistry instance;
+    private List<ACAQJavaExtension> registeredExtensions;
     private ACAQAlgorithmRegistry algorithmRegistry;
     private ACAQDatatypeRegistry datatypeRegistry;
     private ACAQTraitRegistry traitRegistry;
@@ -31,7 +31,7 @@ public class ACAQRegistryService extends AbstractService implements ACAQService 
     private ACAQPlotBuilderRegistry plotBuilderRegistry;
     private ACAQTableAnalyzerUIOperationRegistry tableAnalyzerUIOperationRegistry;
 
-    public ACAQRegistryService() {
+    public ACAQDefaultRegistry() {
         registeredExtensions = new ArrayList<>();
         traitRegistry = new ACAQTraitRegistry();
         datatypeRegistry = new ACAQDatatypeRegistry();
@@ -49,17 +49,25 @@ public class ACAQRegistryService extends AbstractService implements ACAQService 
      * @param pluginService
      */
     private void discover(PluginService pluginService) {
-        for (PluginInfo<ACAQExtensionService> info : pluginService.getPluginsOfType(ACAQExtensionService.class).stream()
-                .sorted(ACAQRegistryService::comparePlugins).collect(Collectors.toList())) {
+        for (PluginInfo<ACAQJavaExtension> info : pluginService.getPluginsOfType(ACAQJavaExtension.class).stream()
+                .sorted(ACAQDefaultRegistry::comparePlugins).collect(Collectors.toList())) {
             System.out.println("ACAQ5: Registering plugin " + info);
             try {
-                ACAQExtensionService service = info.createInstance();
+                ACAQJavaExtension service = info.createInstance();
                 service.register(this);
                 registeredExtensions.add(service);
             } catch (InstantiableException e) {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    /**
+     * Registers a JSON extension
+     * @param extension
+     */
+    public void register(ACAQJsonExtension extension) {
+
     }
 
     @Override
@@ -92,7 +100,7 @@ public class ACAQRegistryService extends AbstractService implements ACAQService 
         return acaquiTraitRegistry;
     }
 
-    public List<ACAQExtensionService> getRegisteredExtensions() {
+    public List<ACAQJavaExtension> getRegisteredExtensions() {
         return Collections.unmodifiableList(registeredExtensions);
     }
 
@@ -109,7 +117,7 @@ public class ACAQRegistryService extends AbstractService implements ACAQService 
         algorithmRegistry.installEvents();
     }
 
-    public static ACAQRegistryService getInstance() {
+    public static ACAQDefaultRegistry getInstance() {
         return instance;
     }
 
@@ -121,7 +129,7 @@ public class ACAQRegistryService extends AbstractService implements ACAQService 
     public static void instantiate(PluginService pluginService) {
         if (instance == null) {
             try {
-                instance = (ACAQRegistryService) pluginService.getPlugin(ACAQRegistryService.class).createInstance();
+                instance = (ACAQDefaultRegistry) pluginService.getPlugin(ACAQDefaultRegistry.class).createInstance();
                 instance.installEvents();
                 instance.discover(pluginService);
             } catch (InstantiableException e) {

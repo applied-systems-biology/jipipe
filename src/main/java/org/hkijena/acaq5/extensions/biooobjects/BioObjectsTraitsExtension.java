@@ -1,7 +1,8 @@
 package org.hkijena.acaq5.extensions.biooobjects;
 
-import org.hkijena.acaq5.ACAQExtensionService;
-import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.ACAQDefaultRegistry;
+import org.hkijena.acaq5.ACAQJavaExtension;
+import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.Sample;
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.Subject;
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.Treatment;
@@ -19,14 +20,10 @@ import org.hkijena.acaq5.extensions.biooobjects.api.traits.quality.NonUniformBri
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.quality.UniformBrightnessQuality;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
-import org.scijava.service.AbstractService;
 
-import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
+@Plugin(type = ACAQJavaExtension.class)
+public class BioObjectsTraitsExtension extends ACAQPrepackagedDefaultJavaExtension {
 
-@Plugin(type = ACAQExtensionService.class)
-public class BioObjectsTraitsExtension extends AbstractService implements ACAQExtensionService {
     @Override
     public String getName() {
         return "Bioimage analysis annotations";
@@ -38,27 +35,17 @@ public class BioObjectsTraitsExtension extends AbstractService implements ACAQEx
     }
 
     @Override
-    public List<String> getAuthors() {
-        return Arrays.asList("Zoltán Cseresnyés", "Ruman Gerst");
+    public String getDependencyId() {
+        return "org.hkijena.acaq5:bioobjects-traits";
     }
 
     @Override
-    public String getURL() {
-        return "https://applied-systems-biology.github.io/acaq5/";
+    public String getDependencyVersion() {
+        return "1.0.0";
     }
 
     @Override
-    public String getLicense() {
-        return "BSD-2";
-    }
-
-    @Override
-    public URL getIconURL() {
-        return ResourceUtils.getPluginResource("logo-400.png");
-    }
-
-    @Override
-    public void register(ACAQRegistryService registryService) {
+    public void register(ACAQDefaultRegistry registryService) {
         registryService.getTraitRegistry().register(LowBrightnessQuality.class);
         registryService.getUITraitRegistry().registerIcon(LowBrightnessQuality.class,
                 ResourceUtils.getPluginResource("icons/traits/low-brightness.png"));

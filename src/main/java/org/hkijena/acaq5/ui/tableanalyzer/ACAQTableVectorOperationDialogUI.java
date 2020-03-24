@@ -13,7 +13,7 @@
 package org.hkijena.acaq5.ui.tableanalyzer;
 
 
-import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.ACAQDefaultRegistry;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,7 +27,7 @@ public class ACAQTableVectorOperationDialogUI extends JDialog {
     private ACAQTableVectorOperationDialogUI(ACAQTableVectorOperation operation) {
         this.operation = operation;
 
-        ACAQTableVectorOperationUI ui = ACAQRegistryService.getInstance().getTableAnalyzerUIOperationRegistry().createUIForVectorOperation(operation);
+        ACAQTableVectorOperationUI ui = ACAQDefaultRegistry.getInstance().getTableAnalyzerUIOperationRegistry().createUIForVectorOperation(operation);
         if (ui == null) {
             needsOpenDialog = false;
         } else {

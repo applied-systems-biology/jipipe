@@ -61,7 +61,7 @@ public class ACAQGUICommand implements Command {
 
     @Override
     public void run() {
-        ACAQRegistryService.instantiate(pluginService);
+        ACAQDefaultRegistry.instantiate(pluginService);
         SwingUtilities.invokeLater(() -> {
             ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
             ToolTipManager.sharedInstance().setInitialDelay(1000);

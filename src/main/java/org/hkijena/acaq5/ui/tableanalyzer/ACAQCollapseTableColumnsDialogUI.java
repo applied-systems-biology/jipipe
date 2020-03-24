@@ -12,7 +12,7 @@
 
 package org.hkijena.acaq5.ui.tableanalyzer;
 
-import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.ui.registries.ACAQTableAnalyzerUIOperationRegistry;
 import org.hkijena.acaq5.utils.BusyCursor;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -51,7 +51,7 @@ public class ACAQCollapseTableColumnsDialogUI extends JDialog {
             operationJComboBox.addItem(null);
             operationJComboBox.addItem(new CategorizeColumnRole());
             List<ACAQTableAnalyzerUIOperationRegistry.VectorOperationEntry> entries =
-                    new ArrayList<>(ACAQRegistryService.getInstance().getTableAnalyzerUIOperationRegistry().getVectorOperationEntries());
+                    new ArrayList<>(ACAQDefaultRegistry.getInstance().getTableAnalyzerUIOperationRegistry().getVectorOperationEntries());
             entries.sort(Comparator.comparing(ACAQTableAnalyzerUIOperationRegistry.VectorOperationEntry::getName));
 
             for (ACAQTableAnalyzerUIOperationRegistry.VectorOperationEntry vectorOperationEntry : entries) {
@@ -158,7 +158,7 @@ public class ACAQCollapseTableColumnsDialogUI extends JDialog {
             Object columnRole = columnOperations.get(columnIndex).getSelectedItem();
             if (columnRole instanceof ACAQTableVectorOperation) {
                 ACAQTableVectorOperation operation = (ACAQTableVectorOperation) columnRole;
-                String shortcut = ACAQRegistryService.getInstance().getTableAnalyzerUIOperationRegistry().getShortcutOf(operation);
+                String shortcut = ACAQDefaultRegistry.getInstance().getTableAnalyzerUIOperationRegistry().getShortcutOf(operation);
                 result.addColumn(shortcut + "(" + tableModel.getColumnName(columnIndex) + ")");
             }
         }
@@ -201,7 +201,7 @@ public class ACAQCollapseTableColumnsDialogUI extends JDialog {
             Object columnRole = columnOperations.get(columnIndex).getSelectedItem();
             if (columnRole instanceof ACAQTableVectorOperation) {
                 ACAQTableVectorOperation operation = (ACAQTableVectorOperation) columnRole;
-                String shortcut = ACAQRegistryService.getInstance().getTableAnalyzerUIOperationRegistry().getShortcutOf(operation);
+                String shortcut = ACAQDefaultRegistry.getInstance().getTableAnalyzerUIOperationRegistry().getShortcutOf(operation);
                 result.addColumn(shortcut + "(" + tableModel.getColumnName(columnIndex) + ")");
 
                 for (int i = 0; i < tableModel.getRowCount(); ++i) {
@@ -240,8 +240,8 @@ public class ACAQCollapseTableColumnsDialogUI extends JDialog {
                                                       int index, boolean isSelected, boolean cellHasFocus) {
 
             if (value instanceof ACAQTableVectorOperation) {
-                setText(ACAQRegistryService.getInstance().getTableAnalyzerUIOperationRegistry().getNameOf((ACAQTableVectorOperation) value));
-                setIcon(ACAQRegistryService.getInstance().getTableAnalyzerUIOperationRegistry().getIconOf((ACAQTableVectorOperation) value));
+                setText(ACAQDefaultRegistry.getInstance().getTableAnalyzerUIOperationRegistry().getNameOf((ACAQTableVectorOperation) value));
+                setIcon(ACAQDefaultRegistry.getInstance().getTableAnalyzerUIOperationRegistry().getIconOf((ACAQTableVectorOperation) value));
             } else if (value instanceof CategorizeColumnRole) {
                 setText("Use as category");
                 setIcon(UIUtils.getIconFromResources("filter.png"));

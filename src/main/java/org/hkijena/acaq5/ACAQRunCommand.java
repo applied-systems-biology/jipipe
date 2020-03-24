@@ -61,7 +61,7 @@ public class ACAQRunCommand implements Command {
 
     @Override
     public void run() {
-        ACAQRegistryService.instantiate(pluginService);
+        ACAQDefaultRegistry.instantiate(pluginService);
         try {
             ACAQProject project = ACAQProject.loadProject(parameterFile.toPath());
             ACAQMutableRunConfiguration configuration = new ACAQMutableRunConfiguration();

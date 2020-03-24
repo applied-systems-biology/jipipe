@@ -1,51 +1,37 @@
 package org.hkijena.acaq5.extensions.standardplots;
 
-import org.hkijena.acaq5.ACAQExtensionService;
-import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.ACAQDefaultRegistry;
+import org.hkijena.acaq5.ACAQJavaExtension;
+import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.standardplots.ui.plots.*;
-import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.plugin.Plugin;
-import org.scijava.service.AbstractService;
 
-import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
+@Plugin(type = ACAQJavaExtension.class)
+public class StandardPlotsExtension extends ACAQPrepackagedDefaultJavaExtension {
 
-@Plugin(type = ACAQExtensionService.class)
-public class StandardPlotsExtension extends AbstractService implements ACAQExtensionService {
     @Override
     public String getName() {
-        return "ACAQ5 standard plots";
+        return "Standard plots";
     }
 
     @Override
     public String getDescription() {
-        return "Provides some plot types for the ACAQ5 plot generator";
+        return "Commonly used plot types";
     }
 
     @Override
-    public List<String> getAuthors() {
-        return Arrays.asList("Zoltán Cseresnyés", "Ruman Gerst");
+    public String getDependencyId() {
+        return "org.hkijena.acaq5:plots";
     }
 
     @Override
-    public String getURL() {
-        return "https://applied-systems-biology.github.io/acaq5/";
+    public String getDependencyVersion() {
+        return "1.0.0";
     }
 
     @Override
-    public String getLicense() {
-        return "BSD-2";
-    }
-
-    @Override
-    public URL getIconURL() {
-        return ResourceUtils.getPluginResource("logo-400.png");
-    }
-
-    @Override
-    public void register(ACAQRegistryService registryService) {
+    public void register(ACAQDefaultRegistry registryService) {
         registryService.getPlotBuilderRegistry().register(DefaultBoxAndWhiskerBarCategoryPlot.class,
                 CategoryPlotSettingsUI.class,
                 "Box Plot",

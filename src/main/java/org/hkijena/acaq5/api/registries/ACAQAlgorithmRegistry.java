@@ -3,7 +3,7 @@ package org.hkijena.acaq5.api.registries;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
@@ -206,7 +206,7 @@ public class ACAQAlgorithmRegistry {
     }
 
     public void installEvents() {
-        ACAQRegistryService.getInstance().getTraitRegistry().getEventBus().register(this);
+        ACAQDefaultRegistry.getInstance().getTraitRegistry().getEventBus().register(this);
     }
 
     @Subscribe
@@ -215,7 +215,7 @@ public class ACAQAlgorithmRegistry {
     }
 
     public static ACAQAlgorithmRegistry getInstance() {
-        return ACAQRegistryService.getInstance().getAlgorithmRegistry();
+        return ACAQDefaultRegistry.getInstance().getAlgorithmRegistry();
     }
 
 }

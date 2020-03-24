@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.ui.registries;
 
-import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
@@ -43,6 +43,6 @@ public class ACAQUIParametertypeRegistry {
     }
 
     public static ACAQUIParametertypeRegistry getInstance() {
-        return ACAQRegistryService.getInstance().getUIParametertypeRegistry();
+        return ACAQDefaultRegistry.getInstance().getUIParametertypeRegistry();
     }
 }

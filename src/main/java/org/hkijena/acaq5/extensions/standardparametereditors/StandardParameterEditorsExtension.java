@@ -1,60 +1,46 @@
 package org.hkijena.acaq5.extensions.standardparametereditors;
 
-import org.hkijena.acaq5.ACAQExtensionService;
-import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.ACAQDefaultRegistry;
+import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollectionVisibilities;
 import org.hkijena.acaq5.api.parameters.CollectionParameter;
 import org.hkijena.acaq5.api.parameters.PathCollection;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefCollection;
+import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.macro.MacroCode;
 import org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors.*;
 import org.hkijena.acaq5.utils.PathFilter;
-import org.hkijena.acaq5.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
-import org.scijava.service.AbstractService;
 
-import java.net.URL;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.List;
 
-@Plugin(type = ACAQExtensionService.class)
-public class StandardParameterEditorsExtension extends AbstractService implements ACAQExtensionService {
+@Plugin(type = ACAQJavaExtension.class)
+public class StandardParameterEditorsExtension extends ACAQPrepackagedDefaultJavaExtension {
 
     @Override
     public String getName() {
-        return "ACAQ5 standard parameter editor user interfaces";
+        return "Standard parameter editors";
     }
 
     @Override
     public String getDescription() {
-        return "Provides user interfaces that allow editing of parameters";
+        return "User interfaces for editing common parameter types";
     }
 
     @Override
-    public List<String> getAuthors() {
-        return Arrays.asList("Zoltán Cseresnyés", "Ruman Gerst");
+    public String getDependencyId() {
+        return "org.hkijena.acaq5:parameter-editors";
     }
 
     @Override
-    public String getURL() {
-        return "https://applied-systems-biology.github.io/acaq5/";
+    public String getDependencyVersion() {
+        return "1.0.0";
     }
 
     @Override
-    public String getLicense() {
-        return "BSD-2";
-    }
-
-    @Override
-    public URL getIconURL() {
-        return ResourceUtils.getPluginResource("logo-400.png");
-    }
-
-    @Override
-    public void register(ACAQRegistryService registryService) {
+    public void register(ACAQDefaultRegistry registryService) {
         // Register parameter editor UIs
         registryService.getUIParametertypeRegistry().registerParameterEditor(Path.class, FilePathParameterEditorUI.class);
         registryService.getUIParametertypeRegistry().registerParameterEditor(int.class, IntegerParameterEditorUI.class);

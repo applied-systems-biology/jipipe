@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.ui.grapheditor;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
@@ -195,7 +195,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
     }
 
     protected void initializeMenuForCategory(JMenu menu, ACAQAlgorithmCategory category) {
-        ACAQRegistryService registryService = ACAQRegistryService.getInstance();
+        ACAQDefaultRegistry registryService = ACAQDefaultRegistry.getInstance();
         boolean isEmpty = true;
         Icon icon = new ColorIcon(16, 16, UIUtils.getFillColorFor(category));
         for (ACAQAlgorithmDeclaration declaration : registryService.getAlgorithmRegistry().getAlgorithmsOfCategory(category)
@@ -211,7 +211,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
     }
 
     private void initializeAddDataSourceMenu(JMenu menu) {
-        ACAQRegistryService registryService = ACAQRegistryService.getInstance();
+        ACAQDefaultRegistry registryService = ACAQDefaultRegistry.getInstance();
         Map<String, Set<Class<? extends ACAQData>>> dataTypesByMenuPaths = ACAQDatatypeRegistry.getInstance().getDataTypesByMenuPaths();
         Map<String, JMenu> menuTree = UIUtils.createMenuTree(menu, dataTypesByMenuPaths.keySet());
 

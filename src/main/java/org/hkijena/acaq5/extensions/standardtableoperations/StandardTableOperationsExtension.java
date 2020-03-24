@@ -1,51 +1,37 @@
 package org.hkijena.acaq5.extensions.standardtableoperations;
 
-import org.hkijena.acaq5.ACAQExtensionService;
-import org.hkijena.acaq5.ACAQRegistryService;
+import org.hkijena.acaq5.ACAQDefaultRegistry;
+import org.hkijena.acaq5.ACAQJavaExtension;
+import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.standardtableoperations.ui.tableoperations.*;
-import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.plugin.Plugin;
-import org.scijava.service.AbstractService;
 
-import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
+@Plugin(type = ACAQJavaExtension.class)
+public class StandardTableOperationsExtension extends ACAQPrepackagedDefaultJavaExtension {
 
-@Plugin(type = ACAQExtensionService.class)
-public class StandardTableOperationsExtension extends AbstractService implements ACAQExtensionService {
     @Override
     public String getName() {
-        return "ACAQ5 standard table operations";
+        return "Standard table operations";
     }
 
     @Override
     public String getDescription() {
-        return "Provides some operations for the table editor integrated into ACAQ5";
+        return "Common table operations";
     }
 
     @Override
-    public List<String> getAuthors() {
-        return Arrays.asList("Zoltán Cseresnyés", "Ruman Gerst");
+    public String getDependencyId() {
+        return "org.hkijena.acaq5:table-operations";
     }
 
     @Override
-    public String getURL() {
-        return "https://applied-systems-biology.github.io/acaq5/";
+    public String getDependencyVersion() {
+        return "1.0.0";
     }
 
     @Override
-    public String getLicense() {
-        return "BSD-2";
-    }
-
-    @Override
-    public URL getIconURL() {
-        return ResourceUtils.getPluginResource("logo-400.png");
-    }
-
-    @Override
-    public void register(ACAQRegistryService registryService) {
+    public void register(ACAQDefaultRegistry registryService) {
         // Register spreadsheet operations
         registryService.getTableAnalyzerUIOperationRegistry().register(StatisticsCountVectorOperation.class,
                 null,
