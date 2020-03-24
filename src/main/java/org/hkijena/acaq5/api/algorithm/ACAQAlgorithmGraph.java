@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.*;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.ACAQAlgorithmGraphEdge;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
@@ -162,10 +163,11 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      *
      * @param source
      * @param target
+     * @param user
      * @return
      */
-    public boolean canConnect(ACAQDataSlot source, ACAQDataSlot target) {
-        if (!canConnectFast(source, target))
+    public boolean canConnect(ACAQDataSlot source, ACAQDataSlot target, boolean user) {
+        if (!canConnectFast(source, target, user))
             return false;
         Graph<ACAQDataSlot, ACAQAlgorithmGraphEdge> copy = (Graph<ACAQDataSlot, ACAQAlgorithmGraphEdge>) graph.clone();
         copy.addEdge(source, target);
@@ -178,23 +180,25 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      *
      * @param source
      * @param target
+     * @param user If triggered by a user
      * @return
      */
-    public boolean canConnectFast(ACAQDataSlot source, ACAQDataSlot target) {
+    public boolean canConnectFast(ACAQDataSlot source, ACAQDataSlot target, boolean user) {
         if (!source.isOutput() || !target.isInput())
             return false;
-        if (!target.getAcceptedDataType().isAssignableFrom(source.getAcceptedDataType()))
+        if (user && !target.getAcceptedDataType().isAssignableFrom(source.getAcceptedDataType()))
             return false;
         return true;
     }
+
 
     public void connect(ACAQDataSlot source, ACAQDataSlot target) {
         connect(source, target, true);
     }
 
     public void connect(ACAQDataSlot source, ACAQDataSlot target, boolean userDisconnectable) {
-        if (!canConnect(source, target))
-            throw new RuntimeException("Cannot connect data slots!");
+        if (!canConnect(source, target, false))
+            throw new RuntimeException("Cannot connect data slots: " + source.getNameWithAlgorithmName() + " ==> " + target.getNameWithAlgorithmName());
         graph.addEdge(source, target, new ACAQAlgorithmGraphEdge(userDisconnectable));
         getEventBus().post(new AlgorithmGraphChangedEvent(this));
         getEventBus().post(new AlgorithmGraphConnectedEvent(this, source, target));
@@ -296,9 +300,10 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * Returns all available sources for an input slot
      *
      * @param target
+     * @param user
      * @return
      */
-    public Set<ACAQDataSlot> getAvailableSources(ACAQDataSlot target) {
+    public Set<ACAQDataSlot> getAvailableSources(ACAQDataSlot target, boolean user) {
         if (getSourceSlot(target) != null)
             return Collections.emptySet();
         Set<ACAQDataSlot> result = new HashSet<>();
@@ -311,7 +316,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
                 continue;
             if (graph.containsEdge(source, target))
                 continue;
-            if (!canConnectFast(source, target))
+            if (!canConnectFast(source, target, user))
                 continue;
             result.add(source);
         }
@@ -356,9 +361,10 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * Returns all available target for an output slot
      *
      * @param source
+     * @param user
      * @return
      */
-    public Set<ACAQDataSlot> getAvailableTargets(ACAQDataSlot source) {
+    public Set<ACAQDataSlot> getAvailableTargets(ACAQDataSlot source, boolean user) {
         if (source.isInput())
             return Collections.emptySet();
         Set<ACAQDataSlot> result = new HashSet<>();
@@ -373,7 +379,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
                 continue;
             if (getSourceSlot(target) != null)
                 continue;
-            if (!canConnectFast(source, target))
+            if (!canConnectFast(source, target, user))
                 continue;
             result.add(target);
         }
@@ -416,6 +422,14 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
                 }
             }
         }
+    }
+
+    public Set<ACAQDependency> getDependencies() {
+        Set<ACAQDependency> result = new HashSet<>();
+        for (ACAQAlgorithm algorithm : algorithms.values()) {
+            result.addAll(algorithm.getDependencies());
+        }
+        return result;
     }
 
     public EventBus getEventBus() {

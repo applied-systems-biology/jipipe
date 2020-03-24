@@ -12,6 +12,7 @@ import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
@@ -29,6 +30,7 @@ import org.hkijena.acaq5.utils.StringUtils;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
 
 /**
  * An ACAQ5 project.
@@ -199,6 +201,7 @@ public class ACAQProject implements ACAQValidatable {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("acaq:project-type", "project");
             jsonGenerator.writeObjectField("metadata", project.metadata);
+            jsonGenerator.writeObjectField("dependencies", project.getDependencies());
             jsonGenerator.writeObjectField("algorithm-graph", project.graph);
             jsonGenerator.writeFieldName("compartments");
             jsonGenerator.writeStartObject();
@@ -206,6 +209,12 @@ public class ACAQProject implements ACAQValidatable {
             jsonGenerator.writeEndObject();
             jsonGenerator.writeEndObject();
         }
+    }
+
+    private Set<ACAQDependency> getDependencies() {
+        Set<ACAQDependency> dependencies = graph.getDependencies();
+        dependencies.addAll(compartmentGraph.getDependencies());
+        return dependencies;
     }
 
     public static class Deserializer extends JsonDeserializer<ACAQProject> {

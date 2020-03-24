@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro;
 
+import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
@@ -206,7 +207,13 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
+    }
 
+    @Override
+    public Set<ACAQDependency> getDependencies() {
+        Set<ACAQDependency> result = super.getDependencies();
+        result.addAll(wrappedGraph.getDependencies());
+        return result;
     }
 
     @Override

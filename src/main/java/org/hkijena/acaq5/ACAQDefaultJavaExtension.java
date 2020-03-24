@@ -1,5 +1,6 @@
 package org.hkijena.acaq5;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.ACAQDefaultDocumentation;
 import org.hkijena.acaq5.api.ACAQProjectMetadata;

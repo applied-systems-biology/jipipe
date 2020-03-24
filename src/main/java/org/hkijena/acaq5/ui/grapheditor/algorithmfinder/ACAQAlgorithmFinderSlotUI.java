@@ -105,7 +105,7 @@ public class ACAQAlgorithmFinderSlotUI extends JPanel {
     }
 
     private void connectToExistingInstance() {
-        if (graph.canConnect(outputSlot, inputSlot)) {
+        if (graph.canConnect(outputSlot, inputSlot, true)) {
             graph.connect(outputSlot, inputSlot);
             eventBus.post(new AlgorithmFinderSuccessEvent(outputSlot, inputSlot));
         } else {

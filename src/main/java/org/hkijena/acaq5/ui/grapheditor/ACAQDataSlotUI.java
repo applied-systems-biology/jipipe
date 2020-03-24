@@ -47,7 +47,7 @@ public class ACAQDataSlotUI extends JPanel {
 
         if (slot.isInput()) {
             if (graph.getSourceSlot(slot) == null) {
-                Set<ACAQDataSlot> availableSources = graph.getAvailableSources(slot);
+                Set<ACAQDataSlot> availableSources = graph.getAvailableSources(slot, true);
                 availableSources.removeIf(slot -> !slot.getAlgorithm().isVisibleIn(compartment));
                 for (ACAQDataSlot source : availableSources) {
                     if (!source.getAlgorithm().isVisibleIn(compartment))
@@ -92,7 +92,7 @@ public class ACAQDataSlotUI extends JPanel {
                     assignButtonMenu.addSeparator();
                 }
             }
-            Set<ACAQDataSlot> availableTargets = graph.getAvailableTargets(slot);
+            Set<ACAQDataSlot> availableTargets = graph.getAvailableTargets(slot, true);
             availableTargets.removeIf(slot -> !slot.getAlgorithm().isVisibleIn(compartment));
 
             JMenuItem findAlgorithmButton = new JMenuItem("Find matching algorithm ...", UIUtils.getIconFromResources("search.png"));
@@ -166,7 +166,7 @@ public class ACAQDataSlotUI extends JPanel {
     }
 
     private void connectSlot(ACAQDataSlot source, ACAQDataSlot target) {
-        if (graph.canConnect(source, target)) {
+        if (graph.canConnect(source, target, true)) {
             graph.connect(source, target);
         }
     }

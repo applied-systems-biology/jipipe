@@ -9,17 +9,17 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.data.*;
-import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
-import org.hkijena.acaq5.api.data.traits.ACAQMutableTraitConfiguration;
-import org.hkijena.acaq5.api.data.traits.ACAQTraitConfiguration;
-import org.hkijena.acaq5.api.data.traits.ConfigTraits;
+import org.hkijena.acaq5.api.data.traits.*;
 import org.hkijena.acaq5.api.events.*;
 import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
+import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
+import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors.StringParameterSettings;
 import org.hkijena.acaq5.utils.JsonUtils;
@@ -496,6 +496,37 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     public void onSlotDisconnected(AlgorithmGraphDisconnectedEvent event) {
         updateSlotInheritance();
+    }
+
+    /**
+     * Returns a list of all dependencies
+     * @return
+     */
+    public Set<ACAQDependency> getDependencies() {
+        Set<ACAQDependency> result = new HashSet<>();
+        result.add(ACAQAlgorithmRegistry.getInstance().getSourceOf(getDeclaration().getId()));
+
+        // Add traits
+        for (ACAQTraitTransferTask task : getTraitConfiguration().getTransferTasks()) {
+            for (ACAQTraitDeclaration traitRestriction : task.getTraitRestrictions()) {
+                result.add(ACAQTraitRegistry.getInstance().getSourceOf(traitRestriction.getId()));
+            }
+        }
+        for (ACAQDataSlotTraitConfiguration configuration : getTraitConfiguration().getModificationTasks().values()) {
+            for (ACAQTraitDeclaration traitDeclaration : configuration.getOperations().keySet()) {
+                result.add(ACAQTraitRegistry.getInstance().getSourceOf(traitDeclaration.getId()));
+            }
+        }
+
+        // Add data slots
+        for (Map.Entry<String, ACAQDataSlot> entry : slots.entrySet()) {
+            result.add(ACAQDatatypeRegistry.getInstance().getSourceOf(entry.getValue().getAcceptedDataType()));
+            for (ACAQTraitDeclaration traitDeclaration : entry.getValue().getSlotAnnotations()) {
+                result.add(ACAQTraitRegistry.getInstance().getSourceOf(traitDeclaration.getId()));
+            }
+        }
+
+        return result;
     }
 
     /**
