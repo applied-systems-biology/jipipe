@@ -1,11 +1,15 @@
 package org.hkijena.acaq5.ui;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.ACAQGUICommand;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
+import org.hkijena.acaq5.ui.project.UnsatisfiedDependenciesDialog;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultUI;
 import org.hkijena.acaq5.ui.settings.ACAQApplicationSettings;
+import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -13,6 +17,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Set;
 
 public class ACAQWorkbenchWindow extends JFrame {
 
@@ -58,7 +63,15 @@ public class ACAQWorkbenchWindow extends JFrame {
     public void openProject(Path path) {
         if (Files.isRegularFile(path)) {
             try {
-                ACAQProject project = ACAQProject.loadProject(path);
+                JsonNode jsonData = JsonUtils.getObjectMapper().readValue(path.toFile(), JsonNode.class);
+                Set<ACAQDependency> dependencySet = ACAQProject.loadDependenciesFromJson(jsonData);
+                Set<ACAQDependency> missingDependencies = ACAQDependency.findUnsatisfiedDepencencies(dependencySet);
+                if (!missingDependencies.isEmpty()) {
+                    if (!UnsatisfiedDependenciesDialog.showDialog(this, path, missingDependencies))
+                        return;
+                }
+
+                ACAQProject project = ACAQProject.loadProject(jsonData);
                 project.setWorkDirectory(path.getParent());
                 ACAQWorkbenchWindow window = openProjectInThisOrNewWindow("Open project", project);
                 if (window == null)
@@ -72,6 +85,15 @@ public class ACAQWorkbenchWindow extends JFrame {
             }
         } else if (Files.isDirectory(path)) {
             try {
+                Path parameterFilePath = path.resolve("parameters.json");
+                JsonNode jsonData = JsonUtils.getObjectMapper().readValue(parameterFilePath.toFile(), JsonNode.class);
+                Set<ACAQDependency> dependencySet = ACAQProject.loadDependenciesFromJson(jsonData);
+                Set<ACAQDependency> missingDependencies = ACAQDependency.findUnsatisfiedDepencencies(dependencySet);
+                if (!missingDependencies.isEmpty()) {
+                    if (!UnsatisfiedDependenciesDialog.showDialog(this, path, missingDependencies))
+                        return;
+                }
+
                 ACAQRun run = ACAQRun.loadFromFolder(path);
                 run.getProject().setWorkDirectory(path);
                 ACAQWorkbenchWindow window = openProjectInThisOrNewWindow("Open ACAQ output", run.getProject());

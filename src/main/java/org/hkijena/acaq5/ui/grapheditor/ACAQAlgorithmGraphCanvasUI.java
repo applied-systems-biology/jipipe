@@ -333,7 +333,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
             if (sourceUI == null && targetUI == null)
                 continue;
-            if(target.getAcceptedDataType().isAssignableFrom(source.getAcceptedDataType()))
+            if (target.getAcceptedDataType().isAssignableFrom(source.getAcceptedDataType()))
                 graphics.setColor(Color.DARK_GRAY);
             else
                 graphics.setColor(Color.RED);

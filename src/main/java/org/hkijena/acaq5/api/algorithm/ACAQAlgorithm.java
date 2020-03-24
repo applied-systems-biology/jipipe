@@ -500,6 +500,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Returns a list of all dependencies
+     *
      * @return
      */
     public Set<ACAQDependency> getDependencies() {

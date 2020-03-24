@@ -3,6 +3,7 @@ package org.hkijena.acaq5.api;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -29,6 +30,7 @@ import org.hkijena.acaq5.utils.StringUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -191,8 +193,37 @@ public class ACAQProject implements ACAQValidatable {
         eventBus.post(new WorkDirectoryChangedEvent(workDirectory));
     }
 
+    public Set<ACAQDependency> getDependencies() {
+        Set<ACAQDependency> dependencies = graph.getDependencies();
+        dependencies.addAll(compartmentGraph.getDependencies());
+        return dependencies;
+    }
+
     public static ACAQProject loadProject(Path fileName) throws IOException {
         return JsonUtils.getObjectMapper().readerFor(ACAQProject.class).readValue(fileName.toFile());
+    }
+
+    public static ACAQProject loadProject(JsonNode node) throws IOException {
+        return JsonUtils.getObjectMapper().readerFor(ACAQProject.class).readValue(node);
+    }
+
+    /**
+     * Deserializes the set of project dependencies from
+     *
+     * @param node
+     * @return
+     */
+    public static Set<ACAQDependency> loadDependenciesFromJson(JsonNode node) {
+        node = node.path("dependencies");
+        if (node.isMissingNode())
+            return new HashSet<>();
+        TypeReference<HashSet<ACAQDependency>> typeReference = new TypeReference<HashSet<ACAQDependency>>() {
+        };
+        try {
+            return JsonUtils.getObjectMapper().readerFor(typeReference).readValue(node);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static class Serializer extends JsonSerializer<ACAQProject> {
@@ -209,12 +240,6 @@ public class ACAQProject implements ACAQValidatable {
             jsonGenerator.writeEndObject();
             jsonGenerator.writeEndObject();
         }
-    }
-
-    private Set<ACAQDependency> getDependencies() {
-        Set<ACAQDependency> dependencies = graph.getDependencies();
-        dependencies.addAll(compartmentGraph.getDependencies());
-        return dependencies;
     }
 
     public static class Deserializer extends JsonDeserializer<ACAQProject> {

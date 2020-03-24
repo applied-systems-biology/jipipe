@@ -180,7 +180,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      *
      * @param source
      * @param target
-     * @param user If triggered by a user
+     * @param user   If triggered by a user
      * @return
      */
     public boolean canConnectFast(ACAQDataSlot source, ACAQDataSlot target, boolean user) {
