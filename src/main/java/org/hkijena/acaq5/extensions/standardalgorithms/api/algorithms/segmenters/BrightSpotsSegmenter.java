@@ -13,9 +13,6 @@ import org.hkijena.acaq5.api.data.traits.RemovesTrait;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
-import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.count.ClusterBioObjects;
-import org.hkijena.acaq5.extensions.biooobjects.api.traits.quality.ImageQuality;
-import org.hkijena.acaq5.extensions.biooobjects.api.traits.quality.NonUniformBrightnessQuality;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleMaskData;
 
@@ -27,11 +24,11 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.Image
 @AlgorithmOutputSlot(value = ImagePlus2DGreyscaleMaskData.class, slotName = "Mask", autoCreate = true)
 
 // Trait matching
-@BadForTrait(NonUniformBrightnessQuality.class)
+@BadForTrait("image-quality-brightness-nonuniform")
 
 // Trait configuration
-@RemovesTrait(ImageQuality.class)
-@AddsTrait(ClusterBioObjects.class)
+@RemovesTrait("image-quality")
+@AddsTrait("bioobject-count-cluster")
 public class BrightSpotsSegmenter extends ACAQIteratingAlgorithm {
 
     private int rollingBallRadius = 20;

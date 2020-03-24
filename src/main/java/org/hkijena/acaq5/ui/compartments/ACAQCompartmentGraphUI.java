@@ -139,7 +139,7 @@ public class ACAQCompartmentGraphUI extends ACAQUIPanel implements MouseListener
     }
 
     protected void initializeAddNodesMenus() {
-        ACAQAlgorithmDeclaration declaration = ACAQAlgorithmRegistry.getInstance().getDefaultDeclarationFor(ACAQProjectCompartment.class);
+        ACAQAlgorithmDeclaration declaration = ACAQAlgorithmRegistry.getInstance().getDeclarationById("acaq:project-compartment");
 
         JButton addItem = new JButton("Add new compartment", UIUtils.getIconFromResources("add.png"));
         UIUtils.makeFlat(addItem);

@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.ui.registries;
 
 import org.hkijena.acaq5.ACAQDefaultRegistry;
+import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
@@ -11,6 +12,7 @@ import java.util.Map;
 
 public class ACAQUIParametertypeRegistry {
 
+    private Map<Class<?>, ACAQDocumentation> parameterDocumentations = new HashMap<>();
     private Map<Class<?>, Class<? extends ACAQParameterEditorUI>> parameterTypes = new HashMap<>();
 
     public ACAQUIParametertypeRegistry() {
@@ -19,6 +21,14 @@ public class ACAQUIParametertypeRegistry {
 
     public void registerParameterEditor(Class<?> parameterType, Class<? extends ACAQParameterEditorUI> uiClass) {
         parameterTypes.put(parameterType, uiClass);
+    }
+
+    public void registerDocumentation(Class<?> parameterType, ACAQDocumentation documentation) {
+        parameterDocumentations.put(parameterType, documentation);
+    }
+
+    public ACAQDocumentation getDocumentationFor(Class<?> parameterType) {
+        return parameterDocumentations.getOrDefault(parameterType, null);
     }
 
     public ACAQParameterEditorUI createEditorFor(ACAQWorkbenchUI workbenchUI, ACAQParameterAccess parameterAccess) {

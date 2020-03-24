@@ -1,7 +1,6 @@
 package org.hkijena.acaq5.extensions.filesystem;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.filesystem.api.algorithms.*;
@@ -47,43 +46,36 @@ public class FilesystemExtension extends ACAQPrepackagedDefaultJavaExtension {
     }
 
     @Override
-    public void register(ACAQDefaultRegistry registryService) {
-        registryService.getDatatypeRegistry().register("file", ACAQFileData.class);
-        registryService.getUIDatatypeRegistry().registerIcon(ACAQFileData.class,
-                ResourceUtils.getPluginResource("icons/data-types/file.png"));
-        registryService.getDatatypeRegistry().register("folder", ACAQFolderData.class);
-        registryService.getUIDatatypeRegistry().registerIcon(ACAQFolderData.class,
-                ResourceUtils.getPluginResource("icons/data-types/folder.png"));
+    public void register() {
+        registerDatatype("file", ACAQFileData.class, ResourceUtils.getPluginResource("icons/data-types/file.png"),
+                FilesystemDataSlotRowUI.class, new FilesystemDataSlotCellUI());
+        registerDatatype("folder", ACAQFolderData.class, ResourceUtils.getPluginResource("icons/data-types/folder.png"),
+                FilesystemDataSlotRowUI.class, new FilesystemDataSlotCellUI());
 
-        registryService.getAlgorithmRegistry().register(ACAQFileDataSource.class);
-        registryService.getAlgorithmRegistry().register(ACAQFileListDataSource.class);
-        registryService.getAlgorithmRegistry().register(ACAQFolderDataSource.class);
-        registryService.getAlgorithmRegistry().register(ACAQFolderListDataSource.class);
+        registerAlgorithm("import-file", ACAQFileDataSource.class);
+        registerAlgorithm("import-file-list", ACAQFileListDataSource.class);
+        registerAlgorithm("import-folder", ACAQFolderDataSource.class);
+        registerAlgorithm("import-folder-list", ACAQFolderListDataSource.class);
 
-        registryService.getAlgorithmRegistry().register(ACAQFilterFiles.class);
-        registryService.getAlgorithmRegistry().register(ACAQFilterFolders.class);
-        registryService.getAlgorithmRegistry().register(ACAQListFiles.class);
-        registryService.getAlgorithmRegistry().register(ACAQListSubfolders.class);
-        registryService.getAlgorithmRegistry().register(ACAQSubFolder.class);
+        registerAlgorithm("file-filter", ACAQFilterFiles.class);
+        registerAlgorithm("folder-filter", ACAQFilterFolders.class);
+        registerAlgorithm("folder-list-files", ACAQListFiles.class);
+        registerAlgorithm("folder-list-subfolders", ACAQListSubfolders.class);
+        registerAlgorithm("folder-navigate-subfolders", ACAQSubFolder.class);
 
-        registryService.getAlgorithmRegistry().register(ACAQFolderAnnotationGenerator.class);
-        registryService.getAlgorithmRegistry().register(ACAQFileAnnotationGenerator.class);
+        registerAlgorithm("folder-annotate-by-name", ACAQFolderAnnotationGenerator.class);
+        registerAlgorithm("file-annotate-by-name", ACAQFileAnnotationGenerator.class);
 
-        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQFileData.class, FilesystemDataSlotRowUI.class);
-        registryService.getUIDatatypeRegistry().registerResultTableCellUI(ACAQFileData.class, new FilesystemDataSlotCellUI());
-        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQFolderData.class, FilesystemDataSlotRowUI.class);
-        registryService.getUIDatatypeRegistry().registerResultTableCellUI(ACAQFolderData.class, new FilesystemDataSlotCellUI());
-
-        registerAlgorithmResources(registryService);
+        registerAlgorithmResources();
     }
 
-    private void registerAlgorithmResources(ACAQDefaultRegistry registryService) {
+    private void registerAlgorithmResources() {
         Set<String> algorithmFiles = ResourceUtils.walkInternalResourceFolder("extensions/filesystem/api/algorithms");
         for (String resourceFile : algorithmFiles) {
             try {
                 JsonNode node = JsonUtils.getObjectMapper().readValue(ResourceUtils.class.getResource(resourceFile), JsonNode.class);
-                GraphWrapperAlgorithmRegistrationTask task = new GraphWrapperAlgorithmRegistrationTask(node);
-                registryService.getAlgorithmRegistry().scheduleRegister(task);
+                GraphWrapperAlgorithmRegistrationTask task = new GraphWrapperAlgorithmRegistrationTask(node, this);
+                getRegistry().getAlgorithmRegistry().scheduleRegister(task);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

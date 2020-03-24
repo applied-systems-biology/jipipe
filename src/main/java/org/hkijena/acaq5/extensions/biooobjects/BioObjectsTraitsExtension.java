@@ -1,23 +1,24 @@
 package org.hkijena.acaq5.extensions.biooobjects;
 
-import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.Sample;
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.Subject;
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.Treatment;
+import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.BioObjects;
+import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.count.BioObjectsCount;
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.count.ClusterBioObjects;
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.count.SingleBioObject;
+import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.morphology.BioObjectsMorphology;
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.morphology.FilamentousBioObjects;
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.morphology.IrregularBioObjects;
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.morphology.RoundBioObjects;
+import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.preparations.BioObjectsPreparations;
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.preparations.labeling.BioObjectsLabeling;
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.preparations.labeling.MembraneLabeledBioObjects;
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.preparations.labeling.UniformlyLabeledBioObjects;
 import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.preparations.labeling.UnlabeledBioObjects;
-import org.hkijena.acaq5.extensions.biooobjects.api.traits.quality.LowBrightnessQuality;
-import org.hkijena.acaq5.extensions.biooobjects.api.traits.quality.NonUniformBrightnessQuality;
-import org.hkijena.acaq5.extensions.biooobjects.api.traits.quality.UniformBrightnessQuality;
+import org.hkijena.acaq5.extensions.biooobjects.api.traits.quality.*;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
 
@@ -45,65 +46,32 @@ public class BioObjectsTraitsExtension extends ACAQPrepackagedDefaultJavaExtensi
     }
 
     @Override
-    public void register(ACAQDefaultRegistry registryService) {
-        registryService.getTraitRegistry().register(LowBrightnessQuality.class);
-        registryService.getUITraitRegistry().registerIcon(LowBrightnessQuality.class,
-                ResourceUtils.getPluginResource("icons/traits/low-brightness.png"));
+    public void register() {
+        // Project management annotations
+        registerTrait("project-sample", Sample.class, ResourceUtils.getPluginResource("icons/traits/project-sample.png"));
+        registerTrait("project-subject", Subject.class, ResourceUtils.getPluginResource("icons/traits/project-subject.png"));
+        registerTrait("project-treatment", Treatment.class, ResourceUtils.getPluginResource("icons/traits/project-treatment.png"));
 
-        registryService.getTraitRegistry().register(NonUniformBrightnessQuality.class);
-        registryService.getUITraitRegistry().registerIcon(NonUniformBrightnessQuality.class,
-                ResourceUtils.getPluginResource("icons/traits/non-uniform-brightness.png"));
+        // Image quality annotations
+        registerTrait("image-quality", ImageQuality.class, null);
+        registerTrait("image-quality-brightness", BrightnessImageQuality.class, null);
+        registerTrait("image-quality-brightness-low", LowBrightnessQuality.class, ResourceUtils.getPluginResource("icons/traits/low-brightness.png"));
+        registerTrait("image-quality-brightness-uniform", UniformBrightnessQuality.class, ResourceUtils.getPluginResource("icons/traits/uniform-brightness.png"));
+        registerTrait("image-quality-brightness-nonuniform", NonUniformBrightnessQuality.class, ResourceUtils.getPluginResource("icons/traits/non-uniform-brightness.png"));
 
-        registryService.getTraitRegistry().register(UniformBrightnessQuality.class);
-        registryService.getUITraitRegistry().registerIcon(UniformBrightnessQuality.class,
-                ResourceUtils.getPluginResource("icons/traits/uniform-brightness.png"));
-
-        registryService.getTraitRegistry().register(ClusterBioObjects.class);
-        registryService.getUITraitRegistry().registerIcon(ClusterBioObjects.class,
-                ResourceUtils.getPluginResource("icons/traits/bioobject-cluster.png"));
-
-        registryService.getTraitRegistry().register(FilamentousBioObjects.class);
-        registryService.getUITraitRegistry().registerIcon(FilamentousBioObjects.class,
-                ResourceUtils.getPluginResource("icons/traits/bioobject-filamentous.png"));
-
-        registryService.getTraitRegistry().register(IrregularBioObjects.class);
-        registryService.getUITraitRegistry().registerIcon(IrregularBioObjects.class,
-                ResourceUtils.getPluginResource("icons/traits/bioobject.png"));
-
-        registryService.getTraitRegistry().register(BioObjectsLabeling.class);
-        registryService.getUITraitRegistry().registerIcon(BioObjectsLabeling.class,
-                ResourceUtils.getPluginResource("icons/traits/bioobject-labeled.png"));
-
-        registryService.getTraitRegistry().register(MembraneLabeledBioObjects.class);
-        registryService.getUITraitRegistry().registerIcon(MembraneLabeledBioObjects.class,
-                ResourceUtils.getPluginResource("icons/traits/bioobject-labeled-membrane.png"));
-
-        registryService.getTraitRegistry().register(RoundBioObjects.class);
-        registryService.getUITraitRegistry().registerIcon(RoundBioObjects.class,
-                ResourceUtils.getPluginResource("icons/traits/bioobject-round.png"));
-
-        registryService.getTraitRegistry().register(SingleBioObject.class);
-        registryService.getUITraitRegistry().registerIcon(SingleBioObject.class,
-                ResourceUtils.getPluginResource("icons/traits/bioobject.png"));
-
-        registryService.getTraitRegistry().register(UniformlyLabeledBioObjects.class);
-        registryService.getUITraitRegistry().registerIcon(UniformlyLabeledBioObjects.class,
-                ResourceUtils.getPluginResource("icons/traits/bioobject-labeled-uniform.png"));
-
-        registryService.getTraitRegistry().register(UnlabeledBioObjects.class);
-        registryService.getUITraitRegistry().registerIcon(UnlabeledBioObjects.class,
-                ResourceUtils.getPluginResource("icons/traits/bioobject-unlabeled.png"));
-
-        registryService.getTraitRegistry().register(Sample.class);
-        registryService.getUITraitRegistry().registerIcon(Sample.class,
-                ResourceUtils.getPluginResource("icons/traits/project-sample.png"));
-
-        registryService.getTraitRegistry().register(Treatment.class);
-        registryService.getUITraitRegistry().registerIcon(Treatment.class,
-                ResourceUtils.getPluginResource("icons/traits/project-label.png"));
-
-        registryService.getTraitRegistry().register(Subject.class);
-        registryService.getUITraitRegistry().registerIcon(Subject.class,
-                ResourceUtils.getPluginResource("icons/traits/project-subject.png"));
+        // Biological object annotations
+        registerTrait("bioobject", BioObjects.class, ResourceUtils.getPluginResource("icons/traits/bioobject.png"));
+        registerTrait("bioobject-count", BioObjectsCount.class, ResourceUtils.getPluginResource("icons/traits/bioobject.png"));
+        registerTrait("bioobject-count-single", SingleBioObject.class, ResourceUtils.getPluginResource("icons/traits/bioobject.png"));
+        registerTrait("bioobject-count-cluster", ClusterBioObjects.class, ResourceUtils.getPluginResource("icons/traits/bioobject-cluster.png"));
+        registerTrait("bioobject-morphology", BioObjectsMorphology.class, ResourceUtils.getPluginResource("icons/traits/bioobject.png"));
+        registerTrait("bioobject-morphology-irregular", IrregularBioObjects.class, ResourceUtils.getPluginResource("icons/traits/bioobject.png"));
+        registerTrait("bioobject-morphology-filamentous", FilamentousBioObjects.class, ResourceUtils.getPluginResource("icons/traits/bioobject-filamentous.png"));
+        registerTrait("bioobject-morphology-round", RoundBioObjects.class, ResourceUtils.getPluginResource("icons/traits/bioobject-round.png"));
+        registerTrait("bioobject-preparations", BioObjectsPreparations.class, ResourceUtils.getPluginResource("icons/traits/bioobject.png"));
+        registerTrait("bioobject-preparations-labeling", BioObjectsLabeling.class, ResourceUtils.getPluginResource("icons/traits/bioobject-labeled.png"));
+        registerTrait("bioobject-preparations-labeling-unlabeled", UnlabeledBioObjects.class, ResourceUtils.getPluginResource("icons/traits/bioobject-unlabeled.png"));
+        registerTrait("bioobject-preparations-labeling-uniform", UniformlyLabeledBioObjects.class, ResourceUtils.getPluginResource("icons/traits/bioobject-labeled-uniform.png"));
+        registerTrait("bioobject-preparations-labeling-membrane", MembraneLabeledBioObjects.class, ResourceUtils.getPluginResource("icons/traits/bioobject-labeled-membrane.png"));
     }
 }

@@ -11,10 +11,6 @@ import org.hkijena.acaq5.api.data.traits.GoodForTrait;
 import org.hkijena.acaq5.api.data.traits.RemovesTrait;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.count.ClusterBioObjects;
-import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.morphology.RoundBioObjects;
-import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.preparations.labeling.BioObjectsLabeling;
-import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.preparations.labeling.UnlabeledBioObjects;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleMaskData;
 
 @ACAQDocumentation(name = "Watershed enhancer")
@@ -25,13 +21,13 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.Image
 @AlgorithmOutputSlot(value = ImagePlus2DGreyscaleMaskData.class, slotName = "Output image", autoCreate = true)
 
 // Trait matching
-@GoodForTrait(RoundBioObjects.class)
-@GoodForTrait(BioObjectsLabeling.class)
-@BadForTrait(UnlabeledBioObjects.class)
-@GoodForTrait(ClusterBioObjects.class)
+@GoodForTrait("bioobject-morphology-round")
+@GoodForTrait("bioobject-preparations-labeling")
+@BadForTrait("bioobject-preparations-labeling-unlabeled")
+@GoodForTrait("bioobject-count-cluster")
 
 // Trait configuration
-@RemovesTrait(ClusterBioObjects.class)
+@RemovesTrait("bioobject-count-cluster")
 public class WatershedMaskEnhancer extends ACAQIteratingAlgorithm {
 
     private int erosionIterations = 0;

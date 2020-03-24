@@ -19,10 +19,10 @@ import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.compartments.datatypes.ACAQCompartmentOutputData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.CompartmentRemovedEvent;
 import org.hkijena.acaq5.api.events.WorkDirectoryChangedEvent;
-import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 
@@ -67,7 +67,7 @@ public class ACAQProject implements ACAQValidatable {
     }
 
     public ACAQProjectCompartment addCompartment(String name) {
-        ACAQProjectCompartment compartment = (ACAQProjectCompartment) ACAQAlgorithmRegistry.getInstance().getDefaultDeclarationFor(ACAQProjectCompartment.class).newInstance();
+        ACAQProjectCompartment compartment = ACAQAlgorithm.newInstance("acaq:project-compartment");
         compartment.setProject(this);
         compartment.setCustomName(name);
         compartmentGraph.insertNode(compartment, ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
@@ -79,8 +79,10 @@ public class ACAQProject implements ACAQValidatable {
         List<ACAQDataSlot> openInputSlots = target.getOpenInputSlots();
         if (openInputSlots.isEmpty()) {
             ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) target.getSlotConfiguration();
-            slotConfiguration.addInputSlot(StringUtils.makeUniqueString(source.getName(), " ", slotConfiguration::hasSlot),
-                    ACAQCompartmentOutputData.class);
+            ACAQSlotDefinition slotDefinition = new ACAQSlotDefinition(ACAQCompartmentOutputData.class, ACAQDataSlot.SlotType.Input,
+                    StringUtils.makeUniqueString(source.getName(), " ", slotConfiguration::hasSlot),
+                    null);
+            slotConfiguration.addSlot(slotDefinition.getName(), slotDefinition);
             openInputSlots = target.getOpenInputSlots();
         }
         compartmentGraph.connect(sourceSlot, openInputSlots.get(0));
@@ -95,7 +97,7 @@ public class ACAQProject implements ACAQValidatable {
             }
         }
         if (compartmentOutput == null) {
-            compartmentOutput = (ACAQCompartmentOutput) ACAQAlgorithmRegistry.getInstance().getDefaultDeclarationFor(ACAQCompartmentOutput.class).newInstance();
+            compartmentOutput = ACAQAlgorithm.newInstance("acaq:compartment-output");
             compartmentOutput.setCustomName(compartment.getName() + " output");
             compartmentOutput.setCompartment(compartment.getProjectCompartmentId());
             graph.insertNode(compartmentOutput, compartment.getProjectCompartmentId());

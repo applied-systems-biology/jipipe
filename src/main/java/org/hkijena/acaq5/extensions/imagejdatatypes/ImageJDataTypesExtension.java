@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.extensions.imagejdatatypes;
 
-import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
@@ -48,48 +47,35 @@ public class ImageJDataTypesExtension extends ACAQPrepackagedDefaultJavaExtensio
     }
 
     @Override
-    public void register(ACAQDefaultRegistry registryService) {
+    public void register() {
         // Register data types
-        registerImageDataType(registryService, "imagej-imgplus", ImagePlusData.class, "icons/data-types/imgplus.png");
-        registerImageDataType(registryService, "imagej-imgplus-2d", ImagePlus2DData.class, "icons/data-types/imgplus-2d.png");
-        registerImageDataType(registryService, "imagej-imgplus-2d-greyscale", ImagePlus2DGreyscaleData.class, "icons/data-types/imgplus-2d-greyscale.png");
-        registerImageDataType(registryService, "imagej-imgplus-2d-greyscale-8u", ImagePlus2DGreyscale8UData.class, "icons/data-types/imgplus-2d-greyscale-8u.png");
-        registerImageDataType(registryService, "imagej-imgplus-2d-greyscale-16u", ImagePlus2DGreyscale16UData.class, "icons/data-types/imgplus-2d-greyscale-16u.png");
-        registerImageDataType(registryService, "imagej-imgplus-2d-greyscale-32f", ImagePlus2DGreyscale32FData.class, "icons/data-types/imgplus-2d-greyscale-32f.png");
-        registerImageDataType(registryService, "imagej-imgplus-2d-greyscale-mask", ImagePlus2DGreyscaleMaskData.class, "icons/data-types/imgplus-2d-greyscale-mask.png");
-        registerImageDataType(registryService, "imagej-imgplus-2d-color", ImagePlus2DColorData.class, "icons/data-types/imgplus-2d-color.png");
-        registerImageDataType(registryService, "imagej-imgplus-2d-color-rgb", ImagePlus2DColorRGBData.class, "icons/data-types/imgplus-2d-color-rgb.png");
-        registerImageDataType(registryService, "imagej-imgplus-2d-color-8u", ImagePlus2DColor8UData.class, "icons/data-types/imgplus-2d-color-8u.png");
+        registerImageDataType("imagej-imgplus", ImagePlusData.class, "icons/data-types/imgplus.png");
+        registerImageDataType("imagej-imgplus-2d", ImagePlus2DData.class, "icons/data-types/imgplus-2d.png");
+        registerImageDataType("imagej-imgplus-2d-greyscale", ImagePlus2DGreyscaleData.class, "icons/data-types/imgplus-2d-greyscale.png");
+        registerImageDataType("imagej-imgplus-2d-greyscale-8u", ImagePlus2DGreyscale8UData.class, "icons/data-types/imgplus-2d-greyscale-8u.png");
+        registerImageDataType("imagej-imgplus-2d-greyscale-16u", ImagePlus2DGreyscale16UData.class, "icons/data-types/imgplus-2d-greyscale-16u.png");
+        registerImageDataType("imagej-imgplus-2d-greyscale-32f", ImagePlus2DGreyscale32FData.class, "icons/data-types/imgplus-2d-greyscale-32f.png");
+        registerImageDataType("imagej-imgplus-2d-greyscale-mask", ImagePlus2DGreyscaleMaskData.class, "icons/data-types/imgplus-2d-greyscale-mask.png");
+        registerImageDataType("imagej-imgplus-2d-color", ImagePlus2DColorData.class, "icons/data-types/imgplus-2d-color.png");
+        registerImageDataType("imagej-imgplus-2d-color-rgb", ImagePlus2DColorRGBData.class, "icons/data-types/imgplus-2d-color-rgb.png");
+        registerImageDataType("imagej-imgplus-2d-color-8u", ImagePlus2DColor8UData.class, "icons/data-types/imgplus-2d-color-8u.png");
 
-        registryService.getDatatypeRegistry().register("imagej-roi", ACAQROIData.class);
-        registryService.getUIDatatypeRegistry().registerIcon(ACAQROIData.class, ResourceUtils.getPluginResource("icons/data-types/roi.png"));
-        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQROIData.class, ROIDataSlotRowUI.class);
-
-        registryService.getDatatypeRegistry().register("imagej-results-table", ACAQResultsTableData.class);
-        registryService.getUIDatatypeRegistry().registerIcon(ACAQResultsTableData.class, ResourceUtils.getPluginResource("icons/data-types/results-table.png"));
-        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQResultsTableData.class, ResultsTableDataSlotRowUI.class);
+        registerDatatype("imagej-roi", ACAQROIData.class, ResourceUtils.getPluginResource("icons/data-types/roi.png"),
+                ROIDataSlotRowUI.class, null);
+        registerDatatype("imagej-results-table", ACAQResultsTableData.class, ResourceUtils.getPluginResource("icons/data-types/results-table.png"),
+                ResultsTableDataSlotRowUI.class, null);
 
         // Register data sources
-        registryService.getAlgorithmRegistry().register(ROIDataFromFile.class);
-        registryService.getAlgorithmRegistry().register(ResultsTableFromFile.class);
-        registryService.getAlgorithmRegistry().register(BioformatsImporter.class);
-
-        // Register result data slot UIs
-        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQROIData.class, ROIDataSlotRowUI.class);
-        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQResultsTableData.class, ResultsTableDataSlotRowUI.class);
-        registryService.getUIDatatypeRegistry().registerResultSlotUI(ACAQResultsTableData.class, ResultsTableDataSlotRowUI.class);
-
+        registerAlgorithm("import-imagej-roi-from-file", ROIDataFromFile.class);
+        registerAlgorithm("import-imagej-results-table-from-file", ResultsTableFromFile.class);
+        registerAlgorithm("import-imagej-bioformats", BioformatsImporter.class);
     }
 
-    private void registerImageDataType(ACAQDefaultRegistry registryService, String id, Class<? extends ACAQData> dataClass, String iconResource) {
+    private void registerImageDataType(String id, Class<? extends ACAQData> dataClass, String iconResource) {
         IMAGEJ_DATA_CLASSES.add(dataClass);
-        registryService.getDatatypeRegistry().register(id, dataClass);
-        registryService.getUIDatatypeRegistry().registerIcon(dataClass,
-                ResourceUtils.getPluginResource(iconResource));
-        registryService.getUIDatatypeRegistry().registerResultSlotUI(dataClass,
-                ImageDataSlotRowUI.class);
+        registerDatatype(id, dataClass, ResourceUtils.getPluginResource(iconResource), ImageDataSlotRowUI.class, null);
         ImagePlusFromFileAlgorithmDeclaration importerDeclaration = new ImagePlusFromFileAlgorithmDeclaration(id, dataClass);
-        registryService.getAlgorithmRegistry().register(importerDeclaration);
+        registerAlgorithm(importerDeclaration);
     }
 }
 

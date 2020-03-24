@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.extensions.standardplots;
 
-import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.standardplots.ui.plots.*;
@@ -31,50 +30,51 @@ public class StandardPlotsExtension extends ACAQPrepackagedDefaultJavaExtension 
     }
 
     @Override
-    public void register(ACAQDefaultRegistry registryService) {
-        registryService.getPlotBuilderRegistry().register(DefaultBoxAndWhiskerBarCategoryPlot.class,
+    public void register() {
+        registerPlot(DefaultBoxAndWhiskerBarCategoryPlot.class,
                 CategoryPlotSettingsUI.class,
                 "Box Plot",
                 UIUtils.getIconFromResources("bar-chart.png"));
-        registryService.getPlotBuilderRegistry().register(DefaultStatisticalLineCategoryPlot.class,
+        registerPlot(DefaultStatisticalLineCategoryPlot.class,
                 CategoryPlotSettingsUI.class,
                 "Statistical Line Plot",
                 UIUtils.getIconFromResources("line-chart.png"));
-        registryService.getPlotBuilderRegistry().register(DefaultStatisticalBarCategoryPlot.class,
+        registerPlot(DefaultStatisticalBarCategoryPlot.class,
                 CategoryPlotSettingsUI.class,
                 "Statistical Bar Plot",
                 UIUtils.getIconFromResources("bar-chart.png"));
-        registryService.getPlotBuilderRegistry().register(LineCategoryPlot.class,
+        registerPlot(LineCategoryPlot.class,
                 CategoryPlotSettingsUI.class,
                 "Line Plot",
                 UIUtils.getIconFromResources("line-chart.png"));
-        registryService.getPlotBuilderRegistry().register(BarCategoryPlot.class,
+        registerPlot(BarCategoryPlot.class,
                 CategoryPlotSettingsUI.class,
                 "Bar Plot",
                 UIUtils.getIconFromResources("bar-chart.png"));
-        registryService.getPlotBuilderRegistry().register(StackedBarCategoryPlot.class,
+        registerPlot(StackedBarCategoryPlot.class,
                 CategoryPlotSettingsUI.class,
                 "Stacked Bar Plot",
                 UIUtils.getIconFromResources("bar-chart.png"));
-        registryService.getPlotBuilderRegistry().register(Pie2DPlot.class,
+        registerPlot(Pie2DPlot.class,
                 PiePlotSettingsUI.class,
                 "2D Pie Plot",
                 UIUtils.getIconFromResources("pie-chart.png"));
-        registryService.getPlotBuilderRegistry().register(Pie3DPlot.class,
+        registerPlot(Pie3DPlot.class,
                 PiePlotSettingsUI.class,
                 "3D Pie Plot",
                 UIUtils.getIconFromResources("pie-chart.png"));
-        registryService.getPlotBuilderRegistry().register(LineXYPlot.class,
+        registerPlot(LineXYPlot.class,
                 XYPlotSettingsUI.class,
                 "XY Line Plot",
                 UIUtils.getIconFromResources("line-chart.png"));
-        registryService.getPlotBuilderRegistry().register(ScatterXYPlot.class,
+        registerPlot(ScatterXYPlot.class,
                 XYPlotSettingsUI.class,
                 "XY Scatter Plot",
                 UIUtils.getIconFromResources("scatter-chart.png"));
-        registryService.getPlotBuilderRegistry().register(HistogramPlot.class,
+        registerPlot(HistogramPlot.class,
                 HistogramPlotSettingsUI.class,
                 "Histogram Plot",
                 UIUtils.getIconFromResources("bar-chart.png"));
     }
+
 }

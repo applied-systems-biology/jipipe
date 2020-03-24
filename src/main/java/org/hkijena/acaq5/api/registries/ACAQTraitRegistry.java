@@ -2,8 +2,9 @@ package org.hkijena.acaq5.api.registries;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.ACAQDefaultRegistry;
+import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.events.TraitRegisteredEvent;
-import org.hkijena.acaq5.api.traits.ACAQDefaultTraitDeclaration;
+import org.hkijena.acaq5.api.traits.ACAQJavaTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 
@@ -17,39 +18,72 @@ import java.util.Objects;
  */
 public class ACAQTraitRegistry {
     private Map<String, ACAQTraitDeclaration> registeredTraits = new HashMap<>();
+    private Map<String, ACAQDependency> registeredTraitSources = new HashMap<>();
     private EventBus eventBus = new EventBus();
 
     public ACAQTraitRegistry() {
 
     }
 
-    public void register(Class<? extends ACAQTrait> klass) {
-        register(new ACAQDefaultTraitDeclaration(klass));
+    /**
+     * Registers a trait class
+     *
+     * @param klass
+     * @param source
+     */
+    public void register(String id, Class<? extends ACAQTrait> klass, ACAQDependency source) {
+        register(new ACAQJavaTraitDeclaration(id, klass), source);
     }
 
-    public void register(ACAQTraitDeclaration declaration) {
+    /**
+     * Registers a trait declaration
+     *
+     * @param declaration
+     * @param source
+     */
+    public void register(ACAQTraitDeclaration declaration, ACAQDependency source) {
         registeredTraits.put(declaration.getId(), declaration);
+        registeredTraitSources.put(declaration.getId(), source);
         eventBus.post(new TraitRegisteredEvent(declaration));
     }
 
-    public ACAQTraitDeclaration getDefaultDeclarationFor(Class<? extends ACAQTrait> klass) {
-        return Objects.requireNonNull(registeredTraits.get(ACAQDefaultTraitDeclaration.getDeclarationIdOf(klass)));
-    }
-
-    public boolean hasDefaultDeclarationFor(Class<? extends ACAQTrait> klass) {
-        return registeredTraits.containsKey(ACAQDefaultTraitDeclaration.getDeclarationIdOf(klass));
-    }
-
+    /**
+     * Gets a registered declaration by its ID
+     *
+     * @param id
+     * @return
+     */
     public ACAQTraitDeclaration getDeclarationById(String id) {
         return Objects.requireNonNull(registeredTraits.get(id));
     }
 
+    /**
+     * Returns all registered traits
+     *
+     * @return
+     */
     public Map<String, ACAQTraitDeclaration> getRegisteredTraits() {
         return Collections.unmodifiableMap(registeredTraits);
     }
 
+    /**
+     * Returns true if there is a trait with given ID
+     *
+     * @param id
+     * @return
+     */
     public boolean hasTraitWithId(String id) {
         return registeredTraits.containsKey(id);
+    }
+
+    /**
+     * Returns the source of the trait
+     *
+     * @param id
+     * @return
+     */
+    public ACAQDependency getSourceOf(String id) {
+        return registeredTraitSources.getOrDefault(id, null);
     }
 
     public EventBus getEventBus() {

@@ -12,9 +12,6 @@ import org.hkijena.acaq5.api.data.traits.GoodForTrait;
 import org.hkijena.acaq5.api.data.traits.RemovesTrait;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.count.ClusterBioObjects;
-import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.morphology.RoundBioObjects;
-import org.hkijena.acaq5.extensions.biooobjects.api.traits.quality.ImageQuality;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleMaskData;
 import org.hkijena.acaq5.utils.Hough_Circle;
@@ -27,11 +24,11 @@ import org.hkijena.acaq5.utils.Hough_Circle;
 @AlgorithmOutputSlot(value = ImagePlus2DGreyscaleMaskData.class, slotName = "Mask", autoCreate = true)
 
 // Trait matching
-@GoodForTrait(RoundBioObjects.class)
+@GoodForTrait("bioobject-morphology-round")
 
 // Trait configuration
-@RemovesTrait(ImageQuality.class)
-@RemovesTrait(ClusterBioObjects.class)
+@RemovesTrait("image-quality")
+@RemovesTrait("bioobject-count-cluster")
 public class HoughSegmenter extends ACAQIteratingAlgorithm {
 
     private int minRadius = 7;

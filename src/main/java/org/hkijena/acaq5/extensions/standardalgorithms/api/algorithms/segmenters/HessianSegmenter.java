@@ -14,7 +14,6 @@ import org.hkijena.acaq5.api.data.traits.RemovesTrait;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
-import org.hkijena.acaq5.extensions.biooobjects.api.traits.quality.ImageQuality;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleMaskData;
 
@@ -28,7 +27,7 @@ import java.util.Vector;
 @AlgorithmOutputSlot(value = ImagePlus2DGreyscaleMaskData.class, slotName = "Mask", autoCreate = true)
 
 // Traits
-@RemovesTrait(ImageQuality.class)
+@RemovesTrait("image-quality")
 public class HessianSegmenter extends ACAQIteratingAlgorithm {
 
     private double smoothing = 1.0;

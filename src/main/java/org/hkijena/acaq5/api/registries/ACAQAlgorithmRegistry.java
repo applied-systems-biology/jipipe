@@ -4,15 +4,12 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQDefaultRegistry;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.ACAQDefaultAlgorithmDeclaration;
 import org.hkijena.acaq5.api.data.ACAQData;
-import org.hkijena.acaq5.api.data.traits.*;
 import org.hkijena.acaq5.api.events.AlgorithmRegisteredEvent;
 import org.hkijena.acaq5.api.events.TraitRegisteredEvent;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,6 +20,7 @@ import java.util.stream.Collectors;
 public class ACAQAlgorithmRegistry {
     private Map<String, ACAQAlgorithmDeclaration> registeredAlgorithms = new HashMap<>();
     private Set<ACAQAlgorithmRegistrationTask> registrationTasks = new HashSet<>();
+    private Map<String, ACAQDependency> registeredAlgorithmSources = new HashMap<>();
     private EventBus eventBus = new EventBus();
 
     public ACAQAlgorithmRegistry() {
@@ -65,82 +63,17 @@ public class ACAQAlgorithmRegistry {
     }
 
     /**
-     * Registers an algorithm class
-     * Automatically registers {@link GoodForTrait} and {@link BadForTrait} annotations
-     *
-     * @param klass
-     */
-    public void register(Class<? extends ACAQAlgorithm> klass) {
-        register(new ACAQDefaultAlgorithmDeclaration(klass));
-    }
-
-    /**
      * Registers an algorithm declaration
      *
      * @param declaration
+     * @param source
      */
-    public void register(ACAQAlgorithmDeclaration declaration) {
+    public void register(ACAQAlgorithmDeclaration declaration, ACAQDependency source) {
         registeredAlgorithms.put(declaration.getId(), declaration);
+        registeredAlgorithmSources.put(declaration.getId(), source);
         eventBus.post(new AlgorithmRegisteredEvent(declaration));
         System.out.println("Registered algorithm '" + declaration.getName() + "' [" + declaration.getId() + "]");
         runRegistrationTasks();
-    }
-
-    /**
-     * Returns an {@link ACAQDefaultAlgorithmDeclaration} instance for a class-based instance registration
-     * Returns null if the algorithm class is not registered or defined by any other declaration method
-     *
-     * @param klass
-     * @return
-     */
-    public ACAQDefaultAlgorithmDeclaration getDefaultDeclarationFor(Class<? extends ACAQAlgorithm> klass) {
-        return (ACAQDefaultAlgorithmDeclaration) getDeclarationById(ACAQDefaultAlgorithmDeclaration.getDeclarationIdOf(klass));
-    }
-
-    /**
-     * Registers that the specified algorithm adds the specified trait to all of its outputs.
-     * This is equivalent to attaching {@link AddsTrait} to the class
-     *
-     * @param klass
-     * @param trait
-     */
-    public void registerAlgorithmAddsTrait(Class<? extends ACAQAlgorithm> klass, Class<? extends ACAQTrait> trait) {
-        getDefaultDeclarationFor(klass).getSlotTraitConfiguration().set(ACAQTraitRegistry.getInstance().getDefaultDeclarationFor(trait),
-                ACAQTraitModificationOperation.Add);
-    }
-
-    /**
-     * Registers that the specified algorithm removes the specified trait from all of its outputs.
-     * This is equivalent to attaching {@link RemovesTrait} to the class
-     *
-     * @param klass
-     * @param trait
-     */
-    public void registerAlgorithmRemovesTrait(Class<? extends ACAQAlgorithm> klass, Class<? extends ACAQTrait> trait) {
-        getDefaultDeclarationFor(klass).getSlotTraitConfiguration().set(ACAQTraitRegistry.getInstance().getDefaultDeclarationFor(trait),
-                ACAQTraitModificationOperation.RemoveCategory);
-    }
-
-    /**
-     * Registers that the specified algorithm is effective for the specified trait.
-     * Equivalent to {@link GoodForTrait} annotation
-     *
-     * @param klass
-     * @param trait
-     */
-    public void registerPreferredTraitFor(Class<? extends ACAQAlgorithm> klass, Class<? extends ACAQTrait> trait) {
-        getDefaultDeclarationFor(klass).getPreferredTraits().add(ACAQTraitRegistry.getInstance().getDefaultDeclarationFor(trait));
-    }
-
-    /**
-     * Registers that the specified algorithm is ineffective for the specified trait.
-     * Equivalent to {@link BadForTrait} annotation
-     *
-     * @param klass
-     * @param trait
-     */
-    public void registerUnwantedTraitFor(Class<? extends ACAQAlgorithm> klass, Class<? extends ACAQTrait> trait) {
-        getDefaultDeclarationFor(klass).getUnwantedTraits().add(ACAQTraitRegistry.getInstance().getDefaultDeclarationFor(trait));
     }
 
     /**
@@ -201,17 +134,42 @@ public class ACAQAlgorithmRegistry {
         return registeredAlgorithms.containsKey(id);
     }
 
+    /**
+     * Returns the event bus that posts registration events
+     *
+     * @return
+     */
     public EventBus getEventBus() {
         return eventBus;
     }
 
+    /**
+     * Install registration events.
+     * This method is only used internally.
+     */
     public void installEvents() {
         ACAQDefaultRegistry.getInstance().getTraitRegistry().getEventBus().register(this);
     }
 
+    /**
+     * Triggered when a trait was registered.
+     * Attempts to register more algorithms
+     *
+     * @param event
+     */
     @Subscribe
     public void onTraitRegistered(TraitRegisteredEvent event) {
         runRegistrationTasks();
+    }
+
+    /**
+     * Returns the source of a registered algorithm
+     *
+     * @param algorithmId
+     * @return
+     */
+    public ACAQDependency getSourceOf(String algorithmId) {
+        return registeredAlgorithmSources.getOrDefault(algorithmId, null);
     }
 
     public static ACAQAlgorithmRegistry getInstance() {

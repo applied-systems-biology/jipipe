@@ -1,14 +1,17 @@
 package org.hkijena.acaq5.api.registries;
 
+import org.hkijena.acaq5.api.data.ACAQData;
+
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class DefaultACAQAlgorithmRegistrationTask implements ACAQAlgorithmRegistrationTask {
+public abstract class ACAQDefaultAlgorithmRegistrationTask implements ACAQAlgorithmRegistrationTask {
     private Set<String> dependencyAlgorithmIds = new HashSet<>();
     private Set<String> dependencyTraitIds = new HashSet<>();
     private Set<String> dependencyDatatypeIds = new HashSet<>();
+    private Set<Class<? extends ACAQData>> dependencyDatatypeClasses = new HashSet<>();
 
-    public DefaultACAQAlgorithmRegistrationTask() {
+    public ACAQDefaultAlgorithmRegistrationTask() {
 
     }
 
@@ -42,6 +45,10 @@ public abstract class DefaultACAQAlgorithmRegistrationTask implements ACAQAlgori
             if (!ACAQDatatypeRegistry.getInstance().hasDatatypeWithId(id))
                 return false;
         }
+        for (Class<? extends ACAQData> dataClass : dependencyDatatypeClasses) {
+            if (!ACAQDatatypeRegistry.getInstance().hasDataType(dataClass))
+                return false;
+        }
 
         return true;
     }
@@ -52,5 +59,13 @@ public abstract class DefaultACAQAlgorithmRegistrationTask implements ACAQAlgori
 
     public void setDependencyDatatypeIds(Set<String> dependencyDatatypeIds) {
         this.dependencyDatatypeIds = dependencyDatatypeIds;
+    }
+
+    public Set<Class<? extends ACAQData>> getDependencyDatatypeClasses() {
+        return dependencyDatatypeClasses;
+    }
+
+    public void setDependencyDatatypeClasses(Set<Class<? extends ACAQData>> dependencyDatatypeClasses) {
+        this.dependencyDatatypeClasses = dependencyDatatypeClasses;
     }
 }

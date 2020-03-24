@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.api.compartments;
 
-import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
@@ -10,7 +9,7 @@ import org.hkijena.acaq5.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
 
 @Plugin(type = ACAQJavaExtension.class)
-public class ACAQCompartmentsExtensionService extends ACAQPrepackagedDefaultJavaExtension {
+public class ACAQCompartmentsExtension extends ACAQPrepackagedDefaultJavaExtension {
 
     @Override
     public String getName() {
@@ -33,12 +32,12 @@ public class ACAQCompartmentsExtensionService extends ACAQPrepackagedDefaultJava
     }
 
     @Override
-    public void register(ACAQDefaultRegistry registryService) {
-        registryService.getAlgorithmRegistry().register(ACAQCompartmentOutput.class);
-        registryService.getAlgorithmRegistry().register(ACAQProjectCompartment.class);
+    public void register() {
+        registerAlgorithm("acaq:compartment-output", ACAQCompartmentOutput.class);
+        registerAlgorithm("acaq:project-compartment", ACAQProjectCompartment.class);
 
-        registryService.getDatatypeRegistry().register("acaq:compartment-output", ACAQCompartmentOutputData.class);
-        registryService.getUIDatatypeRegistry().registerIcon(ACAQCompartmentOutputData.class,
-                ResourceUtils.getPluginResource("icons/data-types/graph-compartment.png"));
+        registerDatatype("acaq:compartment-output", ACAQCompartmentOutputData.class,
+                ResourceUtils.getPluginResource("icons/data-types/graph-compartment.png"),
+                null, null);
     }
 }

@@ -19,6 +19,7 @@ import org.hkijena.acaq5.api.data.traits.ACAQTraitConfiguration;
 import org.hkijena.acaq5.api.data.traits.ConfigTraits;
 import org.hkijena.acaq5.api.events.*;
 import org.hkijena.acaq5.api.parameters.*;
+import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors.StringParameterSettings;
 import org.hkijena.acaq5.utils.JsonUtils;
@@ -495,6 +496,17 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     public void onSlotDisconnected(AlgorithmGraphDisconnectedEvent event) {
         updateSlotInheritance();
+    }
+
+    /**
+     * Utility function to create an algorithm instance from its id
+     *
+     * @param id
+     * @param <T>
+     * @return
+     */
+    public static <T extends ACAQAlgorithm> T newInstance(String id) {
+        return (T) ACAQAlgorithmRegistry.getInstance().getDeclarationById(id).newInstance();
     }
 
     public static class Serializer extends JsonSerializer<ACAQAlgorithm> {

@@ -42,15 +42,10 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
         return slots.containsKey(name);
     }
 
-    public void addInputSlot(String name, Class<? extends ACAQData> klass) {
-        addSlot(name, new ACAQSlotDefinition(klass, ACAQDataSlot.SlotType.Input, name, null));
-    }
-
-    public void addOutputSlot(String name, String inheritedSlot, Class<? extends ACAQData> klass) {
-        addSlot(name, new ACAQSlotDefinition(klass, ACAQDataSlot.SlotType.Output, name, inheritedSlot));
-    }
-
     public void addSlot(String name, ACAQSlotDefinition definition) {
+        if (!Objects.equals(name, definition.getName())) {
+            definition = definition.renamedCopy(name);
+        }
         if (definition.getSlotType() == ACAQDataSlot.SlotType.Input &&
                 !allowedInputSlotTypes.contains(definition.getDataClass()))
             throw new RuntimeException("Slot type is not accepted by this configuration!");
@@ -341,12 +336,17 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
         }
 
         public Builder addInputSlot(String name, Class<? extends ACAQData> klass) {
-            object.addInputSlot(name, klass);
+            object.addSlot(name, new ACAQSlotDefinition(klass, ACAQDataSlot.SlotType.Input, name, null));
             return this;
         }
 
         public Builder addOutputSlot(String name, String inheritedSlot, Class<? extends ACAQData> klass) {
-            object.addOutputSlot(name, inheritedSlot, klass);
+            object.addSlot(name, new ACAQSlotDefinition(klass, ACAQDataSlot.SlotType.Output, name, null));
+            return this;
+        }
+
+        public Builder addSlot(ACAQSlotDefinition definition) {
+            object.addSlot(definition.getName(), definition);
             return this;
         }
 

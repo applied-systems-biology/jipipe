@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.extensions.standardtableoperations;
 
-import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.standardtableoperations.ui.tableoperations.*;
@@ -31,82 +30,82 @@ public class StandardTableOperationsExtension extends ACAQPrepackagedDefaultJava
     }
 
     @Override
-    public void register(ACAQDefaultRegistry registryService) {
+    public void register() {
         // Register spreadsheet operations
-        registryService.getTableAnalyzerUIOperationRegistry().register(StatisticsCountVectorOperation.class,
+        registerTableOperation(StatisticsCountVectorOperation.class,
                 null,
                 "Count",
                 "COUNT",
                 "Counts all entries",
                 UIUtils.getIconFromResources("statistics.png"));
-        registryService.getTableAnalyzerUIOperationRegistry().register(StatisticsCountNonNullVectorOperation.class,
+        registerTableOperation(StatisticsCountNonNullVectorOperation.class,
                 null,
                 "Count Non-Empty",
                 "COUNT_NON_EMPTY",
                 "Counts all non-empty entries",
                 UIUtils.getIconFromResources("statistics.png"));
-        registryService.getTableAnalyzerUIOperationRegistry().register(StatisticsSumVectorOperation.class,
+        registerTableOperation(StatisticsSumVectorOperation.class,
                 null,
                 "Sum",
                 "SUM",
                 "Summarizes all entries",
                 UIUtils.getIconFromResources("statistics.png"));
-        registryService.getTableAnalyzerUIOperationRegistry().register(StatisticsMinVectorOperation.class,
+        registerTableOperation(StatisticsMinVectorOperation.class,
                 null,
                 "Minimum",
                 "MIN",
                 "Minimum value of entries",
                 UIUtils.getIconFromResources("statistics.png"));
-        registryService.getTableAnalyzerUIOperationRegistry().register(StatisticsMaxVectorOperation.class,
+        registerTableOperation(StatisticsMaxVectorOperation.class,
                 null,
                 "Maximum",
                 "MAX",
                 "Maximum value of entries",
                 UIUtils.getIconFromResources("statistics.png"));
-        registryService.getTableAnalyzerUIOperationRegistry().register(StatisticsMedianVectorOperation.class,
+        registerTableOperation(StatisticsMedianVectorOperation.class,
                 null,
                 "Median",
                 "MEDIAN",
                 "Median value of entries",
                 UIUtils.getIconFromResources("statistics.png"));
-        registryService.getTableAnalyzerUIOperationRegistry().register(StatisticsAverageVectorOperation.class,
+        registerTableOperation(StatisticsAverageVectorOperation.class,
                 null,
                 "Average",
                 "AVG",
                 "Average of entries",
                 UIUtils.getIconFromResources("statistics.png"));
-        registryService.getTableAnalyzerUIOperationRegistry().register(StatisticsVarianceVectorOperation.class,
+        registerTableOperation(StatisticsVarianceVectorOperation.class,
                 null,
                 "Variance",
                 "VAR",
                 "Variance of entries",
                 UIUtils.getIconFromResources("statistics.png"));
-        registryService.getTableAnalyzerUIOperationRegistry().register(ConvertToOccurrencesVectorOperation.class,
+        registerTableOperation(ConvertToOccurrencesVectorOperation.class,
                 null,
                 "Number of entries",
                 "COUNT",
                 "Returns the number of items",
                 UIUtils.getIconFromResources("statistics.png"));
 
-        registryService.getTableAnalyzerUIOperationRegistry().register(ConvertToNumericVectorOperation.class,
+        registerTableOperation(ConvertToNumericVectorOperation.class,
                 null,
                 "Convert to numbers",
                 "TO_NUMBERS",
                 "Ensures that all items are numbers. Non-numeric values are set to zero.",
                 UIUtils.getIconFromResources("inplace-function.png"));
-        registryService.getTableAnalyzerUIOperationRegistry().register(ConvertToNumericBooleanVectorOperation.class,
+        registerTableOperation(ConvertToNumericBooleanVectorOperation.class,
                 null,
                 "Convert to numeric boolean",
                 "TO_NUMERIC_BOOLEAN",
                 "Ensures that all items are numeric boolean values. Defaults to outputting zero if the value is not valid.",
                 UIUtils.getIconFromResources("inplace-function.png"));
-        registryService.getTableAnalyzerUIOperationRegistry().register(ConvertToOccurrencesVectorOperation.class,
+        registerTableOperation(ConvertToOccurrencesVectorOperation.class,
                 null,
                 "Convert to number of occurrences",
                 "TO_OCCURENCES",
                 "Replaces the items by their number of occurrences within the list of items.",
                 UIUtils.getIconFromResources("inplace-function.png"));
-        registryService.getTableAnalyzerUIOperationRegistry().register(ConvertToNumericFactorOperation.class,
+        registerTableOperation(ConvertToNumericFactorOperation.class,
                 null,
                 "Convert to numeric factors",
                 "TO_FACTORS",

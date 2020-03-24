@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.api.algorithm;
 
-import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
@@ -10,21 +9,23 @@ public class ACAQIOSlotConfiguration extends ACAQMutableSlotConfiguration {
     }
 
     @Override
-    public void addInputSlot(String name, Class<? extends ACAQData> klass) {
-        super.addInputSlot(name, klass);
-        if (!getSlots().containsKey("Output " + name)) {
-            addOutputSlot("Output " + name, "", klass);
+    public void addSlot(String name, ACAQSlotDefinition definition) {
+        if (definition.getSlotType() == ACAQDataSlot.SlotType.Output) {
+            if (!name.startsWith("Output "))
+                name = "Output " + name;
+            String inputName = name.substring("Output ".length());
+            if (!getSlots().containsKey(inputName)) {
+                addSlot(inputName, new ACAQSlotDefinition(definition.getDataClass(), ACAQDataSlot.SlotType.Input, inputName, null));
+                return;
+            }
         }
-    }
-
-    @Override
-    public void addOutputSlot(String name, String inheritedSlot, Class<? extends ACAQData> klass) {
-        if (!name.startsWith("Output "))
-            name = "Output " + name;
-        super.addOutputSlot(name, null, klass);
-        String inputName = name.substring("Output ".length());
-        if (!getSlots().containsKey(inputName))
-            addInputSlot(inputName, klass);
+        super.addSlot(name, definition);
+        if (definition.getSlotType() == ACAQDataSlot.SlotType.Input) {
+            String outputName = "Output " + name;
+            if (!getSlots().containsKey(outputName)) {
+                addSlot(outputName, new ACAQSlotDefinition(definition.getDataClass(), ACAQDataSlot.SlotType.Output, outputName, null));
+            }
+        }
     }
 
     @Override

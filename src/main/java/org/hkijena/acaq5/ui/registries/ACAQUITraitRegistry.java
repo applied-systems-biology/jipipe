@@ -1,8 +1,6 @@
 package org.hkijena.acaq5.ui.registries;
 
 import org.hkijena.acaq5.ACAQDefaultRegistry;
-import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.utils.ResourceUtils;
 
@@ -26,16 +24,6 @@ public class ACAQUITraitRegistry {
      */
     public void registerIcon(ACAQTraitDeclaration declaration, URL resourcePath) {
         icons.put(declaration, resourcePath);
-    }
-
-    /**
-     * Registers a custom icon for a trait
-     *
-     * @param klass
-     * @param resourcePath
-     */
-    public void registerIcon(Class<? extends ACAQTrait> klass, URL resourcePath) {
-        icons.put(ACAQTraitRegistry.getInstance().getDefaultDeclarationFor(klass), resourcePath);
     }
 
     /**

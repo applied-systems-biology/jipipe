@@ -41,6 +41,12 @@ public class ACAQSlotDefinition {
         this.inheritanceConversions = new HashMap<>(other.inheritanceConversions);
     }
 
+    public ACAQSlotDefinition renamedCopy(String newName) {
+        ACAQSlotDefinition result = new ACAQSlotDefinition(this);
+        result.name = newName;
+        return result;
+    }
+
     public Class<? extends ACAQData> getDataClass() {
         return dataClass;
     }

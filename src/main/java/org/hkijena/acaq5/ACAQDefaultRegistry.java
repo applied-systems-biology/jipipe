@@ -1,5 +1,6 @@
 package org.hkijena.acaq5;
 
+import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistrationTask;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 @Plugin(type = ACAQRegistry.class)
 public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry {
     private static ACAQDefaultRegistry instance;
-    private List<ACAQJavaExtension> registeredExtensions;
+    private List<ACAQDependency> registeredExtensions;
     private ACAQAlgorithmRegistry algorithmRegistry;
     private ACAQDatatypeRegistry datatypeRegistry;
     private ACAQTraitRegistry traitRegistry;
@@ -53,17 +54,24 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
                 .sorted(ACAQDefaultRegistry::comparePlugins).collect(Collectors.toList())) {
             System.out.println("ACAQ5: Registering plugin " + info);
             try {
-                ACAQJavaExtension service = info.createInstance();
-                service.register(this);
-                registeredExtensions.add(service);
+                ACAQJavaExtension extension = info.createInstance();
+                extension.setRegistry(this);
+                extension.register();
+                registeredExtensions.add(extension);
             } catch (InstantiableException e) {
                 throw new RuntimeException(e);
             }
         }
+
+        for (ACAQAlgorithmRegistrationTask task : algorithmRegistry.getScheduledRegistrationTasks()) {
+            System.err.println("Could not register: " + task.toString());
+        }
+
     }
 
     /**
      * Registers a JSON extension
+     *
      * @param extension
      */
     public void register(ACAQJsonExtension extension) {
@@ -100,7 +108,7 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
         return acaquiTraitRegistry;
     }
 
-    public List<ACAQJavaExtension> getRegisteredExtensions() {
+    public List<ACAQDependency> getRegisteredExtensions() {
         return Collections.unmodifiableList(registeredExtensions);
     }
 

@@ -33,7 +33,7 @@
           }
         },
         "acaq:algorithm-ui-location" : { },
-        "acaq:algorithm-type" : "acaq:default:org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro.MacroWrapperAlgorithm",
+        "acaq:algorithm-type" : "external-imagej-macro",
         "acaq:algorithm-compartment" : "DEFAULT",
         "macro-parameters/Sigma" : 1.0,
         "code" : {

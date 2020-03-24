@@ -28,7 +28,7 @@
           }
         },
         "acaq:algorithm-ui-location" : { },
-        "acaq:algorithm-type" : "acaq:default:org.hkijena.acaq5.extensions.filesystem.api.algorithms.ACAQFilterFiles",
+        "acaq:algorithm-type" : "file-filter",
         "acaq:algorithm-compartment" : "DEFAULT",
         "filter" : {
           "mode" : "Contains",
@@ -62,7 +62,7 @@
           }
         },
         "acaq:algorithm-ui-location" : { },
-        "acaq:algorithm-type" : "acaq:default:org.hkijena.acaq5.extensions.filesystem.api.algorithms.ACAQListFiles",
+        "acaq:algorithm-type" : "folder-list-files",
         "acaq:algorithm-compartment" : "DEFAULT",
         "name" : "List files",
         "description" : null,

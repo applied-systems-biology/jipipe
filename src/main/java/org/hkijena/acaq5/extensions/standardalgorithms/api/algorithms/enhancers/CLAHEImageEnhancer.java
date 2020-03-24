@@ -9,10 +9,6 @@ import org.hkijena.acaq5.api.data.traits.GoodForTrait;
 import org.hkijena.acaq5.api.data.traits.RemovesTrait;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.preparations.labeling.MembraneLabeledBioObjects;
-import org.hkijena.acaq5.extensions.biooobjects.api.traits.bioobject.preparations.labeling.UniformlyLabeledBioObjects;
-import org.hkijena.acaq5.extensions.biooobjects.api.traits.quality.LowBrightnessQuality;
-import org.hkijena.acaq5.extensions.biooobjects.api.traits.quality.NonUniformBrightnessQuality;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleData;
 
 @ACAQDocumentation(name = "CLAHE enhancer")
@@ -23,14 +19,14 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.Image
 @AlgorithmOutputSlot(value = ImagePlus2DGreyscaleData.class, slotName = "Output image", autoCreate = true)
 
 // Trait matching
-@GoodForTrait(UniformlyLabeledBioObjects.class)
-@GoodForTrait(MembraneLabeledBioObjects.class)
-@GoodForTrait(LowBrightnessQuality.class)
-@GoodForTrait(NonUniformBrightnessQuality.class)
+@GoodForTrait("bioobject-preparations-labeling-uniform")
+@GoodForTrait("bioobject-preparations-labeling-membrane")
+@GoodForTrait("image-quality-brightness-low")
+@GoodForTrait("image-quality-brightness-nonuniform")
 
 // Trait configuration
-@RemovesTrait(LowBrightnessQuality.class)
-@RemovesTrait(NonUniformBrightnessQuality.class)
+@RemovesTrait("image-quality-brightness-low")
+@RemovesTrait("image-quality-brightness-nonuniform")
 public class CLAHEImageEnhancer extends ACAQIteratingAlgorithm {
 
     private int blocks = 127;

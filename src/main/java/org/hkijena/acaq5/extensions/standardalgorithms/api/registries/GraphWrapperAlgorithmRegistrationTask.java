@@ -2,23 +2,27 @@ package org.hkijena.acaq5.extensions.standardalgorithms.api.registries;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
+import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
-import org.hkijena.acaq5.api.registries.DefaultACAQAlgorithmRegistrationTask;
+import org.hkijena.acaq5.api.registries.ACAQDefaultAlgorithmRegistrationTask;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro.GraphWrapperAlgorithmDeclaration;
 import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.io.IOException;
 import java.util.Map;
 
-public class GraphWrapperAlgorithmRegistrationTask extends DefaultACAQAlgorithmRegistrationTask {
+public class GraphWrapperAlgorithmRegistrationTask extends ACAQDefaultAlgorithmRegistrationTask {
 
     private JsonNode jsonNode;
+    private ACAQDependency source;
 
     /**
      * @param jsonNode The JSON serialized graph wrapper algorithm
+     * @param source
      */
-    public GraphWrapperAlgorithmRegistrationTask(JsonNode jsonNode) {
+    public GraphWrapperAlgorithmRegistrationTask(JsonNode jsonNode, ACAQDependency source) {
         this.jsonNode = jsonNode;
+        this.source = source;
         findDependencyAlgorithms();
         findDependencyTraits("preferred-traits");
         findDependencyTraits("unwanted-traits");
@@ -47,7 +51,7 @@ public class GraphWrapperAlgorithmRegistrationTask extends DefaultACAQAlgorithmR
     public void register() {
         try {
             GraphWrapperAlgorithmDeclaration declaration = JsonUtils.getObjectMapper().readerFor(GraphWrapperAlgorithmDeclaration.class).readValue(jsonNode);
-            ACAQAlgorithmRegistry.getInstance().register(declaration);
+            ACAQAlgorithmRegistry.getInstance().register(declaration, source);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

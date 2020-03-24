@@ -1,7 +1,6 @@
 package org.hkijena.acaq5.extensions.standardalgorithms;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.annotation.AnnotateAll;
@@ -47,37 +46,39 @@ public class StandardAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExten
     }
 
     @Override
-    public void register(ACAQDefaultRegistry registryService) {
+    public void register() {
 
-        registryService.getAlgorithmRegistry().register(MaskToParticleConverter.class);
-        registryService.getAlgorithmRegistry().register(CLAHEImageEnhancer.class);
-        registryService.getAlgorithmRegistry().register(IlluminationCorrectionEnhancer.class);
-        registryService.getAlgorithmRegistry().register(WatershedMaskEnhancer.class);
-        registryService.getAlgorithmRegistry().register(AutoThresholdSegmenter.class);
-        registryService.getAlgorithmRegistry().register(BrightSpotsSegmenter.class);
-        registryService.getAlgorithmRegistry().register(HoughSegmenter.class);
-        registryService.getAlgorithmRegistry().register(InternalGradientSegmenter.class);
-        registryService.getAlgorithmRegistry().register(MultiChannelSplitterConverter.class);
-        registryService.getAlgorithmRegistry().register(MergeROIEnhancer.class);
-        registryService.getAlgorithmRegistry().register(HessianSegmenter.class);
-        registryService.getAlgorithmRegistry().register(AnnotateAll.class);
-        registryService.getAlgorithmRegistry().register(RemoveAnnotations.class);
-        registryService.getAlgorithmRegistry().register(SplitByAnnotation.class);
-        registryService.getAlgorithmRegistry().register(MacroWrapperAlgorithm.class);
+        registerAlgorithm("convert-imagej-analyze-particles", MaskToParticleConverter.class);
+        registerAlgorithm("enhance-imagej-clahe", CLAHEImageEnhancer.class);
+        registerAlgorithm("enhance-imagej-illumination-correction", IlluminationCorrectionEnhancer.class);
+        registerAlgorithm("enhance-imagej-watershed", WatershedMaskEnhancer.class);
+        registerAlgorithm("enhance-imagej-auto-threshold", AutoThresholdSegmenter.class);
+        registerAlgorithm("segment-imagej-bright-spots", BrightSpotsSegmenter.class);
+        registerAlgorithm("segment-imagej-hough", HoughSegmenter.class);
+        registerAlgorithm("segment-imagej-internal-gradient", InternalGradientSegmenter.class);
+        registerAlgorithm("convert-imagej-multichannel-splitter", MultiChannelSplitterConverter.class);
+        registerAlgorithm("enhance-imagej-merge-roi", MergeROIEnhancer.class);
+        registerAlgorithm("segment-imagej-hessian", HessianSegmenter.class);
+        registerAlgorithm("annotate-all", AnnotateAll.class);
+        registerAlgorithm("annotate-remove", RemoveAnnotations.class);
+        registerAlgorithm("annotate-split-by-annotation", SplitByAnnotation.class);
+        registerAlgorithm("external-imagej-macro", MacroWrapperAlgorithm.class);
 
-        registerAlgorithmResources(registryService);
+        registerAlgorithmResources();
     }
 
-    private void registerAlgorithmResources(ACAQDefaultRegistry registryService) {
+    private void registerAlgorithmResources() {
         Set<String> algorithmFiles = ResourceUtils.walkInternalResourceFolder("extensions/standardalgorithms/api/algorithms");
         for (String resourceFile : algorithmFiles) {
             try {
                 JsonNode node = JsonUtils.getObjectMapper().readValue(ResourceUtils.class.getResource(resourceFile), JsonNode.class);
-                GraphWrapperAlgorithmRegistrationTask task = new GraphWrapperAlgorithmRegistrationTask(node);
-                registryService.getAlgorithmRegistry().scheduleRegister(task);
+                GraphWrapperAlgorithmRegistrationTask task = new GraphWrapperAlgorithmRegistrationTask(node, this);
+                registerAlgorithm(task);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
     }
+
+
 }

@@ -3,15 +3,14 @@ package org.hkijena.acaq5.api.traits;
 import com.google.common.reflect.TypeToken;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQHidden;
-import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ACAQDefaultTraitDeclaration extends ACAQMutableTraitDeclaration {
+public class ACAQJavaTraitDeclaration extends ACAQMutableTraitDeclaration {
 
-    public ACAQDefaultTraitDeclaration(Class<? extends ACAQTrait> klass) {
+    public ACAQJavaTraitDeclaration(String id, Class<? extends ACAQTrait> klass) {
 
         if (klass.isInterface())
             throw new IllegalArgumentException("Trait class instances cannot be interfaces!");
@@ -20,21 +19,8 @@ public class ACAQDefaultTraitDeclaration extends ACAQMutableTraitDeclaration {
         setDiscriminator(ACAQDiscriminator.class.isAssignableFrom(klass));
         setName(getNameOf(klass));
         setDescription(getDescriptionOf(klass));
-        setId(getDeclarationIdOf(klass));
+        setId(id);
         setHidden(getIsHidden(klass));
-
-        // Discover inherited traits
-        for (Class<? extends ACAQTrait> inheritedTraitClass : getInheritedTraitClasses(klass)) {
-            ACAQTraitDeclaration declaration;
-            if (ACAQTraitRegistry.getInstance().hasDefaultDeclarationFor(klass)) {
-                declaration = ACAQTraitRegistry.getInstance().getDefaultDeclarationFor(inheritedTraitClass);
-            } else {
-                ACAQTraitRegistry.getInstance().register(inheritedTraitClass);
-                declaration = ACAQTraitRegistry.getInstance().getDefaultDeclarationFor(inheritedTraitClass);
-            }
-
-            getInherited().add(declaration);
-        }
     }
 
     @Override
@@ -55,10 +41,6 @@ public class ACAQDefaultTraitDeclaration extends ACAQMutableTraitDeclaration {
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public static String getDeclarationIdOf(Class<? extends ACAQTrait> klass) {
-        return "acaq:default:" + klass.getCanonicalName();
     }
 
     /**

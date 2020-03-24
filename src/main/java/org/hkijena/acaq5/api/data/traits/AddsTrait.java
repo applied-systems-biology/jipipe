@@ -1,7 +1,6 @@
 package org.hkijena.acaq5.api.data.traits;
 
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
 
 import java.lang.annotation.*;
 
@@ -18,5 +17,5 @@ public @interface AddsTrait {
      *
      * @return
      */
-    Class<? extends ACAQTrait> value();
+    String value();
 }

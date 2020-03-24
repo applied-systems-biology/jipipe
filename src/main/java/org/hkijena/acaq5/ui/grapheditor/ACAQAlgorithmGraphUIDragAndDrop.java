@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.ui.grapheditor;
 
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
-import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.extensions.filesystem.api.datasources.ACAQFileDataSource;
 import org.hkijena.acaq5.extensions.filesystem.api.datasources.ACAQFileListDataSource;
 import org.hkijena.acaq5.extensions.filesystem.api.datasources.ACAQFolderDataSource;
@@ -73,11 +73,11 @@ public class ACAQAlgorithmGraphUIDragAndDrop implements DropTargetListener {
         if (files.size() == 1) {
             File selected = files.get(0);
             if (selected.isDirectory()) {
-                ACAQFolderDataSource dataSource = (ACAQFolderDataSource) ACAQAlgorithmRegistry.getInstance().getDefaultDeclarationFor(ACAQFolderDataSource.class).newInstance();
+                ACAQFolderDataSource dataSource = ACAQAlgorithm.newInstance("import-folder");
                 dataSource.setFolderPath(selected.toPath());
                 graph.insertNode(dataSource, compartment);
             } else {
-                ACAQFileDataSource dataSource = (ACAQFileDataSource) ACAQAlgorithmRegistry.getInstance().getDefaultDeclarationFor(ACAQFileDataSource.class).newInstance();
+                ACAQFileDataSource dataSource = ACAQAlgorithm.newInstance("import-file");
                 dataSource.setFileName(selected.toPath());
                 graph.insertNode(dataSource, compartment);
             }
@@ -85,15 +85,13 @@ public class ACAQAlgorithmGraphUIDragAndDrop implements DropTargetListener {
             Map<Boolean, List<File>> groupedByType = files.stream().collect(Collectors.groupingBy(File::isDirectory));
             for (Map.Entry<Boolean, List<File>> entry : groupedByType.entrySet()) {
                 if (entry.getKey()) {
-                    ACAQFolderListDataSource dataSource = (ACAQFolderListDataSource) ACAQAlgorithmRegistry.getInstance()
-                            .getDefaultDeclarationFor(ACAQFolderListDataSource.class).newInstance();
+                    ACAQFolderListDataSource dataSource = ACAQAlgorithm.newInstance("import-folder-list");
                     for (File file : entry.getValue()) {
                         dataSource.getFolderPaths().add(file.toPath());
                     }
                     graph.insertNode(dataSource, compartment);
                 } else {
-                    ACAQFileListDataSource dataSource = (ACAQFileListDataSource) ACAQAlgorithmRegistry.getInstance()
-                            .getDefaultDeclarationFor(ACAQFileListDataSource.class).newInstance();
+                    ACAQFileListDataSource dataSource = ACAQAlgorithm.newInstance("import-file-list");
                     for (File file : entry.getValue()) {
                         dataSource.getFileNames().add(file.toPath());
                     }

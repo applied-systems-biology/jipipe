@@ -8,6 +8,7 @@ import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQCustomParameterHolder;
 import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterHolder;
@@ -79,10 +80,10 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
         slotConfiguration.clearInputSlots();
         slotConfiguration.clearOutputSlots();
         for (AlgorithmInputSlot slot : getDeclaration().getInputSlots()) {
-            slotConfiguration.addInputSlot(slot.slotName(), slot.value());
+            slotConfiguration.addSlot(slot.slotName(), new ACAQSlotDefinition(slot.value(), ACAQDataSlot.SlotType.Input, slot.slotName(), null));
         }
         for (AlgorithmOutputSlot slot : getDeclaration().getOutputSlots()) {
-            slotConfiguration.addOutputSlot(slot.slotName(), slot.inheritedSlot(), slot.value());
+            slotConfiguration.addSlot(slot.slotName(), new ACAQSlotDefinition(slot.value(), ACAQDataSlot.SlotType.Output, slot.slotName(), null));
         }
         slotConfiguration.setInputSealed(true);
         slotConfiguration.setOutputSealed(true);

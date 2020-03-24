@@ -1,7 +1,5 @@
 package org.hkijena.acaq5.api.data.traits;
 
-import org.hkijena.acaq5.api.traits.ACAQTrait;
-
 import java.lang.annotation.*;
 
 /**
@@ -11,5 +9,5 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Repeatable(BadForTraits.class)
 public @interface BadForTrait {
-    Class<? extends ACAQTrait> value();
+    String value();
 }
