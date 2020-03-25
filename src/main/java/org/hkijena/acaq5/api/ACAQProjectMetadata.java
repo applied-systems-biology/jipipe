@@ -17,6 +17,18 @@ public class ACAQProjectMetadata implements ACAQParameterHolder {
     private String license = "";
     private String citation = "";
 
+    public ACAQProjectMetadata() {
+    }
+
+    public ACAQProjectMetadata(ACAQProjectMetadata other) {
+        this.name = other.name;
+        this.description = other.description;
+        this.authors = other.authors;
+        this.website = other.website;
+        this.license = other.license;
+        this.citation = other.citation;
+    }
+
     @ACAQDocumentation(name = "Name")
     @ACAQParameter("name")
     @JsonGetter("name")

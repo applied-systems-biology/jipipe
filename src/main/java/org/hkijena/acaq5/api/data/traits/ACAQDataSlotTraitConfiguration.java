@@ -22,6 +22,13 @@ import java.util.Set;
 public class ACAQDataSlotTraitConfiguration {
     private Map<ACAQTraitDeclaration, ACAQTraitModificationOperation> operations = new HashMap<>();
 
+    public ACAQDataSlotTraitConfiguration() {
+    }
+
+    public ACAQDataSlotTraitConfiguration(ACAQDataSlotTraitConfiguration other) {
+        this.operations = new HashMap<>(other.operations);
+    }
+
     public void clear() {
         operations.clear();
     }

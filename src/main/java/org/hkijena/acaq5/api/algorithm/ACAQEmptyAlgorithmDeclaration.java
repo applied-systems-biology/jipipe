@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.data.traits.ACAQDataSlotTraitConfiguration;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 
@@ -78,6 +79,11 @@ public class ACAQEmptyAlgorithmDeclaration implements ACAQAlgorithmDeclaration {
     @Override
     public List<AlgorithmOutputSlot> getOutputSlots() {
         return Collections.emptyList();
+    }
+
+    @Override
+    public Set<ACAQDependency> getDependencies() {
+        return Collections.emptySet();
     }
 
     public static class Serializer extends JsonSerializer<ACAQEmptyAlgorithmDeclaration> {

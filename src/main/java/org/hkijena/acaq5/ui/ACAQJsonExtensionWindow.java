@@ -3,7 +3,7 @@ package org.hkijena.acaq5.ui;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.ACAQGUICommand;
-import org.hkijena.acaq5.api.ACAQJsonExtensionProject;
+import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.ui.project.UnsatisfiedDependenciesDialog;
 import org.hkijena.acaq5.ui.settings.ACAQApplicationSettings;
@@ -14,19 +14,33 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 public class ACAQJsonExtensionWindow extends JFrame {
 
+    private static Set<ACAQJsonExtensionWindow> OPEN_WINDOWS = new HashSet<>();
     private ACAQGUICommand command;
-    private ACAQJsonExtensionProject project;
+    private ACAQJsonExtension project;
     private ACAQJsonExtensionUI projectUI;
     private Path projectSavePath;
 
-    public ACAQJsonExtensionWindow(ACAQGUICommand command, ACAQJsonExtensionProject project) {
+    public ACAQJsonExtensionWindow(ACAQGUICommand command, ACAQJsonExtension project) {
+        OPEN_WINDOWS.add(this);
         this.command = command;
         initialize();
         loadProject(project);
+        if(project.getJsonFilePath() != null)
+            setTitle(project.getJsonFilePath().toString());
+        else
+            setTitle("New project");
+    }
+
+    @Override
+    public void dispose() {
+        OPEN_WINDOWS.remove(this);
+        super.dispose();
     }
 
     private void initialize() {
@@ -41,14 +55,14 @@ public class ACAQJsonExtensionWindow extends JFrame {
         super.setTitle("ACAQ5 extension builder - " + title);
     }
 
-    public void loadProject(ACAQJsonExtensionProject project) {
+    public void loadProject(ACAQJsonExtension project) {
         this.project = project;
         this.projectUI = new ACAQJsonExtensionUI(this, command, project);
         setContentPane(projectUI);
     }
 
     public void newProject() {
-        ACAQJsonExtensionProject project = new ACAQJsonExtensionProject();
+        ACAQJsonExtension project = new ACAQJsonExtension();
         ACAQJsonExtensionWindow window = openProjectInThisOrNewWindow("New extension", project);
         if (window == null)
             return;
@@ -67,14 +81,14 @@ public class ACAQJsonExtensionWindow extends JFrame {
                     return;
             }
 
-            ACAQJsonExtensionProject project = ACAQJsonExtensionProject.loadProject(jsonData);
+            ACAQJsonExtension project = ACAQJsonExtension.loadProject(jsonData);
             ACAQJsonExtensionWindow window = openProjectInThisOrNewWindow("Open project", project);
             if (window == null)
                 return;
             window.projectSavePath = path;
             window.getProjectUI().sendStatusBarText("Opened ACAQ5 JSON extension from " + window.projectSavePath);
             window.setTitle(window.projectSavePath.toString());
-            ACAQApplicationSettings.getInstance().addRecentProject(path);
+            ACAQApplicationSettings.getInstance().addRecentJsonExtension(path);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -119,7 +133,7 @@ public class ACAQJsonExtensionWindow extends JFrame {
      * @param project
      * @return
      */
-    private ACAQJsonExtensionWindow openProjectInThisOrNewWindow(String messageTitle, ACAQJsonExtensionProject project) {
+    private ACAQJsonExtensionWindow openProjectInThisOrNewWindow(String messageTitle, ACAQJsonExtension project) {
         switch (UIUtils.askOpenInCurrentWindow(this, messageTitle)) {
             case JOptionPane.YES_OPTION:
                 loadProject(project);
@@ -134,7 +148,7 @@ public class ACAQJsonExtensionWindow extends JFrame {
         return command;
     }
 
-    public ACAQJsonExtensionProject getProject() {
+    public ACAQJsonExtension getProject() {
         return project;
     }
 
@@ -146,7 +160,7 @@ public class ACAQJsonExtensionWindow extends JFrame {
         return projectSavePath;
     }
 
-    public static ACAQJsonExtensionWindow newWindow(ACAQGUICommand command, ACAQJsonExtensionProject project) {
+    public static ACAQJsonExtensionWindow newWindow(ACAQGUICommand command, ACAQJsonExtension project) {
         ACAQJsonExtensionWindow frame = new ACAQJsonExtensionWindow(command, project);
         frame.pack();
         frame.setSize(1024, 768);
@@ -160,5 +174,9 @@ public class ACAQJsonExtensionWindow extends JFrame {
      */
     public static void installExtensions() {
 
+    }
+
+    public static Set<ACAQJsonExtensionWindow> getOpenWindows() {
+        return Collections.unmodifiableSet(OPEN_WINDOWS);
     }
 }

@@ -1,5 +1,8 @@
 package org.hkijena.acaq5.api.traits;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,10 +16,12 @@ public abstract class ACAQMutableTraitDeclaration implements ACAQTraitDeclaratio
     private Set<ACAQTraitDeclaration> inherited = new HashSet<>();
 
     @Override
+    @JsonGetter("id")
     public String getId() {
         return id;
     }
 
+    @JsonSetter("id")
     public void setId(String id) {
         this.id = id;
     }
@@ -40,19 +45,23 @@ public abstract class ACAQMutableTraitDeclaration implements ACAQTraitDeclaratio
     }
 
     @Override
+    @JsonGetter("name")
     public String getName() {
         return name;
     }
 
+    @JsonSetter("name")
     public void setName(String name) {
         this.name = name;
     }
 
     @Override
+    @JsonGetter("description")
     public String getDescription() {
         return description;
     }
 
+    @JsonSetter("description")
     public void setDescription(String description) {
         this.description = description;
     }
@@ -67,10 +76,12 @@ public abstract class ACAQMutableTraitDeclaration implements ACAQTraitDeclaratio
     }
 
     @Override
+    @JsonGetter("hidden")
     public boolean isHidden() {
         return hidden;
     }
 
+    @JsonSetter("hidden")
     public void setHidden(boolean hidden) {
         this.hidden = hidden;
     }

@@ -3,6 +3,7 @@ package org.hkijena.acaq5.ui.settings;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.eventbus.EventBus;
+import gnu.trove.TByteCollection;
 import ij.IJ;
 import ij.Prefs;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
@@ -23,6 +24,7 @@ public class ACAQApplicationSettings {
     private EventBus eventBus = new EventBus();
 
     private List<Path> recentProjects = new ArrayList<>();
+    private List<Path> recentJsonExtensions = new ArrayList<>();
 
     public ACAQApplicationSettings() {
 
@@ -63,6 +65,20 @@ public class ACAQApplicationSettings {
         }
     }
 
+    public void addRecentJsonExtension(Path fileName) {
+        int index = recentJsonExtensions.indexOf(fileName);
+        if (index == -1) {
+            recentJsonExtensions.add(0, fileName);
+            eventBus.post(new ParameterChangedEvent(this, "recent-json-extension"));
+            save();
+        } else if (index != 0) {
+            recentJsonExtensions.remove(index);
+            recentJsonExtensions.add(0, fileName);
+            eventBus.post(new ParameterChangedEvent(this, "recent-json-extension"));
+            save();
+        }
+    }
+
     public void save() {
         File targetFile = getPropertyFile();
         try {
@@ -70,6 +86,16 @@ public class ACAQApplicationSettings {
         } catch (IOException e) {
             IJ.handleException(e);
         }
+    }
+
+    @JsonGetter("recent-json-extensions")
+    public List<Path> getRecentJsonExtensions() {
+        return recentJsonExtensions;
+    }
+
+    @JsonGetter("recent-json-extensions")
+    public void setRecentJsonExtensions(List<Path> recentJsonExtensions) {
+        this.recentJsonExtensions = recentJsonExtensions;
     }
 
     public static ACAQApplicationSettings getInstance() {

@@ -17,10 +17,13 @@ import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 public class ACAQProjectWindow extends JFrame {
 
+    private static Set<ACAQProjectWindow> OPEN_WINDOWS = new HashSet<>();
     private ACAQGUICommand command;
     private ACAQProject project;
     private ACAQProjectUI projectUI;
@@ -28,6 +31,7 @@ public class ACAQProjectWindow extends JFrame {
 
     public ACAQProjectWindow(ACAQGUICommand command, ACAQProject project) {
         this.command = command;
+        OPEN_WINDOWS.add(this);
         initialize();
         loadProject(project);
     }
@@ -37,6 +41,12 @@ public class ACAQProjectWindow extends JFrame {
         super.setTitle("ACAQ5");
         setIconImage(UIUtils.getIconFromResources("acaq5-128.png").getImage());
         UIUtils.setToAskOnClose(this, "Do you really want to close ACAQ5?", "Close window");
+    }
+
+    @Override
+    public void dispose() {
+        OPEN_WINDOWS.remove(this);
+        super.dispose();
     }
 
     @Override
@@ -199,5 +209,9 @@ public class ACAQProjectWindow extends JFrame {
         frame.setVisible(true);
 //        frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         return frame;
+    }
+
+    public static Set<ACAQProjectWindow> getOpenWindows() {
+        return Collections.unmodifiableSet(OPEN_WINDOWS);
     }
 }

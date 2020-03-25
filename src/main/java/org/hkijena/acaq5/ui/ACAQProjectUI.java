@@ -2,7 +2,7 @@ package org.hkijena.acaq5.ui;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQGUICommand;
-import org.hkijena.acaq5.api.ACAQJsonExtensionProject;
+import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.events.CompartmentRemovedEvent;
@@ -80,7 +80,7 @@ public class ACAQProjectUI extends JPanel {
         documentTabPane.addSingletonTab("PLUGIN_MANAGER",
                 "Plugin manager",
                 UIUtils.getIconFromResources("module.png"),
-                new ACAQPluginManagerUIPanel(),
+                new ACAQPluginManagerUIPanel(command),
                 true);
         documentTabPane.selectSingletonTab("INTRODUCTION");
         add(documentTabPane, BorderLayout.CENTER);
@@ -209,7 +209,7 @@ public class ACAQProjectUI extends JPanel {
         JMenuItem newPluginButton = new JMenuItem("New JSON extension ...", UIUtils.getIconFromResources("new.png"));
         newPluginButton.setToolTipText("Opens the extension builder");
         newPluginButton.addActionListener(e -> {
-            ACAQJsonExtensionWindow window = ACAQJsonExtensionWindow.newWindow(command, new ACAQJsonExtensionProject());
+            ACAQJsonExtensionWindow window = ACAQJsonExtensionWindow.newWindow(command, new ACAQJsonExtension());
             window.setTitle("New extension");
         });
         pluginsMenu.add(newPluginButton);

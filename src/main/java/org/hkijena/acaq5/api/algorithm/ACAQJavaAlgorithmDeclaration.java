@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
+import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.data.traits.*;
@@ -13,6 +14,8 @@ import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * {@link ACAQAlgorithmDeclaration} for an algorithm that is defined in Java code
@@ -69,6 +72,11 @@ public class ACAQJavaAlgorithmDeclaration extends ACAQMutableAlgorithmDeclaratio
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public Set<ACAQDependency> getDependencies() {
+        return Collections.emptySet();
     }
 
     @Override

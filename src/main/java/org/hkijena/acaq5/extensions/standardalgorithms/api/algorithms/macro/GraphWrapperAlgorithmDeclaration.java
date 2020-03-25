@@ -3,6 +3,7 @@ package org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.eventbus.EventBus;
+import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQProjectMetadata;
 import org.hkijena.acaq5.api.ACAQValidatable;
@@ -14,6 +15,7 @@ import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
+import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefCollection;
@@ -143,6 +145,29 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     @Override
     public List<AlgorithmOutputSlot> getOutputSlots() {
         return outputSlots;
+    }
+
+    @Override
+    public Set<ACAQDependency> getDependencies() {
+        Set<ACAQDependency> result = new HashSet<>();
+        result.addAll(graph.getDependencies());
+        for (ACAQTraitDeclaration declaration : preferredTraits) {
+            result.add(ACAQTraitRegistry.getInstance().getSourceOf(declaration.getId()));
+            result.addAll(declaration.getDependencies());
+        }
+        for (ACAQTraitDeclaration declaration : unwantedTraits) {
+            result.add(ACAQTraitRegistry.getInstance().getSourceOf(declaration.getId()));
+            result.addAll(declaration.getDependencies());
+        }
+        for (ACAQTraitDeclaration declaration : addedTraits) {
+            result.add(ACAQTraitRegistry.getInstance().getSourceOf(declaration.getId()));
+            result.addAll(declaration.getDependencies());
+        }
+        for (ACAQTraitDeclaration declaration : removedTraits) {
+            result.add(ACAQTraitRegistry.getInstance().getSourceOf(declaration.getId()));
+            result.addAll(declaration.getDependencies());
+        }
+        return result;
     }
 
     @ACAQDocumentation(name = "Preferred annotations", description = "Marks the algorithm as good for handling the specified annotations")

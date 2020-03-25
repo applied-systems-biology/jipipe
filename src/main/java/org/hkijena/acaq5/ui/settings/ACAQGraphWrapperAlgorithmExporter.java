@@ -1,14 +1,17 @@
 package org.hkijena.acaq5.ui.settings;
 
+import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro.GraphWrapperAlgorithmDeclaration;
+import org.hkijena.acaq5.ui.ACAQJsonExtensionWindow;
 import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
 import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
+import org.hkijena.acaq5.ui.components.RecentJsonExtensionsMenu;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -21,6 +24,7 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQProjectUIPanel {
 
     private GraphWrapperAlgorithmDeclaration algorithmDeclaration;
     private ACAQParameterAccessUI parameterAccessUI;
+    private JPopupMenu exportMenu;
 
     public ACAQGraphWrapperAlgorithmExporter(ACAQProjectUI workbenchUI, ACAQAlgorithmGraph wrappedGraph) {
         super(workbenchUI);
@@ -58,12 +62,32 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQProjectUIPanel {
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton exportToFileButton = new JButton("Export to file", UIUtils.getIconFromResources("save.png"));
-        exportToFileButton.setToolTipText("Exports the algorithm as *.json file");
-        exportToFileButton.addActionListener(e -> exportToFile());
-        toolBar.add(exportToFileButton);
+//        JButton exportToFileButton = new JButton("Export to file", UIUtils.getIconFromResources("save.png"));
+//        exportToFileButton.setToolTipText("Exports the algorithm as *.json file. Please note that the file is not a valid JSON extension.");
+//        exportToFileButton.addActionListener(e -> exportToFile());
+//        toolBar.add(exportToFileButton);
+
+        JButton exportToExtensionButton = new JButton("Export to extension", UIUtils.getIconFromResources("export.png"));
+        exportMenu = UIUtils.addPopupMenuToComponent(exportToExtensionButton);
+        toolBar.add(exportToExtensionButton);
+        reloadExportMenu();
 
         add(toolBar, BorderLayout.NORTH);
+    }
+
+    private void reloadExportMenu() {
+        JMenuItem exportToNewExtensionButton = new JMenuItem("New extension ...", UIUtils.getIconFromResources("new.png"));
+        exportToNewExtensionButton.addActionListener(e -> exportToNewExtension());
+        exportMenu.add(exportToNewExtensionButton);
+    }
+
+    private void exportToNewExtension() {
+        if(!checkValidity())
+            return;
+        ACAQJsonExtension extension = new ACAQJsonExtension();
+        extension.addAlgorithm(algorithmDeclaration);
+        getWorkbenchUI().getDocumentTabPane().remove(this);
+        ACAQJsonExtensionWindow.newWindow(getWorkbenchUI().getCommand(), extension);
     }
 
     private void createRandomId() {
@@ -85,20 +109,20 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQProjectUIPanel {
         return report.isValid();
     }
 
-    private void exportToFile() {
-        if (!checkValidity())
-            return;
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Export as *.json");
-        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-            try {
-                JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(fileChooser.getSelectedFile(), algorithmDeclaration);
-                getWorkbenchUI().sendStatusBarText("Exported custom algorithm '" + algorithmDeclaration.getName() + "' to " + fileChooser.getSelectedFile());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
+//    private void exportToFile() {
+//        if (!checkValidity())
+//            return;
+//        JFileChooser fileChooser = new JFileChooser();
+//        fileChooser.setDialogTitle("Export as *.json");
+//        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+//            try {
+//                JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(fileChooser.getSelectedFile(), algorithmDeclaration);
+//                getWorkbenchUI().sendStatusBarText("Exported custom algorithm '" + algorithmDeclaration.getName() + "' to " + fileChooser.getSelectedFile());
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
+//    }
 
     public GraphWrapperAlgorithmDeclaration getAlgorithmDeclaration() {
         return algorithmDeclaration;

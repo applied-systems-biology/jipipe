@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.extensions.imagejdatatypes.datasources;
 
+import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.traits.ACAQDataSlotTraitConfiguration;
@@ -89,5 +90,10 @@ public class ImagePlusFromFileAlgorithmDeclaration implements ACAQAlgorithmDecla
     @Override
     public List<AlgorithmOutputSlot> getOutputSlots() {
         return Collections.unmodifiableList(outputSlots);
+    }
+
+    @Override
+    public Set<ACAQDependency> getDependencies() {
+        return Collections.emptySet();
     }
 }

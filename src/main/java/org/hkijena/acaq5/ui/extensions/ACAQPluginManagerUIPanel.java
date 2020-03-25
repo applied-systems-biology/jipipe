@@ -3,6 +3,8 @@ package org.hkijena.acaq5.ui.extensions;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.ACAQDependency;
+import org.hkijena.acaq5.ACAQGUICommand;
+import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.api.events.ExtensionRegisteredEvent;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWindow;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -16,8 +18,10 @@ public class ACAQPluginManagerUIPanel extends JPanel {
 
     private JList<ACAQDependency> dependencyJList;
     private JSplitPane splitPane;
+    private ACAQGUICommand command;
 
-    public ACAQPluginManagerUIPanel() {
+    public ACAQPluginManagerUIPanel(ACAQGUICommand command) {
+        this.command = command;
         initialize();
         reload();
     }
@@ -59,6 +63,13 @@ public class ACAQPluginManagerUIPanel extends JPanel {
     private void initializeToolbar() {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
+
+        JButton newExtensionButton = new JButton("New extension ...", UIUtils.getIconFromResources("new.png"));
+        newExtensionButton.addActionListener(e -> {
+            ACAQJsonExtensionWindow window = ACAQJsonExtensionWindow.newWindow(command, new ACAQJsonExtension());
+            window.setTitle("New project");
+        });
+        toolBar.add(newExtensionButton);
 
         JButton installButton = new JButton("Install ...", UIUtils.getIconFromResources("open.png"));
         installButton.addActionListener(e -> ACAQJsonExtensionWindow.installExtensions());

@@ -43,6 +43,10 @@ public class StringUtils {
         return string == null || string.isEmpty();
     }
 
+    public static String orElse(String string, String ifNullOrEmpty) {
+        return  isNullOrEmpty(string) ? ifNullOrEmpty : string;
+    }
+
     /**
      * Removes all spaces, and filesystem-unsafe characters from the string and replaces them with dashes
      * Duplicate dashes are removed

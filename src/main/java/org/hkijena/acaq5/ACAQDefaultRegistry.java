@@ -34,6 +34,7 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
     private ACAQUITraitRegistry acaquiTraitRegistry;
     private ACAQPlotBuilderRegistry plotBuilderRegistry;
     private ACAQTableAnalyzerUIOperationRegistry tableAnalyzerUIOperationRegistry;
+    private PluginService pluginService;
 
     public ACAQDefaultRegistry() {
         registeredExtensions = new ArrayList<>();
@@ -45,6 +46,23 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
         acaquiTraitRegistry = new ACAQUITraitRegistry();
         plotBuilderRegistry = new ACAQPlotBuilderRegistry();
         tableAnalyzerUIOperationRegistry = new ACAQTableAnalyzerUIOperationRegistry();
+    }
+
+    /**
+     * Clears all registries and reloads them
+     */
+    public void reload() {
+        System.out.println("ACAQ5: Reloading registry service");
+        registeredExtensions = new ArrayList<>();
+        traitRegistry = new ACAQTraitRegistry();
+        datatypeRegistry = new ACAQDatatypeRegistry();
+        algorithmRegistry = new ACAQAlgorithmRegistry();
+        uiDatatypeRegistry = new ACAQUIDatatypeRegistry();
+        uiParametertypeRegistry = new ACAQUIParametertypeRegistry();
+        acaquiTraitRegistry = new ACAQUITraitRegistry();
+        plotBuilderRegistry = new ACAQPlotBuilderRegistry();
+        tableAnalyzerUIOperationRegistry = new ACAQTableAnalyzerUIOperationRegistry();
+        discover(pluginService);
     }
 
     /**
@@ -152,6 +170,7 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
         if (instance == null) {
             try {
                 instance = (ACAQDefaultRegistry) pluginService.getPlugin(ACAQDefaultRegistry.class).createInstance();
+                instance.pluginService = pluginService;
                 instance.installEvents();
                 instance.discover(pluginService);
             } catch (InstantiableException e) {

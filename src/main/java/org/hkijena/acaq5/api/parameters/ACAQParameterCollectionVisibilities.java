@@ -16,7 +16,6 @@ public class ACAQParameterCollectionVisibilities {
     private Set<String> visibleParameters = new HashSet<>();
 
     public ACAQParameterCollectionVisibilities() {
-
     }
 
     /**

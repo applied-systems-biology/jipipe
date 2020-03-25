@@ -1,10 +1,12 @@
 package org.hkijena.acaq5.api.traits;
 
 import com.google.common.reflect.TypeToken;
+import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQHidden;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,6 +43,11 @@ public class ACAQJavaTraitDeclaration extends ACAQMutableTraitDeclaration {
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public Set<ACAQDependency> getDependencies() {
+        return Collections.emptySet();
     }
 
     /**
