@@ -1,8 +1,8 @@
 package org.hkijena.acaq5.ui.compartments;
 
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
-import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
 import org.hkijena.acaq5.ui.ACAQProjectUI;
+import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphUI;
 
 import java.awt.*;

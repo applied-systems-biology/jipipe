@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.ui.extensions;
 
-import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -18,13 +17,12 @@ public class ACAQDependencyListCellRenderer extends JLabel implements ListCellRe
     @Override
     public Component getListCellRendererComponent(JList<? extends ACAQDependency> list, ACAQDependency value, int index, boolean isSelected, boolean cellHasFocus) {
 
-        if(value == null) {
+        if (value == null) {
             setText("<Null>");
             setIcon(null);
-        }
-        else {
+        } else {
             setText("<html><strong>" + value.getMetadata().getName() + "</strong><br/>Version " + value.getDependencyVersion() + "</html>");
-            if(value instanceof ACAQJsonExtension)
+            if (value instanceof ACAQJsonExtension)
                 setIcon(UIUtils.getIconFromResources("module-json-32.png"));
             else
                 setIcon(UIUtils.getIconFromResources("module-java-32.png"));

@@ -2,8 +2,8 @@ package org.hkijena.acaq5.ui.compartments;
 
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
-import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
 import org.hkijena.acaq5.ui.ACAQProjectUI;
+import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.utils.TooltipUtils;

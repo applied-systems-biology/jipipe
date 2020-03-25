@@ -4,10 +4,12 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -250,6 +252,36 @@ public class TooltipUtils {
         }
         builder.append("</html>");
 
+        return builder.toString();
+    }
+
+    public static String getSlotTable(Collection<ACAQSlotDefinition> slotDefinitions) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("<html><table>");
+        for (ACAQSlotDefinition definition : slotDefinitions) {
+            builder.append("<tr>");
+            builder.append("<td>").append("<img src=\"")
+                    .append(ACAQUIDatatypeRegistry.getInstance().getIconURLFor(definition.getDataClass()))
+                    .append("\"/>").append("</td>");
+            builder.append("<td>").append(!StringUtils.isNullOrEmpty(definition.getName()) ? definition.getName() : ACAQData.getNameOf(definition.getDataClass())).append("</td>");
+            builder.append("</tr>");
+        }
+        builder.append("</table></html>");
+        return builder.toString();
+    }
+
+    public static String getTraitTable(Collection<ACAQTraitDeclaration> traitDeclarations) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("<html><table>");
+        for (ACAQTraitDeclaration definition : traitDeclarations) {
+            builder.append("<tr>");
+            builder.append("<td>").append("<img src=\"")
+                    .append(ACAQUITraitRegistry.getInstance().getIconURLFor(definition))
+                    .append("\"/>").append("</td>");
+            builder.append("<td>").append(definition.getName()).append("</td>");
+            builder.append("</tr>");
+        }
+        builder.append("</table></html>");
         return builder.toString();
     }
 }

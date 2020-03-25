@@ -8,10 +8,7 @@ import org.hkijena.acaq5.api.traits.ACAQJavaTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Contains all known {@link ACAQTrait} types
@@ -88,6 +85,22 @@ public class ACAQTraitRegistry {
 
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    /**
+     * Gets the traits registered by the dependency
+     *
+     * @param dependency
+     * @return
+     */
+    public Set<ACAQTraitDeclaration> getDeclaredBy(ACAQDependency dependency) {
+        Set<ACAQTraitDeclaration> result = new HashSet<>();
+        for (Map.Entry<String, ACAQTraitDeclaration> entry : registeredTraits.entrySet()) {
+            ACAQDependency source = getSourceOf(entry.getKey());
+            if (source == dependency)
+                result.add(entry.getValue());
+        }
+        return result;
     }
 
     public static ACAQTraitRegistry getInstance() {

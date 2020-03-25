@@ -4,8 +4,8 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterHolder;
-import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
 import org.hkijena.acaq5.ui.ACAQProjectUI;
+import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
 
 import java.util.Objects;
 

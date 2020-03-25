@@ -57,6 +57,11 @@ public class MarkdownReader extends JPanel {
         initialize(withToolbar);
     }
 
+    public MarkdownReader(boolean withToolbar, MarkdownDocument document) {
+        this(withToolbar);
+        this.setDocument(document);
+    }
+
     private void initialize(boolean withToolbar) {
         setLayout(new BorderLayout());
 

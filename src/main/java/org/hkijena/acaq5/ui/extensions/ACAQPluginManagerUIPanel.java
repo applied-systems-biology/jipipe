@@ -49,7 +49,7 @@ public class ACAQPluginManagerUIPanel extends JPanel {
     }
 
     private void showDetails(ACAQDependency dependency) {
-        if(dependency == null) {
+        if (dependency == null) {
             splitPane.setRightComponent(new JPanel());
             return;
         }
@@ -73,7 +73,7 @@ public class ACAQPluginManagerUIPanel extends JPanel {
         for (ACAQDependency extension : ACAQDefaultRegistry.getInstance().getRegisteredExtensions()) {
             model.addElement(extension);
         }
-        if(!model.isEmpty())
+        if (!model.isEmpty())
             dependencyJList.setSelectedIndex(0);
     }
 

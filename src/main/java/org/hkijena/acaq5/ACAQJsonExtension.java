@@ -71,12 +71,12 @@ public class ACAQJsonExtension implements ACAQDependency {
         return jsonFilePath;
     }
 
-    public void setRegistry(ACAQDefaultRegistry registry) {
-        this.registry = registry;
-    }
-
     public ACAQDefaultRegistry getRegistry() {
         return registry;
+    }
+
+    public void setRegistry(ACAQDefaultRegistry registry) {
+        this.registry = registry;
     }
 
     public void register() {

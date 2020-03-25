@@ -2,8 +2,8 @@ package org.hkijena.acaq5.ui.resultanalysis;
 
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
-import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
 import org.hkijena.acaq5.ui.ACAQProjectUI;
+import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
 
 import java.nio.file.Path;
 

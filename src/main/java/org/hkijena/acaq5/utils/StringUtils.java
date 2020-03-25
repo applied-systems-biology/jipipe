@@ -12,6 +12,9 @@
 
 package org.hkijena.acaq5.utils;
 
+import org.apache.commons.lang.WordUtils;
+
+import java.net.URL;
 import java.util.Collection;
 import java.util.function.Predicate;
 
@@ -22,6 +25,18 @@ public class StringUtils {
 
     private StringUtils() {
 
+    }
+
+    public static String createIconTextHTMLTable(String text, URL iconURL) {
+        return "<html><table><tr><td><img src=\"" + iconURL + "\" /></td><td>" + text + "</td></tr></table></html>";
+    }
+
+    public static String removeHTMLRoot(String html) {
+        return html.replace("<html>", "").replace("</html>", "");
+    }
+
+    public static String wordWrappedInHTML(String text, int wrapColumn) {
+        return "<html>" + WordUtils.wrap(text, wrapColumn).replace("\n", "<br/>") + "</html>";
     }
 
     public static boolean isNullOrEmpty(String string) {

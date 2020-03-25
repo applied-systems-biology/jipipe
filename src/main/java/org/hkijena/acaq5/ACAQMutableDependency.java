@@ -46,13 +46,13 @@ public class ACAQMutableDependency implements ACAQDependency {
         return dependencyVersion;
     }
 
-    @Override
-    public Path getDependencyLocation() {
-        return null;
-    }
-
     @JsonSetter("version")
     public void setDependencyVersion(String dependencyVersion) {
         this.dependencyVersion = dependencyVersion;
+    }
+
+    @Override
+    public Path getDependencyLocation() {
+        return null;
     }
 }

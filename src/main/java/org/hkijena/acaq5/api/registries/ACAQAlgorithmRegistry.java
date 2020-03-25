@@ -172,6 +172,22 @@ public class ACAQAlgorithmRegistry {
         return registeredAlgorithmSources.getOrDefault(algorithmId, null);
     }
 
+    /**
+     * Gets all algorithms declared by the dependency
+     *
+     * @param dependency
+     * @return
+     */
+    public Set<ACAQAlgorithmDeclaration> getDeclaredBy(ACAQDependency dependency) {
+        Set<ACAQAlgorithmDeclaration> result = new HashSet<>();
+        for (Map.Entry<String, ACAQAlgorithmDeclaration> entry : registeredAlgorithms.entrySet()) {
+            ACAQDependency source = getSourceOf(entry.getKey());
+            if (source == dependency)
+                result.add(entry.getValue());
+        }
+        return result;
+    }
+
     public static ACAQAlgorithmRegistry getInstance() {
         return ACAQDefaultRegistry.getInstance().getAlgorithmRegistry();
     }

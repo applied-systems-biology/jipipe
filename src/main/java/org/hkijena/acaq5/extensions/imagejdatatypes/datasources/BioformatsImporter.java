@@ -19,7 +19,7 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.Image
 
 import java.io.IOException;
 
-@ACAQDocumentation(name = "Bioformats importer")
+@ACAQDocumentation(name = "Bioformats importer", description = "Imports images via the Bioformats plugin")
 @AlgorithmInputSlot(value = ACAQFileData.class, slotName = "Files", autoCreate = true)
 @AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
 @AlgorithmOutputSlot(value = ImagePlus2DGreyscaleData.class)

@@ -18,7 +18,6 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.ui.components.ACAQValidityReportUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
-import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -407,6 +406,19 @@ public class UIUtils {
         textArea.setWrapStyleWord(true);
         textArea.setText(text);
         return textArea;
+    }
+
+    public static void fitRowHeights(JTable table) {
+        for (int row = 0; row < table.getRowCount(); row++) {
+            int rowHeight = table.getRowHeight();
+
+            for (int column = 0; column < table.getColumnCount(); column++) {
+                Component comp = table.prepareRenderer(table.getCellRenderer(row, column), row, column);
+                rowHeight = Math.max(rowHeight, comp.getPreferredSize().height);
+            }
+
+            table.setRowHeight(row, rowHeight);
+        }
     }
 
     public static Map<String, JMenu> createMenuTree(JMenu rootMenu, Set<String> menuPaths) {

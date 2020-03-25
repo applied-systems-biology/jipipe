@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
+import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
+import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 
 import java.io.IOException;
@@ -31,6 +33,14 @@ public class ACAQSlotDefinition {
         this.slotType = slotType;
         this.name = name;
         this.inheritedSlot = inheritedSlot;
+    }
+
+    public ACAQSlotDefinition(AlgorithmInputSlot slot) {
+        this(slot.value(), ACAQDataSlot.SlotType.Input, slot.slotName(), null);
+    }
+
+    public ACAQSlotDefinition(AlgorithmOutputSlot slot) {
+        this(slot.value(), ACAQDataSlot.SlotType.Output, slot.slotName(), null);
     }
 
     public ACAQSlotDefinition(ACAQSlotDefinition other) {

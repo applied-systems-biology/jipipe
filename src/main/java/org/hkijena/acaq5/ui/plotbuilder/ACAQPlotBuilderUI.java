@@ -14,8 +14,8 @@ package org.hkijena.acaq5.ui.plotbuilder;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQDefaultRegistry;
-import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
 import org.hkijena.acaq5.ui.ACAQProjectUI;
+import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.PlotReader;
 import org.hkijena.acaq5.ui.registries.ACAQPlotBuilderRegistry;

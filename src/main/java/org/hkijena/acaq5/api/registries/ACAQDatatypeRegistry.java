@@ -7,6 +7,7 @@ import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.ACAQHidden;
 import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.api.data.ACAQDataDeclaration;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.DatatypeRegisteredEvent;
 
@@ -150,6 +151,22 @@ public class ACAQDatatypeRegistry {
      */
     public boolean hasDataType(Class<? extends ACAQData> dataClass) {
         return registeredDataTypes.containsValue(dataClass);
+    }
+
+    /**
+     * Returns all data declarations added by the dependency
+     *
+     * @param dependency
+     * @return
+     */
+    public Set<ACAQDataDeclaration> getDeclaredBy(ACAQDependency dependency) {
+        Set<ACAQDataDeclaration> result = new HashSet<>();
+        for (Map.Entry<String, Class<? extends ACAQData>> entry : registeredDataTypes.entrySet()) {
+            ACAQDependency source = getSourceOf(entry.getKey());
+            if (source == dependency)
+                result.add(ACAQDataDeclaration.getInstance(entry.getValue()));
+        }
+        return result;
     }
 
     public static ACAQDatatypeRegistry getInstance() {

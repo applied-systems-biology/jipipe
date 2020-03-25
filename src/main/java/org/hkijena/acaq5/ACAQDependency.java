@@ -29,6 +29,7 @@ public interface ACAQDependency extends ACAQParameterHolder {
 
     /**
      * Gets the location of the JAR/JSON that defined the dependency
+     *
      * @return
      */
     Path getDependencyLocation();

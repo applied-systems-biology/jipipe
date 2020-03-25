@@ -1,12 +1,28 @@
 package org.hkijena.acaq5.ui.extensions;
 
 import org.hkijena.acaq5.ACAQDependency;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.api.data.ACAQDataDeclaration;
+import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
+import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
+import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
+import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
+import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.ui.components.FormPanel;
+import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
+import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
 import org.hkijena.acaq5.utils.StringUtils;
+import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
+import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ACAQDependencyUI extends JPanel {
     private ACAQDependency dependency;
@@ -26,16 +42,88 @@ public class ACAQDependencyUI extends JPanel {
         formPanel.addToForm(UIUtils.makeReadonlyTextField(dependency.getDependencyId()), new JLabel("ID"), null);
         formPanel.addToForm(UIUtils.makeReadonlyTextField(dependency.getDependencyVersion()), new JLabel("Version"), null);
         formPanel.addToForm(UIUtils.makeReadonlyTextField(dependency.getMetadata().getAuthors()), new JLabel("Authors"), null);
-        if(!StringUtils.isNullOrEmpty(dependency.getMetadata().getWebsite()))
+        if (!StringUtils.isNullOrEmpty(dependency.getMetadata().getWebsite()))
             formPanel.addToForm(UIUtils.makeURLLabel(dependency.getMetadata().getWebsite()), new JLabel("Website"), null);
-        if(!StringUtils.isNullOrEmpty(dependency.getMetadata().getCitation()))
+        if (!StringUtils.isNullOrEmpty(dependency.getMetadata().getCitation()))
             formPanel.addToForm(UIUtils.makeReadonlyTextField(dependency.getMetadata().getCitation()), new JLabel("Citation"), null);
         formPanel.addToForm(UIUtils.makeReadonlyTextField(dependency.getMetadata().getLicense()), new JLabel("License"), null);
         formPanel.addToForm(UIUtils.makeReadonlyTextField("" + dependency.getDependencyLocation()), new JLabel("Defining file"), null);
         formPanel.addToForm(UIUtils.makeReadonlyTextArea(dependency.getMetadata().getDescription()), new JLabel("Description"), null);
 
+        insertAddedDatatypes(formPanel);
+        insertAddedTraits(formPanel);
+        insertAddedAlgorithms(formPanel);
+
+
         formPanel.addVerticalGlue();
 
         add(formPanel, BorderLayout.CENTER);
+    }
+
+    private void insertAddedTraits(FormPanel formPanel) {
+        Set<ACAQTraitDeclaration> list = ACAQTraitRegistry.getInstance().getDeclaredBy(dependency);
+        if (list.isEmpty())
+            return;
+        DefaultTableModel model = new DefaultTableModel();
+        model.setColumnIdentifiers(new Object[]{"Name", "Type", "ID", "Description"});
+        for (ACAQTraitDeclaration declaration : list) {
+            model.addRow(new Object[]{
+                    StringUtils.createIconTextHTMLTable(declaration.getName(), ACAQUITraitRegistry.getInstance().getIconURLFor(declaration)),
+                    declaration.isDiscriminator() ? "Valued" : "Boolean",
+                    declaration.getId(),
+                    StringUtils.wordWrappedInHTML(declaration.getDescription(), 50)
+            });
+        }
+        insertTable(formPanel, model, "Annotation types", UIUtils.getIconFromResources("label.png"));
+    }
+
+    private void insertAddedDatatypes(FormPanel formPanel) {
+        Set<ACAQDataDeclaration> list = ACAQDatatypeRegistry.getInstance().getDeclaredBy(dependency);
+        if (list.isEmpty())
+            return;
+        DefaultTableModel model = new DefaultTableModel();
+        model.setColumnIdentifiers(new Object[]{"Name", "ID", "Description"});
+        for (ACAQDataDeclaration declaration : list) {
+            model.addRow(new Object[]{
+                    StringUtils.createIconTextHTMLTable(declaration.getName(), ACAQUIDatatypeRegistry.getInstance().getIconURLFor(declaration)),
+                    declaration.getId(),
+                    StringUtils.wordWrappedInHTML(declaration.getDescription(), 50)
+            });
+        }
+        insertTable(formPanel, model, "Data types", UIUtils.getIconFromResources("data-types/data-type.png"));
+    }
+
+    private void insertTable(FormPanel formPanel, DefaultTableModel model, String categoryName, Icon categoryIcon) {
+        formPanel.addGroupHeader(categoryName, categoryIcon);
+        JXTable table = new JXTable(model);
+        table.packAll();
+        table.setSortOrder(0, SortOrder.ASCENDING);
+        UIUtils.fitRowHeights(table);
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(table, BorderLayout.CENTER);
+        panel.add(table.getTableHeader(), BorderLayout.NORTH);
+        formPanel.addWideToForm(panel, null);
+    }
+
+    private void insertAddedAlgorithms(FormPanel formPanel) {
+        List<ACAQAlgorithmDeclaration> list = new ArrayList<>(ACAQAlgorithmRegistry.getInstance().getDeclaredBy(dependency));
+        if (list.isEmpty())
+            return;
+        DefaultTableModel model = new DefaultTableModel();
+        model.setColumnIdentifiers(new Object[]{"Name", "ID", "Description", "Input slots", "Output slots", "Good for", "Bad for", "Adds", "Removes"});
+        for (ACAQAlgorithmDeclaration declaration : list) {
+            model.addRow(new Object[]{
+                    declaration.getName(),
+                    declaration.getId(),
+                    StringUtils.wordWrappedInHTML(declaration.getDescription(), 50),
+                    TooltipUtils.getSlotTable(declaration.getInputSlots().stream().map(ACAQSlotDefinition::new).collect(Collectors.toList())),
+                    TooltipUtils.getSlotTable(declaration.getOutputSlots().stream().map(ACAQSlotDefinition::new).collect(Collectors.toList())),
+                    TooltipUtils.getTraitTable(declaration.getPreferredTraits()),
+                    TooltipUtils.getTraitTable(declaration.getUnwantedTraits()),
+                    TooltipUtils.getTraitTable(declaration.getSlotTraitConfiguration().getAddedTraits()),
+                    TooltipUtils.getTraitTable(declaration.getSlotTraitConfiguration().getRemovedTraits())
+            });
+        }
+        insertTable(formPanel, model, "Algorithms", UIUtils.getIconFromResources("run.png"));
     }
 }
