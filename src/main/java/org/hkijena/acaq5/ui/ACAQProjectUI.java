@@ -2,6 +2,7 @@ package org.hkijena.acaq5.ui;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQGUICommand;
+import org.hkijena.acaq5.api.ACAQJsonExtensionProject;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.events.CompartmentRemovedEvent;
@@ -9,6 +10,7 @@ import org.hkijena.acaq5.ui.compartments.ACAQCompartmentGraphUI;
 import org.hkijena.acaq5.ui.compartments.ACAQCompartmentUI;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.RecentProjectsMenu;
+import org.hkijena.acaq5.ui.extensions.ACAQPluginManagerUIPanel;
 import org.hkijena.acaq5.ui.running.ACAQRunSettingsUI;
 import org.hkijena.acaq5.ui.running.ACAQRunnerQueueUI;
 import org.hkijena.acaq5.ui.settings.ACAQProjectSettingsUI;
@@ -74,6 +76,11 @@ public class ACAQProjectUI extends JPanel {
                 "Project settings",
                 UIUtils.getIconFromResources("wrench.png"),
                 new ACAQProjectSettingsUI(this),
+                true);
+        documentTabPane.addSingletonTab("PLUGIN_MANAGER",
+                "Plugin manager",
+                UIUtils.getIconFromResources("module.png"),
+                new ACAQPluginManagerUIPanel(),
                 true);
         documentTabPane.selectSingletonTab("INTRODUCTION");
         add(documentTabPane, BorderLayout.CENTER);
@@ -196,6 +203,27 @@ public class ACAQProjectUI extends JPanel {
 
         menu.add(compartmentMenu);
 
+        // Plugins menu
+        JMenu pluginsMenu = new JMenu("Plugins");
+
+        JMenuItem newPluginButton = new JMenuItem("New JSON extension ...", UIUtils.getIconFromResources("new.png"));
+        newPluginButton.setToolTipText("Opens the extension builder");
+        newPluginButton.addActionListener(e -> {
+            ACAQJsonExtensionWindow window = ACAQJsonExtensionWindow.newWindow(command, new ACAQJsonExtensionProject());
+            window.setTitle("New extension");
+        });
+        pluginsMenu.add(newPluginButton);
+
+        JMenuItem installPluginButton = new JMenuItem("Install ...", UIUtils.getIconFromResources("download.png"));
+        installPluginButton.addActionListener(e -> ACAQJsonExtensionWindow.installExtensions());
+        pluginsMenu.add(installPluginButton);
+
+        JMenuItem managePluginsButton = new JMenuItem("Manage plugins", UIUtils.getIconFromResources("wrench.png"));
+        managePluginsButton.addActionListener(e -> managePlugins());
+        pluginsMenu.add(managePluginsButton);
+
+        menu.add(pluginsMenu);
+
         menu.add(Box.createHorizontalGlue());
 
         // Queue monitor
@@ -219,6 +247,10 @@ public class ACAQProjectUI extends JPanel {
         menu.add(helpMenu);
 
         add(menu, BorderLayout.NORTH);
+    }
+
+    private void managePlugins() {
+        documentTabPane.selectSingletonTab("PLUGIN_MANAGER");
     }
 
     private void openCompartmentEditor() {
