@@ -14,6 +14,7 @@ public class ACAQJsonExtension implements ACAQDependency {
     private String version;
     private ACAQProjectMetadata metadata = new ACAQProjectMetadata();
     private Path jsonFilePath;
+    private ACAQDefaultRegistry registry;
 
     @Override
     @JsonGetter("metadata")
@@ -51,6 +52,11 @@ public class ACAQJsonExtension implements ACAQDependency {
         return version;
     }
 
+    @Override
+    public Path getDependencyLocation() {
+        return jsonFilePath;
+    }
+
     @JsonSetter("version")
     public void setVersion(String version) {
         this.version = version;
@@ -63,5 +69,17 @@ public class ACAQJsonExtension implements ACAQDependency {
 
     public Path getJsonFilePath() {
         return jsonFilePath;
+    }
+
+    public void setRegistry(ACAQDefaultRegistry registry) {
+        this.registry = registry;
+    }
+
+    public ACAQDefaultRegistry getRegistry() {
+        return registry;
+    }
+
+    public void register() {
+
     }
 }

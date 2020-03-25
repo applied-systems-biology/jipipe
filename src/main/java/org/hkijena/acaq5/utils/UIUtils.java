@@ -18,6 +18,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.ui.components.ACAQValidityReportUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
+import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -25,8 +26,11 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.*;
 import java.util.function.Predicate;
@@ -388,6 +392,23 @@ public class UIUtils {
         toggleButton.addActionListener(e -> toggleButton.setSelected(!toggleButton.isSelected()));
     }
 
+    public static JTextField makeReadonlyTextField(String value) {
+        JTextField textField = new JTextField();
+        textField.setText(value);
+        textField.setEditable(false);
+        return textField;
+    }
+
+    public static JTextArea makeReadonlyTextArea(String text) {
+        JTextArea textArea = new JTextArea();
+        textArea.setBorder(BorderFactory.createEtchedBorder());
+        textArea.setEditable(false);
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+        textArea.setText(text);
+        return textArea;
+    }
+
     public static Map<String, JMenu> createMenuTree(JMenu rootMenu, Set<String> menuPaths) {
         Set<String> decomposedPaths = new HashSet<>();
         for (String menuPath : menuPaths) {
@@ -479,4 +500,22 @@ public class UIUtils {
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
     }
+
+    public static JLabel makeURLLabel(String url) {
+        JLabel label = new JLabel("<html><a href=\"" + url + "\">" + url + "</a></html>");
+        label.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        label.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                try {
+                    Desktop.getDesktop().browse(new URI(url));
+                } catch (URISyntaxException | IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+        return label;
+    }
+
+
 }

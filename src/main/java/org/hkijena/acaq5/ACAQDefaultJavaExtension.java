@@ -22,7 +22,10 @@ import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableVectorOperationUI;
 import org.scijava.service.AbstractService;
 
 import javax.swing.*;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public abstract class ACAQDefaultJavaExtension extends AbstractService implements ACAQJavaExtension {
 
@@ -127,5 +130,14 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
                                        String description,
                                        Icon icon) {
         registry.getTableAnalyzerUIOperationRegistry().register(operationClass, uiClass, name, shortcut, description, icon);
+    }
+
+    @Override
+    public Path getDependencyLocation() {
+        try {
+            return Paths.get(getClass().getProtectionDomain().getCodeSource().getLocation().toURI());
+        } catch (URISyntaxException e) {
+            return null;
+        }
     }
 }

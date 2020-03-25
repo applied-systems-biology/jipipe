@@ -6,6 +6,7 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.ACAQProjectMetadata;
 import org.hkijena.acaq5.api.parameters.ACAQParameterHolder;
 
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,6 +26,12 @@ public interface ACAQDependency extends ACAQParameterHolder {
 
     @JsonGetter("version")
     String getDependencyVersion();
+
+    /**
+     * Gets the location of the JAR/JSON that defined the dependency
+     * @return
+     */
+    Path getDependencyLocation();
 
     /**
      * Exports the dependency to an HTML element (without the root tag)

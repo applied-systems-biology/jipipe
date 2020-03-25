@@ -1,5 +1,7 @@
 package org.hkijena.acaq5;
 
+import com.google.common.eventbus.EventBus;
+import org.hkijena.acaq5.api.events.ExtensionRegisteredEvent;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistrationTask;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 @Plugin(type = ACAQRegistry.class)
 public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry {
     private static ACAQDefaultRegistry instance;
+    private EventBus eventBus = new EventBus();
     private List<ACAQDependency> registeredExtensions;
     private ACAQAlgorithmRegistry algorithmRegistry;
     private ACAQDatatypeRegistry datatypeRegistry;
@@ -58,6 +61,7 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
                 extension.setRegistry(this);
                 extension.register();
                 registeredExtensions.add(extension);
+                eventBus.post(new ExtensionRegisteredEvent(this, extension));
             } catch (InstantiableException e) {
                 throw new RuntimeException(e);
             }
@@ -75,7 +79,11 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
      * @param extension
      */
     public void register(ACAQJsonExtension extension) {
-
+        System.out.println("ACAQ5: Registering Json Extension " + extension.getDependencyId());
+        extension.setRegistry(this);
+        extension.register();
+        registeredExtensions.add(extension);
+        eventBus.post(new ExtensionRegisteredEvent(this, extension));
     }
 
     @Override
@@ -108,6 +116,7 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
         return acaquiTraitRegistry;
     }
 
+    @Override
     public List<ACAQDependency> getRegisteredExtensions() {
         return Collections.unmodifiableList(registeredExtensions);
     }
@@ -123,6 +132,11 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
 
     private void installEvents() {
         algorithmRegistry.installEvents();
+    }
+
+    @Override
+    public EventBus getEventBus() {
+        return eventBus;
     }
 
     public static ACAQDefaultRegistry getInstance() {

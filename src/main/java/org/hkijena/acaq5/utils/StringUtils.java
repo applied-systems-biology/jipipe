@@ -24,6 +24,10 @@ public class StringUtils {
 
     }
 
+    public static boolean isNullOrEmpty(String string) {
+        return string == null || string.isEmpty();
+    }
+
     /**
      * Removes all spaces, and filesystem-unsafe characters from the string and replaces them with dashes
      * Duplicate dashes are removed

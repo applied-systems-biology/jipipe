@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.ACAQProjectMetadata;
 
+import java.nio.file.Path;
+
 public class ACAQMutableDependency implements ACAQDependency {
     private ACAQProjectMetadata metadata = new ACAQProjectMetadata();
     private String dependencyId;
@@ -42,6 +44,11 @@ public class ACAQMutableDependency implements ACAQDependency {
     @JsonGetter("version")
     public String getDependencyVersion() {
         return dependencyVersion;
+    }
+
+    @Override
+    public Path getDependencyLocation() {
+        return null;
     }
 
     @JsonSetter("version")

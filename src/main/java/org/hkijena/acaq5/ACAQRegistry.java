@@ -1,5 +1,6 @@
 package org.hkijena.acaq5;
 
+import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
@@ -9,7 +10,13 @@ import org.hkijena.acaq5.ui.registries.ACAQUIParametertypeRegistry;
 import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
 import org.scijava.service.Service;
 
+import java.util.List;
+
 public interface ACAQRegistry extends Service {
+
+    EventBus getEventBus();
+
+    List<ACAQDependency> getRegisteredExtensions();
 
     ACAQAlgorithmRegistry getAlgorithmRegistry();
 
