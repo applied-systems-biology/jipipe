@@ -147,6 +147,7 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
         for (int i = 0; i < WindowManager.getImageCount(); ++i) {
             ImagePlus image = WindowManager.getImage(i + 1);
             if (!initiallyOpenedImages.contains(image)) {
+                image.changes = false;
                 image.close();
             }
         }

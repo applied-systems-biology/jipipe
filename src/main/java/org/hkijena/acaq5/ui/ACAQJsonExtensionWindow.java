@@ -75,7 +75,7 @@ public class ACAQJsonExtensionWindow extends JFrame {
         try {
             JsonNode jsonData = JsonUtils.getObjectMapper().readValue(path.toFile(), JsonNode.class);
             Set<ACAQDependency> dependencySet = ACAQProject.loadDependenciesFromJson(jsonData);
-            Set<ACAQDependency> missingDependencies = ACAQDependency.findUnsatisfiedDepencencies(dependencySet);
+            Set<ACAQDependency> missingDependencies = ACAQDependency.findUnsatisfiedDependencies(dependencySet);
             if (!missingDependencies.isEmpty()) {
                 if (!UnsatisfiedDependenciesDialog.showDialog(this, path, missingDependencies))
                     return;

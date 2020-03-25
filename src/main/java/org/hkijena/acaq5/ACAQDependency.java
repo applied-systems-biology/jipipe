@@ -63,11 +63,11 @@ public interface ACAQDependency extends ACAQParameterHolder {
      * @param dependencies
      * @return
      */
-    static Set<ACAQDependency> findUnsatisfiedDepencencies(Set<ACAQDependency> dependencies) {
+    static Set<ACAQDependency> findUnsatisfiedDependencies(Set<ACAQDependency> dependencies) {
         Set<ACAQDependency> result = new HashSet<>();
         for (ACAQDependency dependency : dependencies) {
             boolean found = ACAQDefaultRegistry.getInstance().getRegisteredExtensions().stream().anyMatch(d -> d.getDependencyId().equals(dependency.getDependencyId()));
-            if (found)
+            if (!found)
                 result.add(dependency);
         }
         return result;
