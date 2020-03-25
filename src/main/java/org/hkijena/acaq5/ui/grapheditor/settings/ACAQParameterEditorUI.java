@@ -4,18 +4,18 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterHolder;
-import org.hkijena.acaq5.ui.ACAQUIPanel;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 
 import java.util.Objects;
 
 /**
  * A UI for a parameter type
  */
-public abstract class ACAQParameterEditorUI extends ACAQUIPanel {
+public abstract class ACAQParameterEditorUI extends ACAQProjectUIPanel {
     private ACAQParameterAccess parameterAccess;
 
-    public ACAQParameterEditorUI(ACAQWorkbenchUI workbenchUI, ACAQParameterAccess parameterAccess) {
+    public ACAQParameterEditorUI(ACAQProjectUI workbenchUI, ACAQParameterAccess parameterAccess) {
         super(workbenchUI);
         this.parameterAccess = parameterAccess;
         parameterAccess.getParameterHolder().getEventBus().register(this);

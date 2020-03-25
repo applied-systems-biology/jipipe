@@ -1,14 +1,14 @@
 package org.hkijena.acaq5.ui.settings;
 
-import org.hkijena.acaq5.ui.ACAQUIPanel;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 
 import java.awt.*;
 
-public class ACAQProjectSettingsUI extends ACAQUIPanel {
-    public ACAQProjectSettingsUI(ACAQWorkbenchUI workbenchUI) {
+public class ACAQProjectSettingsUI extends ACAQProjectUIPanel {
+    public ACAQProjectSettingsUI(ACAQProjectUI workbenchUI) {
         super(workbenchUI);
         initialize();
     }

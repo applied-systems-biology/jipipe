@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
 
 import javax.swing.*;
@@ -12,7 +12,7 @@ public class DoubleParameterEditorUI extends ACAQParameterEditorUI {
     private boolean skipNextReload = false;
     private boolean isReloading = false;
 
-    public DoubleParameterEditorUI(ACAQWorkbenchUI workbenchUI, ACAQParameterAccess parameterAccess) {
+    public DoubleParameterEditorUI(ACAQProjectUI workbenchUI, ACAQParameterAccess parameterAccess) {
         super(workbenchUI, parameterAccess);
         initialize();
         reload();

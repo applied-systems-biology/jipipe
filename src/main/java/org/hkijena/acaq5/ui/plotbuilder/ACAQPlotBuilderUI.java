@@ -14,8 +14,8 @@ package org.hkijena.acaq5.ui.plotbuilder;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQDefaultRegistry;
-import org.hkijena.acaq5.ui.ACAQUIPanel;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.PlotReader;
 import org.hkijena.acaq5.ui.registries.ACAQPlotBuilderRegistry;
@@ -33,7 +33,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ACAQPlotBuilderUI extends ACAQUIPanel {
+public class ACAQPlotBuilderUI extends ACAQProjectUIPanel {
 
     private JToolBar plotSeriesEditorToolBar;
     private JXPanel plotSeriesListPanel;
@@ -45,7 +45,7 @@ public class ACAQPlotBuilderUI extends ACAQUIPanel {
 
     private List<ACAQPlotSeriesData> seriesDataList = new ArrayList<>();
 
-    public ACAQPlotBuilderUI(ACAQWorkbenchUI workbench) {
+    public ACAQPlotBuilderUI(ACAQProjectUI workbench) {
         super(workbench);
         initialize();
         updatePlotSettings();

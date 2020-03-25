@@ -4,7 +4,7 @@ import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollectionVisibilities;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -19,7 +19,7 @@ public class ACAQParameterCollectionVisibilitiesParameterEditorUI extends ACAQPa
 
     private FormPanel formPanel;
 
-    public ACAQParameterCollectionVisibilitiesParameterEditorUI(ACAQWorkbenchUI workbenchUI, ACAQParameterAccess parameterAccess) {
+    public ACAQParameterCollectionVisibilitiesParameterEditorUI(ACAQProjectUI workbenchUI, ACAQParameterAccess parameterAccess) {
         super(workbenchUI, parameterAccess);
         initialize();
         reload();

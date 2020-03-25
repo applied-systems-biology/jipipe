@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.PathFilter;
@@ -13,7 +13,7 @@ import java.awt.*;
 
 public class PathFilterParameterEditorUI extends ACAQParameterEditorUI {
 
-    public PathFilterParameterEditorUI(ACAQWorkbenchUI workbenchUI, ACAQParameterAccess parameterAccess) {
+    public PathFilterParameterEditorUI(ACAQProjectUI workbenchUI, ACAQParameterAccess parameterAccess) {
         super(workbenchUI, parameterAccess);
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         reload();

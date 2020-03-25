@@ -7,8 +7,8 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
 import org.hkijena.acaq5.api.data.ACAQMergedExportedDataTable;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.ui.ACAQUIPanel;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.TooltipUtils;
@@ -23,7 +23,7 @@ import java.awt.event.MouseEvent;
 import java.nio.file.Path;
 import java.util.List;
 
-public class ACAQMultipleResultDataSlotTableUI extends ACAQUIPanel {
+public class ACAQMultipleResultDataSlotTableUI extends ACAQProjectUIPanel {
 
     private final List<ACAQDataSlot> slots;
     private ACAQRun run;
@@ -31,7 +31,7 @@ public class ACAQMultipleResultDataSlotTableUI extends ACAQUIPanel {
     private ACAQMergedExportedDataTable mergedDataTable;
     private FormPanel rowUIList;
 
-    public ACAQMultipleResultDataSlotTableUI(ACAQWorkbenchUI workbenchUI, ACAQRun run, List<ACAQDataSlot> slots) {
+    public ACAQMultipleResultDataSlotTableUI(ACAQProjectUI workbenchUI, ACAQRun run, List<ACAQDataSlot> slots) {
         super(workbenchUI);
         this.run = run;
         this.slots = slots;

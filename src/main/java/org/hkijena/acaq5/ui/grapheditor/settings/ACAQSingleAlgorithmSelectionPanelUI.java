@@ -4,8 +4,8 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
-import org.hkijena.acaq5.ui.ACAQUIPanel;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
@@ -16,11 +16,11 @@ import org.hkijena.acaq5.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 
-public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQUIPanel {
+public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectUIPanel {
     private ACAQAlgorithmGraph graph;
     private ACAQAlgorithm algorithm;
 
-    public ACAQSingleAlgorithmSelectionPanelUI(ACAQWorkbenchUI workbenchUI, ACAQAlgorithmGraph graph, ACAQAlgorithm algorithm) {
+    public ACAQSingleAlgorithmSelectionPanelUI(ACAQProjectUI workbenchUI, ACAQAlgorithmGraph graph, ACAQAlgorithm algorithm) {
         super(workbenchUI);
         this.graph = graph;
         this.algorithm = algorithm;

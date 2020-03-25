@@ -4,8 +4,8 @@ import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.ui.ACAQUIPanel;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.TooltipUtils;
@@ -19,7 +19,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
 
-public class ACAQResultDataSlotTableUI extends ACAQUIPanel {
+public class ACAQResultDataSlotTableUI extends ACAQProjectUIPanel {
 
     private ACAQRun run;
     private ACAQDataSlot slot;
@@ -27,7 +27,7 @@ public class ACAQResultDataSlotTableUI extends ACAQUIPanel {
     private ACAQExportedDataTable dataTable;
     private FormPanel rowUIList;
 
-    public ACAQResultDataSlotTableUI(ACAQWorkbenchUI workbenchUI, ACAQRun run, ACAQDataSlot slot) {
+    public ACAQResultDataSlotTableUI(ACAQProjectUI workbenchUI, ACAQRun run, ACAQDataSlot slot) {
         super(workbenchUI);
         this.run = run;
         this.slot = slot;

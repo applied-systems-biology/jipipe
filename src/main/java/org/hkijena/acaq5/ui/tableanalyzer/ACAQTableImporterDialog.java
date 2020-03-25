@@ -12,7 +12,7 @@
 
 package org.hkijena.acaq5.ui.tableanalyzer;
 
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.FileSelection;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -21,11 +21,11 @@ import java.awt.*;
 
 public class ACAQTableImporterDialog extends JDialog {
 
-    private ACAQWorkbenchUI workbench;
+    private ACAQProjectUI workbench;
     private FileSelection fileSelection;
     private JComboBox<FileFormat> importFormat;
 
-    public ACAQTableImporterDialog(ACAQWorkbenchUI workbench) {
+    public ACAQTableImporterDialog(ACAQProjectUI workbench) {
         this.workbench = workbench;
         initialize();
     }

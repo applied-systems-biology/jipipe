@@ -5,8 +5,8 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro.GraphWrapperAlgorithmDeclaration;
-import org.hkijena.acaq5.ui.ACAQUIPanel;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.utils.JsonUtils;
@@ -17,12 +17,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 
-public class ACAQGraphWrapperAlgorithmExporter extends ACAQUIPanel {
+public class ACAQGraphWrapperAlgorithmExporter extends ACAQProjectUIPanel {
 
     private GraphWrapperAlgorithmDeclaration algorithmDeclaration;
     private ACAQParameterAccessUI parameterAccessUI;
 
-    public ACAQGraphWrapperAlgorithmExporter(ACAQWorkbenchUI workbenchUI, ACAQAlgorithmGraph wrappedGraph) {
+    public ACAQGraphWrapperAlgorithmExporter(ACAQProjectUI workbenchUI, ACAQAlgorithmGraph wrappedGraph) {
         super(workbenchUI);
         algorithmDeclaration = new GraphWrapperAlgorithmDeclaration();
         algorithmDeclaration.setGraph(wrappedGraph);

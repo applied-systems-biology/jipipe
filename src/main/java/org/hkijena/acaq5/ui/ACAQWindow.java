@@ -19,14 +19,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
 
-public class ACAQWorkbenchWindow extends JFrame {
+public class ACAQWindow extends JFrame {
 
     private ACAQGUICommand command;
     private ACAQProject project;
-    private ACAQWorkbenchUI projectUI;
+    private ACAQProjectUI projectUI;
     private Path projectSavePath;
 
-    public ACAQWorkbenchWindow(ACAQGUICommand command, ACAQProject project) {
+    public ACAQWindow(ACAQGUICommand command, ACAQProject project) {
         this.command = command;
         initialize();
         loadProject(project);
@@ -46,13 +46,13 @@ public class ACAQWorkbenchWindow extends JFrame {
 
     public void loadProject(ACAQProject project) {
         this.project = project;
-        this.projectUI = new ACAQWorkbenchUI(this, command, project);
+        this.projectUI = new ACAQProjectUI(this, command, project);
         setContentPane(projectUI);
     }
 
     public void newProject() {
         ACAQProject project = new ACAQProject();
-        ACAQWorkbenchWindow window = openProjectInThisOrNewWindow("New project", project);
+        ACAQWindow window = openProjectInThisOrNewWindow("New project", project);
         if (window == null)
             return;
         window.projectSavePath = null;
@@ -73,7 +73,7 @@ public class ACAQWorkbenchWindow extends JFrame {
 
                 ACAQProject project = ACAQProject.loadProject(jsonData);
                 project.setWorkDirectory(path.getParent());
-                ACAQWorkbenchWindow window = openProjectInThisOrNewWindow("Open project", project);
+                ACAQWindow window = openProjectInThisOrNewWindow("Open project", project);
                 if (window == null)
                     return;
                 window.projectSavePath = path;
@@ -96,7 +96,7 @@ public class ACAQWorkbenchWindow extends JFrame {
 
                 ACAQRun run = ACAQRun.loadFromFolder(path);
                 run.getProject().setWorkDirectory(path);
-                ACAQWorkbenchWindow window = openProjectInThisOrNewWindow("Open ACAQ output", run.getProject());
+                ACAQWindow window = openProjectInThisOrNewWindow("Open ACAQ output", run.getProject());
                 if (window == null)
                     return;
                 window.projectSavePath = path.resolve("parameters.json");
@@ -165,7 +165,7 @@ public class ACAQWorkbenchWindow extends JFrame {
      * @param project
      * @return
      */
-    private ACAQWorkbenchWindow openProjectInThisOrNewWindow(String messageTitle, ACAQProject project) {
+    private ACAQWindow openProjectInThisOrNewWindow(String messageTitle, ACAQProject project) {
         switch (UIUtils.askOpenInCurrentWindow(this, messageTitle)) {
             case JOptionPane.YES_OPTION:
                 loadProject(project);
@@ -184,7 +184,7 @@ public class ACAQWorkbenchWindow extends JFrame {
         return project;
     }
 
-    public ACAQWorkbenchUI getProjectUI() {
+    public ACAQProjectUI getProjectUI() {
         return projectUI;
     }
 
@@ -192,8 +192,8 @@ public class ACAQWorkbenchWindow extends JFrame {
         return projectSavePath;
     }
 
-    public static ACAQWorkbenchWindow newWindow(ACAQGUICommand command, ACAQProject project) {
-        ACAQWorkbenchWindow frame = new ACAQWorkbenchWindow(command, project);
+    public static ACAQWindow newWindow(ACAQGUICommand command, ACAQProject project) {
+        ACAQWindow frame = new ACAQWindow(command, project);
         frame.pack();
         frame.setSize(1024, 768);
         frame.setVisible(true);

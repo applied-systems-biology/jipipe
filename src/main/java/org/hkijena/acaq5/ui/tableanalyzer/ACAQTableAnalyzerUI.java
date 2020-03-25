@@ -16,8 +16,8 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.primitives.Ints;
 import org.hkijena.acaq5.ACAQDefaultRegistry;
-import org.hkijena.acaq5.ui.ACAQUIPanel;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.plotbuilder.ACAQPlotBuilderUI;
 import org.hkijena.acaq5.ui.registries.ACAQTableAnalyzerUIOperationRegistry;
@@ -34,7 +34,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
 
-public class ACAQTableAnalyzerUI extends ACAQUIPanel {
+public class ACAQTableAnalyzerUI extends ACAQProjectUIPanel {
     private static final int MAX_UNDO = 10;
     private DefaultTableModel tableModel;
     private JXTable jxTable;
@@ -44,7 +44,7 @@ public class ACAQTableAnalyzerUI extends ACAQUIPanel {
     private JButton convertSelectedCellsButton;
     private JPopupMenu convertSelectedCellsMenu;
 
-    public ACAQTableAnalyzerUI(ACAQWorkbenchUI workbench, DefaultTableModel tableModel) {
+    public ACAQTableAnalyzerUI(ACAQProjectUI workbench, DefaultTableModel tableModel) {
         super(workbench);
         this.tableModel = tableModel;
         initialize();
@@ -642,7 +642,7 @@ public class ACAQTableAnalyzerUI extends ACAQUIPanel {
         return tableModel;
     }
 
-    public static void importTableFromCSV(Path fileName, ACAQWorkbenchUI workbenchUI) {
+    public static void importTableFromCSV(Path fileName, ACAQProjectUI workbenchUI) {
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName.toFile()))) {
             DefaultTableModel tableModel = new DefaultTableModel();
             String currentLine;

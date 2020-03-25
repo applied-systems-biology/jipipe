@@ -5,9 +5,9 @@ import org.hkijena.acaq5.ui.components.MarkdownReader;
 
 import java.awt.*;
 
-public class ACAQInfoUI extends ACAQUIPanel {
+public class ACAQInfoUI extends ACAQProjectUIPanel {
 
-    public ACAQInfoUI(ACAQWorkbenchUI workbenchUI) {
+    public ACAQInfoUI(ACAQProjectUI workbenchUI) {
         super(workbenchUI);
         initialize();
     }

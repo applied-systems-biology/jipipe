@@ -8,8 +8,8 @@ import org.hkijena.acaq5.api.compartments.ACAQExportedCompartment;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
-import org.hkijena.acaq5.ui.ACAQUIPanel;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 import static org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph.COMPARTMENT_DEFAULT;
 
-public class ACAQCompartmentGraphUI extends ACAQUIPanel implements MouseListener, MouseMotionListener {
+public class ACAQCompartmentGraphUI extends ACAQProjectUIPanel implements MouseListener, MouseMotionListener {
 
     protected JMenuBar menuBar = new JMenuBar();
     private ACAQAlgorithmGraphCanvasUI graphUI;
@@ -50,7 +50,7 @@ public class ACAQCompartmentGraphUI extends ACAQUIPanel implements MouseListener
 
     private Set<ACAQAlgorithmUI> selection = new HashSet<>();
 
-    public ACAQCompartmentGraphUI(ACAQWorkbenchUI workbenchUI) {
+    public ACAQCompartmentGraphUI(ACAQProjectUI workbenchUI) {
         super(workbenchUI);
         this.compartmentGraph = workbenchUI.getProject().getCompartmentGraph();
         initialize();

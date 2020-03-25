@@ -4,8 +4,8 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQMutableRunConfiguration;
 import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.ui.ACAQUIPanel;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.components.ACAQValidityReportUI;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
@@ -22,11 +22,11 @@ import java.awt.event.ComponentEvent;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-public class ACAQRunSettingsUI extends ACAQUIPanel {
+public class ACAQRunSettingsUI extends ACAQProjectUIPanel {
 
     private ACAQRun run;
 
-    public ACAQRunSettingsUI(ACAQWorkbenchUI workbenchUI) {
+    public ACAQRunSettingsUI(ACAQProjectUI workbenchUI) {
         super(workbenchUI);
         initialize();
         ACAQRunnerQueue.getInstance().getEventBus().register(this);

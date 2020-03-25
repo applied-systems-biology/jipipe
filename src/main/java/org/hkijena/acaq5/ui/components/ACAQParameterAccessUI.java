@@ -2,7 +2,7 @@ package org.hkijena.acaq5.ui.components;
 
 import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.api.parameters.*;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -15,10 +15,10 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ACAQParameterAccessUI extends FormPanel {
-    private ACAQWorkbenchUI workbenchUI;
+    private ACAQProjectUI workbenchUI;
     private ACAQParameterHolder parameterHolder;
 
-    public ACAQParameterAccessUI(ACAQWorkbenchUI workbenchUI, ACAQParameterHolder parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
+    public ACAQParameterAccessUI(ACAQProjectUI workbenchUI, ACAQParameterHolder parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
         super(documentation, documentationBelow, withDocumentation);
         this.workbenchUI = workbenchUI;
         this.parameterHolder = parameterHolder;

@@ -6,7 +6,7 @@ import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.ACAQTraitPicker;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
@@ -31,7 +31,7 @@ public class ACAQTraitParameterEditorUI extends ACAQParameterEditorUI {
     private boolean skipNextReload = false;
     private boolean isReloading = false;
 
-    public ACAQTraitParameterEditorUI(ACAQWorkbenchUI workbenchUI, ACAQParameterAccess parameterAccess) {
+    public ACAQTraitParameterEditorUI(ACAQProjectUI workbenchUI, ACAQParameterAccess parameterAccess) {
         super(workbenchUI, parameterAccess);
         initialize();
         reload();

@@ -5,8 +5,8 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.ui.ACAQUIPanel;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
@@ -21,11 +21,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ACAQMultiAlgorithmSelectionPanelUI extends ACAQUIPanel {
+public class ACAQMultiAlgorithmSelectionPanelUI extends ACAQProjectUIPanel {
     private ACAQAlgorithmGraph graph;
     private Set<ACAQAlgorithm> algorithms;
 
-    public ACAQMultiAlgorithmSelectionPanelUI(ACAQWorkbenchUI workbenchUI, ACAQAlgorithmGraph graph, Set<ACAQAlgorithm> algorithms) {
+    public ACAQMultiAlgorithmSelectionPanelUI(ACAQProjectUI workbenchUI, ACAQAlgorithmGraph graph, Set<ACAQAlgorithm> algorithms) {
         super(workbenchUI);
         this.graph = graph;
         this.algorithms = algorithms;

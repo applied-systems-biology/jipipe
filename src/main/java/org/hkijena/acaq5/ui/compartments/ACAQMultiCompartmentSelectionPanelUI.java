@@ -2,8 +2,8 @@ package org.hkijena.acaq5.ui.compartments;
 
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
-import org.hkijena.acaq5.ui.ACAQUIPanel;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.utils.TooltipUtils;
@@ -15,10 +15,10 @@ import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ACAQMultiCompartmentSelectionPanelUI extends ACAQUIPanel {
+public class ACAQMultiCompartmentSelectionPanelUI extends ACAQProjectUIPanel {
     private Set<ACAQProjectCompartment> compartments;
 
-    public ACAQMultiCompartmentSelectionPanelUI(ACAQWorkbenchUI workbenchUI, Set<ACAQProjectCompartment> compartments) {
+    public ACAQMultiCompartmentSelectionPanelUI(ACAQProjectUI workbenchUI, Set<ACAQProjectCompartment> compartments) {
         super(workbenchUI);
         this.compartments = compartments;
         initialize();

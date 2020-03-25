@@ -10,8 +10,8 @@ import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.AlgorithmRegisteredEvent;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
-import org.hkijena.acaq5.ui.ACAQUIPanel;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, MouseMotionListener {
+public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseListener, MouseMotionListener {
 
     protected JMenuBar menuBar = new JMenuBar();
     private ACAQAlgorithmGraphCanvasUI graphUI;
@@ -51,7 +51,7 @@ public class ACAQAlgorithmGraphUI extends ACAQUIPanel implements MouseListener, 
 
     private Set<ACAQAlgorithmUI> selection = new HashSet<>();
 
-    public ACAQAlgorithmGraphUI(ACAQWorkbenchUI workbenchUI, ACAQAlgorithmGraph algorithmGraph, String compartment) {
+    public ACAQAlgorithmGraphUI(ACAQProjectUI workbenchUI, ACAQAlgorithmGraph algorithmGraph, String compartment) {
         super(workbenchUI);
         this.algorithmGraph = algorithmGraph;
         this.compartment = compartment;

@@ -3,7 +3,7 @@ package org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditor
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.events.WorkDirectoryChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.FileSelection;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
 
@@ -15,7 +15,7 @@ public class FilePathParameterEditorUI extends ACAQParameterEditorUI {
     private boolean isReloading = false;
     private FileSelection fileSelection;
 
-    public FilePathParameterEditorUI(ACAQWorkbenchUI workbenchUI, ACAQParameterAccess parameterAccess) {
+    public FilePathParameterEditorUI(ACAQProjectUI workbenchUI, ACAQParameterAccess parameterAccess) {
         super(workbenchUI, parameterAccess);
         initialize();
         getWorkbenchUI().getProject().getEventBus().register(this);

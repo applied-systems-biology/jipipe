@@ -1,18 +1,18 @@
 package org.hkijena.acaq5.ui.compartments;
 
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
-import org.hkijena.acaq5.ui.ACAQUIPanel;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphUI;
 
 import java.awt.*;
 
-public class ACAQCompartmentUI extends ACAQUIPanel {
+public class ACAQCompartmentUI extends ACAQProjectUIPanel {
 
     private ACAQProjectCompartment compartment;
     private ACAQAlgorithmGraphUI graphUI;
 
-    public ACAQCompartmentUI(ACAQWorkbenchUI workbenchUI, ACAQProjectCompartment compartment) {
+    public ACAQCompartmentUI(ACAQProjectUI workbenchUI, ACAQProjectCompartment compartment) {
         super(workbenchUI);
         this.compartment = compartment;
         initialize();

@@ -2,8 +2,8 @@ package org.hkijena.acaq5.ui.resultanalysis;
 
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
-import org.hkijena.acaq5.ui.ACAQUIPanel;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 
 import java.nio.file.Path;
 
@@ -12,11 +12,11 @@ import java.nio.file.Path;
  * Please note that the data is not present in the data slot anymore at this point, but instead
  * stored in output files. The folder that contains the files can be accessed via getRowStorageFolder()
  */
-public abstract class ACAQResultDataSlotRowUI extends ACAQUIPanel {
+public abstract class ACAQResultDataSlotRowUI extends ACAQProjectUIPanel {
     private ACAQDataSlot slot;
     private ACAQExportedDataTable.Row row;
 
-    public ACAQResultDataSlotRowUI(ACAQWorkbenchUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
+    public ACAQResultDataSlotRowUI(ACAQProjectUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
         super(workbenchUI);
         this.slot = slot;
         this.row = row;

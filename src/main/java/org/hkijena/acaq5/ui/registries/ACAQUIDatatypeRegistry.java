@@ -6,7 +6,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultResultDataSlotCellUI;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultResultDataSlotRowUI;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultDataSlotCellUI;
@@ -76,11 +76,11 @@ public class ACAQUIDatatypeRegistry {
      * @param slot
      * @return
      */
-    public ACAQResultDataSlotRowUI getUIForResultSlot(ACAQWorkbenchUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
+    public ACAQResultDataSlotRowUI getUIForResultSlot(ACAQProjectUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
         Class<? extends ACAQResultDataSlotRowUI> uiClass = resultUIs.getOrDefault(slot.getAcceptedDataType(), null);
         if (uiClass != null) {
             try {
-                return ConstructorUtils.getMatchingAccessibleConstructor(uiClass, ACAQWorkbenchUI.class, ACAQDataSlot.class, ACAQExportedDataTable.Row.class)
+                return ConstructorUtils.getMatchingAccessibleConstructor(uiClass, ACAQProjectUI.class, ACAQDataSlot.class, ACAQExportedDataTable.Row.class)
                         .newInstance(workbenchUI, slot, row);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException(e);

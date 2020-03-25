@@ -4,8 +4,8 @@ import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.ui.ACAQUIPanel;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -16,12 +16,12 @@ import java.awt.*;
 import java.nio.file.Files;
 import java.util.stream.Collectors;
 
-public class ACAQResultAlgorithmTree extends ACAQUIPanel {
+public class ACAQResultAlgorithmTree extends ACAQProjectUIPanel {
     private ACAQRun run;
     private JScrollPane treeScollPane;
     private JTree tree;
 
-    public ACAQResultAlgorithmTree(ACAQWorkbenchUI workbenchUI, ACAQRun run) {
+    public ACAQResultAlgorithmTree(ACAQProjectUI workbenchUI, ACAQRun run) {
         super(workbenchUI);
         this.run = run;
         initialize();

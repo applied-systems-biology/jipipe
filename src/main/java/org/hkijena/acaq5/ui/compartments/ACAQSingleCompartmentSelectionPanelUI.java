@@ -3,8 +3,8 @@ package org.hkijena.acaq5.ui.compartments;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.compartments.ACAQExportedCompartment;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
-import org.hkijena.acaq5.ui.ACAQUIPanel;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
@@ -19,10 +19,10 @@ import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
 
-public class ACAQSingleCompartmentSelectionPanelUI extends ACAQUIPanel {
+public class ACAQSingleCompartmentSelectionPanelUI extends ACAQProjectUIPanel {
     private ACAQProjectCompartment compartment;
 
-    public ACAQSingleCompartmentSelectionPanelUI(ACAQWorkbenchUI workbenchUI, ACAQProjectCompartment compartment) {
+    public ACAQSingleCompartmentSelectionPanelUI(ACAQProjectUI workbenchUI, ACAQProjectCompartment compartment) {
         super(workbenchUI);
         this.compartment = compartment;
         initialize();

@@ -5,8 +5,8 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.testbench.ACAQTestbench;
-import org.hkijena.acaq5.ui.ACAQUIPanel;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.*;
 import org.hkijena.acaq5.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.acaq5.ui.events.RunUIWorkerInterruptedEvent;
@@ -23,7 +23,7 @@ import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class ACAQTestBenchSetupUI extends ACAQUIPanel {
+public class ACAQTestBenchSetupUI extends ACAQProjectUIPanel {
 
     private ACAQAlgorithm algorithm;
     private ACAQAlgorithmGraph graph;
@@ -32,7 +32,7 @@ public class ACAQTestBenchSetupUI extends ACAQUIPanel {
     private ACAQValidityReportUI validationReportUI;
     private ACAQTestbench currentTestBench;
 
-    public ACAQTestBenchSetupUI(ACAQWorkbenchUI workbenchUI, ACAQAlgorithm algorithm, ACAQAlgorithmGraph graph) {
+    public ACAQTestBenchSetupUI(ACAQProjectUI workbenchUI, ACAQAlgorithm algorithm, ACAQAlgorithmGraph graph) {
         super(workbenchUI);
         this.algorithm = algorithm;
         this.graph = graph;

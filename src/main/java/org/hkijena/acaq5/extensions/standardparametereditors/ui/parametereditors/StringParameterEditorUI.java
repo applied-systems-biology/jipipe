@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
 
@@ -16,7 +16,7 @@ public class StringParameterEditorUI extends ACAQParameterEditorUI {
     private boolean skipNextReload = false;
     private boolean isReloading = false;
 
-    public StringParameterEditorUI(ACAQWorkbenchUI workbenchUI, ACAQParameterAccess parameterAccess) {
+    public StringParameterEditorUI(ACAQProjectUI workbenchUI, ACAQParameterAccess parameterAccess) {
         super(workbenchUI, parameterAccess);
         initialize();
         reload();

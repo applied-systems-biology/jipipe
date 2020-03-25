@@ -2,7 +2,7 @@ package org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditor
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.PathCollection;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.FileSelection;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -20,7 +20,7 @@ public class PathCollectionParameterEditorUI extends ACAQParameterEditorUI {
     private FileSelection.PathMode pathMode = FileSelection.PathMode.FilesOnly;
     private JFileChooser fileChooser = new JFileChooser();
 
-    public PathCollectionParameterEditorUI(ACAQWorkbenchUI workbenchUI, ACAQParameterAccess parameterAccess) {
+    public PathCollectionParameterEditorUI(ACAQProjectUI workbenchUI, ACAQParameterAccess parameterAccess) {
         super(workbenchUI, parameterAccess);
         initializeFileSelection();
         initialize();

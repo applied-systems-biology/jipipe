@@ -2,7 +2,7 @@ package org.hkijena.acaq5.ui.resultanalysis;
 
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 
 import javax.swing.*;
 import java.nio.file.Path;
@@ -14,14 +14,14 @@ public abstract class ACAQResultDataSlotCellUI extends JLabel {
     public ACAQResultDataSlotCellUI() {
     }
 
-    public abstract void render(ACAQWorkbenchUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row);
+    public abstract void render(ACAQProjectUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row);
 
     /**
      * Returns the compartment name of the algorithm that generated the data
      *
      * @return
      */
-    public static String getAlgorithmCompartment(ACAQWorkbenchUI workbenchUI, ACAQDataSlot slot) {
+    public static String getAlgorithmCompartment(ACAQProjectUI workbenchUI, ACAQDataSlot slot) {
         return workbenchUI.getProject().getCompartments().get(slot.getAlgorithm().getCompartment()).getName();
     }
 
@@ -39,7 +39,7 @@ public abstract class ACAQResultDataSlotCellUI extends JLabel {
      *
      * @return
      */
-    public static String getDisplayName(ACAQWorkbenchUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
+    public static String getDisplayName(ACAQProjectUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
         return getAlgorithmCompartment(workbenchUI, slot) + "/" + getAlgorithmName(slot) + "/" + slot.getName() + "/" + row.getLocation();
     }
 

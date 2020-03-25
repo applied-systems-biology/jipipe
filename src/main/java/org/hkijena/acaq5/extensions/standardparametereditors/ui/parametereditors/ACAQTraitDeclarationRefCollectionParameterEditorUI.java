@@ -7,7 +7,7 @@ import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefCollection;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.ACAQTraitPicker;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
@@ -25,7 +25,7 @@ public class ACAQTraitDeclarationRefCollectionParameterEditorUI extends ACAQPara
     private JPanel currentlyDisplayed;
     private JDialog pickerDialog;
 
-    public ACAQTraitDeclarationRefCollectionParameterEditorUI(ACAQWorkbenchUI workbenchUI, ACAQParameterAccess parameterAccess) {
+    public ACAQTraitDeclarationRefCollectionParameterEditorUI(ACAQProjectUI workbenchUI, ACAQParameterAccess parameterAccess) {
         super(workbenchUI, parameterAccess);
         initialize();
         reload();

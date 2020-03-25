@@ -10,7 +10,7 @@ import ij.plugin.frame.RoiManager;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ACAQROIData;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultResultDataSlotRowUI;
 import org.hkijena.acaq5.utils.PathUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -22,7 +22,7 @@ import java.nio.file.Path;
 
 public class ROIDataSlotRowUI extends ACAQDefaultResultDataSlotRowUI {
 
-    public ROIDataSlotRowUI(ACAQWorkbenchUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
+    public ROIDataSlotRowUI(ACAQProjectUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
         super(workbenchUI, slot, row);
     }
 

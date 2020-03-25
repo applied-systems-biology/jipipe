@@ -5,7 +5,7 @@ import net.imagej.DatasetService;
 import net.imagej.ImageJ;
 import net.imagej.ops.OpService;
 import org.hkijena.acaq5.api.ACAQProject;
-import org.hkijena.acaq5.ui.ACAQWorkbenchWindow;
+import org.hkijena.acaq5.ui.ACAQWindow;
 import org.scijava.Context;
 import org.scijava.app.StatusService;
 import org.scijava.command.Command;
@@ -65,7 +65,7 @@ public class ACAQGUICommand implements Command {
         SwingUtilities.invokeLater(() -> {
             ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
             ToolTipManager.sharedInstance().setInitialDelay(1000);
-            ACAQWorkbenchWindow window = ACAQWorkbenchWindow.newWindow(this, new ACAQProject());
+            ACAQWindow window = ACAQWindow.newWindow(this, new ACAQProject());
             window.setTitle("New project");
         });
     }

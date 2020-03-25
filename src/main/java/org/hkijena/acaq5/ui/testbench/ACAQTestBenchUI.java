@@ -4,8 +4,8 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.testbench.ACAQTestbench;
 import org.hkijena.acaq5.api.testbench.ACAQTestbenchSnapshot;
-import org.hkijena.acaq5.ui.ACAQUIPanel;
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.ConfirmingButton;
@@ -22,14 +22,14 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
-public class ACAQTestBenchUI extends ACAQUIPanel {
+public class ACAQTestBenchUI extends ACAQProjectUIPanel {
 
     private ACAQTestbench testbench;
     private JComboBox<ACAQTestbenchSnapshot> backupSelection;
     private JButton newTestButton;
     private JSplitPane splitPane;
 
-    public ACAQTestBenchUI(ACAQWorkbenchUI workbenchUI, ACAQTestbench testbench) {
+    public ACAQTestBenchUI(ACAQProjectUI workbenchUI, ACAQTestbench testbench) {
         super(workbenchUI);
         this.testbench = testbench;
 

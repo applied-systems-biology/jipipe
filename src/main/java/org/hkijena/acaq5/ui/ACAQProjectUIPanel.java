@@ -4,15 +4,15 @@ import org.hkijena.acaq5.api.ACAQProject;
 
 import javax.swing.*;
 
-public class ACAQUIPanel extends JPanel {
+public class ACAQProjectUIPanel extends JPanel {
 
-    private final ACAQWorkbenchUI workbenchUI;
+    private final ACAQProjectUI workbenchUI;
 
-    public ACAQUIPanel(ACAQWorkbenchUI workbenchUI) {
+    public ACAQProjectUIPanel(ACAQProjectUI workbenchUI) {
         this.workbenchUI = workbenchUI;
     }
 
-    public ACAQWorkbenchUI getWorkbenchUI() {
+    public ACAQProjectUI getWorkbenchUI() {
         return workbenchUI;
     }
 

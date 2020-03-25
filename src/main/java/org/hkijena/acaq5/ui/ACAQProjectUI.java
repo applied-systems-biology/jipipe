@@ -24,16 +24,16 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ACAQWorkbenchUI extends JPanel {
+public class ACAQProjectUI extends JPanel {
 
     public DocumentTabPane documentTabPane;
-    private ACAQWorkbenchWindow window;
+    private ACAQWindow window;
     private ACAQProject project;
     private ACAQGUICommand command;
     private JLabel statusText;
     private Context context;
 
-    public ACAQWorkbenchUI(ACAQWorkbenchWindow window, ACAQGUICommand command, ACAQProject project) {
+    public ACAQProjectUI(ACAQWindow window, ACAQGUICommand command, ACAQProject project) {
         this.window = window;
         this.project = project;
         this.command = command;
@@ -255,7 +255,7 @@ public class ACAQWorkbenchUI extends JPanel {
         return project;
     }
 
-    public ACAQWorkbenchWindow getWindow() {
+    public ACAQWindow getWindow() {
         return window;
     }
 

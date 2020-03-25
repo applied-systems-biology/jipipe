@@ -12,7 +12,7 @@
 
 package org.hkijena.acaq5.ui.tableanalyzer;
 
-import org.hkijena.acaq5.ui.ACAQWorkbenchUI;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.DocumentTabListCellRenderer;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.utils.TableUtils;
@@ -43,7 +43,7 @@ public class ACAQMergeTableColumnsDialogUI extends JDialog {
         }
     }
 
-    public ACAQMergeTableColumnsDialogUI(ACAQWorkbenchUI workbenchUI, DefaultTableModel tableModel) {
+    public ACAQMergeTableColumnsDialogUI(ACAQProjectUI workbenchUI, DefaultTableModel tableModel) {
         this.tableModel = tableModel;
         initialize();
 
