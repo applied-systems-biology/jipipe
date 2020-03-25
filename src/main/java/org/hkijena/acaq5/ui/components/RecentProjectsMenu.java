@@ -2,7 +2,7 @@ package org.hkijena.acaq5.ui.components;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
-import org.hkijena.acaq5.ui.ACAQWindow;
+import org.hkijena.acaq5.ui.ACAQProjectWindow;
 import org.hkijena.acaq5.ui.settings.ACAQApplicationSettings;
 
 import javax.swing.*;
@@ -10,9 +10,9 @@ import java.nio.file.Path;
 
 public class RecentProjectsMenu extends JMenu {
 
-    private ACAQWindow workbenchWindow;
+    private ACAQProjectWindow workbenchWindow;
 
-    public RecentProjectsMenu(String text, Icon icon, ACAQWindow workbenchWindow) {
+    public RecentProjectsMenu(String text, Icon icon, ACAQProjectWindow workbenchWindow) {
         super(text);
         this.setIcon(icon);
         this.workbenchWindow = workbenchWindow;

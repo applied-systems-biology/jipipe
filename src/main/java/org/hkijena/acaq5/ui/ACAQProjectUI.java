@@ -27,13 +27,13 @@ import java.util.List;
 public class ACAQProjectUI extends JPanel {
 
     public DocumentTabPane documentTabPane;
-    private ACAQWindow window;
+    private ACAQProjectWindow window;
     private ACAQProject project;
     private ACAQGUICommand command;
     private JLabel statusText;
     private Context context;
 
-    public ACAQProjectUI(ACAQWindow window, ACAQGUICommand command, ACAQProject project) {
+    public ACAQProjectUI(ACAQProjectWindow window, ACAQGUICommand command, ACAQProject project) {
         this.window = window;
         this.project = project;
         this.command = command;
@@ -255,7 +255,7 @@ public class ACAQProjectUI extends JPanel {
         return project;
     }
 
-    public ACAQWindow getWindow() {
+    public ACAQProjectWindow getWindow() {
         return window;
     }
 
