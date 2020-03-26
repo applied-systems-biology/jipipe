@@ -123,6 +123,7 @@ public class ACAQJsonExtensionWindow extends JFrame {
             setTitle(savePath.toString());
             projectSavePath = savePath;
             projectUI.sendStatusBarText("Saved ACAQ5 JSON extension to " + savePath);
+            ACAQApplicationSettings.getInstance().addRecentJsonExtension(savePath);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -2,6 +2,7 @@ package org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.enhancers
 
 import ij.gui.Roi;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
+@ACAQOrganization(menuPath = "Merge")
 @ACAQDocumentation(name = "Merge ROI")
 
 // Data flow

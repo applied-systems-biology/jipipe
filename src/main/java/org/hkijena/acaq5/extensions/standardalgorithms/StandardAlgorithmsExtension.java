@@ -8,10 +8,7 @@ import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.annotation
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.annotation.SplitByAnnotation;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.converters.MaskToParticleConverter;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.converters.MultiChannelSplitterConverter;
-import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.enhancers.CLAHEImageEnhancer;
-import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.enhancers.IlluminationCorrectionEnhancer;
-import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.enhancers.MergeROIEnhancer;
-import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.enhancers.WatershedMaskEnhancer;
+import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.enhancers.*;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.segmenters.*;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.registries.GraphWrapperAlgorithmRegistrationTask;
 import org.hkijena.acaq5.utils.JsonUtils;
@@ -47,6 +44,7 @@ public class StandardAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExten
     @Override
     public void register() {
 
+        registerAlgorithm("enhance-merge-slots", MergeDataEnhancer.class);
         registerAlgorithm("convert-imagej-analyze-particles", MaskToParticleConverter.class);
         registerAlgorithm("enhance-imagej-clahe", CLAHEImageEnhancer.class);
         registerAlgorithm("enhance-imagej-illumination-correction", IlluminationCorrectionEnhancer.class);

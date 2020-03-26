@@ -83,11 +83,29 @@ public class ACAQDataSlot implements TableModel {
     public List<ACAQTrait> getAnnotations(int row) {
         List<ACAQTrait> result = new ArrayList<>();
         for (ACAQTraitDeclaration declaration : annotationColumns) {
-            ACAQTrait trait = annotations.get(declaration).get(row);
+            ACAQTrait trait = getOrCreateAnnotationColumnData(declaration).get(row);
             if (trait != null)
                 result.add(trait);
         }
         return result;
+    }
+
+    /**
+     * Gets the annotation column for the trait declaration or creates it
+     * @param declaration
+     * @return
+     */
+    private List<ACAQTrait> getOrCreateAnnotationColumnData(ACAQTraitDeclaration declaration) {
+        ArrayList<ACAQTrait> arrayList = annotations.getOrDefault(declaration, null);
+        if (arrayList == null) {
+            annotationColumns.add(declaration);
+            arrayList = new ArrayList<>();
+            annotations.put(declaration, arrayList);
+        }
+        while(arrayList.size() < getRowCount()) {
+            arrayList.add(null);
+        }
+        return arrayList;
     }
 
     /**
@@ -106,11 +124,8 @@ public class ACAQDataSlot implements TableModel {
         }
         data.add(value);
         for (ACAQTrait trait : traits) {
-            if (!annotations.containsKey(trait.getDeclaration())) {
-                annotationColumns.add(trait.getDeclaration());
-                annotations.put(trait.getDeclaration(), new ArrayList<>());
-            }
-            annotations.get(trait.getDeclaration()).add(trait);
+            List<ACAQTrait> traitArray = getOrCreateAnnotationColumnData(trait.getDeclaration());
+            traitArray.set(getRowCount() - 1, trait);
         }
     }
 
@@ -121,11 +136,7 @@ public class ACAQDataSlot implements TableModel {
      * @param overwrite If false, existing annotations of the same type are not overwritten
      */
     public void addAnnotationToAllData(ACAQTrait trait, boolean overwrite) {
-        if (!annotations.containsKey(trait.getDeclaration())) {
-            annotationColumns.add(trait.getDeclaration());
-            annotations.put(trait.getDeclaration(), new ArrayList<>());
-        }
-        ArrayList<ACAQTrait> traitArray = annotations.get(trait.getDeclaration());
+        List<ACAQTrait> traitArray = getOrCreateAnnotationColumnData(trait.getDeclaration());
         for (int i = 0; i < getRowCount(); ++i) {
             if (!overwrite && traitArray.get(i) != null)
                 continue;
