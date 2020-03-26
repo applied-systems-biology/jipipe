@@ -3,6 +3,7 @@ package org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditor
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
+import org.scijava.Context;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,8 +14,8 @@ public class BooleanParameterEditorUI extends ACAQParameterEditorUI {
     private boolean skipNextReload = false;
     private boolean isReloading = false;
 
-    public BooleanParameterEditorUI(ACAQProjectUI workbenchUI, ACAQParameterAccess parameterAccess) {
-        super(workbenchUI, parameterAccess);
+    public BooleanParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
+        super(context, parameterAccess);
         initialize();
     }
 

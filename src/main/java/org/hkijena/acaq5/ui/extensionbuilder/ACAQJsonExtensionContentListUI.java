@@ -5,6 +5,8 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.events.ExtensionContentAddedEvent;
 import org.hkijena.acaq5.api.events.ExtensionContentRemovedEvent;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
+import org.hkijena.acaq5.api.traits.ACAQJsonTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro.GraphWrapperAlgorithmDeclaration;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionUI;
@@ -22,6 +24,7 @@ public class ACAQJsonExtensionContentListUI extends ACAQJsonExtensionUIPanel {
 
     private JList<Object> list;
     private JSplitPane splitPane;
+    private Object currentlySelectedValue;
 
     public ACAQJsonExtensionContentListUI(ACAQJsonExtensionUI workbenchUI) {
         super(workbenchUI);
@@ -31,15 +34,24 @@ public class ACAQJsonExtensionContentListUI extends ACAQJsonExtensionUIPanel {
     }
 
     private void reload() {
+        Object selectedValue = list.getSelectedValue();
         DefaultListModel<Object> model = (DefaultListModel<Object>) list.getModel();
         model.clear();
         for (ACAQAlgorithmDeclaration declaration : getProject().getAlgorithmDeclarations().stream()
-                .sorted(Comparator.comparing(ACAQAlgorithmDeclaration::getName)).collect(Collectors.toList())) {
+                .sorted(Comparator.comparing(ACAQAlgorithmDeclaration::getName, Comparator.nullsFirst(Comparator.naturalOrder())))
+                .collect(Collectors.toList())) {
             model.addElement(declaration);
         }
         for (ACAQTraitDeclaration declaration : getProject().getTraitDeclarations().stream()
-                .sorted(Comparator.comparing(ACAQTraitDeclaration::getName)).collect(Collectors.toList())) {
+                .sorted(Comparator.comparing(ACAQTraitDeclaration::getName, Comparator.nullsFirst(Comparator.naturalOrder())))
+                .collect(Collectors.toList())) {
             model.addElement(declaration);
+        }
+        if(model.contains(selectedValue)) {
+            list.setSelectedValue(selectedValue, true);
+        }
+        else if(!model.isEmpty()) {
+            list.setSelectedIndex(0);
         }
     }
 
@@ -50,6 +62,9 @@ public class ACAQJsonExtensionContentListUI extends ACAQJsonExtensionUIPanel {
 
         list = new JList<>(new DefaultListModel<>());
         list.setCellRenderer(new JsonExtensionContentListCellRenderer());
+        list.addListSelectionListener(e -> {
+            setCurrentlySelectedValue(list.getSelectedValue());
+        });
         listPanel.add(list, BorderLayout.CENTER);
 
         JToolBar toolBar = new JToolBar();
@@ -90,13 +105,24 @@ public class ACAQJsonExtensionContentListUI extends ACAQJsonExtensionUIPanel {
     }
 
     private void addTrait() {
-
+        ACAQJsonTraitDeclaration declaration = new ACAQJsonTraitDeclaration();
+        getProject().addTrait(declaration);
+        declaration.getEventBus().register(this);
     }
 
     private void addAlgorithm() {
         GraphWrapperAlgorithmDeclaration declaration = new GraphWrapperAlgorithmDeclaration();
+        declaration.getMetadata().setName("");
         declaration.setGraph(new ACAQAlgorithmGraph());
         getProject().addAlgorithm(declaration);
+        declaration.getMetadata().getEventBus().register(this);
+    }
+
+    @Subscribe
+    public void onParameterChanged(ParameterChangedEvent event) {
+        if("name".equals(event.getKey())) {
+            list.repaint();
+        }
     }
 
     @Subscribe
@@ -107,5 +133,26 @@ public class ACAQJsonExtensionContentListUI extends ACAQJsonExtensionUIPanel {
     @Subscribe
     public void onContentRemovedEvent(ExtensionContentRemovedEvent event) {
         reload();
+    }
+
+    public Object getCurrentlySelectedValue() {
+        return currentlySelectedValue;
+    }
+
+    public void setCurrentlySelectedValue(Object currentlySelectedValue) {
+        if(currentlySelectedValue != this.currentlySelectedValue) {
+            this.currentlySelectedValue = currentlySelectedValue;
+            if(currentlySelectedValue != null) {
+                if(currentlySelectedValue instanceof GraphWrapperAlgorithmDeclaration) {
+                    splitPane.setRightComponent(new GraphWrapperAlgorithmDeclarationUI(getWorkbenchUI(), (GraphWrapperAlgorithmDeclaration)currentlySelectedValue));
+                }
+                else if(currentlySelectedValue instanceof ACAQJsonTraitDeclaration) {
+                    splitPane.setRightComponent(new ACAQJsonTraitDeclarationUI(getWorkbenchUI(), (ACAQJsonTraitDeclaration) currentlySelectedValue));
+                }
+            }
+            else {
+                splitPane.setRightComponent(new JPanel());
+            }
+        }
     }
 }

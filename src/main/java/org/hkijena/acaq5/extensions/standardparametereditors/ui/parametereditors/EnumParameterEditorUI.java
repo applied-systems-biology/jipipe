@@ -3,6 +3,7 @@ package org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditor
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
+import org.scijava.Context;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,8 +17,8 @@ public class EnumParameterEditorUI extends ACAQParameterEditorUI {
     private boolean isReloading = false;
     private JComboBox<Object> comboBox;
 
-    public EnumParameterEditorUI(ACAQProjectUI workbenchUI, ACAQParameterAccess parameterAccess) {
-        super(workbenchUI, parameterAccess);
+    public EnumParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
+        super(context, parameterAccess);
         initialize();
         reload();
     }

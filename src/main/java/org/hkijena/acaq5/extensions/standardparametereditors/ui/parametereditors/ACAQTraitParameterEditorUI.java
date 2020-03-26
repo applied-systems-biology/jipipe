@@ -14,6 +14,7 @@ import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTextField;
+import org.scijava.Context;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -31,8 +32,8 @@ public class ACAQTraitParameterEditorUI extends ACAQParameterEditorUI {
     private boolean skipNextReload = false;
     private boolean isReloading = false;
 
-    public ACAQTraitParameterEditorUI(ACAQProjectUI workbenchUI, ACAQParameterAccess parameterAccess) {
-        super(workbenchUI, parameterAccess);
+    public ACAQTraitParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
+        super(context, parameterAccess);
         initialize();
         reload();
     }

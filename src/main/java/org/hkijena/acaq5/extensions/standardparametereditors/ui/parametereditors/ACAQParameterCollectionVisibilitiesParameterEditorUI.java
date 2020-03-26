@@ -8,6 +8,8 @@ import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
+import org.scijava.Context;
+import org.scijava.Contextual;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,8 +21,8 @@ public class ACAQParameterCollectionVisibilitiesParameterEditorUI extends ACAQPa
 
     private FormPanel formPanel;
 
-    public ACAQParameterCollectionVisibilitiesParameterEditorUI(ACAQProjectUI workbenchUI, ACAQParameterAccess parameterAccess) {
-        super(workbenchUI, parameterAccess);
+    public ACAQParameterCollectionVisibilitiesParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
+        super(context, parameterAccess);
         initialize();
         reload();
     }
@@ -74,7 +76,7 @@ public class ACAQParameterCollectionVisibilitiesParameterEditorUI extends ACAQPa
                 }
 
                 ACAQParameterEditorUI ui = ACAQDefaultRegistry.getInstance()
-                        .getUIParametertypeRegistry().createEditorFor(getWorkbenchUI(), parameterAccess);
+                        .getUIParametertypeRegistry().createEditorFor(getContext(), parameterAccess);
 
                 JPanel labelPanel = new JPanel(new BorderLayout(8, 8));
                 JToggleButton exportParameterToggle = new JToggleButton(UIUtils.getIconFromResources("eye.png"));

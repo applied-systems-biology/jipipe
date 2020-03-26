@@ -4,6 +4,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
+import org.scijava.Context;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -16,8 +17,8 @@ public class StringParameterEditorUI extends ACAQParameterEditorUI {
     private boolean skipNextReload = false;
     private boolean isReloading = false;
 
-    public StringParameterEditorUI(ACAQProjectUI workbenchUI, ACAQParameterAccess parameterAccess) {
-        super(workbenchUI, parameterAccess);
+    public StringParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
+        super(context, parameterAccess);
         initialize();
         reload();
     }

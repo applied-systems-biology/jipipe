@@ -6,6 +6,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.FileSelection;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
+import org.scijava.Context;
 
 import java.awt.*;
 
@@ -15,10 +16,10 @@ public class FilePathParameterEditorUI extends ACAQParameterEditorUI {
     private boolean isReloading = false;
     private FileSelection fileSelection;
 
-    public FilePathParameterEditorUI(ACAQProjectUI workbenchUI, ACAQParameterAccess parameterAccess) {
-        super(workbenchUI, parameterAccess);
+    public FilePathParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
+        super(context, parameterAccess);
         initialize();
-        getWorkbenchUI().getProject().getEventBus().register(this);
+//        getWorkbenchUI().getProject().getEventBus().register(this);
     }
 
     @Override
@@ -59,9 +60,9 @@ public class FilePathParameterEditorUI extends ACAQParameterEditorUI {
         });
     }
 
-    @Subscribe
-    public void onWorkDirectoryChanged(WorkDirectoryChangedEvent event) {
-        if (event.getWorkDirectory() != null)
-            fileSelection.getFileChooser().setCurrentDirectory(event.getWorkDirectory().toFile());
-    }
+//    @Subscribe
+//    public void onWorkDirectoryChanged(WorkDirectoryChangedEvent event) {
+//        if (event.getWorkDirectory() != null)
+//            fileSelection.getFileChooser().setCurrentDirectory(event.getWorkDirectory().toFile());
+//    }
 }

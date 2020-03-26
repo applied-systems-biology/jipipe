@@ -8,6 +8,7 @@ import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonExtensionContentListUI;
 import org.hkijena.acaq5.ui.settings.ACAQJsonExtensionSettingsUI;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXStatusBar;
+import org.scijava.Context;
 
 import javax.swing.*;
 import java.awt.*;
@@ -157,5 +158,9 @@ public class ACAQJsonExtensionUI extends JPanel {
 
     public ACAQJsonExtension getProject() {
         return project;
+    }
+
+    public Context getContext() {
+        return command.getContext();
     }
 }

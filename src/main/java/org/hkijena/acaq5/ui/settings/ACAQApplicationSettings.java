@@ -50,6 +50,12 @@ public class ACAQApplicationSettings {
         eventBus.post(new ParameterChangedEvent(this, "recent-projects"));
     }
 
+    public void clearRecentJsonExtensions() {
+        recentJsonExtensions.clear();
+        save();
+        eventBus.post(new ParameterChangedEvent(this, "recent-json-extensions"));
+    }
+
     public void addRecentProject(Path fileName) {
         int index = recentProjects.indexOf(fileName);
         if (index == -1) {
@@ -68,12 +74,12 @@ public class ACAQApplicationSettings {
         int index = recentJsonExtensions.indexOf(fileName);
         if (index == -1) {
             recentJsonExtensions.add(0, fileName);
-            eventBus.post(new ParameterChangedEvent(this, "recent-json-extension"));
+            eventBus.post(new ParameterChangedEvent(this, "recent-json-extensions"));
             save();
         } else if (index != 0) {
             recentJsonExtensions.remove(index);
             recentJsonExtensions.add(0, fileName);
-            eventBus.post(new ParameterChangedEvent(this, "recent-json-extension"));
+            eventBus.post(new ParameterChangedEvent(this, "recent-json-extensions"));
             save();
         }
     }

@@ -15,7 +15,7 @@ public class ACAQJsonExtensionSettingsUI extends ACAQJsonExtensionUIPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        ACAQParameterAccessUI metadataUI = new ACAQParameterAccessUI(null,
+        ACAQParameterAccessUI metadataUI = new ACAQParameterAccessUI(getWorkbenchUI(),
                 getProject(),
                 MarkdownDocument.fromPluginResource("documentation/project-settings.md"),
                 false,

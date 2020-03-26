@@ -3,9 +3,9 @@ package org.hkijena.acaq5.extensions.imagejdatatypes;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
+import org.scijava.Context;
 import org.scijava.ui.swing.script.EditorPane;
 
 import javax.swing.*;
@@ -18,8 +18,8 @@ public class MacroParameterEditorUI extends ACAQParameterEditorUI {
     private boolean isReloading = false;
     private EditorPane textArea;
 
-    public MacroParameterEditorUI(ACAQProjectUI workbenchUI, ACAQParameterAccess parameterAccess) {
-        super(workbenchUI, parameterAccess);
+    public MacroParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
+        super(context, parameterAccess);
         registerIJMacroLanguage();
         initialize();
     }
@@ -34,7 +34,7 @@ public class MacroParameterEditorUI extends ACAQParameterEditorUI {
         MacroCode code = getParameterAccess().get();
         textArea = new EditorPane();
         textArea.setBorder(BorderFactory.createEtchedBorder());
-        getWorkbenchUI().getContext().inject(textArea);
+        getContext().inject(textArea);
         textArea.setText(code.getCode());
         textArea.setSyntaxEditingStyle("text/ijm");
         textArea.getDocument().addDocumentListener(new DocumentChangeListener() {

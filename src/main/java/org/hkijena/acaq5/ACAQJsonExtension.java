@@ -3,24 +3,35 @@ package org.hkijena.acaq5;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQProjectMetadata;
+import org.hkijena.acaq5.api.ACAQValidatable;
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.events.ExtensionContentAddedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
+import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
+import org.hkijena.acaq5.api.registries.ACAQJsonTraitRegistrationTask;
+import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQJsonTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro.GraphWrapperAlgorithmDeclaration;
+import org.hkijena.acaq5.extensions.standardalgorithms.api.registries.GraphWrapperAlgorithmRegistrationTask;
+import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
-public class ACAQJsonExtension implements ACAQDependency {
+@JsonDeserialize(as = ACAQJsonExtension.class)
+public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
     private EventBus eventBus = new EventBus();
     private String id;
     private String version;
@@ -29,7 +40,7 @@ public class ACAQJsonExtension implements ACAQDependency {
     private ACAQDefaultRegistry registry;
 
     private Set<GraphWrapperAlgorithmDeclaration> algorithmDeclarations = new HashSet<>();
-    private Set<ACAQJsonTraitDeclaration> traitDeclarations = new HashSet<ACAQJsonTraitDeclaration>();
+    private Set<ACAQJsonTraitDeclaration> traitDeclarations = new HashSet<>();
 
     public ACAQJsonExtension() {
     }
@@ -97,7 +108,11 @@ public class ACAQJsonExtension implements ACAQDependency {
             result.addAll(declaration.getDependencies());
         }
         for (ACAQTraitDeclaration declaration : traitDeclarations) {
-            result.addAll(declaration.getDependencies());
+            for (ACAQDependency dependency : declaration.getDependencies()) {
+                if(!Objects.equals(dependency.getDependencyId(), getDependencyId())) {
+                    result.add(dependency);
+                }
+            }
         }
         return result;
     }
@@ -115,10 +130,18 @@ public class ACAQJsonExtension implements ACAQDependency {
     }
 
     public void register() {
-
+        for (ACAQJsonTraitDeclaration declaration : traitDeclarations) {
+            // There can be internal dependencies; we require a scheduler task
+            ACAQTraitRegistry.getInstance().scheduleRegister(new ACAQJsonTraitRegistrationTask(declaration, this));
+        }
+        for (GraphWrapperAlgorithmDeclaration declaration : algorithmDeclarations) {
+            // No internal dependencies: The plugin system can handle this
+            ACAQAlgorithmRegistry.getInstance().register(declaration, this);
+        }
     }
 
     public void saveProject(Path savePath) throws IOException {
+        JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(savePath.toFile(), this);
         jsonFilePath = savePath;
     }
 
@@ -152,7 +175,21 @@ public class ACAQJsonExtension implements ACAQDependency {
         this.traitDeclarations = traitDeclarations;
     }
 
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+        for (ACAQJsonTraitDeclaration declaration : traitDeclarations) {
+            report.forCategory("Annotations").forCategory(declaration.getName()).report(declaration);
+        }
+        for (GraphWrapperAlgorithmDeclaration declaration : algorithmDeclarations) {
+            report.forCategory("Algorithms").forCategory(declaration.getName()).report(declaration);
+        }
+    }
+
     public static ACAQJsonExtension loadProject(JsonNode jsonData) {
-        return null;
+        try {
+            return JsonUtils.getObjectMapper().readerFor(ACAQJsonExtension.class).readValue(jsonData);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

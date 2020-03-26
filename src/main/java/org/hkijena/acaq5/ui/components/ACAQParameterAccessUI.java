@@ -2,9 +2,13 @@ package org.hkijena.acaq5.ui.components;
 
 import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.api.parameters.*;
+import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro.GraphWrapperAlgorithmDeclaration;
+import org.hkijena.acaq5.ui.ACAQJsonExtensionUI;
 import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
+import org.scijava.Context;
+import org.scijava.Contextual;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,15 +18,23 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class ACAQParameterAccessUI extends FormPanel {
-    private ACAQProjectUI workbenchUI;
+public class ACAQParameterAccessUI extends FormPanel implements Contextual  {
+    private Context context;
     private ACAQParameterHolder parameterHolder;
 
-    public ACAQParameterAccessUI(ACAQProjectUI workbenchUI, ACAQParameterHolder parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
+    public ACAQParameterAccessUI(Context context, ACAQParameterHolder parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
         super(documentation, documentationBelow, withDocumentation);
-        this.workbenchUI = workbenchUI;
+        this.context = context;
         this.parameterHolder = parameterHolder;
         reloadForm();
+    }
+
+    public ACAQParameterAccessUI(ACAQProjectUI workbenchUI, ACAQParameterHolder parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
+        this(workbenchUI.getContext(), parameterHolder, documentation, documentationBelow, withDocumentation);
+    }
+
+    public ACAQParameterAccessUI(ACAQJsonExtensionUI workbenchUI, ACAQParameterHolder parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
+        this(workbenchUI.getContext(), parameterHolder, documentation, documentationBelow, withDocumentation);
     }
 
     public void reloadForm() {
@@ -40,7 +52,7 @@ public class ACAQParameterAccessUI extends FormPanel {
                     continue;
 
                 ACAQParameterEditorUI ui = ACAQDefaultRegistry.getInstance()
-                        .getUIParametertypeRegistry().createEditorFor(workbenchUI, parameterAccess);
+                        .getUIParametertypeRegistry().createEditorFor(getContext(), parameterAccess);
                 if (ui.isUILabelEnabled())
                     addToForm(ui, new JLabel(parameterAccess.getName()), generateParameterDocumentation(parameterAccess));
                 else
@@ -102,7 +114,7 @@ public class ACAQParameterAccessUI extends FormPanel {
                 }
 
                 ACAQParameterEditorUI ui = ACAQDefaultRegistry.getInstance()
-                        .getUIParametertypeRegistry().createEditorFor(workbenchUI, parameterAccess);
+                        .getUIParametertypeRegistry().createEditorFor(getContext(), parameterAccess);
 
                 JPanel labelPanel = new JPanel(new BorderLayout());
                 if (ui.isUILabelEnabled())
@@ -173,5 +185,21 @@ public class ACAQParameterAccessUI extends FormPanel {
 
     public ACAQParameterHolder getParameterHolder() {
         return parameterHolder;
+    }
+
+    @Override
+    public Context getContext() {
+        return context;
+    }
+
+    @Override
+    public void setContext(Context context) {
+        this.context = context;
+        this.context.inject(this);
+    }
+
+    @Override
+    public Context context() {
+        return context;
     }
 }

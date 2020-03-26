@@ -6,6 +6,7 @@ import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.PathFilter;
 import org.hkijena.acaq5.utils.UIUtils;
+import org.scijava.Context;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -13,8 +14,8 @@ import java.awt.*;
 
 public class PathFilterParameterEditorUI extends ACAQParameterEditorUI {
 
-    public PathFilterParameterEditorUI(ACAQProjectUI workbenchUI, ACAQParameterAccess parameterAccess) {
-        super(workbenchUI, parameterAccess);
+    public PathFilterParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
+        super(context, parameterAccess);
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         reload();
     }

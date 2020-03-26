@@ -4,8 +4,9 @@ public class ACAQDefaultDiscriminator extends ACAQDefaultTrait implements ACAQDi
 
     private String value;
 
-    public ACAQDefaultDiscriminator(ACAQTraitDeclaration declaration) {
+    public ACAQDefaultDiscriminator(ACAQTraitDeclaration declaration, String value) {
         super(declaration);
+        this.value = value;
     }
 
     @Override

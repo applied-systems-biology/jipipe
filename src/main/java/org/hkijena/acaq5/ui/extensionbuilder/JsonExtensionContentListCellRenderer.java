@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.ui.extensionbuilder;
 
+import org.hkijena.acaq5.api.traits.ACAQJsonTraitDeclaration;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro.GraphWrapperAlgorithmDeclaration;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -18,13 +19,21 @@ public class JsonExtensionContentListCellRenderer extends JLabel implements List
     public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 
         if (value instanceof GraphWrapperAlgorithmDeclaration) {
-            String name = StringUtils.orElse(((GraphWrapperAlgorithmDeclaration) value).getName(), "<No name>");
+            String name = StringUtils.orElse(((GraphWrapperAlgorithmDeclaration) value).getName(), "&lt;No name&gt;");
 
             setText("<html><strong>" + name + "</strong><br/>" +
                     "<i>Algorithm</i>" +
                     "</html>");
             setIcon(UIUtils.getIconFromResources("cogs-32.png"));
-        } else {
+        }
+        else if(value instanceof ACAQJsonTraitDeclaration) {
+            String name = StringUtils.orElse(((ACAQJsonTraitDeclaration) value).getName(), "&lt;No name&gt;");
+            setText("<html><strong>" + name + "</strong><br/>" +
+                    "<i>Annotation type</i>" +
+                    "</html>");
+            setIcon(UIUtils.getIconFromResources("tags-32.png"));
+        }
+        else {
             setText("<Unknown entry>");
             setIcon(UIUtils.getIconFromResources("remove.png"));
         }

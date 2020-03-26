@@ -73,9 +73,30 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQProjectUIPanel {
     }
 
     private void reloadExportMenu() {
+        exportMenu.removeAll();
+
         JMenuItem exportToNewExtensionButton = new JMenuItem("New extension ...", UIUtils.getIconFromResources("new.png"));
         exportToNewExtensionButton.addActionListener(e -> exportToNewExtension());
         exportMenu.add(exportToNewExtensionButton);
+
+        exportMenu.addSeparator();
+
+        for (ACAQJsonExtensionWindow window : ACAQJsonExtensionWindow.getOpenWindows()) {
+            JMenuItem exportToExtensionButton = new JMenuItem(window.getTitle(), UIUtils.getIconFromResources("module.png"));
+            exportToExtensionButton.addActionListener(e -> exportToExtension(window.getProject()));
+            exportMenu.add(exportToExtensionButton);
+        }
+
+        JMenuItem reloadButton = new JMenuItem("Reload", UIUtils.getIconFromResources("refresh.png"));
+        reloadButton.addActionListener(e -> reloadExportMenu());
+        exportMenu.add(reloadButton);
+    }
+
+    private void exportToExtension(ACAQJsonExtension extension) {
+        if (!checkValidity())
+            return;
+        extension.addAlgorithm(algorithmDeclaration);
+        getWorkbenchUI().getDocumentTabPane().remove(this);
     }
 
     private void exportToNewExtension() {
