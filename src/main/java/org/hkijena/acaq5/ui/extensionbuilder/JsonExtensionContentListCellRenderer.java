@@ -17,15 +17,14 @@ public class JsonExtensionContentListCellRenderer extends JLabel implements List
     @Override
     public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 
-        if(value instanceof GraphWrapperAlgorithmDeclaration) {
+        if (value instanceof GraphWrapperAlgorithmDeclaration) {
             String name = StringUtils.orElse(((GraphWrapperAlgorithmDeclaration) value).getName(), "<No name>");
 
             setText("<html><strong>" + name + "</strong><br/>" +
                     "<i>Algorithm</i>" +
                     "</html>");
             setIcon(UIUtils.getIconFromResources("cogs-32.png"));
-        }
-        else {
+        } else {
             setText("<Unknown entry>");
             setIcon(UIUtils.getIconFromResources("remove.png"));
         }

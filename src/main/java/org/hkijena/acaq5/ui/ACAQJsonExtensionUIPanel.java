@@ -1,7 +1,6 @@
 package org.hkijena.acaq5.ui;
 
 import org.hkijena.acaq5.ACAQJsonExtension;
-import org.hkijena.acaq5.api.ACAQProject;
 
 import javax.swing.*;
 

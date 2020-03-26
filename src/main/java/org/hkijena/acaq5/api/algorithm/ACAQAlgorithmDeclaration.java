@@ -4,7 +4,6 @@ import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.data.traits.ACAQDataSlotTraitConfiguration;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -104,6 +103,7 @@ public interface ACAQAlgorithmDeclaration {
 
     /**
      * Returns all dependencies
+     *
      * @return
      */
     Set<ACAQDependency> getDependencies();

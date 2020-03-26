@@ -2,7 +2,6 @@ package org.hkijena.acaq5.api.traits;
 
 import org.hkijena.acaq5.ACAQDependency;
 
-import java.util.Collection;
 import java.util.Set;
 
 public interface ACAQTraitDeclaration {
@@ -74,6 +73,7 @@ public interface ACAQTraitDeclaration {
 
     /**
      * Returns all dependencies
+     *
      * @return
      */
     Set<ACAQDependency> getDependencies();

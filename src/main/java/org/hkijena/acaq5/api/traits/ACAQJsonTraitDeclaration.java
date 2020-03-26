@@ -19,7 +19,6 @@ import java.util.Set;
 public class ACAQJsonTraitDeclaration extends ACAQMutableTraitDeclaration {
 
 
-
     @Override
     public ACAQTrait newInstance() {
         return null;

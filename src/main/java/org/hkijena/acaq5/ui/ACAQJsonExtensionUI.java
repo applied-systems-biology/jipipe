@@ -6,7 +6,6 @@ import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.RecentJsonExtensionsMenu;
 import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonExtensionContentListUI;
 import org.hkijena.acaq5.ui.settings.ACAQJsonExtensionSettingsUI;
-import org.hkijena.acaq5.ui.settings.ACAQProjectSettingsUI;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXStatusBar;
 
@@ -17,10 +16,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class ACAQJsonExtensionUI extends JPanel {
-    public DocumentTabPane documentTabPane;
     private final ACAQJsonExtensionWindow window;
     private final ACAQGUICommand command;
     private final ACAQJsonExtension project;
+    public DocumentTabPane documentTabPane;
     private JLabel statusText;
 
     public ACAQJsonExtensionUI(ACAQJsonExtensionWindow window, ACAQGUICommand command, ACAQJsonExtension project) {

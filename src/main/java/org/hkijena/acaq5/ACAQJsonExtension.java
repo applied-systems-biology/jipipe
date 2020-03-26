@@ -96,7 +96,7 @@ public class ACAQJsonExtension implements ACAQDependency {
         for (ACAQAlgorithmDeclaration declaration : algorithmDeclarations) {
             result.addAll(declaration.getDependencies());
         }
-        for(ACAQTraitDeclaration declaration : traitDeclarations) {
+        for (ACAQTraitDeclaration declaration : traitDeclarations) {
             result.addAll(declaration.getDependencies());
         }
         return result;

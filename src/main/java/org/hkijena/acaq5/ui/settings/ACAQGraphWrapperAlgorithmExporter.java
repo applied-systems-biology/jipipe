@@ -11,14 +11,11 @@ import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
 import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
-import org.hkijena.acaq5.ui.components.RecentJsonExtensionsMenu;
-import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
 
 public class ACAQGraphWrapperAlgorithmExporter extends ACAQProjectUIPanel {
 
@@ -82,7 +79,7 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQProjectUIPanel {
     }
 
     private void exportToNewExtension() {
-        if(!checkValidity())
+        if (!checkValidity())
             return;
         ACAQJsonExtension extension = new ACAQJsonExtension();
         extension.addAlgorithm(algorithmDeclaration);

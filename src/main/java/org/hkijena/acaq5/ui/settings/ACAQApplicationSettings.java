@@ -3,7 +3,6 @@ package org.hkijena.acaq5.ui.settings;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.eventbus.EventBus;
-import gnu.trove.TByteCollection;
 import ij.IJ;
 import ij.Prefs;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;

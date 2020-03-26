@@ -7,7 +7,6 @@ import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefCollection;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
-import org.hkijena.acaq5.extensions.imagejdatatypes.MacroCode;
 import org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors.*;
 import org.hkijena.acaq5.utils.PathFilter;
 import org.scijava.plugin.Plugin;

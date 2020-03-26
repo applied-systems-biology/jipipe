@@ -93,6 +93,7 @@ public class ACAQSlotDefinition {
     /**
      * Applies inheritance conversion.
      * This is a text replacement system with termination condition of never visiting the same time twice.
+     *
      * @param definition
      * @param dataClass
      * @return
@@ -102,12 +103,12 @@ public class ACAQSlotDefinition {
         ACAQDataDeclaration currentData = ACAQDataDeclaration.getInstance(dataClass);
         ACAQDataDeclaration lastData = currentData;
         visited.add(currentData);
-        while(true) {
+        while (true) {
             currentData = definition.inheritanceConversions.getOrDefault(currentData, null);
-            if(currentData == null)
+            if (currentData == null)
                 return lastData.getDataClass();
             lastData = currentData;
-            if(visited.contains(currentData))
+            if (visited.contains(currentData))
                 return currentData.getDataClass();
             visited.add(currentData);
         }

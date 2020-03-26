@@ -44,7 +44,7 @@ public class StringUtils {
     }
 
     public static String orElse(String string, String ifNullOrEmpty) {
-        return  isNullOrEmpty(string) ? ifNullOrEmpty : string;
+        return isNullOrEmpty(string) ? ifNullOrEmpty : string;
     }
 
     /**

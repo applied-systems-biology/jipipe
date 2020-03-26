@@ -12,7 +12,6 @@ import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.enhancers.
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.enhancers.IlluminationCorrectionEnhancer;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.enhancers.MergeROIEnhancer;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.enhancers.WatershedMaskEnhancer;
-import org.hkijena.acaq5.extensions.imagejdatatypes.MacroWrapperAlgorithm;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.segmenters.*;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.registries.GraphWrapperAlgorithmRegistrationTask;
 import org.hkijena.acaq5.utils.JsonUtils;

@@ -31,7 +31,7 @@ public class ACAQJsonExtensionWindow extends JFrame {
         this.command = command;
         initialize();
         loadProject(project);
-        if(project.getJsonFilePath() != null)
+        if (project.getJsonFilePath() != null)
             setTitle(project.getJsonFilePath().toString());
         else
             setTitle("New project");

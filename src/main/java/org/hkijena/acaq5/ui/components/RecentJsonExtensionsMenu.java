@@ -3,7 +3,6 @@ package org.hkijena.acaq5.ui.components;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWindow;
-import org.hkijena.acaq5.ui.ACAQProjectWindow;
 import org.hkijena.acaq5.ui.settings.ACAQApplicationSettings;
 
 import javax.swing.*;
