@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.standardalgorithms.api.macro;
+package org.hkijena.acaq5.extensions.imagejdatatypes;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;

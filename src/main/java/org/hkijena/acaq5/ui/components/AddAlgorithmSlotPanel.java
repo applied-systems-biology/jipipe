@@ -321,7 +321,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
         dialog.setTitle("Add slot");
         dialog.setModal(true);
         dialog.pack();
-        dialog.setSize(new Dimension(500, 400));
+        dialog.setSize(new Dimension(500, 600));
         dialog.setLocationRelativeTo(parent);
         UIUtils.addEscapeListener(dialog);
         dialog.setVisible(true);

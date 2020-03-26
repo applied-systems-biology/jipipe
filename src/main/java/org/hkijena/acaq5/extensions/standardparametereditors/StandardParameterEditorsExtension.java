@@ -7,7 +7,7 @@ import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefCollection;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
-import org.hkijena.acaq5.extensions.standardalgorithms.api.macro.MacroCode;
+import org.hkijena.acaq5.extensions.imagejdatatypes.MacroCode;
 import org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors.*;
 import org.hkijena.acaq5.utils.PathFilter;
 import org.scijava.plugin.Plugin;
@@ -50,7 +50,6 @@ public class StandardParameterEditorsExtension extends ACAQPrepackagedDefaultJav
         registerParameterType(Float.class, FloatParameterEditorUI.class, "Floating point number (single)", "A floating point number with single precision");
         registerParameterType(Boolean.class, BooleanParameterEditorUI.class, "Boolean value", "A boolean value (true/false)");
         registerParameterType(String.class, StringParameterEditorUI.class, "String", "A text value");
-        registerParameterType(MacroCode.class, MacroParameterEditorUI.class, "ImageJ macro", "An ImageJ macro code");
         registerParameterType(Enum.class, EnumParameterEditorUI.class, null, "A selection of different values");
         registerParameterType(PathCollection.class, PathCollectionParameterEditorUI.class, "Path collection", "A list of multiple filesystem paths");
         registerParameterType(PathFilter.class, PathFilterParameterEditorUI.class, "Path filter", "A filter for filenames or folder names");

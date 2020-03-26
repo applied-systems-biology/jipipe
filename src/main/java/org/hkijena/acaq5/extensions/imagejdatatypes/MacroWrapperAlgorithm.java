@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro;
+package org.hkijena.acaq5.extensions.imagejdatatypes;
 
 import ij.ImagePlus;
 import ij.WindowManager;
@@ -19,7 +19,6 @@ import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ACAQROIData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ACAQResultsTableData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.acaq5.extensions.standardalgorithms.api.macro.MacroCode;
 import org.hkijena.acaq5.utils.MacroUtils;
 
 import java.awt.*;

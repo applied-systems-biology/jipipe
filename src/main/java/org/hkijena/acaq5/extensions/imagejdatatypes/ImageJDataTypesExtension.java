@@ -21,7 +21,7 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.resultanalysis.ResultsTableD
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
 
-import static org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro.MacroWrapperAlgorithm.IMAGEJ_DATA_CLASSES;
+import static org.hkijena.acaq5.extensions.imagejdatatypes.MacroWrapperAlgorithm.IMAGEJ_DATA_CLASSES;
 
 @Plugin(type = ACAQJavaExtension.class)
 public class ImageJDataTypesExtension extends ACAQPrepackagedDefaultJavaExtension {
@@ -62,13 +62,21 @@ public class ImageJDataTypesExtension extends ACAQPrepackagedDefaultJavaExtensio
 
         registerDatatype("imagej-roi", ACAQROIData.class, ResourceUtils.getPluginResource("icons/data-types/roi.png"),
                 ROIDataSlotRowUI.class, null);
+        IMAGEJ_DATA_CLASSES.add(ACAQROIData.class);
         registerDatatype("imagej-results-table", ACAQResultsTableData.class, ResourceUtils.getPluginResource("icons/data-types/results-table.png"),
                 ResultsTableDataSlotRowUI.class, null);
+        IMAGEJ_DATA_CLASSES.add(ACAQResultsTableData.class);
 
         // Register data sources
         registerAlgorithm("import-imagej-roi-from-file", ROIDataFromFile.class);
         registerAlgorithm("import-imagej-results-table-from-file", ResultsTableFromFile.class);
         registerAlgorithm("import-imagej-bioformats", BioformatsImporter.class);
+
+        // Register algorithms
+        registerAlgorithm("external-imagej-macro", MacroWrapperAlgorithm.class);
+
+        // Register parameter editors
+        registerParameterType(MacroCode.class, MacroParameterEditorUI.class, "ImageJ macro", "An ImageJ macro code");
     }
 
     private void registerImageDataType(String id, Class<? extends ACAQData> dataClass, String iconResource) {

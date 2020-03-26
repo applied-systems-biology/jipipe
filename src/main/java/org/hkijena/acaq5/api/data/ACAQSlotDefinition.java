@@ -13,7 +13,9 @@ import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Defines an {@link org.hkijena.acaq5.api.algorithm.ACAQAlgorithm} data slot.
@@ -88,9 +90,27 @@ public class ACAQSlotDefinition {
         this.inheritanceConversions = inheritanceConversions;
     }
 
+    /**
+     * Applies inheritance conversion.
+     * This is a text replacement system with termination condition of never visiting the same time twice.
+     * @param definition
+     * @param dataClass
+     * @return
+     */
     public static Class<? extends ACAQData> applyInheritanceConversion(ACAQSlotDefinition definition, Class<? extends ACAQData> dataClass) {
-        return definition.inheritanceConversions.getOrDefault(ACAQDataDeclaration.getInstance(dataClass),
-                ACAQDataDeclaration.getInstance(dataClass)).getDataClass();
+        Set<ACAQDataDeclaration> visited = new HashSet<>();
+        ACAQDataDeclaration currentData = ACAQDataDeclaration.getInstance(dataClass);
+        ACAQDataDeclaration lastData = currentData;
+        visited.add(currentData);
+        while(true) {
+            currentData = definition.inheritanceConversions.getOrDefault(currentData, null);
+            if(currentData == null)
+                return lastData.getDataClass();
+            lastData = currentData;
+            if(visited.contains(currentData))
+                return currentData.getDataClass();
+            visited.add(currentData);
+        }
     }
 
     public static class Serializer extends JsonSerializer<ACAQSlotDefinition> {
