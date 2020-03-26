@@ -50,7 +50,7 @@ public class BioObjectsTraitsExtension extends ACAQPrepackagedDefaultJavaExtensi
         // Project management annotations
         registerTrait("project-sample", Sample.class, ResourceUtils.getPluginResource("icons/traits/project-sample.png"));
         registerTrait("project-subject", Subject.class, ResourceUtils.getPluginResource("icons/traits/project-subject.png"));
-        registerTrait("project-treatment", Treatment.class, ResourceUtils.getPluginResource("icons/traits/project-treatment.png"));
+        registerTrait("project-treatment", Treatment.class, ResourceUtils.getPluginResource("icons/traits/project-label.png"));
 
         // Image quality annotations
         registerTrait("image-quality", ImageQuality.class, null);
