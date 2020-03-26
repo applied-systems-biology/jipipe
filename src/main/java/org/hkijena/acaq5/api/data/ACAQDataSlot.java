@@ -92,6 +92,7 @@ public class ACAQDataSlot implements TableModel {
 
     /**
      * Gets the annotation column for the trait declaration or creates it
+     *
      * @param declaration
      * @return
      */
@@ -102,7 +103,7 @@ public class ACAQDataSlot implements TableModel {
             arrayList = new ArrayList<>();
             annotations.put(declaration, arrayList);
         }
-        while(arrayList.size() < getRowCount()) {
+        while (arrayList.size() < getRowCount()) {
             arrayList.add(null);
         }
         return arrayList;

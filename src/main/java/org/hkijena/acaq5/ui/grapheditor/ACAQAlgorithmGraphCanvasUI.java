@@ -172,7 +172,27 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
                 ui.trySetLocationNoGrid(minX, y);
             }
         }
+    }
 
+    private void autoPlaceTargetAdjacent(ACAQAlgorithmUI sourceAlgorithmUI, ACAQDataSlot source, ACAQAlgorithmUI targetAlgorithmUI, ACAQDataSlot target) {
+        int sourceSlotIndex = source.getAlgorithm().getOutputSlots().indexOf(source);
+        int targetSlotIndex = target.getAlgorithm().getInputSlots().indexOf(target);
+        if (sourceSlotIndex < 0 || targetSlotIndex < 0) {
+            autoPlaceAlgorithm(targetAlgorithmUI);
+            return;
+        }
+
+        int sourceSlotInternalY = sourceSlotIndex * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+        int targetSlotInternalY = targetSlotIndex * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+
+        int minX = sourceAlgorithmUI.getWidth() + sourceAlgorithmUI.getX() + ACAQAlgorithmUI.SLOT_UI_WIDTH * 2;
+        int targetY = sourceAlgorithmUI.getY() + sourceSlotInternalY - targetSlotInternalY;
+
+        int x = (int) (minX * 1.0 / ACAQAlgorithmUI.SLOT_UI_WIDTH) * ACAQAlgorithmUI.SLOT_UI_WIDTH;
+        int y = (int) (targetY * 1.0 / ACAQAlgorithmUI.SLOT_UI_HEIGHT) * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+        if (!targetAlgorithmUI.trySetLocationNoGrid(x, y)) {
+            autoPlaceAlgorithm(targetAlgorithmUI);
+        }
     }
 
     @Override
@@ -271,9 +291,10 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         ACAQAlgorithmUI targetNode = nodeUIs.getOrDefault(event.getTarget().getAlgorithm(), null);
 
         if (sourceNode != null && targetNode != null && layoutHelperEnabled) {
-            autoPlaceAlgorithm(targetNode);
+            autoPlaceTargetAdjacent(sourceNode, event.getSource(), targetNode, event.getTarget());
         }
     }
+
 
     @Subscribe
     public void onOpenAlgorithmSettings(AlgorithmSelectedEvent event) {
