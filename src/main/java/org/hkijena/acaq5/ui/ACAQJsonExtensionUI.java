@@ -5,6 +5,8 @@ import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.RecentJsonExtensionsMenu;
 import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonExtensionContentListUI;
+import org.hkijena.acaq5.ui.extensionbuilder.grapheditor.ACAQJsonExtensionAlgorithmGraphUI;
+import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.ACAQTraitGraphUI;
 import org.hkijena.acaq5.ui.settings.ACAQJsonExtensionSettingsUI;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXStatusBar;
@@ -48,6 +50,11 @@ public class ACAQJsonExtensionUI extends JPanel {
                 "Extension contents",
                 UIUtils.getIconFromResources("module.png"),
                 new ACAQJsonExtensionContentListUI(this),
+                false);
+        documentTabPane.addSingletonTab("TRAIT_GRAPH",
+                "Annotations",
+                UIUtils.getIconFromResources("connect.png"),
+                new ACAQTraitGraphUI(this),
                 false);
         initializeMenu();
         initializeStatusBar();

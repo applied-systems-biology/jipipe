@@ -9,6 +9,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.events.AlgorithmRegisteredEvent;
+import org.hkijena.acaq5.api.events.DatatypeRegisteredEvent;
 import org.hkijena.acaq5.api.events.TraitRegisteredEvent;
 
 import java.util.*;
@@ -149,6 +150,7 @@ public class ACAQAlgorithmRegistry {
      */
     public void installEvents() {
         ACAQDefaultRegistry.getInstance().getTraitRegistry().getEventBus().register(this);
+        ACAQDefaultRegistry.getInstance().getDatatypeRegistry().getEventBus().register(this);
     }
 
     /**
@@ -159,6 +161,16 @@ public class ACAQAlgorithmRegistry {
      */
     @Subscribe
     public void onTraitRegistered(TraitRegisteredEvent event) {
+        runRegistrationTasks();
+    }
+
+    /**
+     * Triggered when a datatype was registered.
+     * Attempts to register more algorithms.
+     * @param event
+     */
+    @Subscribe
+    public void onDatatypeRegistered(DatatypeRegisteredEvent event) {
         runRegistrationTasks();
     }
 
