@@ -3,6 +3,7 @@ package org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQProjectMetadata;
@@ -12,7 +13,9 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.traits.ACAQDataSlotTraitConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
+import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
+import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
@@ -44,6 +47,7 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     private Map<ACAQDataSlot, String> exportedSlotNames = new HashMap<>();
 
     public GraphWrapperAlgorithmDeclaration() {
+        graph.getEventBus().register(this);
     }
 
     @ACAQDocumentation(name = "Algorithm ID", description = "An unique identifier for the algorithm")
@@ -257,8 +261,27 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
 
     @JsonSetter("graph")
     public void setGraph(ACAQAlgorithmGraph graph) {
-        this.graph = graph;
+        if(graph != this.graph) {
+            if(this.graph != null) {
+                this.graph.getEventBus().unregister(this);
+            }
+            this.graph = graph;
+            updateSlots();
+            this.graph.getEventBus().register(this);
+        }
+    }
+
+    @Subscribe
+    public void onGraphChanged(AlgorithmGraphChangedEvent event) {
         updateSlots();
+        parameterCollectionVisibilities.setAvailableParameters(getAvailableParameters());
+        getEventBus().post(new ParameterChangedEvent(this, "parameter-visibilities"));
+    }
+
+    @Subscribe
+    public void onGraphParameterStructureChanged(ParameterStructureChangedEvent event) {
+        parameterCollectionVisibilities.setAvailableParameters(getAvailableParameters());
+        getEventBus().post(new ParameterChangedEvent(this, "parameter-visibilities"));
     }
 
     private void updateSlots() {

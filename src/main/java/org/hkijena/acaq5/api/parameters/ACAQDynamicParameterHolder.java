@@ -8,6 +8,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.io.IOException;
@@ -47,7 +48,7 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
 
     @JsonGetter("parameters")
     private Map<String, ACAQMutableParameterAccess> getParameters() {
-        return parameters;
+        return Collections.unmodifiableMap(parameters);
     }
 
     @JsonSetter("parameters")
@@ -59,7 +60,9 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
         if (parameters.containsKey(key))
             throw new IllegalArgumentException("Parameter with key " + key + " already exists!");
         ACAQMutableParameterAccess parameterAccess = new ACAQMutableParameterAccess(this, key, fieldClass);
+        parameterAccess.setName(key);
         parameters.put(key, parameterAccess);
+        getEventBus().post(new ParameterStructureChangedEvent(this));
         return parameterAccess;
     }
 

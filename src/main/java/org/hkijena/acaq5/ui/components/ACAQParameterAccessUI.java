@@ -79,7 +79,9 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual  {
                         parameterAccess.getVisibility() == ACAQParameterVisibility.Visible;
             });
 
-            if(parameterIds.isEmpty())
+            boolean parameterHolderIsDynamic = parameterHolder instanceof ACAQDynamicParameterHolder && ((ACAQDynamicParameterHolder) parameterHolder).isAllowModification();
+
+            if(parameterIds.isEmpty() && !parameterHolderIsDynamic)
                 continue;
 
             boolean foundHolderName = false;
@@ -98,7 +100,7 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual  {
             subAlgorithmGroupTitle.add(holderNameLabel, BorderLayout.CENTER);
             addToForm(subAlgorithmGroupTitle, null);
 
-            if (parameterHolder instanceof ACAQDynamicParameterHolder && ((ACAQDynamicParameterHolder) parameterHolder).isAllowModification()) {
+            if (parameterHolderIsDynamic) {
                 holderNameLabel.setText(((ACAQDynamicParameterHolder) parameterHolder).getName());
                 holderNameLabel.setToolTipText(((ACAQDynamicParameterHolder) parameterHolder).getDescription());
                 holderNameLabel.setIcon(UIUtils.getIconFromResources("cog.png"));

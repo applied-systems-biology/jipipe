@@ -163,4 +163,8 @@ public class ACAQJsonExtensionUI extends JPanel {
     public Context getContext() {
         return command.getContext();
     }
+
+    public DocumentTabPane getDocumentTabPane() {
+        return documentTabPane;
+    }
 }

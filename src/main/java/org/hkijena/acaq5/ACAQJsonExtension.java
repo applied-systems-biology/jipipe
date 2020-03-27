@@ -12,6 +12,7 @@ import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.events.ExtensionContentAddedEvent;
+import org.hkijena.acaq5.api.events.ExtensionContentRemovedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
@@ -182,6 +183,18 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
         }
         for (GraphWrapperAlgorithmDeclaration declaration : algorithmDeclarations) {
             report.forCategory("Algorithms").forCategory(declaration.getName()).report(declaration);
+        }
+    }
+
+    public void removeAlgorithm(GraphWrapperAlgorithmDeclaration declaration) {
+        if(algorithmDeclarations.remove(declaration)) {
+            eventBus.post(new ExtensionContentRemovedEvent(this, declaration));
+        }
+    }
+
+    public void removeAnnotation(ACAQJsonTraitDeclaration declaration) {
+        if(traitDeclarations.remove(declaration)) {
+            eventBus.post(new ExtensionContentRemovedEvent(this, declaration));
         }
     }
 

@@ -23,6 +23,7 @@ import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors.StringParameterSettings;
 import org.hkijena.acaq5.utils.JsonUtils;
+import org.hkijena.acaq5.utils.StringUtils;
 
 import java.awt.*;
 import java.io.IOException;
@@ -349,7 +350,8 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
     }
 
     public boolean isVisibleIn(String containerCompartment) {
-        return containerCompartment.equals(compartment) || visibleCompartments.contains(containerCompartment);
+        return StringUtils.isNullOrEmpty(compartment) || StringUtils.isNullOrEmpty(containerCompartment) ||
+                containerCompartment.equals(compartment) || visibleCompartments.contains(containerCompartment);
     }
 
     public Set<String> getVisibleCompartments() {

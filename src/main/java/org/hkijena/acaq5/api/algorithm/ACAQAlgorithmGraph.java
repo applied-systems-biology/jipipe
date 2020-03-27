@@ -397,6 +397,11 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         eventBus.post(new AlgorithmGraphChangedEvent(this));
     }
 
+    @Subscribe
+    public void onParameterStructureChanged(ParameterStructureChangedEvent event) {
+        eventBus.post(event);
+    }
+
     public void updateDataSlotTraits() {
         Set<ACAQAlgorithm> executedAlgorithms = new HashSet<>();
         for (ACAQDataSlot slot : traverse()) {

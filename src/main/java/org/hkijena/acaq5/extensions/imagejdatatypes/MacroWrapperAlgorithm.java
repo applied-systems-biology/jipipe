@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.extensions.imagejdatatypes;
 
+import com.google.common.eventbus.Subscribe;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.macro.Interpreter;
@@ -12,6 +13,7 @@ import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.traits.ConfigTraits;
+import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterHolder;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
@@ -65,12 +67,14 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
                 .restrictInputTo(IMAGEJ_DATA_CLASSES.toArray(new Class[0]))
                 .restrictOutputTo(IMAGEJ_DATA_CLASSES.toArray(new Class[0]))
                 .build());
+        this.macroParameters.getEventBus().register(this);
     }
 
     public MacroWrapperAlgorithm(MacroWrapperAlgorithm other) {
         super(other);
         this.code = new MacroCode(other.code);
         this.macroParameters = new ACAQDynamicParameterHolder(other.macroParameters);
+        this.macroParameters.getEventBus().register(this);
     }
 
     @Override
@@ -263,6 +267,11 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
     @ACAQDocumentation(name = "Macro parameters", description = "Parameters that are passed as variables to the macro")
     public ACAQDynamicParameterHolder getMacroParameters() {
         return macroParameters;
+    }
+
+    @Subscribe
+    public void onParameterStructureChanged(ParameterStructureChangedEvent event) {
+        getEventBus().post(event);
     }
 }
 
