@@ -71,9 +71,9 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
                 if(sourceAlgorithm == null)
                     continue;
                 ACAQDataSlot source = sourceAlgorithm.getFirstOutputSlot();
-                String targetSlotName = "Output " + (index++);
+                String targetSlotName = "Input " + (index++);
                 slotConfiguration.addSlot(targetSlotName, new ACAQSlotDefinition(ACAQTraitNodeInheritanceData.class,
-                        ACAQDataSlot.SlotType.Output,
+                        ACAQDataSlot.SlotType.Input,
                         targetSlotName,
                         null));
                 ACAQDataSlot target = node.getInputSlot(targetSlotName);
