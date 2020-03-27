@@ -2,10 +2,7 @@ package org.hkijena.acaq5.ui.grapheditor.algorithmfinder;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
-import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
+import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
@@ -115,7 +112,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
             for (ACAQAlgorithmDeclaration targetAlgorithm : algorithms) {
                 int score = scores.get(targetAlgorithm);
                 // Add a generic one for creating a new instance
-                {
+                if(targetAlgorithm.getCategory() != ACAQAlgorithmCategory.Internal) {
                     ACAQAlgorithmFinderAlgorithmUI algorithmUI = new ACAQAlgorithmFinderAlgorithmUI(outputSlot, graph, compartment, targetAlgorithm, score, maxScore);
                     algorithmUI.getEventBus().register(this);
                     formPanel.addToForm(algorithmUI, null);
