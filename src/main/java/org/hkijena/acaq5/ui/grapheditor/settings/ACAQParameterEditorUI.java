@@ -4,8 +4,6 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterHolder;
-import org.hkijena.acaq5.ui.ACAQProjectUI;
-import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
 import org.scijava.Context;
 import org.scijava.Contextual;
 
@@ -69,12 +67,6 @@ public abstract class ACAQParameterEditorUI extends JPanel implements Contextual
     }
 
     @Override
-    public void setContext(Context context) {
-        this.context = context;
-        this.context.inject(this);
-    }
-
-    @Override
     public Context context() {
         return context;
     }
@@ -82,5 +74,11 @@ public abstract class ACAQParameterEditorUI extends JPanel implements Contextual
     @Override
     public Context getContext() {
         return context;
+    }
+
+    @Override
+    public void setContext(Context context) {
+        this.context = context;
+        this.context.inject(this);
     }
 }

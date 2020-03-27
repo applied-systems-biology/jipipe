@@ -38,7 +38,7 @@ public class ACAQTestBenchSetupUI extends ACAQProjectUIPanel {
         this.graph = graph;
 
         setLayout(new BorderLayout());
-        this.validationReportUI = new ACAQValidityReportUI();
+        this.validationReportUI = new ACAQValidityReportUI(false);
 
         initializeValidationReportUI();
         initializeSetupPanel();
@@ -51,7 +51,7 @@ public class ACAQTestBenchSetupUI extends ACAQProjectUIPanel {
     private void initializeValidationReportUI() {
         validationReportPanel = new JPanel();
         validationReportPanel.setLayout(new BorderLayout());
-        validationReportUI = new ACAQValidityReportUI();
+        validationReportUI = new ACAQValidityReportUI(false);
         DocumentedComponent pane = new DocumentedComponent(true,
                 MarkdownDocument.fromPluginResource("documentation/testbench.md"),
                 validationReportUI);

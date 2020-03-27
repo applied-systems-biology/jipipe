@@ -83,6 +83,7 @@ public interface ACAQParameterAccess {
 
     /**
      * Sets the name for the parameter holder
+     *
      * @param name
      */
     void setHolderName(String name);
@@ -96,6 +97,7 @@ public interface ACAQParameterAccess {
 
     /**
      * Sets the holder description
+     *
      * @param description
      */
     void setHolderDescription(String description);

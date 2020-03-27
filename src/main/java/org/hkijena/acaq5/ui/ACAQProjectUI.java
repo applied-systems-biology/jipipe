@@ -10,6 +10,7 @@ import org.hkijena.acaq5.ui.compartments.ACAQCompartmentGraphUI;
 import org.hkijena.acaq5.ui.compartments.ACAQCompartmentUI;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.RecentProjectsMenu;
+import org.hkijena.acaq5.ui.components.ReloadableValidityChecker;
 import org.hkijena.acaq5.ui.extensions.ACAQPluginManagerUIPanel;
 import org.hkijena.acaq5.ui.running.ACAQRunSettingsUI;
 import org.hkijena.acaq5.ui.running.ACAQRunnerQueueUI;
@@ -34,6 +35,7 @@ public class ACAQProjectUI extends JPanel {
     private ACAQGUICommand command;
     private JLabel statusText;
     private Context context;
+    private ReloadableValidityChecker validityCheckerPanel;
 
     public ACAQProjectUI(ACAQProjectWindow window, ACAQGUICommand command, ACAQProject project) {
         this.window = window;
@@ -81,6 +83,12 @@ public class ACAQProjectUI extends JPanel {
                 "Plugin manager",
                 UIUtils.getIconFromResources("module.png"),
                 new ACAQPluginManagerUIPanel(command),
+                true);
+        validityCheckerPanel = new ReloadableValidityChecker(project);
+        documentTabPane.addSingletonTab("VALIDITY_CHECK",
+                "Project validation",
+                UIUtils.getIconFromResources("checkmark.png"),
+                validityCheckerPanel,
                 true);
         documentTabPane.selectSingletonTab("INTRODUCTION");
         add(documentTabPane, BorderLayout.CENTER);
@@ -230,6 +238,13 @@ public class ACAQProjectUI extends JPanel {
         menu.add(new ACAQRunnerQueueUI());
         menu.add(Box.createHorizontalStrut(1));
 
+        // "Validate" entry
+        JButton validateProjectButton = new JButton("Validate", UIUtils.getIconFromResources("checkmark.png"));
+        validateProjectButton.setToolTipText("Opens a new tab to check parameters and graph for validity.");
+        validateProjectButton.addActionListener(e -> validateProject());
+        UIUtils.makeFlat(validateProjectButton);
+        menu.add(validateProjectButton);
+
         // "Run" entry
         JButton runProjectButton = new JButton("Run", UIUtils.getIconFromResources("run.png"));
         runProjectButton.setToolTipText("Opens a new interface to run the analysis.");
@@ -247,6 +262,11 @@ public class ACAQProjectUI extends JPanel {
         menu.add(helpMenu);
 
         add(menu, BorderLayout.NORTH);
+    }
+
+    private void validateProject() {
+        validityCheckerPanel.recheckValidity();
+        documentTabPane.selectSingletonTab("VALIDITY_CHECK");
     }
 
     private void managePlugins() {

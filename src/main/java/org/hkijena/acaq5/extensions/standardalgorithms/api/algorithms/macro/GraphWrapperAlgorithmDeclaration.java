@@ -261,8 +261,8 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
 
     @JsonSetter("graph")
     public void setGraph(ACAQAlgorithmGraph graph) {
-        if(graph != this.graph) {
-            if(this.graph != null) {
+        if (graph != this.graph) {
+            if (this.graph != null) {
                 this.graph.getEventBus().unregister(this);
             }
             this.graph = graph;
@@ -319,8 +319,8 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
             for (Map.Entry<String, ACAQParameterAccess> entry : ACAQParameterAccess.getParameters(algorithm).entrySet()) {
                 String newId = algorithm.getIdInGraph() + "/" + entry.getKey();
                 ACAQParameterAccess parameterAccess = entry.getValue();
-                if(parameterAccess.getParameterHolder() instanceof ACAQAlgorithm && StringUtils.isNullOrEmpty(parameterAccess.getHolderName())) {
-                    parameterAccess.setHolderName(((ACAQAlgorithm)parameterAccess.getParameterHolder()).getName());
+                if (parameterAccess.getParameterHolder() instanceof ACAQAlgorithm && StringUtils.isNullOrEmpty(parameterAccess.getHolderName())) {
+                    parameterAccess.setHolderName(((ACAQAlgorithm) parameterAccess.getParameterHolder()).getName());
                 }
                 parameterAccessMap.put(newId, entry.getValue());
             }

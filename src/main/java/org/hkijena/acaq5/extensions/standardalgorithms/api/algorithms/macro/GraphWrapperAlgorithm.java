@@ -62,7 +62,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
                 if (parameterAccess.getParameterHolder() instanceof ACAQDynamicParameterHolder) {
                     ((ACAQDynamicParameterHolder) parameterAccess.getParameterHolder()).setAllowModification(false);
                 }
-                if(parameterAccess.getParameterHolder() instanceof ACAQAlgorithm && StringUtils.isNullOrEmpty(parameterAccess.getHolderName())) {
+                if (parameterAccess.getParameterHolder() instanceof ACAQAlgorithm && StringUtils.isNullOrEmpty(parameterAccess.getHolderName())) {
                     parameterAccess.setHolderName(((ACAQAlgorithm) parameterAccess.getParameterHolder()).getName());
                 }
 

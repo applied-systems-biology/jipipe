@@ -2,10 +2,7 @@ package org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQDocumentation;
-import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQCustomParameterHolder;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
@@ -32,7 +29,7 @@ public class ACAQNewTraitNode extends ACAQTraitNode implements ACAQCustomParamet
     @Override
     public void setTraitDeclaration(ACAQTraitDeclaration traitDeclaration) {
         super.setTraitDeclaration(traitDeclaration);
-        ACAQJsonTraitDeclaration jsonTraitDeclaration = (ACAQJsonTraitDeclaration)traitDeclaration;
+        ACAQJsonTraitDeclaration jsonTraitDeclaration = (ACAQJsonTraitDeclaration) traitDeclaration;
         jsonTraitDeclaration.getEventBus().register(this);
     }
 
@@ -43,7 +40,7 @@ public class ACAQNewTraitNode extends ACAQTraitNode implements ACAQCustomParamet
 
     @Subscribe
     public void onParameterChanged(ParameterChangedEvent event) {
-        if("name".equals(event.getKey())) {
+        if ("name".equals(event.getKey())) {
             setCustomName(getTraitDeclaration().getName());
         }
         getEventBus().post(event);

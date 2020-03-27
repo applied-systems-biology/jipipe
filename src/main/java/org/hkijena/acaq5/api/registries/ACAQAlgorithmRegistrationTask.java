@@ -11,6 +11,7 @@ public interface ACAQAlgorithmRegistrationTask {
 
     /**
      * Returns true if the registration can be done
+     *
      * @return
      */
     boolean canRegister();

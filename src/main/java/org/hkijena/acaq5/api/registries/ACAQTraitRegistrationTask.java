@@ -8,6 +8,7 @@ public interface ACAQTraitRegistrationTask {
 
     /**
      * Returns true if the registration can be done
+     *
      * @return
      */
     boolean canRegister();

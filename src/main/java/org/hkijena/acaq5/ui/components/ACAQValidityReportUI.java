@@ -7,18 +7,51 @@ import org.jdesktop.swingx.JXTable;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.Map;
 
 public class ACAQValidityReportUI extends JPanel {
+    private JSplitPane splitPane;
     private ACAQValidityReport report;
     private JXTable table;
+    private JPanel tablePanel;
+    private boolean withHelp;
+    private JPanel everythingValidPanel;
 
-    public ACAQValidityReportUI() {
+    public ACAQValidityReportUI(boolean withHelp) {
+        this.withHelp = withHelp;
         initialize();
+        switchToEverythingValid();
+    }
+
+    private void switchToTable() {
+        if (withHelp) {
+            splitPane.setLeftComponent(tablePanel);
+        } else {
+            removeAll();
+            add(tablePanel, BorderLayout.CENTER);
+            revalidate();
+            repaint();
+        }
+    }
+
+    private void switchToEverythingValid() {
+        if (withHelp) {
+            splitPane.setLeftComponent(everythingValidPanel);
+        } else {
+            removeAll();
+            add(everythingValidPanel, BorderLayout.CENTER);
+            revalidate();
+            repaint();
+        }
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
+
+        // Create table panel
+        tablePanel = new JPanel(new BorderLayout());
         table = new JXTable() {
             @Override
             public boolean isCellEditable(int i, int i1) {
@@ -27,18 +60,44 @@ public class ACAQValidityReportUI extends JPanel {
         };
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.getViewport().setBackground(Color.WHITE);
-        add(scrollPane, BorderLayout.CENTER);
-        add(table.getTableHeader(), BorderLayout.NORTH);
+        tablePanel.add(scrollPane, BorderLayout.CENTER);
+        tablePanel.add(table.getTableHeader(), BorderLayout.NORTH);
+
+        // Create alternative panel
+        everythingValidPanel = new JPanel(new BorderLayout());
+        {
+            JLabel label = new JLabel("No issues found", UIUtils.getIconFromResources("check-circle-green-64.png"), JLabel.LEFT);
+            label.setFont(label.getFont().deriveFont(26.0f));
+            everythingValidPanel.add(label, BorderLayout.CENTER);
+        }
+
+        // Create split pane if needed
+        if (withHelp) {
+            splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JLabel(),
+                    new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/validation.md")));
+            splitPane.setDividerSize(3);
+            splitPane.setResizeWeight(0.66);
+            addComponentListener(new ComponentAdapter() {
+                @Override
+                public void componentResized(ComponentEvent e) {
+                    super.componentResized(e);
+                    splitPane.setDividerLocation(0.66);
+                }
+            });
+            add(splitPane, BorderLayout.CENTER);
+        }
     }
 
     private void refreshUI() {
-        DefaultTableModel model = new DefaultTableModel() {
-            @Override
-            public Class<?> getColumnClass(int columnIndex) {
-                return getValueAt(0, columnIndex).getClass();
-            }
-        };
-        if (report != null) {
+        if (report == null || report.isValid()) {
+            switchToEverythingValid();
+        } else {
+            DefaultTableModel model = new DefaultTableModel() {
+                @Override
+                public Class<?> getColumnClass(int columnIndex) {
+                    return getValueAt(0, columnIndex).getClass();
+                }
+            };
             model.addColumn("");
             model.addColumn("Location");
             model.addColumn("Message");
@@ -51,10 +110,11 @@ public class ACAQValidityReportUI extends JPanel {
                         messages.getOrDefault(key, "")
                 });
             }
+            table.setModel(model);
+            table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+            table.packAll();
+            switchToTable();
         }
-        table.setModel(model);
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        table.packAll();
     }
 
     public void setReport(ACAQValidityReport report) {

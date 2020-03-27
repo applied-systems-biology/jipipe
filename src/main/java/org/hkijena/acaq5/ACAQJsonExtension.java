@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQProjectMetadata;
@@ -19,9 +18,9 @@ import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQJsonTraitRegistrationTask;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQJsonTraitDeclaration;
+import org.hkijena.acaq5.api.traits.ACAQMutableTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro.GraphWrapperAlgorithmDeclaration;
-import org.hkijena.acaq5.extensions.standardalgorithms.api.registries.GraphWrapperAlgorithmRegistrationTask;
 import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.io.IOException;
@@ -30,6 +29,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @JsonDeserialize(as = ACAQJsonExtension.class)
 public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
@@ -110,7 +110,7 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
         }
         for (ACAQTraitDeclaration declaration : traitDeclarations) {
             for (ACAQDependency dependency : declaration.getDependencies()) {
-                if(!Objects.equals(dependency.getDependencyId(), getDependencyId())) {
+                if (!Objects.equals(dependency.getDependencyId(), getDependencyId())) {
                     result.add(dependency);
                 }
             }
@@ -180,20 +180,42 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
     public void reportValidity(ACAQValidityReport report) {
         for (ACAQJsonTraitDeclaration declaration : traitDeclarations) {
             report.forCategory("Annotations").forCategory(declaration.getName()).report(declaration);
+
+            for (String id : declaration.getInheritedIds()) {
+                if (ACAQTraitRegistry.getInstance().hasTraitWithId(id)) {
+                    ACAQTraitDeclaration inherited = ACAQTraitRegistry.getInstance().getDeclarationById(id);
+                    if (inherited.isDiscriminator() != declaration.isDiscriminator()) {
+                        report.forCategory("Annotations").forCategory(declaration.getName()).reportIsInvalid("Inconsistent inheritance! Please ensure to make the" +
+                                " 'Contains value' setting consistent to the inherited annotations.");
+                    }
+                } else {
+                    ACAQJsonTraitDeclaration inherited = traitDeclarations.stream().filter(d -> Objects.equals(d.getId(), id)).findFirst().orElse(null);
+                    if (inherited != null && inherited.isDiscriminator() != declaration.isDiscriminator()) {
+                        report.forCategory("Annotations").forCategory(declaration.getName()).reportIsInvalid("Inconsistent inheritance! Please ensure to make the" +
+                                " 'Contains value' setting consistent to the inherited annotations.");
+                    }
+                }
+            }
+        }
+        if (traitDeclarations.size() != traitDeclarations.stream().map(ACAQMutableTraitDeclaration::getId).collect(Collectors.toSet()).size()) {
+            report.forCategory("Annotations").reportIsInvalid("Duplicate IDs found! Please make sure that IDs are unique.");
         }
         for (GraphWrapperAlgorithmDeclaration declaration : algorithmDeclarations) {
             report.forCategory("Algorithms").forCategory(declaration.getName()).report(declaration);
         }
+        if (algorithmDeclarations.size() != algorithmDeclarations.stream().map(GraphWrapperAlgorithmDeclaration::getId).collect(Collectors.toSet()).size()) {
+            report.forCategory("Algorithms").reportIsInvalid("Duplicate IDs found! Please make sure that IDs are unique.");
+        }
     }
 
     public void removeAlgorithm(GraphWrapperAlgorithmDeclaration declaration) {
-        if(algorithmDeclarations.remove(declaration)) {
+        if (algorithmDeclarations.remove(declaration)) {
             eventBus.post(new ExtensionContentRemovedEvent(this, declaration));
         }
     }
 
     public void removeAnnotation(ACAQJsonTraitDeclaration declaration) {
-        if(traitDeclarations.remove(declaration)) {
+        if (traitDeclarations.remove(declaration)) {
             eventBus.post(new ExtensionContentRemovedEvent(this, declaration));
         }
     }

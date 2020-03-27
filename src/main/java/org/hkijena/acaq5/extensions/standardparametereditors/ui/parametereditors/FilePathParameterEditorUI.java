@@ -1,9 +1,6 @@
 package org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors;
 
-import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.api.events.WorkDirectoryChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.FileSelection;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
 import org.scijava.Context;

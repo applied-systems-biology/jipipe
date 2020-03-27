@@ -47,7 +47,7 @@ public class ACAQRunSettingsUI extends ACAQProjectUIPanel {
     private void initializeValidityCheckUI(ACAQValidityReport report) {
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout(8, 8));
-        ACAQValidityReportUI reportUI = new ACAQValidityReportUI();
+        ACAQValidityReportUI reportUI = new ACAQValidityReportUI(false);
         reportUI.setReport(report);
 
         MarkdownReader help = new MarkdownReader(false);

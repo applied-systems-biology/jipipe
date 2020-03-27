@@ -4,9 +4,7 @@ import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro.Grap
 import org.hkijena.acaq5.ui.ACAQJsonExtensionUI;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionUIPanel;
 import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
-import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
-import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.extensionbuilder.grapheditor.ACAQJsonExtensionAlgorithmGraphUI;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -55,10 +53,11 @@ public class GraphWrapperAlgorithmDeclarationUI extends ACAQJsonExtensionUIPanel
 
     private void editAlgorithm() {
         for (DocumentTabPane.DocumentTab tab : getWorkbenchUI().getDocumentTabPane().getTabs()) {
-            if(tab.getContent() instanceof ACAQJsonExtensionAlgorithmGraphUI) {
-                ACAQJsonExtensionAlgorithmGraphUI ui = (ACAQJsonExtensionAlgorithmGraphUI)tab.getContent();
-                if(ui.getAlgorithmGraph() == declaration.getGraph()) {
-                    getWorkbenchUI().getDocumentTabPane().setSelectedComponent(ui);;
+            if (tab.getContent() instanceof ACAQJsonExtensionAlgorithmGraphUI) {
+                ACAQJsonExtensionAlgorithmGraphUI ui = (ACAQJsonExtensionAlgorithmGraphUI) tab.getContent();
+                if (ui.getAlgorithmGraph() == declaration.getGraph()) {
+                    getWorkbenchUI().getDocumentTabPane().setSelectedComponent(ui);
+                    ;
                     return;
                 }
             }

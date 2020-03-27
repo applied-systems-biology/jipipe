@@ -13,7 +13,6 @@
 package org.hkijena.acaq5.utils;
 
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
@@ -345,7 +344,7 @@ public class UIUtils {
     }
 
     public static void openValidityReportDialog(Component parent, ACAQValidityReport report) {
-        ACAQValidityReportUI ui = new ACAQValidityReportUI();
+        ACAQValidityReportUI ui = new ACAQValidityReportUI(true);
         ui.setReport(report);
         JDialog dialog = new JDialog();
         dialog.setTitle("Error");

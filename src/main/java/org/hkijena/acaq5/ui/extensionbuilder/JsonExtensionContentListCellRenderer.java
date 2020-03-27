@@ -25,15 +25,13 @@ public class JsonExtensionContentListCellRenderer extends JLabel implements List
                     "<i>Algorithm</i>" +
                     "</html>");
             setIcon(UIUtils.getIconFromResources("cogs-32.png"));
-        }
-        else if(value instanceof ACAQJsonTraitDeclaration) {
+        } else if (value instanceof ACAQJsonTraitDeclaration) {
             String name = StringUtils.orElse(((ACAQJsonTraitDeclaration) value).getName(), "&lt;No name&gt;");
             setText("<html><strong>" + name + "</strong><br/>" +
                     "<i>Annotation type</i>" +
                     "</html>");
             setIcon(UIUtils.getIconFromResources("tags-32.png"));
-        }
-        else {
+        } else {
             setText("<Unknown entry>");
             setIcon(UIUtils.getIconFromResources("remove.png"));
         }

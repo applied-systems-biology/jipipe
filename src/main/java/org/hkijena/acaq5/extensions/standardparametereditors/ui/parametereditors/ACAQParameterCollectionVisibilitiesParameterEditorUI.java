@@ -4,12 +4,10 @@ import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollectionVisibilities;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
-import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Context;
-import org.scijava.Contextual;
 
 import javax.swing.*;
 import java.awt.*;
@@ -56,7 +54,7 @@ public class ACAQParameterCollectionVisibilitiesParameterEditorUI extends ACAQPa
                         parameterAccess.getVisibility() == ACAQParameterVisibility.Visible;
             });
 
-            if(parameterIds.isEmpty())
+            if (parameterIds.isEmpty())
                 continue;
 
             boolean foundHolderName = false;

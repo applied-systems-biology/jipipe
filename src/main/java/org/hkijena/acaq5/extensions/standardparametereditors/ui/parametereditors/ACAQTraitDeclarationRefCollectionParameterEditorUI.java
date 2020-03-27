@@ -7,7 +7,6 @@ import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefCollection;
-import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.components.ACAQTraitPicker;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
@@ -90,7 +89,7 @@ public class ACAQTraitDeclarationRefCollectionParameterEditorUI extends ACAQPara
 
         Set<ACAQTraitDeclaration> availableTraits = new HashSet<>();
         for (ACAQTraitDeclaration traitDeclaration : ACAQTraitRegistry.getInstance().getRegisteredTraits().values()) {
-            if(traitDeclaration.isHidden())
+            if (traitDeclaration.isHidden())
                 continue;
             if (baseClass.isAssignableFrom(traitDeclaration.getTraitClass())) {
                 availableTraits.add(traitDeclaration);

@@ -167,6 +167,7 @@ public class ACAQAlgorithmRegistry {
     /**
      * Triggered when a datatype was registered.
      * Attempts to register more algorithms.
+     *
      * @param event
      */
     @Subscribe

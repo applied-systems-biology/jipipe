@@ -2,10 +2,11 @@ package org.hkijena.acaq5.ui;
 
 import org.hkijena.acaq5.ACAQGUICommand;
 import org.hkijena.acaq5.ACAQJsonExtension;
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.RecentJsonExtensionsMenu;
+import org.hkijena.acaq5.ui.components.ReloadableValidityChecker;
 import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonExtensionContentListUI;
-import org.hkijena.acaq5.ui.extensionbuilder.grapheditor.ACAQJsonExtensionAlgorithmGraphUI;
 import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.ACAQTraitGraphUI;
 import org.hkijena.acaq5.ui.settings.ACAQJsonExtensionSettingsUI;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -24,6 +25,7 @@ public class ACAQJsonExtensionUI extends JPanel {
     private final ACAQJsonExtension project;
     public DocumentTabPane documentTabPane;
     private JLabel statusText;
+    private ReloadableValidityChecker validityCheckerPanel;
 
     public ACAQJsonExtensionUI(ACAQJsonExtensionWindow window, ACAQGUICommand command, ACAQJsonExtension project) {
         this.window = window;
@@ -56,11 +58,22 @@ public class ACAQJsonExtensionUI extends JPanel {
                 UIUtils.getIconFromResources("connect.png"),
                 new ACAQTraitGraphUI(this),
                 false);
+        validityCheckerPanel = new ReloadableValidityChecker(project);
+        documentTabPane.addSingletonTab("VALIDITY_CHECK",
+                "Project validation",
+                UIUtils.getIconFromResources("checkmark.png"),
+                validityCheckerPanel,
+                true);
         initializeMenu();
         initializeStatusBar();
         sendStatusBarText("Welcome to the ACAQ5 extension builder");
 
         add(documentTabPane, BorderLayout.CENTER);
+    }
+
+    private void validateProject() {
+        validityCheckerPanel.recheckValidity();
+        documentTabPane.selectSingletonTab("VALIDITY_CHECK");
     }
 
     private void initializeStatusBar() {
@@ -129,6 +142,13 @@ public class ACAQJsonExtensionUI extends JPanel {
 
         menu.add(Box.createHorizontalGlue());
 
+        // "Validate" entry
+        JButton validateProjectButton = new JButton("Validate", UIUtils.getIconFromResources("checkmark.png"));
+        validateProjectButton.setToolTipText("Opens a new tab to check parameters and graph for validity.");
+        validateProjectButton.addActionListener(e -> validateProject());
+        UIUtils.makeFlat(validateProjectButton);
+        menu.add(validateProjectButton);
+
         // "Run" entry
         JButton installButton = new JButton("Install", UIUtils.getIconFromResources("download.png"));
         installButton.setToolTipText("Installs the current extension.");
@@ -156,7 +176,13 @@ public class ACAQJsonExtensionUI extends JPanel {
     }
 
     private void installProject() {
+        validityCheckerPanel.recheckValidity();
+        ACAQValidityReport report = validityCheckerPanel.getReport();
+        if (!report.isValid()) {
+            validateProject();
+        } else {
 
+        }
     }
 
     public ACAQJsonExtensionWindow getWindow() {

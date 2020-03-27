@@ -19,7 +19,7 @@ public class ACAQJsonTraitDeclaration extends ACAQMutableTraitDeclaration implem
 
     @Override
     public ACAQTrait newInstance() {
-        if(isDiscriminator())
+        if (isDiscriminator())
             return new ACAQDefaultDiscriminator(this, "");
         else
             return new ACAQDefaultTrait(this);
@@ -27,7 +27,7 @@ public class ACAQJsonTraitDeclaration extends ACAQMutableTraitDeclaration implem
 
     @Override
     public ACAQTrait newInstance(String value) {
-        if(isDiscriminator())
+        if (isDiscriminator())
             return new ACAQDefaultDiscriminator(this, value);
         else
             return new ACAQDefaultTrait(this);
@@ -39,7 +39,7 @@ public class ACAQJsonTraitDeclaration extends ACAQMutableTraitDeclaration implem
         Set<ACAQDependency> dependencies = new HashSet<>();
         for (ACAQTraitDeclaration declaration : getInherited()) {
             ACAQDependency source = ACAQTraitRegistry.getInstance().getSourceOf(declaration.getId());
-            if(source != null) {
+            if (source != null) {
                 dependencies.add(source);
             }
         }
@@ -59,21 +59,20 @@ public class ACAQJsonTraitDeclaration extends ACAQMutableTraitDeclaration implem
     @ACAQParameter("is-discriminator")
     public void setDiscriminator(boolean discriminator) {
         super.setDiscriminator(discriminator);
-        if(discriminator) {
+        if (discriminator) {
             setTraitClass(ACAQDefaultDiscriminator.class);
-        }
-        else {
+        } else {
             setTraitClass(ACAQDefaultTrait.class);
         }
     }
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        if(StringUtils.isNullOrEmpty(getName()))
+        if (StringUtils.isNullOrEmpty(getName()))
             report.forCategory("Name").reportIsInvalid("The name is empty! Please provide a meaningful name.");
-        if(StringUtils.isNullOrEmpty(getId()))
+        if (StringUtils.isNullOrEmpty(getId()))
             report.forCategory("ID").reportIsInvalid("The ID is empty! Please provide a unique ID.");
-        if(ACAQTraitRegistry.getInstance().hasTraitWithId(getId()) && isDiscriminator() != ACAQTraitRegistry.getInstance().getDeclarationById(getId()).isDiscriminator()) {
+        if (ACAQTraitRegistry.getInstance().hasTraitWithId(getId()) && isDiscriminator() != ACAQTraitRegistry.getInstance().getDeclarationById(getId()).isDiscriminator()) {
             report.forCategory("Contains value").reportIsInvalid("There is already an existing annotation type with a different value behavior!" +
                     " Please make sure that same IDs have same behaviors.");
         }
@@ -92,7 +91,7 @@ public class ACAQJsonTraitDeclaration extends ACAQMutableTraitDeclaration implem
     public void updatedInheritedDeclarations() {
         getInherited().clear();
         for (String id : inheritedIds) {
-            if(ACAQTraitRegistry.getInstance().hasTraitWithId(id)) {
+            if (ACAQTraitRegistry.getInstance().hasTraitWithId(id)) {
                 getInherited().add(ACAQTraitRegistry.getInstance().getDeclarationById(id));
             }
         }

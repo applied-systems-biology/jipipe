@@ -69,10 +69,9 @@ public class ACAQSingleTraitSelectionPanelUI extends ACAQJsonExtensionUIPanel {
     }
 
     private void deleteNode() {
-        if(node instanceof ACAQExistingTraitNode) {
+        if (node instanceof ACAQExistingTraitNode) {
 
-        }
-        else if(node instanceof ACAQNewTraitNode) {
+        } else if (node instanceof ACAQNewTraitNode) {
             if (JOptionPane.showConfirmDialog(this, "Do you really want to delete the algorithm '" + node.getName() + "'?\n" +
                     "You will lose all nodes stored in this algorithm.", "Delete algorithm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
                 graph.removeNode(node);

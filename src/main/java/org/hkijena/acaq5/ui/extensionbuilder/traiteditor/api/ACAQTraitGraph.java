@@ -22,9 +22,9 @@ import java.util.Map;
 import java.util.Set;
 
 public class ACAQTraitGraph extends ACAQAlgorithmGraph {
+    boolean initialized = false;
     private ACAQJsonExtension extension;
     private BiMap<ACAQTraitDeclaration, ACAQTraitNode> traitNodes = HashBiMap.create();
-    boolean initialized = false;
 
     public ACAQTraitGraph(ACAQJsonExtension extension) {
         this.extension = extension;
@@ -37,7 +37,7 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
 
         Set<String> internalIds = new HashSet<>();
         for (ACAQJsonTraitDeclaration declaration : extension.getTraitDeclarations()) {
-            if(!StringUtils.isNullOrEmpty(declaration.getId())) {
+            if (!StringUtils.isNullOrEmpty(declaration.getId())) {
                 internalIds.add(declaration.getId());
             }
         }
@@ -46,17 +46,17 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
         for (ACAQJsonTraitDeclaration declaration : extension.getTraitDeclarations()) {
             declaration.updatedInheritedDeclarations();
             for (ACAQTraitDeclaration inherited : declaration.getInherited()) {
-               if(!nodeIdMap.containsKey(inherited.getId()) && !internalIds.contains(inherited.getId())) {
-                   ACAQExistingTraitNode node = addExternalTrait(inherited);
-                   nodeIdMap.put(inherited.getId(), node);
-               }
+                if (!nodeIdMap.containsKey(inherited.getId()) && !internalIds.contains(inherited.getId())) {
+                    ACAQExistingTraitNode node = addExternalTrait(inherited);
+                    nodeIdMap.put(inherited.getId(), node);
+                }
             }
         }
 
         // Create all new nodes
         for (ACAQJsonTraitDeclaration declaration : extension.getTraitDeclarations()) {
             ACAQNewTraitNode node = addNewTraitNode(declaration);
-            if(!StringUtils.isNullOrEmpty(declaration.getId()) && !nodeIdMap.containsKey(declaration.getId())) {
+            if (!StringUtils.isNullOrEmpty(declaration.getId()) && !nodeIdMap.containsKey(declaration.getId())) {
                 nodeIdMap.put(declaration.getId(), node);
             }
         }
@@ -64,11 +64,11 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
         // Add connections
         for (ACAQJsonTraitDeclaration declaration : extension.getTraitDeclarations()) {
             ACAQTraitNode node = traitNodes.get(declaration);
-            ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration)node.getSlotConfiguration();
+            ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) node.getSlotConfiguration();
             int index = 1;
             for (String id : declaration.getInheritedIds()) {
                 ACAQTraitNode sourceAlgorithm = nodeIdMap.getOrDefault(id, null);
-                if(sourceAlgorithm == null)
+                if (sourceAlgorithm == null)
                     continue;
                 ACAQDataSlot source = sourceAlgorithm.getFirstOutputSlot();
                 String targetSlotName = "Input " + (index++);
@@ -87,9 +87,9 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
     @Override
     public void insertNode(String key, ACAQAlgorithm algorithm, String compartment) {
         super.insertNode(key, algorithm, compartment);
-        if(initialized && algorithm instanceof ACAQNewTraitNode) {
-            ACAQNewTraitNode traitNode = (ACAQNewTraitNode)algorithm;
-            if(traitNode.getTraitDeclaration() == null) {
+        if (initialized && algorithm instanceof ACAQNewTraitNode) {
+            ACAQNewTraitNode traitNode = (ACAQNewTraitNode) algorithm;
+            if (traitNode.getTraitDeclaration() == null) {
                 ACAQJsonTraitDeclaration traitDeclaration = new ACAQJsonTraitDeclaration();
                 traitNode.setTraitDeclaration(traitDeclaration);
                 traitNodes.put(traitDeclaration, traitNode);
@@ -101,12 +101,12 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
     @Override
     public void removeNode(ACAQAlgorithm algorithm) {
         super.removeNode(algorithm);
-        if(algorithm instanceof ACAQNewTraitNode) {
+        if (algorithm instanceof ACAQNewTraitNode) {
             // Workaround for registration bug
             algorithm.getEventBus().register(this);
             algorithm.getEventBus().unregister(this);
-            ACAQJsonTraitDeclaration declaration = (ACAQJsonTraitDeclaration)((ACAQNewTraitNode) algorithm).getTraitDeclaration();
-            if(extension.getTraitDeclarations().contains(declaration)) {
+            ACAQJsonTraitDeclaration declaration = (ACAQJsonTraitDeclaration) ((ACAQNewTraitNode) algorithm).getTraitDeclaration();
+            if (extension.getTraitDeclarations().contains(declaration)) {
                 extension.removeAnnotation(declaration);
             }
         }
@@ -120,7 +120,7 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
 
     @Override
     public boolean disconnect(ACAQDataSlot source, ACAQDataSlot target, boolean user) {
-        if(super.disconnect(source, target, user)) {
+        if (super.disconnect(source, target, user)) {
             updateInheritances();
             return true;
         }
@@ -128,19 +128,21 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
     }
 
     public void updateInheritances() {
-        if(!initialized)
+        if (!initialized)
             return;
 
         for (Map.Entry<ACAQTraitDeclaration, ACAQTraitNode> entry : traitNodes.entrySet()) {
-            if(entry.getKey() instanceof ACAQJsonTraitDeclaration) {
-                ACAQJsonTraitDeclaration declaration = (ACAQJsonTraitDeclaration)entry.getKey();
+            if (!containsNode(entry.getValue()))
+                continue;
+            if (entry.getKey() instanceof ACAQJsonTraitDeclaration) {
+                ACAQJsonTraitDeclaration declaration = (ACAQJsonTraitDeclaration) entry.getKey();
                 declaration.getInheritedIds().clear();
                 for (ACAQDataSlot target : entry.getValue().getInputSlots()) {
                     ACAQDataSlot source = getSourceSlot(target);
-                    if(source != null) {
-                        ACAQTraitNode sourceNode = (ACAQTraitNode)source.getAlgorithm();
+                    if (source != null) {
+                        ACAQTraitNode sourceNode = (ACAQTraitNode) source.getAlgorithm();
                         String id = sourceNode.getTraitDeclaration().getId();
-                        if(!StringUtils.isNullOrEmpty(id)) {
+                        if (!StringUtils.isNullOrEmpty(id)) {
                             declaration.getInheritedIds().add(id);
                         }
                     }
@@ -161,19 +163,19 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
 
     @Subscribe
     public void onTraitAddedEvent(ExtensionContentAddedEvent event) {
-        if(event.getContent() instanceof ACAQJsonTraitDeclaration) {
-            ACAQJsonTraitDeclaration declaration = (ACAQJsonTraitDeclaration)event.getContent();
-            if(!traitNodes.containsKey(declaration))
+        if (event.getContent() instanceof ACAQJsonTraitDeclaration) {
+            ACAQJsonTraitDeclaration declaration = (ACAQJsonTraitDeclaration) event.getContent();
+            if (!traitNodes.containsKey(declaration))
                 addNewTraitNode(declaration);
         }
     }
 
     @Subscribe
     public void onTraitRemovedEvent(ExtensionContentRemovedEvent event) {
-        if(event.getContent() instanceof ACAQJsonTraitDeclaration) {
-            ACAQJsonTraitDeclaration declaration = (ACAQJsonTraitDeclaration)event.getContent();
+        if (event.getContent() instanceof ACAQJsonTraitDeclaration) {
+            ACAQJsonTraitDeclaration declaration = (ACAQJsonTraitDeclaration) event.getContent();
             ACAQTraitNode node = traitNodes.getOrDefault(declaration, null);
-            if(node != null && containsNode(node)) {
+            if (node != null && containsNode(node)) {
                 removeNode(node);
             }
         }
@@ -181,7 +183,7 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
 
     @Subscribe
     public void onTraitIdChanged(ParameterChangedEvent event) {
-        if("id".equals(event.getKey())) {
+        if ("id".equals(event.getKey())) {
             updateInheritances();
         }
     }

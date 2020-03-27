@@ -2,7 +2,6 @@ package org.hkijena.acaq5.ui.components;
 
 import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.api.parameters.*;
-import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro.GraphWrapperAlgorithmDeclaration;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionUI;
 import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
@@ -18,7 +17,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class ACAQParameterAccessUI extends FormPanel implements Contextual  {
+public class ACAQParameterAccessUI extends FormPanel implements Contextual {
     private Context context;
     private ACAQParameterHolder parameterHolder;
 
@@ -81,7 +80,7 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual  {
 
             boolean parameterHolderIsDynamic = parameterHolder instanceof ACAQDynamicParameterHolder && ((ACAQDynamicParameterHolder) parameterHolder).isAllowModification();
 
-            if(parameterIds.isEmpty() && !parameterHolderIsDynamic)
+            if (parameterIds.isEmpty() && !parameterHolderIsDynamic)
                 continue;
 
             boolean foundHolderName = false;
