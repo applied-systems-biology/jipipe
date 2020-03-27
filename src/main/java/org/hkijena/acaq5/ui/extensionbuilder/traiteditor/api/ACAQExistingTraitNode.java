@@ -2,17 +2,20 @@ package org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
+import org.hkijena.acaq5.api.parameters.ACAQCustomParameterHolder;
+import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+
+import java.util.Collections;
+import java.util.Map;
 
 @ACAQDocumentation(name = "Imported Annotation", description = "An annotation type that was imported from another extension")
 @AlgorithmInputSlot(ACAQTraitNodeInheritanceData.class)
 @AlgorithmOutputSlot(ACAQTraitNodeInheritanceData.class)
-public class ACAQExistingTraitNode extends ACAQTraitNode {
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.Internal)
+public class ACAQExistingTraitNode extends ACAQTraitNode implements ACAQCustomParameterHolder {
 
     public ACAQExistingTraitNode(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
@@ -20,5 +23,10 @@ public class ACAQExistingTraitNode extends ACAQTraitNode {
 
     public ACAQExistingTraitNode(ACAQExistingTraitNode other) {
         super(other);
+    }
+
+    @Override
+    public Map<String, ACAQParameterAccess> getCustomParameters() {
+        return Collections.emptyMap();
     }
 }

@@ -5,9 +5,12 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
+import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQJsonTraitDeclaration;
+import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionUI;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionUIPanel;
+import org.hkijena.acaq5.ui.components.ACAQTraitPicker;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
@@ -26,6 +29,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph.COMPARTMENT_DEFAULT;
@@ -153,7 +157,14 @@ public class ACAQTraitGraphUI extends ACAQJsonExtensionUIPanel implements MouseL
     }
 
     private void addExistingAnnotation() {
-
+        Set<ACAQTraitDeclaration> available = ACAQTraitRegistry.getInstance().getRegisteredTraits().values()
+                .stream().filter(d -> !graph.containsTrait(d)).collect(Collectors.toSet());
+        Set<ACAQTraitDeclaration> selected = ACAQTraitPicker.showDialog(this,
+                ACAQTraitPicker.Mode.Multiple,
+                available);
+        for (ACAQTraitDeclaration declaration : selected) {
+            graph.addExternalTrait(declaration);
+        }
     }
 
     private void addNewAnnotation() {

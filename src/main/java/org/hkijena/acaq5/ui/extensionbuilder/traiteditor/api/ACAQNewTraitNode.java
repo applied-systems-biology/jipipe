@@ -3,10 +3,7 @@ package org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
@@ -21,6 +18,7 @@ import java.util.Map;
 @ACAQDocumentation(name = "Custom Annotation", description = "A custom annotation type")
 @AlgorithmInputSlot(ACAQTraitNodeInheritanceData.class)
 @AlgorithmOutputSlot(ACAQTraitNodeInheritanceData.class)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.Annotation)
 public class ACAQNewTraitNode extends ACAQTraitNode implements ACAQCustomParameterHolder {
 
     public ACAQNewTraitNode(ACAQAlgorithmDeclaration declaration) {
@@ -48,5 +46,6 @@ public class ACAQNewTraitNode extends ACAQTraitNode implements ACAQCustomParamet
         if("name".equals(event.getKey())) {
             setCustomName(getTraitDeclaration().getName());
         }
+        getEventBus().post(event);
     }
 }

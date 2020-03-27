@@ -11,6 +11,7 @@ import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
 import org.hkijena.acaq5.api.events.ExtensionContentAddedEvent;
 import org.hkijena.acaq5.api.events.ExtensionContentRemovedEvent;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.traits.ACAQJsonTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.utils.StringUtils;
@@ -23,6 +24,7 @@ import java.util.Set;
 public class ACAQTraitGraph extends ACAQAlgorithmGraph {
     private ACAQJsonExtension extension;
     private BiMap<ACAQTraitDeclaration, ACAQTraitNode> traitNodes = HashBiMap.create();
+    boolean initialized = false;
 
     public ACAQTraitGraph(ACAQJsonExtension extension) {
         this.extension = extension;
@@ -45,11 +47,8 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
             declaration.updatedInheritedDeclarations();
             for (ACAQTraitDeclaration inherited : declaration.getInherited()) {
                if(!nodeIdMap.containsKey(inherited.getId()) && !internalIds.contains(inherited.getId())) {
-                   ACAQExistingTraitNode node = ACAQAlgorithm.newInstance("acaq:existing-trait-node");
-                   node.setTraitDeclaration(inherited);
-                   insertNode(node, COMPARTMENT_DEFAULT);
+                   ACAQExistingTraitNode node = addExternalTrait(inherited);
                    nodeIdMap.put(inherited.getId(), node);
-                   traitNodes.put(inherited, node);
                }
             }
         }
@@ -81,13 +80,82 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
                 connect(source, target);
             }
         }
+
+        this.initialized = true;
+    }
+
+    @Override
+    public void insertNode(String key, ACAQAlgorithm algorithm, String compartment) {
+        super.insertNode(key, algorithm, compartment);
+        if(initialized && algorithm instanceof ACAQNewTraitNode) {
+            ACAQNewTraitNode traitNode = (ACAQNewTraitNode)algorithm;
+            if(traitNode.getTraitDeclaration() == null) {
+                ACAQJsonTraitDeclaration traitDeclaration = new ACAQJsonTraitDeclaration();
+                traitNode.setTraitDeclaration(traitDeclaration);
+                traitNodes.put(traitDeclaration, traitNode);
+                extension.addTrait(traitDeclaration);
+            }
+        }
+    }
+
+    @Override
+    public void removeNode(ACAQAlgorithm algorithm) {
+        super.removeNode(algorithm);
+        if(algorithm instanceof ACAQNewTraitNode) {
+            // Workaround for registration bug
+            algorithm.getEventBus().register(this);
+            algorithm.getEventBus().unregister(this);
+            ACAQJsonTraitDeclaration declaration = (ACAQJsonTraitDeclaration)((ACAQNewTraitNode) algorithm).getTraitDeclaration();
+            if(extension.getTraitDeclarations().contains(declaration)) {
+                extension.removeAnnotation(declaration);
+            }
+        }
+    }
+
+    @Override
+    public void connect(ACAQDataSlot source, ACAQDataSlot target, boolean userDisconnectable) {
+        super.connect(source, target, userDisconnectable);
+        updateInheritances();
+    }
+
+    @Override
+    public boolean disconnect(ACAQDataSlot source, ACAQDataSlot target, boolean user) {
+        if(super.disconnect(source, target, user)) {
+            updateInheritances();
+            return true;
+        }
+        return false;
+    }
+
+    public void updateInheritances() {
+        if(!initialized)
+            return;
+
+        for (Map.Entry<ACAQTraitDeclaration, ACAQTraitNode> entry : traitNodes.entrySet()) {
+            if(entry.getKey() instanceof ACAQJsonTraitDeclaration) {
+                ACAQJsonTraitDeclaration declaration = (ACAQJsonTraitDeclaration)entry.getKey();
+                declaration.getInheritedIds().clear();
+                for (ACAQDataSlot target : entry.getValue().getInputSlots()) {
+                    ACAQDataSlot source = getSourceSlot(target);
+                    if(source != null) {
+                        ACAQTraitNode sourceNode = (ACAQTraitNode)source.getAlgorithm();
+                        String id = sourceNode.getTraitDeclaration().getId();
+                        if(!StringUtils.isNullOrEmpty(id)) {
+                            declaration.getInheritedIds().add(id);
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     private ACAQNewTraitNode addNewTraitNode(ACAQJsonTraitDeclaration declaration) {
         ACAQNewTraitNode node = ACAQAlgorithm.newInstance("acaq:new-trait-node");
         node.setTraitDeclaration(declaration);
-        insertNode(node, COMPARTMENT_DEFAULT);
         traitNodes.put(declaration, node);
+        insertNode(node, COMPARTMENT_DEFAULT);
+        node.getEventBus().register(this);
         return node;
     }
 
@@ -95,7 +163,8 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
     public void onTraitAddedEvent(ExtensionContentAddedEvent event) {
         if(event.getContent() instanceof ACAQJsonTraitDeclaration) {
             ACAQJsonTraitDeclaration declaration = (ACAQJsonTraitDeclaration)event.getContent();
-            addNewTraitNode(declaration);
+            if(!traitNodes.containsKey(declaration))
+                addNewTraitNode(declaration);
         }
     }
 
@@ -104,9 +173,28 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
         if(event.getContent() instanceof ACAQJsonTraitDeclaration) {
             ACAQJsonTraitDeclaration declaration = (ACAQJsonTraitDeclaration)event.getContent();
             ACAQTraitNode node = traitNodes.getOrDefault(declaration, null);
-            if(node != null) {
+            if(node != null && containsNode(node)) {
                 removeNode(node);
             }
         }
+    }
+
+    @Subscribe
+    public void onTraitIdChanged(ParameterChangedEvent event) {
+        if("id".equals(event.getKey())) {
+            updateInheritances();
+        }
+    }
+
+    public boolean containsTrait(ACAQTraitDeclaration declaration) {
+        return traitNodes.containsKey(declaration);
+    }
+
+    public ACAQExistingTraitNode addExternalTrait(ACAQTraitDeclaration declaration) {
+        ACAQExistingTraitNode node = ACAQAlgorithm.newInstance("acaq:existing-trait-node");
+        node.setTraitDeclaration(declaration);
+        insertNode(node, COMPARTMENT_DEFAULT);
+        traitNodes.put(declaration, node);
+        return node;
     }
 }

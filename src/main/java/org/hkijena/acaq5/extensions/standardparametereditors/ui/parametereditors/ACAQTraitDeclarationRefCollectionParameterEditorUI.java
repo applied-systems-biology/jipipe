@@ -90,6 +90,8 @@ public class ACAQTraitDeclarationRefCollectionParameterEditorUI extends ACAQPara
 
         Set<ACAQTraitDeclaration> availableTraits = new HashSet<>();
         for (ACAQTraitDeclaration traitDeclaration : ACAQTraitRegistry.getInstance().getRegisteredTraits().values()) {
+            if(traitDeclaration.isHidden())
+                continue;
             if (baseClass.isAssignableFrom(traitDeclaration.getTraitClass())) {
                 availableTraits.add(traitDeclaration);
             }

@@ -11,6 +11,7 @@ import org.hkijena.acaq5.ui.components.ACAQTraitPicker;
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
 public class ACAQTraitConfigurationUI extends JPanel {
 
@@ -35,7 +36,7 @@ public class ACAQTraitConfigurationUI extends JPanel {
     private void initialize() {
         setLayout(new BorderLayout());
         traitPicker = new ACAQTraitPicker(ACAQTraitPicker.Mode.Multiple,
-                new HashSet<>(ACAQTraitRegistry.getInstance().getRegisteredTraits().values()));
+                new HashSet<>(ACAQTraitRegistry.getInstance().getRegisteredTraits().values().stream().filter(d -> !d.isHidden()).collect(Collectors.toSet())));
         traitPicker.getEventBus().register(this);
         add(traitPicker, BorderLayout.CENTER);
     }

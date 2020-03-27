@@ -12,6 +12,7 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.events.TraitConfigurationChangedEvent;
 import org.hkijena.acaq5.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
+import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api.ACAQTraitNode;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -120,7 +121,13 @@ public class ACAQAlgorithmUI extends JPanel {
             JMenuItem deleteButton = new JMenuItem("Delete compartment", UIUtils.getIconFromResources("delete.png"));
             deleteButton.addActionListener(e -> removeCompartment());
             menu.add(deleteButton);
-        } else {
+        }
+        else if (algorithm instanceof ACAQTraitNode) {
+            JMenuItem deleteButton = new JMenuItem("Delete annotation", UIUtils.getIconFromResources("delete.png"));
+            deleteButton.addActionListener(e -> removeTrait());
+            menu.add(deleteButton);
+        }
+        else {
             JMenuItem deleteButton = new JMenuItem("Delete algorithm", UIUtils.getIconFromResources("delete.png"));
             deleteButton.setEnabled(graphUI.getAlgorithmGraph().canUserDelete(algorithm));
             deleteButton.addActionListener(e -> removeAlgorithm());
@@ -134,6 +141,14 @@ public class ACAQAlgorithmUI extends JPanel {
         if (JOptionPane.showConfirmDialog(this, "Do you really want to delete the compartment '" + compartment.getName() + "'?\n" +
                 "You will lose all nodes stored in this compartment.", "Delete compartment", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
             compartment.getProject().removeCompartment(compartment);
+        }
+    }
+
+    private void removeTrait() {
+        if (JOptionPane.showConfirmDialog(this,
+                "Do you really want to remove the annotation '" + algorithm.getName() + "'?", "Delete annotation",
+                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            graphUI.getAlgorithmGraph().removeNode(algorithm);
         }
     }
 
