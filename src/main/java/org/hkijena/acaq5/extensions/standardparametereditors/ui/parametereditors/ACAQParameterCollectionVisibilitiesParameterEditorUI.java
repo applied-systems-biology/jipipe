@@ -49,6 +49,16 @@ public class ACAQParameterCollectionVisibilitiesParameterEditorUI extends ACAQPa
 
         for (Object parameterHolder : groupedByHolder.keySet()) {
 
+            List<String> parameterIds = groupedByHolder.get(parameterHolder).stream().sorted().collect(Collectors.toList());
+            parameterIds.removeIf(key -> {
+                ACAQParameterAccess parameterAccess = parameters.get(key);
+                return parameterAccess.getVisibility() == ACAQParameterVisibility.Hidden ||
+                        parameterAccess.getVisibility() == ACAQParameterVisibility.Visible;
+            });
+
+            if(parameterIds.isEmpty())
+                continue;
+
             boolean foundHolderName = false;
 
             JPanel subAlgorithmGroupTitle = new JPanel(new BorderLayout());
@@ -62,12 +72,8 @@ public class ACAQParameterCollectionVisibilitiesParameterEditorUI extends ACAQPa
             subAlgorithmGroupTitle.add(holderNameLabel, BorderLayout.CENTER);
             formPanel.addToForm(subAlgorithmGroupTitle, null);
 
-            for (String key : groupedByHolder.get(parameterHolder).stream().sorted().collect(Collectors.toList())) {
+            for (String key : parameterIds) {
                 ACAQParameterAccess parameterAccess = parameters.get(key);
-                if (parameterAccess.getVisibility() == ACAQParameterVisibility.Hidden)
-                    continue;
-                if (parameterAccess.getVisibility() == ACAQParameterVisibility.Visible)
-                    continue;
 
                 if (!foundHolderName) {
                     holderNameLabel.setText(parameterAccess.getHolderName());

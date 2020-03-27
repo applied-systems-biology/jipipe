@@ -82,11 +82,23 @@ public interface ACAQParameterAccess {
     String getHolderName();
 
     /**
+     * Sets the name for the parameter holder
+     * @param name
+     */
+    void setHolderName(String name);
+
+    /**
      * A description for the parameter holder
      *
      * @return
      */
     String getHolderDescription();
+
+    /**
+     * Sets the holder description
+     * @param description
+     */
+    void setHolderDescription(String description);
 
     /**
      * Finds all parameters of the provided object

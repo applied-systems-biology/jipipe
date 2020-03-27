@@ -72,6 +72,16 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual  {
             if (parameterHolder == this.parameterHolder)
                 continue;
 
+            List<String> parameterIds = groupedByHolder.get(parameterHolder).stream().sorted().collect(Collectors.toList());
+            parameterIds.removeIf(key -> {
+                ACAQParameterAccess parameterAccess = parameters.get(key);
+                return parameterAccess.getVisibility() == ACAQParameterVisibility.Hidden ||
+                        parameterAccess.getVisibility() == ACAQParameterVisibility.Visible;
+            });
+
+            if(parameterIds.isEmpty())
+                continue;
+
             boolean foundHolderName = false;
 
             JPanel subAlgorithmGroupTitle = new JPanel(new BorderLayout());
@@ -100,12 +110,8 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual  {
                 subAlgorithmGroupTitle.add(addButton, BorderLayout.EAST);
             }
 
-            for (String key : groupedByHolder.get(parameterHolder).stream().sorted().collect(Collectors.toList())) {
+            for (String key : parameterIds) {
                 ACAQParameterAccess parameterAccess = parameters.get(key);
-                if (parameterAccess.getVisibility() == ACAQParameterVisibility.Hidden)
-                    continue;
-                if (parameterAccess.getVisibility() == ACAQParameterVisibility.Visible)
-                    continue;
 
                 if (!foundHolderName) {
                     holderNameLabel.setText(parameterAccess.getHolderName());

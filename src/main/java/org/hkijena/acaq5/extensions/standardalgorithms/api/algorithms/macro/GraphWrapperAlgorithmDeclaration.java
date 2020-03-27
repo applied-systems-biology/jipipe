@@ -295,6 +295,10 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
         for (ACAQAlgorithm algorithm : graph.traverseAlgorithms()) {
             for (Map.Entry<String, ACAQParameterAccess> entry : ACAQParameterAccess.getParameters(algorithm).entrySet()) {
                 String newId = algorithm.getIdInGraph() + "/" + entry.getKey();
+                ACAQParameterAccess parameterAccess = entry.getValue();
+                if(parameterAccess.getParameterHolder() instanceof ACAQAlgorithm && StringUtils.isNullOrEmpty(parameterAccess.getHolderName())) {
+                    parameterAccess.setHolderName(((ACAQAlgorithm)parameterAccess.getParameterHolder()).getName());
+                }
                 parameterAccessMap.put(newId, entry.getValue());
             }
         }

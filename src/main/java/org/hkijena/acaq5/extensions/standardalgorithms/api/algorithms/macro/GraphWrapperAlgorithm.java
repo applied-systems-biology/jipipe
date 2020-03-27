@@ -15,6 +15,7 @@ import org.hkijena.acaq5.api.parameters.ACAQCustomParameterHolder;
 import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterHolder;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQReflectionParameterAccess;
+import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.*;
 
@@ -52,13 +53,17 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
         for (ACAQAlgorithm algorithm : wrappedGraph.traverseAlgorithms()) {
             for (Map.Entry<String, ACAQParameterAccess> entry : ACAQParameterAccess.getParameters(algorithm).entrySet()) {
 
+                ACAQParameterAccess parameterAccess = entry.getValue();
                 String newId = algorithm.getIdInGraph() + "/" + entry.getKey();
 
                 if (!declaration.getParameterCollectionVisibilities().isVisible(newId)) {
                     continue;
                 }
-                if (entry.getValue().getParameterHolder() instanceof ACAQDynamicParameterHolder) {
-                    ((ACAQDynamicParameterHolder) entry.getValue().getParameterHolder()).setAllowModification(false);
+                if (parameterAccess.getParameterHolder() instanceof ACAQDynamicParameterHolder) {
+                    ((ACAQDynamicParameterHolder) parameterAccess.getParameterHolder()).setAllowModification(false);
+                }
+                if(parameterAccess.getParameterHolder() instanceof ACAQAlgorithm && StringUtils.isNullOrEmpty(parameterAccess.getHolderName())) {
+                    parameterAccess.setHolderName(((ACAQAlgorithm) parameterAccess.getParameterHolder()).getName());
                 }
 
                 parameterAccessMap.put(newId, entry.getValue());
