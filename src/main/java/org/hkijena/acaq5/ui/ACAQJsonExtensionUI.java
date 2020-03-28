@@ -3,9 +3,7 @@ package org.hkijena.acaq5.ui;
 import org.hkijena.acaq5.ACAQGUICommand;
 import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.ui.components.DocumentTabPane;
-import org.hkijena.acaq5.ui.components.RecentJsonExtensionsMenu;
-import org.hkijena.acaq5.ui.components.ReloadableValidityChecker;
+import org.hkijena.acaq5.ui.components.*;
 import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonExtensionContentListUI;
 import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.ACAQTraitGraphUI;
 import org.hkijena.acaq5.ui.settings.ACAQJsonExtensionSettingsUI;
@@ -41,7 +39,7 @@ public class ACAQJsonExtensionUI extends JPanel {
         documentTabPane.addSingletonTab("INTRODUCTION",
                 "Introduction",
                 UIUtils.getIconFromResources("info.png"),
-                new JPanel(),
+                new MarkdownReader(true, MarkdownDocument.fromPluginResource("documentation/introduction-extension-builder.md")),
                 false);
         documentTabPane.addSingletonTab("PROJECT_SETTINGS",
                 "Extension settings",

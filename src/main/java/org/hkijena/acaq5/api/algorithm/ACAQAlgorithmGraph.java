@@ -23,6 +23,7 @@ import org.jgrapht.alg.cycle.CycleDetector;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.io.DOTExporter;
 import org.jgrapht.io.ExportException;
+import org.jgrapht.traverse.DepthFirstIterator;
 import org.jgrapht.traverse.GraphIterator;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
@@ -535,6 +536,35 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         while (iterator.hasNext()) {
             ACAQDataSlot slot = iterator.next();
             result.add(slot);
+        }
+        return result;
+    }
+
+    public List<ACAQDataSlot> traverseDepthFirst() {
+        GraphIterator<ACAQDataSlot, ACAQAlgorithmGraphEdge> iterator = new DepthFirstIterator<>(graph);
+        List<ACAQDataSlot> result = new ArrayList<>();
+        while (iterator.hasNext()) {
+            ACAQDataSlot slot = iterator.next();
+            result.add(slot);
+        }
+        return result;
+    }
+
+    public List<ACAQAlgorithm> traverseAlgorithmsDepthFirst() {
+        Set<ACAQAlgorithm> visited = new HashSet<>();
+        List<ACAQAlgorithm> result = new ArrayList<>();
+        for (ACAQDataSlot slot : traverseDepthFirst()) {
+            if (slot.isOutput()) {
+                if (!visited.contains(slot.getAlgorithm())) {
+                    visited.add(slot.getAlgorithm());
+                    result.add(slot.getAlgorithm());
+                }
+            }
+        }
+        for (ACAQAlgorithm missing : algorithms.values()) {
+            if (!visited.contains(missing)) {
+                result.add(missing);
+            }
         }
         return result;
     }

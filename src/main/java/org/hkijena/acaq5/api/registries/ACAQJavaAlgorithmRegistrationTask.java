@@ -45,4 +45,9 @@ public class ACAQJavaAlgorithmRegistrationTask extends ACAQDefaultAlgorithmRegis
     public void register() {
         ACAQAlgorithmRegistry.getInstance().register(new ACAQJavaAlgorithmDeclaration(id, algorithmClass), source);
     }
+
+    @Override
+    public String toString() {
+        return id + " @ " + algorithmClass;
+    }
 }

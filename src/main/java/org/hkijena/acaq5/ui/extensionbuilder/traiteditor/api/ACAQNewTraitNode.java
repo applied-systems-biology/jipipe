@@ -9,6 +9,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterHolder;
 import org.hkijena.acaq5.api.traits.ACAQJsonTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
+import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.Map;
 
@@ -33,6 +34,19 @@ public class ACAQNewTraitNode extends ACAQTraitNode implements ACAQCustomParamet
         super.setTraitDeclaration(traitDeclaration);
         ACAQJsonTraitDeclaration jsonTraitDeclaration = (ACAQJsonTraitDeclaration) traitDeclaration;
         jsonTraitDeclaration.getEventBus().register(this);
+        updateCustomName();
+    }
+
+    private void updateCustomName() {
+        String name = getTraitDeclaration().getName();
+        if (StringUtils.isNullOrEmpty(name)) {
+            if (!StringUtils.isNullOrEmpty(getTraitDeclaration().getId())) {
+                name = "<" + getTraitDeclaration().getId() + ">";
+            } else {
+                name = null;
+            }
+        }
+        setCustomName(name);
     }
 
     @Override
@@ -42,8 +56,8 @@ public class ACAQNewTraitNode extends ACAQTraitNode implements ACAQCustomParamet
 
     @Subscribe
     public void onParameterChanged(ParameterChangedEvent event) {
-        if ("name".equals(event.getKey())) {
-            setCustomName(getTraitDeclaration().getName());
+        if ("name".equals(event.getKey()) || "id".equals(event.getKey())) {
+            updateCustomName();
         } else if ("is-discriminator".equals(event.getKey())) {
             updateSlotTypes();
         }

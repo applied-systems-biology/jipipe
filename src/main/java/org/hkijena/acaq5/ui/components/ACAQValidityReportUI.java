@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.ui.components;
 
-import org.apache.commons.lang.WordUtils;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.StringUtils;

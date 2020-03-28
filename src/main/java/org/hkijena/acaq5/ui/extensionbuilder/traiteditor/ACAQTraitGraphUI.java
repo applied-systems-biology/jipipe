@@ -3,6 +3,9 @@ package org.hkijena.acaq5.ui.extensionbuilder.traiteditor;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
@@ -16,9 +19,9 @@ import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api.ACAQTraitGraph;
 import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api.ACAQTraitNode;
+import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api.ACAQTraitNodeInheritanceData;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
-import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.imageio.ImageIO;
@@ -145,9 +148,15 @@ public class ACAQTraitGraphUI extends ACAQJsonExtensionUIPanel implements MouseL
 
         JButton addItem = new JButton("New annotation", UIUtils.getIconFromResources("new.png"));
         UIUtils.makeFlat(addItem);
-        addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
-        addItem.addActionListener(e -> addNewAnnotation());
+        addItem.setToolTipText("Adds a new custom annotation type.");
+        addItem.addActionListener(e -> addNewAnnotation(false));
         menuBar.add(addItem);
+
+        JButton addWithInputItem = new JButton("New sub-annotation", UIUtils.getIconFromResources("new.png"));
+        UIUtils.makeFlat(addWithInputItem);
+        addWithInputItem.setToolTipText("Adds a new custom annotation type. It already comes with an input slot for inheritance.");
+        addWithInputItem.addActionListener(e -> addNewAnnotation(true));
+        menuBar.add(addWithInputItem);
 
         JButton importItem = new JButton("Add existing annotation", UIUtils.getIconFromResources("add.png"));
         UIUtils.makeFlat(importItem);
@@ -166,8 +175,16 @@ public class ACAQTraitGraphUI extends ACAQJsonExtensionUIPanel implements MouseL
         }
     }
 
-    private void addNewAnnotation() {
-        getProject().addTrait(new ACAQJsonTraitDeclaration());
+    private void addNewAnnotation(boolean withInputSlot) {
+        ACAQJsonTraitDeclaration declaration = new ACAQJsonTraitDeclaration();
+        getProject().addTrait(declaration);
+        if (withInputSlot) {
+            ACAQTraitNode node = graph.getNodeFor(declaration);
+            if (node != null) {
+                ((ACAQMutableSlotConfiguration) node.getSlotConfiguration()).addSlot("Input 1",
+                        new ACAQSlotDefinition(ACAQTraitNodeInheritanceData.class, ACAQDataSlot.SlotType.Input, "Input 1", null));
+            }
+        }
     }
 
     public ACAQAlgorithmGraph getGraph() {

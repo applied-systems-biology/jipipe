@@ -37,6 +37,8 @@ public class StringUtils {
     }
 
     public static String wordWrappedInHTML(String text, int wrapColumn) {
+        if (text == null)
+            text = "";
         return "<html>" + WordUtils.wrap(HtmlEscapers.htmlEscaper().escape(text), wrapColumn).replace("\n", "<br/>") + "</html>";
     }
 

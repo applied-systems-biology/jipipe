@@ -119,6 +119,18 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
     public void connect(ACAQDataSlot source, ACAQDataSlot target, boolean userDisconnectable) {
         super.connect(source, target, userDisconnectable);
         updateInheritances();
+
+        // Helper functions to find IDs
+        if (target.getAlgorithm() instanceof ACAQNewTraitNode) {
+            ACAQTraitNode sourceNode = (ACAQTraitNode) source.getAlgorithm();
+            ACAQNewTraitNode traitNode = (ACAQNewTraitNode) target.getAlgorithm();
+            if (StringUtils.isNullOrEmpty(traitNode.getTraitDeclaration().getId()) && traitNode.getInputSlots().size() == 1) {
+                if (!StringUtils.isNullOrEmpty(sourceNode.getTraitDeclaration().getId())) {
+                    ACAQJsonTraitDeclaration declaration = (ACAQJsonTraitDeclaration) traitNode.getTraitDeclaration();
+                    declaration.setId(sourceNode.getTraitDeclaration().getId() + "-");
+                }
+            }
+        }
     }
 
     @Override
@@ -203,5 +215,9 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
         insertNode(node, COMPARTMENT_DEFAULT);
         traitNodes.put(declaration, node);
         return node;
+    }
+
+    public ACAQTraitNode getNodeFor(ACAQTraitDeclaration declaration) {
+        return traitNodes.getOrDefault(declaration, null);
     }
 }

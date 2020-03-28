@@ -1,0 +1,65 @@
+{
+  "id" : "org.hkijena.acaq5:project-management-traits",
+  "version" : "1.0.0",
+  "metadata" : {
+    "name" : "Project management annotations",
+    "description" : "An ACAQ5 project",
+    "authors" : "Zoltán Cseresnyés, Ruman Gerst",
+    "website" : "https://applied-systems-biology.github.io/acaq5/",
+    "license" : "BSD-2",
+    "citation" : ""
+  },
+  "algorithms" : [ ],
+  "annotations" : [ {
+    "id" : "project-condition",
+    "is-discriminator" : true,
+    "hidden" : false,
+    "name" : "Condition",
+    "description" : null,
+    "inherited-annotation-ids" : [ ]
+  }, {
+    "id" : "project-species",
+    "is-discriminator" : true,
+    "hidden" : false,
+    "name" : "Species",
+    "description" : null,
+    "inherited-annotation-ids" : [ ]
+  }, {
+    "id" : "project-taxonomicunit",
+    "is-discriminator" : true,
+    "hidden" : false,
+    "name" : "Taxonomic unit",
+    "description" : null,
+    "inherited-annotation-ids" : [ ]
+  }, {
+    "id" : "project-strain",
+    "is-discriminator" : true,
+    "hidden" : false,
+    "name" : "Strain",
+    "description" : null,
+    "inherited-annotation-ids" : [ ]
+  }, {
+    "id" : "project-subject",
+    "is-discriminator" : true,
+    "hidden" : false,
+    "name" : "Subject",
+    "description" : null,
+    "inherited-annotation-ids" : [ ]
+  }, {
+    "id" : "project-treatment",
+    "is-discriminator" : true,
+    "hidden" : false,
+    "name" : "Treatment",
+    "description" : null,
+    "inherited-annotation-ids" : [ ]
+  }, {
+    "id" : "project-sample",
+    "is-discriminator" : true,
+    "hidden" : false,
+    "name" : "Sample",
+    "description" : null,
+    "inherited-annotation-ids" : [ ]
+  } ],
+  "acaq:project-type" : "json-extension",
+  "dependencies" : [ ]
+}

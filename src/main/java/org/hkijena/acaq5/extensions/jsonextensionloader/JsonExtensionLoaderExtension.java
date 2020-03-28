@@ -72,22 +72,26 @@ public class JsonExtensionLoaderExtension extends ACAQPrepackagedDefaultJavaExte
     }
 
     public void updateRegistrationTasks() {
-        Set<JsonExtensionRegistrationTask> toRemove = new HashSet<>();
+        if (tasks.isEmpty())
+            return;
+        System.out.println("[ACAQ5 Json Extension] There are still " + tasks.size() + " unregistered extensions left");
+        Set<JsonExtensionRegistrationTask> runnable = new HashSet<>();
         for (JsonExtensionRegistrationTask task : tasks) {
             if (task.canRegister()) {
-                registerJsonExtension(task.getJsonNode());
-                toRemove.add(task);
+                runnable.add(task);
             }
         }
-        if (!toRemove.isEmpty()) {
-            tasks.removeAll(toRemove);
-            updateRegistrationTasks();
+        if (!runnable.isEmpty()) {
+            tasks.removeAll(runnable);
+            for (JsonExtensionRegistrationTask task : runnable) {
+                runRegistrationTask(task);
+            }
         }
     }
 
-    public void registerJsonExtension(JsonNode jsonNode) {
+    public void runRegistrationTask(JsonExtensionRegistrationTask task) {
         try {
-            ACAQJsonExtension extension = JsonUtils.getObjectMapper().readerFor(ACAQJsonExtension.class).readValue(jsonNode);
+            ACAQJsonExtension extension = JsonUtils.getObjectMapper().readerFor(ACAQJsonExtension.class).readValue(task.getJsonNode());
             getRegistry().register(extension);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -96,7 +100,7 @@ public class JsonExtensionLoaderExtension extends ACAQPrepackagedDefaultJavaExte
 
     public void registerJsonExtensionFromFile(Path filePath) {
         try {
-            scheduleRegisterJsonExtension(JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(filePath.toFile()));
+            scheduleRegisterJsonExtension(filePath, JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(filePath.toFile()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -105,19 +109,19 @@ public class JsonExtensionLoaderExtension extends ACAQPrepackagedDefaultJavaExte
     public void registerJsonExtensionFromResource(String resourcePath) {
         try {
             JsonNode node = JsonUtils.getObjectMapper().readValue(ResourceUtils.class.getResource(resourcePath), JsonNode.class);
-            scheduleRegisterJsonExtension(node);
+            scheduleRegisterJsonExtension(null, node);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void scheduleRegisterJsonExtension(JsonNode jsonNode) {
+    public void scheduleRegisterJsonExtension(Path filePath, JsonNode jsonNode) {
         JsonNode projectTypeNode = jsonNode.path("acaq:project-type");
-        if (projectTypeNode.isMissingNode() || projectTypeNode.isTextual() || "json-extension".equals(projectTypeNode.textValue())) {
+        if (projectTypeNode.isMissingNode() || !projectTypeNode.isTextual() || !"json-extension".equals(projectTypeNode.textValue())) {
             return;
         }
 
-        JsonExtensionRegistrationTask task = new JsonExtensionRegistrationTask(getRegistry(), jsonNode);
+        JsonExtensionRegistrationTask task = new JsonExtensionRegistrationTask(getRegistry(), filePath, jsonNode);
         tasks.add(task);
         updateRegistrationTasks();
     }
