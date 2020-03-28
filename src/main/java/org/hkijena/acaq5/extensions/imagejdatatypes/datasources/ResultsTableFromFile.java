@@ -5,13 +5,13 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.ACAQFileData;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ACAQResultsTableData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 
 import java.io.IOException;
 
 @ACAQDocumentation(name = "Results table from file")
 @AlgorithmInputSlot(value = ACAQFileData.class, slotName = "Files", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQResultsTableData.class, slotName = "Results table", autoCreate = true)
+@AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Results table", autoCreate = true)
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
 public class ResultsTableFromFile extends ACAQIteratingAlgorithm {
 
@@ -28,7 +28,7 @@ public class ResultsTableFromFile extends ACAQIteratingAlgorithm {
         ACAQFileData fileData = dataInterface.getInputData(getFirstInputSlot());
         try {
             ResultsTable resultsTable = ResultsTable.open(fileData.getFilePath().toString());
-            dataInterface.addOutputData(getFirstOutputSlot(), new ACAQResultsTableData(resultsTable));
+            dataInterface.addOutputData(getFirstOutputSlot(), new ResultsTableData(resultsTable));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

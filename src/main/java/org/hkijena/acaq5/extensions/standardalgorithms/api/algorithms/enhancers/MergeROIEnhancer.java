@@ -7,7 +7,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ACAQROIData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,14 +17,14 @@ import java.util.List;
 @ACAQDocumentation(name = "Merge ROI")
 
 // Data flow
-@AlgorithmInputSlot(ACAQROIData.class)
-@AlgorithmOutputSlot(ACAQROIData.class)
+@AlgorithmInputSlot(ROIData.class)
+@AlgorithmOutputSlot(ROIData.class)
 
 // Traits
 public class MergeROIEnhancer extends ACAQIteratingAlgorithm {
     public MergeROIEnhancer(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, ACAQMutableSlotConfiguration.builder().restrictInputTo(ACAQROIData.class)
-                .addOutputSlot("ROI", "", ACAQROIData.class)
+        super(declaration, ACAQMutableSlotConfiguration.builder().restrictInputTo(ROIData.class)
+                .addOutputSlot("ROI", "", ROIData.class)
                 .sealOutput().build(), null);
     }
 
@@ -36,11 +36,11 @@ public class MergeROIEnhancer extends ACAQIteratingAlgorithm {
     protected void runIteration(ACAQDataInterface dataInterface) {
         List<Roi> inputROI = new ArrayList<>();
         for (ACAQDataSlot slot : getInputSlots()) {
-            ACAQROIData data = dataInterface.getInputData(slot);
+            ROIData data = dataInterface.getInputData(slot);
             inputROI.addAll(data.getROI());
         }
 
-        dataInterface.addOutputData(getFirstOutputSlot(), new ACAQROIData(inputROI));
+        dataInterface.addOutputData(getFirstOutputSlot(), new ROIData(inputROI));
     }
 
     @Override

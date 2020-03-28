@@ -17,12 +17,9 @@ public class ACAQImageJAdapterRegistry {
     private Set<Class<? extends ACAQData>> registeredACAQDataTypes = new HashSet<>();
     private Set<Class<?>> registeredImageJDataTypes = new HashSet<>();
 
-    public static ACAQImageJAdapterRegistry getInstance() {
-        return ACAQDefaultRegistry.getInstance().getImageJDataAdapterRegistry();
-    }
-
     /**
      * Registers an adapter
+     *
      * @param adapter
      */
     public void register(ImageJDatatypeAdapter adapter) {
@@ -33,6 +30,7 @@ public class ACAQImageJAdapterRegistry {
 
     /**
      * Returns true if the ImageJ data type is supported
+     *
      * @param klass
      * @return
      */
@@ -42,6 +40,7 @@ public class ACAQImageJAdapterRegistry {
 
     /**
      * Returns true if the ACAQ data type is supported
+     *
      * @param klass
      * @return
      */
@@ -51,12 +50,13 @@ public class ACAQImageJAdapterRegistry {
 
     /**
      * Applies conversion from ImageJ to ACAQ5 data
+     *
      * @param data
      * @return
      */
     public ACAQData convertImageJToACAQ(Object data) {
         for (ImageJDatatypeAdapter adapter : registeredAdapters) {
-            if(adapter.canConvertImageJToACAQ(data)) {
+            if (adapter.canConvertImageJToACAQ(data)) {
                 return adapter.convertImageJToACAQ(data);
             }
         }
@@ -65,16 +65,21 @@ public class ACAQImageJAdapterRegistry {
 
     /**
      * Applies conversion from ACAQ5 to ImageJ data
+     *
      * @param data
      * @param activate If true, the data should be put into foreground
      * @return
      */
     public Object convertACAQToImageJ(ACAQData data, boolean activate) {
         for (ImageJDatatypeAdapter adapter : registeredAdapters) {
-            if(adapter.canConvertACAQToImageJ(data)) {
+            if (adapter.canConvertACAQToImageJ(data)) {
                 return adapter.convertACAQToImageJ(data, activate);
             }
         }
         return null;
+    }
+
+    public static ACAQImageJAdapterRegistry getInstance() {
+        return ACAQDefaultRegistry.getInstance().getImageJDataAdapterRegistry();
     }
 }

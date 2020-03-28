@@ -1,16 +1,17 @@
 package org.hkijena.acaq5.extensions.imagejdatatypes;
 
 import org.hkijena.acaq5.ACAQJavaExtension;
-import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.imagejdatatypes.compat.ImgPlusDataImageJAdapter;
+import org.hkijena.acaq5.extensions.imagejdatatypes.compat.ROIDataImageJAdapter;
+import org.hkijena.acaq5.extensions.imagejdatatypes.compat.ResultsTableDataImageJAdapter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datasources.BioformatsImporter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datasources.ImagePlusFromFileAlgorithmDeclaration;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datasources.ROIDataFromFile;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datasources.ResultsTableFromFile;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ACAQROIData;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ACAQResultsTableData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.color.ImagePlus2DColor8UData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.color.ImagePlus2DColorData;
@@ -61,12 +62,14 @@ public class ImageJDataTypesExtension extends ACAQPrepackagedDefaultJavaExtensio
         registerImageDataType("imagej-imgplus-2d-color-rgb", ImagePlus2DColorRGBData.class, "icons/data-types/imgplus-2d-color-rgb.png");
         registerImageDataType("imagej-imgplus-2d-color-8u", ImagePlus2DColor8UData.class, "icons/data-types/imgplus-2d-color-8u.png");
 
-        registerDatatype("imagej-roi", ACAQROIData.class, ResourceUtils.getPluginResource("icons/data-types/roi.png"),
+        registerDatatype("imagej-roi", ROIData.class, ResourceUtils.getPluginResource("icons/data-types/roi.png"),
                 ROIDataSlotRowUI.class, null);
-        IMAGEJ_DATA_CLASSES.add(ACAQROIData.class);
-        registerDatatype("imagej-results-table", ACAQResultsTableData.class, ResourceUtils.getPluginResource("icons/data-types/results-table.png"),
+        registerImageJDataAdapter(new ROIDataImageJAdapter());
+        IMAGEJ_DATA_CLASSES.add(ROIData.class);
+        registerDatatype("imagej-results-table", ResultsTableData.class, ResourceUtils.getPluginResource("icons/data-types/results-table.png"),
                 ResultsTableDataSlotRowUI.class, null);
-        IMAGEJ_DATA_CLASSES.add(ACAQResultsTableData.class);
+        IMAGEJ_DATA_CLASSES.add(ResultsTableData.class);
+        registerImageJDataAdapter(new ResultsTableDataImageJAdapter());
 
         // Register data sources
         registerAlgorithm("import-imagej-roi-from-file", ROIDataFromFile.class);

@@ -87,6 +87,7 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
     /**
      * Registers a new annotation type. The {@link ACAQTraitDeclaration} is generated from the class as {@link ACAQJavaTraitDeclaration}.
      * It is assumed that all dependencies are met.
+     *
      * @param id
      * @param traitClass
      * @param icon
@@ -97,6 +98,7 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
 
     /**
      * Registers a new annotation type. It is assumed that all dependencies are met.
+     *
      * @param traitDeclaration
      * @param icon
      */
@@ -109,6 +111,7 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
 
     /**
      * Registers a new data type
+     *
      * @param id
      * @param dataClass
      * @param icon
@@ -130,6 +133,7 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
 
     /**
      * Registers a new algorithm. The {@link ACAQAlgorithmDeclaration} is generated as {@link org.hkijena.acaq5.api.algorithm.ACAQJavaAlgorithmDeclaration}.
+     *
      * @param id
      * @param algorithmClass
      */
@@ -140,6 +144,7 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
     /**
      * Registers a new algorithm. It is assumed that all dependencies are met.
      * If the dependency situation is unclear, register an {@link ACAQAlgorithmRegistrationTask} instead
+     *
      * @param declaration
      */
     public void registerAlgorithm(ACAQAlgorithmDeclaration declaration) {
@@ -149,6 +154,7 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
     /**
      * Registers a new algorithm with additional dependencies.
      * Actual registration happens when all dependencies are met.-
+     *
      * @param task
      */
     public void registerAlgorithm(ACAQAlgorithmRegistrationTask task) {
@@ -157,6 +163,7 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
 
     /**
      * Registers a new parameter type and respective editors
+     *
      * @param parameterClass
      * @param uiClass
      * @param name
@@ -170,6 +177,7 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
 
     /**
      * Registers a new plot type
+     *
      * @param plotClass
      * @param plotSettingsUIClass
      * @param name
@@ -181,6 +189,7 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
 
     /**
      * Registers a new table operation
+     *
      * @param operationClass
      * @param uiClass
      * @param name
@@ -199,6 +208,7 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
 
     /**
      * Registers an adapter between ImageJ and ACAQ5 data types
+     *
      * @param adapter
      */
     public void registerImageJDataAdapter(ImageJDatatypeAdapter adapter) {

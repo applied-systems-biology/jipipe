@@ -6,7 +6,6 @@ import org.hkijena.acaq5.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
-import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 
 /**
@@ -43,7 +42,7 @@ public class ImgPlusDataImageJAdapter implements ImageJDatatypeAdapter {
     @Override
     public ACAQData convertImageJToACAQ(Object imageJData) {
         try {
-            return (ACAQData)ConstructorUtils.invokeConstructor(acaqDataClass, imageJData);
+            return (ACAQData) ConstructorUtils.invokeConstructor(acaqDataClass, imageJData);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
             throw new RuntimeException(e);
         }
@@ -51,8 +50,8 @@ public class ImgPlusDataImageJAdapter implements ImageJDatatypeAdapter {
 
     @Override
     public Object convertACAQToImageJ(ACAQData acaqData, boolean activate) {
-        ImagePlus imagePlus = ((ImagePlusData)acaqData).getImage();
-        if(activate) {
+        ImagePlus imagePlus = ((ImagePlusData) acaqData).getImage();
+        if (activate) {
             imagePlus.show();
         }
         return imagePlus;

@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.api.compat;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.data.ACAQData;
 
 public interface ImageJDatatypeAdapter {
@@ -14,7 +13,6 @@ public interface ImageJDatatypeAdapter {
     boolean canConvertImageJToACAQ(Object imageJData);
 
     /**
-     *
      * @param acaqData
      * @return
      */

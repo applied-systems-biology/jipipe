@@ -106,7 +106,7 @@ public class ACAQDependencyUI extends JPanel {
         for (ACAQDataDeclaration declaration : list) {
             boolean supportsImageJ = ACAQImageJAdapterRegistry.getInstance().supportsACAQData(declaration.getDataClass());
             String supportsImageJEntry;
-            if(supportsImageJ)
+            if (supportsImageJ)
                 supportsImageJEntry = StringUtils.createIconTextHTMLTable("Yes", ResourceUtils.getPluginResource("icons/check-circle-green.png"));
             else
                 supportsImageJEntry = StringUtils.createIconTextHTMLTable("No", ResourceUtils.getPluginResource("icons/close-tab.png"));

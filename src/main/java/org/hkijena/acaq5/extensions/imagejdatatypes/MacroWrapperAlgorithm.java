@@ -18,9 +18,9 @@ import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterHolder;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ACAQROIData;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ACAQResultsTableData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.utils.MacroUtils;
 
 import java.awt.*;
@@ -37,11 +37,11 @@ import java.util.Map;
 @ACAQDocumentation(name = "ImageJ Macro", description = "Runs a custom ImageJ macro")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Miscellaneous)
 @AlgorithmInputSlot(ImagePlusData.class)
-@AlgorithmInputSlot(ACAQROIData.class)
-@AlgorithmInputSlot(ACAQResultsTableData.class)
+@AlgorithmInputSlot(ROIData.class)
+@AlgorithmInputSlot(ResultsTableData.class)
 @AlgorithmOutputSlot(ImagePlusData.class)
-@AlgorithmOutputSlot(ACAQROIData.class)
-@AlgorithmOutputSlot(ACAQResultsTableData.class)
+@AlgorithmOutputSlot(ROIData.class)
+@AlgorithmOutputSlot(ResultsTableData.class)
 @ConfigTraits(allowModify = true)
 public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
 
@@ -134,11 +134,11 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                     throw new RuntimeException(e);
                 }
-            } else if (ACAQROIData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
-                dataInterface.addOutputData(outputSlot, new ACAQROIData(RoiManager.getRoiManager()));
-            } else if (ACAQResultsTableData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
+            } else if (ROIData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
+                dataInterface.addOutputData(outputSlot, new ROIData(RoiManager.getRoiManager()));
+            } else if (ResultsTableData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
                 ResultsTable table = ResultsTable.getResultsTable();
-                dataInterface.addOutputData(outputSlot, new ACAQResultsTableData((ResultsTable) table.clone()));
+                dataInterface.addOutputData(outputSlot, new ResultsTableData((ResultsTable) table.clone()));
             }
         }
     }
@@ -187,12 +187,12 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
                 img.setTitle(inputSlot.getName());
                 img.show();
                 WindowManager.setTempCurrentImage(img);
-            } else if (data instanceof ACAQROIData) {
+            } else if (data instanceof ROIData) {
                 RoiManager.getRoiManager().reset();
-                ((ACAQROIData) data).addToRoiManager(RoiManager.getRoiManager());
-            } else if (data instanceof ACAQResultsTableData) {
+                ((ROIData) data).addToRoiManager(RoiManager.getRoiManager());
+            } else if (data instanceof ResultsTableData) {
                 ResultsTable.getResultsTable().reset();
-                ((ACAQResultsTableData) data).addToTable(ResultsTable.getResultsTable());
+                ((ResultsTableData) data).addToTable(ResultsTable.getResultsTable());
             } else {
                 throw new RuntimeException("Unsupported data: " + data);
             }
@@ -201,10 +201,10 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        long roiInputSlotCount = getInputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ACAQROIData.class).count();
-        long roiOutputSlotCount = getOutputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ACAQROIData.class).count();
-        long resultsTableInputSlotCount = getInputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ACAQResultsTableData.class).count();
-        long resultsTableOutputSlotCount = getOutputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ACAQResultsTableData.class).count();
+        long roiInputSlotCount = getInputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ROIData.class).count();
+        long roiOutputSlotCount = getOutputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ROIData.class).count();
+        long resultsTableInputSlotCount = getInputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ResultsTableData.class).count();
+        long resultsTableOutputSlotCount = getOutputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ResultsTableData.class).count();
         if (roiInputSlotCount > 1) {
             report.reportIsInvalid("Too many ROI inputs! Please make sure to only have at most one ROI data input.");
         }

@@ -18,18 +18,18 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 @ACAQDocumentation(name = "ROI", description = "Collection of ROI")
-public class ACAQROIData implements ACAQData {
+public class ROIData implements ACAQData {
     private List<Roi> roi;
 
-    public ACAQROIData(Path storageFilePath) throws IOException {
+    public ROIData(Path storageFilePath) throws IOException {
         this.roi = loadRoiListFromFile(PathUtils.findFileByExtensionIn(storageFilePath, ".zip"));
     }
 
-    public ACAQROIData(List<Roi> roi) {
+    public ROIData(List<Roi> roi) {
         this.roi = roi;
     }
 
-    public ACAQROIData(RoiManager roiManager) {
+    public ROIData(RoiManager roiManager) {
         this.roi = new ArrayList<>();
         this.roi.addAll(Arrays.asList(roiManager.getRoisAsArray()));
     }
