@@ -1,11 +1,8 @@
 package org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api;
 
-import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
@@ -46,7 +43,7 @@ public class ACAQTraitNode extends ACAQAlgorithm {
     }
 
     public void updateSlotTypes() {
-        ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration)getSlotConfiguration();
+        ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) getSlotConfiguration();
         slotConfiguration.getAllowedInputSlotTypes().clear();
         slotConfiguration.getAllowedOutputSlotTypes().clear();
         Class<? extends ACAQData> slotClass = getTraitDeclaration().isDiscriminator() ? ACAQDiscriminatorNodeInheritanceData.class : ACAQTraitNodeInheritanceData.class;

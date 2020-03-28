@@ -59,16 +59,8 @@ public class ACAQParameterCollectionVisibilitiesParameterEditorUI extends ACAQPa
 
             boolean foundHolderName = false;
 
-            JPanel subAlgorithmGroupTitle = new JPanel(new BorderLayout());
-
-            subAlgorithmGroupTitle.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createEmptyBorder(8, 0, 4, 0),
-                    BorderFactory.createMatteBorder(1, 0, 0, 0, Color.DARK_GRAY)),
-                    BorderFactory.createEmptyBorder(4, 4, 4, 4)
-            ));
-            JLabel holderNameLabel = new JLabel();
-            subAlgorithmGroupTitle.add(holderNameLabel, BorderLayout.CENTER);
-            formPanel.addToForm(subAlgorithmGroupTitle, null);
+            FormPanel.GroupHeaderPanel groupHeaderPanel = formPanel.addGroupHeader("", null);
+            JLabel holderNameLabel = groupHeaderPanel.getTitleLabel();
 
             for (String key : parameterIds) {
                 ACAQParameterAccess parameterAccess = parameters.get(key);

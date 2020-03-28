@@ -147,17 +147,10 @@ public class FormPanel extends JPanel {
         return component;
     }
 
-    public JPanel addGroupHeader(String text, Icon icon) {
-        JPanel subAlgorithmGroupTitle = new JPanel(new BorderLayout());
-        subAlgorithmGroupTitle.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(8, 0, 4, 0),
-                BorderFactory.createMatteBorder(1, 0, 0, 0, Color.DARK_GRAY)),
-                BorderFactory.createEmptyBorder(4, 4, 4, 4)
-        ));
-        JLabel holderNameLabel = new JLabel(text, icon, JLabel.LEFT);
-        subAlgorithmGroupTitle.add(holderNameLabel, BorderLayout.CENTER);
-        addToForm(subAlgorithmGroupTitle, null);
-        return subAlgorithmGroupTitle;
+    public GroupHeaderPanel addGroupHeader(String text, Icon icon) {
+        GroupHeaderPanel panel = new GroupHeaderPanel(text, icon);
+        addWideToForm(panel, null);
+        return panel;
     }
 
     private List<Component> getComponentListForCurrentGroup() {
@@ -229,5 +222,54 @@ public class FormPanel extends JPanel {
 
     public MarkdownReader getParameterHelp() {
         return parameterHelp;
+    }
+
+    public static class GroupHeaderPanel extends JPanel {
+        private final JLabel titleLabel;
+        private int columnCount = 0;
+
+        public GroupHeaderPanel(String text, Icon icon) {
+            setBorder(BorderFactory.createEmptyBorder(8, 0, 4, 0));
+            setLayout(new GridBagLayout());
+
+            titleLabel = new JLabel(text, icon, JLabel.LEFT);
+            add(titleLabel, new GridBagConstraints() {
+                {
+                    gridx = 0;
+                    gridy = 0;
+                    anchor = GridBagConstraints.WEST;
+                    insets = UI_PADDING;
+                }
+            });
+            ++columnCount;
+
+            add(new JSeparator(), new GridBagConstraints() {
+                {
+                    gridx = 1;
+                    gridy = 0;
+                    fill = GridBagConstraints.HORIZONTAL;
+                    weightx = 1;
+                    anchor = GridBagConstraints.WEST;
+                    insets = UI_PADDING;
+                }
+            });
+            ++columnCount;
+        }
+
+        public JLabel getTitleLabel() {
+            return titleLabel;
+        }
+
+        public void addColumn(Component component) {
+            add(component, new GridBagConstraints() {
+                {
+                    gridx = columnCount;
+                    gridy = 0;
+                    anchor = GridBagConstraints.WEST;
+                    insets = UI_PADDING;
+                }
+            });
+            ++columnCount;
+        }
     }
 }

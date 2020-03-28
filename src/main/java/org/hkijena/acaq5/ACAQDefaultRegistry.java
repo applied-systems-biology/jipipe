@@ -13,9 +13,7 @@ import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -25,27 +23,19 @@ import java.util.stream.Collectors;
 public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry {
     private static ACAQDefaultRegistry instance;
     private EventBus eventBus = new EventBus();
-    private List<ACAQDependency> registeredExtensions;
-    private ACAQAlgorithmRegistry algorithmRegistry;
-    private ACAQDatatypeRegistry datatypeRegistry;
-    private ACAQTraitRegistry traitRegistry;
-    private ACAQUIDatatypeRegistry uiDatatypeRegistry;
-    private ACAQUIParametertypeRegistry uiParametertypeRegistry;
-    private ACAQUITraitRegistry acaquiTraitRegistry;
-    private ACAQPlotBuilderRegistry plotBuilderRegistry;
-    private ACAQTableAnalyzerUIOperationRegistry tableAnalyzerUIOperationRegistry;
+    private Set<String> registeredExtensionIds = new HashSet<>();
+    private List<ACAQDependency> registeredExtensions = new ArrayList<>();
+    private ACAQAlgorithmRegistry algorithmRegistry = new ACAQAlgorithmRegistry();
+    private ACAQDatatypeRegistry datatypeRegistry = new ACAQDatatypeRegistry();
+    private ACAQTraitRegistry traitRegistry = new ACAQTraitRegistry();
+    private ACAQUIDatatypeRegistry uiDatatypeRegistry = new ACAQUIDatatypeRegistry();
+    private ACAQUIParametertypeRegistry uiParametertypeRegistry = new ACAQUIParametertypeRegistry();
+    private ACAQUITraitRegistry acaquiTraitRegistry = new ACAQUITraitRegistry();
+    private ACAQPlotBuilderRegistry plotBuilderRegistry = new ACAQPlotBuilderRegistry();
+    private ACAQTableAnalyzerUIOperationRegistry tableAnalyzerUIOperationRegistry = new ACAQTableAnalyzerUIOperationRegistry();
     private PluginService pluginService;
 
     public ACAQDefaultRegistry() {
-        registeredExtensions = new ArrayList<>();
-        traitRegistry = new ACAQTraitRegistry();
-        datatypeRegistry = new ACAQDatatypeRegistry();
-        algorithmRegistry = new ACAQAlgorithmRegistry();
-        uiDatatypeRegistry = new ACAQUIDatatypeRegistry();
-        uiParametertypeRegistry = new ACAQUIParametertypeRegistry();
-        acaquiTraitRegistry = new ACAQUITraitRegistry();
-        plotBuilderRegistry = new ACAQPlotBuilderRegistry();
-        tableAnalyzerUIOperationRegistry = new ACAQTableAnalyzerUIOperationRegistry();
     }
 
     /**
@@ -54,6 +44,7 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
     public void reload() {
         System.out.println("ACAQ5: Reloading registry service");
         registeredExtensions = new ArrayList<>();
+        registeredExtensionIds = new HashSet<>();
         traitRegistry = new ACAQTraitRegistry();
         datatypeRegistry = new ACAQDatatypeRegistry();
         algorithmRegistry = new ACAQAlgorithmRegistry();
@@ -155,6 +146,10 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
     @Override
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    public Set<String> getRegisteredExtensionIds() {
+        return registeredExtensionIds;
     }
 
     public static ACAQDefaultRegistry getInstance() {

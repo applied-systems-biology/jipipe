@@ -5,7 +5,6 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQCustomParameterHolder;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.traits.ACAQMutableTraitDeclaration;
 
 import java.util.Collections;
 import java.util.Map;
@@ -20,7 +19,7 @@ public class ACAQExistingTraitNode extends ACAQTraitNode implements ACAQCustomPa
 
     public ACAQExistingTraitNode(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
-        ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration)getSlotConfiguration();
+        ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) getSlotConfiguration();
         slotConfiguration.setInputSealed(true);
     }
 

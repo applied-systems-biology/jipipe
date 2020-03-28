@@ -175,14 +175,20 @@ public class ACAQProjectUI extends JPanel {
         JMenuItem saveProjectButton = new JMenuItem("Save ...", UIUtils.getIconFromResources("save.png"));
         saveProjectButton.setToolTipText("Saves the project. If the project was opened from a file or previously saved, the file will be overwritten.");
         saveProjectButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
-        saveProjectButton.addActionListener(e -> window.saveProjectAs(true));
+        saveProjectButton.addActionListener(e -> {
+            window.saveProjectAs(true);
+            validateProject(true);
+        });
         projectMenu.add(saveProjectButton);
 
         // "Save project" entry
         JMenuItem saveProjectAsButton = new JMenuItem("Save as ...", UIUtils.getIconFromResources("save.png"));
         saveProjectAsButton.setToolTipText("Saves the project to a new file.");
         saveProjectAsButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK + KeyEvent.SHIFT_DOWN_MASK));
-        saveProjectAsButton.addActionListener(e -> window.saveProjectAs(false));
+        saveProjectAsButton.addActionListener(e -> {
+            window.saveProjectAs(false);
+            validateProject(true);
+        });
         projectMenu.add(saveProjectAsButton);
 
         projectMenu.addSeparator();
@@ -241,7 +247,7 @@ public class ACAQProjectUI extends JPanel {
         // "Validate" entry
         JButton validateProjectButton = new JButton("Validate", UIUtils.getIconFromResources("checkmark.png"));
         validateProjectButton.setToolTipText("Opens a new tab to check parameters and graph for validity.");
-        validateProjectButton.addActionListener(e -> validateProject());
+        validateProjectButton.addActionListener(e -> validateProject(false));
         UIUtils.makeFlat(validateProjectButton);
         menu.add(validateProjectButton);
 
@@ -264,9 +270,10 @@ public class ACAQProjectUI extends JPanel {
         add(menu, BorderLayout.NORTH);
     }
 
-    private void validateProject() {
+    private void validateProject(boolean avoidSwitching) {
         validityCheckerPanel.recheckValidity();
-        documentTabPane.selectSingletonTab("VALIDITY_CHECK");
+        if (!avoidSwitching || !validityCheckerPanel.getReport().isValid())
+            documentTabPane.selectSingletonTab("VALIDITY_CHECK");
     }
 
     private void managePlugins() {

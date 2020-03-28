@@ -44,8 +44,7 @@ public class ACAQNewTraitNode extends ACAQTraitNode implements ACAQCustomParamet
     public void onParameterChanged(ParameterChangedEvent event) {
         if ("name".equals(event.getKey())) {
             setCustomName(getTraitDeclaration().getName());
-        }
-        else if("is-discriminator".equals(event.getKey())) {
+        } else if ("is-discriminator".equals(event.getKey())) {
             updateSlotTypes();
         }
         getEventBus().post(event);

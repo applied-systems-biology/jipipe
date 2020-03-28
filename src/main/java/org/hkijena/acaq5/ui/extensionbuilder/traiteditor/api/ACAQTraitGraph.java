@@ -188,8 +188,7 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
     public void onTraitIdChanged(ParameterChangedEvent event) {
         if ("id".equals(event.getKey())) {
             updateInheritances();
-        }
-        else if("is-discriminator".equals(event.getKey())) {
+        } else if ("is-discriminator".equals(event.getKey())) {
             getEventBus().post(new AlgorithmGraphChangedEvent(this));
         }
     }

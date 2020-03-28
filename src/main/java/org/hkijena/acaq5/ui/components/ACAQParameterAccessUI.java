@@ -1,10 +1,12 @@
 package org.hkijena.acaq5.ui.components;
 
 import org.hkijena.acaq5.ACAQDefaultRegistry;
+import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionUI;
 import org.hkijena.acaq5.ui.ACAQProjectUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
+import org.hkijena.acaq5.ui.registries.ACAQUIParametertypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.Contextual;
@@ -84,20 +86,8 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
                 continue;
 
             boolean foundHolderName = false;
-
-            JPanel subAlgorithmGroupTitle = new JPanel(new BorderLayout());
-            if (hasElements) {
-                subAlgorithmGroupTitle.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createCompoundBorder(
-                        BorderFactory.createEmptyBorder(8, 0, 4, 0),
-                        BorderFactory.createMatteBorder(1, 0, 0, 0, Color.DARK_GRAY)),
-                        BorderFactory.createEmptyBorder(4, 4, 4, 4)
-                ));
-            } else {
-                subAlgorithmGroupTitle.setBorder(BorderFactory.createEmptyBorder(12, 4, 8, 4));
-            }
-            JLabel holderNameLabel = new JLabel();
-            subAlgorithmGroupTitle.add(holderNameLabel, BorderLayout.CENTER);
-            addToForm(subAlgorithmGroupTitle, null);
+            GroupHeaderPanel groupHeaderPanel = addGroupHeader("", null);
+            JLabel holderNameLabel = groupHeaderPanel.getTitleLabel();
 
             if (parameterHolderIsDynamic) {
                 holderNameLabel.setText(((ACAQDynamicParameterHolder) parameterHolder).getName());
@@ -108,7 +98,7 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
                 initializeAddDynamicParameterButton(addButton, (ACAQDynamicParameterHolder) parameterHolder);
                 addButton.setToolTipText("Add new parameter");
                 UIUtils.makeFlat25x25(addButton);
-                subAlgorithmGroupTitle.add(addButton, BorderLayout.EAST);
+                groupHeaderPanel.addColumn(addButton);
             }
 
             for (String key : parameterIds) {
@@ -174,7 +164,16 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
     private void initializeAddDynamicParameterButton(JButton addButton, ACAQDynamicParameterHolder parameterHolder) {
         JPopupMenu menu = UIUtils.addPopupMenuToComponent(addButton);
         for (Class<?> allowedType : parameterHolder.getAllowedTypes()) {
-            JMenuItem addItem = new JMenuItem(allowedType.getSimpleName(), UIUtils.getIconFromResources("add.png"));
+            ACAQDocumentation documentation = ACAQUIParametertypeRegistry.getInstance().getDocumentationFor(allowedType);
+            String name = allowedType.getSimpleName();
+            String description = "Inserts a new parameter";
+            if (documentation != null) {
+                name = documentation.name();
+                description = documentation.description();
+            }
+
+            JMenuItem addItem = new JMenuItem(name, UIUtils.getIconFromResources("add.png"));
+            addItem.setToolTipText(description);
             addItem.addActionListener(e -> addDynamicParameter(parameterHolder, allowedType));
             menu.add(addItem);
         }
