@@ -12,12 +12,15 @@
 
 package org.hkijena.acaq5.utils;
 
+import com.oracle.xmlns.internal.webservices.jaxws_databinding.ExistingAnnotationsType;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.ui.components.ACAQValidityReportUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
+import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api.ACAQExistingTraitNode;
+import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api.ACAQNewTraitNode;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -374,6 +377,10 @@ public class UIUtils {
     public static Color getFillColorFor(ACAQAlgorithmDeclaration declaration) {
         if (declaration.getAlgorithmClass() == ACAQProjectCompartment.class)
             return new Color(254, 254, 255);
+        if (declaration.getAlgorithmClass() == ACAQExistingTraitNode.class)
+            return new Color(254, 254, 255);
+        if (declaration.getAlgorithmClass() == ACAQNewTraitNode.class)
+            return new Color(203, 187, 213);
         return declaration.getCategory().getColor(0.1f, 0.9f);
     }
 
@@ -384,6 +391,10 @@ public class UIUtils {
     public static Color getBorderColorFor(ACAQAlgorithmDeclaration declaration) {
         if (declaration.getAlgorithmClass() == ACAQProjectCompartment.class)
             return new Color(6, 20, 57);
+        if (declaration.getAlgorithmClass() == ACAQExistingTraitNode.class)
+            return new Color(6, 20, 57);
+        if (declaration.getAlgorithmClass() == ACAQNewTraitNode.class)
+            return new Color(58, 32, 63);
         return declaration.getCategory().getColor(0.1f, 0.5f);
     }
 

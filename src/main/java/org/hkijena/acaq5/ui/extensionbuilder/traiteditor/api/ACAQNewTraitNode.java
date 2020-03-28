@@ -15,6 +15,8 @@ import java.util.Map;
 @ACAQDocumentation(name = "Custom Annotation", description = "A custom annotation type")
 @AlgorithmInputSlot(ACAQTraitNodeInheritanceData.class)
 @AlgorithmOutputSlot(ACAQTraitNodeInheritanceData.class)
+@AlgorithmInputSlot(ACAQDiscriminatorNodeInheritanceData.class)
+@AlgorithmOutputSlot(ACAQDiscriminatorNodeInheritanceData.class)
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Annotation)
 public class ACAQNewTraitNode extends ACAQTraitNode implements ACAQCustomParameterHolder {
 
@@ -42,6 +44,9 @@ public class ACAQNewTraitNode extends ACAQTraitNode implements ACAQCustomParamet
     public void onParameterChanged(ParameterChangedEvent event) {
         if ("name".equals(event.getKey())) {
             setCustomName(getTraitDeclaration().getName());
+        }
+        else if("is-discriminator".equals(event.getKey())) {
+            updateSlotTypes();
         }
         getEventBus().post(event);
     }

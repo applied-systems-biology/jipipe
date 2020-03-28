@@ -6,13 +6,13 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
+import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 
-@ACAQDocumentation(name = "Annotation", description = "An annotation")
-@AlgorithmInputSlot(ACAQTraitNodeInheritanceData.class)
-@AlgorithmOutputSlot(ACAQTraitNodeInheritanceData.class)
 public class ACAQTraitNode extends ACAQAlgorithm {
 
     private ACAQTraitDeclaration traitDeclaration;
@@ -42,12 +42,26 @@ public class ACAQTraitNode extends ACAQAlgorithm {
     public void setTraitDeclaration(ACAQTraitDeclaration traitDeclaration) {
         this.traitDeclaration = traitDeclaration;
         setCustomName(traitDeclaration.getName());
+        updateSlotTypes();
+    }
+
+    public void updateSlotTypes() {
+        ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration)getSlotConfiguration();
+        slotConfiguration.getAllowedInputSlotTypes().clear();
+        slotConfiguration.getAllowedOutputSlotTypes().clear();
+        Class<? extends ACAQData> slotClass = getTraitDeclaration().isDiscriminator() ? ACAQDiscriminatorNodeInheritanceData.class : ACAQTraitNodeInheritanceData.class;
+        slotConfiguration.getAllowedInputSlotTypes().add(slotClass);
+        slotConfiguration.getAllowedOutputSlotTypes().add(slotClass);
+        for (ACAQDataSlot value : getSlots().values()) {
+            value.setAcceptedDataType(slotClass);
+        }
+        getEventBus().post(new AlgorithmSlotsChangedEvent(this));
     }
 
     public static ACAQSlotConfiguration createSlotConfiguration() {
         return ACAQMutableSlotConfiguration.builder()
-                .restrictInputTo(ACAQTraitNodeInheritanceData.class)
-                .restrictOutputTo(ACAQTraitNodeInheritanceData.class)
+                .restrictInputTo(ACAQTraitNodeInheritanceData.class, ACAQDiscriminatorNodeInheritanceData.class)
+                .restrictOutputTo(ACAQTraitNodeInheritanceData.class, ACAQDiscriminatorNodeInheritanceData.class)
                 .addOutputSlot("This", "", ACAQTraitNodeInheritanceData.class)
                 .sealOutput()
                 .build();

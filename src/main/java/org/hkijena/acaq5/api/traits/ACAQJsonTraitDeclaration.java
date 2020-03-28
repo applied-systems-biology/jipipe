@@ -6,6 +6,7 @@ import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.utils.StringUtils;
@@ -64,6 +65,7 @@ public class ACAQJsonTraitDeclaration extends ACAQMutableTraitDeclaration implem
         } else {
             setTraitClass(ACAQDefaultTrait.class);
         }
+        getEventBus().post(new ParameterChangedEvent(this, "is-discriminator"));
     }
 
     @Override

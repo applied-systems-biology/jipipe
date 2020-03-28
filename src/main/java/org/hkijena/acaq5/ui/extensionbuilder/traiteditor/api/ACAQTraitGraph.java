@@ -6,9 +6,11 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
+import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.ExtensionContentAddedEvent;
 import org.hkijena.acaq5.api.events.ExtensionContentRemovedEvent;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
@@ -72,7 +74,8 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
                     continue;
                 ACAQDataSlot source = sourceAlgorithm.getFirstOutputSlot();
                 String targetSlotName = "Input " + (index++);
-                slotConfiguration.addSlot(targetSlotName, new ACAQSlotDefinition(ACAQTraitNodeInheritanceData.class,
+                Class<? extends ACAQData> slotClass = declaration.isDiscriminator() ? ACAQDiscriminatorNodeInheritanceData.class : ACAQTraitNodeInheritanceData.class;
+                slotConfiguration.addSlot(targetSlotName, new ACAQSlotDefinition(slotClass,
                         ACAQDataSlot.SlotType.Input,
                         targetSlotName,
                         null));
@@ -185,6 +188,9 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
     public void onTraitIdChanged(ParameterChangedEvent event) {
         if ("id".equals(event.getKey())) {
             updateInheritances();
+        }
+        else if("is-discriminator".equals(event.getKey())) {
+            getEventBus().post(new AlgorithmGraphChangedEvent(this));
         }
     }
 

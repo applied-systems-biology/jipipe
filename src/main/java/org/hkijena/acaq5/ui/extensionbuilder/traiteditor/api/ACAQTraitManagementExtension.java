@@ -34,7 +34,10 @@ public class ACAQTraitManagementExtension extends ACAQPrepackagedDefaultJavaExte
         registerAlgorithm("acaq:existing-trait-node", ACAQExistingTraitNode.class);
 
         registerDatatype("acaq:trait-inheritance", ACAQTraitNodeInheritanceData.class,
-                ResourceUtils.getPluginResource("icons/label.png"),
+                ResourceUtils.getPluginResource("icons/traits/trait-boolean.png"),
+                null, null);
+        registerDatatype("acaq:discriminator-inheritance", ACAQDiscriminatorNodeInheritanceData.class,
+                ResourceUtils.getPluginResource("icons/traits/trait-text.png"),
                 null, null);
     }
 }

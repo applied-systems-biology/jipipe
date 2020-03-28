@@ -12,6 +12,7 @@ import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api.ACAQNewTraitNode;
 import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api.ACAQTraitGraph;
 import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api.ACAQTraitNode;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQSlotEditorUI;
+import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -55,7 +56,7 @@ public class ACAQSingleTraitSelectionPanelUI extends ACAQJsonExtensionUIPanel {
     private void initializeToolbar() {
         JToolBar toolBar = new JToolBar();
         JLabel nameLabel = new JLabel(node.getName(), new ColorIcon(16, 16, UIUtils.getFillColorFor(node.getDeclaration())), JLabel.LEFT);
-//        nameLabel.setToolTipText(TooltipUtils.getProjectCompartmentTooltip(algorithm, getProject().getGraph()));
+        nameLabel.setToolTipText(TooltipUtils.getTraitTooltip(node.getTraitDeclaration()));
         toolBar.add(nameLabel);
 
         toolBar.add(Box.createHorizontalGlue());
