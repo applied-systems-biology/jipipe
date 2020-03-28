@@ -1,6 +1,9 @@
 package org.hkijena.acaq5.ui.components;
 
+import org.apache.commons.lang.WordUtils;
 import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.utils.ResourceUtils;
+import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
@@ -92,26 +95,20 @@ public class ACAQValidityReportUI extends JPanel {
         if (report == null || report.isValid()) {
             switchToEverythingValid();
         } else {
-            DefaultTableModel model = new DefaultTableModel() {
-                @Override
-                public Class<?> getColumnClass(int columnIndex) {
-                    return getValueAt(0, columnIndex).getClass();
-                }
-            };
-            model.addColumn("");
+            DefaultTableModel model = new DefaultTableModel();
             model.addColumn("Location");
             model.addColumn("Message");
-            ImageIcon icon = UIUtils.getIconFromResources("error.png");
             Map<String, String> messages = report.getMessages();
             for (String key : report.getInvalidResponses()) {
+
                 model.addRow(new Object[]{
-                        icon,
-                        key,
-                        messages.getOrDefault(key, "")
+                        StringUtils.createIconTextHTMLTable(key.replace("/", " ⏵ "), ResourceUtils.getPluginResource("icons/error.png")),
+                        StringUtils.wordWrappedInHTML(messages.getOrDefault(key, ""), 50)
                 });
             }
             table.setModel(model);
             table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+            UIUtils.fitRowHeights(table);
             table.packAll();
             switchToTable();
         }

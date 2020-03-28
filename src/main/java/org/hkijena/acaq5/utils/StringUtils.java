@@ -12,6 +12,7 @@
 
 package org.hkijena.acaq5.utils;
 
+import com.google.common.html.HtmlEscapers;
 import org.apache.commons.lang.WordUtils;
 
 import java.net.URL;
@@ -28,7 +29,7 @@ public class StringUtils {
     }
 
     public static String createIconTextHTMLTable(String text, URL iconURL) {
-        return "<html><table><tr><td><img src=\"" + iconURL + "\" /></td><td>" + text + "</td></tr></table></html>";
+        return "<html><table><tr><td><img src=\"" + iconURL + "\" /></td><td>" + HtmlEscapers.htmlEscaper().escape(text) + "</td></tr></table></html>";
     }
 
     public static String removeHTMLRoot(String html) {
@@ -36,7 +37,7 @@ public class StringUtils {
     }
 
     public static String wordWrappedInHTML(String text, int wrapColumn) {
-        return "<html>" + WordUtils.wrap(text, wrapColumn).replace("\n", "<br/>") + "</html>";
+        return "<html>" + WordUtils.wrap(HtmlEscapers.htmlEscaper().escape(text), wrapColumn).replace("\n", "<br/>") + "</html>";
     }
 
     public static boolean isNullOrEmpty(String string) {
