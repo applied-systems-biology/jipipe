@@ -5,6 +5,8 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.ACAQDependency;
+import org.hkijena.acaq5.api.ACAQValidatable;
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.data.ACAQData;
@@ -18,7 +20,7 @@ import java.util.stream.Collectors;
 /**
  * Manages known algorithms and their annotations
  */
-public class ACAQAlgorithmRegistry {
+public class ACAQAlgorithmRegistry implements ACAQValidatable {
     private Map<String, ACAQAlgorithmDeclaration> registeredAlgorithms = new HashMap<>();
     private Set<ACAQAlgorithmRegistrationTask> registrationTasks = new HashSet<>();
     private Map<String, ACAQDependency> registeredAlgorithmSources = new HashMap<>();
@@ -199,6 +201,13 @@ public class ACAQAlgorithmRegistry {
                 result.add(entry.getValue());
         }
         return result;
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+        for (ACAQAlgorithmRegistrationTask task : registrationTasks) {
+            report.forCategory("Unregistered algorithms").forCategory(task.toString()).report(task);
+        }
     }
 
     public static ACAQAlgorithmRegistry getInstance() {

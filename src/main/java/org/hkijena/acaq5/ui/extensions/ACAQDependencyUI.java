@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.ui.extensions;
 
 import org.hkijena.acaq5.ACAQDependency;
+import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.data.ACAQDataDeclaration;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
@@ -50,6 +51,7 @@ public class ACAQDependencyUI extends JPanel {
         formPanel.addToForm(UIUtils.makeReadonlyTextField("" + dependency.getDependencyLocation()), new JLabel("Defining file"), null);
         formPanel.addToForm(UIUtils.makeReadonlyTextArea(dependency.getMetadata().getDescription()), new JLabel("Description"), null);
 
+        insertDependencies(formPanel);
         insertAddedDatatypes(formPanel);
         insertAddedTraits(formPanel);
         insertAddedAlgorithms(formPanel);
@@ -58,6 +60,22 @@ public class ACAQDependencyUI extends JPanel {
         formPanel.addVerticalGlue();
 
         add(formPanel, BorderLayout.CENTER);
+    }
+
+    private void insertDependencies(FormPanel formPanel) {
+        if (dependency instanceof ACAQJsonExtension) {
+            ACAQJsonExtension jsonExtension = (ACAQJsonExtension) dependency;
+            if (jsonExtension.getDependencies().isEmpty())
+                return;
+            DefaultTableModel model = new DefaultTableModel();
+            model.setColumnIdentifiers(new Object[]{"Dependency"});
+            for (ACAQDependency dependency : jsonExtension.getDependencies()) {
+                model.addRow(new Object[]{
+                        "<html>" + ACAQDependency.toHtmlElement(dependency) + "</html>"
+                });
+            }
+            insertTable(formPanel, model, "Dependencies", UIUtils.getIconFromResources("module.png"));
+        }
     }
 
     private void insertAddedTraits(FormPanel formPanel) {

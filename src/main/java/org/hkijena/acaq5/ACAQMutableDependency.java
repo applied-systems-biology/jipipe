@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQProjectMetadata;
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
 
@@ -65,5 +66,10 @@ public class ACAQMutableDependency implements ACAQDependency {
     @Override
     public Path getDependencyLocation() {
         return null;
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+
     }
 }

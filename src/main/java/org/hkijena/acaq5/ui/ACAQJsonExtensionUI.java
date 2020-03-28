@@ -179,7 +179,7 @@ public class ACAQJsonExtensionUI extends JPanel {
         if (!report.isValid()) {
             validateProject();
         } else {
-
+            ACAQJsonExtensionWindow.installExtension(this, getProject());
         }
     }
 

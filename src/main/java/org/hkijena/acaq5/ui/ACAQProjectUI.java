@@ -12,6 +12,7 @@ import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.RecentProjectsMenu;
 import org.hkijena.acaq5.ui.components.ReloadableValidityChecker;
 import org.hkijena.acaq5.ui.extensions.ACAQPluginManagerUIPanel;
+import org.hkijena.acaq5.ui.extensions.ACAQPluginValidityCheckerPanel;
 import org.hkijena.acaq5.ui.running.ACAQRunSettingsUI;
 import org.hkijena.acaq5.ui.running.ACAQRunnerQueueUI;
 import org.hkijena.acaq5.ui.settings.ACAQProjectSettingsUI;
@@ -36,6 +37,7 @@ public class ACAQProjectUI extends JPanel {
     private JLabel statusText;
     private Context context;
     private ReloadableValidityChecker validityCheckerPanel;
+    private ACAQPluginValidityCheckerPanel pluginValidityCheckerPanel;
 
     public ACAQProjectUI(ACAQProjectWindow window, ACAQGUICommand command, ACAQProject project) {
         this.window = window;
@@ -45,6 +47,8 @@ public class ACAQProjectUI extends JPanel {
         initialize();
         initializeDefaultProject();
         project.getEventBus().register(this);
+
+        validatePlugins(true);
     }
 
     private void initializeDefaultProject() {
@@ -82,13 +86,19 @@ public class ACAQProjectUI extends JPanel {
         documentTabPane.addSingletonTab("PLUGIN_MANAGER",
                 "Plugin manager",
                 UIUtils.getIconFromResources("module.png"),
-                new ACAQPluginManagerUIPanel(command),
+                new ACAQPluginManagerUIPanel(this),
                 true);
         validityCheckerPanel = new ReloadableValidityChecker(project);
         documentTabPane.addSingletonTab("VALIDITY_CHECK",
                 "Project validation",
                 UIUtils.getIconFromResources("checkmark.png"),
                 validityCheckerPanel,
+                true);
+        pluginValidityCheckerPanel = new ACAQPluginValidityCheckerPanel();
+        documentTabPane.addSingletonTab("PLUGIN_VALIDITY_CHECK",
+                "Plugin validation",
+                UIUtils.getIconFromResources("module.png"),
+                pluginValidityCheckerPanel,
                 true);
         documentTabPane.selectSingletonTab("INTRODUCTION");
         add(documentTabPane, BorderLayout.CENTER);
@@ -229,7 +239,7 @@ public class ACAQProjectUI extends JPanel {
         pluginsMenu.add(newPluginButton);
 
         JMenuItem installPluginButton = new JMenuItem("Install ...", UIUtils.getIconFromResources("download.png"));
-        installPluginButton.addActionListener(e -> ACAQJsonExtensionWindow.installExtensions());
+        installPluginButton.addActionListener(e -> ACAQJsonExtensionWindow.installExtensions(this));
         pluginsMenu.add(installPluginButton);
 
         JMenuItem managePluginsButton = new JMenuItem("Manage plugins", UIUtils.getIconFromResources("wrench.png"));
@@ -270,10 +280,16 @@ public class ACAQProjectUI extends JPanel {
         add(menu, BorderLayout.NORTH);
     }
 
-    private void validateProject(boolean avoidSwitching) {
+    public void validateProject(boolean avoidSwitching) {
         validityCheckerPanel.recheckValidity();
         if (!avoidSwitching || !validityCheckerPanel.getReport().isValid())
             documentTabPane.selectSingletonTab("VALIDITY_CHECK");
+    }
+
+    public void validatePlugins(boolean avoidSwitching) {
+        pluginValidityCheckerPanel.recheckValidity();
+        if (!avoidSwitching || !pluginValidityCheckerPanel.getReport().isValid())
+            documentTabPane.selectSingletonTab("PLUGIN_VALIDITY_CHECK");
     }
 
     private void managePlugins() {

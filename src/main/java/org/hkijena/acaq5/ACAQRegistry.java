@@ -1,6 +1,7 @@
 package org.hkijena.acaq5;
 
 import com.google.common.eventbus.EventBus;
+import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
@@ -12,7 +13,7 @@ import org.scijava.service.Service;
 
 import java.util.List;
 
-public interface ACAQRegistry extends Service {
+public interface ACAQRegistry extends Service, ACAQValidatable {
 
     EventBus getEventBus();
 

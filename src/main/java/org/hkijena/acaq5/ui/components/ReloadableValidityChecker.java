@@ -9,17 +9,23 @@ import java.awt.*;
 
 public class ReloadableValidityChecker extends JPanel {
     private ACAQValidatable validatable;
+    private MarkdownDocument helpDocument;
     private ACAQValidityReportUI reportUI;
     private ACAQValidityReport report = new ACAQValidityReport();
 
     public ReloadableValidityChecker(ACAQValidatable validatable) {
+        this(validatable, null);
+    }
+
+    public ReloadableValidityChecker(ACAQValidatable validatable, MarkdownDocument helpDocument) {
         this.validatable = validatable;
+        this.helpDocument = helpDocument;
         initialize();
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
-        reportUI = new ACAQValidityReportUI(true);
+        reportUI = new ACAQValidityReportUI(true, helpDocument);
         add(reportUI, BorderLayout.CENTER);
 
         JToolBar toolBar = new JToolBar();

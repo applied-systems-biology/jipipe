@@ -6,6 +6,7 @@ import ij.Menus;
 import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.ACAQJsonExtension;
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.events.ExtensionRegisteredEvent;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.utils.JsonUtils;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
 @Plugin(type = ACAQJavaExtension.class)
 public class JsonExtensionLoaderExtension extends ACAQPrepackagedDefaultJavaExtension {
 
-    private Set<JsonExtensionRegistrationTask> tasks = new HashSet<>();
+    private Set<JsonExtensionRegistrationTask> registrationTasks = new HashSet<>();
 
     @Override
     public String getName() {
@@ -47,7 +48,8 @@ public class JsonExtensionLoaderExtension extends ACAQPrepackagedDefaultJavaExte
         if (Files.exists(getPluginDirectory())) {
             try {
                 for (Path path : Files.walk(getPluginDirectory()).collect(Collectors.toSet())) {
-                    registerJsonExtensionFromFile(path);
+                    if (Files.isRegularFile(path))
+                        registerJsonExtensionFromFile(path);
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -72,17 +74,17 @@ public class JsonExtensionLoaderExtension extends ACAQPrepackagedDefaultJavaExte
     }
 
     public void updateRegistrationTasks() {
-        if (tasks.isEmpty())
+        if (registrationTasks.isEmpty())
             return;
-        System.out.println("[ACAQ5 Json Extension] There are still " + tasks.size() + " unregistered extensions left");
+        System.out.println("[ACAQ5 Json Extension] There are still " + registrationTasks.size() + " unregistered extensions left");
         Set<JsonExtensionRegistrationTask> runnable = new HashSet<>();
-        for (JsonExtensionRegistrationTask task : tasks) {
+        for (JsonExtensionRegistrationTask task : registrationTasks) {
             if (task.canRegister()) {
                 runnable.add(task);
             }
         }
         if (!runnable.isEmpty()) {
-            tasks.removeAll(runnable);
+            registrationTasks.removeAll(runnable);
             for (JsonExtensionRegistrationTask task : runnable) {
                 runRegistrationTask(task);
             }
@@ -122,8 +124,16 @@ public class JsonExtensionLoaderExtension extends ACAQPrepackagedDefaultJavaExte
         }
 
         JsonExtensionRegistrationTask task = new JsonExtensionRegistrationTask(getRegistry(), filePath, jsonNode);
-        tasks.add(task);
+        registrationTasks.add(task);
         updateRegistrationTasks();
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+        super.reportValidity(report);
+        for (JsonExtensionRegistrationTask task : registrationTasks) {
+            report.forCategory("Unregistered JSON extensions").report(task);
+        }
     }
 
     @Subscribe

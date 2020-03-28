@@ -53,6 +53,7 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     @ACAQDocumentation(name = "Algorithm ID", description = "An unique identifier for the algorithm")
     @ACAQParameter("id")
     @JsonGetter("id")
+    @StringParameterSettings(monospace = true)
     @Override
     public String getId() {
         return id;
@@ -337,7 +338,7 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     public void reportValidity(ACAQValidityReport report) {
         if (id == null || id.isEmpty()) {
             report.reportIsInvalid("ID is null or empty! Please provide a valid algorithm ID.");
-        } else if (ACAQAlgorithmRegistry.getInstance().hasAlgorithmWithId(id)) {
+        } else if (ACAQAlgorithmRegistry.getInstance().hasAlgorithmWithId(id) && ACAQAlgorithmRegistry.getInstance().getDeclarationById(id) != this) {
             report.reportIsInvalid("The ID already exists! Please provide a unique ID.");
         }
         if (category == ACAQAlgorithmCategory.Internal) {

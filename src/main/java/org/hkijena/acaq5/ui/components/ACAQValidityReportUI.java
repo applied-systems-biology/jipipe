@@ -20,9 +20,19 @@ public class ACAQValidityReportUI extends JPanel {
     private JPanel tablePanel;
     private boolean withHelp;
     private JPanel everythingValidPanel;
+    private MarkdownDocument helpDocument;
 
     public ACAQValidityReportUI(boolean withHelp) {
+        this(withHelp, MarkdownDocument.fromPluginResource("documentation/validation.md"));
+    }
+
+    public ACAQValidityReportUI(boolean withHelp, MarkdownDocument helpDocument) {
+        if (helpDocument == null)
+            helpDocument = MarkdownDocument.fromPluginResource("documentation/validation.md");
+
         this.withHelp = withHelp;
+        this.helpDocument = helpDocument;
+
         initialize();
         switchToEverythingValid();
     }
@@ -76,7 +86,7 @@ public class ACAQValidityReportUI extends JPanel {
         // Create split pane if needed
         if (withHelp) {
             splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JLabel(),
-                    new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/validation.md")));
+                    new MarkdownReader(false, helpDocument));
             splitPane.setDividerSize(3);
             splitPane.setResizeWeight(0.66);
             addComponentListener(new ComponentAdapter() {

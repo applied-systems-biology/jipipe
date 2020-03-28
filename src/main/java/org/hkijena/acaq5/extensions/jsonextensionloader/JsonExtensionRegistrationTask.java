@@ -4,12 +4,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.ACAQProject;
+import org.hkijena.acaq5.api.ACAQValidatable;
+import org.hkijena.acaq5.api.ACAQValidityReport;
 
 import java.nio.file.Path;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class JsonExtensionRegistrationTask {
+public class JsonExtensionRegistrationTask implements ACAQValidatable {
 
     private final Set<String> dependencyIds;
     private ACAQDefaultRegistry registry;
@@ -34,5 +36,16 @@ public class JsonExtensionRegistrationTask {
 
     public Path getFilePath() {
         return filePath;
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+        for (String dependencyId : dependencyIds) {
+            if (!registry.getRegisteredExtensionIds().contains(dependencyId)) {
+                report.reportIsInvalid("Dependency '" + dependencyId + "' is missing! Please ensure that the matching extension is installed. Otherwise you can try to open the extension" +
+                        " '" + filePath + "' in the extension builder and save it to update dependencies.");
+            }
+        }
+
     }
 }

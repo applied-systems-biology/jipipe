@@ -1,6 +1,8 @@
 package org.hkijena.acaq5.api.registries;
 
-public interface ACAQTraitRegistrationTask {
+import org.hkijena.acaq5.api.ACAQValidatable;
+
+public interface ACAQTraitRegistrationTask extends ACAQValidatable {
     /**
      * Runs the registration
      */

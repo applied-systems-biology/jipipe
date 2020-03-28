@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.api.registries;
 
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.data.ACAQData;
 
 import java.util.HashSet;
@@ -67,5 +68,25 @@ public abstract class ACAQDefaultAlgorithmRegistrationTask implements ACAQAlgori
 
     public void setDependencyDatatypeClasses(Set<Class<? extends ACAQData>> dependencyDatatypeClasses) {
         this.dependencyDatatypeClasses = dependencyDatatypeClasses;
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+        for (String id : dependencyAlgorithmIds) {
+            if (!ACAQAlgorithmRegistry.getInstance().hasAlgorithmWithId(id))
+                report.forCategory("Dependency Algorithms").reportIsInvalid("Dependency algorithm '" + id + "' is missing! Please make sure to install dependency plugins.");
+        }
+        for (String id : dependencyTraitIds) {
+            if (!ACAQTraitRegistry.getInstance().hasTraitWithId(id))
+                report.forCategory("Dependency Annotations").reportIsInvalid("Dependency annotation '" + id + "' is missing! Please make sure to install dependency plugins.");
+        }
+        for (String id : dependencyDatatypeIds) {
+            if (!ACAQDatatypeRegistry.getInstance().hasDatatypeWithId(id))
+                report.forCategory("Dependency Data types").reportIsInvalid("Dependency data type '" + id + "' is missing! Please make sure to install dependency plugins.");
+        }
+        for (Class<? extends ACAQData> dataClass : dependencyDatatypeClasses) {
+            if (!ACAQDatatypeRegistry.getInstance().hasDataType(dataClass))
+                report.forCategory("Dependency Data types").reportIsInvalid("Dependency data type '" + dataClass.getCanonicalName() + "' is missing! Please make sure to install dependency plugins.");
+        }
     }
 }

@@ -1,6 +1,7 @@
 package org.hkijena.acaq5;
 
 import com.google.common.eventbus.EventBus;
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.events.ExtensionRegisteredEvent;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistrationTask;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
@@ -70,6 +71,7 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
                 extension.setRegistry(this);
                 extension.register();
                 registeredExtensions.add(extension);
+                registeredExtensionIds.add(extension.getDependencyId());
                 eventBus.post(new ExtensionRegisteredEvent(this, extension));
             } catch (InstantiableException e) {
                 throw new RuntimeException(e);
@@ -92,6 +94,7 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
         extension.setRegistry(this);
         extension.register();
         registeredExtensions.add(extension);
+        registeredExtensionIds.add(extension.getDependencyId());
         eventBus.post(new ExtensionRegisteredEvent(this, extension));
     }
 
@@ -150,6 +153,19 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
 
     public Set<String> getRegisteredExtensionIds() {
         return registeredExtensionIds;
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+        report.forCategory("Algorithms").report(algorithmRegistry);
+        report.forCategory("Annotations").report(traitRegistry);
+        for (ACAQDependency extension : registeredExtensions) {
+            report.forCategory("Extensions").forCategory(extension.getDependencyId()).report(extension);
+        }
+    }
+
+    public ACAQDependency findExtensionById(String dependencyId) {
+        return registeredExtensions.stream().filter(d -> Objects.equals(dependencyId, d.getDependencyId())).findFirst().orElse(null);
     }
 
     public static ACAQDefaultRegistry getInstance() {

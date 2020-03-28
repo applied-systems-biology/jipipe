@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.ACAQProjectMetadata;
+import org.hkijena.acaq5.api.ACAQValidatable;
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.parameters.ACAQParameterHolder;
 
 import java.nio.file.Path;
@@ -14,7 +16,7 @@ import java.util.Set;
  * Encapsulates a dependency such as an extension or JSON extension
  */
 @JsonDeserialize(as = ACAQMutableDependency.class)
-public interface ACAQDependency extends ACAQParameterHolder {
+public interface ACAQDependency extends ACAQParameterHolder, ACAQValidatable {
     @JsonGetter("metadata")
     ACAQProjectMetadata getMetadata();
 
@@ -33,6 +35,9 @@ public interface ACAQDependency extends ACAQParameterHolder {
      * @return
      */
     Path getDependencyLocation();
+
+    @Override
+    void reportValidity(ACAQValidityReport report);
 
     /**
      * Exports the dependency to an HTML element (without the root tag)

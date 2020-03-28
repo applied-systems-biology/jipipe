@@ -14,4 +14,11 @@ public @interface StringParameterSettings {
      * @return
      */
     boolean multiline() default false;
+
+    /**
+     * If true, the text is rendered with monospaced font
+     *
+     * @return
+     */
+    boolean monospace() default false;
 }

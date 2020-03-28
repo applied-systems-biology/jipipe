@@ -3,6 +3,7 @@ package org.hkijena.acaq5;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.ACAQDefaultDocumentation;
 import org.hkijena.acaq5.api.ACAQProjectMetadata;
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.data.ACAQData;
@@ -66,6 +67,11 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
     public abstract String getLicense();
 
     public abstract URL getLogo();
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+
+    }
 
     @Override
     public ACAQDefaultRegistry getRegistry() {

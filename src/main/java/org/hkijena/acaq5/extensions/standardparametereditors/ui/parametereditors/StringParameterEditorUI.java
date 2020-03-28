@@ -31,6 +31,7 @@ public class StringParameterEditorUI extends ACAQParameterEditorUI {
         if (value != null) {
             stringValue = "" + value;
         }
+        boolean monospaced = settings != null && settings.monospace();
         if (settings != null && settings.multiline()) {
             JTextArea textArea = new JTextArea(stringValue);
             textArea.setBorder(BorderFactory.createEtchedBorder());
@@ -41,6 +42,8 @@ public class StringParameterEditorUI extends ACAQParameterEditorUI {
             textComponent = textField;
             add(textField, BorderLayout.CENTER);
         }
+        if (monospaced)
+            textComponent.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 
         textComponent.getDocument().addDocumentListener(new DocumentChangeListener() {
             @Override

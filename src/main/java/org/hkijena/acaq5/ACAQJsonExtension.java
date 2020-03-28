@@ -21,7 +21,9 @@ import org.hkijena.acaq5.api.traits.ACAQJsonTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQMutableTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro.GraphWrapperAlgorithmDeclaration;
+import org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors.StringParameterSettings;
 import org.hkijena.acaq5.utils.JsonUtils;
+import org.hkijena.acaq5.utils.StringUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -67,6 +69,7 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
     @Override
     @JsonGetter("id")
     @ACAQParameter("id")
+    @StringParameterSettings(monospace = true)
     @ACAQDocumentation(name = "ID", description = "A unique identifier")
     public String getDependencyId() {
         return id;
@@ -178,6 +181,17 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
+        if (StringUtils.isNullOrEmpty(getDependencyId())) {
+            report.forCategory("ID").reportIsInvalid("The ID is empty! Please provide a valid ID.");
+        } else if (!getDependencyId().contains(":")) {
+            report.forCategory("ID").reportIsInvalid("Malformed ID! The ID must have following structure: <Organization>:<Name> e.g. org.hkijena.acaq5:my-plugin");
+        }
+        if (StringUtils.isNullOrEmpty(getDependencyVersion())) {
+            report.forCategory("Version").reportIsInvalid("The version is empty! Please provide a valid version number.");
+        }
+        if (StringUtils.isNullOrEmpty(getMetadata().getName()) || "New project".equals(getMetadata().getName())) {
+            report.forCategory("Name").reportIsInvalid("Invalid name! Please provide a meaningful name for your plugin.");
+        }
         for (ACAQJsonTraitDeclaration declaration : traitDeclarations) {
             report.forCategory("Annotations").forCategory(declaration.getName()).report(declaration);
 

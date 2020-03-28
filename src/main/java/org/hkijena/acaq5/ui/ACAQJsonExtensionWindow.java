@@ -1,18 +1,23 @@
 package org.hkijena.acaq5.ui;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.ACAQGUICommand;
 import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.api.ACAQProject;
+import org.hkijena.acaq5.extensions.jsonextensionloader.JsonExtensionLoaderExtension;
 import org.hkijena.acaq5.ui.project.UnsatisfiedDependenciesDialog;
 import org.hkijena.acaq5.ui.settings.ACAQApplicationSettings;
 import org.hkijena.acaq5.utils.JsonUtils;
+import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashSet;
@@ -173,8 +178,92 @@ public class ACAQJsonExtensionWindow extends JFrame {
     /**
      * Allows the user to select files to install
      */
-    public static void installExtensions() {
+    public static void installExtensions(Component parent) {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Install extensions");
+        fileChooser.setMultiSelectionEnabled(true);
+        if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
+            for (File selectedFile : fileChooser.getSelectedFiles()) {
+                installExtensionFromFile(parent, selectedFile.toPath());
+            }
+        }
+    }
 
+    /**
+     * Loads a project and installs it
+     *
+     * @param parent
+     * @param filePath
+     */
+    public static void installExtensionFromFile(Component parent, Path filePath) {
+        try {
+            JsonNode jsonData = JsonUtils.getObjectMapper().readValue(filePath.toFile(), JsonNode.class);
+            Set<ACAQDependency> dependencySet = ACAQProject.loadDependenciesFromJson(jsonData);
+            Set<ACAQDependency> missingDependencies = ACAQDependency.findUnsatisfiedDependencies(dependencySet);
+            if (!missingDependencies.isEmpty()) {
+                if (!UnsatisfiedDependenciesDialog.showDialog(parent, filePath, missingDependencies))
+                    return;
+            }
+
+            ACAQJsonExtension project = ACAQJsonExtension.loadProject(jsonData);
+            installExtension(parent, project);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Installs a loaded project
+     *
+     * @param parent
+     * @param extension
+     */
+    public static void installExtension(Component parent, ACAQJsonExtension extension) {
+        boolean alreadyExists = ACAQDefaultRegistry.getInstance().getRegisteredExtensionIds().contains(extension.getDependencyId());
+        if (alreadyExists) {
+            if (JOptionPane.showConfirmDialog(parent, "There already exists an extension with ID '"
+                    + extension.getDependencyId() + "'. Do you want to install this extension anyways?", "Install", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+                return;
+            }
+        }
+        Path pluginFolder = JsonExtensionLoaderExtension.getPluginDirectory();
+        if (!Files.exists(pluginFolder)) {
+            try {
+                Files.createDirectories(pluginFolder);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        // Suggest a path that the user can later change
+        Path suggestedPath = pluginFolder.resolve(StringUtils.makeFilesystemCompatible(extension.getDependencyId()) + ".acaq5.json");
+        if (alreadyExists) {
+            ACAQDependency dependency = ACAQDefaultRegistry.getInstance().findExtensionById(extension.getDependencyId());
+            if (dependency instanceof ACAQJsonExtension) {
+                Path jsonExtensionPath = ((ACAQJsonExtension) dependency).getJsonFilePath();
+                if (jsonExtensionPath != null && Files.exists(jsonExtensionPath)) {
+                    suggestedPath = jsonExtensionPath;
+                }
+            }
+        }
+
+        // Let the user select a file path
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Install extension '" + extension.getMetadata().getName() + "'");
+        fileChooser.setCurrentDirectory(pluginFolder.toFile());
+        fileChooser.setSelectedFile(suggestedPath.toFile());
+        if (fileChooser.showSaveDialog(parent) != JFileChooser.APPROVE_OPTION)
+            return;
+
+        Path selectedPath = fileChooser.getSelectedFile().toPath();
+        try {
+            extension.saveProject(selectedPath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Install extension
+        ACAQDefaultRegistry.getInstance().register(extension);
     }
 
     public static Set<ACAQJsonExtensionWindow> getOpenWindows() {

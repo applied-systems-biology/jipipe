@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.ACAQDependency;
+import org.hkijena.acaq5.api.ACAQValidatable;
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.events.TraitRegisteredEvent;
 import org.hkijena.acaq5.api.traits.ACAQJavaTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
@@ -14,7 +16,7 @@ import java.util.*;
 /**
  * Contains all known {@link ACAQTrait} types
  */
-public class ACAQTraitRegistry {
+public class ACAQTraitRegistry implements ACAQValidatable {
     private Map<String, ACAQTraitDeclaration> registeredTraits = new HashMap<>();
     private Map<String, ACAQDependency> registeredTraitSources = new HashMap<>();
     private Set<ACAQTraitRegistrationTask> registrationTasks = new HashSet<>();
@@ -136,6 +138,14 @@ public class ACAQTraitRegistry {
                 result.add(entry.getValue());
         }
         return result;
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+        for (ACAQTraitRegistrationTask task : registrationTasks) {
+            report.forCategory("Unregistered annotations").forCategory(task.toString()).report(task);
+        }
+
     }
 
     public static ACAQTraitRegistry getInstance() {

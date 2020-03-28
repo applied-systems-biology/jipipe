@@ -7,6 +7,8 @@ import org.hkijena.acaq5.ACAQGUICommand;
 import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.api.events.ExtensionRegisteredEvent;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWindow;
+import org.hkijena.acaq5.ui.ACAQProjectUI;
+import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -14,16 +16,18 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
-public class ACAQPluginManagerUIPanel extends JPanel {
+public class ACAQPluginManagerUIPanel extends ACAQProjectUIPanel {
 
     private JList<ACAQDependency> dependencyJList;
     private JSplitPane splitPane;
     private ACAQGUICommand command;
 
-    public ACAQPluginManagerUIPanel(ACAQGUICommand command) {
-        this.command = command;
+    public ACAQPluginManagerUIPanel(ACAQProjectUI ui) {
+        super(ui);
+        this.command = ui.getCommand();
         initialize();
         reload();
+        ACAQDefaultRegistry.getInstance().getEventBus().register(this);
     }
 
     private void initialize() {
@@ -72,8 +76,14 @@ public class ACAQPluginManagerUIPanel extends JPanel {
         toolBar.add(newExtensionButton);
 
         JButton installButton = new JButton("Install ...", UIUtils.getIconFromResources("open.png"));
-        installButton.addActionListener(e -> ACAQJsonExtensionWindow.installExtensions());
+        installButton.addActionListener(e -> ACAQJsonExtensionWindow.installExtensions(this));
         toolBar.add(installButton);
+
+        toolBar.add(Box.createHorizontalGlue());
+
+        ACAQPluginValidityCheckerButton validityCheckerButton = new ACAQPluginValidityCheckerButton();
+        validityCheckerButton.addActionListener(e -> getWorkbenchUI().getDocumentTabPane().selectSingletonTab("PLUGIN_VALIDITY_CHECK"));
+        toolBar.add(validityCheckerButton);
 
         add(toolBar, BorderLayout.NORTH);
     }
