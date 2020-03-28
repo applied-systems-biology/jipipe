@@ -3,6 +3,7 @@ package org.hkijena.acaq5.extensions.imagejdatatypes;
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
+import org.hkijena.acaq5.extensions.imagejdatatypes.compat.ImgPlusDataImageJAdapter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datasources.BioformatsImporter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datasources.ImagePlusFromFileAlgorithmDeclaration;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datasources.ROIDataFromFile;
@@ -79,9 +80,10 @@ public class ImageJDataTypesExtension extends ACAQPrepackagedDefaultJavaExtensio
         registerParameterType(MacroCode.class, MacroParameterEditorUI.class, "ImageJ macro", "An ImageJ macro code");
     }
 
-    private void registerImageDataType(String id, Class<? extends ACAQData> dataClass, String iconResource) {
+    private void registerImageDataType(String id, Class<? extends ImagePlusData> dataClass, String iconResource) {
         IMAGEJ_DATA_CLASSES.add(dataClass);
         registerDatatype(id, dataClass, ResourceUtils.getPluginResource(iconResource), ImageDataSlotRowUI.class, null);
+        registerImageJDataAdapter(new ImgPlusDataImageJAdapter(dataClass));
         ImagePlusFromFileAlgorithmDeclaration importerDeclaration = new ImagePlusFromFileAlgorithmDeclaration(id, dataClass);
         registerAlgorithm(importerDeclaration);
     }

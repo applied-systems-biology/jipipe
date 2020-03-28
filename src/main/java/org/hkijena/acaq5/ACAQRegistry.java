@@ -4,6 +4,7 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
+import org.hkijena.acaq5.api.registries.ACAQImageJAdapterRegistry;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.ui.registries.ACAQPlotBuilderRegistry;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
@@ -16,6 +17,8 @@ import java.util.List;
 public interface ACAQRegistry extends Service, ACAQValidatable {
 
     EventBus getEventBus();
+
+    ACAQImageJAdapterRegistry getImageJDataAdapterRegistry();
 
     List<ACAQDependency> getRegisteredExtensions();
 

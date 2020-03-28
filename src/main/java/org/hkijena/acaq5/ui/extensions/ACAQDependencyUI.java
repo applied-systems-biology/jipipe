@@ -7,11 +7,13 @@ import org.hkijena.acaq5.api.data.ACAQDataDeclaration;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
+import org.hkijena.acaq5.api.registries.ACAQImageJAdapterRegistry;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
+import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -100,12 +102,19 @@ public class ACAQDependencyUI extends JPanel {
         if (list.isEmpty())
             return;
         DefaultTableModel model = new DefaultTableModel();
-        model.setColumnIdentifiers(new Object[]{"Name", "ID", "Description"});
+        model.setColumnIdentifiers(new Object[]{"Name", "ID", "Description", "ImageJ support"});
         for (ACAQDataDeclaration declaration : list) {
+            boolean supportsImageJ = ACAQImageJAdapterRegistry.getInstance().supportsACAQData(declaration.getDataClass());
+            String supportsImageJEntry;
+            if(supportsImageJ)
+                supportsImageJEntry = StringUtils.createIconTextHTMLTable("Yes", ResourceUtils.getPluginResource("icons/check-circle-green.png"));
+            else
+                supportsImageJEntry = StringUtils.createIconTextHTMLTable("No", ResourceUtils.getPluginResource("icons/close-tab.png"));
             model.addRow(new Object[]{
                     StringUtils.createIconTextHTMLTable(declaration.getName(), ACAQUIDatatypeRegistry.getInstance().getIconURLFor(declaration)),
                     declaration.getId(),
-                    StringUtils.wordWrappedInHTML(declaration.getDescription(), 50)
+                    StringUtils.wordWrappedInHTML(declaration.getDescription(), 50),
+                    supportsImageJEntry
             });
         }
         insertTable(formPanel, model, "Data types", UIUtils.getIconFromResources("data-types/data-type.png"));

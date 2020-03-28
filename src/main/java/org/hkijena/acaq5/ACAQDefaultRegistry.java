@@ -3,10 +3,7 @@ package org.hkijena.acaq5;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.events.ExtensionRegisteredEvent;
-import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistrationTask;
-import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
-import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
-import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
+import org.hkijena.acaq5.api.registries.*;
 import org.hkijena.acaq5.ui.registries.*;
 import org.scijava.InstantiableException;
 import org.scijava.plugin.Plugin;
@@ -34,7 +31,9 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
     private ACAQUITraitRegistry acaquiTraitRegistry = new ACAQUITraitRegistry();
     private ACAQPlotBuilderRegistry plotBuilderRegistry = new ACAQPlotBuilderRegistry();
     private ACAQTableAnalyzerUIOperationRegistry tableAnalyzerUIOperationRegistry = new ACAQTableAnalyzerUIOperationRegistry();
+    private ACAQImageJAdapterRegistry imageJDataAdapterRegistry = new ACAQImageJAdapterRegistry();
     private PluginService pluginService;
+
 
     public ACAQDefaultRegistry() {
     }
@@ -54,6 +53,7 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
         acaquiTraitRegistry = new ACAQUITraitRegistry();
         plotBuilderRegistry = new ACAQPlotBuilderRegistry();
         tableAnalyzerUIOperationRegistry = new ACAQTableAnalyzerUIOperationRegistry();
+        imageJDataAdapterRegistry = new ACAQImageJAdapterRegistry();
         discover(pluginService);
     }
 
@@ -126,6 +126,11 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
     @Override
     public ACAQUITraitRegistry getUITraitRegistry() {
         return acaquiTraitRegistry;
+    }
+
+    @Override
+    public ACAQImageJAdapterRegistry getImageJDataAdapterRegistry() {
+        return imageJDataAdapterRegistry;
     }
 
     @Override
