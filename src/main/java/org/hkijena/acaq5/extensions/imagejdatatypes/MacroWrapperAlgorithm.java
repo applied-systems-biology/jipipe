@@ -18,6 +18,7 @@ import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterHolder;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
+import org.hkijena.acaq5.api.registries.ACAQImageJAdapterRegistry;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
@@ -44,8 +45,6 @@ import java.util.Map;
 @AlgorithmOutputSlot(ResultsTableData.class)
 @ConfigTraits(allowModify = true)
 public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
-
-    public static List<Class<? extends ACAQData>> IMAGEJ_DATA_CLASSES = new ArrayList<>();
     public static Class<?>[] ALLOWED_PARAMETER_CLASSES = new Class[]{
             String.class,
             Integer.class,
@@ -64,8 +63,8 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
     public MacroWrapperAlgorithm(ACAQAlgorithmDeclaration declaration) {
         super(declaration, ACAQMutableSlotConfiguration.builder()
                 .allowOutputSlotInheritance(true)
-                .restrictInputTo(IMAGEJ_DATA_CLASSES.toArray(new Class[0]))
-                .restrictOutputTo(IMAGEJ_DATA_CLASSES.toArray(new Class[0]))
+                .restrictInputTo(ACAQImageJAdapterRegistry.getInstance().getSupportedACAQDataTypes().toArray(new Class[0]))
+                .restrictOutputTo(ACAQImageJAdapterRegistry.getInstance().getSupportedACAQDataTypes().toArray(new Class[0]))
                 .build());
         this.macroParameters.getEventBus().register(this);
     }

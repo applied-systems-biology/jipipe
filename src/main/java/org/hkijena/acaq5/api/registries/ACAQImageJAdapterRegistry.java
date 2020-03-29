@@ -4,10 +4,7 @@ import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.acaq5.api.data.ACAQData;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Registers all known adapters between ImageJ and ACAQ5 data types
@@ -81,5 +78,21 @@ public class ACAQImageJAdapterRegistry {
 
     public static ACAQImageJAdapterRegistry getInstance() {
         return ACAQDefaultRegistry.getInstance().getImageJDataAdapterRegistry();
+    }
+
+    /**
+     * Returns all supported ACAQ data types
+     * @return
+     */
+    public Set<Class<? extends ACAQData>> getSupportedACAQDataTypes() {
+        return Collections.unmodifiableSet(registeredACAQDataTypes);
+    }
+
+    /**
+     * Returns all supported ImageJ data types
+     * @return
+     */
+    public Set<Class<?>> getSupportedImageJDataTypes() {
+        return Collections.unmodifiableSet(registeredImageJDataTypes);
     }
 }

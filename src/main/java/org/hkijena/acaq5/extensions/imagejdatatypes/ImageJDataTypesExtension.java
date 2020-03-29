@@ -23,8 +23,6 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.resultanalysis.ResultsTableD
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
 
-import static org.hkijena.acaq5.extensions.imagejdatatypes.MacroWrapperAlgorithm.IMAGEJ_DATA_CLASSES;
-
 @Plugin(type = ACAQJavaExtension.class)
 public class ImageJDataTypesExtension extends ACAQPrepackagedDefaultJavaExtension {
 
@@ -65,10 +63,8 @@ public class ImageJDataTypesExtension extends ACAQPrepackagedDefaultJavaExtensio
         registerDatatype("imagej-roi", ROIData.class, ResourceUtils.getPluginResource("icons/data-types/roi.png"),
                 ROIDataSlotRowUI.class, null);
         registerImageJDataAdapter(new ROIDataImageJAdapter());
-        IMAGEJ_DATA_CLASSES.add(ROIData.class);
         registerDatatype("imagej-results-table", ResultsTableData.class, ResourceUtils.getPluginResource("icons/data-types/results-table.png"),
                 ResultsTableDataSlotRowUI.class, null);
-        IMAGEJ_DATA_CLASSES.add(ResultsTableData.class);
         registerImageJDataAdapter(new ResultsTableDataImageJAdapter());
 
         // Register data sources
@@ -84,7 +80,6 @@ public class ImageJDataTypesExtension extends ACAQPrepackagedDefaultJavaExtensio
     }
 
     private void registerImageDataType(String id, Class<? extends ImagePlusData> dataClass, String iconResource) {
-        IMAGEJ_DATA_CLASSES.add(dataClass);
         registerDatatype(id, dataClass, ResourceUtils.getPluginResource(iconResource), ImageDataSlotRowUI.class, null);
         registerImageJDataAdapter(new ImgPlusDataImageJAdapter(dataClass));
         ImagePlusFromFileAlgorithmDeclaration importerDeclaration = new ImagePlusFromFileAlgorithmDeclaration(id, dataClass);
