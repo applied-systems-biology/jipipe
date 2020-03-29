@@ -48,6 +48,14 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
     public ACAQJsonExtension() {
     }
 
+    public static ACAQJsonExtension loadProject(JsonNode jsonData) {
+        try {
+            return JsonUtils.getObjectMapper().readerFor(ACAQJsonExtension.class).readValue(jsonData);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     @JsonGetter("metadata")
     @ACAQSubParameters("metadata")
@@ -231,14 +239,6 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
     public void removeAnnotation(ACAQJsonTraitDeclaration declaration) {
         if (traitDeclarations.remove(declaration)) {
             eventBus.post(new ExtensionContentRemovedEvent(this, declaration));
-        }
-    }
-
-    public static ACAQJsonExtension loadProject(JsonNode jsonData) {
-        try {
-            return JsonUtils.getObjectMapper().readerFor(ACAQJsonExtension.class).readValue(jsonData);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 }

@@ -14,6 +14,10 @@ public class ACAQImageJAdapterRegistry {
     private Set<Class<? extends ACAQData>> registeredACAQDataTypes = new HashSet<>();
     private Set<Class<?>> registeredImageJDataTypes = new HashSet<>();
 
+    public static ACAQImageJAdapterRegistry getInstance() {
+        return ACAQDefaultRegistry.getInstance().getImageJDataAdapterRegistry();
+    }
+
     /**
      * Registers an adapter
      *
@@ -47,19 +51,19 @@ public class ACAQImageJAdapterRegistry {
 
     /**
      * Returns a matching adapter for an ACAQ5 data type
+     *
      * @param klass
      * @return
      */
     public ImageJDatatypeAdapter getAdapterForACAQData(Class<? extends ACAQData> klass) {
-        if(registeredACAQDataTypes.contains(klass)) {
+        if (registeredACAQDataTypes.contains(klass)) {
             for (ImageJDatatypeAdapter adapter : registeredAdapters) {
-                if(adapter.getACAQDatatype() == klass)
+                if (adapter.getACAQDatatype() == klass)
                     return adapter;
             }
-        }
-        else {
+        } else {
             for (ImageJDatatypeAdapter adapter : registeredAdapters) {
-                if(adapter.getACAQDatatype().isAssignableFrom(klass))
+                if (adapter.getACAQDatatype().isAssignableFrom(klass))
                     return adapter;
             }
         }
@@ -68,62 +72,28 @@ public class ACAQImageJAdapterRegistry {
 
     /**
      * Returns a matching adapter for an ImageJ data type
+     *
      * @param klass
      * @return
      */
     public ImageJDatatypeAdapter getAdapterForImageJData(Class<?> klass) {
-        if(registeredACAQDataTypes.contains(klass)) {
+        if (registeredACAQDataTypes.contains(klass)) {
             for (ImageJDatatypeAdapter adapter : registeredAdapters) {
-                if(adapter.getImageJDatatype() == klass)
+                if (adapter.getImageJDatatype() == klass)
+                    return adapter;
+            }
+        } else {
+            for (ImageJDatatypeAdapter adapter : registeredAdapters) {
+                if (adapter.getImageJDatatype().isAssignableFrom(klass))
                     return adapter;
             }
         }
-        else {
-            for (ImageJDatatypeAdapter adapter : registeredAdapters) {
-                if(adapter.getImageJDatatype().isAssignableFrom(klass))
-                    return adapter;
-            }
-        }
         return null;
-    }
-
-    /**
-     * Applies conversion from ImageJ to ACAQ5 data
-     *
-     * @param data
-     * @return
-     */
-    public ACAQData convertImageJToACAQ(Object data) {
-        for (ImageJDatatypeAdapter adapter : registeredAdapters) {
-            if (adapter.canConvertImageJToACAQ(data)) {
-                return adapter.convertImageJToACAQ(data);
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Applies conversion from ACAQ5 to ImageJ data
-     *
-     * @param data
-     * @param activate If true, the data should be put into foreground
-     * @return
-     */
-    public Object convertACAQToImageJ(ACAQData data, boolean activate) {
-        for (ImageJDatatypeAdapter adapter : registeredAdapters) {
-            if (adapter.canConvertACAQToImageJ(data)) {
-                return adapter.convertACAQToImageJ(data, activate);
-            }
-        }
-        return null;
-    }
-
-    public static ACAQImageJAdapterRegistry getInstance() {
-        return ACAQDefaultRegistry.getInstance().getImageJDataAdapterRegistry();
     }
 
     /**
      * Returns all supported ACAQ data types
+     *
      * @return
      */
     public Set<Class<? extends ACAQData>> getSupportedACAQDataTypes() {
@@ -132,6 +102,7 @@ public class ACAQImageJAdapterRegistry {
 
     /**
      * Returns all supported ImageJ data types
+     *
      * @return
      */
     public Set<Class<?>> getSupportedImageJDataTypes() {
@@ -140,6 +111,7 @@ public class ACAQImageJAdapterRegistry {
 
     /**
      * Gets a matching adapter for the provided data
+     *
      * @param data
      * @return
      */
@@ -165,5 +137,9 @@ public class ACAQImageJAdapterRegistry {
             }
         }
         return null;
+    }
+
+    public List<ImageJDatatypeAdapter> getRegisteredAdapters() {
+        return registeredAdapters;
     }
 }

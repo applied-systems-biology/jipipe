@@ -32,19 +32,20 @@ public class ROIDataImageJAdapter implements ImageJDatatypeAdapter {
     /**
      * Converts a {@link RoiManager} to {@link ROIData}.
      * If imageJData is null, the currently active {@link RoiManager} is used.
+     *
      * @param imageJData
      * @return
      */
     @Override
     public ACAQData convertImageJToACAQ(Object imageJData) {
-        if(imageJData instanceof RoiManager)
+        if (imageJData instanceof RoiManager)
             return new ROIData((RoiManager) imageJData);
         else
             return new ROIData(RoiManager.getRoiManager());
     }
 
     @Override
-    public Object convertACAQToImageJ(ACAQData acaqData, boolean activate) {
+    public Object convertACAQToImageJ(ACAQData acaqData, boolean activate, String windowName) {
         if (activate) {
             RoiManager roiManager = new RoiManager();
             ((ROIData) acaqData).addToRoiManager(roiManager);
@@ -54,5 +55,10 @@ public class ROIDataImageJAdapter implements ImageJDatatypeAdapter {
             ((ROIData) acaqData).addToRoiManager(roiManager);
             return roiManager;
         }
+    }
+
+    @Override
+    public ACAQData importFromImageJ(String windowName) {
+        return new ROIData(RoiManager.getRoiManager());
     }
 }

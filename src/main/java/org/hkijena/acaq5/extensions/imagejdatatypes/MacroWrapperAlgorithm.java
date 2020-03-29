@@ -9,6 +9,7 @@ import ij.plugin.frame.RoiManager;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
@@ -25,7 +26,6 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.utils.MacroUtils;
 
 import java.awt.*;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,8 +63,8 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
     public MacroWrapperAlgorithm(ACAQAlgorithmDeclaration declaration) {
         super(declaration, ACAQMutableSlotConfiguration.builder()
                 .allowOutputSlotInheritance(true)
-                .restrictInputTo(ACAQImageJAdapterRegistry.getInstance().getSupportedACAQDataTypes().toArray(new Class[0]))
-                .restrictOutputTo(ACAQImageJAdapterRegistry.getInstance().getSupportedACAQDataTypes().toArray(new Class[0]))
+                .restrictInputTo(getCompatibleTypes())
+                .restrictOutputTo(getCompatibleTypes())
                 .build());
         this.macroParameters.getEventBus().register(this);
     }
@@ -74,6 +74,10 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
         this.code = new MacroCode(other.code);
         this.macroParameters = new ACAQDynamicParameterHolder(other.macroParameters);
         this.macroParameters.getEventBus().register(this);
+    }
+
+    public static Class[] getCompatibleTypes() {
+        return ACAQImageJAdapterRegistry.getInstance().getSupportedACAQDataTypes().toArray(new Class[0]);
     }
 
     @Override
@@ -126,19 +130,22 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
 
     private void passOutputData(ACAQDataInterface dataInterface) {
         for (ACAQDataSlot outputSlot : getOutputSlots()) {
-            if (ImagePlusData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
-                ImagePlus image = WindowManager.getImage(outputSlot.getName());
-                try {
-                    dataInterface.addOutputData(outputSlot, outputSlot.getAcceptedDataType().getConstructor(ImagePlus.class).newInstance(image.duplicate()));
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                    throw new RuntimeException(e);
-                }
-            } else if (ROIData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
-                dataInterface.addOutputData(outputSlot, new ROIData(RoiManager.getRoiManager()));
-            } else if (ResultsTableData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
-                ResultsTable table = ResultsTable.getResultsTable();
-                dataInterface.addOutputData(outputSlot, new ResultsTableData((ResultsTable) table.clone()));
-            }
+//            if (ImagePlusData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
+//                ImagePlus image = WindowManager.getImage(outputSlot.getName());
+//                try {
+//                    dataInterface.addOutputData(outputSlot, outputSlot.getAcceptedDataType().getConstructor(ImagePlus.class).newInstance(image.duplicate()));
+//                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+//                    throw new RuntimeException(e);
+//                }
+//            } else if (ROIData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
+//                dataInterface.addOutputData(outputSlot, new ROIData(RoiManager.getRoiManager()));
+//            } else if (ResultsTableData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
+//                ResultsTable table = ResultsTable.getResultsTable();
+//                dataInterface.addOutputData(outputSlot, new ResultsTableData((ResultsTable) table.clone()));
+//            }
+            ImageJDatatypeAdapter adapter = ACAQImageJAdapterRegistry.getInstance().getAdapterForACAQData(outputSlot.getAcceptedDataType());
+            ACAQData data = adapter.importFromImageJ(outputSlot.getName());
+            dataInterface.addOutputData(outputSlot, data);
         }
     }
 
@@ -181,20 +188,22 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
         }
         for (ACAQDataSlot inputSlot : getInputSlots()) {
             ACAQData data = dataInterface.getInputData(inputSlot);
-            if (data instanceof ImagePlusData) {
-                ImagePlus img = ((ImagePlusData) data).getImage().duplicate();
-                img.setTitle(inputSlot.getName());
-                img.show();
-                WindowManager.setTempCurrentImage(img);
-            } else if (data instanceof ROIData) {
-                RoiManager.getRoiManager().reset();
-                ((ROIData) data).addToRoiManager(RoiManager.getRoiManager());
-            } else if (data instanceof ResultsTableData) {
-                ResultsTable.getResultsTable().reset();
-                ((ResultsTableData) data).addToTable(ResultsTable.getResultsTable());
-            } else {
-                throw new RuntimeException("Unsupported data: " + data);
-            }
+            ImageJDatatypeAdapter adapter = ACAQImageJAdapterRegistry.getInstance().getAdapterForACAQData(data);
+            adapter.convertACAQToImageJ(data, true, inputSlot.getName());
+//            if (data instanceof ImagePlusData) {
+//                ImagePlus img = ((ImagePlusData) data).getImage().duplicate();
+//                img.setTitle(inputSlot.getName());
+//                img.show();
+//                WindowManager.setTempCurrentImage(img);
+//            } else if (data instanceof ROIData) {
+//                RoiManager.getRoiManager().reset();
+//                ((ROIData) data).addToRoiManager(RoiManager.getRoiManager());
+//            } else if (data instanceof ResultsTableData) {
+//                ResultsTable.getResultsTable().reset();
+//                ((ResultsTableData) data).addToTable(ResultsTable.getResultsTable());
+//            } else {
+//                throw new RuntimeException("Unsupported data: " + data);
+//            }
         }
     }
 

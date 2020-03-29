@@ -19,6 +19,10 @@ public class ACAQUIParametertypeRegistry {
 
     }
 
+    public static ACAQUIParametertypeRegistry getInstance() {
+        return ACAQDefaultRegistry.getInstance().getUIParametertypeRegistry();
+    }
+
     public void registerParameterEditor(Class<?> parameterType, Class<? extends ACAQParameterEditorUI> uiClass) {
         parameterTypes.put(parameterType, uiClass);
     }
@@ -50,9 +54,5 @@ public class ACAQUIParametertypeRegistry {
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public static ACAQUIParametertypeRegistry getInstance() {
-        return ACAQDefaultRegistry.getInstance().getUIParametertypeRegistry();
     }
 }

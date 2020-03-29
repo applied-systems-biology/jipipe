@@ -44,8 +44,18 @@ public interface ImageJDatatypeAdapter {
      * Converts an ACAQ5 data type to its corresponding ImageJ data type
      *
      * @param acaqData
-     * @param activate If true, the data should be made visible in ImageJ
+     * @param activate   If true, the data should be made visible in ImageJ
+     * @param windowName
      * @return
      */
-    Object convertACAQToImageJ(ACAQData acaqData, boolean activate);
+    Object convertACAQToImageJ(ACAQData acaqData, boolean activate, String windowName);
+
+    /**
+     * Imports ACAQ data from an ImageJ window
+     *
+     * @param windowName
+     * @return
+     */
+    ACAQData importFromImageJ(String windowName);
+
 }

@@ -120,6 +120,17 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
     }
 
     /**
+     * Utility function to create an algorithm instance from its id
+     *
+     * @param id
+     * @param <T>
+     * @return
+     */
+    public static <T extends ACAQAlgorithm> T newInstance(String id) {
+        return (T) ACAQAlgorithmRegistry.getInstance().getDeclarationById(id).newInstance();
+    }
+
+    /**
      * Initializes the trait configuration.
      * This includes applying annotation-based trait assignments
      */
@@ -530,17 +541,6 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
         }
 
         return result;
-    }
-
-    /**
-     * Utility function to create an algorithm instance from its id
-     *
-     * @param id
-     * @param <T>
-     * @return
-     */
-    public static <T extends ACAQAlgorithm> T newInstance(String id) {
-        return (T) ACAQAlgorithmRegistry.getInstance().getDeclarationById(id).newInstance();
     }
 
     public static class Serializer extends JsonSerializer<ACAQAlgorithm> {

@@ -45,6 +45,36 @@ public class ACAQAlgorithmFinderUI extends JPanel {
         reloadAlgorithmList();
     }
 
+    public static int scoreAlgorithmForOutputSlot(ACAQAlgorithmDeclaration declaration, ACAQDataSlot slot, ACAQAlgorithmGraph graph) {
+        Set<ACAQTraitDeclaration> preferredTraits = declaration.getPreferredTraits();
+        Set<ACAQTraitDeclaration> unwantedTraits = declaration.getUnwantedTraits();
+        int score = 0;
+        for (ACAQTraitDeclaration trait : slot.getSlotAnnotations()) {
+            if (preferredTraits.contains(trait)) {
+                score += 10;
+            } else if (unwantedTraits.contains(trait)) {
+                score -= 20;
+            } else {
+                score += 5;
+            }
+        }
+        return score;
+    }
+
+    public static List<ACAQAlgorithmDeclaration> findCompatibleTargetAlgorithms(ACAQDataSlot slot) {
+        Class<? extends ACAQData> outputSlotDataClass = slot.getAcceptedDataType();
+        List<ACAQAlgorithmDeclaration> result = new ArrayList<>();
+        for (ACAQAlgorithmDeclaration declaration : ACAQAlgorithmRegistry.getInstance().getRegisteredAlgorithms().values()) {
+            for (Class<? extends ACAQData> inputSlotDataClass : declaration.getInputSlots().stream().map(AlgorithmInputSlot::value).collect(Collectors.toList())) {
+                if (inputSlotDataClass.isAssignableFrom(outputSlotDataClass)) {
+                    result.add(declaration);
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
     private void initialize() {
         setLayout(new BorderLayout());
         initializeToolBar();
@@ -190,35 +220,5 @@ public class ACAQAlgorithmFinderUI extends JPanel {
 
     public String getCompartment() {
         return compartment;
-    }
-
-    public static int scoreAlgorithmForOutputSlot(ACAQAlgorithmDeclaration declaration, ACAQDataSlot slot, ACAQAlgorithmGraph graph) {
-        Set<ACAQTraitDeclaration> preferredTraits = declaration.getPreferredTraits();
-        Set<ACAQTraitDeclaration> unwantedTraits = declaration.getUnwantedTraits();
-        int score = 0;
-        for (ACAQTraitDeclaration trait : slot.getSlotAnnotations()) {
-            if (preferredTraits.contains(trait)) {
-                score += 10;
-            } else if (unwantedTraits.contains(trait)) {
-                score -= 20;
-            } else {
-                score += 5;
-            }
-        }
-        return score;
-    }
-
-    public static List<ACAQAlgorithmDeclaration> findCompatibleTargetAlgorithms(ACAQDataSlot slot) {
-        Class<? extends ACAQData> outputSlotDataClass = slot.getAcceptedDataType();
-        List<ACAQAlgorithmDeclaration> result = new ArrayList<>();
-        for (ACAQAlgorithmDeclaration declaration : ACAQAlgorithmRegistry.getInstance().getRegisteredAlgorithms().values()) {
-            for (Class<? extends ACAQData> inputSlotDataClass : declaration.getInputSlots().stream().map(AlgorithmInputSlot::value).collect(Collectors.toList())) {
-                if (inputSlotDataClass.isAssignableFrom(outputSlotDataClass)) {
-                    result.add(declaration);
-                    break;
-                }
-            }
-        }
-        return result;
     }
 }

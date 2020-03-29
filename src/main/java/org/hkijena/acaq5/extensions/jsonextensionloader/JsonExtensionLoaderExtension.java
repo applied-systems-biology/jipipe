@@ -26,6 +26,13 @@ public class JsonExtensionLoaderExtension extends ACAQPrepackagedDefaultJavaExte
 
     private Set<JsonExtensionRegistrationTask> registrationTasks = new HashSet<>();
 
+    public static Path getPluginDirectory() {
+        String path = Menus.getPlugInsPath();
+        if (path == null)
+            return Paths.get("plugins");
+        return Paths.get(path);
+    }
+
     @Override
     public String getName() {
         return "JSON Extension loader";
@@ -41,7 +48,7 @@ public class JsonExtensionLoaderExtension extends ACAQPrepackagedDefaultJavaExte
         // Register from resources
         Set<String> algorithmFiles = ResourceUtils.walkInternalResourceFolder("jsonextensions");
         for (String resourceFile : algorithmFiles) {
-            if(resourceFile.endsWith(".json"))
+            if (resourceFile.endsWith(".json"))
                 registerJsonExtensionFromResource(resourceFile);
         }
 
@@ -140,12 +147,5 @@ public class JsonExtensionLoaderExtension extends ACAQPrepackagedDefaultJavaExte
     @Subscribe
     public void onExtensionRegistered(ExtensionRegisteredEvent event) {
         updateRegistrationTasks();
-    }
-
-    public static Path getPluginDirectory() {
-        String path = Menus.getPlugInsPath();
-        if (path == null)
-            return Paths.get("plugins");
-        return Paths.get(path);
     }
 }

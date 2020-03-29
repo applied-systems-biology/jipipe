@@ -6,6 +6,7 @@ import org.apache.commons.lang.reflect.ConstructorUtils;
 import org.hkijena.acaq5.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.acaq5.utils.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -43,29 +44,40 @@ public class ImgPlusDataImageJAdapter implements ImageJDatatypeAdapter {
     /**
      * Converts {@link ImagePlus} to an {@link ImagePlusData} instance.
      * If the imageJData is a {@link String}, the image is taken from the window with this name
+     *
      * @param imageJData
      * @return
      */
     @Override
     public ACAQData convertImageJToACAQ(Object imageJData) {
         // If we provide a window name, convert it to ImagePlus first
-        if(imageJData instanceof String) {
-            imageJData =  WindowManager.getImage((String)imageJData);
+        if (imageJData instanceof String) {
+            imageJData = WindowManager.getImage((String) imageJData);
         }
         try {
-            return (ACAQData) ConstructorUtils.invokeConstructor(acaqDataClass, imageJData);
+            ImagePlus img = ((ImagePlus) imageJData).duplicate();
+            return (ACAQData) ConstructorUtils.invokeConstructor(acaqDataClass, img);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Object convertACAQToImageJ(ACAQData acaqData, boolean activate) {
-        ImagePlus imagePlus = ((ImagePlusData) acaqData).getImage();
+    public Object convertACAQToImageJ(ACAQData acaqData, boolean activate, String windowName) {
+        ImagePlus img = ((ImagePlusData) acaqData).getImage();
         if (activate) {
-            imagePlus.show();
-            WindowManager.setTempCurrentImage(imagePlus);
+            img.show();
+            if (!StringUtils.isNullOrEmpty(windowName)) {
+                img.setTitle(windowName);
+            }
+            WindowManager.setTempCurrentImage(img);
         }
-        return imagePlus;
+        return img;
+    }
+
+    @Override
+    public ACAQData importFromImageJ(String windowName) {
+        ImagePlus image = WindowManager.getImage(windowName);
+        return convertImageJToACAQ(image);
     }
 }

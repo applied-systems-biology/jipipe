@@ -38,6 +38,32 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
     public ACAQDefaultRegistry() {
     }
 
+    public static ACAQDefaultRegistry getInstance() {
+        return instance;
+    }
+
+    /**
+     * Instantiates the plugin service. This is done within {@link ACAQGUICommand}
+     *
+     * @param pluginService
+     */
+    public static void instantiate(PluginService pluginService) {
+        if (instance == null) {
+            try {
+                instance = (ACAQDefaultRegistry) pluginService.getPlugin(ACAQDefaultRegistry.class).createInstance();
+                instance.pluginService = pluginService;
+                instance.installEvents();
+                instance.discover(pluginService);
+            } catch (InstantiableException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public static int comparePlugins(PluginInfo<?> p0, PluginInfo<?> p1) {
+        return -Double.compare(p0.getPriority(), p1.getPriority());
+    }
+
     /**
      * Clears all registries and reloads them
      */
@@ -171,31 +197,5 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
 
     public ACAQDependency findExtensionById(String dependencyId) {
         return registeredExtensions.stream().filter(d -> Objects.equals(dependencyId, d.getDependencyId())).findFirst().orElse(null);
-    }
-
-    public static ACAQDefaultRegistry getInstance() {
-        return instance;
-    }
-
-    /**
-     * Instantiates the plugin service. This is done within {@link ACAQGUICommand}
-     *
-     * @param pluginService
-     */
-    public static void instantiate(PluginService pluginService) {
-        if (instance == null) {
-            try {
-                instance = (ACAQDefaultRegistry) pluginService.getPlugin(ACAQDefaultRegistry.class).createInstance();
-                instance.pluginService = pluginService;
-                instance.installEvents();
-                instance.discover(pluginService);
-            } catch (InstantiableException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    public static int comparePlugins(PluginInfo<?> p0, PluginInfo<?> p1) {
-        return -Double.compare(p0.getPriority(), p1.getPriority());
     }
 }

@@ -53,6 +53,33 @@ public class ACAQProject implements ACAQValidatable {
         compartmentGraph.getEventBus().register(this);
     }
 
+    public static ACAQProject loadProject(Path fileName) throws IOException {
+        return JsonUtils.getObjectMapper().readerFor(ACAQProject.class).readValue(fileName.toFile());
+    }
+
+    public static ACAQProject loadProject(JsonNode node) throws IOException {
+        return JsonUtils.getObjectMapper().readerFor(ACAQProject.class).readValue(node);
+    }
+
+    /**
+     * Deserializes the set of project dependencies from
+     *
+     * @param node
+     * @return
+     */
+    public static Set<ACAQDependency> loadDependenciesFromJson(JsonNode node) {
+        node = node.path("dependencies");
+        if (node.isMissingNode())
+            return new HashSet<>();
+        TypeReference<HashSet<ACAQDependency>> typeReference = new TypeReference<HashSet<ACAQDependency>>() {
+        };
+        try {
+            return JsonUtils.getObjectMapper().readerFor(typeReference).readValue(node);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public EventBus getEventBus() {
         return eventBus;
     }
@@ -197,33 +224,6 @@ public class ACAQProject implements ACAQValidatable {
         Set<ACAQDependency> dependencies = graph.getDependencies();
         dependencies.addAll(compartmentGraph.getDependencies());
         return dependencies;
-    }
-
-    public static ACAQProject loadProject(Path fileName) throws IOException {
-        return JsonUtils.getObjectMapper().readerFor(ACAQProject.class).readValue(fileName.toFile());
-    }
-
-    public static ACAQProject loadProject(JsonNode node) throws IOException {
-        return JsonUtils.getObjectMapper().readerFor(ACAQProject.class).readValue(node);
-    }
-
-    /**
-     * Deserializes the set of project dependencies from
-     *
-     * @param node
-     * @return
-     */
-    public static Set<ACAQDependency> loadDependenciesFromJson(JsonNode node) {
-        node = node.path("dependencies");
-        if (node.isMissingNode())
-            return new HashSet<>();
-        TypeReference<HashSet<ACAQDependency>> typeReference = new TypeReference<HashSet<ACAQDependency>>() {
-        };
-        try {
-            return JsonUtils.getObjectMapper().readerFor(typeReference).readValue(node);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public static class Serializer extends JsonSerializer<ACAQProject> {

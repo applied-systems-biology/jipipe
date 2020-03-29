@@ -48,6 +48,14 @@ public class ACAQExportedDataTable implements TableModel {
 
     }
 
+    public static ACAQExportedDataTable loadFromJson(Path fileName) {
+        try {
+            return JsonUtils.getObjectMapper().readerFor(ACAQExportedDataTable.class).readValue(fileName.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @JsonGetter("algorithm-id")
     public String getAlgorithmId() {
         return algorithmId;
@@ -195,14 +203,6 @@ public class ACAQExportedDataTable implements TableModel {
     @Override
     public void removeTableModelListener(TableModelListener l) {
 
-    }
-
-    public static ACAQExportedDataTable loadFromJson(Path fileName) {
-        try {
-            return JsonUtils.getObjectMapper().readerFor(ACAQExportedDataTable.class).readValue(fileName.toFile());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public static class Row {

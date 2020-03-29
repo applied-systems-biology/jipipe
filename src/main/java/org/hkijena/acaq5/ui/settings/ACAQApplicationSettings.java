@@ -29,6 +29,35 @@ public class ACAQApplicationSettings {
 
     }
 
+    public static ACAQApplicationSettings getInstance() {
+        if (instance == null) {
+            File targetFile = getPropertyFile();
+            if (targetFile.exists()) {
+                try {
+                    instance = JsonUtils.getObjectMapper().readerFor(ACAQApplicationSettings.class).readValue(targetFile);
+                } catch (IOException e) {
+                    instance = new ACAQApplicationSettings();
+                    IJ.handleException(e);
+                }
+            } else {
+                instance = new ACAQApplicationSettings();
+            }
+        }
+        return instance;
+    }
+
+    public static File getPropertyFile() {
+        Path imageJDir = Paths.get(Prefs.getImageJDir());
+        if (!Files.isDirectory(imageJDir)) {
+            try {
+                Files.createDirectories(imageJDir);
+            } catch (IOException e) {
+                IJ.handleException(e);
+            }
+        }
+        return imageJDir.resolve("acaq5.properties.json").toFile();
+    }
+
     public EventBus getEventBus() {
         return eventBus;
     }
@@ -101,34 +130,5 @@ public class ACAQApplicationSettings {
     @JsonGetter("recent-json-extensions")
     public void setRecentJsonExtensions(List<Path> recentJsonExtensions) {
         this.recentJsonExtensions = recentJsonExtensions;
-    }
-
-    public static ACAQApplicationSettings getInstance() {
-        if (instance == null) {
-            File targetFile = getPropertyFile();
-            if (targetFile.exists()) {
-                try {
-                    instance = JsonUtils.getObjectMapper().readerFor(ACAQApplicationSettings.class).readValue(targetFile);
-                } catch (IOException e) {
-                    instance = new ACAQApplicationSettings();
-                    IJ.handleException(e);
-                }
-            } else {
-                instance = new ACAQApplicationSettings();
-            }
-        }
-        return instance;
-    }
-
-    public static File getPropertyFile() {
-        Path imageJDir = Paths.get(Prefs.getImageJDir());
-        if (!Files.isDirectory(imageJDir)) {
-            try {
-                Files.createDirectories(imageJDir);
-            } catch (IOException e) {
-                IJ.handleException(e);
-            }
-        }
-        return imageJDir.resolve("acaq5.properties.json").toFile();
     }
 }

@@ -38,6 +38,10 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
         allowedOutputSlotTypes = new HashSet<>(ACAQDatatypeRegistry.getInstance().getUnhiddenRegisteredDataTypes().values());
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public boolean hasSlot(String name) {
         return slots.containsKey(name);
     }
@@ -322,10 +326,6 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
     public void setAllowInheritedOutputSlots(boolean allowInheritedOutputSlots) {
         this.allowInheritedOutputSlots = allowInheritedOutputSlots;
-    }
-
-    public static Builder builder() {
-        return new Builder();
     }
 
     public static class Builder {

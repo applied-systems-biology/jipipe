@@ -50,6 +50,60 @@ public class ACAQTableAnalyzerUI extends ACAQProjectUIPanel {
         initialize();
     }
 
+    public static void importTableFromCSV(Path fileName, ACAQProjectUI workbenchUI) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName.toFile()))) {
+            DefaultTableModel tableModel = new DefaultTableModel();
+            String currentLine;
+            boolean isFirstLine = true;
+            ArrayList<String> buffer = new ArrayList<>();
+            StringBuilder currentCellBuffer = new StringBuilder();
+            while ((currentLine = reader.readLine()) != null) {
+                buffer.clear();
+                currentCellBuffer.setLength(0);
+                boolean isWithinQuote = false;
+
+                for (int i = 0; i < currentLine.length(); ++i) {
+                    char c = currentLine.charAt(i);
+                    if (c == '\"') {
+                        if (isWithinQuote) {
+                            if (currentLine.charAt(i - 1) == '\"') {
+                                currentCellBuffer.append("\"");
+                            } else {
+                                isWithinQuote = false;
+                            }
+                        } else {
+                            isWithinQuote = true;
+                        }
+                    } else if (c == ',') {
+                        buffer.add(currentCellBuffer.toString());
+                        currentCellBuffer.setLength(0);
+                    } else {
+                        currentCellBuffer.append(c);
+                    }
+                }
+
+                if (currentCellBuffer.length() > 0) {
+                    buffer.add(currentCellBuffer.toString());
+                }
+
+                if (isFirstLine) {
+                    for (String column : buffer) {
+                        tableModel.addColumn(column);
+                    }
+                    isFirstLine = false;
+                } else {
+                    tableModel.addRow(buffer.toArray());
+                }
+            }
+
+            // Create table analyzer
+            workbenchUI.getDocumentTabPane().addTab(fileName.getFileName().toString(), UIUtils.getIconFromResources("table.png"),
+                    new ACAQTableAnalyzerUI(workbenchUI, tableModel), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private void initialize() {
         setLayout(new BorderLayout());
 
@@ -561,44 +615,6 @@ public class ACAQTableAnalyzerUI extends ACAQProjectUIPanel {
         undoBuffer.push(TableUtils.cloneTableModel(tableModel));
     }
 
-    private void exportTableAsCSV() {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Export table");
-        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-            try (BufferedOutputStream writer = new BufferedOutputStream(new FileOutputStream(fileChooser.getSelectedFile()))) {
-                String[] rowBuffer = new String[tableModel.getColumnCount()];
-
-                for (int column = 0; column < tableModel.getColumnCount(); ++column) {
-                    rowBuffer[column] = tableModel.getColumnName(column);
-                }
-
-                writer.write(Joiner.on(',').join(rowBuffer).getBytes(Charsets.UTF_8));
-                writer.write("\n".getBytes(Charsets.UTF_8));
-
-                for (int row = 0; row < tableModel.getRowCount(); ++row) {
-                    for (int column = 0; column < tableModel.getColumnCount(); ++column) {
-                        if (tableModel.getValueAt(row, column) instanceof Boolean) {
-                            rowBuffer[column] = (Boolean) tableModel.getValueAt(row, column) ? "TRUE" : "FALSE";
-                        } else if (tableModel.getValueAt(row, column) instanceof Number) {
-                            rowBuffer[column] = tableModel.getValueAt(row, column).toString();
-                        } else {
-                            String content = "" + tableModel.getValueAt(row, column);
-                            content = content.replace("\"", "\"\"");
-                            if (content.contains(",")) {
-                                content = "\"" + content + "\"";
-                            }
-                            rowBuffer[column] = content;
-                        }
-                    }
-                    writer.write(Joiner.on(',').join(rowBuffer).getBytes(Charsets.UTF_8));
-                    writer.write("\n".getBytes(Charsets.UTF_8));
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
 //    private void exportTableAsXLSX() {
 //        JFileChooser fileChooser = new JFileChooser();
 //        fileChooser.setDialogTitle("Export table");
@@ -638,62 +654,46 @@ public class ACAQTableAnalyzerUI extends ACAQProjectUIPanel {
 //        }
 //    }
 
-    public DefaultTableModel getTableModel() {
-        return tableModel;
+    private void exportTableAsCSV() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Export table");
+        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            try (BufferedOutputStream writer = new BufferedOutputStream(new FileOutputStream(fileChooser.getSelectedFile()))) {
+                String[] rowBuffer = new String[tableModel.getColumnCount()];
+
+                for (int column = 0; column < tableModel.getColumnCount(); ++column) {
+                    rowBuffer[column] = tableModel.getColumnName(column);
+                }
+
+                writer.write(Joiner.on(',').join(rowBuffer).getBytes(Charsets.UTF_8));
+                writer.write("\n".getBytes(Charsets.UTF_8));
+
+                for (int row = 0; row < tableModel.getRowCount(); ++row) {
+                    for (int column = 0; column < tableModel.getColumnCount(); ++column) {
+                        if (tableModel.getValueAt(row, column) instanceof Boolean) {
+                            rowBuffer[column] = (Boolean) tableModel.getValueAt(row, column) ? "TRUE" : "FALSE";
+                        } else if (tableModel.getValueAt(row, column) instanceof Number) {
+                            rowBuffer[column] = tableModel.getValueAt(row, column).toString();
+                        } else {
+                            String content = "" + tableModel.getValueAt(row, column);
+                            content = content.replace("\"", "\"\"");
+                            if (content.contains(",")) {
+                                content = "\"" + content + "\"";
+                            }
+                            rowBuffer[column] = content;
+                        }
+                    }
+                    writer.write(Joiner.on(',').join(rowBuffer).getBytes(Charsets.UTF_8));
+                    writer.write("\n".getBytes(Charsets.UTF_8));
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
-    public static void importTableFromCSV(Path fileName, ACAQProjectUI workbenchUI) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileName.toFile()))) {
-            DefaultTableModel tableModel = new DefaultTableModel();
-            String currentLine;
-            boolean isFirstLine = true;
-            ArrayList<String> buffer = new ArrayList<>();
-            StringBuilder currentCellBuffer = new StringBuilder();
-            while ((currentLine = reader.readLine()) != null) {
-                buffer.clear();
-                currentCellBuffer.setLength(0);
-                boolean isWithinQuote = false;
-
-                for (int i = 0; i < currentLine.length(); ++i) {
-                    char c = currentLine.charAt(i);
-                    if (c == '\"') {
-                        if (isWithinQuote) {
-                            if (currentLine.charAt(i - 1) == '\"') {
-                                currentCellBuffer.append("\"");
-                            } else {
-                                isWithinQuote = false;
-                            }
-                        } else {
-                            isWithinQuote = true;
-                        }
-                    } else if (c == ',') {
-                        buffer.add(currentCellBuffer.toString());
-                        currentCellBuffer.setLength(0);
-                    } else {
-                        currentCellBuffer.append(c);
-                    }
-                }
-
-                if (currentCellBuffer.length() > 0) {
-                    buffer.add(currentCellBuffer.toString());
-                }
-
-                if (isFirstLine) {
-                    for (String column : buffer) {
-                        tableModel.addColumn(column);
-                    }
-                    isFirstLine = false;
-                } else {
-                    tableModel.addRow(buffer.toArray());
-                }
-            }
-
-            // Create table analyzer
-            workbenchUI.getDocumentTabPane().addTab(fileName.getFileName().toString(), UIUtils.getIconFromResources("table.png"),
-                    new ACAQTableAnalyzerUI(workbenchUI, tableModel), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public DefaultTableModel getTableModel() {
+        return tableModel;
     }
 
     private static class CellIndex {

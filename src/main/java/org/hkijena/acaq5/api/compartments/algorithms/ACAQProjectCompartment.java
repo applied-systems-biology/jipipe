@@ -28,6 +28,15 @@ public class ACAQProjectCompartment extends ACAQAlgorithm {
         super(other);
     }
 
+    public static ACAQSlotConfiguration createSlotConfiguration() {
+        return ACAQMutableSlotConfiguration.builder()
+                .restrictInputTo(ACAQCompartmentOutputData.class)
+                .restrictOutputTo(ACAQCompartmentOutputData.class)
+                .addOutputSlot("Output", "", ACAQCompartmentOutputData.class)
+                .sealOutput()
+                .build();
+    }
+
     public String getProjectCompartmentId() {
         return getIdInGraph();
     }
@@ -69,14 +78,5 @@ public class ACAQProjectCompartment extends ACAQAlgorithm {
 
     public void setOutputNode(ACAQCompartmentOutput outputNode) {
         this.outputNode = outputNode;
-    }
-
-    public static ACAQSlotConfiguration createSlotConfiguration() {
-        return ACAQMutableSlotConfiguration.builder()
-                .restrictInputTo(ACAQCompartmentOutputData.class)
-                .restrictOutputTo(ACAQCompartmentOutputData.class)
-                .addOutputSlot("Output", "", ACAQCompartmentOutputData.class)
-                .sealOutput()
-                .build();
     }
 }
