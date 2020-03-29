@@ -41,14 +41,15 @@ public class JsonExtensionLoaderExtension extends ACAQPrepackagedDefaultJavaExte
         // Register from resources
         Set<String> algorithmFiles = ResourceUtils.walkInternalResourceFolder("jsonextensions");
         for (String resourceFile : algorithmFiles) {
-            registerJsonExtensionFromResource(resourceFile);
+            if(resourceFile.endsWith(".json"))
+                registerJsonExtensionFromResource(resourceFile);
         }
 
         // Register from plugin directory
         if (Files.exists(getPluginDirectory())) {
             try {
                 for (Path path : Files.walk(getPluginDirectory()).collect(Collectors.toSet())) {
-                    if (Files.isRegularFile(path))
+                    if (Files.isRegularFile(path) && path.getFileName().toString().endsWith(".json"))
                         registerJsonExtensionFromFile(path);
                 }
             } catch (IOException e) {
@@ -104,7 +105,7 @@ public class JsonExtensionLoaderExtension extends ACAQPrepackagedDefaultJavaExte
         try {
             scheduleRegisterJsonExtension(filePath, JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(filePath.toFile()));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 

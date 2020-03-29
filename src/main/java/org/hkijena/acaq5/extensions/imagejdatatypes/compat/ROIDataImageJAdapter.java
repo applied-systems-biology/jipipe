@@ -5,6 +5,9 @@ import org.hkijena.acaq5.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIData;
 
+/**
+ * Adapter between {@link RoiManager} and {@link ROIData}
+ */
 public class ROIDataImageJAdapter implements ImageJDatatypeAdapter {
     @Override
     public boolean canConvertImageJToACAQ(Object imageJData) {
@@ -26,9 +29,18 @@ public class ROIDataImageJAdapter implements ImageJDatatypeAdapter {
         return ROIData.class;
     }
 
+    /**
+     * Converts a {@link RoiManager} to {@link ROIData}.
+     * If imageJData is null, the currently active {@link RoiManager} is used.
+     * @param imageJData
+     * @return
+     */
     @Override
     public ACAQData convertImageJToACAQ(Object imageJData) {
-        return new ROIData((RoiManager) imageJData);
+        if(imageJData instanceof RoiManager)
+            return new ROIData((RoiManager) imageJData);
+        else
+            return new ROIData(RoiManager.getRoiManager());
     }
 
     @Override

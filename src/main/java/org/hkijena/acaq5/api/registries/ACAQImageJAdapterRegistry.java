@@ -46,6 +46,48 @@ public class ACAQImageJAdapterRegistry {
     }
 
     /**
+     * Returns a matching adapter for an ACAQ5 data type
+     * @param klass
+     * @return
+     */
+    public ImageJDatatypeAdapter getAdapterForACAQData(Class<? extends ACAQData> klass) {
+        if(registeredACAQDataTypes.contains(klass)) {
+            for (ImageJDatatypeAdapter adapter : registeredAdapters) {
+                if(adapter.getACAQDatatype() == klass)
+                    return adapter;
+            }
+        }
+        else {
+            for (ImageJDatatypeAdapter adapter : registeredAdapters) {
+                if(adapter.getACAQDatatype().isAssignableFrom(klass))
+                    return adapter;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns a matching adapter for an ImageJ data type
+     * @param klass
+     * @return
+     */
+    public ImageJDatatypeAdapter getAdapterForImageJData(Class<?> klass) {
+        if(registeredACAQDataTypes.contains(klass)) {
+            for (ImageJDatatypeAdapter adapter : registeredAdapters) {
+                if(adapter.getImageJDatatype() == klass)
+                    return adapter;
+            }
+        }
+        else {
+            for (ImageJDatatypeAdapter adapter : registeredAdapters) {
+                if(adapter.getImageJDatatype().isAssignableFrom(klass))
+                    return adapter;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Applies conversion from ImageJ to ACAQ5 data
      *
      * @param data
@@ -94,5 +136,34 @@ public class ACAQImageJAdapterRegistry {
      */
     public Set<Class<?>> getSupportedImageJDataTypes() {
         return Collections.unmodifiableSet(registeredImageJDataTypes);
+    }
+
+    /**
+     * Gets a matching adapter for the provided data
+     * @param data
+     * @return
+     */
+    public ImageJDatatypeAdapter getAdapterForACAQData(ACAQData data) {
+        for (ImageJDatatypeAdapter adapter : registeredAdapters) {
+            if (adapter.canConvertACAQToImageJ(data)) {
+                return adapter;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Applies conversion from ACAQ5 to ImageJ data
+     *
+     * @param data
+     * @return
+     */
+    public ImageJDatatypeAdapter getAdapterForImageJData(Object data) {
+        for (ImageJDatatypeAdapter adapter : registeredAdapters) {
+            if (adapter.canConvertImageJToACAQ(data)) {
+                return adapter;
+            }
+        }
+        return null;
     }
 }
