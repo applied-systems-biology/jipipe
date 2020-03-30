@@ -1,0 +1,88 @@
+package org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors;
+
+import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.api.traits.ACAQTraitIconRef;
+import org.hkijena.acaq5.ui.components.ACAQIconPickerDialog;
+import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
+import org.hkijena.acaq5.utils.ResourceUtils;
+import org.hkijena.acaq5.utils.StringUtils;
+import org.hkijena.acaq5.utils.UIUtils;
+import org.scijava.Context;
+
+import javax.swing.*;
+import java.awt.*;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
+
+public class ACAQTraitIconRefParameterEditorUI extends ACAQParameterEditorUI {
+
+    private JButton currentlyDisplayed;
+    private static Set<String> availableTraitIcons;
+
+    public ACAQTraitIconRefParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
+        super(context, parameterAccess);
+        initialize();
+        reload();
+    }
+
+    public static Set<String> getAvailableTraitIcons() {
+        if(availableTraitIcons == null) {
+            availableTraitIcons = new HashSet<>();
+            Set<String> rawIcons = ResourceUtils.walkInternalResourceFolder("icons/traits");
+            String basePath = ResourceUtils.getResourcePath("icons/traits/");
+            for (String rawIcon : rawIcons) {
+                availableTraitIcons.add(rawIcon.substring(basePath.length()));
+            }
+        }
+        return availableTraitIcons;
+    }
+
+    private void initialize() {
+        setLayout(new BorderLayout());
+
+        currentlyDisplayed = new JButton();
+        currentlyDisplayed.setHorizontalAlignment(SwingConstants.LEFT);
+        currentlyDisplayed.addActionListener(e -> pickIcon());
+        UIUtils.makeFlat(currentlyDisplayed);
+        add(currentlyDisplayed, BorderLayout.CENTER);
+
+        JButton selectButton = new JButton(UIUtils.getIconFromResources("edit.png"));
+        UIUtils.makeFlat(selectButton);
+        selectButton.setToolTipText("Select icon");
+        selectButton.addActionListener(e -> pickIcon());
+        add(selectButton, BorderLayout.EAST);
+    }
+
+    private void pickIcon() {
+        String picked = ACAQIconPickerDialog.showDialog(this, ResourceUtils.getResourcePath("icons/traits"), getAvailableTraitIcons());
+        ACAQTraitIconRef ref = getParameterAccess().get();
+        ref.setIconName(picked);
+        reload();
+    }
+
+    @Override
+    public boolean isUILabelEnabled() {
+        return true;
+    }
+
+    @Override
+    public void reload() {
+        ACAQTraitIconRef ref = getParameterAccess().get();
+        if(!StringUtils.isNullOrEmpty(ref.getIconName())) {
+            URL resource = ResourceUtils.getPluginResource("icons/traits/" + ref.getIconName());
+            if(resource != null) {
+                currentlyDisplayed.setText(ref.getIconName());
+                currentlyDisplayed.setIcon(new ImageIcon(resource));
+            }
+            else {
+                currentlyDisplayed.setText("<Invalid: " + ref.getIconName() + ">");
+                currentlyDisplayed.setIcon(UIUtils.getIconFromResources("traits/trait.png"));
+            }
+        }
+        else {
+            currentlyDisplayed.setText("<None selected>");
+            currentlyDisplayed.setIcon(UIUtils.getIconFromResources("traits/trait.png"));
+        }
+    }
+}

@@ -17,6 +17,7 @@ import java.util.Set;
 public class ACAQJsonTraitDeclaration extends ACAQMutableTraitDeclaration implements ACAQValidatable {
 
     private Set<String> inheritedIds = new HashSet<>();
+    private ACAQTraitIconRef traitIcon = new ACAQTraitIconRef();
 
     @Override
     public ACAQTrait newInstance() {
@@ -97,5 +98,18 @@ public class ACAQJsonTraitDeclaration extends ACAQMutableTraitDeclaration implem
                 getInherited().add(ACAQTraitRegistry.getInstance().getDeclarationById(id));
             }
         }
+    }
+
+    @JsonGetter("icon")
+    @ACAQDocumentation(name="Icon", description = "Icon of this annotation type")
+    @ACAQParameter("icon")
+    public ACAQTraitIconRef getTraitIcon() {
+        return traitIcon;
+    }
+
+    @JsonSetter("icon")
+    @ACAQParameter("icon")
+    public void setTraitIcon(ACAQTraitIconRef traitIcon) {
+        this.traitIcon = traitIcon;
     }
 }
