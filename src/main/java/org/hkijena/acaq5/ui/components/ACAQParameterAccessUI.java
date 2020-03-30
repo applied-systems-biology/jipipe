@@ -23,19 +23,23 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
     private Context context;
     private ACAQParameterHolder parameterHolder;
 
-    public ACAQParameterAccessUI(Context context, ACAQParameterHolder parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
-        super(documentation, documentationBelow, withDocumentation);
+    public ACAQParameterAccessUI(Context context, ACAQParameterHolder parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation, boolean withScrolling) {
+        super(documentation, documentationBelow, withDocumentation, withScrolling);
         this.context = context;
         this.parameterHolder = parameterHolder;
         reloadForm();
     }
 
+    public ACAQParameterAccessUI(Context context, ACAQParameterHolder parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
+        this(context, parameterHolder, documentation, documentationBelow, withDocumentation, true);
+    }
+
     public ACAQParameterAccessUI(ACAQProjectUI workbenchUI, ACAQParameterHolder parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
-        this(workbenchUI.getContext(), parameterHolder, documentation, documentationBelow, withDocumentation);
+        this(workbenchUI.getContext(), parameterHolder, documentation, documentationBelow, withDocumentation, true);
     }
 
     public ACAQParameterAccessUI(ACAQJsonExtensionUI workbenchUI, ACAQParameterHolder parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
-        this(workbenchUI.getContext(), parameterHolder, documentation, documentationBelow, withDocumentation);
+        this(workbenchUI.getContext(), parameterHolder, documentation, documentationBelow, withDocumentation, true);
     }
 
     public void reloadForm() {

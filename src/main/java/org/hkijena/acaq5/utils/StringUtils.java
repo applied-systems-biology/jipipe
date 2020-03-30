@@ -29,7 +29,19 @@ public class StringUtils {
     }
 
     public static String createIconTextHTMLTable(String text, URL iconURL) {
-        return "<html><table><tr><td><img src=\"" + iconURL + "\" /></td><td>" + HtmlEscapers.htmlEscaper().escape(text) + "</td></tr></table></html>";
+        return "<html>" + createIconTextHTMLTableElement(text, iconURL) + " </html>";
+    }
+
+    public static String createIconTextHTMLTableElement(String text, URL iconURL) {
+        return "<table><tr><td><img src=\"" + iconURL + "\" /></td><td>" + HtmlEscapers.htmlEscaper().escape(text) + "</td></tr></table>";
+    }
+
+    public static String createRightIconTextHTMLTable(String text, URL iconURL) {
+        return "<html>" + createRightIconTextHTMLTableElement(text, iconURL) + "</html>";
+    }
+
+    public static String createRightIconTextHTMLTableElement(String text, URL iconURL) {
+        return "<table><tr><td>" + HtmlEscapers.htmlEscaper().escape(text) + "</td><td><img src=\"" + iconURL + "\" /></td><td></tr></table>";
     }
 
     public static String removeHTMLRoot(String html) {

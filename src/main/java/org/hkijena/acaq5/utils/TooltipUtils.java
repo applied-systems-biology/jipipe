@@ -10,6 +10,7 @@ import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -94,24 +95,25 @@ public class TooltipUtils {
 
             int displayedSlots = Math.max(inputSlots.size(), outputSlots.size());
             if (displayedSlots > 0) {
-                builder.append("<tr><td></td><td><i>Input</i></td><td><i>Output</i></td><td></td></tr>");
+                builder.append("<tr><td><i>Input</i></td><td><i>Output</i></td></tr>");
                 for (int i = 0; i < displayedSlots; ++i) {
                     Class<? extends ACAQData> inputSlot = i < inputSlots.size() ? inputSlots.get(i).value() : null;
                     Class<? extends ACAQData> outputSlot = i < inputSlots.size() ? outputSlots.get(i).value() : null;
                     builder.append("<tr>");
                     if (inputSlot != null) {
-                        builder.append("<td><img src=\"").append(ACAQUIDatatypeRegistry.getInstance().getIconURLFor(inputSlot)).append("\"/></td>");
-                        builder.append("<td>").append(ACAQData.getNameOf(inputSlot)).append("</td>");
+                        builder.append("<td>");
+                        builder.append(StringUtils.createIconTextHTMLTableElement(ACAQData.getNameOf(inputSlot), ACAQUIDatatypeRegistry.getInstance().getIconURLFor(inputSlot)));
+                        builder.append("</td>");
                     }
                     if (outputSlot != null) {
-                        builder.append("<td>").append(ACAQData.getNameOf(outputSlot)).append("</td>");
-                        builder.append("<td><img src=\"").append(ACAQUIDatatypeRegistry.getInstance().getIconURLFor(outputSlot)).append("\"/></td>");
+                        builder.append("<td>");
+                        builder.append(StringUtils.createRightIconTextHTMLTableElement(ACAQData.getNameOf(outputSlot), ACAQUIDatatypeRegistry.getInstance().getIconURLFor(outputSlot)));
+                        builder.append("</td>");
                     }
                     builder.append("</tr>");
                 }
             }
         }
-        builder.append("</table>");
 
         // Write description
         String description = declaration.getDescription();
@@ -123,28 +125,35 @@ public class TooltipUtils {
         Set<ACAQTraitDeclaration> addedTraits = declaration.getSlotTraitConfiguration().getAddedTraits();
         Set<ACAQTraitDeclaration> removedTraits = declaration.getSlotTraitConfiguration().getRemovedTraits();
 
-        if (!preferredTraits.isEmpty()) {
-            builder.append("<br/><br/><strong>Good for<br/>");
-            insertTraitTable(builder, preferredTraits);
-        }
-        if (!unwantedTraits.isEmpty()) {
-            builder.append("<br/><br/><strong>Bad for<br/>");
-            insertTraitTable(builder, unwantedTraits);
-        }
-        if (!removedTraits.isEmpty()) {
-            builder.append("<br/><br/><strong>Removes<br/>");
-            insertTraitTable(builder, removedTraits);
-        }
-        if (!addedTraits.isEmpty()) {
-            builder.append("<br/><br/><strong>Adds<br/>");
-            insertTraitTable(builder, addedTraits);
-        }
+        if(!preferredTraits.isEmpty() || !unwantedTraits.isEmpty())
+            insertOpposingTraitTableContent(builder, preferredTraits, "Good for", unwantedTraits, "Bad for");
+        if(!addedTraits.isEmpty() || !removedTraits.isEmpty())
+            insertOpposingTraitTableContent(builder, addedTraits, "Adds", removedTraits, "Removes");
+
+        builder.append("</table>");
+
+//        if (!preferredTraits.isEmpty()) {
+//            builder.append("<br/><br/><strong>Good for<br/>");
+//            insertTraitTable(builder, preferredTraits);
+//        }
+//        if (!unwantedTraits.isEmpty()) {
+//            builder.append("<br/><br/><strong>Bad for<br/>");
+//            insertTraitTable(builder, unwantedTraits);
+//        }
+//        if (!removedTraits.isEmpty()) {
+//            builder.append("<br/><br/><strong>Removes<br/>");
+//            insertTraitTable(builder, removedTraits);
+//        }
+//        if (!addedTraits.isEmpty()) {
+//            builder.append("<br/><br/><strong>Adds<br/>");
+//            insertTraitTable(builder, addedTraits);
+//        }
 
         builder.append("</html>");
         return builder.toString();
     }
 
-//    public static String getTraitTooltip(Class<? extends ACAQTrait> klass) {
+    //    public static String getTraitTooltip(Class<? extends ACAQTrait> klass) {
 //        String name = ACAQTrait.getNameOf(klass);
 //        String description = ACAQTrait.getDescriptionOf(klass);
 //        StringBuilder builder = new StringBuilder();
@@ -175,6 +184,32 @@ public class TooltipUtils {
 //
 //        return builder.toString();
 //    }
+
+    public static void insertOpposingTraitTableContent(StringBuilder builder, Set<ACAQTraitDeclaration> leftTraits, String leftTitle, Set<ACAQTraitDeclaration> rightTraits, String rightTitle) {
+//        builder.append("<table>");
+        builder.append("<tr><td><i>").append(leftTitle).append("</i></td><td><i>").append(rightTitle).append("</i></td></tr>");
+        Iterator<ACAQTraitDeclaration> leftIterator = leftTraits.iterator();
+        Iterator<ACAQTraitDeclaration> rightIterator = rightTraits.iterator();
+        for (int i = 0; i < Math.max(leftTraits.size(), rightTraits.size()); ++i) {
+            builder.append("<tr>");
+
+            builder.append("<td>");
+            if(i < leftTraits.size()) {
+                ACAQTraitDeclaration declaration = leftIterator.next();
+                builder.append(StringUtils.createIconTextHTMLTableElement(declaration.getName(), ACAQUITraitRegistry.getInstance().getIconURLFor(declaration)));
+            }
+            builder.append("</td>");
+            builder.append("<td>");
+            if(i < rightTraits.size()) {
+                ACAQTraitDeclaration declaration = rightIterator.next();
+                builder.append(StringUtils.createIconTextHTMLTableElement(declaration.getName(), ACAQUITraitRegistry.getInstance().getIconURLFor(declaration)));
+            }
+            builder.append("</td>");
+
+            builder.append("</tr>");
+        }
+//        builder.append("</table>");
+    }
 
     public static void insertTraitTable(StringBuilder builder, Set<ACAQTraitDeclaration> traits) {
         builder.append("<table>");
