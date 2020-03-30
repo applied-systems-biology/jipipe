@@ -6,6 +6,24 @@ import java.awt.*;
 public class ImageLogo extends JPanel {
     private Image image;
 
+    public Image getImage() {
+        return image;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
+        repaint();
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        if (image != null) {
+            drawScaledImage(image, this, g);
+        }
+    }
+
     public static void drawScaledImage(Image image, Component canvas, Graphics g) {
         int imgWidth = image.getWidth(null);
         int imgHeight = image.getHeight(null);
@@ -46,23 +64,5 @@ public class ImageLogo extends JPanel {
         }
 
         g.drawImage(image, x1, y1, x2, y2, 0, 0, imgWidth, imgHeight, null);
-    }
-
-    public Image getImage() {
-        return image;
-    }
-
-    public void setImage(Image image) {
-        this.image = image;
-        repaint();
-    }
-
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-
-        if (image != null) {
-            drawScaledImage(image, this, g);
-        }
     }
 }

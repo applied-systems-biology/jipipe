@@ -1,5 +1,7 @@
 package org.hkijena.acaq5;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import ij.IJ;
 import net.imagej.ImageJ;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
@@ -11,7 +13,8 @@ import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Initializable;
-import org.scijava.command.*;
+import org.scijava.command.Command;
+import org.scijava.command.DynamicCommand;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
@@ -43,38 +46,36 @@ public class ACAQRunAlgorithmCommand extends DynamicCommand implements Initializ
         ACAQDefaultRegistry.instantiate(getContext().getService(PluginService.class));
         ACAQAlgorithm algorithm;
         SingleImageJAlgorithmRun settings;
-        if(StringUtils.isNullOrEmpty(algorithmId) || StringUtils.isNullOrEmpty(algorithmParameters)) {
+        if (StringUtils.isNullOrEmpty(algorithmId) || StringUtils.isNullOrEmpty(algorithmParameters)) {
             RunSingleAlgorithmDialog dialog = new RunSingleAlgorithmDialog(getContext());
             dialog.setTitle("Run ACAQ5 algorithm");
             dialog.setIconImage(UIUtils.getIconFromResources("acaq5-128.png").getImage());
             dialog.setModal(true);
             dialog.pack();
-            dialog.setSize(new Dimension(640, 480));
+            dialog.setSize(new Dimension(800, 600));
             UIUtils.addEscapeListener(dialog);
             dialog.setVisible(true);
-            if(dialog.isCanceled()) {
+            if (dialog.isCanceled()) {
                 cancel("User clicked 'Cancel' in setup dialog.");
                 return;
-            }
-            else {
+            } else {
                 algorithmId = dialog.getAlgorithmId();
                 algorithmParameters = dialog.getAlgorithmParametersJson();
                 algorithm = dialog.getAlgorithm();
                 settings = dialog.getRunSettings();
             }
-        }
-        else {
+        } else {
             ACAQAlgorithmDeclaration declaration = ACAQAlgorithmRegistry.getInstance().getDeclarationById(algorithmId);
             algorithm = declaration.newInstance();
+            settings = new SingleImageJAlgorithmRun(algorithm);
             try {
-                settings = JsonUtils.getObjectMapper().readValue(algorithmParameters, SingleImageJAlgorithmRun.class);
+                settings.fromJson(JsonUtils.getObjectMapper().readValue(algorithmParameters, JsonNode.class));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            settings.setAlgorithm(algorithm);
             ACAQValidityReport report = new ACAQValidityReport();
             settings.reportValidity(report);
-            if(!report.isValid()) {
+            if (!report.isValid()) {
                 StringBuilder message = new StringBuilder();
                 message.append("The provided algorithm options are invalid:\n\n");
                 for (Map.Entry<String, String> entry : report.getMessages().entrySet()) {
@@ -84,9 +85,11 @@ public class ACAQRunAlgorithmCommand extends DynamicCommand implements Initializ
                 return;
             }
         }
-
+        IJ.showProgress(1, 3);
         settings.pushInput();
+        IJ.showProgress(2, 3);
         algorithm.run();
+        IJ.showProgress(3, 3);
         settings.pullOutput();
     }
 

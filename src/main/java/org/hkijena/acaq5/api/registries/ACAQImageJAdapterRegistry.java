@@ -14,10 +14,6 @@ public class ACAQImageJAdapterRegistry {
     private Set<Class<? extends ACAQData>> registeredACAQDataTypes = new HashSet<>();
     private Set<Class<?>> registeredImageJDataTypes = new HashSet<>();
 
-    public static ACAQImageJAdapterRegistry getInstance() {
-        return ACAQDefaultRegistry.getInstance().getImageJDataAdapterRegistry();
-    }
-
     /**
      * Registers an adapter
      *
@@ -141,5 +137,9 @@ public class ACAQImageJAdapterRegistry {
 
     public List<ImageJDatatypeAdapter> getRegisteredAdapters() {
         return registeredAdapters;
+    }
+
+    public static ACAQImageJAdapterRegistry getInstance() {
+        return ACAQDefaultRegistry.getInstance().getImageJDataAdapterRegistry();
     }
 }

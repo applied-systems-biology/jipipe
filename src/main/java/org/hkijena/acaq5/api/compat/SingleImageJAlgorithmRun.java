@@ -1,22 +1,51 @@
 package org.hkijena.acaq5.api.compat;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.common.collect.ImmutableList;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.data.*;
+import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
+import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.api.parameters.ACAQParameterHolder;
+import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.api.registries.ACAQImageJAdapterRegistry;
+import org.hkijena.acaq5.utils.JsonUtils;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Settings class used for a single algorithm run
  */
+@JsonSerialize(using = SingleImageJAlgorithmRun.Serializer.class)
 public class SingleImageJAlgorithmRun implements ACAQValidatable {
 
+    private EventBus eventBus = new EventBus();
     private ACAQAlgorithm algorithm;
+    private Map<String, ImageJDatatypeImporter> inputSlotImporters = new HashMap<>();
+
+    public SingleImageJAlgorithmRun(ACAQAlgorithm algorithm) {
+        this.algorithm = algorithm;
+        updateSlots();
+        algorithm.getEventBus().register(this);
+    }
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        if(algorithm == null) {
+        if (algorithm == null) {
             report.reportIsInvalid("No algorithm was provided! This is an programming error. Please contact the plugin author.");
         }
     }
@@ -25,20 +54,101 @@ public class SingleImageJAlgorithmRun implements ACAQValidatable {
         return algorithm;
     }
 
-    public void setAlgorithm(ACAQAlgorithm algorithm) {
-        this.algorithm = algorithm;
+    public Map<String, ImageJDatatypeImporter> getInputSlotImporters() {
+        return Collections.unmodifiableMap(inputSlotImporters);
+    }
+
+    private void updateSlots() {
+        for (ACAQDataSlot inputSlot : algorithm.getInputSlots()) {
+            if (!inputSlotImporters.containsKey(inputSlot.getName())) {
+                inputSlotImporters.put(inputSlot.getName(), new ImageJDatatypeImporter(
+                        ACAQImageJAdapterRegistry.getInstance().getAdapterForACAQData(inputSlot.getAcceptedDataType())));
+            }
+        }
+        for (Map.Entry<String, ImageJDatatypeImporter> entry : ImmutableList.copyOf(inputSlotImporters.entrySet())) {
+            ACAQDataSlot slot = algorithm.getSlots().getOrDefault(entry.getKey(), null);
+            if (slot == null || !slot.isInput()) {
+                inputSlotImporters.remove(entry.getKey());
+            }
+        }
     }
 
     public void pushInput() {
-
+        for (Map.Entry<String, ImageJDatatypeImporter> entry : inputSlotImporters.entrySet()) {
+            ACAQDataSlot slot = algorithm.getInputSlot(entry.getKey());
+            slot.clearData();
+            slot.addData(entry.getValue().get());
+        }
     }
 
     public void pullOutput() {
+        for (ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
+            ImageJDatatypeAdapter adapter = ACAQImageJAdapterRegistry.getInstance().getAdapterForACAQData(outputSlot.getAcceptedDataType());
+            for (int i = 0; i < outputSlot.getRowCount(); ++i) {
+                ACAQData data = outputSlot.getData(i);
+                adapter.convertACAQToImageJ(data, true, outputSlot.getName());
+            }
+        }
+    }
 
+    @Subscribe
+    public void onAlgorithmSlotsChanged(AlgorithmSlotsChangedEvent event) {
+        updateSlots();
+        eventBus.post(event);
+    }
+
+    /**
+     * Loads data from JSON
+     *
+     * @param jsonNode
+     */
+    public void fromJson(JsonNode jsonNode) {
+        if (jsonNode.has("parameters")) {
+            Map<String, ACAQParameterAccess> parameters = ACAQParameterAccess.getParameters(algorithm);
+            for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.get("parameters").fields())) {
+                ACAQParameterAccess access = parameters.getOrDefault(entry.getKey(), null);
+                try {
+                    access.set(JsonUtils.getObjectMapper().readerFor(access.getFieldClass()).readValue(entry.getValue()));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        if (jsonNode.has("add-input")) {
+            ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
+            for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.get("add-input").fields())) {
+                ACAQDataDeclaration declaration = ACAQDataDeclaration.getInstance(entry.getValue().textValue());
+                slotConfiguration.addSlot(entry.getKey(), new ACAQSlotDefinition(declaration.getDataClass(),
+                        ACAQDataSlot.SlotType.Input,
+                        entry.getKey(),
+                        null));
+            }
+        }
+        if (jsonNode.has("add-output")) {
+            ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
+            for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.get("add-output").fields())) {
+                ACAQDataDeclaration declaration = ACAQDataDeclaration.getInstance(entry.getValue().textValue());
+                slotConfiguration.addSlot(entry.getKey(), new ACAQSlotDefinition(declaration.getDataClass(),
+                        ACAQDataSlot.SlotType.Output,
+                        entry.getKey(),
+                        null));
+            }
+        }
+        if (jsonNode.has("input")) {
+            for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.get("input").fields())) {
+                ImageJDatatypeImporter importer = inputSlotImporters.get(entry.getKey());
+                importer.setWindowName(entry.getValue().textValue());
+            }
+        }
+    }
+
+    public EventBus getEventBus() {
+        return eventBus;
     }
 
     /**
      * Returns true if an algorithm can be run in a single ImageJ algorithm run
+     *
      * @param declaration
      * @return
      */
@@ -50,14 +160,87 @@ public class SingleImageJAlgorithmRun implements ACAQValidatable {
         }
         ACAQAlgorithm algorithm = declaration.newInstance();
         for (ACAQDataSlot inputSlot : algorithm.getInputSlots()) {
-            if(!ACAQImageJAdapterRegistry.getInstance().supportsACAQData(inputSlot.getAcceptedDataType()))
+            if (!ACAQImageJAdapterRegistry.getInstance().supportsACAQData(inputSlot.getAcceptedDataType()))
                 return false;
         }
         for (ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
-            if(!ACAQImageJAdapterRegistry.getInstance().supportsACAQData(outputSlot.getAcceptedDataType()))
+            if (!ACAQImageJAdapterRegistry.getInstance().supportsACAQData(outputSlot.getAcceptedDataType()))
                 return false;
         }
 
         return true;
+    }
+
+    public static class Serializer extends JsonSerializer<SingleImageJAlgorithmRun> {
+        @Override
+        public void serialize(SingleImageJAlgorithmRun run, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+            // Instantiate an unchanged algorithm to reduce the output
+            ACAQAlgorithm comparison = run.getAlgorithm().getDeclaration().newInstance();
+            jsonGenerator.writeStartObject();
+
+            serializeParameters(run, comparison, jsonGenerator);
+            serializeInputSlotConfiguration(run, comparison, jsonGenerator);
+            serializeInputSlotData(run, jsonGenerator);
+            serializeOutputSlotConfiguration(run, comparison, jsonGenerator);
+
+            jsonGenerator.writeEndObject();
+        }
+
+        private void serializeInputSlotData(SingleImageJAlgorithmRun run, JsonGenerator jsonGenerator) throws IOException {
+            Map<String, String> slotData = new HashMap<>();
+            for (Map.Entry<String, ImageJDatatypeImporter> entry : run.inputSlotImporters.entrySet()) {
+                if (entry.getValue().getWindowName() != null) {
+                    slotData.put(entry.getKey(), entry.getValue().getWindowName());
+                }
+            }
+            if (!slotData.isEmpty()) {
+                jsonGenerator.writeObjectField("input", slotData);
+            }
+        }
+
+        private void serializeOutputSlotConfiguration(SingleImageJAlgorithmRun run, ACAQAlgorithm comparison, JsonGenerator jsonGenerator) throws IOException {
+            Map<String, String> serializedSlots = new HashMap<>();
+            for (ACAQDataSlot outputSlot : run.getAlgorithm().getOutputSlots()) {
+                ACAQDataSlot existingSlot = comparison.getSlots().getOrDefault(outputSlot.getName(), null);
+                if (existingSlot != null && existingSlot.isOutput())
+                    continue;
+                serializedSlots.put(outputSlot.getName(), ACAQDatatypeRegistry.getInstance().getIdOf(outputSlot.getAcceptedDataType()));
+            }
+            if (!serializedSlots.isEmpty()) {
+                jsonGenerator.writeObjectField("add-output", serializedSlots);
+            }
+        }
+
+        private void serializeInputSlotConfiguration(SingleImageJAlgorithmRun run, ACAQAlgorithm comparison, JsonGenerator jsonGenerator) throws IOException {
+            Map<String, String> serializedSlots = new HashMap<>();
+            for (ACAQDataSlot inputSlot : run.getAlgorithm().getInputSlots()) {
+                ACAQDataSlot existingSlot = comparison.getSlots().getOrDefault(inputSlot.getName(), null);
+                if (existingSlot != null && existingSlot.isInput())
+                    continue;
+                serializedSlots.put(inputSlot.getName(), ACAQDatatypeRegistry.getInstance().getIdOf(inputSlot.getAcceptedDataType()));
+            }
+            if (!serializedSlots.isEmpty()) {
+                jsonGenerator.writeObjectField("add-input", serializedSlots);
+            }
+        }
+
+        private void serializeParameters(SingleImageJAlgorithmRun run, ACAQParameterHolder comparison, JsonGenerator jsonGenerator) throws IOException {
+
+            Map<String, ACAQParameterAccess> comparisonParameters = ACAQParameterAccess.getParameters(comparison);
+            Map<String, Object> serializedParameters = new HashMap<>();
+
+            for (Map.Entry<String, ACAQParameterAccess> entry : ACAQParameterAccess.getParameters(run.getAlgorithm()).entrySet()) {
+                ACAQParameterAccess originalAccess = comparisonParameters.getOrDefault(entry.getKey(), null);
+                Object originalValue = originalAccess != null ? originalAccess.get() : null;
+                Object value = entry.getValue().get();
+                if (!Objects.equals(originalValue, value)) {
+                    serializedParameters.put(entry.getKey(), value);
+                }
+            }
+
+            if (!serializedParameters.isEmpty()) {
+                jsonGenerator.writeObjectField("parameters", serializedParameters);
+            }
+        }
     }
 }

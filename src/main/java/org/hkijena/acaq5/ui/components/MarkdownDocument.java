@@ -41,6 +41,21 @@ public class MarkdownDocument {
         render();
     }
 
+    private void render() {
+        Parser parser = Parser.builder(OPTIONS).build();
+        Node document = parser.parse(markdown);
+        HtmlRenderer renderer = HtmlRenderer.builder(OPTIONS).build();
+        this.renderedHTML = renderer.render(document);
+    }
+
+    public String getRenderedHTML() {
+        return renderedHTML;
+    }
+
+    public String getMarkdown() {
+        return markdown;
+    }
+
     public static MarkdownDocument fromFile(Path fileName) {
         try {
             MarkdownDocument existing = fromFileCache.getOrDefault(fileName, null);
@@ -69,21 +84,6 @@ public class MarkdownDocument {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private void render() {
-        Parser parser = Parser.builder(OPTIONS).build();
-        Node document = parser.parse(markdown);
-        HtmlRenderer renderer = HtmlRenderer.builder(OPTIONS).build();
-        this.renderedHTML = renderer.render(document);
-    }
-
-    public String getRenderedHTML() {
-        return renderedHTML;
-    }
-
-    public String getMarkdown() {
-        return markdown;
     }
 
 

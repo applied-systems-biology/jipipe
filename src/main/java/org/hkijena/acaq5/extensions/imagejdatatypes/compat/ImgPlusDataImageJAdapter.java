@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.extensions.imagejdatatypes.compat;
 
+import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import org.apache.commons.lang.reflect.ConstructorUtils;
@@ -77,6 +78,8 @@ public class ImgPlusDataImageJAdapter implements ImageJDatatypeAdapter {
 
     @Override
     public ACAQData importFromImageJ(String windowName) {
+        if (StringUtils.isNullOrEmpty(windowName))
+            return convertImageJToACAQ(IJ.getImage());
         ImagePlus image = WindowManager.getImage(windowName);
         return convertImageJToACAQ(image);
     }

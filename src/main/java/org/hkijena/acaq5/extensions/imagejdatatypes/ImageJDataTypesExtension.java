@@ -5,6 +5,9 @@ import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.imagejdatatypes.compat.ImgPlusDataImageJAdapter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.compat.ROIDataImageJAdapter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.compat.ResultsTableDataImageJAdapter;
+import org.hkijena.acaq5.extensions.imagejdatatypes.compat.importers.ImagePlusDataImporterUI;
+import org.hkijena.acaq5.extensions.imagejdatatypes.compat.importers.ROIDataImporterUI;
+import org.hkijena.acaq5.extensions.imagejdatatypes.compat.importers.ResultsTableDataImporterUI;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datasources.BioformatsImporter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datasources.ImagePlusFromFileAlgorithmDeclaration;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datasources.ROIDataFromFile;
@@ -62,10 +65,10 @@ public class ImageJDataTypesExtension extends ACAQPrepackagedDefaultJavaExtensio
 
         registerDatatype("imagej-roi", ROIData.class, ResourceUtils.getPluginResource("icons/data-types/roi.png"),
                 ROIDataSlotRowUI.class, null);
-        registerImageJDataAdapter(new ROIDataImageJAdapter());
+        registerImageJDataAdapter(new ROIDataImageJAdapter(), ROIDataImporterUI.class);
         registerDatatype("imagej-results-table", ResultsTableData.class, ResourceUtils.getPluginResource("icons/data-types/results-table.png"),
                 ResultsTableDataSlotRowUI.class, null);
-        registerImageJDataAdapter(new ResultsTableDataImageJAdapter());
+        registerImageJDataAdapter(new ResultsTableDataImageJAdapter(), ResultsTableDataImporterUI.class);
 
         // Register data sources
         registerAlgorithm("import-imagej-roi-from-file", ROIDataFromFile.class);
@@ -81,7 +84,7 @@ public class ImageJDataTypesExtension extends ACAQPrepackagedDefaultJavaExtensio
 
     private void registerImageDataType(String id, Class<? extends ImagePlusData> dataClass, String iconResource) {
         registerDatatype(id, dataClass, ResourceUtils.getPluginResource(iconResource), ImageDataSlotRowUI.class, null);
-        registerImageJDataAdapter(new ImgPlusDataImageJAdapter(dataClass));
+        registerImageJDataAdapter(new ImgPlusDataImageJAdapter(dataClass), ImagePlusDataImporterUI.class);
         ImagePlusFromFileAlgorithmDeclaration importerDeclaration = new ImagePlusFromFileAlgorithmDeclaration(id, dataClass);
         registerAlgorithm(importerDeclaration);
     }

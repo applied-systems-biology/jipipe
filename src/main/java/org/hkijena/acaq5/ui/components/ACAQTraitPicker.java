@@ -32,42 +32,6 @@ public class ACAQTraitPicker extends JPanel {
         refreshTraitList();
     }
 
-    public static Set<ACAQTraitDeclaration> showDialog(Component parent, Mode mode, Set<ACAQTraitDeclaration> availableTraits) {
-        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
-        ACAQTraitPicker picker = new ACAQTraitPicker(mode, availableTraits);
-
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(picker, BorderLayout.CENTER);
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-        buttonPanel.add(Box.createHorizontalGlue());
-
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("remove.png"));
-        cancelButton.addActionListener(e -> {
-            picker.setSelectedTraits(Collections.emptySet());
-            dialog.setVisible(false);
-        });
-        buttonPanel.add(cancelButton);
-
-        JButton confirmButton = new JButton("Pick", UIUtils.getIconFromResources("checkmark.png"));
-        confirmButton.addActionListener(e -> dialog.setVisible(false));
-        buttonPanel.add(confirmButton);
-
-        panel.add(buttonPanel, BorderLayout.SOUTH);
-
-        dialog.setContentPane(panel);
-        dialog.setTitle("Pick annotation");
-        dialog.setModal(true);
-        dialog.pack();
-        dialog.setSize(new Dimension(500, 600));
-        dialog.setLocationRelativeTo(parent);
-        UIUtils.addEscapeListener(dialog);
-        dialog.setVisible(true);
-
-        return picker.getSelectedTraits();
-    }
-
     private void initialize() {
         setLayout(new BorderLayout());
         JToolBar toolBar = new JToolBar();
@@ -202,6 +166,42 @@ public class ACAQTraitPicker extends JPanel {
         this.selectedTraits = new HashSet<>(traits);
         eventBus.post(new SelectedTraitsChangedEvent(this));
         refreshTraitList();
+    }
+
+    public static Set<ACAQTraitDeclaration> showDialog(Component parent, Mode mode, Set<ACAQTraitDeclaration> availableTraits) {
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
+        ACAQTraitPicker picker = new ACAQTraitPicker(mode, availableTraits);
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(picker, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        buttonPanel.add(Box.createHorizontalGlue());
+
+        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("remove.png"));
+        cancelButton.addActionListener(e -> {
+            picker.setSelectedTraits(Collections.emptySet());
+            dialog.setVisible(false);
+        });
+        buttonPanel.add(cancelButton);
+
+        JButton confirmButton = new JButton("Pick", UIUtils.getIconFromResources("checkmark.png"));
+        confirmButton.addActionListener(e -> dialog.setVisible(false));
+        buttonPanel.add(confirmButton);
+
+        panel.add(buttonPanel, BorderLayout.SOUTH);
+
+        dialog.setContentPane(panel);
+        dialog.setTitle("Pick annotation");
+        dialog.setModal(true);
+        dialog.pack();
+        dialog.setSize(new Dimension(500, 600));
+        dialog.setLocationRelativeTo(parent);
+        UIUtils.addEscapeListener(dialog);
+        dialog.setVisible(true);
+
+        return picker.getSelectedTraits();
     }
 
     public enum Mode {

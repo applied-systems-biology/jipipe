@@ -24,10 +24,6 @@ public class ACAQAlgorithmGraphUIDragAndDrop implements DropTargetListener {
         this.canvasUI = canvasUI;
     }
 
-    public static void install(ACAQAlgorithmGraphCanvasUI canvasUI) {
-        new DropTarget(canvasUI, new ACAQAlgorithmGraphUIDragAndDrop(canvasUI));
-    }
-
     @Override
     public void dragEnter(DropTargetDragEvent dtde) {
 
@@ -104,5 +100,9 @@ public class ACAQAlgorithmGraphUIDragAndDrop implements DropTargetListener {
             }
 
         }
+    }
+
+    public static void install(ACAQAlgorithmGraphCanvasUI canvasUI) {
+        new DropTarget(canvasUI, new ACAQAlgorithmGraphUIDragAndDrop(canvasUI));
     }
 }

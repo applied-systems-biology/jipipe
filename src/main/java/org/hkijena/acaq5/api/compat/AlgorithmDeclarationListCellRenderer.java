@@ -1,11 +1,7 @@
 package org.hkijena.acaq5.api.compat;
 
-import com.google.common.html.HtmlEscapers;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.ui.components.ColorIcon;
-import org.hkijena.acaq5.ui.components.MonochromeColorIcon;
-import org.hkijena.acaq5.utils.StringUtils;
-import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -24,13 +20,12 @@ public class AlgorithmDeclarationListCellRenderer extends JLabel implements List
 
         setFont(list.getFont());
 
-        if(value != null) {
+        if (value != null) {
             setIcon(new ColorIcon(16, 16, UIUtils.getFillColorFor(value)));
             setText(value.getName());
 //            setText("<html><table cellpadding=\"0\"><tr><td>" + HtmlEscapers.htmlEscaper().escape(value.getName()) + "</td>" +
 //                    "<tr><td><i>" + HtmlEscapers.htmlEscaper().escape(value.getDescription()) + "</td></tr></table></html>");
-        }
-        else {
+        } else {
             setText("<Null>");
         }
 

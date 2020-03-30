@@ -53,30 +53,6 @@ public class ACAQSlotDefinition {
         this.inheritanceConversions = new HashMap<>(other.inheritanceConversions);
     }
 
-    /**
-     * Applies inheritance conversion.
-     * This is a text replacement system with termination condition of never visiting the same time twice.
-     *
-     * @param definition
-     * @param dataClass
-     * @return
-     */
-    public static Class<? extends ACAQData> applyInheritanceConversion(ACAQSlotDefinition definition, Class<? extends ACAQData> dataClass) {
-        Set<ACAQDataDeclaration> visited = new HashSet<>();
-        ACAQDataDeclaration currentData = ACAQDataDeclaration.getInstance(dataClass);
-        ACAQDataDeclaration lastData = currentData;
-        visited.add(currentData);
-        while (true) {
-            currentData = definition.inheritanceConversions.getOrDefault(currentData, null);
-            if (currentData == null)
-                return lastData.getDataClass();
-            lastData = currentData;
-            if (visited.contains(currentData))
-                return currentData.getDataClass();
-            visited.add(currentData);
-        }
-    }
-
     public ACAQSlotDefinition renamedCopy(String newName) {
         ACAQSlotDefinition result = new ACAQSlotDefinition(this);
         result.name = newName;
@@ -112,6 +88,30 @@ public class ACAQSlotDefinition {
 
     public void setInheritanceConversions(Map<ACAQDataDeclaration, ACAQDataDeclaration> inheritanceConversions) {
         this.inheritanceConversions = inheritanceConversions;
+    }
+
+    /**
+     * Applies inheritance conversion.
+     * This is a text replacement system with termination condition of never visiting the same time twice.
+     *
+     * @param definition
+     * @param dataClass
+     * @return
+     */
+    public static Class<? extends ACAQData> applyInheritanceConversion(ACAQSlotDefinition definition, Class<? extends ACAQData> dataClass) {
+        Set<ACAQDataDeclaration> visited = new HashSet<>();
+        ACAQDataDeclaration currentData = ACAQDataDeclaration.getInstance(dataClass);
+        ACAQDataDeclaration lastData = currentData;
+        visited.add(currentData);
+        while (true) {
+            currentData = definition.inheritanceConversions.getOrDefault(currentData, null);
+            if (currentData == null)
+                return lastData.getDataClass();
+            lastData = currentData;
+            if (visited.contains(currentData))
+                return currentData.getDataClass();
+            visited.add(currentData);
+        }
     }
 
     public static class Serializer extends JsonSerializer<ACAQSlotDefinition> {

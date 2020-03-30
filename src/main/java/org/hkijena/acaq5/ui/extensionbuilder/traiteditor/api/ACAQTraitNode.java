@@ -22,15 +22,6 @@ public class ACAQTraitNode extends ACAQAlgorithm {
         super(other);
     }
 
-    public static ACAQSlotConfiguration createSlotConfiguration() {
-        return ACAQMutableSlotConfiguration.builder()
-                .restrictInputTo(ACAQTraitNodeInheritanceData.class, ACAQDiscriminatorNodeInheritanceData.class)
-                .restrictOutputTo(ACAQTraitNodeInheritanceData.class, ACAQDiscriminatorNodeInheritanceData.class)
-                .addOutputSlot("This", "", ACAQTraitNodeInheritanceData.class)
-                .sealOutput()
-                .build();
-    }
-
     @Override
     public void run() {
 
@@ -62,5 +53,14 @@ public class ACAQTraitNode extends ACAQAlgorithm {
             value.setAcceptedDataType(slotClass);
         }
         getEventBus().post(new AlgorithmSlotsChangedEvent(this));
+    }
+
+    public static ACAQSlotConfiguration createSlotConfiguration() {
+        return ACAQMutableSlotConfiguration.builder()
+                .restrictInputTo(ACAQTraitNodeInheritanceData.class, ACAQDiscriminatorNodeInheritanceData.class)
+                .restrictOutputTo(ACAQTraitNodeInheritanceData.class, ACAQDiscriminatorNodeInheritanceData.class)
+                .addOutputSlot("This", "", ACAQTraitNodeInheritanceData.class)
+                .sealOutput()
+                .build();
     }
 }

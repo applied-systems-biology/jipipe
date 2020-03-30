@@ -24,6 +24,13 @@ import java.util.Objects;
 public interface ACAQTrait {
 
     /**
+     * Returns the declaration of this trait
+     *
+     * @return
+     */
+    ACAQTraitDeclaration getDeclaration();
+
+    /**
      * Returns the name of given trait
      *
      * @param klass
@@ -74,13 +81,6 @@ public interface ACAQTrait {
         else
             return true;
     }
-
-    /**
-     * Returns the declaration of this trait
-     *
-     * @return
-     */
-    ACAQTraitDeclaration getDeclaration();
 
     class Serializer extends JsonSerializer<ACAQTrait> {
         @Override

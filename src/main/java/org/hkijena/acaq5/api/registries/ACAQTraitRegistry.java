@@ -26,10 +26,6 @@ public class ACAQTraitRegistry implements ACAQValidatable {
 
     }
 
-    public static ACAQTraitRegistry getInstance() {
-        return ACAQDefaultRegistry.getInstance().getTraitRegistry();
-    }
-
     /**
      * Registers a trait class
      *
@@ -150,5 +146,9 @@ public class ACAQTraitRegistry implements ACAQValidatable {
             report.forCategory("Unregistered annotations").forCategory(task.toString()).report(task);
         }
 
+    }
+
+    public static ACAQTraitRegistry getInstance() {
+        return ACAQDefaultRegistry.getInstance().getTraitRegistry();
     }
 }

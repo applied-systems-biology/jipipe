@@ -41,44 +41,6 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
         }
     }
 
-    /**
-     * Finds all dynamic parameter holders in the parameter holder
-     * Does not find child parameter holders.
-     *
-     * @param parameterHolder
-     * @return
-     */
-    public static Map<String, ACAQDynamicParameterHolder> findDynamicParameterHolders(Object parameterHolder) {
-        Map<String, ACAQDynamicParameterHolder> result = new HashMap<>();
-        for (Method method : parameterHolder.getClass().getMethods()) {
-            ACAQSubParameters[] subAlgorithms = method.getAnnotationsByType(ACAQSubParameters.class);
-
-            String subAlgorithmName = null;
-            String subAlgorithmDescription = null;
-
-            ACAQDocumentation[] documentations = method.getAnnotationsByType(ACAQDocumentation.class);
-            if (documentations.length > 0) {
-                subAlgorithmName = documentations[0].name();
-                subAlgorithmDescription = documentations[0].description();
-            }
-
-            if (subAlgorithms.length > 0) {
-                try {
-                    ACAQSubParameters subAlgorithmAnnotation = subAlgorithms[0];
-                    Object subAlgorithm = method.invoke(parameterHolder);
-                    if (subAlgorithm instanceof ACAQDynamicParameterHolder) {
-                        ((ACAQDynamicParameterHolder) subAlgorithm).name = subAlgorithmName;
-                        ((ACAQDynamicParameterHolder) subAlgorithm).description = subAlgorithmDescription;
-                        result.put(subAlgorithmAnnotation.value(), (ACAQDynamicParameterHolder) subAlgorithm);
-                    }
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        return result;
-    }
-
     @Override
     public Map<String, ACAQParameterAccess> getCustomParameters() {
         return Collections.unmodifiableMap(parameters);
@@ -162,5 +124,43 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
     @Override
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    /**
+     * Finds all dynamic parameter holders in the parameter holder
+     * Does not find child parameter holders.
+     *
+     * @param parameterHolder
+     * @return
+     */
+    public static Map<String, ACAQDynamicParameterHolder> findDynamicParameterHolders(Object parameterHolder) {
+        Map<String, ACAQDynamicParameterHolder> result = new HashMap<>();
+        for (Method method : parameterHolder.getClass().getMethods()) {
+            ACAQSubParameters[] subAlgorithms = method.getAnnotationsByType(ACAQSubParameters.class);
+
+            String subAlgorithmName = null;
+            String subAlgorithmDescription = null;
+
+            ACAQDocumentation[] documentations = method.getAnnotationsByType(ACAQDocumentation.class);
+            if (documentations.length > 0) {
+                subAlgorithmName = documentations[0].name();
+                subAlgorithmDescription = documentations[0].description();
+            }
+
+            if (subAlgorithms.length > 0) {
+                try {
+                    ACAQSubParameters subAlgorithmAnnotation = subAlgorithms[0];
+                    Object subAlgorithm = method.invoke(parameterHolder);
+                    if (subAlgorithm instanceof ACAQDynamicParameterHolder) {
+                        ((ACAQDynamicParameterHolder) subAlgorithm).name = subAlgorithmName;
+                        ((ACAQDynamicParameterHolder) subAlgorithm).description = subAlgorithmDescription;
+                        result.put(subAlgorithmAnnotation.value(), (ACAQDynamicParameterHolder) subAlgorithm);
+                    }
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return result;
     }
 }

@@ -26,12 +26,6 @@ public class ACAQRunnerQueue {
 
     }
 
-    public static ACAQRunnerQueue getInstance() {
-        if (instance == null)
-            instance = new ACAQRunnerQueue();
-        return instance;
-    }
-
     public ACAQRunWorker enqueue(ACAQRunnable run) {
         ACAQRunWorker worker = new ACAQRunWorker(run);
         worker.getEventBus().register(this);
@@ -98,5 +92,11 @@ public class ACAQRunnerQueue {
 
     public ACAQRunnable getCurrentRun() {
         return currentlyRunningWorker != null ? currentlyRunningWorker.getRun() : null;
+    }
+
+    public static ACAQRunnerQueue getInstance() {
+        if (instance == null)
+            instance = new ACAQRunnerQueue();
+        return instance;
     }
 }

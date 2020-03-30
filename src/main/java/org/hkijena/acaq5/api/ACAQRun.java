@@ -33,22 +33,6 @@ public class ACAQRun implements ACAQRunnable {
         initializeInternalStoragePaths();
     }
 
-    /**
-     * Loads an ACAQRun from a folder
-     *
-     * @param folder
-     * @return
-     */
-    public static ACAQRun loadFromFolder(Path folder) throws IOException {
-        Path parameterFile = folder.resolve("parameters.json");
-        ACAQProject project = ACAQProject.loadProject(parameterFile);
-        ACAQMutableRunConfiguration configuration = new ACAQMutableRunConfiguration();
-        configuration.setOutputPath(folder);
-        ACAQRun run = new ACAQRun(project, configuration);
-        run.prepare();
-        return run;
-    }
-
     private void initializeRelativeDirectories() {
         for (ACAQAlgorithm algorithm : algorithmGraph.getAlgorithmNodes().values()) {
             algorithm.setWorkDirectory(null);
@@ -192,5 +176,21 @@ public class ACAQRun implements ACAQRunnable {
 
     public ACAQRunConfiguration getConfiguration() {
         return configuration;
+    }
+
+    /**
+     * Loads an ACAQRun from a folder
+     *
+     * @param folder
+     * @return
+     */
+    public static ACAQRun loadFromFolder(Path folder) throws IOException {
+        Path parameterFile = folder.resolve("parameters.json");
+        ACAQProject project = ACAQProject.loadProject(parameterFile);
+        ACAQMutableRunConfiguration configuration = new ACAQMutableRunConfiguration();
+        configuration.setOutputPath(folder);
+        ACAQRun run = new ACAQRun(project, configuration);
+        run.prepare();
+        return run;
     }
 }

@@ -32,36 +32,11 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
     private ACAQPlotBuilderRegistry plotBuilderRegistry = new ACAQPlotBuilderRegistry();
     private ACAQTableAnalyzerUIOperationRegistry tableAnalyzerUIOperationRegistry = new ACAQTableAnalyzerUIOperationRegistry();
     private ACAQImageJAdapterRegistry imageJDataAdapterRegistry = new ACAQImageJAdapterRegistry();
+    private ACAQUIImageJDatatypeAdapterRegistry uiImageJDatatypeAdapterRegistry = new ACAQUIImageJDatatypeAdapterRegistry();
     private PluginService pluginService;
 
 
     public ACAQDefaultRegistry() {
-    }
-
-    public static ACAQDefaultRegistry getInstance() {
-        return instance;
-    }
-
-    /**
-     * Instantiates the plugin service. This is done within {@link ACAQGUICommand}
-     *
-     * @param pluginService
-     */
-    public static void instantiate(PluginService pluginService) {
-        if (instance == null) {
-            try {
-                instance = (ACAQDefaultRegistry) pluginService.getPlugin(ACAQDefaultRegistry.class).createInstance();
-                instance.pluginService = pluginService;
-                instance.installEvents();
-                instance.discover(pluginService);
-            } catch (InstantiableException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    public static int comparePlugins(PluginInfo<?> p0, PluginInfo<?> p1) {
-        return -Double.compare(p0.getPriority(), p1.getPriority());
     }
 
     /**
@@ -80,6 +55,7 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
         plotBuilderRegistry = new ACAQPlotBuilderRegistry();
         tableAnalyzerUIOperationRegistry = new ACAQTableAnalyzerUIOperationRegistry();
         imageJDataAdapterRegistry = new ACAQImageJAdapterRegistry();
+        uiImageJDatatypeAdapterRegistry = new ACAQUIImageJDatatypeAdapterRegistry();
         discover(pluginService);
     }
 
@@ -169,6 +145,11 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
         return plotBuilderRegistry;
     }
 
+    @Override
+    public ACAQUIImageJDatatypeAdapterRegistry getUIImageJDatatypeAdapterRegistry() {
+        return uiImageJDatatypeAdapterRegistry;
+    }
+
     public ACAQTableAnalyzerUIOperationRegistry getTableAnalyzerUIOperationRegistry() {
         return tableAnalyzerUIOperationRegistry;
     }
@@ -197,5 +178,31 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
 
     public ACAQDependency findExtensionById(String dependencyId) {
         return registeredExtensions.stream().filter(d -> Objects.equals(dependencyId, d.getDependencyId())).findFirst().orElse(null);
+    }
+
+    public static ACAQDefaultRegistry getInstance() {
+        return instance;
+    }
+
+    /**
+     * Instantiates the plugin service. This is done within {@link ACAQGUICommand}
+     *
+     * @param pluginService
+     */
+    public static void instantiate(PluginService pluginService) {
+        if (instance == null) {
+            try {
+                instance = (ACAQDefaultRegistry) pluginService.getPlugin(ACAQDefaultRegistry.class).createInstance();
+                instance.pluginService = pluginService;
+                instance.installEvents();
+                instance.discover(pluginService);
+            } catch (InstantiableException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public static int comparePlugins(PluginInfo<?> p0, PluginInfo<?> p1) {
+        return -Double.compare(p0.getPriority(), p1.getPriority());
     }
 }

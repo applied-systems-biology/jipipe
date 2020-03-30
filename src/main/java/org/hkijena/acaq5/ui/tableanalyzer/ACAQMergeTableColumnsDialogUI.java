@@ -54,34 +54,6 @@ public class ACAQMergeTableColumnsDialogUI extends JDialog {
         }
     }
 
-    private static JTable createColumnSelectionTable() {
-        JTable columnSelection = new JTable();
-        DefaultTableModel columnSelectionmodel = new DefaultTableModel() {
-            @Override
-            public Class<?> getColumnClass(int columnIndex) {
-                if (columnIndex == 0)
-                    return Boolean.class;
-                else if (columnIndex == 1)
-                    return String.class;
-                return super.getColumnClass(columnIndex);
-            }
-
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return column == 0;
-            }
-        };
-        columnSelectionmodel.setColumnCount(2);
-        columnSelection.setModel(columnSelectionmodel);
-        columnSelection.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-        columnSelection.getColumnModel().getColumn(0).setMaxWidth(20);
-        columnSelection.setShowGrid(false);
-        columnSelection.setOpaque(false);
-        columnSelection.setTableHeader(null);
-        columnSelection.setDefaultRenderer(String.class, new ColumnNameCellRenderer());
-        return columnSelection;
-    }
-
     public DocumentTabPane.DocumentTab getMergedTab() {
         if (tableSelection.getSelectedItem() instanceof DocumentTabPane.DocumentTab)
             return (DocumentTabPane.DocumentTab) tableSelection.getSelectedItem();
@@ -185,6 +157,34 @@ public class ACAQMergeTableColumnsDialogUI extends JDialog {
 
             setVisible(false);
         }
+    }
+
+    private static JTable createColumnSelectionTable() {
+        JTable columnSelection = new JTable();
+        DefaultTableModel columnSelectionmodel = new DefaultTableModel() {
+            @Override
+            public Class<?> getColumnClass(int columnIndex) {
+                if (columnIndex == 0)
+                    return Boolean.class;
+                else if (columnIndex == 1)
+                    return String.class;
+                return super.getColumnClass(columnIndex);
+            }
+
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 0;
+            }
+        };
+        columnSelectionmodel.setColumnCount(2);
+        columnSelection.setModel(columnSelectionmodel);
+        columnSelection.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+        columnSelection.getColumnModel().getColumn(0).setMaxWidth(20);
+        columnSelection.setShowGrid(false);
+        columnSelection.setOpaque(false);
+        columnSelection.setTableHeader(null);
+        columnSelection.setDefaultRenderer(String.class, new ColumnNameCellRenderer());
+        return columnSelection;
     }
 
     private static class ColumnNameCellRenderer extends JLabel implements TableCellRenderer {

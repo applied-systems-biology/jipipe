@@ -25,6 +25,36 @@ public class ACAQJavaTraitDeclaration extends ACAQMutableTraitDeclaration {
         setHidden(getIsHidden(klass));
     }
 
+    @Override
+    public ACAQTrait newInstance() {
+        try {
+            return getTraitClass().getConstructor(ACAQTraitDeclaration.class).newInstance(this);
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public ACAQTrait newInstance(String value) {
+        if (!isDiscriminator())
+            return newInstance();
+        try {
+            return getTraitClass().getConstructor(ACAQTraitDeclaration.class, String.class).newInstance(this, value);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Set<ACAQDependency> getDependencies() {
+        return Collections.emptySet();
+    }
+
+    @Override
+    public String toString() {
+        return "Trait type: " + getId();
+    }
+
     /**
      * Returns the name of a trait
      *
@@ -79,35 +109,5 @@ public class ACAQJavaTraitDeclaration extends ACAQMutableTraitDeclaration {
      */
     static boolean getIsHidden(Class<? extends ACAQTrait> klass) {
         return klass.getAnnotationsByType(ACAQHidden.class).length > 0;
-    }
-
-    @Override
-    public ACAQTrait newInstance() {
-        try {
-            return getTraitClass().getConstructor(ACAQTraitDeclaration.class).newInstance(this);
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public ACAQTrait newInstance(String value) {
-        if (!isDiscriminator())
-            return newInstance();
-        try {
-            return getTraitClass().getConstructor(ACAQTraitDeclaration.class, String.class).newInstance(this, value);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public Set<ACAQDependency> getDependencies() {
-        return Collections.emptySet();
-    }
-
-    @Override
-    public String toString() {
-        return "Trait type: " + getId();
     }
 }

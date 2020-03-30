@@ -19,77 +19,6 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
     private String holderDescription;
     private ACAQParameterVisibility visibility = ACAQParameterVisibility.TransitiveVisible;
 
-    /**
-     * Extracts parameters from an object
-     *
-     * @param parameterHolder
-     * @return
-     */
-    public static Map<String, ACAQParameterAccess> getReflectionParameters(ACAQParameterHolder parameterHolder) {
-        Map<String, ACAQParameterAccess> result = new HashMap<>();
-        for (Method method : parameterHolder.getClass().getMethods()) {
-            ACAQParameter[] parameterAnnotations = method.getAnnotationsByType(ACAQParameter.class);
-            if (parameterAnnotations.length > 0) {
-                ACAQParameter parameterAnnotation = parameterAnnotations[0];
-                ACAQReflectionParameterAccess access = (ACAQReflectionParameterAccess) result.putIfAbsent(parameterAnnotation.value(), new ACAQReflectionParameterAccess());
-                if (access == null)
-                    access = (ACAQReflectionParameterAccess) result.get(parameterAnnotation.value());
-                access.parameterHolder = parameterHolder;
-                access.visibility = access.visibility.intersectWith(parameterAnnotation.visibility());
-                if (method.getParameters().length == 1) {
-                    // Is a setter
-                    access.setter = method;
-                    access.key = parameterAnnotation.value();
-
-                    ACAQDocumentation[] documentations = method.getAnnotationsByType(ACAQDocumentation.class);
-                    if (documentations.length > 0)
-                        access.documentation = documentations[0];
-                } else {
-                    // Is a getter
-                    access.getter = method;
-                    access.key = parameterAnnotation.value();
-
-                    ACAQDocumentation[] documentations = method.getAnnotationsByType(ACAQDocumentation.class);
-                    if (documentations.length > 0)
-                        access.documentation = documentations[0];
-                }
-            }
-
-            ACAQSubParameters[] subAlgorithms = method.getAnnotationsByType(ACAQSubParameters.class);
-            if (subAlgorithms.length > 0) {
-                try {
-                    ACAQSubParameters subAlgorithmAnnotation = subAlgorithms[0];
-                    ACAQParameterHolder subAlgorithm = (ACAQParameterHolder) method.invoke(parameterHolder);
-                    String subAlgorithmName = null;
-                    String subAlgorithmDescription = null;
-
-                    ACAQDocumentation[] documentations = method.getAnnotationsByType(ACAQDocumentation.class);
-                    if (documentations.length > 0) {
-                        subAlgorithmName = documentations[0].name();
-                        subAlgorithmDescription = documentations[0].description();
-                    }
-
-                    for (Map.Entry<String, ACAQParameterAccess> kv : ACAQParameterAccess.getParameters(subAlgorithm).entrySet()) {
-                        ACAQParameterAccess subParameter = kv.getValue();
-                        if (subParameter.getParameterHolder() == subAlgorithm) {
-                            if (subParameter instanceof ACAQMutableParameterAccess) {
-                                ((ACAQMutableParameterAccess) subParameter).setHolderName(subAlgorithmName);
-                                ((ACAQMutableParameterAccess) subParameter).setHolderDescription(subAlgorithmDescription);
-                            } else if (subParameter instanceof ACAQReflectionParameterAccess) {
-                                ((ACAQReflectionParameterAccess) subParameter).setHolderName(subAlgorithmName);
-                                ((ACAQReflectionParameterAccess) subParameter).setHolderDescription(subAlgorithmDescription);
-                            }
-                        }
-                        result.put(subAlgorithmAnnotation.value() + "/" + kv.getKey(), subParameter);
-                    }
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        return result;
-    }
-
     @Override
     public String getKey() {
         return key;
@@ -175,5 +104,76 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
 
     public void setHolderDescription(String holderDescription) {
         this.holderDescription = holderDescription;
+    }
+
+    /**
+     * Extracts parameters from an object
+     *
+     * @param parameterHolder
+     * @return
+     */
+    public static Map<String, ACAQParameterAccess> getReflectionParameters(ACAQParameterHolder parameterHolder) {
+        Map<String, ACAQParameterAccess> result = new HashMap<>();
+        for (Method method : parameterHolder.getClass().getMethods()) {
+            ACAQParameter[] parameterAnnotations = method.getAnnotationsByType(ACAQParameter.class);
+            if (parameterAnnotations.length > 0) {
+                ACAQParameter parameterAnnotation = parameterAnnotations[0];
+                ACAQReflectionParameterAccess access = (ACAQReflectionParameterAccess) result.putIfAbsent(parameterAnnotation.value(), new ACAQReflectionParameterAccess());
+                if (access == null)
+                    access = (ACAQReflectionParameterAccess) result.get(parameterAnnotation.value());
+                access.parameterHolder = parameterHolder;
+                access.visibility = access.visibility.intersectWith(parameterAnnotation.visibility());
+                if (method.getParameters().length == 1) {
+                    // Is a setter
+                    access.setter = method;
+                    access.key = parameterAnnotation.value();
+
+                    ACAQDocumentation[] documentations = method.getAnnotationsByType(ACAQDocumentation.class);
+                    if (documentations.length > 0)
+                        access.documentation = documentations[0];
+                } else {
+                    // Is a getter
+                    access.getter = method;
+                    access.key = parameterAnnotation.value();
+
+                    ACAQDocumentation[] documentations = method.getAnnotationsByType(ACAQDocumentation.class);
+                    if (documentations.length > 0)
+                        access.documentation = documentations[0];
+                }
+            }
+
+            ACAQSubParameters[] subAlgorithms = method.getAnnotationsByType(ACAQSubParameters.class);
+            if (subAlgorithms.length > 0) {
+                try {
+                    ACAQSubParameters subAlgorithmAnnotation = subAlgorithms[0];
+                    ACAQParameterHolder subAlgorithm = (ACAQParameterHolder) method.invoke(parameterHolder);
+                    String subAlgorithmName = null;
+                    String subAlgorithmDescription = null;
+
+                    ACAQDocumentation[] documentations = method.getAnnotationsByType(ACAQDocumentation.class);
+                    if (documentations.length > 0) {
+                        subAlgorithmName = documentations[0].name();
+                        subAlgorithmDescription = documentations[0].description();
+                    }
+
+                    for (Map.Entry<String, ACAQParameterAccess> kv : ACAQParameterAccess.getParameters(subAlgorithm).entrySet()) {
+                        ACAQParameterAccess subParameter = kv.getValue();
+                        if (subParameter.getParameterHolder() == subAlgorithm) {
+                            if (subParameter instanceof ACAQMutableParameterAccess) {
+                                ((ACAQMutableParameterAccess) subParameter).setHolderName(subAlgorithmName);
+                                ((ACAQMutableParameterAccess) subParameter).setHolderDescription(subAlgorithmDescription);
+                            } else if (subParameter instanceof ACAQReflectionParameterAccess) {
+                                ((ACAQReflectionParameterAccess) subParameter).setHolderName(subAlgorithmName);
+                                ((ACAQReflectionParameterAccess) subParameter).setHolderDescription(subAlgorithmDescription);
+                            }
+                        }
+                        result.put(subAlgorithmAnnotation.value() + "/" + kv.getKey(), subParameter);
+                    }
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return result;
     }
 }

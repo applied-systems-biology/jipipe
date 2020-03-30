@@ -7,28 +7,6 @@ import java.util.Map;
 public interface ACAQParameterAccess {
 
     /**
-     * Finds all parameters of the provided object
-     * This includes dynamic parameters
-     *
-     * @param parameterHolder
-     * @return
-     */
-    static Map<String, ACAQParameterAccess> getParameters(ACAQParameterHolder parameterHolder) {
-        Map<String, ACAQParameterAccess> result = new HashMap<>();
-        if (parameterHolder instanceof ACAQCustomParameterHolder) {
-            for (Map.Entry<String, ACAQParameterAccess> entry : ((ACAQCustomParameterHolder) parameterHolder).getCustomParameters().entrySet()) {
-                result.put(entry.getKey(), entry.getValue());
-            }
-        } else {
-            for (Map.Entry<String, ACAQParameterAccess> entry : ACAQReflectionParameterAccess.getReflectionParameters(parameterHolder).entrySet()) {
-                result.put(entry.getKey(), entry.getValue());
-            }
-        }
-
-        return result;
-    }
-
-    /**
      * Returns the unique ID of this parameter
      *
      * @return
@@ -123,4 +101,26 @@ public interface ACAQParameterAccess {
      * @param description
      */
     void setHolderDescription(String description);
+
+    /**
+     * Finds all parameters of the provided object
+     * This includes dynamic parameters
+     *
+     * @param parameterHolder
+     * @return
+     */
+    static Map<String, ACAQParameterAccess> getParameters(ACAQParameterHolder parameterHolder) {
+        Map<String, ACAQParameterAccess> result = new HashMap<>();
+        if (parameterHolder instanceof ACAQCustomParameterHolder) {
+            for (Map.Entry<String, ACAQParameterAccess> entry : ((ACAQCustomParameterHolder) parameterHolder).getCustomParameters().entrySet()) {
+                result.put(entry.getKey(), entry.getValue());
+            }
+        } else {
+            for (Map.Entry<String, ACAQParameterAccess> entry : ACAQReflectionParameterAccess.getReflectionParameters(parameterHolder).entrySet()) {
+                result.put(entry.getKey(), entry.getValue());
+            }
+        }
+
+        return result;
+    }
 }

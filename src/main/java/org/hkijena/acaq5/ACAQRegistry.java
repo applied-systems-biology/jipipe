@@ -6,10 +6,7 @@ import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.api.registries.ACAQImageJAdapterRegistry;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
-import org.hkijena.acaq5.ui.registries.ACAQPlotBuilderRegistry;
-import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
-import org.hkijena.acaq5.ui.registries.ACAQUIParametertypeRegistry;
-import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
+import org.hkijena.acaq5.ui.registries.*;
 import org.scijava.service.Service;
 
 import java.util.List;
@@ -35,4 +32,6 @@ public interface ACAQRegistry extends Service, ACAQValidatable {
     ACAQUITraitRegistry getUITraitRegistry();
 
     ACAQPlotBuilderRegistry getPlotBuilderRegistry();
+
+    ACAQUIImageJDatatypeAdapterRegistry getUIImageJDatatypeAdapterRegistry();
 }

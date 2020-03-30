@@ -13,6 +13,7 @@ import org.hkijena.acaq5.api.registries.ACAQJavaAlgorithmRegistrationTask;
 import org.hkijena.acaq5.api.traits.ACAQJavaTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
+import org.hkijena.acaq5.ui.compat.ImageJDatatypeImporterUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.plotbuilder.ACAQPlot;
 import org.hkijena.acaq5.ui.plotbuilder.ACAQPlotSettingsUI;
@@ -210,9 +211,11 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
      * Registers an adapter between ImageJ and ACAQ5 data types
      *
      * @param adapter
+     * @param importerUIClass User interface class used for importing ImageJ data
      */
-    public void registerImageJDataAdapter(ImageJDatatypeAdapter adapter) {
+    public void registerImageJDataAdapter(ImageJDatatypeAdapter adapter, Class<? extends ImageJDatatypeImporterUI> importerUIClass) {
         registry.getImageJDataAdapterRegistry().register(adapter);
+        registry.getUIImageJDatatypeAdapterRegistry().registerImporterFor(adapter.getImageJDatatype(), importerUIClass);
     }
 
     @Override

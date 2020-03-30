@@ -50,20 +50,6 @@ public class AddAlgorithmSlotPanel extends JPanel {
         }
     }
 
-    public static void showDialog(Component parent, ACAQAlgorithm algorithm, ACAQDataSlot.SlotType slotType) {
-        JDialog dialog = new JDialog();
-        AddAlgorithmSlotPanel panel = new AddAlgorithmSlotPanel(algorithm, slotType);
-        panel.setDialog(dialog);
-        dialog.setContentPane(panel);
-        dialog.setTitle("Add slot");
-        dialog.setModal(true);
-        dialog.pack();
-        dialog.setSize(new Dimension(500, 600));
-        dialog.setLocationRelativeTo(parent);
-        UIUtils.addEscapeListener(dialog);
-        dialog.setVisible(true);
-    }
-
     private void setInitialName() {
         String initialValue = slotType + " data";
 
@@ -325,5 +311,19 @@ public class AddAlgorithmSlotPanel extends JPanel {
 
     public void setDialog(JDialog dialog) {
         this.dialog = dialog;
+    }
+
+    public static void showDialog(Component parent, ACAQAlgorithm algorithm, ACAQDataSlot.SlotType slotType) {
+        JDialog dialog = new JDialog();
+        AddAlgorithmSlotPanel panel = new AddAlgorithmSlotPanel(algorithm, slotType);
+        panel.setDialog(dialog);
+        dialog.setContentPane(panel);
+        dialog.setTitle("Add slot");
+        dialog.setModal(true);
+        dialog.pack();
+        dialog.setSize(new Dimension(500, 600));
+        dialog.setLocationRelativeTo(parent);
+        UIUtils.addEscapeListener(dialog);
+        dialog.setVisible(true);
     }
 }

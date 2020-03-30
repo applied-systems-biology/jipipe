@@ -125,9 +125,9 @@ public class TooltipUtils {
         Set<ACAQTraitDeclaration> addedTraits = declaration.getSlotTraitConfiguration().getAddedTraits();
         Set<ACAQTraitDeclaration> removedTraits = declaration.getSlotTraitConfiguration().getRemovedTraits();
 
-        if(!preferredTraits.isEmpty() || !unwantedTraits.isEmpty())
+        if (!preferredTraits.isEmpty() || !unwantedTraits.isEmpty())
             insertOpposingTraitTableContent(builder, preferredTraits, "Good for", unwantedTraits, "Bad for");
-        if(!addedTraits.isEmpty() || !removedTraits.isEmpty())
+        if (!addedTraits.isEmpty() || !removedTraits.isEmpty())
             insertOpposingTraitTableContent(builder, addedTraits, "Adds", removedTraits, "Removes");
 
         builder.append("</table>");
@@ -194,13 +194,13 @@ public class TooltipUtils {
             builder.append("<tr>");
 
             builder.append("<td>");
-            if(i < leftTraits.size()) {
+            if (i < leftTraits.size()) {
                 ACAQTraitDeclaration declaration = leftIterator.next();
                 builder.append(StringUtils.createIconTextHTMLTableElement(declaration.getName(), ACAQUITraitRegistry.getInstance().getIconURLFor(declaration)));
             }
             builder.append("</td>");
             builder.append("<td>");
-            if(i < rightTraits.size()) {
+            if (i < rightTraits.size()) {
                 ACAQTraitDeclaration declaration = rightIterator.next();
                 builder.append(StringUtils.createIconTextHTMLTableElement(declaration.getName(), ACAQUITraitRegistry.getInstance().getIconURLFor(declaration)));
             }

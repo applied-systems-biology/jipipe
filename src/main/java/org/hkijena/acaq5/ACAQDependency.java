@@ -17,6 +17,28 @@ import java.util.Set;
  */
 @JsonDeserialize(as = ACAQMutableDependency.class)
 public interface ACAQDependency extends ACAQParameterHolder, ACAQValidatable {
+    @JsonGetter("metadata")
+    ACAQProjectMetadata getMetadata();
+
+    @Override
+    EventBus getEventBus();
+
+    @JsonGetter("id")
+    String getDependencyId();
+
+    @JsonGetter("version")
+    String getDependencyVersion();
+
+    /**
+     * Gets the location of the JAR/JSON that defined the dependency
+     *
+     * @return
+     */
+    Path getDependencyLocation();
+
+    @Override
+    void reportValidity(ACAQValidityReport report);
+
     /**
      * Exports the dependency to an HTML element (without the root tag)
      *
@@ -55,26 +77,4 @@ public interface ACAQDependency extends ACAQParameterHolder, ACAQValidatable {
         }
         return result;
     }
-
-    @JsonGetter("metadata")
-    ACAQProjectMetadata getMetadata();
-
-    @Override
-    EventBus getEventBus();
-
-    @JsonGetter("id")
-    String getDependencyId();
-
-    @JsonGetter("version")
-    String getDependencyVersion();
-
-    /**
-     * Gets the location of the JAR/JSON that defined the dependency
-     *
-     * @return
-     */
-    Path getDependencyLocation();
-
-    @Override
-    void reportValidity(ACAQValidityReport report);
 }

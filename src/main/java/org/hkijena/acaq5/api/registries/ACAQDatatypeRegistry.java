@@ -26,10 +26,6 @@ public class ACAQDatatypeRegistry {
 
     }
 
-    public static ACAQDatatypeRegistry getInstance() {
-        return ACAQDefaultRegistry.getInstance().getDatatypeRegistry();
-    }
-
     /**
      * Registers a data type
      *
@@ -171,5 +167,9 @@ public class ACAQDatatypeRegistry {
                 result.add(ACAQDataDeclaration.getInstance(entry.getValue()));
         }
         return result;
+    }
+
+    public static ACAQDatatypeRegistry getInstance() {
+        return ACAQDefaultRegistry.getInstance().getDatatypeRegistry();
     }
 }

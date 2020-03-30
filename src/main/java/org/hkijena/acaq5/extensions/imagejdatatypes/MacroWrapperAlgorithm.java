@@ -76,10 +76,6 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
         this.macroParameters.getEventBus().register(this);
     }
 
-    public static Class[] getCompatibleTypes() {
-        return ACAQImageJAdapterRegistry.getInstance().getSupportedACAQDataTypes().toArray(new Class[0]);
-    }
-
     @Override
     protected void runIteration(ACAQDataInterface dataInterface) {
         backupWindows();
@@ -280,6 +276,10 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
     @Subscribe
     public void onParameterStructureChanged(ParameterStructureChangedEvent event) {
         getEventBus().post(event);
+    }
+
+    public static Class[] getCompatibleTypes() {
+        return ACAQImageJAdapterRegistry.getInstance().getSupportedACAQDataTypes().toArray(new Class[0]);
     }
 }
 

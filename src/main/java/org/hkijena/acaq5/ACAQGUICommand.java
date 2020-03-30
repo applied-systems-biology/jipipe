@@ -59,12 +59,6 @@ public class ACAQGUICommand implements Command {
     @Parameter
     private Context context;
 
-    public static void main(final String... args) {
-        final ImageJ ij = new ImageJ();
-        ij.ui().showUI();
-        ij.command().run(ACAQGUICommand.class, true);
-    }
-
     @Override
     public void run() {
         ACAQDefaultRegistry.instantiate(pluginService);
@@ -114,5 +108,11 @@ public class ACAQGUICommand implements Command {
 
     public Context getContext() {
         return context;
+    }
+
+    public static void main(final String... args) {
+        final ImageJ ij = new ImageJ();
+        ij.ui().showUI();
+        ij.command().run(ACAQGUICommand.class, true);
     }
 }

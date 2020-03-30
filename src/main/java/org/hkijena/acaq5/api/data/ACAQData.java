@@ -20,6 +20,14 @@ import java.util.stream.Collectors;
 public interface ACAQData {
 
     /**
+     * Saves the data to a folder
+     *
+     * @param storageFilePath A folder that already exists
+     * @param name            A name reference that can be used to generate filename(s)
+     */
+    void saveTo(Path storageFilePath, String name);
+
+    /**
      * Returns the name of a data type
      *
      * @param klass
@@ -121,12 +129,4 @@ public interface ACAQData {
             throw new RuntimeException(e);
         }
     }
-
-    /**
-     * Saves the data to a folder
-     *
-     * @param storageFilePath A folder that already exists
-     * @param name            A name reference that can be used to generate filename(s)
-     */
-    void saveTo(Path storageFilePath, String name);
 }
