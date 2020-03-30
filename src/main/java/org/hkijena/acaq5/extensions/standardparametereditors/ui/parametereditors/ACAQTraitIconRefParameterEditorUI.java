@@ -17,25 +17,13 @@ import java.util.Set;
 
 public class ACAQTraitIconRefParameterEditorUI extends ACAQParameterEditorUI {
 
-    private JButton currentlyDisplayed;
     private static Set<String> availableTraitIcons;
+    private JButton currentlyDisplayed;
 
     public ACAQTraitIconRefParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
         super(context, parameterAccess);
         initialize();
         reload();
-    }
-
-    public static Set<String> getAvailableTraitIcons() {
-        if(availableTraitIcons == null) {
-            availableTraitIcons = new HashSet<>();
-            Set<String> rawIcons = ResourceUtils.walkInternalResourceFolder("icons/traits");
-            String basePath = ResourceUtils.getResourcePath("icons/traits/");
-            for (String rawIcon : rawIcons) {
-                availableTraitIcons.add(rawIcon.substring(basePath.length()));
-            }
-        }
-        return availableTraitIcons;
     }
 
     private void initialize() {
@@ -69,20 +57,30 @@ public class ACAQTraitIconRefParameterEditorUI extends ACAQParameterEditorUI {
     @Override
     public void reload() {
         ACAQTraitIconRef ref = getParameterAccess().get();
-        if(!StringUtils.isNullOrEmpty(ref.getIconName())) {
+        if (!StringUtils.isNullOrEmpty(ref.getIconName())) {
             URL resource = ResourceUtils.getPluginResource("icons/traits/" + ref.getIconName());
-            if(resource != null) {
+            if (resource != null) {
                 currentlyDisplayed.setText(ref.getIconName());
                 currentlyDisplayed.setIcon(new ImageIcon(resource));
-            }
-            else {
+            } else {
                 currentlyDisplayed.setText("<Invalid: " + ref.getIconName() + ">");
                 currentlyDisplayed.setIcon(UIUtils.getIconFromResources("traits/trait.png"));
             }
-        }
-        else {
+        } else {
             currentlyDisplayed.setText("<None selected>");
             currentlyDisplayed.setIcon(UIUtils.getIconFromResources("traits/trait.png"));
         }
+    }
+
+    public static Set<String> getAvailableTraitIcons() {
+        if (availableTraitIcons == null) {
+            availableTraitIcons = new HashSet<>();
+            Set<String> rawIcons = ResourceUtils.walkInternalResourceFolder("icons/traits");
+            String basePath = ResourceUtils.getResourcePath("icons/traits/");
+            for (String rawIcon : rawIcons) {
+                availableTraitIcons.add(rawIcon.substring(basePath.length()));
+            }
+        }
+        return availableTraitIcons;
     }
 }

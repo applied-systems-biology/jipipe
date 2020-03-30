@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.ui.components;
 
-import org.hkijena.acaq5.api.compat.AlgorithmDeclarationListCellRenderer;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTextField;
 
@@ -89,7 +88,7 @@ public class ACAQIconPickerDialog extends JDialog implements MouseListener {
         String[] searchStrings = getSearchStrings();
         for (String icon : availableIcons) {
             boolean matches = true;
-            if(searchStrings != null) {
+            if (searchStrings != null) {
                 for (String searchString : searchStrings) {
                     if (!icon.toLowerCase().contains(searchString)) {
                         matches = false;
@@ -97,7 +96,7 @@ public class ACAQIconPickerDialog extends JDialog implements MouseListener {
                     }
                 }
             }
-            if(matches) {
+            if (matches) {
                 model.addElement(icon);
             }
         }
@@ -120,7 +119,7 @@ public class ACAQIconPickerDialog extends JDialog implements MouseListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if(e.getClickCount() >= 2) {
+        if (e.getClickCount() >= 2) {
             setVisible(false);
         }
     }

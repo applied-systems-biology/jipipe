@@ -23,9 +23,9 @@ public class ACAQJsonTraitRegistrationTask implements ACAQTraitRegistrationTask 
     public void register() {
         declaration.updatedInheritedDeclarations();
         ACAQTraitRegistry.getInstance().register(declaration, source);
-        if(declaration.getTraitIcon() != null && !StringUtils.isNullOrEmpty(declaration.getTraitIcon().getIconName())) {
+        if (declaration.getTraitIcon() != null && !StringUtils.isNullOrEmpty(declaration.getTraitIcon().getIconName())) {
             URL resource = ResourceUtils.getPluginResource("icons/traits/" + declaration.getTraitIcon().getIconName());
-            if(resource != null) {
+            if (resource != null) {
                 ACAQUITraitRegistry.getInstance().registerIcon(declaration, resource);
             }
         }

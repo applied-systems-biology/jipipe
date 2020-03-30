@@ -11,54 +11,61 @@
   },
   "algorithms" : [ ],
   "annotations" : [ {
-    "id" : "project-condition",
-    "is-discriminator" : true,
-    "hidden" : false,
-    "name" : "Condition",
-    "description" : null,
-    "inherited-annotation-ids" : [ ]
-  }, {
-    "id" : "project-species",
-    "is-discriminator" : true,
-    "hidden" : false,
-    "name" : "Species",
-    "description" : null,
-    "inherited-annotation-ids" : [ ]
-  }, {
     "id" : "project-taxonomicunit",
     "is-discriminator" : true,
     "hidden" : false,
     "name" : "Taxonomic unit",
     "description" : null,
-    "inherited-annotation-ids" : [ ]
-  }, {
-    "id" : "project-strain",
-    "is-discriminator" : true,
-    "hidden" : false,
-    "name" : "Strain",
-    "description" : null,
-    "inherited-annotation-ids" : [ ]
-  }, {
-    "id" : "project-subject",
-    "is-discriminator" : true,
-    "hidden" : false,
-    "name" : "Subject",
-    "description" : null,
-    "inherited-annotation-ids" : [ ]
+    "inherited-annotation-ids" : [ ],
+    "icon" : "share-alt-purple.png"
   }, {
     "id" : "project-treatment",
     "is-discriminator" : true,
     "hidden" : false,
     "name" : "Treatment",
     "description" : null,
-    "inherited-annotation-ids" : [ ]
+    "inherited-annotation-ids" : [ ],
+    "icon" : "download-purple.png"
   }, {
     "id" : "project-sample",
     "is-discriminator" : true,
     "hidden" : false,
     "name" : "Sample",
     "description" : null,
-    "inherited-annotation-ids" : [ ]
+    "inherited-annotation-ids" : [ ],
+    "icon" : "flask-purple.png"
+  }, {
+    "id" : "project-strain",
+    "is-discriminator" : true,
+    "hidden" : false,
+    "name" : "Strain",
+    "description" : null,
+    "inherited-annotation-ids" : [ ],
+    "icon" : "biohazard-purple.png"
+  }, {
+    "id" : "project-species",
+    "is-discriminator" : true,
+    "hidden" : false,
+    "name" : "Species",
+    "description" : null,
+    "inherited-annotation-ids" : [ ],
+    "icon" : "leaf-purple.png"
+  }, {
+    "id" : "project-condition",
+    "is-discriminator" : true,
+    "hidden" : false,
+    "name" : "Condition",
+    "description" : null,
+    "inherited-annotation-ids" : [ ],
+    "icon" : "ruler-combined-purple.png"
+  }, {
+    "id" : "project-subject",
+    "is-discriminator" : true,
+    "hidden" : false,
+    "name" : "Subject",
+    "description" : null,
+    "inherited-annotation-ids" : [ ],
+    "icon" : "project-subject.png"
   } ],
   "acaq:project-type" : "json-extension",
   "dependencies" : [ ]

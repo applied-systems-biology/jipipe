@@ -11,96 +11,109 @@
   },
   "algorithms" : [ ],
   "annotations" : [ {
-    "id" : "bioobject-preparations-labeling-uniform",
-    "is-discriminator" : false,
-    "hidden" : false,
-    "name" : "Uniformly labeled objects",
-    "description" : "Objects are labled uniformly",
-    "inherited-annotation-ids" : [ "bioobject-preparations-labeling" ]
-  }, {
-    "id" : "bioobject-morphology",
-    "is-discriminator" : false,
-    "hidden" : true,
-    "name" : "Object Morphology",
-    "description" : "Information about the object morphology",
-    "inherited-annotation-ids" : [ "bioobject" ]
-  }, {
     "id" : "bioobject-preparations-labeling-unlabeled",
     "is-discriminator" : false,
     "hidden" : false,
     "name" : "Unlabeled objects",
     "description" : "Objects are unlabeled",
-    "inherited-annotation-ids" : [ "bioobject-preparations-labeling" ]
+    "inherited-annotation-ids" : [ "bioobject-preparations-labeling" ],
+    "icon" : "bioobject-unlabeled.png"
   }, {
-    "id" : "bioobject-morphology-round",
+    "id" : "bioobject-preparations-labeling-uniform",
     "is-discriminator" : false,
     "hidden" : false,
-    "name" : "Round objects",
-    "description" : "",
-    "inherited-annotation-ids" : [ "bioobject-morphology" ]
-  }, {
-    "id" : "bioobject-preparations",
-    "is-discriminator" : false,
-    "hidden" : true,
-    "name" : "Sample preparations",
-    "description" : "Information about object preparation",
-    "inherited-annotation-ids" : [ "bioobject" ]
-  }, {
-    "id" : "bioobject-count-cluster",
-    "is-discriminator" : false,
-    "hidden" : false,
-    "name" : "Clusters",
-    "description" : "A cluster of multiple objects that cannot be trivially separated",
-    "inherited-annotation-ids" : [ "bioobject-count" ]
-  }, {
-    "id" : "bioobject-morphology-filamentous",
-    "is-discriminator" : false,
-    "hidden" : false,
-    "name" : "Filamentous objects",
-    "description" : "Filamentous objects, e.g. worms",
-    "inherited-annotation-ids" : [ "bioobject-morphology" ]
-  }, {
-    "id" : "bioobject-count",
-    "is-discriminator" : false,
-    "hidden" : false,
-    "name" : "Object count",
-    "description" : null,
-    "inherited-annotation-ids" : [ "bioobject" ]
-  }, {
-    "id" : "bioobject-morphology-irregular",
-    "is-discriminator" : false,
-    "hidden" : false,
-    "name" : "Irregular objects",
-    "description" : "Objects without a defined form",
-    "inherited-annotation-ids" : [ "bioobject-morphology" ]
-  }, {
-    "id" : "bioobject",
-    "is-discriminator" : false,
-    "hidden" : false,
-    "name" : "Biological object",
-    "description" : "A biological objects",
-    "inherited-annotation-ids" : [ ]
+    "name" : "Uniformly labeled objects",
+    "description" : "Objects are labled uniformly",
+    "inherited-annotation-ids" : [ "bioobject-preparations-labeling" ],
+    "icon" : "bioobject-labeled-uniform.png"
   }, {
     "id" : "bioobject-count-single",
     "is-discriminator" : false,
     "hidden" : false,
     "name" : "Single objects",
     "description" : "Each data set only contains one object",
-    "inherited-annotation-ids" : [ "bioobject-count" ]
+    "inherited-annotation-ids" : [ "bioobject-count" ],
+    "icon" : "bioobject.png"
+  }, {
+    "id" : "bioobject-count",
+    "is-discriminator" : false,
+    "hidden" : false,
+    "name" : "Object count",
+    "description" : null,
+    "inherited-annotation-ids" : [ "bioobject" ],
+    "icon" : "bioobject.png"
+  }, {
+    "id" : "bioobject-morphology",
+    "is-discriminator" : false,
+    "hidden" : true,
+    "name" : "Object Morphology",
+    "description" : "Information about the object morphology",
+    "inherited-annotation-ids" : [ "bioobject" ],
+    "icon" : "bioobject.png"
+  }, {
+    "id" : "bioobject-morphology-round",
+    "is-discriminator" : false,
+    "hidden" : false,
+    "name" : "Round objects",
+    "description" : "",
+    "inherited-annotation-ids" : [ "bioobject-morphology" ],
+    "icon" : "bioobject-round.png"
+  }, {
+    "id" : "bioobject",
+    "is-discriminator" : false,
+    "hidden" : false,
+    "name" : "Biological object",
+    "description" : "A biological objects",
+    "inherited-annotation-ids" : [ ],
+    "icon" : "bioobject.png"
   }, {
     "id" : "bioobject-preparations-labeling-membrane",
     "is-discriminator" : false,
     "hidden" : false,
     "name" : "Membrane-labeled objects",
     "description" : "Object membranes are labeled",
-    "inherited-annotation-ids" : [ "bioobject-preparations-labeling" ]
+    "inherited-annotation-ids" : [ "bioobject-preparations-labeling" ],
+    "icon" : "bioobject-labeled-membrane.png"
+  }, {
+    "id" : "bioobject-preparations",
+    "is-discriminator" : false,
+    "hidden" : true,
+    "name" : "Sample preparations",
+    "description" : "Information about object preparation",
+    "inherited-annotation-ids" : [ "bioobject" ],
+    "icon" : "bioobject.png"
   }, {
     "id" : "bioobject-preparations-labeling",
     "is-discriminator" : false,
     "hidden" : true,
     "name" : "Object labeling",
     "description" : "Information about how the objects are labeled",
-    "inherited-annotation-ids" : [ "bioobject-preparations" ]
+    "inherited-annotation-ids" : [ "bioobject-preparations" ],
+    "icon" : "bioobject-labeled.png"
+  }, {
+    "id" : "bioobject-count-cluster",
+    "is-discriminator" : false,
+    "hidden" : false,
+    "name" : "Clusters",
+    "description" : "A cluster of multiple objects that cannot be trivially separated",
+    "inherited-annotation-ids" : [ "bioobject-count" ],
+    "icon" : "bioobject-cluster.png"
+  }, {
+    "id" : "bioobject-morphology-filamentous",
+    "is-discriminator" : false,
+    "hidden" : false,
+    "name" : "Filamentous objects",
+    "description" : "Filamentous objects, e.g. worms",
+    "inherited-annotation-ids" : [ "bioobject-morphology" ],
+    "icon" : "bioobject-filamentous.png"
+  }, {
+    "id" : "bioobject-morphology-irregular",
+    "is-discriminator" : false,
+    "hidden" : false,
+    "name" : "Irregular objects",
+    "description" : "Objects without a defined form",
+    "inherited-annotation-ids" : [ "bioobject-morphology" ],
+    "icon" : "bioobject.png"
   } ],
   "acaq:project-type" : "json-extension",
   "dependencies" : [ ]

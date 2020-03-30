@@ -101,7 +101,7 @@ public class ACAQJsonTraitDeclaration extends ACAQMutableTraitDeclaration implem
     }
 
     @JsonGetter("icon")
-    @ACAQDocumentation(name="Icon", description = "Icon of this annotation type")
+    @ACAQDocumentation(name = "Icon", description = "Icon of this annotation type")
     @ACAQParameter("icon")
     public ACAQTraitIconRef getTraitIcon() {
         return traitIcon;
