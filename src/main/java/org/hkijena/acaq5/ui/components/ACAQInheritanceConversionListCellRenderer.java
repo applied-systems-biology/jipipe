@@ -8,8 +8,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Map;
 
+/**
+ * Renders inheritance conversion entries
+ */
 public class ACAQInheritanceConversionListCellRenderer extends JLabel implements ListCellRenderer<Map.Entry<ACAQDataDeclaration, ACAQDataDeclaration>> {
 
+    /**
+     * Creates a new renderer
+     */
     public ACAQInheritanceConversionListCellRenderer() {
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));

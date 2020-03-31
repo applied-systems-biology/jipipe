@@ -8,9 +8,15 @@ import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
+/**
+ * Renders the column header in merged {@link org.hkijena.acaq5.api.data.ACAQExportedDataTable} instances
+ */
 public class ACAQMergedDataSlotTableColumnHeaderRenderer implements TableCellRenderer {
     private ACAQMergedExportedDataTable dataTable;
 
+    /**
+     * @param dataTable The table
+     */
     public ACAQMergedDataSlotTableColumnHeaderRenderer(ACAQMergedExportedDataTable dataTable) {
         this.dataTable = dataTable;
     }

@@ -8,8 +8,14 @@ import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Renders a {@link ACAQTestbenchSnapshot}
+ */
 public class ACAQDataSlotBackupListCellRenderer extends JLabel implements ListCellRenderer<ACAQTestbenchSnapshot> {
 
+    /**
+     * Creates a new renderer
+     */
     public ACAQDataSlotBackupListCellRenderer() {
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));

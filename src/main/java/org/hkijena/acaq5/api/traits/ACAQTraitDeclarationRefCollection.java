@@ -8,9 +8,15 @@ import java.util.Collection;
  */
 public class ACAQTraitDeclarationRefCollection extends ArrayList<ACAQTraitDeclarationRef> {
 
+    /**
+     * Creates a new instance
+     */
     public ACAQTraitDeclarationRefCollection() {
     }
 
+    /**
+     * @param c the collection
+     */
     public ACAQTraitDeclarationRefCollection(Collection<? extends ACAQTraitDeclarationRef> c) {
         super(c);
     }

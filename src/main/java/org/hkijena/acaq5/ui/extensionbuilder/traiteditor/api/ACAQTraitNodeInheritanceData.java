@@ -6,6 +6,9 @@ import org.hkijena.acaq5.api.data.ACAQData;
 
 import java.nio.file.Path;
 
+/**
+ * Structural data for trait inheritance
+ */
 @ACAQDocumentation(name = "Inheritance", description = "An inheritance between annotation types")
 @ACAQHidden
 public class ACAQTraitNodeInheritanceData implements ACAQData {

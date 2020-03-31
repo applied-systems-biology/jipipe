@@ -33,6 +33,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * A JSON-serializable extension
+ */
 @JsonDeserialize(as = ACAQJsonExtension.class)
 public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
     private EventBus eventBus = new EventBus();
@@ -45,6 +48,9 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
     private Set<GraphWrapperAlgorithmDeclaration> algorithmDeclarations = new HashSet<>();
     private Set<ACAQJsonTraitDeclaration> traitDeclarations = new HashSet<>();
 
+    /**
+     * Creates a new instance
+     */
     public ACAQJsonExtension() {
     }
 
@@ -56,6 +62,10 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
         return metadata;
     }
 
+    /**
+     * Sets metadata
+     * @param metadata Metadata
+     */
     @JsonSetter("metadata")
     public void setMetadata(ACAQProjectMetadata metadata) {
         this.metadata = metadata;
@@ -75,6 +85,10 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
         return id;
     }
 
+    /**
+     * Sets the ID
+     * @param id ID
+     */
     @JsonSetter("id")
     @ACAQParameter("id")
     public void setId(String id) {
@@ -94,17 +108,27 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
         return jsonFilePath;
     }
 
+    /**
+     * Sets the version
+     * @param version Version
+     */
     @JsonSetter("version")
     @ACAQParameter("version")
     public void setVersion(String version) {
         this.version = version;
     }
 
+    /**
+     * @return The project type
+     */
     @JsonGetter("acaq:project-type")
     public String getProjectType() {
         return "json-extension";
     }
 
+    /**
+     * @return The dependencies of this extension
+     */
     @JsonGetter("dependencies")
     public Set<ACAQDependency> getDependencies() {
         Set<ACAQDependency> result = new HashSet<>();
@@ -121,18 +145,31 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
         return result;
     }
 
+    /**
+     * @return The JSON file path of this extension. Can return null.
+     */
     public Path getJsonFilePath() {
         return jsonFilePath;
     }
 
+    /**
+     * @return The registry instance
+     */
     public ACAQDefaultRegistry getRegistry() {
         return registry;
     }
 
+    /**
+     * Sets the registry instance
+     * @param registry The registry
+     */
     public void setRegistry(ACAQDefaultRegistry registry) {
         this.registry = registry;
     }
 
+    /**
+     * Registers the content
+     */
     public void register() {
         for (ACAQJsonTraitDeclaration declaration : traitDeclarations) {
             // There can be internal dependencies; we require a scheduler task
@@ -144,36 +181,64 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
         }
     }
 
+    /**
+     * Saves the extension
+     * @param savePath The save path
+     * @throws IOException Triggered by {@link com.fasterxml.jackson.databind.ObjectMapper}
+     */
     public void saveProject(Path savePath) throws IOException {
         JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(savePath.toFile(), this);
         jsonFilePath = savePath;
     }
 
+    /**
+     * Adds a new algorithm of specified type
+     * @param algorithmDeclaration The algorithm type
+     */
     public void addAlgorithm(GraphWrapperAlgorithmDeclaration algorithmDeclaration) {
         algorithmDeclarations.add(algorithmDeclaration);
         eventBus.post(new ExtensionContentAddedEvent(this, algorithmDeclaration));
     }
 
+    /**
+     * Adds a new trait fo specified type
+     * @param traitDeclaration The trait type
+     */
     public void addTrait(ACAQJsonTraitDeclaration traitDeclaration) {
         traitDeclarations.add(traitDeclaration);
         eventBus.post(new ExtensionContentAddedEvent(this, traitDeclaration));
     }
 
+    /**
+     * @return Algorithm declarations
+     */
     @JsonGetter("algorithms")
     public Set<GraphWrapperAlgorithmDeclaration> getAlgorithmDeclarations() {
         return Collections.unmodifiableSet(algorithmDeclarations);
     }
 
+    /**
+     * Sets algorithm declarations
+     * @param algorithmDeclarations Declarations
+     */
     @JsonSetter("algorithms")
     private void setAlgorithmDeclarations(Set<GraphWrapperAlgorithmDeclaration> algorithmDeclarations) {
         this.algorithmDeclarations = algorithmDeclarations;
     }
 
+    /**
+     * Gets trait types
+     * @return Trait types
+     */
     @JsonGetter("annotations")
     public Set<ACAQJsonTraitDeclaration> getTraitDeclarations() {
         return Collections.unmodifiableSet(traitDeclarations);
     }
 
+    /**
+     * Sets trait types
+     * @param traitDeclarations Trait types
+     */
     @JsonSetter("annotations")
     private void setTraitDeclarations(Set<ACAQJsonTraitDeclaration> traitDeclarations) {
         this.traitDeclarations = traitDeclarations;
@@ -222,18 +287,31 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
         }
     }
 
+    /**
+     * Removes an algorithm
+     * @param declaration Algorithm type
+     */
     public void removeAlgorithm(GraphWrapperAlgorithmDeclaration declaration) {
         if (algorithmDeclarations.remove(declaration)) {
             eventBus.post(new ExtensionContentRemovedEvent(this, declaration));
         }
     }
 
+    /**
+     * Removes a trait type
+     * @param declaration Trait type
+     */
     public void removeAnnotation(ACAQJsonTraitDeclaration declaration) {
         if (traitDeclarations.remove(declaration)) {
             eventBus.post(new ExtensionContentRemovedEvent(this, declaration));
         }
     }
 
+    /**
+     * Loads a {@link ACAQJsonExtension} from JSON
+     * @param jsonData JSON data
+     * @return Loaded instance
+     */
     public static ACAQJsonExtension loadProject(JsonNode jsonData) {
         try {
             return JsonUtils.getObjectMapper().readerFor(ACAQJsonExtension.class).readValue(jsonData);

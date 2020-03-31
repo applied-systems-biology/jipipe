@@ -20,12 +20,18 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Registry for data types
+ */
 public class ACAQUIDatatypeRegistry {
     private ACAQResultDataSlotCellUI defaultResultTableRowUI = new ACAQDefaultResultDataSlotCellUI();
     private Map<Class<? extends ACAQData>, URL> icons = new HashMap<>();
     private Map<Class<? extends ACAQData>, Class<? extends ACAQResultDataSlotRowUI>> resultUIs = new HashMap<>();
     private Map<Class<? extends ACAQData>, ACAQResultDataSlotCellUI> resultTableCellUIs = new HashMap<>();
 
+    /**
+     * New registry
+     */
     public ACAQUIDatatypeRegistry() {
 
     }
@@ -33,8 +39,8 @@ public class ACAQUIDatatypeRegistry {
     /**
      * Registers a custom icon for a datatype
      *
-     * @param klass
-     * @param resourcePath
+     * @param klass data class
+     * @param resourcePath icon resource
      */
     public void registerIcon(Class<? extends ACAQData> klass, URL resourcePath) {
         icons.put(klass, resourcePath);
@@ -43,8 +49,8 @@ public class ACAQUIDatatypeRegistry {
     /**
      * Registers a custom UI for a result data slot
      *
-     * @param klass
-     * @param uiClass
+     * @param klass data class
+     * @param uiClass slot ui
      */
     public void registerResultSlotUI(Class<? extends ACAQData> klass, Class<? extends ACAQResultDataSlotRowUI> uiClass) {
         resultUIs.put(klass, uiClass);
@@ -53,8 +59,8 @@ public class ACAQUIDatatypeRegistry {
     /**
      * Registers a custom renderer for the data displayed in the dataslot result table
      *
-     * @param klass
-     * @param renderer
+     * @param klass data class
+     * @param renderer cell renderer
      */
     public void registerResultTableCellUI(Class<? extends ACAQData> klass, ACAQResultDataSlotCellUI renderer) {
         resultTableCellUIs.put(klass, renderer);
@@ -63,8 +69,8 @@ public class ACAQUIDatatypeRegistry {
     /**
      * Returns the icon for a datatype
      *
-     * @param klass
-     * @return
+     * @param klass data class
+     * @return icon instance
      */
     public ImageIcon getIconFor(Class<? extends ACAQData> klass) {
         URL uri = icons.getOrDefault(klass, ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
@@ -74,8 +80,10 @@ public class ACAQUIDatatypeRegistry {
     /**
      * Generates a UI for a result data slot
      *
-     * @param slot
-     * @return
+     * @param workbenchUI workbench UI
+     * @param slot data slot
+     * @param row table row
+     * @return slot UI
      */
     public ACAQResultDataSlotRowUI getUIForResultSlot(ACAQProjectUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
         Class<? extends ACAQResultDataSlotRowUI> uiClass = resultUIs.getOrDefault(slot.getAcceptedDataType(), null);
@@ -94,13 +102,18 @@ public class ACAQUIDatatypeRegistry {
     /**
      * Returns a cell renderer for dataslot result table
      *
-     * @param klass
-     * @return
+     * @param klass data class
+     * @return cell renderer
      */
     public ACAQResultDataSlotCellUI getCellRendererFor(Class<? extends ACAQData> klass) {
         return resultTableCellUIs.getOrDefault(klass, defaultResultTableRowUI);
     }
 
+    /**
+     * Gets an icon for each algorithm category
+     * @param category algorithm category
+     * @return icon for the category
+     */
     public URL getIconURLFor(ACAQAlgorithmCategory category) {
         switch (category) {
             case DataSource:
@@ -122,10 +135,18 @@ public class ACAQUIDatatypeRegistry {
         }
     }
 
+    /**
+     * @param klass data class
+     * @return icon resource
+     */
     public URL getIconURLFor(Class<? extends ACAQData> klass) {
         return icons.getOrDefault(klass, ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
     }
 
+    /**
+     * @param declaration data declaration
+     * @return icon resource
+     */
     public URL getIconURLFor(ACAQDataDeclaration declaration) {
         return getIconURLFor(declaration.getDataClass());
     }

@@ -17,6 +17,11 @@ public abstract class ACAQParameterEditorUI extends JPanel implements Contextual
     private Context context;
     private ACAQParameterAccess parameterAccess;
 
+    /**
+     * Creates new instance
+     * @param context SciJava context
+     * @param parameterAccess Parameter
+     */
     public ACAQParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
         this.context = context;
         this.parameterAccess = parameterAccess;
@@ -26,7 +31,7 @@ public abstract class ACAQParameterEditorUI extends JPanel implements Contextual
     /**
      * Gets the object that holds the parameter
      *
-     * @return
+     * @return object that holds the parameter
      */
     public ACAQParameterHolder getParameterHolder() {
         return parameterAccess.getParameterHolder();
@@ -35,7 +40,7 @@ public abstract class ACAQParameterEditorUI extends JPanel implements Contextual
     /**
      * Gets the parameter accessor
      *
-     * @return
+     * @return parameter accessor
      */
     public ACAQParameterAccess getParameterAccess() {
         return parameterAccess;
@@ -45,7 +50,7 @@ public abstract class ACAQParameterEditorUI extends JPanel implements Contextual
      * If true, the {@link org.hkijena.acaq5.ui.components.ACAQParameterAccessUI} will display a label with the parameter
      * name next to this UI.
      *
-     * @return
+     * @return if label should be shown
      */
     public abstract boolean isUILabelEnabled();
 
@@ -57,7 +62,7 @@ public abstract class ACAQParameterEditorUI extends JPanel implements Contextual
     /**
      * Listens for changes in parameters
      *
-     * @param event
+     * @param event Generated event
      */
     @Subscribe
     public void onParameterChanged(ParameterChangedEvent event) {

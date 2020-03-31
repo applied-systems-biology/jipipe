@@ -14,19 +14,33 @@ package org.hkijena.acaq5.ui.plotbuilder;
 
 import java.util.function.Function;
 
+/**
+ * Generates data
+ * @param <T> Generated data type
+ */
 public class ACAQPlotSeriesGenerator<T> {
     private String name;
     private Function<Integer, T> generatorFunction;
 
+    /**
+     * @param name Generator name
+     * @param generatorFunction Function that generates data based on row index
+     */
     public ACAQPlotSeriesGenerator(String name, Function<Integer, T> generatorFunction) {
         this.name = name;
         this.generatorFunction = generatorFunction;
     }
 
+    /**
+     * @return Generator name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @return Function that generates data based on row index
+     */
     public Function<Integer, T> getGeneratorFunction() {
         return generatorFunction;
     }

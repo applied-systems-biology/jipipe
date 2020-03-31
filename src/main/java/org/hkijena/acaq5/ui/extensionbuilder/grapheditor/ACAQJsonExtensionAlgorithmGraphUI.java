@@ -34,6 +34,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Graph editor UI used within an {@link org.hkijena.acaq5.ACAQJsonExtension}
+ */
 public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQJsonExtensionUIPanel implements MouseListener, MouseMotionListener {
 
     protected JMenuBar menuBar = new JMenuBar();
@@ -52,6 +55,12 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQJsonExtensionUIPanel 
 
     private Set<ACAQAlgorithmUI> selection = new HashSet<>();
 
+    /**
+     * Creates a new instance
+     * @param workbenchUI The workbench UI
+     * @param algorithmGraph The algorithm graph
+     * @param compartment The compartment
+     */
     public ACAQJsonExtensionAlgorithmGraphUI(ACAQJsonExtensionUI workbenchUI, ACAQAlgorithmGraph algorithmGraph, String compartment) {
         super(workbenchUI);
         this.algorithmGraph = algorithmGraph;
@@ -96,17 +105,28 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQJsonExtensionUIPanel 
         algorithmGraph.getEventBus().register(this);
     }
 
+    /**
+     * Should be triggered when an algorithm was registered.
+     * Updates menus.
+     * @param event Generated event
+     */
     @Subscribe
     public void onAlgorithmRegistryChanged(AlgorithmRegisteredEvent event) {
         reloadMenuBar();
         getWorkbenchUI().sendStatusBarText("Plugins were updated");
     }
 
+    /**
+     * Reloads the menu bar
+     */
     public void reloadMenuBar() {
         menuBar.removeAll();
         initializeToolbar();
     }
 
+    /**
+     * Initializes the toolbar
+     */
     protected void initializeToolbar() {
         initializeAddNodesMenus();
 
@@ -153,6 +173,9 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQJsonExtensionUIPanel 
         }
     }
 
+    /**
+     * Initializes the "Add nodes" menu
+     */
     protected void initializeAddNodesMenus() {
         JMenu addDataSourceMenu = new JMenu("Add data");
         addDataSourceMenu.setIcon(UIUtils.getIconFromResources("database.png"));
@@ -195,6 +218,11 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQJsonExtensionUIPanel 
         menuBar.add(addMiscMenu);
     }
 
+    /**
+     * Initializes the menu for a category
+     * @param menu The menu
+     * @param category The category
+     */
     protected void initializeMenuForCategory(JMenu menu, ACAQAlgorithmCategory category) {
         ACAQDefaultRegistry registryService = ACAQDefaultRegistry.getInstance();
         boolean isEmpty = true;
@@ -242,10 +270,17 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQJsonExtensionUIPanel 
         }
     }
 
+    /**
+     * @return The graph
+     */
     public ACAQAlgorithmGraph getAlgorithmGraph() {
         return algorithmGraph;
     }
 
+    /**
+     * Should be triggered when an algorithm was selected
+     * @param event Generated event
+     */
     @Subscribe
     public void onAlgorithmSelected(AlgorithmSelectedEvent event) {
         if (event.getUi() != null) {
@@ -263,6 +298,9 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQJsonExtensionUIPanel 
         }
     }
 
+    /**
+     * Clears the selection
+     */
     public void clearSelection() {
         for (ACAQAlgorithmUI ui : selection) {
             ui.setSelected(false);
@@ -273,6 +311,10 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQJsonExtensionUIPanel 
         splitPane.setDividerLocation(dividerLocation);
     }
 
+    /**
+     * Selects only the specified algorithm
+     * @param ui The algorithm
+     */
     public void selectOnly(ACAQAlgorithmUI ui) {
         if (selection.isEmpty()) {
             addToSelection(ui);
@@ -287,6 +329,10 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQJsonExtensionUIPanel 
         }
     }
 
+    /**
+     * Removes an algorithm from the selection
+     * @param ui The algorithm
+     */
     public void removeFromSelection(ACAQAlgorithmUI ui) {
         if (selection.contains(ui)) {
             selection.remove(ui);
@@ -305,6 +351,10 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQJsonExtensionUIPanel 
         }
     }
 
+    /**
+     * Add to selection
+     * @param ui The algorithm
+     */
     public void addToSelection(ACAQAlgorithmUI ui) {
         selection.add(ui);
         ui.setSelected(true);
@@ -320,6 +370,10 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQJsonExtensionUIPanel 
         }
     }
 
+    /**
+     * Triggered when a graph was changed
+     * @param event Generated event
+     */
     @Subscribe
     public void onGraphChanged(AlgorithmGraphChangedEvent event) {
         if (selection.stream().anyMatch(ui -> !algorithmGraph.getAlgorithmNodes().containsValue(ui.getAlgorithm()))) {
@@ -386,6 +440,9 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQJsonExtensionUIPanel 
 
     }
 
+    /**
+     * @return The compartment
+     */
     public String getCompartment() {
         return compartment;
     }

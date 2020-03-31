@@ -20,6 +20,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * A plot
+ */
 public abstract class ACAQPlot {
 
     protected List<ACAQPlotSeries> series = new ArrayList<>();
@@ -27,18 +30,31 @@ public abstract class ACAQPlot {
     private List<ACAQPlotSeriesData> seriesDataList;
     private String title = "Plot";
 
+    /**
+     * Creates a new instance
+     * @param seriesDataList List of data series
+     */
     protected ACAQPlot(List<ACAQPlotSeriesData> seriesDataList) {
         this.seriesDataList = seriesDataList;
     }
 
+    /**
+     * @return If series can be removed
+     */
     public boolean canRemoveSeries() {
         return true;
     }
 
+    /**
+     * @return If series can be added
+     */
     public boolean canAddSeries() {
         return true;
     }
 
+    /**
+     * Adds a new series
+     */
     public void addSeries() {
         if (canAddSeries()) {
             ACAQPlotSeries s = createSeries();
@@ -49,6 +65,10 @@ public abstract class ACAQPlot {
         }
     }
 
+    /**
+     * Removes the series
+     * @param series The removed series
+     */
     public void removeSeries(ACAQPlotSeries series) {
         if (canRemoveSeries()) {
             this.series.remove(series);
@@ -57,6 +77,11 @@ public abstract class ACAQPlot {
         }
     }
 
+    /**
+     * Moves the series up in order.
+     * Silently fails if the index is already 0
+     * @param series The series
+     */
     public void moveSeriesUp(ACAQPlotSeries series) {
         int index = this.series.indexOf(series);
         if (index > 0) {
@@ -67,6 +92,11 @@ public abstract class ACAQPlot {
         }
     }
 
+    /**
+     * Moves the series down in order.
+     * Silently fails if the index is already maximum.
+     * @param series The series
+     */
     public void moveSeriesDown(ACAQPlotSeries series) {
         int index = this.series.indexOf(series);
         if (index >= 0 && index < this.series.size() - 1) {
@@ -77,55 +107,99 @@ public abstract class ACAQPlot {
         }
     }
 
+    /**
+     * Triggered when a series' data is changed
+     * @param event Generated event
+     */
     @Subscribe
     public void handleSeriesDataChangedEvent(ACAQPlotSeries.DataChangedEvent event) {
         eventBus.post(new PlotChangedEvent(this));
     }
 
+    /**
+     * @return Created series
+     */
     protected abstract ACAQPlotSeries createSeries();
 
+    /**
+     * @return Plot UI instance
+     */
     public abstract JFreeChart createPlot();
 
+    /**
+     * @return Event bus
+     */
     public EventBus getEventBus() {
         return eventBus;
     }
 
+    /**
+     * @return The plot title
+     */
     public String getTitle() {
         return title;
     }
 
+    /**
+     * Sets the plot title
+     * @param title The title
+     */
     public void setTitle(String title) {
         this.title = title;
         eventBus.post(new PlotChangedEvent(this));
     }
 
+    /**
+     * @return The currently loaded series
+     */
     public List<ACAQPlotSeries> getSeries() {
         return Collections.unmodifiableList(series);
     }
 
+    /**
+     * @return The series data
+     */
     public List<ACAQPlotSeriesData> getSeriesDataList() {
         return seriesDataList;
     }
 
+    /**
+     * Event when a plot is changed
+     */
     public static class PlotChangedEvent {
         private ACAQPlot plot;
 
+        /**
+         * @param plot Event source
+         */
         public PlotChangedEvent(ACAQPlot plot) {
             this.plot = plot;
         }
 
+        /**
+         * @return The event source
+         */
         public ACAQPlot getPlot() {
             return plot;
         }
     }
 
+    /**
+     * Event when the series list is changed
+     */
     public static class PlotSeriesListChangedEvent {
         private ACAQPlot plot;
 
+        /**
+         * @param plot Event source
+         */
         public PlotSeriesListChangedEvent(ACAQPlot plot) {
             this.plot = plot;
         }
 
+        /**
+         * @return Event source
+         */
         public ACAQPlot getPlot() {
             return plot;
         }

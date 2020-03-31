@@ -15,7 +15,7 @@ public @interface ACAQParameter {
     /**
      * The unique key of this parameter
      *
-     * @return
+     * @return Parameter key
      */
     String value();
 
@@ -23,7 +23,7 @@ public @interface ACAQParameter {
      * Sets if the parameter is visible to the user or only exported into JSON
      * Lower visibilities override higher visibilities.
      *
-     * @return
+     * @return Parameter visibility
      */
     ACAQParameterVisibility visibility() default ACAQParameterVisibility.TransitiveVisible;
 }

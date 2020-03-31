@@ -18,6 +18,9 @@ import org.hkijena.acaq5.ACAQDefaultRegistry;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * UI for {@link ACAQTableVectorOperation}
+ */
 public class ACAQTableVectorOperationDialogUI extends JDialog {
 
     private ACAQTableVectorOperation operation;

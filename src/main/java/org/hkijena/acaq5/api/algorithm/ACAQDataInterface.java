@@ -18,6 +18,12 @@ public class ACAQDataInterface {
     private Map<ACAQDataSlot, Integer> inputSlotRows;
     private List<ACAQTrait> annotations;
 
+    /**
+     * Creates a new interface
+     * @param algorithm The algorithm
+     * @param referenceInputSlot The reference input slot
+     * @param referenceInputSlotRow The reference input slot row
+     */
     public ACAQDataInterface(ACAQAlgorithm algorithm, ACAQDataSlot referenceInputSlot, int referenceInputSlotRow) {
         this.algorithm = algorithm;
         this.inputSlotRows = new HashMap<>();
@@ -40,9 +46,9 @@ public class ACAQDataInterface {
     /**
      * Gets stored data from an input slot
      *
-     * @param slotName
-     * @param <T>
-     * @return
+     * @param slotName The slot name
+     * @param <T> Data type
+     * @return Input data with provided name
      */
     public <T extends ACAQData> T getInputData(String slotName) {
         return getInputData(algorithm.getInputSlot(slotName));
@@ -51,9 +57,9 @@ public class ACAQDataInterface {
     /**
      * Gets stored data from an input slot
      *
-     * @param slot
-     * @param <T>
-     * @return
+     * @param slot The slot
+     * @param <T> Data type
+     * @return Input data with provided name
      */
     public <T extends ACAQData> T getInputData(ACAQDataSlot slot) {
         if (slot.getAlgorithm() != algorithm)
@@ -66,7 +72,7 @@ public class ACAQDataInterface {
     /**
      * Gets the list of annotations
      *
-     * @return
+     * @return list of annotations
      */
     public List<ACAQTrait> getAnnotations() {
         return annotations;
@@ -76,7 +82,7 @@ public class ACAQDataInterface {
      * Adds an annotation to the annotation list
      * If there is already existing an annotation of the sample type, it will be overwritten
      *
-     * @param trait
+     * @param trait added annotation
      */
     public void addAnnotation(ACAQTrait trait) {
         removeAnnotation(trait.getDeclaration());
@@ -85,8 +91,9 @@ public class ACAQDataInterface {
 
     /**
      * Removes an annotation of provided type
+     * Only the exact type is removed.
      *
-     * @param declaration
+     * @param declaration removed annotation
      */
     public void removeAnnotation(ACAQTraitDeclaration declaration) {
         annotations.removeIf(a -> a.getDeclaration() == declaration);
@@ -94,8 +101,9 @@ public class ACAQDataInterface {
 
     /**
      * Returns an existing annotation
+     * Only the exact type is used for searching
      *
-     * @param declaration
+     * @param declaration annotation type
      * @return null if it does not exist
      */
     public ACAQTrait getAnnotationOfType(ACAQTraitDeclaration declaration) {
@@ -106,8 +114,8 @@ public class ACAQDataInterface {
      * Writes output data into the provided slot
      * Please note that annotations should be set up till this point
      *
-     * @param slotName
-     * @param data
+     * @param slotName Slot name
+     * @param data Added data
      */
     public void addOutputData(String slotName, ACAQData data) {
         addOutputData(algorithm.getOutputSlot(slotName), data);
@@ -117,8 +125,8 @@ public class ACAQDataInterface {
      * Writes output data into the provided slot
      * Please note that annotations should be set up till this point
      *
-     * @param slot
-     * @param data
+     * @param slot Slot instance
+     * @param data Added data
      */
     public void addOutputData(ACAQDataSlot slot, ACAQData data) {
         if (slot.getAlgorithm() != algorithm)

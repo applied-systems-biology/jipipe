@@ -18,11 +18,18 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * UI around an {@link ACAQRun} result
+ */
 public class ACAQResultUI extends ACAQProjectUIPanel {
     private ACAQRun run;
     private JSplitPane splitPane;
     private ACAQResultAlgorithmTree algorithmTree;
 
+    /**
+     * @param workbenchUI the workbench
+     * @param run the finished run
+     */
     public ACAQResultUI(ACAQProjectUI workbenchUI, ACAQRun run) {
         super(workbenchUI);
         this.run = run;
@@ -130,6 +137,9 @@ public class ACAQResultUI extends ACAQProjectUIPanel {
         }
     }
 
+    /**
+     * @return The run
+     */
     public ACAQRun getRun() {
         return run;
     }

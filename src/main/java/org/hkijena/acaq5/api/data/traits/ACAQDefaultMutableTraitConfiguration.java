@@ -35,6 +35,10 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
     private boolean traitModificationsSealed = false;
     private boolean traitTransfersSealed = false;
 
+    /**
+     * Creates a new instance
+     * @param algorithm The algorithm
+     */
     public ACAQDefaultMutableTraitConfiguration(ACAQAlgorithm algorithm) {
         this.algorithm = algorithm;
     }
@@ -105,24 +109,41 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
         return eventBus;
     }
 
+    /**
+     * @return True if traits are automatically transferred from all input slots to all output slots
+     */
     public boolean isTransferAllToAll() {
         return transferAllToAll;
     }
 
+    /**
+     * Enable to transfer traits automatically from all input slots to all output slots
+     * @param transferAllToAll Enabled
+     */
     public void setTransferAllToAll(boolean transferAllToAll) {
         this.transferAllToAll = transferAllToAll;
         postChangedEvent();
     }
 
+    /**
+     * @return Mutable list of transfer tasks
+     */
     public List<ACAQTraitTransferTask> getMutableTransferTasks() {
         return transferTasks;
     }
 
+    /**
+     * @param transferTasks List of transfer tasks
+     */
     public void setMutableTransferTasks(List<ACAQTraitTransferTask> transferTasks) {
         this.transferTasks = transferTasks;
         postChangedEvent();
     }
 
+    /**
+     * Loads from JSON
+     * @param jsonNode JSON data
+     */
     public void fromJson(JsonNode jsonNode) {
         ObjectMapper objectMapper = JsonUtils.getObjectMapper();
 
@@ -157,6 +178,11 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
         }
     }
 
+    /**
+     * Returns a mutable slot configuration
+     * @param slotName Slot name
+     * @return Slot configuration
+     */
     public ACAQDataSlotTraitConfiguration getConfigurationForSlot(String slotName) {
         ACAQDataSlotTraitConfiguration result = slotTraitModificationTasks.getOrDefault(slotName, null);
         if (result == null) {
@@ -171,6 +197,10 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
         return traitModificationsSealed;
     }
 
+    /**
+     * Seals/unseals trait modifications
+     * @param traitModificationsSealed seal/unseal modfications
+     */
     public void setTraitModificationsSealed(boolean traitModificationsSealed) {
         this.traitModificationsSealed = traitModificationsSealed;
         postChangedEvent();
@@ -193,6 +223,10 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
         return traitTransfersSealed;
     }
 
+    /**
+     * Seals/unseals trait transfers
+     * @param traitTransfersSealed If sealed or unsealed
+     */
     public void setTraitTransfersSealed(boolean traitTransfersSealed) {
         this.traitTransfersSealed = traitTransfersSealed;
         postChangedEvent();
@@ -204,28 +238,48 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
         postChangedEvent();
     }
 
+    /**
+     * Post an event that the configuration was changed
+     */
     public void postChangedEvent() {
         eventBus.post(new TraitConfigurationChangedEvent(this));
     }
 
+    /**
+     * @return Modification tasks
+     */
     public Map<String, ACAQDataSlotTraitConfiguration> getMutableSlotTraitModificationTasks() {
         return slotTraitModificationTasks;
     }
 
+    /**
+     * Sets the modification tasks
+     * @param slotTraitModificationTasks List of modification tasks
+     */
     public void setMutableSlotTraitModificationTasks(Map<String, ACAQDataSlotTraitConfiguration> slotTraitModificationTasks) {
         this.slotTraitModificationTasks = slotTraitModificationTasks;
         postChangedEvent();
     }
 
+    /**
+     * @return Modification tasks
+     */
     public ACAQDataSlotTraitConfiguration getMutableGlobalTraitModificationTasks() {
         return globalTraitModificationTasks;
     }
 
+    /**
+     * Sets modification tasks
+     * @param globalTraitModificationTasks Modification tasks
+     */
     public void setMutableGlobalTraitModificationTasks(ACAQDataSlotTraitConfiguration globalTraitModificationTasks) {
         this.globalTraitModificationTasks = globalTraitModificationTasks;
         postChangedEvent();
     }
 
+    /**
+     * Serializes the configuration
+     */
     public static class Serializer extends JsonSerializer<ACAQDefaultMutableTraitConfiguration> {
         @Override
         public void serialize(ACAQDefaultMutableTraitConfiguration traitConfiguration, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {

@@ -8,6 +8,9 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 public class AlgorithmRegisteredEvent {
     private ACAQAlgorithmDeclaration algorithmDeclaration;
 
+    /**
+     * @param algorithmDeclaration the algorithm type
+     */
     public AlgorithmRegisteredEvent(ACAQAlgorithmDeclaration algorithmDeclaration) {
         this.algorithmDeclaration = algorithmDeclaration;
     }

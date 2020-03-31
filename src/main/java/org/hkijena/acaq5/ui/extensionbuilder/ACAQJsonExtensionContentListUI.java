@@ -21,12 +21,19 @@ import java.awt.event.ComponentEvent;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 
+/**
+ * Lists the content of an {@link org.hkijena.acaq5.ACAQJsonExtension}
+ */
 public class ACAQJsonExtensionContentListUI extends ACAQJsonExtensionUIPanel {
 
     private JList<Object> list;
     private JSplitPane splitPane;
     private Object currentlySelectedValue;
 
+    /**
+     * Creates new instance
+     * @param workbenchUI The workbench UI
+     */
     public ACAQJsonExtensionContentListUI(ACAQJsonExtensionUI workbenchUI) {
         super(workbenchUI);
         initialize();
@@ -126,6 +133,10 @@ public class ACAQJsonExtensionContentListUI extends ACAQJsonExtensionUIPanel {
         declaration.getMetadata().getEventBus().register(this);
     }
 
+    /**
+     * Triggered when a name was changed
+     * @param event Generated event
+     */
     @Subscribe
     public void onParameterChanged(ParameterChangedEvent event) {
         if ("name".equals(event.getKey())) {
@@ -133,20 +144,35 @@ public class ACAQJsonExtensionContentListUI extends ACAQJsonExtensionUIPanel {
         }
     }
 
+    /**
+     * Triggered when content was added
+     * @param event Generated event
+     */
     @Subscribe
     public void onContentAddedEvent(ExtensionContentAddedEvent event) {
         reload();
     }
 
+    /**
+     * Triggered when content was removed
+     * @param event Generated event
+     */
     @Subscribe
     public void onContentRemovedEvent(ExtensionContentRemovedEvent event) {
         reload();
     }
 
+    /**
+     * @return The currently selected value
+     */
     public Object getCurrentlySelectedValue() {
         return currentlySelectedValue;
     }
 
+    /**
+     * Sets the selected value
+     * @param currentlySelectedValue The value
+     */
     public void setCurrentlySelectedValue(Object currentlySelectedValue) {
         if (currentlySelectedValue != this.currentlySelectedValue) {
             this.currentlySelectedValue = currentlySelectedValue;

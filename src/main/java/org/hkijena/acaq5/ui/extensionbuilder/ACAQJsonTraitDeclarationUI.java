@@ -10,10 +10,17 @@ import org.hkijena.acaq5.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * UI around an {@link ACAQJsonTraitDeclaration}
+ */
 public class ACAQJsonTraitDeclarationUI extends ACAQJsonExtensionUIPanel {
 
     private ACAQJsonTraitDeclaration declaration;
 
+    /**
+     * @param workbenchUI The workbench UI
+     * @param declaration The declaration
+     */
     public ACAQJsonTraitDeclarationUI(ACAQJsonExtensionUI workbenchUI, ACAQJsonTraitDeclaration declaration) {
         super(workbenchUI);
         this.declaration = declaration;

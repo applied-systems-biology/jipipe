@@ -13,6 +13,9 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.Map;
 
+/**
+ * UI for an {@link ACAQValidityReport}
+ */
 public class ACAQValidityReportUI extends JPanel {
     private JSplitPane splitPane;
     private ACAQValidityReport report;
@@ -22,10 +25,17 @@ public class ACAQValidityReportUI extends JPanel {
     private JPanel everythingValidPanel;
     private MarkdownDocument helpDocument;
 
+    /**
+     * @param withHelp if a help panel should be shown
+     */
     public ACAQValidityReportUI(boolean withHelp) {
         this(withHelp, MarkdownDocument.fromPluginResource("documentation/validation.md"));
     }
 
+    /**
+     * @param withHelp if a help panel should be shown
+     * @param helpDocument a custom help document
+     */
     public ACAQValidityReportUI(boolean withHelp, MarkdownDocument helpDocument) {
         if (helpDocument == null)
             helpDocument = MarkdownDocument.fromPluginResource("documentation/validation.md");

@@ -46,10 +46,17 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     private Map<ACAQAlgorithm, String> compartments = new HashMap<>();
     private EventBus eventBus = new EventBus();
 
+    /**
+     * Creates a new algorithm graph
+     */
     public ACAQAlgorithmGraph() {
 
     }
 
+    /**
+     * Creates a deep copy of the other algorithm graph
+     * @param other The original graph
+     */
     public ACAQAlgorithmGraph(ACAQAlgorithmGraph other) {
         // Copy nodes
         for (Map.Entry<String, ACAQAlgorithm> kv : other.algorithms.entrySet()) {
@@ -75,7 +82,8 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * Inserts an algorithm into the graph
      *
      * @param key       The unique ID
-     * @param algorithm
+     * @param algorithm The algorithm
+     * @param compartment The compartment where the algorithm will be placed
      */
     public void insertNode(String key, ACAQAlgorithm algorithm, String compartment) {
         if (compartment == null)
@@ -100,17 +108,29 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * Inserts an algorithm into the graph.
      * The name is automatically generated
      *
-     * @param algorithm
+     * @param algorithm The algorithm
+     * @param compartment The compartment where the algorithm will be placed
      */
     public void insertNode(ACAQAlgorithm algorithm, String compartment) {
         String uniqueName = StringUtils.makeUniqueString(StringUtils.jsonify(compartment + "-" + algorithm.getName()), " ", algorithms.keySet());
         insertNode(uniqueName, algorithm, compartment);
     }
 
+    /**
+     * Returns true if the user can delete the algorithm
+     * @param algorithm The algorithm
+     * @return True if the user can delete the algorithm
+     */
     public boolean canUserDelete(ACAQAlgorithm algorithm) {
         return algorithm.getCategory() != ACAQAlgorithmCategory.Internal;
     }
 
+    /**
+     * Returns true if the user can disconnect the slots
+     * @param source Source slot
+     * @param target Target slot
+     * @return True if the user can disconnect those slots. Returns false if the connection does not exist.
+     */
     public boolean canUserDisconnect(ACAQDataSlot source, ACAQDataSlot target) {
         if (graph.containsEdge(source, target)) {
             ACAQAlgorithmGraphEdge edge = graph.getEdge(source, target);
@@ -121,6 +141,11 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         return false;
     }
 
+    /**
+     * Removes a whole compartment from the graph.
+     * Will fail silently if the ID does not exist
+     * @param compartment The compartment ID
+     */
     public void removeCompartment(String compartment) {
         Set<String> ids = algorithms.keySet().stream().filter(id -> compartment.equals(compartments.get(algorithms.get(id)))).collect(Collectors.toSet());
         for (String id : ids) {
@@ -128,6 +153,11 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         }
     }
 
+    /**
+     * Renames a compartment
+     * @param compartment Original compartment ID
+     * @param newCompartment New compartment ID
+     */
     public void renameCompartment(String compartment, String newCompartment) {
         for (ACAQAlgorithm algorithm : algorithms.values().stream().filter(a -> compartment.equals(compartments.get(a))).collect(Collectors.toSet())) {
             compartments.put(algorithm, newCompartment);
@@ -135,6 +165,11 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         getEventBus().post(new AlgorithmGraphChangedEvent(this));
     }
 
+    /**
+     * Removes an algorithm.
+     * The algorithm should exist within the graph.
+     * @param algorithm The algorithm
+     */
     public void removeNode(ACAQAlgorithm algorithm) {
         // Do regular disconnect
         for (ACAQDataSlot slot : algorithm.getInputSlots()) {
@@ -162,10 +197,10 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     /**
      * Slow implementation of connection checking that tests for graph cycles
      *
-     * @param source
-     * @param target
-     * @param user
-     * @return
+     * @param source Source slot. Must be an output.
+     * @param target Target slot. Must be an input.
+     * @param user If true, the user is generating the connection
+     * @return True if the connection could be possible
      */
     public boolean canConnect(ACAQDataSlot source, ACAQDataSlot target, boolean user) {
         if (!canConnectFast(source, target, user))
@@ -179,10 +214,10 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     /**
      * Fast implementation of connection checking without copying the graph
      *
-     * @param source
-     * @param target
-     * @param user   If triggered by a user
-     * @return
+     * @param source Source slot. Must be an output.
+     * @param target Target slot. Must be an input.
+     * @param user If triggered by a user
+     * @return True if the connection could be possible. Please check again with canConnect()
      */
     public boolean canConnectFast(ACAQDataSlot source, ACAQDataSlot target, boolean user) {
         if (!source.isOutput() || !target.isInput())
@@ -193,10 +228,22 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     }
 
 
+    /**
+     * Connects an output slot to an input slot.
+     * Allows users to disconnect this connection
+     * @param source An output slot
+     * @param target An input slot
+     */
     public void connect(ACAQDataSlot source, ACAQDataSlot target) {
         connect(source, target, true);
     }
 
+    /**
+     * Connects an output slot to an input slot.
+     * @param source An output slot.
+     * @param target An input slot.
+     * @param userDisconnectable If true, users are allowed to disconnect this connection again
+     */
     public void connect(ACAQDataSlot source, ACAQDataSlot target, boolean userDisconnectable) {
         if (!canConnect(source, target, false))
             throw new RuntimeException("Cannot connect data slots: " + source.getNameWithAlgorithmName() + " ==> " + target.getNameWithAlgorithmName());
@@ -208,6 +255,9 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         updateDataSlotTraits();
     }
 
+    /**
+     * Repairs the graph by removing old nodes and adding missing ones
+     */
     public void repairGraph() {
 
         boolean modified = false;
@@ -264,7 +314,8 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * If exists, returns the output slot that provides data for the input slot
      * Returns null if target is an output or no slot exists
      *
-     * @return
+     * @param target The input slot
+     * @return The output slot that generates data for the input. Null if no source exists.
      */
     public ACAQDataSlot getSourceSlot(ACAQDataSlot target) {
         if (target.isInput()) {
@@ -282,8 +333,8 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * Returns the list of input slots that are provided by the source slot
      * Returns an empty set if the target is an input or no slot exists
      *
-     * @param source
-     * @return
+     * @param source An output slot
+     * @return All slots that receive data from the output slot
      */
     public Set<ACAQDataSlot> getTargetSlots(ACAQDataSlot source) {
         if (source.isOutput()) {
@@ -298,11 +349,12 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     }
 
     /**
-     * Returns all available sources for an input slot
+     * Returns all available sources for an input slot.
+     * This function does not check for cycles.
      *
-     * @param target
-     * @param user
-     * @return
+     * @param target An input slot
+     * @param user If true, only connections that can be created by a user are shown
+     * @return Set of potential sources
      */
     public Set<ACAQDataSlot> getAvailableSources(ACAQDataSlot target, boolean user) {
         if (getSourceSlot(target) != null)
@@ -327,8 +379,8 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     /**
      * Completely disconnects a slot
      *
-     * @param slot
-     * @param user
+     * @param slot An input or output slot
+     * @param user If true, indicates that is disconnect was issued by a user
      */
     public void disconnectAll(ACAQDataSlot slot, boolean user) {
         if (slot.isInput()) {
@@ -343,6 +395,13 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         }
     }
 
+    /**
+     * Disconnects an input and an output slot
+     * @param source An output slot
+     * @param target An input slot
+     * @param user Indicates if the command was issued by a user
+     * @return True if the disconnect was successful, otherwise false
+     */
     public boolean disconnect(ACAQDataSlot source, ACAQDataSlot target, boolean user) {
         if (graph.containsEdge(source, target)) {
             if (user && !canUserDisconnect(source, target))
@@ -360,10 +419,11 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
     /**
      * Returns all available target for an output slot
+     * Does not check for cycles.
      *
-     * @param source
-     * @param user
-     * @return
+     * @param source An output slot
+     * @param user Indicates that a user issues the connection
+     * @return A list of all available input slots
      */
     public Set<ACAQDataSlot> getAvailableTargets(ACAQDataSlot source, boolean user) {
         if (source.isInput())
@@ -387,22 +447,41 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         return result;
     }
 
+    /**
+     * Should be triggered when an {@link ACAQAlgorithm}'s slots are changed.
+     * Triggers a graph repair
+     * @param event The generated event
+     */
     @Subscribe
     public void onAlgorithmSlotsChanged(AlgorithmSlotsChangedEvent event) {
         repairGraph();
     }
 
+    /**
+     * Should be triggered when an {@link ACAQAlgorithm}'s traits are changed
+     * Updates the traits
+     * @param event Generated event
+     */
     @Subscribe
     public void onTraitsChanged(TraitConfigurationChangedEvent event) {
         updateDataSlotTraits();
         eventBus.post(new AlgorithmGraphChangedEvent(this));
     }
 
+    /**
+     * Should be triggered when an {@link ACAQAlgorithm}'s parameter structure is changed.
+     * This event is re-triggered into getEventBus()
+     * @param event Generated event
+     */
     @Subscribe
     public void onParameterStructureChanged(ParameterStructureChangedEvent event) {
         eventBus.post(event);
     }
 
+    /**
+     * Updates global (slot) traits of the algorithms.
+     * Those traits are different from data traits.
+     */
     public void updateDataSlotTraits() {
         Set<ACAQAlgorithm> executedAlgorithms = new HashSet<>();
         for (ACAQDataSlot slot : traverse()) {
@@ -430,6 +509,10 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         }
     }
 
+    /**
+     * Gets all dependencies of all algorithms
+     * @return Set of dependencies
+     */
     public Set<ACAQDependency> getDependencies() {
         Set<ACAQDependency> result = new HashSet<>();
         for (ACAQAlgorithm algorithm : algorithms.values()) {
@@ -438,14 +521,27 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         return result;
     }
 
+    /**
+     * Returns the even bus
+     * @return Event bus instance
+     */
     public EventBus getEventBus() {
         return eventBus;
     }
 
+    /**
+     * Returns all algorithms
+     * @return Map from algorithm instance ID to algorithm instance
+     */
     public BiMap<String, ACAQAlgorithm> getAlgorithmNodes() {
         return ImmutableBiMap.copyOf(algorithms);
     }
 
+    /**
+     * Returns true if this graph contains the algorithm
+     * @param algorithm The algorithm instance
+     * @return True if the algorithm is part of this graph
+     */
     public boolean containsNode(ACAQAlgorithm algorithm) {
         return algorithms.containsValue(algorithm);
     }
@@ -453,7 +549,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     /**
      * Returns all edges as set of edges
      *
-     * @return
+     * @return Set of entries where the key is an output slot and the value is an input slot
      */
     public Set<Map.Entry<ACAQDataSlot, ACAQDataSlot>> getSlotEdges() {
         Set<Map.Entry<ACAQDataSlot, ACAQDataSlot>> result = new HashSet<>();
@@ -467,6 +563,10 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         return result;
     }
 
+    /**
+     * Loads this graph from JSON
+     * @param node JSON data
+     */
     public void fromJson(JsonNode node) {
         if (!node.has("nodes"))
             return;
@@ -495,7 +595,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     /**
      * Merges another graph into this graph
      *
-     * @param otherGraph
+     * @param otherGraph The other graph
      * @return A map from ID in source graph to algorithm in target graph
      */
     public Map<String, ACAQAlgorithm> mergeWith(ACAQAlgorithmGraph otherGraph) {
@@ -513,14 +613,24 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         return copies;
     }
 
+    /**
+     * @return The number of all algorithms
+     */
     public int getAlgorithmCount() {
         return algorithms.size();
     }
 
+    /**
+     * @return The number of all algorithm slots in this graph
+     */
     public int getSlotCount() {
         return graph.vertexSet().size();
     }
 
+    /**
+     * Saves the graph as DOT file
+     * @param fileName Path where to save the file
+     */
     public void exportDOT(Path fileName) {
         DOTExporter<ACAQDataSlot, ACAQAlgorithmGraphEdge> exporter = new DOTExporter<>();
         try {
@@ -530,6 +640,11 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         }
     }
 
+    /**
+     * Traverses the graph in topological order.
+     * The order guarantees that input is always available
+     * @return Sorted list of data slots
+     */
     public List<ACAQDataSlot> traverse() {
         GraphIterator<ACAQDataSlot, ACAQAlgorithmGraphEdge> iterator = new TopologicalOrderIterator<>(graph);
         List<ACAQDataSlot> result = new ArrayList<>();
@@ -540,6 +655,10 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         return result;
     }
 
+    /**
+     * Traverses depth-first. The order is not suitable for running the algorithm graph.
+     * @return Sorted list of data slots
+     */
     public List<ACAQDataSlot> traverseDepthFirst() {
         GraphIterator<ACAQDataSlot, ACAQAlgorithmGraphEdge> iterator = new DepthFirstIterator<>(graph);
         List<ACAQDataSlot> result = new ArrayList<>();
@@ -550,6 +669,10 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         return result;
     }
 
+    /**
+     * Traverses the algorithms depth-first. The order is not suitable for running the algorithm graph.
+     * @return Sorted list of algorithms
+     */
     public List<ACAQAlgorithm> traverseAlgorithmsDepthFirst() {
         Set<ACAQAlgorithm> visited = new HashSet<>();
         List<ACAQAlgorithm> result = new ArrayList<>();
@@ -569,6 +692,11 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         return result;
     }
 
+    /**
+     * Traverses the graph in topological order.
+     * The order guarantees that input is always available
+     * @return Sorted list of algorithms
+     */
     public List<ACAQAlgorithm> traverseAlgorithms() {
         Set<ACAQAlgorithm> visited = new HashSet<>();
         List<ACAQAlgorithm> result = new ArrayList<>();
@@ -588,10 +716,18 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         return result;
     }
 
+    /**
+     * @return All data slots
+     */
     public Set<ACAQDataSlot> getSlotNodes() {
         return graph.vertexSet();
     }
 
+    /**
+     * Returns true if the slot is in this graph
+     * @param slot A slot
+     * @return True if this graph contains the slot
+     */
     public boolean containsNode(ACAQDataSlot slot) {
         return graph.vertexSet().contains(slot);
     }
@@ -612,32 +748,65 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         }
     }
 
+    /**
+     * @return The underlying graph
+     */
     public Graph<ACAQDataSlot, ACAQAlgorithmGraphEdge> getGraph() {
         return graph;
     }
 
+    /**
+     * Clears this graph
+     */
     public void clear() {
         for (ACAQAlgorithm algorithm : ImmutableSet.copyOf(algorithms.values())) {
             removeNode(algorithm);
         }
     }
 
+    /**
+     * Returns the ID of the algorithm within this graph.
+     * The algorithm must be a part of this graph.
+     * @param algorithm The algorithm
+     * @return The ID of this algorithm within the graph.
+     */
     public String getIdOf(ACAQAlgorithm algorithm) {
         return algorithms.inverse().get(algorithm);
     }
 
+    /**
+     * Returns true if this graph contains an algorithm with the same ID as the foreign algorithm in the foreign graph
+     * @param foreign An algorithm
+     * @param foreignGraph Graph that contains the foreign algorithm
+     * @return True if this graph contains an equivalent algorithm (with the same ID)
+     */
     public boolean containsEquivalentOf(ACAQAlgorithm foreign, ACAQAlgorithmGraph foreignGraph) {
         return getAlgorithmNodes().containsKey(foreignGraph.getIdOf(foreign));
     }
 
+    /**
+     * Returns the algorithm that has the same ID as the foreign algorithm in the foreign graph.
+     * @param foreign  An algorithm
+     * @param foreignGraph Graph that contains the foreign algorithm
+     * @return Equivalent algorithm within this graph
+     */
     public ACAQAlgorithm getEquivalentOf(ACAQAlgorithm foreign, ACAQAlgorithmGraph foreignGraph) {
         return getAlgorithmNodes().get(foreignGraph.getIdOf(foreign));
     }
 
+    /**
+     * Returns the graph compartment ID of the algorithm
+     * This graph must contain the algorithm
+     * @param algorithm An algorithm
+     * @return The compartment ID
+     */
     public String getCompartmentOf(ACAQAlgorithm algorithm) {
         return compartments.get(algorithm);
     }
 
+    /**
+     * @return All unconnected slots
+     */
     public List<ACAQDataSlot> getUnconnectedSlots() {
         List<ACAQDataSlot> result = new ArrayList<>();
         for (ACAQDataSlot slot : traverse()) {
@@ -653,6 +822,11 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         return result;
     }
 
+    /**
+     * Returns the algorithms within the specified compartment ID.
+     * @param compartmentId The compartment ID
+     * @return Algorithms that have the specified compartment ID. Empty set if the compartment does not exist.
+     */
     public Set<ACAQAlgorithm> getAlgorithmsWithCompartment(String compartmentId) {
         Set<ACAQAlgorithm> result = new HashSet<>();
         for (ACAQAlgorithm algorithm : algorithms.values()) {
@@ -662,6 +836,9 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         return result;
     }
 
+    /**
+     * Serializes an {@link ACAQAlgorithmGraph}
+     */
     public static class Serializer extends JsonSerializer<ACAQAlgorithmGraph> {
         @Override
         public void serialize(ACAQAlgorithmGraph algorithmGraph, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
@@ -698,6 +875,9 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         }
     }
 
+    /**
+     * Deserializes an {@link ACAQAlgorithmGraph}
+     */
     public static class Deserializer extends JsonDeserializer<ACAQAlgorithmGraph> {
         @Override
         public ACAQAlgorithmGraph deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {

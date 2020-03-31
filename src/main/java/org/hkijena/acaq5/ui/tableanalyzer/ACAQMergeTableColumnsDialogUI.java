@@ -25,6 +25,9 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.util.Vector;
 
+/**
+ * UI that merges table columns
+ */
 public class ACAQMergeTableColumnsDialogUI extends JDialog {
     private ACAQTableAnalyzerUI tableAnalyzerUI;
     private DefaultTableModel tableModel;
@@ -32,6 +35,9 @@ public class ACAQMergeTableColumnsDialogUI extends JDialog {
     private JXTable jxTable;
     private JTable columnSelection;
 
+    /**
+     * @param tableAnalyzerUI The table analyzer
+     */
     public ACAQMergeTableColumnsDialogUI(ACAQTableAnalyzerUI tableAnalyzerUI) {
         this.tableAnalyzerUI = tableAnalyzerUI;
         this.tableModel = tableAnalyzerUI.getTableModel();
@@ -43,6 +49,10 @@ public class ACAQMergeTableColumnsDialogUI extends JDialog {
         }
     }
 
+    /**
+     * @param workbenchUI The workbench
+     * @param tableModel The table
+     */
     public ACAQMergeTableColumnsDialogUI(ACAQProjectUI workbenchUI, DefaultTableModel tableModel) {
         this.tableModel = tableModel;
         initialize();
@@ -54,6 +64,10 @@ public class ACAQMergeTableColumnsDialogUI extends JDialog {
         }
     }
 
+    /**
+     * Finds the tab that contains the selected table
+     * @return The tab
+     */
     public DocumentTabPane.DocumentTab getMergedTab() {
         if (tableSelection.getSelectedItem() instanceof DocumentTabPane.DocumentTab)
             return (DocumentTabPane.DocumentTab) tableSelection.getSelectedItem();
@@ -187,6 +201,9 @@ public class ACAQMergeTableColumnsDialogUI extends JDialog {
         return columnSelection;
     }
 
+    /**
+     * Renders a tab name
+     */
     private static class ColumnNameCellRenderer extends JLabel implements TableCellRenderer {
 
         public ColumnNameCellRenderer() {

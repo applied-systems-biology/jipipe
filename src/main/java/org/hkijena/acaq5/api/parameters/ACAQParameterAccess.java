@@ -4,101 +4,104 @@ import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Interface around accessing a parameter
+ */
 public interface ACAQParameterAccess {
 
     /**
      * Returns the unique ID of this parameter
      *
-     * @return
+     * @return Unique parameter key
      */
     String getKey();
 
     /**
      * Returns the parameter name that is displayed to the user
      *
-     * @return
+     * @return Parameter name
      */
     String getName();
 
     /**
      * Returns a description
      *
-     * @return
+     * @return Parameter description
      */
     String getDescription();
 
     /**
      * Returns if the parameter should be visible to users or only stored to JSON
      *
-     * @return
+     * @return Parameter visibility
      */
     ACAQParameterVisibility getVisibility();
 
     /**
      * Finds an annotation for this parameter
      *
-     * @param klass
-     * @param <T>
-     * @return
+     * @param klass Annotation class
+     * @param <T> Annotation type
+     * @return Annotation or null if not found
      */
     <T extends Annotation> T getAnnotationOfType(Class<T> klass);
 
     /**
      * Returns the parameter data type
      *
-     * @return
+     * @return Parameter class
      */
     Class<?> getFieldClass();
 
     /**
      * Gets the parameter value
      *
-     * @param <T>
-     * @return
+     * @param <T> Parameter data type
+     * @return Parameter value
      */
     <T> T get();
 
     /**
      * Sets the parameter value
      *
-     * @param value
-     * @param <T>
-     * @return
+     * @param value Parameter value
+     * @param <T> Parameter data type
+     * @return If setting the value was successful
      */
     <T> boolean set(T value);
 
     /**
      * Gets the object that holds the parameter
      *
-     * @return
+     * @return the object that holds the parameter
      */
     ACAQParameterHolder getParameterHolder();
 
     /**
      * A name for the parameter holder
      *
-     * @return
+     * @return name for the parameter holder
      */
     String getHolderName();
 
     /**
      * Sets the name for the parameter holder
      *
-     * @param name
+     * @param name name for the parameter holder
      */
     void setHolderName(String name);
 
     /**
      * A description for the parameter holder
      *
-     * @return
+     * @return description for the parameter holder
      */
     String getHolderDescription();
 
     /**
      * Sets the holder description
      *
-     * @param description
+     * @param description holder description
      */
     void setHolderDescription(String description);
 
@@ -106,8 +109,8 @@ public interface ACAQParameterAccess {
      * Finds all parameters of the provided object
      * This includes dynamic parameters
      *
-     * @param parameterHolder
-     * @return
+     * @param parameterHolder Parameterized object
+     * @return All parameters
      */
     static Map<String, ACAQParameterAccess> getParameters(ACAQParameterHolder parameterHolder) {
         Map<String, ACAQParameterAccess> result = new HashMap<>();

@@ -14,6 +14,9 @@ import java.awt.*;
 
 import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_HEIGHT;
 
+/**
+ * UI for one slot in the algorithm finder
+ */
 public class ACAQAlgorithmFinderSlotUI extends JPanel {
 
     private ACAQDataSlot outputSlot;
@@ -26,6 +29,14 @@ public class ACAQAlgorithmFinderSlotUI extends JPanel {
     private JButton assignButton;
     private JPopupMenu assignButtonMenu;
 
+    /**
+     * Creates a slot UI
+     * @param outputSlot The slot
+     * @param graph The graph
+     * @param compartment The compartment
+     * @param inputSlot The target slot
+     * @param isExistingInstance If true, the algorithm already exists within the graph
+     */
     public ACAQAlgorithmFinderSlotUI(ACAQDataSlot outputSlot, ACAQAlgorithmGraph graph, String compartment, ACAQDataSlot inputSlot, boolean isExistingInstance) {
         this.outputSlot = outputSlot;
         this.graph = graph;
@@ -113,10 +124,18 @@ public class ACAQAlgorithmFinderSlotUI extends JPanel {
         }
     }
 
+    /**
+     * Returns the event bus.
+     * @return Event bus instance.
+     */
     public EventBus getEventBus() {
         return eventBus;
     }
 
+    /**
+     * Returns the compartment ID
+     * @return Compartment ID
+     */
     public String getCompartment() {
         return compartment;
     }

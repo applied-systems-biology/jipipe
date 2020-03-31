@@ -15,7 +15,15 @@ package org.hkijena.acaq5.ui.plotbuilder;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A {@link ACAQPlotSeriesColumn} that contains only numbers
+ */
 public class ACAQNumericPlotSeriesColumn extends ACAQPlotSeriesColumn<Double> {
+    /**
+     * @param seriesDataList The series data list
+     * @param defaultGenerator Provides default values
+     * @param additionalGenerators Additional generators
+     */
     @SafeVarargs
     public ACAQNumericPlotSeriesColumn(List<ACAQPlotSeriesData> seriesDataList, ACAQPlotSeriesGenerator<Double> defaultGenerator, ACAQPlotSeriesGenerator<Double>... additionalGenerators) {
         super(seriesDataList, defaultGenerator, additionalGenerators);

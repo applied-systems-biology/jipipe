@@ -38,22 +38,37 @@ public class ACAQDataDeclaration implements Comparable<ACAQDataDeclaration> {
         this.hidden = ACAQData.isHidden(dataClass);
     }
 
+    /**
+     * @return The data class
+     */
     public Class<? extends ACAQData> getDataClass() {
         return dataClass;
     }
 
+    /**
+     * @return Name of the data type
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @return Description of the data type
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * @return Menu path of the data type
+     */
     public String getMenuPath() {
         return menuPath;
     }
 
+    /**
+     * @return if the data type should be hidden
+     */
     public boolean isHidden() {
         return hidden;
     }
@@ -76,10 +91,20 @@ public class ACAQDataDeclaration implements Comparable<ACAQDataDeclaration> {
         return Objects.hash(dataClass);
     }
 
+    /**
+     * @return The data type ID
+     */
     public String getId() {
         return ACAQDatatypeRegistry.getInstance().getIdOf(dataClass);
     }
 
+    /**
+     * Returns a {@link ACAQDataDeclaration} instance for the data class.
+     * Does not require the data type to be registered.
+     * Instances are cached.
+     * @param klass The data class
+     * @return The declaration instance
+     */
     public static ACAQDataDeclaration getInstance(Class<? extends ACAQData> klass) {
         ACAQDataDeclaration declaration = cache.getOrDefault(klass, null);
         if (declaration == null) {
@@ -89,10 +114,20 @@ public class ACAQDataDeclaration implements Comparable<ACAQDataDeclaration> {
         return declaration;
     }
 
+    /**
+     * Returns a {@link ACAQDataDeclaration} instance for the data type ID.
+     * Requires that the data type ID is registered.
+     * Instances are cached.
+     * @param id Data type ID
+     * @return The declaration instance
+     */
     public static ACAQDataDeclaration getInstance(String id) {
         return ACAQDataDeclaration.getInstance(ACAQDatatypeRegistry.getInstance().getById(id));
     }
 
+    /**
+     * Serializes a declaration as data type ID
+     */
     public static class Serializer extends JsonSerializer<ACAQDataDeclaration> {
         @Override
         public void serialize(ACAQDataDeclaration declaration, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
@@ -100,6 +135,10 @@ public class ACAQDataDeclaration implements Comparable<ACAQDataDeclaration> {
         }
     }
 
+    /**
+     * Deserializes a declaration from a data type ID.
+     * Requires that the ID is registered.
+     */
     public static class Deserializer extends JsonDeserializer<ACAQDataDeclaration> {
         @Override
         public ACAQDataDeclaration deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
@@ -107,6 +146,9 @@ public class ACAQDataDeclaration implements Comparable<ACAQDataDeclaration> {
         }
     }
 
+    /**
+     * Deserializer for a Map key
+     */
     public static class KeyDeserializer extends com.fasterxml.jackson.databind.KeyDeserializer {
         @Override
         public Object deserializeKey(String s, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {

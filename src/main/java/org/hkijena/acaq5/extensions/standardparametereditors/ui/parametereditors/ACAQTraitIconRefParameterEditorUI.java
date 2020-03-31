@@ -15,11 +15,18 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Editor for {@link ACAQTraitIconRef}
+ */
 public class ACAQTraitIconRefParameterEditorUI extends ACAQParameterEditorUI {
 
     private static Set<String> availableTraitIcons;
     private JButton currentlyDisplayed;
 
+    /**
+     * @param context SciJava context
+     * @param parameterAccess the parameter
+     */
     public ACAQTraitIconRefParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
         super(context, parameterAccess);
         initialize();

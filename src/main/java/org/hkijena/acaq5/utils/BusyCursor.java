@@ -15,10 +15,16 @@ package org.hkijena.acaq5.utils;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * A cursor for a component to indicate that some process is running
+ */
 public class BusyCursor implements AutoCloseable {
 
     private Window window;
 
+    /**
+     * @param component target component
+     */
     public BusyCursor(Component component) {
         this.window = SwingUtilities.getWindowAncestor(component);
         if (window != null) {

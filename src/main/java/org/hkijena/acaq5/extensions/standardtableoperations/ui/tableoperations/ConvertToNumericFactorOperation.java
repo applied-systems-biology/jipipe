@@ -18,6 +18,9 @@ import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableVectorOperation;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Converts contents into numeric representations
+ */
 public class ConvertToNumericFactorOperation implements ACAQTableVectorOperation {
     @Override
     public Object[] process(Object[] input) {

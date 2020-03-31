@@ -15,6 +15,9 @@ package org.hkijena.acaq5.extensions.standardtableoperations.ui.tableoperations;
 
 import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableVectorOperation;
 
+/**
+ * Ensures that all values are numbers. Non-numeric values are converted to zero.
+ */
 public class ConvertToNumericVectorOperation implements ACAQTableVectorOperation {
     @Override
     public Object[] process(Object[] input) {

@@ -7,8 +7,14 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.nio.file.Path;
 
+/**
+ * Renders the location of of {@link org.hkijena.acaq5.api.data.ACAQExportedDataTable} and {@link org.hkijena.acaq5.api.data.ACAQMergedExportedDataTable}
+ */
 public class ACAQRowLocationTableCellRenderer extends JLabel implements TableCellRenderer {
 
+    /**
+     * Creates new renderer
+     */
     public ACAQRowLocationTableCellRenderer() {
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));

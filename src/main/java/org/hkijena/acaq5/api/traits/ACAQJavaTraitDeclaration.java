@@ -10,8 +10,16 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * A {@link ACAQTraitDeclaration} generated from a Java class
+ */
 public class ACAQJavaTraitDeclaration extends ACAQMutableTraitDeclaration {
 
+    /**
+     * Creates a new instance
+     * @param id The trait id
+     * @param klass The trait class
+     */
     public ACAQJavaTraitDeclaration(String id, Class<? extends ACAQTrait> klass) {
 
         if (klass.isInterface())
@@ -58,8 +66,8 @@ public class ACAQJavaTraitDeclaration extends ACAQMutableTraitDeclaration {
     /**
      * Returns the name of a trait
      *
-     * @param klass
-     * @return
+     * @param klass trait class
+     * @return name
      */
     public static String getNameOf(Class<? extends ACAQTrait> klass) {
         ACAQDocumentation[] annotations = klass.getAnnotationsByType(ACAQDocumentation.class);
@@ -73,8 +81,8 @@ public class ACAQJavaTraitDeclaration extends ACAQMutableTraitDeclaration {
     /**
      * Returns the description of a trait
      *
-     * @param klass
-     * @return
+     * @param klass trait class
+     * @return name
      */
     public static String getDescriptionOf(Class<? extends ACAQTrait> klass) {
         ACAQDocumentation[] annotations = klass.getAnnotationsByType(ACAQDocumentation.class);
@@ -88,8 +96,8 @@ public class ACAQJavaTraitDeclaration extends ACAQMutableTraitDeclaration {
     /**
      * Returns all inherited traits
      *
-     * @param klass
-     * @return
+     * @param klass trait class
+     * @return name
      */
     static Set<Class<? extends ACAQTrait>> getInheritedTraitClasses(Class<? extends ACAQTrait> klass) {
         Set<Class<? extends ACAQTrait>> result = new HashSet<>();
@@ -104,8 +112,8 @@ public class ACAQJavaTraitDeclaration extends ACAQMutableTraitDeclaration {
     /**
      * Returns true if the trait is hidden from the user
      *
-     * @param klass
-     * @return
+     * @param klass The trait class
+     * @return If the trait should be hidden
      */
     static boolean getIsHidden(Class<? extends ACAQTrait> klass) {
         return klass.getAnnotationsByType(ACAQHidden.class).length > 0;

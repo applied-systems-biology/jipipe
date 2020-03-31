@@ -16,6 +16,9 @@ import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleMaskData;
 
+/**
+ * Applies Bright spots segmentation
+ */
 @ACAQDocumentation(name = "Bright spots segmentation")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
 
@@ -36,11 +39,18 @@ public class BrightSpotsSegmenter extends ACAQIteratingAlgorithm {
     private double gaussianSigma = 3;
     private AutoThresholdSegmenter autoThresholdSegmenter;
 
+    /**
+     * @param declaration the declaration
+     */
     public BrightSpotsSegmenter(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
         this.autoThresholdSegmenter = new AutoThresholdSegmenter(new ACAQEmptyAlgorithmDeclaration());
     }
 
+    /**
+     * Copies the algorithm
+     * @param other the original
+     */
     public BrightSpotsSegmenter(BrightSpotsSegmenter other) {
         super(other);
         this.rollingBallRadius = other.rollingBallRadius;

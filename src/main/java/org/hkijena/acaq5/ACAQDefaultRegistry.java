@@ -36,6 +36,9 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
     private PluginService pluginService;
 
 
+    /**
+     * Create a new registry instance
+     */
     public ACAQDefaultRegistry() {
     }
 
@@ -62,7 +65,7 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
     /**
      * Discovers extension services that provide new ACAQ5 modules
      *
-     * @param pluginService
+     * @param pluginService The plugin service
      */
     private void discover(PluginService pluginService) {
         for (PluginInfo<ACAQJavaExtension> info : pluginService.getPluginsOfType(ACAQJavaExtension.class).stream()
@@ -89,7 +92,7 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
     /**
      * Registers a JSON extension
      *
-     * @param extension
+     * @param extension The extension
      */
     public void register(ACAQJsonExtension extension) {
         System.out.println("ACAQ5: Registering Json Extension " + extension.getDependencyId());
@@ -150,6 +153,7 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
         return uiImageJDatatypeAdapterRegistry;
     }
 
+    @Override
     public ACAQTableAnalyzerUIOperationRegistry getTableAnalyzerUIOperationRegistry() {
         return tableAnalyzerUIOperationRegistry;
     }
@@ -163,6 +167,7 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
         return eventBus;
     }
 
+    @Override
     public Set<String> getRegisteredExtensionIds() {
         return registeredExtensionIds;
     }
@@ -176,10 +181,14 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
         }
     }
 
+    @Override
     public ACAQDependency findExtensionById(String dependencyId) {
         return registeredExtensions.stream().filter(d -> Objects.equals(dependencyId, d.getDependencyId())).findFirst().orElse(null);
     }
 
+    /**
+     * @return Singleton instance
+     */
     public static ACAQDefaultRegistry getInstance() {
         return instance;
     }
@@ -187,7 +196,7 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
     /**
      * Instantiates the plugin service. This is done within {@link ACAQGUICommand}
      *
-     * @param pluginService
+     * @param pluginService The plugin service
      */
     public static void instantiate(PluginService pluginService) {
         if (instance == null) {
@@ -202,6 +211,12 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
         }
     }
 
+    /**
+     * Compares two plugins and sorts them by priority
+     * @param p0 Plugin
+     * @param p1 Plugin
+     * @return Comparator result
+     */
     public static int comparePlugins(PluginInfo<?> p0, PluginInfo<?> p1) {
         return -Double.compare(p0.getPriority(), p1.getPriority());
     }

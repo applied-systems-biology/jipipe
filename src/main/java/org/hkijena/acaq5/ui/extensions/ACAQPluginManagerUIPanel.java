@@ -16,12 +16,18 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
+/**
+ * UI that lists all plugins
+ */
 public class ACAQPluginManagerUIPanel extends ACAQProjectUIPanel {
 
     private JList<ACAQDependency> dependencyJList;
     private JSplitPane splitPane;
     private ACAQGUICommand command;
 
+    /**
+     * @param ui The project UI
+     */
     public ACAQPluginManagerUIPanel(ACAQProjectUI ui) {
         super(ui);
         this.command = ui.getCommand();
@@ -88,6 +94,9 @@ public class ACAQPluginManagerUIPanel extends ACAQProjectUIPanel {
         add(toolBar, BorderLayout.NORTH);
     }
 
+    /**
+     * Reloads the UI
+     */
     public void reload() {
         DefaultListModel<ACAQDependency> model = (DefaultListModel<ACAQDependency>) dependencyJList.getModel();
         model.clear();
@@ -98,6 +107,10 @@ public class ACAQPluginManagerUIPanel extends ACAQProjectUIPanel {
             dependencyJList.setSelectedIndex(0);
     }
 
+    /**
+     * Triggered when an extension is registered
+     * @param event Generated event
+     */
     @Subscribe
     public void onExtensionRegistered(ExtensionRegisteredEvent event) {
         reload();

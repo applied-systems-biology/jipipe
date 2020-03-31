@@ -24,6 +24,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * UI that displays an {@link ACAQAlgorithmGraph}
+ */
 public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionListener, MouseListener {
     private ACAQAlgorithmGraph algorithmGraph;
     private ACAQAlgorithmUI currentlyDragged;
@@ -34,6 +37,11 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     private boolean layoutHelperEnabled;
     private String compartment;
 
+    /**
+     * Creates a new UI
+     * @param algorithmGraph The algorithm graph
+     * @param compartment The compartment to show
+     */
     public ACAQAlgorithmGraphCanvasUI(ACAQAlgorithmGraph algorithmGraph, String compartment) {
         super(null);
         this.algorithmGraph = algorithmGraph;
@@ -49,6 +57,9 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         addMouseMotionListener(this);
     }
 
+    /**
+     * @return The displayed graph
+     */
     public ACAQAlgorithmGraph getAlgorithmGraph() {
         return algorithmGraph;
     }
@@ -263,6 +274,9 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
     }
 
+    /**
+     * @return Returns true if the user is currently dragging an algorithm around
+     */
     public boolean isDragging() {
         return currentlyDragged != null;
     }
@@ -279,12 +293,21 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         return new Dimension(width, height);
     }
 
+    /**
+     * Should be triggered when the algorithm graph is changed.
+     * Triggers a node update.
+     * @param event The generated event
+     */
     @Subscribe
     public void onAlgorithmGraphChanged(AlgorithmGraphChangedEvent event) {
         addNewNodes();
         removeOldNodes();
     }
 
+    /**
+     * Should be triggered when a connection is made
+     * @param event The generated event
+     */
     @Subscribe
     public void onAlgorithmConnected(AlgorithmGraphConnectedEvent event) {
         ACAQAlgorithmUI sourceNode = nodeUIs.getOrDefault(event.getSource().getAlgorithm(), null);
@@ -296,11 +319,18 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     }
 
 
+    /**
+     * Should be triggered when an {@link ACAQAlgorithmUI} requests that the algorithm settings should be opened
+     * @param event The generated event
+     */
     @Subscribe
     public void onOpenAlgorithmSettings(AlgorithmSelectedEvent event) {
         eventBus.post(event);
     }
 
+    /**
+     * @return The event bus instance
+     */
     public EventBus getEventBus() {
         return eventBus;
     }
@@ -424,7 +454,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     /**
      * Gets the X position where new entries are placed automatically
      *
-     * @return
+     * @return X position
      */
     public int getNewEntryLocationX() {
         return newEntryLocationX;
@@ -434,24 +464,38 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
      * Sets the X position where new entries are placed automatically
      * This can be set by parent components to for example place algorithms into the current view
      *
-     * @param newEntryLocationX
+     * @param newEntryLocationX X position
      */
     public void setNewEntryLocationX(int newEntryLocationX) {
         this.newEntryLocationX = newEntryLocationX;
     }
 
+    /**
+     * @return Returns true if the layout helper is enabled. It auto-layouts when connections are made
+     */
     public boolean isLayoutHelperEnabled() {
         return layoutHelperEnabled;
     }
 
+    /**
+     * Enables or disables the layout helper
+     * @param layoutHelperEnabled If the layout helper should be enabled
+     */
     public void setLayoutHelperEnabled(boolean layoutHelperEnabled) {
         this.layoutHelperEnabled = layoutHelperEnabled;
     }
 
+    /**
+     * @return The displayed compartment
+     */
     public String getCompartment() {
         return compartment;
     }
 
+    /**
+     * Creates a screenshot of the whole graph compartment
+     * @return The screenshot image
+     */
     public BufferedImage createScreenshot() {
         return ScreenImage.createImage(this);
     }

@@ -7,8 +7,14 @@ import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
+/**
+ * Renders {@link ACAQTrait}
+ */
 public class ACAQTraitTableCellRenderer extends JLabel implements TableCellRenderer {
 
+    /**
+     * Creates a new renderer
+     */
     public ACAQTraitTableCellRenderer() {
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));

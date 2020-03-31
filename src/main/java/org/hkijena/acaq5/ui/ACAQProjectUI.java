@@ -28,6 +28,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * UI around an {@link ACAQProject}
+ */
 public class ACAQProjectUI extends JPanel {
 
     public DocumentTabPane documentTabPane;
@@ -39,6 +42,11 @@ public class ACAQProjectUI extends JPanel {
     private ReloadableValidityChecker validityCheckerPanel;
     private ACAQPluginValidityCheckerPanel pluginValidityCheckerPanel;
 
+    /**
+     * @param window Parent window
+     * @param command GUI command
+     * @param project The project
+     */
     public ACAQProjectUI(ACAQProjectWindow window, ACAQGUICommand command, ACAQProject project) {
         this.window = window;
         this.project = project;
@@ -108,6 +116,11 @@ public class ACAQProjectUI extends JPanel {
         sendStatusBarText("Welcome to ACAQ5");
     }
 
+    /**
+     * Finds open {@link ACAQCompartmentUI} tabs
+     * @param compartment Targeted compartment
+     * @return List of UIs
+     */
     public List<ACAQCompartmentUI> findCompartmentUIs(ACAQProjectCompartment compartment) {
         List<ACAQCompartmentUI> result = new ArrayList<>();
         for (DocumentTabPane.DocumentTab tab : documentTabPane.getTabs()) {
@@ -119,6 +132,11 @@ public class ACAQProjectUI extends JPanel {
         return result;
     }
 
+    /**
+     * Opens the graph editor for specified compartment
+     * @param compartment The compartment
+     * @param switchToTab If true, switch to the tab
+     */
     public void openCompartmentGraph(ACAQProjectCompartment compartment, boolean switchToTab) {
         List<ACAQCompartmentUI> compartmentUIs = findCompartmentUIs(compartment);
         if (compartmentUIs.isEmpty()) {
@@ -142,6 +160,10 @@ public class ACAQProjectUI extends JPanel {
         add(statusBar, BorderLayout.SOUTH);
     }
 
+    /**
+     * Sends a text to the status bar
+     * @param text The text
+     */
     public void sendStatusBarText(String text) {
         LocalDateTime localDateTime = LocalDateTime.now();
         statusText.setText(localDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE) + " " + localDateTime.format(DateTimeFormatter.ofPattern("HH:mm:ss")) + " " + text);
@@ -280,12 +302,20 @@ public class ACAQProjectUI extends JPanel {
         add(menu, BorderLayout.NORTH);
     }
 
+    /**
+     * Validates the project
+     * @param avoidSwitching Do no switch to the validity checker tab if the project is OK
+     */
     public void validateProject(boolean avoidSwitching) {
         validityCheckerPanel.recheckValidity();
         if (!avoidSwitching || !validityCheckerPanel.getReport().isValid())
             documentTabPane.selectSingletonTab("VALIDITY_CHECK");
     }
 
+    /**
+     * Validates the plugins
+     * @param avoidSwitching  Do no switch to the validity checker tab if the plugins are OK
+     */
     public void validatePlugins(boolean avoidSwitching) {
         pluginValidityCheckerPanel.recheckValidity();
         if (!avoidSwitching || !pluginValidityCheckerPanel.getReport().isValid())
@@ -322,18 +352,32 @@ public class ACAQProjectUI extends JPanel {
         documentTabPane.switchToLastTab();
     }
 
+    /**
+     * @return The tab pane
+     */
     public DocumentTabPane getDocumentTabPane() {
         return documentTabPane;
     }
 
+    /**
+     * @return The project
+     */
     public ACAQProject getProject() {
         return project;
     }
 
+    /**
+     * @return The parent window
+     */
     public ACAQProjectWindow getWindow() {
         return window;
     }
 
+    /**
+     * Triggered when a compartment is deleted.
+     * Closes corresponding tabs.
+     * @param event Generated event
+     */
     @Subscribe
     public void onCompartmentRemoved(CompartmentRemovedEvent event) {
         for (ACAQCompartmentUI compartmentUI : findCompartmentUIs(event.getCompartment())) {
@@ -341,10 +385,16 @@ public class ACAQProjectUI extends JPanel {
         }
     }
 
+    /**
+     * @return SciJava context
+     */
     public Context getContext() {
         return context;
     }
 
+    /**
+     * @return GUI command
+     */
     public ACAQGUICommand getCommand() {
         return command;
     }

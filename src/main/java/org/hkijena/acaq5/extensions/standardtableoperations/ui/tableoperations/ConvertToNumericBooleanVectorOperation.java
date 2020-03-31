@@ -15,6 +15,10 @@ package org.hkijena.acaq5.extensions.standardtableoperations.ui.tableoperations;
 
 import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableVectorOperation;
 
+/**
+ * Vector operation that converts a number > 0 into 1, and strings "true" into 1
+ * otherwise values are converted to 0
+ */
 public class ConvertToNumericBooleanVectorOperation implements ACAQTableVectorOperation {
     @Override
     public Object[] process(Object[] input) {

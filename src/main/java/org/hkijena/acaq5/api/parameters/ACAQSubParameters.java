@@ -15,7 +15,7 @@ public @interface ACAQSubParameters {
     /**
      * The name of the sub-algorithm
      *
-     * @return
+     * @return name of the sub-algorithm
      */
     String value();
 }

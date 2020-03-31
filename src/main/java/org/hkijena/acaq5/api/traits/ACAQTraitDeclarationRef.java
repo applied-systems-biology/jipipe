@@ -21,10 +21,16 @@ public class ACAQTraitDeclarationRef implements ACAQValidatable {
 
     private ACAQTraitDeclaration declaration;
 
+    /**
+     * @param declaration The referenced declaration
+     */
     public ACAQTraitDeclarationRef(ACAQTraitDeclaration declaration) {
         this.declaration = declaration;
     }
 
+    /**
+     * New instance
+     */
     public ACAQTraitDeclarationRef() {
 
     }
@@ -43,6 +49,9 @@ public class ACAQTraitDeclarationRef implements ACAQValidatable {
             report.reportIsInvalid("No annotation type is selected! Please select an annotation type.");
     }
 
+    /**
+     * Serializes the reference as ID
+     */
     public static class Serializer extends JsonSerializer<ACAQTraitDeclarationRef> {
 
         @Override
@@ -52,6 +61,9 @@ public class ACAQTraitDeclarationRef implements ACAQValidatable {
 
     }
 
+    /**
+     * Deserializes the reference from a string
+     */
     public static class Deserializer extends JsonDeserializer<ACAQTraitDeclarationRef> {
 
         @Override

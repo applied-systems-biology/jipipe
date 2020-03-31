@@ -10,27 +10,54 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Registry for parameter types
+ */
 public class ACAQUIParametertypeRegistry {
 
     private Map<Class<?>, ACAQDocumentation> parameterDocumentations = new HashMap<>();
     private Map<Class<?>, Class<? extends ACAQParameterEditorUI>> parameterTypes = new HashMap<>();
 
+    /**
+     * New instance
+     */
     public ACAQUIParametertypeRegistry() {
 
     }
 
+    /**
+     * Registers a new parameter type
+     * @param parameterType parameter type
+     * @param uiClass corresponding editor UI
+     */
     public void registerParameterEditor(Class<?> parameterType, Class<? extends ACAQParameterEditorUI> uiClass) {
         parameterTypes.put(parameterType, uiClass);
     }
 
+    /**
+     * Registers documentation for a parameter type
+     * @param parameterType parameter type
+     * @param documentation the documentation
+     */
     public void registerDocumentation(Class<?> parameterType, ACAQDocumentation documentation) {
         parameterDocumentations.put(parameterType, documentation);
     }
 
+    /**
+     * Gets documentation for a parameter type
+     * @param parameterType parameter type
+     * @return documentation. Can be null.
+     */
     public ACAQDocumentation getDocumentationFor(Class<?> parameterType) {
         return parameterDocumentations.getOrDefault(parameterType, null);
     }
 
+    /**
+     * Creates editor for the parameter
+     * @param context SciJava context
+     * @param parameterAccess the parameter
+     * @return Parameter editor UI
+     */
     public ACAQParameterEditorUI createEditorFor(Context context, ACAQParameterAccess parameterAccess) {
         Class<? extends ACAQParameterEditorUI> uiClass = parameterTypes.getOrDefault(parameterAccess.getFieldClass(), null);
         if (uiClass == null) {

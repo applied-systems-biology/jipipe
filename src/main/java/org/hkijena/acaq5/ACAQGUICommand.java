@@ -21,40 +21,14 @@ import org.scijava.ui.UIService;
 
 import javax.swing.*;
 
+/**
+ * Command that runs the GUI
+ */
 @Plugin(type = Command.class, menuPath = "Plugins>ACAQ5>ACAQ5 GUI")
 public class ACAQGUICommand implements Command {
-    @Parameter
-    private OpService ops;
-
-    @Parameter
-    private LogService log;
-
-    @Parameter
-    private UIService ui;
-
-    @Parameter
-    private CommandService cmd;
-
-    @Parameter
-    private StatusService status;
-
-    @Parameter
-    private ThreadService thread;
-
-    @Parameter
-    private DatasetIOService datasetIO;
-
-    @Parameter
-    private DisplayService display;
-
-    @Parameter
-    private DatasetService datasetService;
 
     @Parameter
     private PluginService pluginService;
-
-    @Parameter
-    private OptionsService optionsService;
 
     @Parameter
     private Context context;
@@ -70,46 +44,16 @@ public class ACAQGUICommand implements Command {
         });
     }
 
-    public LogService getLogService() {
-        return log;
-    }
-
-    public StatusService getStatusService() {
-        return status;
-    }
-
-    public ThreadService getThreadService() {
-        return thread;
-    }
-
-    public UIService getUiService() {
-        return ui;
-    }
-
-    public DatasetIOService getDatasetIOService() {
-        return datasetIO;
-    }
-
-    public DisplayService getDisplayService() {
-        return display;
-    }
-
-    public DatasetService getDatasetService() {
-        return datasetService;
-    }
-
-    public PluginService getPluginService() {
-        return pluginService;
-    }
-
-    public OptionsService getOptionsService() {
-        return optionsService;
-    }
-
+    /**
+     * @return The context
+     */
     public Context getContext() {
         return context;
     }
 
+    /**
+     * @param args ignored
+     */
     public static void main(final String... args) {
         final ImageJ ij = new ImageJ();
         ij.ui().showUI();

@@ -21,6 +21,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Window that holds an {@link ACAQProjectUI} instance
+ */
 public class ACAQProjectWindow extends JFrame {
 
     private static Set<ACAQProjectWindow> OPEN_WINDOWS = new HashSet<>();
@@ -29,6 +32,10 @@ public class ACAQProjectWindow extends JFrame {
     private ACAQProjectUI projectUI;
     private Path projectSavePath;
 
+    /**
+     * @param command GUI command
+     * @param project The project
+     */
     public ACAQProjectWindow(ACAQGUICommand command, ACAQProject project) {
         this.command = command;
         OPEN_WINDOWS.add(this);
@@ -54,12 +61,20 @@ public class ACAQProjectWindow extends JFrame {
         super.setTitle("ACAQ5 - " + title);
     }
 
+    /**
+     * Loads a project into the window
+     * @param project The project
+     */
     public void loadProject(ACAQProject project) {
         this.project = project;
         this.projectUI = new ACAQProjectUI(this, command, project);
         setContentPane(projectUI);
     }
 
+    /**
+     * Creates a new project.
+     * Asks the user if it should replace the currently displayed project
+     */
     public void newProject() {
         ACAQProject project = new ACAQProject();
         ACAQProjectWindow window = openProjectInThisOrNewWindow("New project", project);
@@ -70,6 +85,11 @@ public class ACAQProjectWindow extends JFrame {
         window.getProjectUI().sendStatusBarText("Created new project");
     }
 
+    /**
+     * Opens a project from a file or folder
+     * Asks the user if it should replace the currently displayed project
+     * @param path JSON project file or result folder
+     */
     public void openProject(Path path) {
         if (Files.isRegularFile(path)) {
             try {
@@ -126,6 +146,9 @@ public class ACAQProjectWindow extends JFrame {
         }
     }
 
+    /**
+     * Opens a file chooser where the user can select a project file
+     */
     public void openProject() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -135,6 +158,9 @@ public class ACAQProjectWindow extends JFrame {
         }
     }
 
+    /**
+     * Opens a file chooser where the user can select a result folder
+     */
     public void openProjectAndOutput() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -144,6 +170,10 @@ public class ACAQProjectWindow extends JFrame {
         }
     }
 
+    /**
+     * Saves the project
+     * @param avoidDialog If true, the project is stored in the last known valid output location if possible
+     */
     public void saveProjectAs(boolean avoidDialog) {
         Path savePath = null;
         if (avoidDialog && projectSavePath != null)
@@ -172,9 +202,9 @@ public class ACAQProjectWindow extends JFrame {
     }
 
     /**
-     * @param messageTitle
-     * @param project
-     * @return
+     * @param messageTitle Description of the project source
+     * @param project The project
+     * @return The window that holds the project
      */
     private ACAQProjectWindow openProjectInThisOrNewWindow(String messageTitle, ACAQProject project) {
         switch (UIUtils.askOpenInCurrentWindow(this, messageTitle)) {
@@ -187,22 +217,40 @@ public class ACAQProjectWindow extends JFrame {
         return null;
     }
 
+    /**
+     * @return GUI command
+     */
     public ACAQGUICommand getCommand() {
         return command;
     }
 
+    /**
+     * @return The current project
+     */
     public ACAQProject getProject() {
         return project;
     }
 
+    /**
+     * @return The current project UI
+     */
     public ACAQProjectUI getProjectUI() {
         return projectUI;
     }
 
+    /**
+     * @return Last known project save path
+     */
     public Path getProjectSavePath() {
         return projectSavePath;
     }
 
+    /**
+     * Creates a new window
+     * @param command GUI command
+     * @param project The project
+     * @return The window
+     */
     public static ACAQProjectWindow newWindow(ACAQGUICommand command, ACAQProject project) {
         ACAQProjectWindow frame = new ACAQProjectWindow(command, project);
         frame.pack();
@@ -212,6 +260,9 @@ public class ACAQProjectWindow extends JFrame {
         return frame;
     }
 
+    /**
+     * @return All open project windows
+     */
     public static Set<ACAQProjectWindow> getOpenWindows() {
         return Collections.unmodifiableSet(OPEN_WINDOWS);
     }

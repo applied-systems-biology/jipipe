@@ -16,10 +16,18 @@ import org.hkijena.acaq5.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * UI for a single {@link ACAQAlgorithm}
+ */
 public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectUIPanel {
     private ACAQAlgorithmGraph graph;
     private ACAQAlgorithm algorithm;
 
+    /**
+     * @param workbenchUI the workbench UI
+     * @param graph the graph
+     * @param algorithm the algorithm
+     */
     public ACAQSingleAlgorithmSelectionPanelUI(ACAQProjectUI workbenchUI, ACAQAlgorithmGraph graph, ACAQAlgorithm algorithm) {
         super(workbenchUI);
         this.graph = graph;
@@ -116,6 +124,9 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectUIPanel {
         }
     }
 
+    /**
+     * @return the algorithm
+     */
     public ACAQAlgorithm getAlgorithm() {
         return algorithm;
     }

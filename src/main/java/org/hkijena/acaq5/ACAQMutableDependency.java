@@ -11,6 +11,10 @@ import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
 
 import java.nio.file.Path;
 
+/**
+ * A JSON-serializable {@link ACAQDependency}.
+ * {@link ACAQDependency} is deserialize to this type.
+ */
 public class ACAQMutableDependency implements ACAQDependency {
     private ACAQProjectMetadata metadata = new ACAQProjectMetadata();
     private String dependencyId;
@@ -25,6 +29,10 @@ public class ACAQMutableDependency implements ACAQDependency {
         return metadata;
     }
 
+    /**
+     * Sets the metadata
+     * @param metadata The metadata
+     */
     @JsonSetter("metadata")
     public void setMetadata(ACAQProjectMetadata metadata) {
         this.metadata = metadata;
@@ -43,6 +51,10 @@ public class ACAQMutableDependency implements ACAQDependency {
         return dependencyId;
     }
 
+    /**
+     * Sets the ID
+     * @param dependencyId The ID
+     */
     @JsonSetter("id")
     @ACAQParameter("id")
     public void setDependencyId(String dependencyId) {
@@ -57,6 +69,10 @@ public class ACAQMutableDependency implements ACAQDependency {
         return dependencyVersion;
     }
 
+    /**
+     * Sets the version
+     * @param dependencyVersion The version
+     */
     @JsonSetter("version")
     @ACAQParameter("version")
     public void setDependencyVersion(String dependencyVersion) {

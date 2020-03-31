@@ -23,6 +23,9 @@ public class ACAQTraitEditorUI extends JPanel {
     private MarkdownReader helpPanel;
     private JSplitPane splitPane;
 
+    /**
+     * @param algorithm the algorithm
+     */
     public ACAQTraitEditorUI(ACAQAlgorithm algorithm) {
         this.algorithm = algorithm;
         initialize();
@@ -57,6 +60,9 @@ public class ACAQTraitEditorUI extends JPanel {
         add(splitPane, BorderLayout.CENTER);
     }
 
+    /**
+     * Reloads the list
+     */
     public void reloadList() {
         ACAQDataSlot selectedSlot = slotSelection.getSelectedItem() != null ? (ACAQDataSlot) slotSelection.getSelectedItem() : null;
         ArrayList<ACAQDataSlot> slots = new ArrayList<>();
@@ -70,6 +76,9 @@ public class ACAQTraitEditorUI extends JPanel {
         updateEditor();
     }
 
+    /**
+     * Updates the editor
+     */
     public void updateEditor() {
         if (slotSelection.getSelectedItem() != null) {
             ACAQDataSlot selectedSlot = (ACAQDataSlot) slotSelection.getSelectedItem();
@@ -79,6 +88,10 @@ public class ACAQTraitEditorUI extends JPanel {
         }
     }
 
+    /**
+     * Triggered when algorithm slots are changed
+     * @param event Generated event
+     */
     @Subscribe
     public void onAlgorithmSlotsChanged(AlgorithmSlotsChangedEvent event) {
         reloadList();

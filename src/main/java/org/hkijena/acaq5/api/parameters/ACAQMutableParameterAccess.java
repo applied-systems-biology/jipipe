@@ -6,6 +6,9 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 
 import java.lang.annotation.Annotation;
 
+/**
+ * A mutable implementation of {@link ACAQParameterAccess}
+ */
 public class ACAQMutableParameterAccess implements ACAQParameterAccess {
     private ACAQParameterHolder parameterHolder;
     private String holderName;
@@ -17,15 +20,28 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
     private Class<?> fieldClass;
     private Object value;
 
+    /**
+     * Creates a new instance
+     */
     public ACAQMutableParameterAccess() {
     }
 
+    /**
+     * Creates a new instance
+     * @param parameterHolder The object that holds the parameter
+     * @param key Unique parameter key
+     * @param fieldClass Parameter field type
+     */
     public ACAQMutableParameterAccess(ACAQParameterHolder parameterHolder, String key, Class<?> fieldClass) {
         this.parameterHolder = parameterHolder;
         this.key = key;
         this.fieldClass = fieldClass;
     }
 
+    /**
+     * Copies the parameter access
+     * @param other The original
+     */
     public ACAQMutableParameterAccess(ACAQMutableParameterAccess other) {
         this.parameterHolder = other.parameterHolder;
         this.holderName = other.holderName;
@@ -46,7 +62,7 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
     /**
      * For internal use only
      *
-     * @param key
+     * @param key key of this access
      */
     public void setKey(String key) {
         this.key = key;
@@ -58,6 +74,10 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
         return name;
     }
 
+    /**
+     * Sets the name
+     * @param name The name
+     */
     @JsonSetter("name")
     public void setName(String name) {
         this.name = name;
@@ -69,6 +89,10 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
         return description;
     }
 
+    /**
+     * Sets the description
+     * @param description The description
+     */
     @JsonSetter("description")
     public void setDescription(String description) {
         this.description = description;
@@ -82,6 +106,10 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
         return visibility;
     }
 
+    /**
+     * Sets the visibility
+     * @param visibility The visibilities
+     */
     @JsonSetter("visibility")
     public void setVisibility(ACAQParameterVisibility visibility) {
         this.visibility = visibility;
@@ -101,7 +129,7 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
     /**
      * For internal usage only
      *
-     * @param fieldClass
+     * @param fieldClass The parameter class
      */
     @JsonSetter("field-class")
     public void setFieldClass(Class<?> fieldClass) {
@@ -133,7 +161,7 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
     /**
      * For internal usage only
      *
-     * @param parameterHolder
+     * @param parameterHolder The object that holds the parameter
      */
     public void setParameterHolder(ACAQParameterHolder parameterHolder) {
         this.parameterHolder = parameterHolder;
@@ -145,6 +173,10 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
         return holderDescription;
     }
 
+    /**
+     * Sets a description that describes the parameter holder
+     * @param holderDescription Parameter holder description
+     */
     public void setHolderDescription(String holderDescription) {
         this.holderDescription = holderDescription;
     }
@@ -154,6 +186,10 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
         return holderName;
     }
 
+    /**
+     * Sets a name for the parameter holder
+     * @param holderName Parameter holder name
+     */
     public void setHolderName(String holderName) {
         this.holderName = holderName;
     }

@@ -19,12 +19,18 @@ import org.hkijena.acaq5.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Dialog to import a table
+ */
 public class ACAQTableImporterDialog extends JDialog {
 
     private ACAQProjectUI workbench;
     private FileSelection fileSelection;
     private JComboBox<FileFormat> importFormat;
 
+    /**
+     * @param workbench the workbench
+     */
     public ACAQTableImporterDialog(ACAQProjectUI workbench) {
         this.workbench = workbench;
         initialize();
@@ -158,6 +164,9 @@ public class ACAQTableImporterDialog extends JDialog {
 //        }
 //    }
 
+    /**
+     * Available file formats
+     */
     enum FileFormat {
         CSV;
 

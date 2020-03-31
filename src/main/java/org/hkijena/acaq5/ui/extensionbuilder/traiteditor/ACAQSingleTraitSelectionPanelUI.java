@@ -18,10 +18,18 @@ import org.hkijena.acaq5.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * UI for a single {@link ACAQTraitNode}
+ */
 public class ACAQSingleTraitSelectionPanelUI extends ACAQJsonExtensionUIPanel {
     private ACAQTraitNode node;
     private ACAQTraitGraph graph;
 
+    /**
+     * @param workbenchUI the workbench
+     * @param node the node
+     * @param graph the graph
+     */
     public ACAQSingleTraitSelectionPanelUI(ACAQJsonExtensionUI workbenchUI, ACAQTraitNode node, ACAQTraitGraph graph) {
         super(workbenchUI);
         this.node = node;
@@ -80,7 +88,11 @@ public class ACAQSingleTraitSelectionPanelUI extends ACAQJsonExtensionUIPanel {
         }
     }
 
-    public ACAQAlgorithm getCompartment() {
+    /**
+     *
+     * @return the trait node
+     */
+    public ACAQTraitNode getTraitNode() {
         return node;
     }
 }

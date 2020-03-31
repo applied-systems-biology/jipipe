@@ -7,11 +7,20 @@ import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphUI;
 
 import java.awt.*;
 
+/**
+ * Editor for one project compartment graph
+ * Contains a {@link ACAQAlgorithmGraphUI} instance that allows editing the compartment's content
+ */
 public class ACAQCompartmentUI extends ACAQProjectUIPanel {
 
     private ACAQProjectCompartment compartment;
     private ACAQAlgorithmGraphUI graphUI;
 
+    /**
+     * Creates a new editor
+     * @param workbenchUI the workbench UI
+     * @param compartment the compartment
+     */
     public ACAQCompartmentUI(ACAQProjectUI workbenchUI, ACAQProjectCompartment compartment) {
         super(workbenchUI);
         this.compartment = compartment;
@@ -34,6 +43,9 @@ public class ACAQCompartmentUI extends ACAQProjectUIPanel {
 //        add(toolBar, BorderLayout.NORTH);
     }
 
+    /**
+     * @return The displayed compartment
+     */
     public ACAQProjectCompartment getCompartment() {
         return compartment;
     }

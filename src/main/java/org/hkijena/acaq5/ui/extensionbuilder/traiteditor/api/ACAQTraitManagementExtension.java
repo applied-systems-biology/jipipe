@@ -5,6 +5,9 @@ import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
 
+/**
+ * Extension that provides trait management capabilities
+ */
 @Plugin(type = ACAQJavaExtension.class)
 public class ACAQTraitManagementExtension extends ACAQPrepackagedDefaultJavaExtension {
 

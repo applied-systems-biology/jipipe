@@ -16,11 +16,18 @@ import java.awt.*;
 import java.nio.file.Files;
 import java.util.stream.Collectors;
 
+/**
+ * Displays a tree where the user can select data slots
+ */
 public class ACAQResultAlgorithmTree extends ACAQProjectUIPanel {
     private ACAQRun run;
     private JScrollPane treeScollPane;
     private JTree tree;
 
+    /**
+     * @param workbenchUI Workbench ui
+     * @param run The run
+     */
     public ACAQResultAlgorithmTree(ACAQProjectUI workbenchUI, ACAQRun run) {
         super(workbenchUI);
         this.run = run;
@@ -68,6 +75,9 @@ public class ACAQResultAlgorithmTree extends ACAQProjectUIPanel {
         add(treeScollPane, BorderLayout.CENTER);
     }
 
+    /**
+     * @return The tree component
+     */
     public JTree getTree() {
         return tree;
     }

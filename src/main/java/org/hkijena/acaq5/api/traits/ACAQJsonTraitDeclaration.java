@@ -14,6 +14,9 @@ import org.hkijena.acaq5.utils.StringUtils;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * A SJON-serializable trait declaration
+ */
 public class ACAQJsonTraitDeclaration extends ACAQMutableTraitDeclaration implements ACAQValidatable {
 
     private Set<String> inheritedIds = new HashSet<>();
@@ -81,16 +84,26 @@ public class ACAQJsonTraitDeclaration extends ACAQMutableTraitDeclaration implem
         }
     }
 
+    /**
+     * @return The IDs of inherited {@link ACAQTraitDeclaration}
+     */
     @JsonGetter("inherited-annotation-ids")
     public Set<String> getInheritedIds() {
         return inheritedIds;
     }
 
+    /**
+     * Sets the Ids of inherited {@link ACAQTraitDeclaration}
+     * @param inheritedIds The Ids
+     */
     @JsonSetter("inherited-annotation-ids")
     public void setInheritedIds(Set<String> inheritedIds) {
         this.inheritedIds = inheritedIds;
     }
 
+    /**
+     * Attempts to push inherited trait IDs into the inherited trait declaration instances
+     */
     public void updatedInheritedDeclarations() {
         getInherited().clear();
         for (String id : inheritedIds) {
@@ -100,6 +113,9 @@ public class ACAQJsonTraitDeclaration extends ACAQMutableTraitDeclaration implem
         }
     }
 
+    /**
+     * @return The icon of this trait annotation
+     */
     @JsonGetter("icon")
     @ACAQDocumentation(name = "Icon", description = "Icon of this annotation type")
     @ACAQParameter("icon")
@@ -107,6 +123,10 @@ public class ACAQJsonTraitDeclaration extends ACAQMutableTraitDeclaration implem
         return traitIcon;
     }
 
+    /**
+     * Sets the icon
+     * @param traitIcon The icon
+     */
     @JsonSetter("icon")
     @ACAQParameter("icon")
     public void setTraitIcon(ACAQTraitIconRef traitIcon) {

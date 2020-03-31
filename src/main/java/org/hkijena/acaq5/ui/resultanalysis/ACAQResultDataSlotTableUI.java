@@ -19,6 +19,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
 
+/**
+ * UI that displays the {@link ACAQExportedDataTable} of an {@link ACAQDataSlot}
+ */
 public class ACAQResultDataSlotTableUI extends ACAQProjectUIPanel {
 
     private ACAQRun run;
@@ -27,6 +30,11 @@ public class ACAQResultDataSlotTableUI extends ACAQProjectUIPanel {
     private ACAQExportedDataTable dataTable;
     private FormPanel rowUIList;
 
+    /**
+     * @param workbenchUI the workbench UI
+     * @param run The run
+     * @param slot The slot
+     */
     public ACAQResultDataSlotTableUI(ACAQProjectUI workbenchUI, ACAQRun run, ACAQDataSlot slot) {
         super(workbenchUI);
         this.run = run;

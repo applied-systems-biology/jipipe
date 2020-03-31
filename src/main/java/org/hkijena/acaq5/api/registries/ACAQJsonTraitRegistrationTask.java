@@ -9,11 +9,18 @@ import org.hkijena.acaq5.utils.StringUtils;
 
 import java.net.URL;
 
+/**
+ * Registers an {@link ACAQJsonTraitDeclaration}
+ */
 public class ACAQJsonTraitRegistrationTask implements ACAQTraitRegistrationTask {
 
     private ACAQJsonTraitDeclaration declaration;
     private ACAQDependency source;
 
+    /**
+     * @param declaration The declaration
+     * @param source The dependency that registers the declaration
+     */
     public ACAQJsonTraitRegistrationTask(ACAQJsonTraitDeclaration declaration, ACAQDependency source) {
         this.declaration = declaration;
         this.source = source;

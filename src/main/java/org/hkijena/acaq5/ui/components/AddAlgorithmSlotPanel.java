@@ -23,6 +23,9 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+/**
+ * UI that adds slots to an algorithm
+ */
 public class AddAlgorithmSlotPanel extends JPanel {
     private ACAQAlgorithm algorithm;
     private ACAQDataSlot.SlotType slotType;
@@ -37,6 +40,10 @@ public class AddAlgorithmSlotPanel extends JPanel {
     private Set<ACAQDataDeclaration> availableTypes;
     private Map<ACAQDataDeclaration, ACAQDataDeclaration> inheritanceConversions = new HashMap<>();
 
+    /**
+     * @param algorithm the target algorithm
+     * @param slotType the slot type to be created
+     */
     public AddAlgorithmSlotPanel(ACAQAlgorithm algorithm, ACAQDataSlot.SlotType slotType) {
         this.algorithm = algorithm;
         this.slotType = slotType;
@@ -313,6 +320,12 @@ public class AddAlgorithmSlotPanel extends JPanel {
         this.dialog = dialog;
     }
 
+    /**
+     * Shows a dialog for adding slots
+     * @param parent parent component
+     * @param algorithm target algorithm
+     * @param slotType slot type to be created
+     */
     public static void showDialog(Component parent, ACAQAlgorithm algorithm, ACAQDataSlot.SlotType slotType) {
         JDialog dialog = new JDialog();
         AddAlgorithmSlotPanel panel = new AddAlgorithmSlotPanel(algorithm, slotType);

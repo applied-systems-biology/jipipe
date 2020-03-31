@@ -25,6 +25,10 @@ public class ACAQRun implements ACAQRunnable {
     private ACAQProject project;
     private ACAQRunConfiguration configuration;
 
+    /**
+     * @param project The project
+     * @param configuration Run configuration
+     */
     public ACAQRun(ACAQProject project, ACAQRunConfiguration configuration) {
         this.project = project;
         this.configuration = configuration;
@@ -45,6 +49,9 @@ public class ACAQRun implements ACAQRunnable {
         }
     }
 
+    /**
+     * @return The project that created this run
+     */
     public ACAQProject getProject() {
         return project;
     }
@@ -56,6 +63,9 @@ public class ACAQRun implements ACAQRunnable {
         assignDataStoragePaths();
     }
 
+    /**
+     * Iterates through output slots and assigns the data storage paths
+     */
     public void assignDataStoragePaths() {
         if (configuration.getOutputPath() != null) {
             if (!Files.exists(configuration.getOutputPath())) {
@@ -170,10 +180,16 @@ public class ACAQRun implements ACAQRunnable {
         }
     }
 
+    /**
+     * @return The graph used within this run. A copy of the project graph.
+     */
     public ACAQAlgorithmGraph getGraph() {
         return algorithmGraph;
     }
 
+    /**
+     * @return The run configuration
+     */
     public ACAQRunConfiguration getConfiguration() {
         return configuration;
     }
@@ -181,8 +197,9 @@ public class ACAQRun implements ACAQRunnable {
     /**
      * Loads an ACAQRun from a folder
      *
-     * @param folder
-     * @return
+     * @param folder Folder containing the run
+     * @return The loaded run
+     * @throws IOException Triggered by {@link com.fasterxml.jackson.databind.ObjectMapper}
      */
     public static ACAQRun loadFromFolder(Path folder) throws IOException {
         Path parameterFile = folder.resolve("parameters.json");

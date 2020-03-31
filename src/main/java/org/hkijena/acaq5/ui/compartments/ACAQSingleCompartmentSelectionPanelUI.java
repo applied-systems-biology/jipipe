@@ -19,9 +19,16 @@ import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
 
+/**
+ * UI for a single {@link ACAQProjectCompartment}
+ */
 public class ACAQSingleCompartmentSelectionPanelUI extends ACAQProjectUIPanel {
     private ACAQProjectCompartment compartment;
 
+    /**
+     * @param workbenchUI the workbench
+     * @param compartment the compartment
+     */
     public ACAQSingleCompartmentSelectionPanelUI(ACAQProjectUI workbenchUI, ACAQProjectCompartment compartment) {
         super(workbenchUI);
         this.compartment = compartment;
@@ -119,6 +126,9 @@ public class ACAQSingleCompartmentSelectionPanelUI extends ACAQProjectUIPanel {
         }
     }
 
+    /**
+     * @return the compartment
+     */
     public ACAQAlgorithm getCompartment() {
         return compartment;
     }

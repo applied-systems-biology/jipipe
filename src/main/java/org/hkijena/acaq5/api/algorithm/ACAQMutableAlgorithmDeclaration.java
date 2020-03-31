@@ -30,6 +30,10 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
         return algorithmClass;
     }
 
+    /**
+     * Sets the algorithm class
+     * @param algorithmClass The algorithm class
+     */
     public void setAlgorithmClass(Class<? extends ACAQAlgorithm> algorithmClass) {
         this.algorithmClass = algorithmClass;
     }
@@ -39,6 +43,10 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
         return name;
     }
 
+    /**
+     * Sets the name
+     * @param name The name
+     */
     public void setName(String name) {
         this.name = name;
     }
@@ -48,6 +56,10 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
         return description;
     }
 
+    /**
+     * Sets the description
+     * @param description The description
+     */
     public void setDescription(String description) {
         this.description = description;
     }
@@ -57,6 +69,10 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
         return category;
     }
 
+    /**
+     * Sets the category
+     * @param category The category
+     */
     public void setCategory(ACAQAlgorithmCategory category) {
         this.category = category;
     }
@@ -66,6 +82,10 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
         return preferredTraits;
     }
 
+    /**
+     * Sets preferred traits
+     * @param preferredTraits The preferred traits
+     */
     public void setPreferredTraits(Set<ACAQTraitDeclaration> preferredTraits) {
         this.preferredTraits = preferredTraits;
     }
@@ -75,6 +95,10 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
         return unwantedTraits;
     }
 
+    /**
+     * Sets unwanted traits
+     * @param unwantedTraits Unwanted traits
+     */
     public void setUnwantedTraits(Set<ACAQTraitDeclaration> unwantedTraits) {
         this.unwantedTraits = unwantedTraits;
     }
@@ -84,6 +108,10 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
         return inputSlots;
     }
 
+    /**
+     * Sets the input slots
+     * @param inputSlots Input slots
+     */
     public void setInputSlots(List<AlgorithmInputSlot> inputSlots) {
         this.inputSlots = inputSlots;
     }
@@ -93,6 +121,10 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
         return outputSlots;
     }
 
+    /**
+     * Sets the output slots
+     * @param outputSlots Output slots
+     */
     public void setOutputSlots(List<AlgorithmOutputSlot> outputSlots) {
         this.outputSlots = outputSlots;
     }
@@ -102,6 +134,10 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
         return id;
     }
 
+    /**
+     * Sets the ID
+     * @param id A unique ID
+     */
     public void setId(String id) {
         this.id = id;
     }
@@ -111,6 +147,10 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
         return slotTraitConfiguration;
     }
 
+    /**
+     * Sets the slot trait configuration
+     * @param slotTraitConfiguration The configuration
+     */
     public void setSlotTraitConfiguration(ACAQDataSlotTraitConfiguration slotTraitConfiguration) {
         this.slotTraitConfiguration = slotTraitConfiguration;
     }
@@ -120,6 +160,10 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
         return menuPath;
     }
 
+    /**
+     * Sets the menu path. Menu items are separated by newlines
+     * @param menuPath The menu path
+     */
     public void setMenuPath(String menuPath) {
         this.menuPath = menuPath;
     }

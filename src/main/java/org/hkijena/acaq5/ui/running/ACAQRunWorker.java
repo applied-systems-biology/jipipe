@@ -12,11 +12,17 @@ import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * A worker
+ */
 public class ACAQRunWorker extends SwingWorker<Exception, Object> {
 
     private EventBus eventBus = new EventBus();
     private ACAQRunnable run;
 
+    /**
+     * @param run The executed run
+     */
     public ACAQRunWorker(ACAQRunnable run) {
         this.run = run;
     }
@@ -71,10 +77,16 @@ public class ACAQRunWorker extends SwingWorker<Exception, Object> {
         eventBus.post(new RunUIWorkerInterruptedEvent(this, e));
     }
 
+    /**
+     * @return The event bus
+     */
     public EventBus getEventBus() {
         return eventBus;
     }
 
+    /**
+     * @return The run
+     */
     public ACAQRunnable getRun() {
         return run;
     }

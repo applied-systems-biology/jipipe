@@ -20,15 +20,25 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Exported {@link ACAQProjectCompartment}
+ */
 @JsonSerialize(using = ACAQExportedCompartment.Serializer.class)
 @JsonDeserialize(using = ACAQExportedCompartment.Deserializer.class)
 public class ACAQExportedCompartment {
     private ACAQProjectMetadata metadata = new ACAQProjectMetadata();
     private ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
 
+    /**
+     * Creates a new instance
+     */
     public ACAQExportedCompartment() {
     }
 
+    /**
+     * Initializes the instance from a compartment
+     * @param compartment The compartment
+     */
     public ACAQExportedCompartment(ACAQProjectCompartment compartment) {
         initializeGraphFromProject(compartment);
     }
@@ -55,6 +65,9 @@ public class ACAQExportedCompartment {
         }
     }
 
+    /**
+     * @return A name suggested automatically
+     */
     public String getSuggestedName() {
         if (metadata.getName() != null && !metadata.getName().trim().isEmpty())
             return metadata.getName();
@@ -62,6 +75,11 @@ public class ACAQExportedCompartment {
             return "Compartment";
     }
 
+    /**
+     * Adds the compartment to a project as the specified compartment name
+     * @param project Target project
+     * @param compartmentName Target compartment name
+     */
     public void addTo(ACAQProject project, String compartmentName) {
         if (project.getCompartments().containsKey(compartmentName))
             throw new RuntimeException("Compartment " + compartmentName + " already exists!");
@@ -93,18 +111,33 @@ public class ACAQExportedCompartment {
         }
     }
 
+    /**
+     * Saves the exported compartment to JSON
+     * @param fileName The JSON filename
+     * @throws IOException Triggered by ObjectMapper
+     */
     public void saveToJson(Path fileName) throws IOException {
         JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(fileName.toFile(), this);
     }
 
+    /**
+     * @return Metadata
+     */
     public ACAQProjectMetadata getMetadata() {
         return metadata;
     }
 
+    /**
+     * Sets the metadata
+     * @param metadata The metadata
+     */
     public void setMetadata(ACAQProjectMetadata metadata) {
         this.metadata = metadata;
     }
 
+    /**
+     * Serializes the compartment
+     */
     public static class Serializer extends JsonSerializer<ACAQExportedCompartment> {
         @Override
         public void serialize(ACAQExportedCompartment exportedCompartment, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
@@ -116,6 +149,9 @@ public class ACAQExportedCompartment {
         }
     }
 
+    /**
+     * Deserializes the compartment
+     */
     public static class Deserializer extends JsonDeserializer<ACAQExportedCompartment> {
         @Override
         public ACAQExportedCompartment deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {

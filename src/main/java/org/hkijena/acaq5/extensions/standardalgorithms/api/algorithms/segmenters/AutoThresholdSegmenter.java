@@ -38,10 +38,17 @@ public class AutoThresholdSegmenter extends ACAQIteratingAlgorithm {
 
     private AutoThresholder.Method method = AutoThresholder.Method.Default;
 
+    /**
+     * @param declaration the declaration
+     */
     public AutoThresholdSegmenter(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
     }
 
+    /**
+     * Copies the algorithm
+     * @param other the original
+     */
     public AutoThresholdSegmenter(AutoThresholdSegmenter other) {
         super(other);
         this.method = other.method;

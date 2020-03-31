@@ -11,10 +11,16 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 import java.awt.*;
 
+/**
+ * Renders the tree in {@link ACAQResultAlgorithmTree}
+ */
 public class ACAQResultTreeCellRenderer extends JLabel implements TreeCellRenderer {
     private Icon compartmentIcon = UIUtils.getIconFromResources("graph-compartment.png");
     private Icon rootIcon = UIUtils.getIconFromResources("run.png");
 
+    /**
+     * Creates new renderer
+     */
     public ACAQResultTreeCellRenderer() {
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));

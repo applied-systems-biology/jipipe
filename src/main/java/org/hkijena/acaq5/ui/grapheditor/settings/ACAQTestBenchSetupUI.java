@@ -23,6 +23,9 @@ import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+/**
+ * UI for generating {@link ACAQTestbench}
+ */
 public class ACAQTestBenchSetupUI extends ACAQProjectUIPanel {
 
     private ACAQAlgorithm algorithm;
@@ -32,6 +35,11 @@ public class ACAQTestBenchSetupUI extends ACAQProjectUIPanel {
     private ACAQValidityReportUI validationReportUI;
     private ACAQTestbench currentTestBench;
 
+    /**
+     * @param workbenchUI the workbench
+     * @param algorithm the target algorithm
+     * @param graph the graph
+     */
     public ACAQTestBenchSetupUI(ACAQProjectUI workbenchUI, ACAQAlgorithm algorithm, ACAQAlgorithmGraph graph) {
         super(workbenchUI);
         this.algorithm = algorithm;
@@ -157,6 +165,10 @@ public class ACAQTestBenchSetupUI extends ACAQProjectUIPanel {
         executerUI.startRun();
     }
 
+    /**
+     * Triggered when a worker is finished
+     * @param event Generated event
+     */
     @Subscribe
     public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
         if (event.getRun() == currentTestBench) {
@@ -175,6 +187,10 @@ public class ACAQTestBenchSetupUI extends ACAQProjectUIPanel {
         }
     }
 
+    /**
+     * Triggered when a worker is interrupted
+     * @param event Generated event
+     */
     @Subscribe
     public void onWorkerInterrupted(RunUIWorkerInterruptedEvent event) {
         if (event.getRun() == currentTestBench) {

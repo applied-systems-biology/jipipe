@@ -8,6 +8,9 @@ import org.hkijena.acaq5.ui.components.FileSelection;
 
 import java.nio.file.Path;
 
+/**
+ * A mutable implementation of {@link ACAQRunConfiguration}
+ */
 public class ACAQMutableRunConfiguration implements ACAQRunConfiguration {
     private EventBus eventBus = new EventBus();
     private Path outputPath;
@@ -24,6 +27,10 @@ public class ACAQMutableRunConfiguration implements ACAQRunConfiguration {
         return outputPath;
     }
 
+    /**
+     * Sets the output path
+     * @param outputPath The output path
+     */
     @ACAQParameter("output-path")
     public void setOutputPath(Path outputPath) {
         this.outputPath = outputPath;
@@ -35,6 +42,10 @@ public class ACAQMutableRunConfiguration implements ACAQRunConfiguration {
         return flushingEnabled;
     }
 
+    /**
+     * Enables/Disables if data is written
+     * @param flushingEnabled Enables/Disables writing data
+     */
     public void setFlushingEnabled(boolean flushingEnabled) {
         this.flushingEnabled = flushingEnabled;
     }
@@ -44,6 +55,11 @@ public class ACAQMutableRunConfiguration implements ACAQRunConfiguration {
         return onlyRunningEndAlgorithm;
     }
 
+    /**
+     * Enables/Disables if only the last algorithm is run.
+     * Used for {@link org.hkijena.acaq5.api.testbench.ACAQTestbench}
+     * @param onlyRunningEndAlgorithm Enables/Disables if only the last algorithm is run.
+     */
     public void setOnlyRunningEndAlgorithm(boolean onlyRunningEndAlgorithm) {
         this.onlyRunningEndAlgorithm = onlyRunningEndAlgorithm;
     }
@@ -53,6 +69,10 @@ public class ACAQMutableRunConfiguration implements ACAQRunConfiguration {
         return flushingKeepsDataEnabled;
     }
 
+    /**
+     * Enables/Disables if data is kept after writing.
+     * @param flushingKeepsDataEnabled Enables/Disables if data is kept after writing.
+     */
     public void setFlushingKeepsDataEnabled(boolean flushingKeepsDataEnabled) {
         this.flushingKeepsDataEnabled = flushingKeepsDataEnabled;
     }
@@ -62,6 +82,10 @@ public class ACAQMutableRunConfiguration implements ACAQRunConfiguration {
         return endAlgorithmId;
     }
 
+    /**
+     * Sets the end algorithm ID. Effective with isOnlyRunningEndAlgorithm()
+     * @param endAlgorithmId The algorithm ID
+     */
     public void setEndAlgorithmId(String endAlgorithmId) {
         this.endAlgorithmId = endAlgorithmId;
     }

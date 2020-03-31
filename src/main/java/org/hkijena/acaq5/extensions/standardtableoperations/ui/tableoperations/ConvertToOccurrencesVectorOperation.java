@@ -18,6 +18,9 @@ import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableVectorOperation;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Converts the vector into a histogram vector
+ */
 public class ConvertToOccurrencesVectorOperation implements ACAQTableVectorOperation {
     @Override
     public Object[] process(Object[] input) {

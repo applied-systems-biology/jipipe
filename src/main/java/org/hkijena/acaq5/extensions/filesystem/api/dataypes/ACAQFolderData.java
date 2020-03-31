@@ -10,15 +10,25 @@ import org.hkijena.acaq5.utils.JsonUtils;
 import java.io.IOException;
 import java.nio.file.Path;
 
+/**
+ * Data that stores a folder
+ */
 @ACAQDocumentation(name = "Folder")
 public class ACAQFolderData implements ACAQData {
 
     private Path folderPath;
 
+    /**
+     * Instantiates the data from a folder path
+     * @param folderPath Folder path
+     */
     public ACAQFolderData(Path folderPath) {
         this.folderPath = folderPath;
     }
 
+    /**
+     * Creates a new instance
+     */
     private ACAQFolderData() {
     }
 
@@ -32,16 +42,27 @@ public class ACAQFolderData implements ACAQData {
         }
     }
 
+    /**
+     * Gets the data type name
+     * @return Data type name
+     */
     @JsonGetter("acaq:data-type")
     private String getDataTypeName() {
         return ACAQDatatypeRegistry.getInstance().getIdOf(getClass());
     }
 
+    /**
+     * @return The folder path
+     */
     @JsonGetter("folder-path")
     public Path getFolderPath() {
         return folderPath;
     }
 
+    /**
+     * Sets the folder path
+     * @param path Folder path
+     */
     @JsonSetter("folder-path")
     private void setFolderPath(Path path) {
         this.folderPath = path;

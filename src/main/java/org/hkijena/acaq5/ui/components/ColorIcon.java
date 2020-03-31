@@ -26,14 +26,27 @@ public class ColorIcon implements Icon {
     private Color border;
     private Insets insets;
 
+    /**
+     * Creates a 16x16 black icon
+     */
     public ColorIcon() {
         this(16, 16);
     }
 
+    /**
+     * Creates a black icon
+     * @param width icon width
+     * @param height icon height
+     */
     public ColorIcon(int width, int height) {
         this(width, height, Color.black);
     }
 
+    /**
+     * @param width icon width
+     * @param height icon height
+     * @param c icon color
+     */
     public ColorIcon(int width, int height, Color c) {
         imageWidth = width;
         imageHeight = height;

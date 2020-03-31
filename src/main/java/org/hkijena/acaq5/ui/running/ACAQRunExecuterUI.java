@@ -9,11 +9,17 @@ import org.hkijena.acaq5.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * UI that executes an {@link ACAQRunnable}
+ */
 public class ACAQRunExecuterUI extends JPanel {
     private ACAQRunnable run;
     private JProgressBar progressBar;
     private JButton cancelButton;
 
+    /**
+     * @param run The runnable
+     */
     public ACAQRunExecuterUI(ACAQRunnable run) {
         this.run = run;
         initialize();
@@ -40,6 +46,9 @@ public class ACAQRunExecuterUI extends JPanel {
         add(buttonPanel, BorderLayout.CENTER);
     }
 
+    /**
+     * Starts the run
+     */
     public void startRun() {
         ACAQRunWorker worker = ACAQRunnerQueue.getInstance().enqueue(run);
         progressBar.setString("Waiting until other processes are finished ...");
@@ -50,11 +59,18 @@ public class ACAQRunExecuterUI extends JPanel {
         });
     }
 
+    /**
+     * Cancels the run
+     */
     public void requestCancelRun() {
         cancelButton.setEnabled(false);
         ACAQRunnerQueue.getInstance().cancel(run);
     }
 
+    /**
+     * Triggered when a scheduled worker is finished
+     * @param event Generated event
+     */
     @Subscribe
     public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
         if (event.getRun() == run) {
@@ -63,6 +79,10 @@ public class ACAQRunExecuterUI extends JPanel {
         }
     }
 
+    /**
+     * Triggered when a schedules worker is interrupted
+     * @param event Generated event
+     */
     @Subscribe
     public void onWorkerInterrupted(RunUIWorkerFinishedEvent event) {
         if (event.getRun() == run) {
@@ -71,6 +91,10 @@ public class ACAQRunExecuterUI extends JPanel {
         }
     }
 
+    /**
+     * Triggered when a worker reports progress
+     * @param event Generated event
+     */
     @Subscribe
     public void onWorkerProgress(RunUIWorkerProgressEvent event) {
         if (event.getRun() == run) {

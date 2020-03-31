@@ -13,7 +13,7 @@ public @interface ACAQOrganization {
      * This is valid for {@link org.hkijena.acaq5.api.algorithm.ACAQAlgorithm} and {@link org.hkijena.acaq5.api.data.ACAQData}
      * Menu entries are separated via newlines.
      *
-     * @return
+     * @return The menu path
      */
     String menuPath() default "";
 }

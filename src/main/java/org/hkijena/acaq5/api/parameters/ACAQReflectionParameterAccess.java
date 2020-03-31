@@ -8,6 +8,9 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * {@link ACAQParameterAccess} generated from reflection
+ */
 public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
 
     private String key;
@@ -38,6 +41,9 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
         return null;
     }
 
+    /**
+     * @return Documentation of this parameter
+     */
     public ACAQDocumentation getDocumentation() {
         return documentation;
     }
@@ -109,8 +115,8 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
     /**
      * Extracts parameters from an object
      *
-     * @param parameterHolder
-     * @return
+     * @param parameterHolder Object that holds the parameter
+     * @return Map from parameter key to parameter. The key is not necessarily ParameterHolder.getKey()
      */
     public static Map<String, ACAQParameterAccess> getReflectionParameters(ACAQParameterHolder parameterHolder) {
         Map<String, ACAQParameterAccess> result = new HashMap<>();
@@ -160,11 +166,11 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
                         ACAQParameterAccess subParameter = kv.getValue();
                         if (subParameter.getParameterHolder() == subAlgorithm) {
                             if (subParameter instanceof ACAQMutableParameterAccess) {
-                                ((ACAQMutableParameterAccess) subParameter).setHolderName(subAlgorithmName);
-                                ((ACAQMutableParameterAccess) subParameter).setHolderDescription(subAlgorithmDescription);
+                                subParameter.setHolderName(subAlgorithmName);
+                                subParameter.setHolderDescription(subAlgorithmDescription);
                             } else if (subParameter instanceof ACAQReflectionParameterAccess) {
-                                ((ACAQReflectionParameterAccess) subParameter).setHolderName(subAlgorithmName);
-                                ((ACAQReflectionParameterAccess) subParameter).setHolderDescription(subAlgorithmDescription);
+                                subParameter.setHolderName(subAlgorithmName);
+                                subParameter.setHolderDescription(subAlgorithmDescription);
                             }
                         }
                         result.put(subAlgorithmAnnotation.value() + "/" + kv.getKey(), subParameter);

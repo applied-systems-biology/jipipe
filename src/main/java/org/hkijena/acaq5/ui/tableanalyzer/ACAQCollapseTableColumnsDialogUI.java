@@ -25,11 +25,17 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
 
+/**
+ * UI for integrating table columns
+ */
 public class ACAQCollapseTableColumnsDialogUI extends JDialog {
     private DefaultTableModel tableModel;
     private DefaultTableModel resultTableModel;
     private List<JComboBox<Object>> columnOperations = new ArrayList<>();
 
+    /**
+     * @param tableModel The table model
+     */
     public ACAQCollapseTableColumnsDialogUI(DefaultTableModel tableModel) {
         this.tableModel = tableModel;
         initialize();
@@ -218,6 +224,9 @@ public class ACAQCollapseTableColumnsDialogUI extends JDialog {
         setVisible(false);
     }
 
+    /**
+     * @return The resulting table model
+     */
     public DefaultTableModel getResultTableModel() {
         return resultTableModel;
     }
@@ -229,6 +238,9 @@ public class ACAQCollapseTableColumnsDialogUI extends JDialog {
 
     }
 
+    /**
+     * Renders a list entry
+     */
     private static class Renderer extends JLabel implements ListCellRenderer<Object> {
 
         public Renderer() {

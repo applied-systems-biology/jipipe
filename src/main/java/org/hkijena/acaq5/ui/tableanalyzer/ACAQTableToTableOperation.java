@@ -14,6 +14,13 @@ package org.hkijena.acaq5.ui.tableanalyzer;
 
 import javax.swing.table.DefaultTableModel;
 
+/**
+ * An operation that converts a table to another table
+ */
 public interface ACAQTableToTableOperation {
+    /**
+     * @param input input table
+     * @return output table
+     */
     DefaultTableModel process(DefaultTableModel input);
 }

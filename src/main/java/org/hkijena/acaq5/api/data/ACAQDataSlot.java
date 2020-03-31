@@ -37,6 +37,13 @@ public class ACAQDataSlot implements TableModel {
 
     private Set<ACAQTraitDeclaration> slotAnnotations = new HashSet<>();
 
+    /**
+     * Creates a new slot
+     * @param algorithm The algorithm that contains the slot
+     * @param slotType The slot type
+     * @param name The unique slot name
+     * @param acceptedDataType The accepted data type
+     */
     public ACAQDataSlot(ACAQAlgorithm algorithm, SlotType slotType, String name, Class<? extends ACAQData> acceptedDataType) {
         this.algorithm = algorithm;
         this.name = name;
@@ -44,6 +51,9 @@ public class ACAQDataSlot implements TableModel {
         this.acceptedDataType = acceptedDataType;
     }
 
+    /**
+     * @return the slot's data type
+     */
     public Class<? extends ACAQData> getAcceptedDataType() {
         return acceptedDataType;
     }
@@ -52,12 +62,17 @@ public class ACAQDataSlot implements TableModel {
      * Sets the accepted slot type
      * Please note that this method can cause issues when running the graph
      *
-     * @param slotDataType
+     * @param slotDataType the new data type
      */
     public void setAcceptedDataType(Class<? extends ACAQData> slotDataType) {
         acceptedDataType = slotDataType;
     }
 
+    /**
+     * Returns true if the slot can carry the provided data
+     * @param data Data
+     * @return True if the slot accepts the data
+     */
     public boolean accepts(ACAQData data) {
         if (data == null)
             throw new NullPointerException("Data slots cannot accept null data!");
@@ -67,8 +82,9 @@ public class ACAQDataSlot implements TableModel {
     /**
      * Gets the data stored in a specific row
      *
-     * @param row
-     * @return
+     * @param row The row
+     * @return Data at row
+     * @param <T> Data type
      */
     public <T> T getData(int row) {
         return (T) data.get(row);
@@ -77,8 +93,8 @@ public class ACAQDataSlot implements TableModel {
     /**
      * Gets the list of annotations for a specific data row
      *
-     * @param row
-     * @return
+     * @param row The row
+     * @return Annotations at row
      */
     public List<ACAQTrait> getAnnotations(int row) {
         List<ACAQTrait> result = new ArrayList<>();
@@ -92,9 +108,10 @@ public class ACAQDataSlot implements TableModel {
 
     /**
      * Gets the annotation column for the trait declaration or creates it
+     * Ensures that the output size is equal to getRowCount()
      *
-     * @param declaration
-     * @return
+     * @param declaration Annotation type
+     * @return All trait instances of the provided type. Size is getRowCount()
      */
     private List<ACAQTrait> getOrCreateAnnotationColumnData(ACAQTraitDeclaration declaration) {
         ArrayList<ACAQTrait> arrayList = annotations.getOrDefault(declaration, null);
@@ -112,8 +129,8 @@ public class ACAQDataSlot implements TableModel {
     /**
      * Adds a data row
      *
-     * @param value
-     * @param traits
+     * @param value The data
+     * @param traits Optional traits
      */
     public void addData(ACAQData value, List<ACAQTrait> traits) {
         if (!accepts(value))
@@ -133,7 +150,7 @@ public class ACAQDataSlot implements TableModel {
     /**
      * Adds an annotation to all existing data
      *
-     * @param trait
+     * @param trait The trait instance
      * @param overwrite If false, existing annotations of the same type are not overwritten
      */
     public void addAnnotationToAllData(ACAQTrait trait, boolean overwrite) {
@@ -148,7 +165,7 @@ public class ACAQDataSlot implements TableModel {
     /**
      * Removes an annotation column from the data
      *
-     * @param declaration
+     * @param declaration Annotation type
      */
     public void removeAllAnnotationsFromData(ACAQTraitDeclaration declaration) {
         int columnIndex = annotationColumns.indexOf(declaration);
@@ -161,7 +178,7 @@ public class ACAQDataSlot implements TableModel {
     /**
      * Adds a data row
      *
-     * @param value
+     * @param value Data
      */
     public void addData(ACAQData value) {
         addData(value, Collections.emptyList());
@@ -170,7 +187,7 @@ public class ACAQDataSlot implements TableModel {
     /**
      * Finds the row that matches the given traits
      *
-     * @param traits
+     * @param traits A valid annotation list with size equals to getRowCount()
      * @return row index >= 0 if found, otherwise -1
      */
     public int findRowWithTraits(List<ACAQTrait> traits) {
@@ -199,24 +216,38 @@ public class ACAQDataSlot implements TableModel {
     /**
      * Returns true if all rows are unique according to their traits
      *
-     * @return
+     * @return if all rows are unique according to their traits
      */
     public boolean isDataUnique() {
         return uniqueData;
     }
 
+    /**
+     * @return The unique slot name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Returns a name that includes the algorithm name and the slot name.
+     * Should not be used outside of UI.
+     * @return Display name that includes the algorithm name, as well as the slot name.
+     */
     public String getNameWithAlgorithmName() {
         return algorithm.getName() + " \uD83E\uDC92 " + getName();
     }
 
+    /**
+     * @return The algorithm that contains the slot
+     */
     public ACAQAlgorithm getAlgorithm() {
         return algorithm;
     }
 
+    /**
+     * @return The slot type
+     */
     public SlotType getSlotType() {
         return slotType;
     }
@@ -232,6 +263,9 @@ public class ACAQDataSlot implements TableModel {
         }
     }
 
+    /**
+     * @return True if this slot is an input slot
+     */
     public boolean isInput() {
         switch (slotType) {
             case Input:
@@ -243,6 +277,9 @@ public class ACAQDataSlot implements TableModel {
         }
     }
 
+    /**
+     * @return True if this slot is an output
+     */
     public boolean isOutput() {
         switch (slotType) {
             case Input:
@@ -258,12 +295,16 @@ public class ACAQDataSlot implements TableModel {
      * Gets the storage path that is used during running the algorithm for saving the results
      * This is not used during project creation
      *
-     * @return
+     * @return Data storage path
      */
     public Path getStoragePath() {
         return storagePath;
     }
 
+    /**
+     * Sets storage path that is used during running the algorithm for saving the results
+     * @param storagePath Data storage paths
+     */
     public void setStoragePath(Path storagePath) {
         this.storagePath = storagePath;
     }
@@ -304,7 +345,7 @@ public class ACAQDataSlot implements TableModel {
     /**
      * Returns all trait declarations, sorted by their information
      *
-     * @return
+     * @return Information-sorted trait types
      */
     public List<ACAQTraitDeclaration> getTraitsSortedByInformation() {
         Map<ACAQTraitDeclaration, Double> informations = new HashMap<>();
@@ -317,8 +358,8 @@ public class ACAQDataSlot implements TableModel {
     /**
      * Calculates the information of a trait
      *
-     * @param traitDeclaration
-     * @return
+     * @param traitDeclaration Trait type
+     * @return Shannon-Information of this trait type
      */
     public double getInformationOf(ACAQTraitDeclaration traitDeclaration) {
         Map<Object, Integer> frequencies = new HashMap<>();
@@ -345,7 +386,7 @@ public class ACAQDataSlot implements TableModel {
     /**
      * Copies the source slot into this slot
      *
-     * @param sourceSlot
+     * @param sourceSlot The other slot
      */
     public void copyFrom(ACAQDataSlot sourceSlot) {
         for (int row = 0; row < sourceSlot.getRowCount(); ++row) {
@@ -416,7 +457,7 @@ public class ACAQDataSlot implements TableModel {
     /**
      * Returns all traits that are not associated to data, but instead associated to the slot itself
      *
-     * @return
+     * @return Slot annotations
      */
     public Set<ACAQTraitDeclaration> getSlotAnnotations() {
         return Collections.unmodifiableSet(slotAnnotations);
@@ -425,7 +466,7 @@ public class ACAQDataSlot implements TableModel {
     /**
      * Adds an annotation to this slot
      *
-     * @param declaration
+     * @param declaration Annotation type
      */
     public void addSlotAnnotation(ACAQTraitDeclaration declaration) {
         slotAnnotations.add(declaration);
@@ -435,7 +476,7 @@ public class ACAQDataSlot implements TableModel {
     /**
      * Removes an annotation from this slot
      *
-     * @param declaration
+     * @param declaration Annotation type
      */
     public void removeSlotAnnotation(ACAQTraitDeclaration declaration) {
         if (slotAnnotations.remove(declaration))
@@ -445,7 +486,7 @@ public class ACAQDataSlot implements TableModel {
     /**
      * Removes the annotation, as well as any other annotation that inherits from it from this slot
      *
-     * @param declaration
+     * @param declaration Annotation type
      */
     public void removeSlotAnnotationCategory(ACAQTraitDeclaration declaration) {
         if (slotAnnotations.remove(declaration) || slotAnnotations.removeIf(t -> t.getInherited().contains(declaration)))
@@ -462,6 +503,9 @@ public class ACAQDataSlot implements TableModel {
         }
     }
 
+    /**
+     * @return The event bus
+     */
     public EventBus getEventBus() {
         return eventBus;
     }
@@ -469,7 +513,8 @@ public class ACAQDataSlot implements TableModel {
     /**
      * Updates the trait declaration to add this trait
      *
-     * @param declaration
+     * @param declaration Annotation type
+     * @param operation The operation
      */
     public void setSlotTraitToTraitConfiguration(ACAQTraitDeclaration declaration, ACAQTraitModificationOperation operation) {
         if (algorithm.getTraitConfiguration() instanceof ACAQMutableTraitConfiguration) {
@@ -477,12 +522,18 @@ public class ACAQDataSlot implements TableModel {
         }
     }
 
+    /**
+     * Removes all data from this slot
+     */
     public void clearData() {
         data.clear();
         annotationColumns.clear();
         annotations.clear();
     }
 
+    /**
+     * The slot type
+     */
     public enum SlotType {
         Input,
         Output

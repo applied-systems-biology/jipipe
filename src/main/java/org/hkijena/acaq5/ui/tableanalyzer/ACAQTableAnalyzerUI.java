@@ -34,6 +34,9 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
 
+/**
+ * Spreadsheet UI
+ */
 public class ACAQTableAnalyzerUI extends ACAQProjectUIPanel {
     private static final int MAX_UNDO = 10;
     private DefaultTableModel tableModel;
@@ -44,6 +47,10 @@ public class ACAQTableAnalyzerUI extends ACAQProjectUIPanel {
     private JButton convertSelectedCellsButton;
     private JPopupMenu convertSelectedCellsMenu;
 
+    /**
+     * @param workbench the workbench
+     * @param tableModel the table
+     */
     public ACAQTableAnalyzerUI(ACAQProjectUI workbench, DefaultTableModel tableModel) {
         super(workbench);
         this.tableModel = tableModel;
@@ -402,6 +409,9 @@ public class ACAQTableAnalyzerUI extends ACAQProjectUIPanel {
         return result;
     }
 
+    /**
+     * Auto-sizes all columns
+     */
     public void autoSizeColumns() {
         jxTable.packAll();
     }
@@ -554,6 +564,9 @@ public class ACAQTableAnalyzerUI extends ACAQProjectUIPanel {
         }
     }
 
+    /**
+     * Creates a new 'Undo' point
+     */
     public void createUndoSnapshot() {
         if (undoBuffer.size() >= MAX_UNDO)
             undoBuffer.remove(0);
@@ -642,6 +655,11 @@ public class ACAQTableAnalyzerUI extends ACAQProjectUIPanel {
         return tableModel;
     }
 
+    /**
+     * Imports a table from CSV and creates a new {@link ACAQTableAnalyzerUI} tab
+     * @param fileName CSV file
+     * @param workbenchUI workbench
+     */
     public static void importTableFromCSV(Path fileName, ACAQProjectUI workbenchUI) {
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName.toFile()))) {
             DefaultTableModel tableModel = new DefaultTableModel();
@@ -696,6 +714,9 @@ public class ACAQTableAnalyzerUI extends ACAQProjectUIPanel {
         }
     }
 
+    /**
+     * Points to a cell in the table
+     */
     private static class CellIndex {
         private int row;
         private int column;

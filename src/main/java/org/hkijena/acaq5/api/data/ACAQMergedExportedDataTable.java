@@ -12,6 +12,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Merges multiple {@link ACAQExportedDataTable}
+ */
 public class ACAQMergedExportedDataTable implements TableModel {
 
     private ArrayList<ACAQProjectCompartment> compartmentList = new ArrayList<>();
@@ -20,6 +23,12 @@ public class ACAQMergedExportedDataTable implements TableModel {
     private List<ACAQTraitDeclaration> traitColumns = new ArrayList<>();
     private ArrayList<ACAQDataSlot> slotList = new ArrayList<>();
 
+    /**
+     * Adds an {@link ACAQExportedDataTable}
+     * @param project The project
+     * @param dataSlot The data slot
+     * @param table The table
+     */
     public void add(ACAQProject project, ACAQDataSlot dataSlot, ACAQExportedDataTable table) {
         for (ACAQTraitDeclaration traitColumn : table.getTraitColumns()) {
             if (!traitColumns.contains(traitColumn))
@@ -111,14 +120,25 @@ public class ACAQMergedExportedDataTable implements TableModel {
 
     }
 
+    /**
+     * @return Additional columns containing {@link ACAQTraitDeclaration}
+     */
     public List<ACAQTraitDeclaration> getTraitColumns() {
         return traitColumns;
     }
 
+    /**
+     * Gets the slot that defined the specified row
+     * @param row Row index
+     * @return The slot that defined the row
+     */
     public ACAQDataSlot getSlot(int row) {
         return slotList.get(row);
     }
 
+    /**
+     * @return List of rows
+     */
     public List<ACAQExportedDataTable.Row> getRowList() {
         return rowList;
     }

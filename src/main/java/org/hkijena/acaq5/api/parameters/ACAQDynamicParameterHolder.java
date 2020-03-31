@@ -28,10 +28,17 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
     private String description;
     private boolean allowModification = true;
 
+    /**
+     * @param allowedTypes The parameter types that can be added
+     */
     public ACAQDynamicParameterHolder(Class<?>... allowedTypes) {
         this.allowedTypes.addAll(Arrays.asList(allowedTypes));
     }
 
+    /**
+     * Copies the parameters from the original
+     * @param other The original
+     */
     public ACAQDynamicParameterHolder(ACAQDynamicParameterHolder other) {
         this.allowedTypes.addAll(other.allowedTypes);
         for (Map.Entry<String, ACAQMutableParameterAccess> entry : other.parameters.entrySet()) {
@@ -56,6 +63,12 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
         this.parameters.putAll(parameters);
     }
 
+    /**
+     * Adds a new parameter
+     * @param key A unique key
+     * @param fieldClass The parameter class
+     * @return The created parameter access
+     */
     public ACAQMutableParameterAccess addParameter(String key, Class<?> fieldClass) {
         if (parameters.containsKey(key))
             throw new IllegalArgumentException("Parameter with key " + key + " already exists!");
@@ -66,38 +79,77 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
         return parameterAccess;
     }
 
+    /**
+     * Removes a parameter
+     * @param key The parameter key
+     */
     public void removeParameter(String key) {
         parameters.remove(key);
     }
 
+    /**
+     * Gets a parameter by its key
+     * @param key The parameter key
+     * @return The parameter access
+     */
     public ACAQMutableParameterAccess getParameter(String key) {
         return parameters.get(key);
     }
 
+    /**
+     * Gets a parameter value
+     * @param key The parameter key
+     * @param <T> The parameter type
+     * @return The parameter value
+     */
     public <T> T getValue(String key) {
         return getParameter(key).get();
     }
 
+    /**
+     * Sets a parameter value
+     * @param key The parameter key
+     * @param value The parameter value
+     * @param <T> The parameter type
+     * @return True if setting the value was successful
+     */
     public <T> boolean setValue(String key, T value) {
         return getParameter(key).set(value);
     }
 
+    /**
+     * @return Allowed parameter types
+     */
     public Set<Class<?>> getAllowedTypes() {
         return allowedTypes;
     }
 
+    /**
+     * Sets allowed parameter types
+     * @param allowedTypes Parameter types
+     */
     public void setAllowedTypes(Set<Class<?>> allowedTypes) {
         this.allowedTypes = allowedTypes;
     }
 
+    /**
+     * @return Parameter holder name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @return Parameter holder description
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Loads the holder from JSON
+     * @param node JSON data
+     */
     public void fromJson(JsonNode node) {
         parameters.clear();
         JsonNode parametersNode = node.get("parameters");
@@ -113,10 +165,17 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
         }
     }
 
+    /**
+     * @return True if modification is allowed
+     */
     public boolean isAllowModification() {
         return allowModification;
     }
 
+    /**
+     * Enabled/disables if modification is allowed
+     * @param allowModification True if modification is allowed
+     */
     public void setAllowModification(boolean allowModification) {
         this.allowModification = allowModification;
     }
@@ -130,8 +189,8 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
      * Finds all dynamic parameter holders in the parameter holder
      * Does not find child parameter holders.
      *
-     * @param parameterHolder
-     * @return
+     * @param parameterHolder The parameter holder
+     * @return Map from string to parameter holder
      */
     public static Map<String, ACAQDynamicParameterHolder> findDynamicParameterHolders(Object parameterHolder) {
         Map<String, ACAQDynamicParameterHolder> result = new HashMap<>();

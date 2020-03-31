@@ -24,6 +24,11 @@ import java.util.Set;
 @JsonSerialize(using = ACAQJavaAlgorithmDeclaration.Serializer.class)
 public class ACAQJavaAlgorithmDeclaration extends ACAQMutableAlgorithmDeclaration {
 
+    /**
+     * Creates a new algorithm declaration
+     * @param id Algorithm ID
+     * @param algorithmClass Algorithm class
+     */
     public ACAQJavaAlgorithmDeclaration(String id, Class<? extends ACAQAlgorithm> algorithmClass) {
         setAlgorithmClass(algorithmClass);
         setId(id);
@@ -91,8 +96,8 @@ public class ACAQJavaAlgorithmDeclaration extends ACAQMutableAlgorithmDeclaratio
     /**
      * Returns the name of an algorithm
      *
-     * @param klass
-     * @return
+     * @param klass Algorithm class
+     * @return The name
      */
     public static String getNameOf(Class<? extends ACAQAlgorithm> klass) {
         ACAQDocumentation[] annotations = klass.getAnnotationsByType(ACAQDocumentation.class);
@@ -106,8 +111,8 @@ public class ACAQJavaAlgorithmDeclaration extends ACAQMutableAlgorithmDeclaratio
     /**
      * Returns the description of an algorithm
      *
-     * @param klass
-     * @return
+     * @param klass The algorithm class
+     * @return The name
      */
     public static String getDescriptionOf(Class<? extends ACAQAlgorithm> klass) {
         ACAQDocumentation[] annotations = klass.getAnnotationsByType(ACAQDocumentation.class);
@@ -121,8 +126,8 @@ public class ACAQJavaAlgorithmDeclaration extends ACAQMutableAlgorithmDeclaratio
     /**
      * Returns the category of an algorithm
      *
-     * @param klass
-     * @return
+     * @param klass The algorithm class
+     * @return The category
      */
     public static ACAQAlgorithmCategory getCategoryOf(Class<? extends ACAQAlgorithm> klass) {
         AlgorithmMetadata[] annotations = klass.getAnnotationsByType(AlgorithmMetadata.class);
@@ -136,8 +141,8 @@ public class ACAQJavaAlgorithmDeclaration extends ACAQMutableAlgorithmDeclaratio
     /**
      * Returns the menu path of the algorithm
      *
-     * @param klass
-     * @return
+     * @param klass The algorithm class
+     * @return The menu path
      */
     static String getMenuPathOf(Class<? extends ACAQAlgorithm> klass) {
         ACAQOrganization[] annotations = klass.getAnnotationsByType(ACAQOrganization.class);
@@ -148,6 +153,9 @@ public class ACAQJavaAlgorithmDeclaration extends ACAQMutableAlgorithmDeclaratio
         }
     }
 
+    /**
+     * Serializes the declaration
+     */
     public static class Serializer extends JsonSerializer<ACAQJavaAlgorithmDeclaration> {
         @Override
         public void serialize(ACAQJavaAlgorithmDeclaration declaration, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {

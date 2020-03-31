@@ -25,6 +25,9 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+/**
+ * A user interface to find a matching algorithm for the specified target slot
+ */
 public class ACAQAlgorithmFinderUI extends JPanel {
     private ACAQDataSlot outputSlot;
     private ACAQAlgorithm algorithm;
@@ -34,6 +37,12 @@ public class ACAQAlgorithmFinderUI extends JPanel {
     private FormPanel formPanel;
     private EventBus eventBus = new EventBus();
 
+    /**
+     * Creates a new UI
+     * @param outputSlot The target slot
+     * @param graph The graph
+     * @param compartment The graph compartment. Algorithms outside of the compartment are not detected.
+     */
     public ACAQAlgorithmFinderUI(ACAQDataSlot outputSlot, ACAQAlgorithmGraph graph, String compartment) {
         this.compartment = compartment;
         if (!outputSlot.isOutput())
@@ -179,19 +188,38 @@ public class ACAQAlgorithmFinderUI extends JPanel {
         return searchStrings;
     }
 
+    /**
+     * Should trigger when a target slot was successfully found.
+     * @param event Generated event
+     */
     @Subscribe
     public void onAlgorithmFinderSuccess(AlgorithmFinderSuccessEvent event) {
         eventBus.post(event);
     }
 
+    /**
+     * Returns the event bus
+     * @return Event bus instance
+     */
     public EventBus getEventBus() {
         return eventBus;
     }
 
+    /**
+     * Returns the graph compartment
+     * @return Compartment ID
+     */
     public String getCompartment() {
         return compartment;
     }
 
+    /**
+     * Scores how well an algorithm fits to the specified target slot
+     * @param declaration The algorithm
+     * @param slot The target slot
+     * @param graph The algorithm graph
+     * @return Unnormalized score
+     */
     public static int scoreAlgorithmForOutputSlot(ACAQAlgorithmDeclaration declaration, ACAQDataSlot slot, ACAQAlgorithmGraph graph) {
         Set<ACAQTraitDeclaration> preferredTraits = declaration.getPreferredTraits();
         Set<ACAQTraitDeclaration> unwantedTraits = declaration.getUnwantedTraits();
@@ -208,6 +236,11 @@ public class ACAQAlgorithmFinderUI extends JPanel {
         return score;
     }
 
+    /**
+     * Finds all algorithms that fit to the slot according to the information in {@link ACAQAlgorithmDeclaration}
+     * @param slot The target slot
+     * @return Unsorted list of algorithm declarations
+     */
     public static List<ACAQAlgorithmDeclaration> findCompatibleTargetAlgorithms(ACAQDataSlot slot) {
         Class<? extends ACAQData> outputSlotDataClass = slot.getAcceptedDataType();
         List<ACAQAlgorithmDeclaration> result = new ArrayList<>();

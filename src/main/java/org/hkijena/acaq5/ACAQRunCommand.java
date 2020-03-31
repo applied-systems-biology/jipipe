@@ -21,34 +21,13 @@ import org.scijava.ui.UIService;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Command that runs an ACAQ5 project without GUI
+ */
 @Plugin(type = Command.class, menuPath = "Plugins>ACAQ5>Run ACAQ5 project")
 public class ACAQRunCommand implements Command {
     @Parameter
-    private OpService ops;
-
-    @Parameter
-    private LogService log;
-
-    @Parameter
-    private UIService ui;
-
-    @Parameter
-    private CommandService cmd;
-
-    @Parameter
     private StatusService status;
-
-    @Parameter
-    private ThreadService thread;
-
-    @Parameter
-    private DatasetIOService datasetIO;
-
-    @Parameter
-    private DisplayService display;
-
-    @Parameter
-    private DatasetService datasetService;
 
     @Parameter
     private PluginService pluginService;
@@ -76,37 +55,5 @@ public class ACAQRunCommand implements Command {
     private void onProgress(ACAQRunnerStatus runStatus) {
         status.showProgress(runStatus.getProgress(), runStatus.getMaxProgress());
         status.showStatus("ACAQ5: " + runStatus.getMessage());
-    }
-
-    public LogService getLogService() {
-        return log;
-    }
-
-    public StatusService getStatusService() {
-        return status;
-    }
-
-    public ThreadService getThreadService() {
-        return thread;
-    }
-
-    public UIService getUiService() {
-        return ui;
-    }
-
-    public DatasetIOService getDatasetIOService() {
-        return datasetIO;
-    }
-
-    public DisplayService getDisplayService() {
-        return display;
-    }
-
-    public DatasetService getDatasetService() {
-        return datasetService;
-    }
-
-    public PluginService getPluginService() {
-        return pluginService;
     }
 }

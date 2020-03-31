@@ -22,6 +22,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Parameter editor for {@link ACAQTrait}
+ */
 public class ACAQTraitParameterEditorUI extends ACAQParameterEditorUI {
 
     private ACAQTraitPicker picker;
@@ -31,6 +34,10 @@ public class ACAQTraitParameterEditorUI extends ACAQParameterEditorUI {
     private boolean skipNextReload = false;
     private boolean isReloading = false;
 
+    /**
+     * @param context SciJava context
+     * @param parameterAccess the parameter
+     */
     public ACAQTraitParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
         super(context, parameterAccess);
         initialize();
@@ -154,6 +161,10 @@ public class ACAQTraitParameterEditorUI extends ACAQParameterEditorUI {
         pickerDialog.setVisible(true);
     }
 
+    /**
+     * Triggered when a trait is selected
+     * @param event Generated event
+     */
     @Subscribe
     public void onTraitSelected(ACAQTraitPicker.TraitSelectedEvent event) {
         if (pickerDialog.isVisible()) {

@@ -9,5 +9,8 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Repeatable(BadForTraits.class)
 public @interface BadForTrait {
+    /**
+     * @return trait id
+     */
     String value();
 }

@@ -23,10 +23,18 @@ public class ACAQFileDataSource extends ACAQAlgorithm {
     private Path currentWorkingDirectory;
     private Path fileName;
 
+    /**
+     * Initializes the algorithm
+     * @param declaration The algorithm declaration
+     */
     public ACAQFileDataSource(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
     }
 
+    /**
+     * Copies the algorithm
+     * @param other The original
+     */
     public ACAQFileDataSource(ACAQFileDataSource other) {
         super(other);
         this.fileName = other.fileName;
@@ -38,6 +46,9 @@ public class ACAQFileDataSource extends ACAQAlgorithm {
         getFirstOutputSlot().addData(new ACAQFileData(fileName));
     }
 
+    /**
+     * @return The file name
+     */
     @ACAQParameter("file-name")
     @ACAQDocumentation(name = "File name")
     @FilePathParameterSettings(ioMode = FileSelection.IOMode.Open, pathMode = FileSelection.PathMode.FilesOnly)
@@ -45,12 +56,19 @@ public class ACAQFileDataSource extends ACAQAlgorithm {
         return fileName;
     }
 
+    /**
+     * Sets the file name
+     * @param fileName The file name
+     */
     @ACAQParameter("file-name")
     public void setFileName(Path fileName) {
         this.fileName = fileName;
         getEventBus().post(new ParameterChangedEvent(this, "file-name"));
     }
 
+    /**
+     * @return The file name as absolute path
+     */
     public Path getAbsoluteFileName() {
         if (fileName == null)
             return null;

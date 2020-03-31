@@ -14,9 +14,15 @@ package org.hkijena.acaq5.ui.tableanalyzer;
 
 import javax.swing.*;
 
+/**
+ * UI for {@link ACAQTableToTableOperation}
+ */
 public class ACAQTableToTableOperationUI extends JPanel {
     private ACAQTableToTableOperation operation;
 
+    /**
+     * @param operation the operation
+     */
     public ACAQTableToTableOperationUI(ACAQTableToTableOperation operation) {
         this.operation = operation;
     }

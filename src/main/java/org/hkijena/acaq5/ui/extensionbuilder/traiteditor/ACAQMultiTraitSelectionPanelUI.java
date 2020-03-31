@@ -16,10 +16,18 @@ import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * UI when multiple {@link ACAQTraitNode} are selected
+ */
 public class ACAQMultiTraitSelectionPanelUI extends ACAQJsonExtensionUIPanel {
     private Set<ACAQTraitNode> algorithms;
     private ACAQTraitGraph graph;
 
+    /**
+     * @param workbenchUI The workbench
+     * @param graph The trait graph
+     * @param algorithms The selected trait nodes
+     */
     public ACAQMultiTraitSelectionPanelUI(ACAQJsonExtensionUI workbenchUI, ACAQTraitGraph graph, Set<ACAQTraitNode> algorithms) {
         super(workbenchUI);
         this.graph = graph;

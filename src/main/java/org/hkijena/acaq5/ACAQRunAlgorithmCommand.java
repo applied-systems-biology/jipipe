@@ -93,6 +93,9 @@ public class ACAQRunAlgorithmCommand extends DynamicCommand implements Initializ
         settings.pullOutput();
     }
 
+    /**
+     * @param args ignored
+     */
     public static void main(String[] args) {
         final ImageJ ij = new ImageJ();
         ij.ui().showUI();

@@ -2,19 +2,22 @@ package org.hkijena.acaq5;
 
 import org.scijava.plugin.SciJavaPlugin;
 
+/**
+ * A Java extension
+ */
 public interface ACAQJavaExtension extends SciJavaPlugin, ACAQDependency {
 
     /**
      * Returns the registry
      *
-     * @return
+     * @return The registry
      */
     ACAQDefaultRegistry getRegistry();
 
     /**
      * Sets the registry
      *
-     * @param registry
+     * @param registry The registry
      */
     void setRegistry(ACAQDefaultRegistry registry);
 

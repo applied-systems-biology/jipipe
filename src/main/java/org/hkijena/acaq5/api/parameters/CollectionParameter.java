@@ -19,6 +19,9 @@ import java.util.ArrayList;
 public class CollectionParameter<T> extends ArrayList<T> {
     private Class<T> contentClass;
 
+    /**
+     * @param contentClass the stored content
+     */
     public CollectionParameter(Class<T> contentClass) {
         this.contentClass = contentClass;
     }
@@ -27,6 +30,9 @@ public class CollectionParameter<T> extends ArrayList<T> {
         return contentClass;
     }
 
+    /**
+     * Serializes the parameter
+     */
     public static class Serializer extends JsonSerializer<CollectionParameter<?>> {
         @Override
         public void serialize(CollectionParameter<?> objects, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
@@ -37,6 +43,9 @@ public class CollectionParameter<T> extends ArrayList<T> {
         }
     }
 
+    /**
+     * Deserializes the parameter
+     */
     public static class Deserializer extends JsonDeserializer<CollectionParameter<?>> {
         @Override
         public CollectionParameter<?> deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {

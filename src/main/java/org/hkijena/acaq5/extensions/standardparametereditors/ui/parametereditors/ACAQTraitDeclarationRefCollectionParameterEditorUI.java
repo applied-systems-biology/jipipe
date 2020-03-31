@@ -19,12 +19,19 @@ import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Editor for {@link ACAQTraitDeclarationRefCollection}
+ */
 public class ACAQTraitDeclarationRefCollectionParameterEditorUI extends ACAQParameterEditorUI {
 
     private ACAQTraitPicker picker;
     private JPanel currentlyDisplayed;
     private JDialog pickerDialog;
 
+    /**
+     * @param context SciJava context
+     * @param parameterAccess the parameter
+     */
     public ACAQTraitDeclarationRefCollectionParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
         super(context, parameterAccess);
         initialize();
@@ -107,6 +114,10 @@ public class ACAQTraitDeclarationRefCollectionParameterEditorUI extends ACAQPara
         pickerDialog.setVisible(true);
     }
 
+    /**
+     * Triggered when a trait is selected
+     * @param event Generated event
+     */
     @Subscribe
     public void onTraitSelected(ACAQTraitPicker.SelectedTraitsChangedEvent event) {
         if (pickerDialog.isVisible()) {

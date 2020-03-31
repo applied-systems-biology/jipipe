@@ -24,10 +24,18 @@ public class ACAQFolderListDataSource extends ACAQAlgorithm {
     private PathCollection folderPaths = new PathCollection();
     private Path currentWorkingDirectory;
 
+    /**
+     * Creates a new instance
+     * @param declaration The algorithm declaration
+     */
     public ACAQFolderListDataSource(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
     }
 
+    /**
+     * Copies the algorithm
+     * @param other The original
+     */
     public ACAQFolderListDataSource(ACAQFolderListDataSource other) {
         super(other);
         this.folderPaths.addAll(other.folderPaths);
@@ -41,6 +49,9 @@ public class ACAQFolderListDataSource extends ACAQAlgorithm {
         }
     }
 
+    /**
+     * @return Gets the folder paths
+     */
     @ACAQParameter("folder-paths")
     @ACAQDocumentation(name = "Folder paths")
     @FilePathParameterSettings(ioMode = FileSelection.IOMode.Open, pathMode = FileSelection.PathMode.DirectoriesOnly)
@@ -48,12 +59,19 @@ public class ACAQFolderListDataSource extends ACAQAlgorithm {
         return folderPaths;
     }
 
+    /**
+     * Sets the folder path
+     * @param folderPaths Folder paths
+     */
     @ACAQParameter("folder-paths")
     public void setFolderPaths(PathCollection folderPaths) {
         this.folderPaths = folderPaths;
         getEventBus().post(new ParameterChangedEvent(this, "folder-paths"));
     }
 
+    /**
+     * @return Folder paths as absolute paths
+     */
     public PathCollection getAbsoluteFolderPaths() {
         PathCollection result = new PathCollection();
         for (Path folderPath : folderPaths) {

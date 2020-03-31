@@ -7,12 +7,19 @@ import org.scijava.Context;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Parameter editor for boolean data
+ */
 public class BooleanParameterEditorUI extends ACAQParameterEditorUI {
 
     private JCheckBox checkBox;
     private boolean skipNextReload = false;
     private boolean isReloading = false;
 
+    /**
+     * @param context SciJava context
+     * @param parameterAccess the parameter
+     */
     public BooleanParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
         super(context, parameterAccess);
         initialize();

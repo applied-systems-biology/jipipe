@@ -7,104 +7,110 @@ import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Describes an {@link ACAQAlgorithm}
+ */
 public interface ACAQAlgorithmDeclaration {
 
     /**
      * Generates an Id for this declaration
      *
-     * @return
+     * @return The ID
      */
     String getId();
 
     /**
      * The algorithm class that is generated
      *
-     * @return
+     * @return The algorithm class
      */
     Class<? extends ACAQAlgorithm> getAlgorithmClass();
 
     /**
      * Creates a new algorithm instance
      *
-     * @return
+     * @return Algorithm instance
      */
     ACAQAlgorithm newInstance();
 
     /**
      * Copies an existing algorithm instance
      *
-     * @param algorithm
-     * @return
+     * @param algorithm Original algorithm instance
+     * @return Copied algorithm instance
      */
     ACAQAlgorithm clone(ACAQAlgorithm algorithm);
 
     /**
      * Returns the algorithm name
      *
-     * @return
+     * @return The name
      */
     String getName();
 
     /**
      * Returns the algorithm description
      *
-     * @return
+     * @return The description
      */
     String getDescription();
 
     /**
      * Gets the menu path of this algorithm
      *
-     * @return
+     * @return String containing menu entries separated by new-lines
      */
     String getMenuPath();
 
     /**
      * Returns the algorithm category
      *
-     * @return
+     * @return The category
      */
     ACAQAlgorithmCategory getCategory();
 
     /**
      * Returns the preferred traits
      *
-     * @return
+     * @return Set of preferred traits
      */
     Set<ACAQTraitDeclaration> getPreferredTraits();
 
     /**
      * Returns the unwanted traits
      *
-     * @return
+     * @return Set of unwanted traits
      */
     Set<ACAQTraitDeclaration> getUnwantedTraits();
 
     /**
-     * Returns all algorithm-global trait modification tasks
+     * Returns all algorithm-global trait modification tasks.
+     * Instances can have a configuration that is different from this configuration.
      *
-     * @return
+     * @return General trait configuration
      */
     ACAQDataSlotTraitConfiguration getSlotTraitConfiguration();
 
     /**
-     * Returns input data
+     * Returns general input data.
+     * Instances can have a configuration that is different from this configuration.
      *
-     * @return
+     * @return List of input slots
      */
     List<AlgorithmInputSlot> getInputSlots();
 
     /**
-     * Returns output data
+     * Returns general output data.
+     * Instances can have a configuration that is different from this configuration.
      *
-     * @return
+     * @return List of output slots
      */
     List<AlgorithmOutputSlot> getOutputSlots();
 
     /**
      * Returns all dependencies
      *
-     * @return
+     * @return List of dependencies
      */
     Set<ACAQDependency> getDependencies();
 }

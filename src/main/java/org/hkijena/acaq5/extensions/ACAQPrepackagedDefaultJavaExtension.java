@@ -5,6 +5,9 @@ import org.hkijena.acaq5.utils.ResourceUtils;
 
 import java.net.URL;
 
+/**
+ * {@link ACAQDefaultJavaExtension} for internal usage
+ */
 public abstract class ACAQPrepackagedDefaultJavaExtension extends ACAQDefaultJavaExtension {
 
     @Override

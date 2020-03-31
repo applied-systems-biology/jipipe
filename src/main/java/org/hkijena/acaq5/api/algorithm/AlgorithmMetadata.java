@@ -14,7 +14,7 @@ public @interface AlgorithmMetadata {
     /**
      * The algorithm category
      *
-     * @return
+     * @return the algorithm category
      */
     ACAQAlgorithmCategory category();
 }

@@ -24,10 +24,22 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Contains operations on tables
+ */
 public class ACAQTableAnalyzerUIOperationRegistry {
     private Map<Class<? extends ACAQTableVectorOperation>, VectorOperationEntry> vectorOperationEntries = new HashMap<>();
     private Map<Class<? extends ACAQTableToTableOperation>, TableToTableOperationEntry> tableToTableOperationEntries = new HashMap<>();
 
+    /**
+     * Registers a new operation
+     * @param operationClass The operation class
+     * @param uiClass User interface
+     * @param name Operation name
+     * @param shortcut Short operation name shown in table columns
+     * @param description Description
+     * @param icon Icon for the operation
+     */
     public void register(Class<? extends ACAQTableVectorOperation> operationClass,
                          Class<? extends ACAQTableVectorOperationUI> uiClass,
                          String name,
@@ -42,6 +54,10 @@ public class ACAQTableAnalyzerUIOperationRegistry {
                 icon));
     }
 
+    /**
+     * @param operation The operation
+     * @return the UI
+     */
     public ACAQTableVectorOperationUI createUIForVectorOperation(ACAQTableVectorOperation operation) {
         try {
             if (vectorOperationEntries.get(operation.getClass()).getUiClass() == null)
@@ -52,6 +68,10 @@ public class ACAQTableAnalyzerUIOperationRegistry {
         }
     }
 
+    /**
+     * @param operation The operation
+     * @return the UI
+     */
     public ACAQTableToTableOperationUI createUIForTableToTableOperation(ACAQTableToTableOperation operation) {
         try {
             if (tableToTableOperationEntries.get(operation.getClass()).getUiClass() == null)
@@ -70,26 +90,49 @@ public class ACAQTableAnalyzerUIOperationRegistry {
         return tableToTableOperationEntries.values();
     }
 
+    /**
+     * @param operation The operation
+     * @return Name of the operation
+     */
     public String getNameOf(ACAQTableVectorOperation operation) {
         return vectorOperationEntries.get(operation.getClass()).getName();
     }
 
+    /**
+     * @param operation The operation
+     * @return Operation shortcut
+     */
     public String getShortcutOf(ACAQTableVectorOperation operation) {
         return vectorOperationEntries.get(operation.getClass()).getShortcut();
     }
 
+    /**
+     * @param operation The operation
+     * @return Operation icon
+     */
     public Icon getIconOf(ACAQTableVectorOperation operation) {
         return vectorOperationEntries.get(operation.getClass()).getIcon();
     }
 
+    /**
+     * @param operation The operation
+     * @return Operation name
+     */
     public String getNameOf(ACAQTableToTableOperation operation) {
         return tableToTableOperationEntries.get(operation.getClass()).getName();
     }
 
+    /**
+     * @param operation The operation
+     * @return operation icon
+     */
     public Icon getIconOf(ACAQTableToTableOperation operation) {
         return tableToTableOperationEntries.get(operation.getClass()).getIcon();
     }
 
+    /**
+     * Entry with a vector operation
+     */
     public static class VectorOperationEntry {
         private Class<? extends ACAQTableVectorOperation> operationClass;
         private Class<? extends ACAQTableVectorOperationUI> uiClass;
@@ -98,6 +141,14 @@ public class ACAQTableAnalyzerUIOperationRegistry {
         private String description;
         private Icon icon;
 
+        /**
+         * @param operationClass the operation class
+         * @param uiClass the UI class
+         * @param name the name
+         * @param shortcut the shortcut
+         * @param description the description
+         * @param icon the icon
+         */
         public VectorOperationEntry(Class<? extends ACAQTableVectorOperation> operationClass, Class<? extends ACAQTableVectorOperationUI> uiClass, String name, String shortcut, String description, Icon icon) {
             this.operationClass = operationClass;
             this.uiClass = uiClass;
@@ -127,6 +178,9 @@ public class ACAQTableAnalyzerUIOperationRegistry {
             return operationClass;
         }
 
+        /**
+         * @return New instance
+         */
         public ACAQTableVectorOperation instantiateOperation() {
             try {
                 return operationClass.getConstructor().newInstance();
@@ -140,6 +194,9 @@ public class ACAQTableAnalyzerUIOperationRegistry {
         }
     }
 
+    /**
+     * An oepration entry
+     */
     public static class TableToTableOperationEntry {
         private Class<? extends ACAQTableToTableOperation> operationClass;
         private Class<? extends ACAQTableToTableOperationUI> uiClass;
@@ -147,6 +204,13 @@ public class ACAQTableAnalyzerUIOperationRegistry {
         private String description;
         private Icon icon;
 
+        /**
+         * @param operationClass the operation class
+         * @param uiClass UI class
+         * @param name operation name
+         * @param description description
+         * @param icon Icon
+         */
         public TableToTableOperationEntry(Class<? extends ACAQTableToTableOperation> operationClass, Class<? extends ACAQTableToTableOperationUI> uiClass, String name, String description, Icon icon) {
             this.operationClass = operationClass;
             this.uiClass = uiClass;
@@ -175,6 +239,9 @@ public class ACAQTableAnalyzerUIOperationRegistry {
             return operationClass;
         }
 
+        /**
+         * @return New instance
+         */
         public ACAQTableToTableOperation instantiateOperation() {
             try {
                 return operationClass.getConstructor().newInstance();

@@ -15,9 +15,16 @@ import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * UI when multiple {@link ACAQProjectCompartment} instances are selected
+ */
 public class ACAQMultiCompartmentSelectionPanelUI extends ACAQProjectUIPanel {
     private Set<ACAQProjectCompartment> compartments;
 
+    /**
+     * @param workbenchUI The workbench UI
+     * @param compartments The compartment selection
+     */
     public ACAQMultiCompartmentSelectionPanelUI(ACAQProjectUI workbenchUI, Set<ACAQProjectCompartment> compartments) {
         super(workbenchUI);
         this.compartments = compartments;

@@ -9,6 +9,9 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import java.util.Collections;
 import java.util.Map;
 
+/**
+ * Structural node that represents an existing {@link org.hkijena.acaq5.api.traits.ACAQTrait}
+ */
 @ACAQDocumentation(name = "Imported Annotation", description = "An annotation type that was imported from another extension")
 @AlgorithmInputSlot(ACAQTraitNodeInheritanceData.class)
 @AlgorithmOutputSlot(ACAQTraitNodeInheritanceData.class)
@@ -17,12 +20,20 @@ import java.util.Map;
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Internal)
 public class ACAQExistingTraitNode extends ACAQTraitNode implements ACAQCustomParameterHolder {
 
+    /**
+     * Creates a new instance
+     * @param declaration The algorithm declaration
+     */
     public ACAQExistingTraitNode(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
         ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) getSlotConfiguration();
         slotConfiguration.setInputSealed(true);
     }
 
+    /**
+     * Copies the instance
+     * @param other The original
+     */
     public ACAQExistingTraitNode(ACAQExistingTraitNode other) {
         super(other);
     }

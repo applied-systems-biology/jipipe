@@ -8,9 +8,16 @@ import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
+/**
+ * Renders additional {@link ACAQTraitDeclaration} columns in a table
+ */
 public class ACAQDataSlotTableColumnHeaderRenderer implements TableCellRenderer {
     private ACAQExportedDataTable dataTable;
 
+    /**
+     * Creates a new instance
+     * @param dataTable The table
+     */
     public ACAQDataSlotTableColumnHeaderRenderer(ACAQExportedDataTable dataTable) {
         this.dataTable = dataTable;
     }

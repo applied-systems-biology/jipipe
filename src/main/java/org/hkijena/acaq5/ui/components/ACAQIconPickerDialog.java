@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Dialog that picks an icon
+ */
 public class ACAQIconPickerDialog extends JDialog implements MouseListener {
 
     private String selectedIcon;
@@ -20,6 +23,11 @@ public class ACAQIconPickerDialog extends JDialog implements MouseListener {
     private JXTextField searchField;
     private JList<String> iconList;
 
+    /**
+     * @param parent The window parent
+     * @param prefix The resource prefix
+     * @param availableIcons Icon names without resource prefix
+     */
     public ACAQIconPickerDialog(Window parent, String prefix, Set<String> availableIcons) {
         super(parent);
         this.prefix = prefix;
@@ -113,6 +121,9 @@ public class ACAQIconPickerDialog extends JDialog implements MouseListener {
         return searchStrings;
     }
 
+    /**
+     * @return The selected icon name without prefix
+     */
     public String getSelectedIcon() {
         return selectedIcon;
     }
@@ -144,6 +155,13 @@ public class ACAQIconPickerDialog extends JDialog implements MouseListener {
 
     }
 
+    /**
+     * Picks an icon name using a dialog
+     * @param parent The parent component
+     * @param prefix The prefix put in front of the icon names for rendering the icon
+     * @param availableIcons Icon names without prefix
+     * @return The selected icon or null
+     */
     public static String showDialog(Component parent, String prefix, Set<String> availableIcons) {
         ACAQIconPickerDialog dialog = new ACAQIconPickerDialog(SwingUtilities.getWindowAncestor(parent),
                 prefix,

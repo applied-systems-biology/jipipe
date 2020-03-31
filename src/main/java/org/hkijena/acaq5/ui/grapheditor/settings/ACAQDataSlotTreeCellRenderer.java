@@ -8,8 +8,15 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 import java.awt.*;
 
+/**
+ * Renders an {@link ACAQDataSlot} in a {@link JTree}
+ */
 public class ACAQDataSlotTreeCellRenderer extends JLabel implements TreeCellRenderer {
 
+
+    /**
+     * Creates a new renderer
+     */
     public ACAQDataSlotTreeCellRenderer() {
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));

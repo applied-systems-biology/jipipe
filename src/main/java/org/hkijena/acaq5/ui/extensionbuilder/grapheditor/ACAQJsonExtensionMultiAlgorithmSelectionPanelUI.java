@@ -15,10 +15,18 @@ import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Panel shown when multiple algorithms are selected
+ */
 public class ACAQJsonExtensionMultiAlgorithmSelectionPanelUI extends ACAQJsonExtensionUIPanel {
     private ACAQAlgorithmGraph graph;
     private Set<ACAQAlgorithm> algorithms;
 
+    /**
+     * @param workbenchUI Workbench UI
+     * @param graph The graph
+     * @param algorithms Selected algorithms
+     */
     public ACAQJsonExtensionMultiAlgorithmSelectionPanelUI(ACAQJsonExtensionUI workbenchUI, ACAQAlgorithmGraph graph, Set<ACAQAlgorithm> algorithms) {
         super(workbenchUI);
         this.graph = graph;

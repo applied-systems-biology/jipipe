@@ -18,6 +18,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Task that transfers traits from an input slot to the output slot
+ */
 @JsonSerialize(using = ACAQTraitTransferTask.Serializer.class)
 @JsonDeserialize(using = ACAQTraitTransferTask.Deserializer.class)
 public class ACAQTraitTransferTask {
@@ -26,8 +29,8 @@ public class ACAQTraitTransferTask {
     private Set<ACAQTraitDeclaration> traitRestrictions;
 
     /**
-     * @param inputSlotName
-     * @param outputSlotName
+     * @param inputSlotName input slot
+     * @param outputSlotName output slot
      * @param traitRestrictions If empty, no restrictions apply
      */
     public ACAQTraitTransferTask(String inputSlotName, String outputSlotName, Set<ACAQTraitDeclaration> traitRestrictions) {
@@ -36,6 +39,10 @@ public class ACAQTraitTransferTask {
         this.traitRestrictions = traitRestrictions;
     }
 
+    /**
+     * Applies the transfer to the algorithm
+     * @param algorithm the algorithm
+     */
     public void applyTo(ACAQAlgorithm algorithm) {
         ACAQDataSlot sourceSlot = algorithm.getInputSlot(getInputSlotName());
         ACAQDataSlot targetSlot = algorithm.getOutputSlot(getOutputSlotName());
@@ -73,6 +80,9 @@ public class ACAQTraitTransferTask {
         return Objects.hash(inputSlotName, outputSlotName, traitRestrictions);
     }
 
+    /**
+     * Serializes an {@link ACAQTraitTransferTask}
+     */
     public static class Serializer extends JsonSerializer<ACAQTraitTransferTask> {
         @Override
         public void serialize(ACAQTraitTransferTask task, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
@@ -84,6 +94,9 @@ public class ACAQTraitTransferTask {
         }
     }
 
+    /**
+     * Deserializes an {@link ACAQTraitTransferTask}
+     */
     public static class Deserializer extends JsonDeserializer<ACAQTraitTransferTask> {
         @Override
         public ACAQTraitTransferTask deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {

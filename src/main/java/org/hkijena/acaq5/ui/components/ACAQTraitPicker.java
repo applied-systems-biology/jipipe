@@ -15,6 +15,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Panel that allows to pick {@link ACAQTraitDeclaration}
+ */
 public class ACAQTraitPicker extends JPanel {
 
     private Mode mode;
@@ -25,6 +28,10 @@ public class ACAQTraitPicker extends JPanel {
     private Set<ACAQTraitDeclaration> availableTraits;
     private Set<ACAQTraitDeclaration> selectedTraits = new HashSet<>();
 
+    /**
+     * @param mode the mode
+     * @param availableTraits list of available trait types
+     */
     public ACAQTraitPicker(Mode mode, Set<ACAQTraitDeclaration> availableTraits) {
         this.mode = mode;
         this.availableTraits = availableTraits;
@@ -63,6 +70,9 @@ public class ACAQTraitPicker extends JPanel {
         add(new JScrollPane(traitList), BorderLayout.CENTER);
     }
 
+    /**
+     * Refreshes the list
+     */
     public void refreshTraitList() {
         traitList.removeAll();
         String[] searchStrings = getSearchStrings();
@@ -102,6 +112,10 @@ public class ACAQTraitPicker extends JPanel {
         });
     }
 
+    /**
+     * Selects a trait
+     * @param traitDeclaration selected trait
+     */
     public void selectTrait(ACAQTraitDeclaration traitDeclaration) {
         if (selectedTraits.contains(traitDeclaration))
             return;
@@ -115,6 +129,10 @@ public class ACAQTraitPicker extends JPanel {
         eventBus.post(new SelectedTraitsChangedEvent(this));
     }
 
+    /**
+     * Deselect a trait
+     * @param traitDeclaration trait
+     */
     public void deselectTrait(ACAQTraitDeclaration traitDeclaration) {
         if (!selectedTraits.contains(traitDeclaration))
             return;
@@ -168,6 +186,13 @@ public class ACAQTraitPicker extends JPanel {
         refreshTraitList();
     }
 
+    /**
+     * Shows a dialog to pick traits
+     * @param parent parent component
+     * @param mode mode
+     * @param availableTraits list of available traits
+     * @return picked traits
+     */
     public static Set<ACAQTraitDeclaration> showDialog(Component parent, Mode mode, Set<ACAQTraitDeclaration> availableTraits) {
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
         ACAQTraitPicker picker = new ACAQTraitPicker(mode, availableTraits);
@@ -204,15 +229,24 @@ public class ACAQTraitPicker extends JPanel {
         return picker.getSelectedTraits();
     }
 
+    /**
+     * The mode of the picker
+     */
     public enum Mode {
         NonInteractive,
         Single,
         Multiple
     }
 
+    /**
+     * Generated when a trait is selected
+     */
     public static class SelectedTraitsChangedEvent {
         private ACAQTraitPicker traitPicker;
 
+        /**
+         * @param traitPicker event source
+         */
         public SelectedTraitsChangedEvent(ACAQTraitPicker traitPicker) {
             this.traitPicker = traitPicker;
         }
@@ -222,10 +256,17 @@ public class ACAQTraitPicker extends JPanel {
         }
     }
 
+    /**
+     * Generated when a trait is selected
+     */
     public static class TraitSelectedEvent {
         private ACAQTraitPicker traitPicker;
         private ACAQTraitDeclaration traitDeclaration;
 
+        /**
+         * @param traitPicker event source
+         * @param traitDeclaration picked trait
+         */
         public TraitSelectedEvent(ACAQTraitPicker traitPicker, ACAQTraitDeclaration traitDeclaration) {
             this.traitPicker = traitPicker;
             this.traitDeclaration = traitDeclaration;
@@ -240,10 +281,17 @@ public class ACAQTraitPicker extends JPanel {
         }
     }
 
+    /**
+     * Generated when a trait is deselected
+     */
     public static class TraitDeselectedEvent {
         private ACAQTraitPicker traitPicker;
         private ACAQTraitDeclaration traitDeclaration;
 
+        /**
+         * @param traitPicker event source
+         * @param traitDeclaration deselected trait
+         */
         public TraitDeselectedEvent(ACAQTraitPicker traitPicker, ACAQTraitDeclaration traitDeclaration) {
             this.traitPicker = traitPicker;
             this.traitDeclaration = traitDeclaration;

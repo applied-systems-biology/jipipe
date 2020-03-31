@@ -15,7 +15,7 @@ public @interface AddsTrait {
     /**
      * Trait that will be added
      *
-     * @return
+     * @return added trait
      */
     String value();
 }

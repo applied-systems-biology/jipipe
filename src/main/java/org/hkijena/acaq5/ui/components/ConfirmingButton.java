@@ -14,26 +14,42 @@ public class ConfirmingButton extends JButton {
     private Icon iconBackup;
     private Icon confirmIcon;
 
+    /**
+     * Creates a button
+     */
     public ConfirmingButton() {
         super();
         initialize();
     }
 
+    /**
+     * @param icon icon
+     */
     public ConfirmingButton(Icon icon) {
         super(icon);
         initialize();
     }
 
+    /**
+     * @param text button text
+     */
     public ConfirmingButton(String text) {
         super(text);
         initialize();
     }
 
+    /**
+     * @param a button action
+     */
     public ConfirmingButton(Action a) {
         super(a);
         initialize();
     }
 
+    /**
+     * @param text button text
+     * @param icon button icon
+     */
     public ConfirmingButton(String text, Icon icon) {
         super(text, icon);
         initialize();

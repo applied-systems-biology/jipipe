@@ -8,8 +8,14 @@ import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 
 import javax.swing.*;
 
+/**
+ * Renders a {@link ACAQDataSlot} row as table cell
+ */
 public class ACAQDefaultResultDataSlotCellUI extends ACAQResultDataSlotCellUI {
 
+    /**
+     * Creates a new renderer
+     */
     public ACAQDefaultResultDataSlotCellUI() {
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));

@@ -22,6 +22,9 @@ import java.awt.font.TextLayout;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * UI around an {@link ACAQAlgorithm} instance
+ */
 public class ACAQAlgorithmUI extends JPanel {
 
     /**
@@ -47,6 +50,11 @@ public class ACAQAlgorithmUI extends JPanel {
 
     private boolean selected;
 
+    /**
+     * Creates a new UI
+     * @param graphUI The graph UI that contains this UI
+     * @param algorithm The algorithm
+     */
     public ACAQAlgorithmUI(ACAQAlgorithmGraphCanvasUI graphUI, ACAQAlgorithm algorithm) {
         this.graphUI = graphUI;
         this.algorithm = algorithm;
@@ -173,6 +181,9 @@ public class ACAQAlgorithmUI extends JPanel {
         });
     }
 
+    /**
+     * @return The displayed algorithm
+     */
     public ACAQAlgorithm getAlgorithm() {
         return algorithm;
     }
@@ -186,6 +197,9 @@ public class ACAQAlgorithmUI extends JPanel {
         return button;
     }
 
+    /**
+     * Updates the slots
+     */
     public void updateAlgorithmSlotUIs() {
         slotUIList.clear();
         inputSlotPanel.removeAll();
@@ -283,7 +297,7 @@ public class ACAQAlgorithmUI extends JPanel {
     /**
      * Contains the number of displayed rows. This includes the number of slot rows, and optionally additional rows for adding
      *
-     * @return
+     * @return Displayed rows
      */
     private int getDisplayedRows() {
         int inputRows = algorithm.getInputSlots().size();
@@ -336,9 +350,9 @@ public class ACAQAlgorithmUI extends JPanel {
      * Tries to move the node to the provided location
      * A grid is applied to the input coordinates
      *
-     * @param x
-     * @param y
-     * @return
+     * @param x x coordinate
+     * @param y y coordinate
+     * @return True if setting the location was successful
      */
     public boolean trySetLocationInGrid(int x, int y) {
         y = (int) Math.rint(y * 1.0 / ACAQAlgorithmUI.SLOT_UI_HEIGHT) * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
@@ -349,7 +363,7 @@ public class ACAQAlgorithmUI extends JPanel {
     /**
      * Returns true if this component overlaps with another component
      *
-     * @return
+     * @return True if an overlap was found
      */
     public boolean isOverlapping() {
         for (int i = 0; i < graphUI.getComponentCount(); ++i) {
@@ -370,9 +384,9 @@ public class ACAQAlgorithmUI extends JPanel {
      * Tries to move the node to the provided location
      * A grid is applied to the input coordinates
      *
-     * @param x
-     * @param y
-     * @return
+     * @param x x coordinate
+     * @param y y coordinate
+     * @return True if setting the location was successful
      */
     public boolean trySetLocationNoGrid(int x, int y) {
         // Check for collisions
@@ -418,17 +432,26 @@ public class ACAQAlgorithmUI extends JPanel {
     /**
      * Get the Y location of the bottom part
      *
-     * @return
+     * @return y coordinate
      */
     public int getBottomY() {
         return getY() + getHeight();
     }
 
+    /**
+     * Should be triggered when the algorithm's slots are changed.
+     * Triggers slot UI updates
+     * @param event Generated event
+     */
     @Subscribe
     public void onAlgorithmSlotsChanged(AlgorithmSlotsChangedEvent event) {
         updateAlgorithmSlotUIs();
     }
 
+    /**
+     * Should be triggered when the algorithm's slot traits are changed
+     * @param event The generated event
+     */
     @Subscribe
     public void onTraitsChanged(TraitConfigurationChangedEvent event) {
         setSize(calculateWidth(), calculateHeight());
@@ -436,6 +459,10 @@ public class ACAQAlgorithmUI extends JPanel {
         repaint();
     }
 
+    /**
+     * Should be triggered when an algorithm's name parameter is changed
+     * @param event The generated event
+     */
     @Subscribe
     public void onAlgorithmParametersChanged(ParameterChangedEvent event) {
         if (event.getParameterHolder() == algorithm && "name".equals(event.getKey())) {
@@ -458,14 +485,26 @@ public class ACAQAlgorithmUI extends JPanel {
         algorithm.setLocationWithin(graphUI.getCompartment(), p);
     }
 
+    /**
+     * @return The event bus
+     */
     public EventBus getEventBus() {
         return eventBus;
     }
 
+    /**
+     * Returns if the selected-flag was set. This does not mean that the algorithm is actually selected in the graph UI
+     * @return True if this algorithm is selected.
+     */
     public boolean isSelected() {
         return selected;
     }
 
+    /**
+     * Sets the selected-flag and updates the UI
+     * This does not select the algorithm the graph UI
+     * @param selected if the algorithm is selected
+     */
     public void setSelected(boolean selected) {
         this.selected = selected;
         updateBorder();

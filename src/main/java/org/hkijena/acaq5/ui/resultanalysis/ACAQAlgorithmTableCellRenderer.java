@@ -7,8 +7,14 @@ import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
+/**
+ * Renders {@link ACAQAlgorithm} instances in a table cell
+ */
 public class ACAQAlgorithmTableCellRenderer extends JLabel implements TableCellRenderer {
 
+    /**
+     * Creates a new renderer
+     */
     public ACAQAlgorithmTableCellRenderer() {
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));

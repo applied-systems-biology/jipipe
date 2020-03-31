@@ -6,6 +6,10 @@ import org.hkijena.acaq5.api.data.ACAQData;
 
 import java.nio.file.Path;
 
+/**
+ * Represents an {@link org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput} in the compartment graph.
+ * This is purely structural data.
+ */
 @ACAQDocumentation(name = "Output data", description = "Output of a compartment")
 @ACAQHidden
 public class ACAQCompartmentOutputData implements ACAQData {

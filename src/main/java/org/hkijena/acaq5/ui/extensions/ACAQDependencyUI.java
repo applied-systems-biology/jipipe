@@ -27,9 +27,16 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Displays an {@link ACAQDependency}
+ */
 public class ACAQDependencyUI extends JPanel {
     private ACAQDependency dependency;
 
+    /**
+     * Creates a new UI
+     * @param dependency The dependency
+     */
     public ACAQDependencyUI(ACAQDependency dependency) {
         this.dependency = dependency;
         initialize();

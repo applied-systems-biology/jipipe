@@ -22,10 +22,16 @@ import java.awt.event.ComponentEvent;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+/**
+ * Settings UI for {@link org.hkijena.acaq5.api.ACAQRunConfiguration}
+ */
 public class ACAQRunSettingsUI extends ACAQProjectUIPanel {
 
     private ACAQRun run;
 
+    /**
+     * @param workbenchUI workbench UI
+     */
     public ACAQRunSettingsUI(ACAQProjectUI workbenchUI) {
         super(workbenchUI);
         initialize();
@@ -131,12 +137,20 @@ public class ACAQRunSettingsUI extends ACAQProjectUIPanel {
         executerUI.startRun();
     }
 
+    /**
+     * Triggered when the run is finished
+     * @param event Generated event
+     */
     @Subscribe
     public void onRunFinished(RunUIWorkerFinishedEvent event) {
         if (event.getRun() == run)
             openResults();
     }
 
+    /**
+     * Triggered when the run is interrupted
+     * @param event Generated event
+     */
     @Subscribe
     public void onRunInterrupted(RunUIWorkerInterruptedEvent event) {
         if (event.getRun() == run)

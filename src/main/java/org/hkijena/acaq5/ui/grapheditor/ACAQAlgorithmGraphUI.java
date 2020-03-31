@@ -33,6 +33,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Editor for a project graph compartment
+ */
 public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseListener, MouseMotionListener {
 
     protected JMenuBar menuBar = new JMenuBar();
@@ -51,6 +54,12 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseLis
 
     private Set<ACAQAlgorithmUI> selection = new HashSet<>();
 
+    /**
+     * Creates a project graph compartment editor
+     * @param workbenchUI The workbench
+     * @param algorithmGraph The graph
+     * @param compartment The compartment
+     */
     public ACAQAlgorithmGraphUI(ACAQProjectUI workbenchUI, ACAQAlgorithmGraph algorithmGraph, String compartment) {
         super(workbenchUI);
         this.algorithmGraph = algorithmGraph;
@@ -95,17 +104,28 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseLis
         algorithmGraph.getEventBus().register(this);
     }
 
+    /**
+     * Should be triggered when new algorithms are registered.
+     * Reloads the menu
+     * @param event Generated event
+     */
     @Subscribe
     public void onAlgorithmRegistryChanged(AlgorithmRegisteredEvent event) {
         reloadMenuBar();
         getWorkbenchUI().sendStatusBarText("Plugins were updated");
     }
 
+    /**
+     * Reloads the menu bar
+     */
     public void reloadMenuBar() {
         menuBar.removeAll();
         initializeToolbar();
     }
 
+    /**
+     * Initializes the tool bar
+     */
     protected void initializeToolbar() {
         initializeAddNodesMenus();
 
@@ -152,6 +172,9 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseLis
         }
     }
 
+    /**
+     * Initializes the "Add nodes" menus
+     */
     protected void initializeAddNodesMenus() {
         JMenu addDataSourceMenu = new JMenu("Add data");
         addDataSourceMenu.setIcon(UIUtils.getIconFromResources("database.png"));
@@ -194,6 +217,11 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseLis
         menuBar.add(addMiscMenu);
     }
 
+    /**
+     * Initializes a menu for one algorithm category
+     * @param menu The menu
+     * @param category The algorithm category
+     */
     protected void initializeMenuForCategory(JMenu menu, ACAQAlgorithmCategory category) {
         ACAQDefaultRegistry registryService = ACAQDefaultRegistry.getInstance();
         boolean isEmpty = true;
@@ -241,10 +269,17 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseLis
         }
     }
 
+    /**
+     * @return The edited graph
+     */
     public ACAQAlgorithmGraph getAlgorithmGraph() {
         return algorithmGraph;
     }
 
+    /**
+     * Should be triggered when an algorithm was selected
+     * @param event The generated event
+     */
     @Subscribe
     public void onAlgorithmSelected(AlgorithmSelectedEvent event) {
         if (event.getUi() != null) {
@@ -262,6 +297,9 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseLis
         }
     }
 
+    /**
+     * Clears the algorithm selection
+     */
     public void clearSelection() {
         for (ACAQAlgorithmUI ui : selection) {
             ui.setSelected(false);
@@ -272,6 +310,10 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseLis
         splitPane.setDividerLocation(dividerLocation);
     }
 
+    /**
+     * Selects only the specified algorithm
+     * @param ui The algorithm UI
+     */
     public void selectOnly(ACAQAlgorithmUI ui) {
         if (selection.isEmpty()) {
             addToSelection(ui);
@@ -286,6 +328,10 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseLis
         }
     }
 
+    /**
+     * Removes an algorithm from the selection
+     * @param ui The algorithm UI
+     */
     public void removeFromSelection(ACAQAlgorithmUI ui) {
         if (selection.contains(ui)) {
             selection.remove(ui);
@@ -304,6 +350,10 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseLis
         }
     }
 
+    /**
+     * Adds an algorithm to the selection
+     * @param ui The algorithm UI
+     */
     public void addToSelection(ACAQAlgorithmUI ui) {
         selection.add(ui);
         ui.setSelected(true);
@@ -319,6 +369,10 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseLis
         }
     }
 
+    /**
+     * Should be triggered when the algorithm graph is changed
+     * @param event The generated event
+     */
     @Subscribe
     public void onGraphChanged(AlgorithmGraphChangedEvent event) {
         if (selection.stream().anyMatch(ui -> !algorithmGraph.getAlgorithmNodes().containsValue(ui.getAlgorithm()))) {
@@ -385,6 +439,9 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseLis
 
     }
 
+    /**
+     * @return The displayed graph compartment
+     */
     public String getCompartment() {
         return compartment;
     }

@@ -11,6 +11,9 @@ import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.ACAQFolderData;
 import org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors.ACAQTraitDeclarationRefParameterSettings;
 
+/**
+ * Algorithm that generates annotations from folder names
+ */
 @ACAQDocumentation(name = "Folders to annotations", description = "Creates an annotation for each folder based on its name")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Annotation)
 
@@ -23,11 +26,19 @@ public class ACAQFolderAnnotationGenerator extends ACAQIteratingAlgorithm {
 
     private ACAQTraitDeclarationRef generatedAnnotation = new ACAQTraitDeclarationRef();
 
+    /**
+     * Creates a new instance
+     * @param declaration The algorithm declaration
+     */
     public ACAQFolderAnnotationGenerator(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
         updateSlotTraits();
     }
 
+    /**
+     * Copies the algorithm
+     * @param other The original
+     */
     public ACAQFolderAnnotationGenerator(ACAQFolderAnnotationGenerator other) {
         super(other);
         this.generatedAnnotation = new ACAQTraitDeclarationRef(other.generatedAnnotation.getDeclaration());
@@ -57,6 +68,9 @@ public class ACAQFolderAnnotationGenerator extends ACAQIteratingAlgorithm {
         traitConfiguration.postChangedEvent();
     }
 
+    /**
+     * @return The generated annotation type
+     */
     @ACAQDocumentation(name = "Generated annotation", description = "Select which annotation type is generated for each folder")
     @ACAQTraitDeclarationRefParameterSettings(traitBaseClass = ACAQDiscriminator.class)
     @ACAQParameter("generated-annotation")
@@ -64,6 +78,10 @@ public class ACAQFolderAnnotationGenerator extends ACAQIteratingAlgorithm {
         return generatedAnnotation;
     }
 
+    /**
+     * Sets the generated annotation type
+     * @param generatedAnnotation The annotation type
+     */
     @ACAQParameter("generated-annotation")
     public void setGeneratedAnnotation(ACAQTraitDeclarationRef generatedAnnotation) {
         this.generatedAnnotation = generatedAnnotation;

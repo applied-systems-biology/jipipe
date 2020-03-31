@@ -11,5 +11,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface BadForTraits {
+    /**
+     * @return bad traits
+     */
     BadForTrait[] value();
 }

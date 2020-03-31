@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+/**
+ * Allows to test one algorithm with multiple parameters
+ */
 public class ACAQTestbench implements ACAQRunnable, ACAQValidatable {
     private ACAQProject project;
     private ACAQAlgorithm targetAlgorithm;
@@ -22,6 +25,11 @@ public class ACAQTestbench implements ACAQRunnable, ACAQValidatable {
 
     private List<ACAQTestbenchSnapshot> backupList = new ArrayList<>();
 
+    /**
+     * @param project The project
+     * @param targetAlgorithm The tested algorithm
+     * @param workDirectory A temporary work directory
+     */
     public ACAQTestbench(ACAQProject project, ACAQAlgorithm targetAlgorithm, Path workDirectory) {
         this.project = project;
         this.targetAlgorithm = targetAlgorithm;
@@ -67,30 +75,51 @@ public class ACAQTestbench implements ACAQRunnable, ACAQValidatable {
         return project;
     }
 
+    /**
+     * @return the algorithm that is targeted. This algorithm is part of the project.
+     */
     public ACAQAlgorithm getTargetAlgorithm() {
         return targetAlgorithm;
     }
 
+    /**
+     * @return the work directory
+     */
     public Path getWorkDirectory() {
         return workDirectory;
     }
 
+    /**
+     * @return the run
+     */
     public ACAQRun getTestbenchRun() {
         return testbenchRun;
     }
 
+    /**
+     * @return the target algorithm. This algorithm is a copy of the project algorithm.
+     */
     public ACAQAlgorithm getBenchedAlgorithm() {
         return benchedAlgorithm;
     }
 
+    /**
+     * @return all backups
+     */
     public List<ACAQTestbenchSnapshot> getBackupList() {
         return backupList;
     }
 
+    /**
+     * Creates a backup
+     */
     public void createBackup() {
         backupList.add(new ACAQTestbenchSnapshot(this));
     }
 
+    /**
+     * @return the latest backup
+     */
     public ACAQTestbenchSnapshot getLatestBackup() {
         return backupList.get(backupList.size() - 1);
     }
@@ -100,6 +129,9 @@ public class ACAQTestbench implements ACAQRunnable, ACAQValidatable {
         benchedAlgorithm.reportValidity(report);
     }
 
+    /**
+     * Creates a new test
+     */
     public void newTest() {
         ACAQValidityReport report = new ACAQValidityReport();
         reportValidity(report);
@@ -117,6 +149,9 @@ public class ACAQTestbench implements ACAQRunnable, ACAQValidatable {
         ((ACAQMutableRunConfiguration) testbenchRun.getConfiguration()).setOutputPath(outputPath);
     }
 
+    /**
+     * @return the first backup. This is used as reference to get the intermediate data
+     */
     public ACAQTestbenchSnapshot getInitialBackup() {
         return initialBackup;
     }

@@ -30,6 +30,11 @@ public class ACAQExportedDataTable implements TableModel {
     private List<Row> rowList;
     private List<ACAQTraitDeclaration> traitColumns;
 
+    /**
+     * Initializes a new table from a slot
+     * @param slot The slot
+     * @param dataOutputPaths output path for each slot row
+     */
     public ACAQExportedDataTable(ACAQDataSlot slot, List<Path> dataOutputPaths) {
         this.algorithmId = slot.getAlgorithm().getDeclaration().getId();
         this.slotName = slot.getName();
@@ -44,64 +49,112 @@ public class ACAQExportedDataTable implements TableModel {
         }
     }
 
+    /**
+     * Creates an empty instance
+     */
     public ACAQExportedDataTable() {
 
     }
 
+    /**
+     * @return Gets the algorithm ID
+     */
     @JsonGetter("algorithm-id")
     public String getAlgorithmId() {
         return algorithmId;
     }
 
+    /**
+     * Sets the algorithm ID
+     * @param algorithmId the algorithm ID
+     */
     @JsonSetter("algorithm-id")
     private void setAlgorithmId(String algorithmId) {
         this.algorithmId = algorithmId;
     }
 
+    /**
+     * @return The slot name
+     */
     @JsonGetter("slot")
     public String getSlotName() {
         return slotName;
     }
 
+    /**
+     * Sets the slot name
+     * @param slotName The slot name
+     */
     @JsonSetter("slot")
     public void setSlotName(String slotName) {
         this.slotName = slotName;
     }
 
+    /**
+     * @return The internal path
+     */
     @JsonGetter("internal-path")
     public Path getInternalPath() {
         return internalPath;
     }
 
+    /**
+     * Sets the internal path
+     * @param internalPath The internal path
+     */
     @JsonSetter("internal-path")
     public void setInternalPath(Path internalPath) {
         this.internalPath = internalPath;
     }
 
+    /**
+     * @return The accepted datatype ID
+     */
     @JsonGetter("data-type")
     public String getAcceptedDataTypeId() {
         return ACAQDatatypeRegistry.getInstance().getIdOf(acceptedDataType);
     }
 
+    /**
+     * Sets the accepted datatype ID
+     * @param id Datatype ID
+     */
     @JsonSetter("data-type")
     public void setAcceptedDataTypeId(String id) {
         this.acceptedDataType = ACAQDatatypeRegistry.getInstance().getById(id);
     }
 
+    /**
+     * @return List of rows
+     */
     @JsonGetter("rows")
     public List<Row> getRowList() {
         return rowList;
     }
 
+    /**
+     * Sets list of rows
+     * @param rowList Row list
+     */
     @JsonSetter("rows")
     public void setRowList(List<Row> rowList) {
         this.rowList = rowList;
     }
 
+    /**
+     * Saves the table to JSON
+     * @param fileName  JSON file
+     * @throws IOException Triggered by {@link com.fasterxml.jackson.databind.ObjectMapper}
+     */
     public void saveAsJson(Path fileName) throws IOException {
         JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(fileName.toFile(), this);
     }
 
+    /**
+     * Saves the table to CSV
+     * @param fileName  CSV file
+     * @throws IOException Triggered by {@link ResultsTable}
+     */
     public void saveAsCSV(Path fileName) throws IOException {
         ResultsTable table = new ResultsTable();
         for (Row row : rowList) {
@@ -124,6 +177,9 @@ public class ACAQExportedDataTable implements TableModel {
         table.saveAs(fileName.toString());
     }
 
+    /**
+     * @return Additional columns containing {@link ACAQTraitDeclaration}
+     */
     public List<ACAQTraitDeclaration> getTraitColumns() {
         if (traitColumns == null) {
             Set<ACAQTraitDeclaration> registeredTraits = new HashSet<>();
@@ -197,6 +253,11 @@ public class ACAQExportedDataTable implements TableModel {
 
     }
 
+    /**
+     * Loads the table from JSON
+     * @param fileName JSON file
+     * @return Loaded table
+     */
     public static ACAQExportedDataTable loadFromJson(Path fileName) {
         try {
             return JsonUtils.getObjectMapper().readerFor(ACAQExportedDataTable.class).readValue(fileName.toFile());
@@ -205,28 +266,48 @@ public class ACAQExportedDataTable implements TableModel {
         }
     }
 
+    /**
+     * A row in the table
+     */
     public static class Row {
         private Path location;
         private List<ACAQTrait> traits;
 
+        /**
+         * Creates new instance
+         */
         public Row() {
         }
 
+        /**
+         * @return Internal location relative to the output folder
+         */
         @JsonGetter("location")
         public Path getLocation() {
             return location;
         }
 
+        /**
+         * Sets the location
+         * @param location Internal location relative to the output folder
+         */
         @JsonSetter("location")
         public void setLocation(Path location) {
             this.location = location;
         }
 
+        /**
+         * @return Annotations
+         */
         @JsonGetter("traits")
         public List<ACAQTrait> getTraits() {
             return traits;
         }
 
+        /**
+         * Sets annotations
+         * @param traits List of annotations
+         */
         @JsonSetter("traits")
         public void setTraits(List<ACAQTrait> traits) {
             this.traits = traits;

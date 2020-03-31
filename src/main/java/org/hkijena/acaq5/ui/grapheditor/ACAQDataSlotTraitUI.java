@@ -16,10 +16,18 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Set;
 
+/**
+ * UI that shows and manages slot traits
+ */
 public class ACAQDataSlotTraitUI extends JPanel {
     private ACAQAlgorithmGraph graph;
     private ACAQDataSlot slot;
 
+    /**
+     * Creates a new UI
+     * @param graph The graph
+     * @param slot The slot
+     */
     public ACAQDataSlotTraitUI(ACAQAlgorithmGraph graph, ACAQDataSlot slot) {
         this.graph = graph;
         this.slot = slot;
@@ -81,11 +89,18 @@ public class ACAQDataSlotTraitUI extends JPanel {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
     }
 
+    /**
+     * Should be triggered when an algorithm's slot annotations are changed
+     * @param event Generated event
+     */
     @Subscribe
     public void onSlotsTraitsChanged(SlotAnnotationsChanged event) {
         reloadButtons();
     }
 
+    /**
+     * @return Width needed to display the annotations
+     */
     public int calculateWidth() {
         Set<ACAQTraitDeclaration> traits = slot.getSlotAnnotations();
         boolean canEditTraits = false;

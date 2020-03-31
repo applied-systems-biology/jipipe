@@ -23,6 +23,9 @@ import java.util.function.Consumer;
 import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_HEIGHT;
 import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_WIDTH;
 
+/**
+ * UI around an {@link ACAQDataSlot}
+ */
 public class ACAQDataSlotUI extends JPanel {
     private ACAQAlgorithmGraph graph;
     private String compartment;
@@ -31,6 +34,12 @@ public class ACAQDataSlotUI extends JPanel {
     private JPopupMenu assignButtonMenu;
     private ACAQDataSlotTraitUI traitUI;
 
+    /**
+     * Creates a new UI
+     * @param graph The graph
+     * @param compartment The compartment ID
+     * @param slot The slot instance
+     */
     public ACAQDataSlotUI(ACAQAlgorithmGraph graph, String compartment, ACAQDataSlot slot) {
         this.graph = graph;
         this.compartment = compartment;
@@ -245,6 +254,9 @@ public class ACAQDataSlotUI extends JPanel {
         return slot.getAcceptedDataType();
     }
 
+    /**
+     * @return The name that should be displayed
+     */
     public String getDisplayedName() {
         if (slot.getAlgorithm() instanceof ACAQCompartmentOutput) {
             if (slot.isOutput()) {
@@ -257,6 +269,9 @@ public class ACAQDataSlotUI extends JPanel {
         }
     }
 
+    /**
+     * @return The width needed to display the slot
+     */
     public int calculateWidth() {
         // First calculate the width caused by the label width
         FontRenderContext frc = new FontRenderContext(null, false, false);
@@ -269,10 +284,17 @@ public class ACAQDataSlotUI extends JPanel {
         return width;
     }
 
+    /**
+     * @return The slot
+     */
     public ACAQDataSlot getSlot() {
         return slot;
     }
 
+    /**
+     * Should be triggered when the slots are changed
+     * @param event Generated event
+     */
     @Subscribe
     public void onAlgorithmGraphChanged(AlgorithmGraphChangedEvent event) {
         if (graph.containsNode(slot)) {
@@ -281,6 +303,9 @@ public class ACAQDataSlotUI extends JPanel {
         }
     }
 
+    /**
+     * @return The compartment
+     */
     public String getCompartment() {
         return compartment;
     }

@@ -17,22 +17,31 @@ import java.util.Set;
  */
 @JsonDeserialize(as = ACAQMutableDependency.class)
 public interface ACAQDependency extends ACAQParameterHolder, ACAQValidatable {
+    /**
+     * @return The dependency metadata
+     */
     @JsonGetter("metadata")
     ACAQProjectMetadata getMetadata();
 
     @Override
     EventBus getEventBus();
 
+    /**
+     * @return The unique dependency ID
+     */
     @JsonGetter("id")
     String getDependencyId();
 
+    /**
+     * @return The dependency version
+     */
     @JsonGetter("version")
     String getDependencyVersion();
 
     /**
      * Gets the location of the JAR/JSON that defined the dependency
      *
-     * @return
+     * @return location of the JAR/JSON that defined the dependency
      */
     Path getDependencyLocation();
 
@@ -42,8 +51,8 @@ public interface ACAQDependency extends ACAQParameterHolder, ACAQValidatable {
     /**
      * Exports the dependency to an HTML element (without the root tag)
      *
-     * @param dependency
-     * @return
+     * @param dependency Dependency instance
+     * @return HTML element without HTML root tags
      */
     static String toHtmlElement(ACAQDependency dependency) {
         StringBuilder stringBuilder = new StringBuilder();
@@ -65,8 +74,8 @@ public interface ACAQDependency extends ACAQParameterHolder, ACAQValidatable {
     /**
      * Finds all dependencies that cannot be met
      *
-     * @param dependencies
-     * @return
+     * @param dependencies List of dependencies to be checked. Only the ID will be checked.
+     * @return Set of dependencies whose IDs are not registered
      */
     static Set<ACAQDependency> findUnsatisfiedDependencies(Set<ACAQDependency> dependencies) {
         Set<ACAQDependency> result = new HashSet<>();

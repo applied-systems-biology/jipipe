@@ -6,8 +6,14 @@ import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Renders a {@link ACAQDataSlot}
+ */
 public class ACAQDataSlotListCellRenderer extends JLabel implements ListCellRenderer<ACAQDataSlot> {
 
+    /**
+     * Creates a new renderer
+     */
     public ACAQDataSlotListCellRenderer() {
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));

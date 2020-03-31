@@ -8,18 +8,29 @@ import javax.swing.*;
 import java.nio.file.Path;
 
 /**
- * A UI that is rendered in a TableCell.
+ * Renders a {@link ACAQDataSlot} row as table cell
  */
 public abstract class ACAQResultDataSlotCellUI extends JLabel {
+    /**
+     * Creates a new renderer
+     */
     public ACAQResultDataSlotCellUI() {
     }
 
+    /**
+     * Renders the data slot row
+     * @param workbenchUI the workbench
+     * @param slot The data slot
+     * @param row The data slot row
+     */
     public abstract void render(ACAQProjectUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row);
 
     /**
      * Returns the compartment name of the algorithm that generated the data
      *
-     * @return
+     * @param workbenchUI The workbench
+     * @param slot The data slot
+     * @return The algorithm compartment
      */
     public static String getAlgorithmCompartment(ACAQProjectUI workbenchUI, ACAQDataSlot slot) {
         return workbenchUI.getProject().getCompartments().get(slot.getAlgorithm().getCompartment()).getName();
@@ -28,7 +39,8 @@ public abstract class ACAQResultDataSlotCellUI extends JLabel {
     /**
      * Returns the name of the algorithm that generated the data
      *
-     * @return
+     * @param slot The data slot
+     * @return The algorithm name
      */
     public static String getAlgorithmName(ACAQDataSlot slot) {
         return slot.getAlgorithm().getName();
@@ -37,7 +49,10 @@ public abstract class ACAQResultDataSlotCellUI extends JLabel {
     /**
      * Returns a name that identifies this row
      *
-     * @return
+     * @param workbenchUI The workbench UI
+     * @param slot The data slot
+     * @param row The data slot row
+     * @return The display name
      */
     public static String getDisplayName(ACAQProjectUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
         return getAlgorithmCompartment(workbenchUI, slot) + "/" + getAlgorithmName(slot) + "/" + slot.getName() + "/" + row.getLocation();
@@ -46,7 +61,9 @@ public abstract class ACAQResultDataSlotCellUI extends JLabel {
     /**
      * Returns the folder where the data is stored
      *
-     * @return
+     * @param slot The data slot
+     * @param row The data slot row
+     * @return The row storage folder
      */
     public static Path getRowStorageFolder(ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
         return slot.getStoragePath().resolve(row.getLocation());

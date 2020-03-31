@@ -21,7 +21,13 @@ import org.jfree.chart.renderer.category.StandardBarPainter;
 
 import java.util.List;
 
+/**
+ * A bar category plot
+ */
 public class BarCategoryPlot extends DefaultCategoryPlot {
+    /**
+     * @param seriesDataList the data
+     */
     public BarCategoryPlot(List<ACAQPlotSeriesData> seriesDataList) {
         super(seriesDataList);
         setTitle("Bar plot");

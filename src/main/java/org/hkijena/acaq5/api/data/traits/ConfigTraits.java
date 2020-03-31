@@ -16,14 +16,14 @@ public @interface ConfigTraits {
      * If true, traits are automatically transferred the following way:
      * The union set of input data traits is transferred to all output data slots.
      *
-     * @return
+     * @return enable auto-transfer
      */
     boolean autoTransfer() default true;
 
     /**
      * If true, users can add custom traits
      *
-     * @return
+     * @return allow user modification
      */
     boolean allowModify() default false;
 }

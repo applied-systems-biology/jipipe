@@ -30,8 +30,8 @@ public interface ACAQData {
     /**
      * Returns the name of a data type
      *
-     * @param klass
-     * @return
+     * @param klass The data class
+     * @return The name of the data class
      */
     static String getNameOf(Class<? extends ACAQData> klass) {
         ACAQDocumentation[] annotations = klass.getAnnotationsByType(ACAQDocumentation.class);
@@ -45,8 +45,8 @@ public interface ACAQData {
     /**
      * Returns the description of a data type
      *
-     * @param klass
-     * @return
+     * @param klass The data class
+     * @return The data class description
      */
     static String getDescriptionOf(Class<? extends ACAQData> klass) {
         ACAQDocumentation[] annotations = klass.getAnnotationsByType(ACAQDocumentation.class);
@@ -60,8 +60,8 @@ public interface ACAQData {
     /**
      * Returns the menu path of the data type
      *
-     * @param klass
-     * @return
+     * @param klass The data class
+     * @return The menu path of the data class
      */
     static String getMenuPathOf(Class<? extends ACAQData> klass) {
         ACAQOrganization[] annotations = klass.getAnnotationsByType(ACAQOrganization.class);
@@ -75,8 +75,8 @@ public interface ACAQData {
     /**
      * Returns true if this data should be be accessible by the user
      *
-     * @param klass
-     * @return
+     * @param klass Data class
+     * @return If the data should be hidden from user
      */
     static boolean isHidden(Class<? extends ACAQData> klass) {
         return klass.getAnnotationsByType(ACAQHidden.class).length > 0;
@@ -85,8 +85,8 @@ public interface ACAQData {
     /**
      * Gets name sorted list of data classes
      *
-     * @param classes
-     * @return
+     * @param classes The data classes
+     * @return A name-sorted list of data classes
      */
     static List<Class<? extends ACAQData>> getSortedList(Collection<Class<? extends ACAQData>> classes) {
         return classes.stream().sorted(Comparator.comparing(ACAQData::getNameOf)).collect(Collectors.toList());
@@ -95,8 +95,8 @@ public interface ACAQData {
     /**
      * Groups the data types by their menu path
      *
-     * @param classes
-     * @return
+     * @param classes The data classes
+     * @return Map from menu path to a set of data classes that have the menu path
      */
     static Map<String, Set<Class<? extends ACAQData>>> groupByMenuPath(Collection<Class<? extends ACAQData>> classes) {
         Map<String, Set<Class<? extends ACAQData>>> result = new HashMap<>();
@@ -117,10 +117,10 @@ public interface ACAQData {
      * Instantiates a data class with the provided parameters
      * This method is helpful if output data is constructed based on slot types
      *
-     * @param klass
-     * @param constructorParameters
-     * @param <T>
-     * @return
+     * @param klass The data class
+     * @param constructorParameters Constructor parameters
+     * @param <T> Data class
+     * @return Data instance
      */
     static <T extends ACAQData> T createInstance(Class<T> klass, Object... constructorParameters) {
         try {

@@ -1,5 +1,8 @@
 package org.hkijena.acaq5.api.parameters;
 
+/**
+ * Defines the visibility of a parameter
+ */
 public enum ACAQParameterVisibility {
     /**
      * Highest visibility: Visible to users, and to parent parameter holders
@@ -23,8 +26,8 @@ public enum ACAQParameterVisibility {
     /**
      * Gets the lower visibility of this one one the other one
      *
-     * @param other
-     * @return
+     * @param other The other visibility
+     * @return the lower visibility
      */
     public ACAQParameterVisibility intersectWith(ACAQParameterVisibility other) {
         if (other.order > order)
@@ -36,8 +39,8 @@ public enum ACAQParameterVisibility {
     /**
      * Returns true if this visibility is visible in a container with a minimum visibility
      *
-     * @param container
-     * @return
+     * @param container The container visibility
+     * @return If the visibility is visible in the container
      */
     public boolean isVisibleIn(ACAQParameterVisibility container) {
         return this.order <= container.order;

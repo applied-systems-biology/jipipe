@@ -36,6 +36,9 @@ import java.util.stream.Collectors;
 
 import static org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph.COMPARTMENT_DEFAULT;
 
+/**
+ * Graph editor UI to organize traits
+ */
 public class ACAQTraitGraphUI extends ACAQJsonExtensionUIPanel implements MouseListener, MouseMotionListener {
 
     protected JMenuBar menuBar = new JMenuBar();
@@ -55,6 +58,9 @@ public class ACAQTraitGraphUI extends ACAQJsonExtensionUIPanel implements MouseL
 
     private ACAQTraitGraph graph;
 
+    /**
+     * @param workbenchUI the workbench
+     */
     public ACAQTraitGraphUI(ACAQJsonExtensionUI workbenchUI) {
         super(workbenchUI);
         this.graph = new ACAQTraitGraph(getProject());
@@ -97,6 +103,9 @@ public class ACAQTraitGraphUI extends ACAQJsonExtensionUIPanel implements MouseL
         graph.getEventBus().register(this);
     }
 
+    /**
+     * Initializes the toolbar
+     */
     protected void initializeToolbar() {
         initializeAddNodesMenus();
 
@@ -143,9 +152,10 @@ public class ACAQTraitGraphUI extends ACAQJsonExtensionUIPanel implements MouseL
         }
     }
 
+    /**
+     * Initializes the "Add" menu
+     */
     protected void initializeAddNodesMenus() {
-        ACAQAlgorithmDeclaration declaration = ACAQAlgorithmRegistry.getInstance().getDeclarationById("acaq:project-compartment");
-
         JButton addItem = new JButton("New annotation", UIUtils.getIconFromResources("new.png"));
         UIUtils.makeFlat(addItem);
         addItem.setToolTipText("Adds a new custom annotation type.");
@@ -191,6 +201,10 @@ public class ACAQTraitGraphUI extends ACAQJsonExtensionUIPanel implements MouseL
         return graph;
     }
 
+    /**
+     * Triggered when a trait node is selected
+     * @param event Generated event
+     */
     @Subscribe
     public void onAlgorithmSelected(AlgorithmSelectedEvent event) {
         if (event.getUi() != null) {
@@ -208,6 +222,9 @@ public class ACAQTraitGraphUI extends ACAQJsonExtensionUIPanel implements MouseL
         }
     }
 
+    /**
+     * Clears the selection
+     */
     public void clearSelection() {
         for (ACAQAlgorithmUI ui : selection) {
             ui.setSelected(false);
@@ -218,6 +235,10 @@ public class ACAQTraitGraphUI extends ACAQJsonExtensionUIPanel implements MouseL
         splitPane.setDividerLocation(dividerLocation);
     }
 
+    /**
+     * Selects only one trait
+     * @param ui the UI
+     */
     public void selectOnly(ACAQAlgorithmUI ui) {
         if (selection.isEmpty()) {
             addToSelection(ui);
@@ -232,6 +253,10 @@ public class ACAQTraitGraphUI extends ACAQJsonExtensionUIPanel implements MouseL
         }
     }
 
+    /**
+     * Adds a node to the selection
+     * @param ui the UI
+     */
     public void addToSelection(ACAQAlgorithmUI ui) {
         selection.add(ui);
         ui.setSelected(true);
@@ -247,6 +272,10 @@ public class ACAQTraitGraphUI extends ACAQJsonExtensionUIPanel implements MouseL
         }
     }
 
+    /**
+     * Removes a node from the selection
+     * @param ui the UI
+     */
     public void removeFromSelection(ACAQAlgorithmUI ui) {
         if (selection.contains(ui)) {
             selection.remove(ui);
@@ -265,6 +294,10 @@ public class ACAQTraitGraphUI extends ACAQJsonExtensionUIPanel implements MouseL
         }
     }
 
+    /**
+     * Triggered when the graph is changed
+     * @param event Generated event
+     */
     @Subscribe
     public void onGraphChanged(AlgorithmGraphChangedEvent event) {
         if (selection.stream().anyMatch(ui -> !graph.getAlgorithmNodes().containsValue(ui.getAlgorithm()))) {

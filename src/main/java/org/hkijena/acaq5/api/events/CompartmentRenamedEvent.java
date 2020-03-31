@@ -9,6 +9,9 @@ import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 public class CompartmentRenamedEvent {
     private ACAQProjectCompartment compartment;
 
+    /**
+     * @param compartment the compartment
+     */
     public CompartmentRenamedEvent(ACAQProjectCompartment compartment) {
         this.compartment = compartment;
     }

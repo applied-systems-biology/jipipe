@@ -22,10 +22,16 @@ import java.awt.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+/**
+ * Standard implementation of {@link ACAQPlotSettingsUI}
+ */
 public class DefaultACAQPlotSettingsUI extends ACAQPlotSettingsUI {
 
     private int gridBagRow = 0;
 
+    /**
+     * @param plot the plot
+     */
     public DefaultACAQPlotSettingsUI(ACAQPlot plot) {
         super(plot);
         setLayout(new GridBagLayout());
@@ -36,6 +42,12 @@ public class DefaultACAQPlotSettingsUI extends ACAQPlotSettingsUI {
         addStringEditorComponent("Title", () -> getPlot().getTitle(), s -> getPlot().setTitle(s));
     }
 
+    /**
+     * Adds a component
+     * @param label label
+     * @param icon icon
+     * @param component component
+     */
     protected void addComponent(String label, Icon icon, Component component) {
         final int finalRow = gridBagRow++;
         add(new JLabel(label, icon, JLabel.LEFT), new GridBagConstraints() {
@@ -58,6 +70,12 @@ public class DefaultACAQPlotSettingsUI extends ACAQPlotSettingsUI {
         });
     }
 
+    /**
+     * Adds a string editor component
+     * @param label label
+     * @param getter getter function
+     * @param setter setter function
+     */
     protected void addStringEditorComponent(String label, Supplier<String> getter, Consumer<String> setter) {
         JTextField textField = new JTextField(getter.get());
         textField.getDocument().addDocumentListener(new DocumentChangeListener() {

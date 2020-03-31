@@ -9,11 +9,18 @@ import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
+/**
+ * Renders row data of an {@link ACAQExportedDataTable}
+ */
 public class ACAQRowDataTableCellRenderer implements TableCellRenderer {
 
     private ACAQProjectUI workbenchUI;
     private ACAQDataSlot slot;
 
+    /**
+     * @param workbenchUI the workbench
+     * @param slot the data slot
+     */
     public ACAQRowDataTableCellRenderer(ACAQProjectUI workbenchUI, ACAQDataSlot slot) {
         this.workbenchUI = workbenchUI;
         this.slot = slot;

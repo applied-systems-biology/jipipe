@@ -24,11 +24,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * UI for splitting table columns
+ */
 public class ACAQSplitColumnDialogUI extends JDialog {
     private DefaultTableModel tableModel;
     private DefaultTableModel resultTableModel;
     private List<JComboBox<ColumnRole>> columnOperations = new ArrayList<>();
 
+    /**
+     * @param tableModel the table
+     */
     public ACAQSplitColumnDialogUI(DefaultTableModel tableModel) {
         this.tableModel = tableModel;
         initialize();
@@ -158,12 +164,18 @@ public class ACAQSplitColumnDialogUI extends JDialog {
         return resultTableModel;
     }
 
+    /**
+     * Role for each column
+     */
     enum ColumnRole {
         Ignore,
         Value,
         Category
     }
 
+    /**
+     * Renderer for {@link ColumnRole}
+     */
     private static class Renderer extends JLabel implements ListCellRenderer<ColumnRole> {
 
         public Renderer() {

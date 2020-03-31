@@ -8,6 +8,9 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterHolder;
 import org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors.StringParameterSettings;
 
+/**
+ * JSON-serializable project metadata
+ */
 public class ACAQProjectMetadata implements ACAQParameterHolder {
     private EventBus eventBus = new EventBus();
     private String name = "New project";
@@ -17,9 +20,16 @@ public class ACAQProjectMetadata implements ACAQParameterHolder {
     private String license = "";
     private String citation = "";
 
+    /**
+     * Creates new empty instance
+     */
     public ACAQProjectMetadata() {
     }
 
+    /**
+     * Copies metadata
+     * @param other The original metadata
+     */
     public ACAQProjectMetadata(ACAQProjectMetadata other) {
         this.name = other.name;
         this.description = other.description;
@@ -29,6 +39,9 @@ public class ACAQProjectMetadata implements ACAQParameterHolder {
         this.citation = other.citation;
     }
 
+    /**
+     * @return Gets the name
+     */
     @ACAQDocumentation(name = "Name")
     @ACAQParameter("name")
     @JsonGetter("name")
@@ -36,6 +49,10 @@ public class ACAQProjectMetadata implements ACAQParameterHolder {
         return name;
     }
 
+    /**
+     * Sets the name
+     * @param name the name
+     */
     @ACAQParameter("name")
     @JsonSetter("name")
     public void setName(String name) {
@@ -43,6 +60,9 @@ public class ACAQProjectMetadata implements ACAQParameterHolder {
         getEventBus().post(new ParameterChangedEvent(this, "name"));
     }
 
+    /**
+     * @return the description
+     */
     @ACAQDocumentation(name = "Description")
     @ACAQParameter("description")
     @StringParameterSettings(multiline = true)
@@ -51,6 +71,10 @@ public class ACAQProjectMetadata implements ACAQParameterHolder {
         return description;
     }
 
+    /**
+     * Sets the description
+     * @param description the description
+     */
     @ACAQParameter("description")
     @JsonSetter("description")
     public void setDescription(String description) {
@@ -58,6 +82,9 @@ public class ACAQProjectMetadata implements ACAQParameterHolder {
         getEventBus().post(new ParameterChangedEvent(this, "description"));
     }
 
+    /**
+     * @return The authors
+     */
     @ACAQDocumentation(name = "Authors")
     @ACAQParameter("authors")
     @JsonGetter("authors")
@@ -65,6 +92,10 @@ public class ACAQProjectMetadata implements ACAQParameterHolder {
         return authors;
     }
 
+    /**
+     * Sets the authors
+     * @param authors the authors
+     */
     @ACAQParameter("authors")
     @JsonSetter("authors")
     public void setAuthors(String authors) {
@@ -72,6 +103,9 @@ public class ACAQProjectMetadata implements ACAQParameterHolder {
         getEventBus().post(new ParameterChangedEvent(this, "authors"));
     }
 
+    /**
+     * @return the website
+     */
     @ACAQDocumentation(name = "Website")
     @ACAQParameter("website")
     @JsonGetter("website")
@@ -79,6 +113,10 @@ public class ACAQProjectMetadata implements ACAQParameterHolder {
         return website;
     }
 
+    /**
+     * Sets the website
+     * @param website the website
+     */
     @ACAQParameter("website")
     @JsonSetter("website")
     public void setWebsite(String website) {
@@ -86,6 +124,9 @@ public class ACAQProjectMetadata implements ACAQParameterHolder {
         getEventBus().post(new ParameterChangedEvent(this, "website"));
     }
 
+    /**
+     * @return the license
+     */
     @ACAQDocumentation(name = "License")
     @ACAQParameter("license")
     @JsonGetter("license")
@@ -93,6 +134,10 @@ public class ACAQProjectMetadata implements ACAQParameterHolder {
         return license;
     }
 
+    /**
+     * Sets the license
+     * @param license the license
+     */
     @ACAQParameter("license")
     @JsonSetter("license")
     public void setLicense(String license) {
@@ -100,6 +145,9 @@ public class ACAQProjectMetadata implements ACAQParameterHolder {
         getEventBus().post(new ParameterChangedEvent(this, "license"));
     }
 
+    /**
+     * @return the citation
+     */
     @ACAQDocumentation(name = "Citation")
     @ACAQParameter("citation")
     @JsonGetter("citation")
@@ -107,6 +155,10 @@ public class ACAQProjectMetadata implements ACAQParameterHolder {
         return citation;
     }
 
+    /**
+     * Sets the citation
+     * @param citation the citation
+     */
     @ACAQParameter("citation")
     @JsonSetter("citation")
     public void setCitation(String citation) {

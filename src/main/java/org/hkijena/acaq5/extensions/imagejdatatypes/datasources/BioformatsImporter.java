@@ -19,6 +19,9 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.Image
 
 import java.io.IOException;
 
+/**
+ * BioFormats importer wrapper
+ */
 @ACAQDocumentation(name = "Bioformats importer", description = "Imports images via the Bioformats plugin")
 @AlgorithmInputSlot(value = ACAQFileData.class, slotName = "Files", autoCreate = true)
 @AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
@@ -37,11 +40,18 @@ public class BioformatsImporter extends ACAQIteratingAlgorithm {
     private boolean crop;
     private boolean stitchTiles;
 
+    /**
+     * @param declaration the declaration
+     */
     public BioformatsImporter(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
         ((ACAQMutableSlotConfiguration) getSlotConfiguration()).setOutputSealed(false);
     }
 
+    /**
+     * Copies the algorithm
+     * @param other the original
+     */
     public BioformatsImporter(BioformatsImporter other) {
         super(other);
         this.colorMode = other.colorMode;

@@ -10,6 +10,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Collectors;
 
+/**
+ * Algorithms that lists the sub folders for each input folder
+ */
 @ACAQDocumentation(name = "List subfolders", description = "Lists all subfolders")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.FileSystem)
 
@@ -20,10 +23,18 @@ import java.util.stream.Collectors;
 // Traits
 public class ACAQListSubfolders extends ACAQIteratingAlgorithm {
 
+    /**
+     * Creates a new instance
+     * @param declaration The algorithm declaration
+     */
     public ACAQListSubfolders(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
     }
 
+    /**
+     * Copies the algorithm
+     * @param other The original
+     */
     public ACAQListSubfolders(ACAQListSubfolders other) {
         super(other);
     }

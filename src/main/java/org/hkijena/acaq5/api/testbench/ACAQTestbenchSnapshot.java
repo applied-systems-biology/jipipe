@@ -20,6 +20,9 @@ public class ACAQTestbenchSnapshot {
     private String label;
     private Map<ACAQAlgorithm, AlgorithmBackup> algorithmBackups = new HashMap<>();
 
+    /**
+     * @param testbench the testbench
+     */
     public ACAQTestbenchSnapshot(ACAQTestbench testbench) {
         this.testbench = testbench;
         this.outputFolderBackup = testbench.getTestbenchRun().getConfiguration().getOutputPath();
@@ -29,6 +32,9 @@ public class ACAQTestbenchSnapshot {
         }
     }
 
+    /**
+     * Restores the snapshot
+     */
     public void restore() {
         ((ACAQMutableRunConfiguration) this.testbench.getTestbenchRun().getConfiguration()).setOutputPath(outputFolderBackup);
         restore(testbench.getBenchedAlgorithm());
@@ -41,10 +47,18 @@ public class ACAQTestbenchSnapshot {
         }
     }
 
+    /**
+     * Restores the snapshot into the target algorithm
+     * @param algorithm the target algorithm
+     */
     public void restore(ACAQAlgorithm algorithm) {
         algorithmBackups.get(algorithm).restore();
     }
 
+    /**
+     * @param runAlgorithm algorithm in the {@link org.hkijena.acaq5.api.ACAQRun}
+     * @return Backup for the algorithm
+     */
     public AlgorithmBackup getAlgorithmBackup(ACAQAlgorithm runAlgorithm) {
         return algorithmBackups.get(runAlgorithm);
     }
@@ -61,11 +75,17 @@ public class ACAQTestbenchSnapshot {
         this.label = label;
     }
 
+    /**
+     * Backups parameters and storage paths
+     */
     public static class AlgorithmBackup {
         private ACAQAlgorithm algorithm;
         private Map<String, Object> parameterBackups = new HashMap<>();
         private Map<String, Path> storagePathBackups = new HashMap<>();
 
+        /**
+         * @param algorithm the algorithm the backup is created from
+         */
         public AlgorithmBackup(ACAQAlgorithm algorithm) {
             this.algorithm = algorithm;
             backupData();
@@ -85,6 +105,9 @@ public class ACAQTestbenchSnapshot {
             }
         }
 
+        /**
+         * Restores the backup to the input algorithm
+         */
         public void restore() {
             for (ACAQDataSlot slot : algorithm.getOutputSlots()) {
                 slot.setStoragePath(storagePathBackups.get(slot.getName()));
@@ -92,6 +115,10 @@ public class ACAQTestbenchSnapshot {
             restoreParameters(algorithm);
         }
 
+        /**
+         * Restores the parameter to a compatible foreign algorithm
+         * @param targetAlgorithm the target algorithm
+         */
         public void restoreParameters(ACAQAlgorithm targetAlgorithm) {
             Map<String, ACAQParameterAccess> parameters = ACAQParameterAccess.getParameters(targetAlgorithm);
             for (Map.Entry<String, ACAQParameterAccess> entry : parameters.entrySet()) {

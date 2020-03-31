@@ -10,12 +10,21 @@ import org.hkijena.acaq5.api.data.traits.BadForTrait;
 import org.hkijena.acaq5.api.data.traits.GoodForTrait;
 import org.hkijena.acaq5.api.data.traits.RemovesTrait;
 
+/**
+ * Registers a Java algorithm
+ */
 public class ACAQJavaAlgorithmRegistrationTask extends ACAQDefaultAlgorithmRegistrationTask {
 
     private ACAQDependency source;
     private String id;
     private Class<? extends ACAQAlgorithm> algorithmClass;
 
+    /**
+     * Creates a new registration task
+     * @param id The id
+     * @param algorithmClass The algorithm class
+     * @param source The dependency the registers the algorithm
+     */
     public ACAQJavaAlgorithmRegistrationTask(String id, Class<? extends ACAQAlgorithm> algorithmClass, ACAQDependency source) {
         this.source = source;
         this.id = id;

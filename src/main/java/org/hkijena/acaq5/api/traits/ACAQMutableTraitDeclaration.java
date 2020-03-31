@@ -12,6 +12,9 @@ import org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * A mutable implementation of {@link ACAQTraitDeclaration}
+ */
 public abstract class ACAQMutableTraitDeclaration implements ACAQTraitDeclaration, ACAQParameterHolder {
     private EventBus eventBus = new EventBus();
     private String id;
@@ -31,6 +34,10 @@ public abstract class ACAQMutableTraitDeclaration implements ACAQTraitDeclaratio
         return id;
     }
 
+    /**
+     * Sets the ID
+     * @param id The ID
+     */
     @JsonSetter("id")
     @ACAQParameter("id")
     public void setId(String id) {
@@ -43,6 +50,10 @@ public abstract class ACAQMutableTraitDeclaration implements ACAQTraitDeclaratio
         return traitClass;
     }
 
+    /**
+     * Sets the trait class
+     * @param traitClass The trait class
+     */
     public void setTraitClass(Class<? extends ACAQTrait> traitClass) {
         this.traitClass = traitClass;
     }
@@ -52,6 +63,10 @@ public abstract class ACAQMutableTraitDeclaration implements ACAQTraitDeclaratio
         return discriminator;
     }
 
+    /**
+     * Sets if the declaration is a discriminator
+     * @param discriminator Sets if the declaration is a discriminator
+     */
     public void setDiscriminator(boolean discriminator) {
         this.discriminator = discriminator;
     }
@@ -64,6 +79,10 @@ public abstract class ACAQMutableTraitDeclaration implements ACAQTraitDeclaratio
         return name;
     }
 
+    /**
+     * Sets the name
+     * @param name The name
+     */
     @JsonSetter("name")
     @ACAQParameter("name")
     public void setName(String name) {
@@ -79,6 +98,10 @@ public abstract class ACAQMutableTraitDeclaration implements ACAQTraitDeclaratio
         return description;
     }
 
+    /**
+     * Sets the description
+     * @param description The description
+     */
     @JsonSetter("description")
     @ACAQParameter("description")
     public void setDescription(String description) {
@@ -91,6 +114,10 @@ public abstract class ACAQMutableTraitDeclaration implements ACAQTraitDeclaratio
         return inherited;
     }
 
+    /**
+     * Sets the inherited
+     * @param inherited The inherited traits
+     */
     public void setInherited(Set<ACAQTraitDeclaration> inherited) {
         this.inherited = inherited;
     }
@@ -103,6 +130,10 @@ public abstract class ACAQMutableTraitDeclaration implements ACAQTraitDeclaratio
         return hidden;
     }
 
+    /**
+     * Sets if the trait should be hidden from the user
+     * @param hidden Sets if the trait should be hidden from the user
+     */
     @JsonSetter("hidden")
     @ACAQParameter("hidden")
     public void setHidden(boolean hidden) {

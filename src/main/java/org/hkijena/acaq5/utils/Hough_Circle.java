@@ -1247,7 +1247,6 @@ public class Hough_Circle extends SwingWorker<Integer, String> {
     /**
      * Search for a fixed number of circles.
      *
-     * @param maxCircles The number of circles that should be found.
      */
     private void getCenterPoints() {
 

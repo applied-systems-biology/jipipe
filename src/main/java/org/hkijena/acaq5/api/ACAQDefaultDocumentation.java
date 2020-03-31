@@ -2,10 +2,18 @@ package org.hkijena.acaq5.api;
 
 import java.lang.annotation.Annotation;
 
+/**
+ * Default implementation of {@link ACAQDocumentation}
+ */
 public class ACAQDefaultDocumentation implements ACAQDocumentation {
     private final String name;
     private final String description;
 
+    /**
+     * Creates a new instance
+     * @param name The name
+     * @param description The description
+     */
     public ACAQDefaultDocumentation(String name, String description) {
         this.name = name;
         this.description = description;

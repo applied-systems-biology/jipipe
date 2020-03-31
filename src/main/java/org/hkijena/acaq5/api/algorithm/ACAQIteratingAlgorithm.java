@@ -12,18 +12,37 @@ import java.util.List;
  */
 public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
 
+    /**
+     * Creates a new instance
+     * @param declaration Algorithm declaration
+     * @param slotConfiguration Slot configuration override
+     * @param traitConfiguration Trait configuration override
+     */
     public ACAQIteratingAlgorithm(ACAQAlgorithmDeclaration declaration, ACAQSlotConfiguration slotConfiguration, ACAQTraitConfiguration traitConfiguration) {
         super(declaration, slotConfiguration, traitConfiguration);
     }
 
+    /**
+     * Creates a new instance
+     * @param declaration Algorithm declaration
+     * @param slotConfiguration Slot configuration override
+     */
     public ACAQIteratingAlgorithm(ACAQAlgorithmDeclaration declaration, ACAQSlotConfiguration slotConfiguration) {
         super(declaration, slotConfiguration, null);
     }
 
+    /**
+     * Creates a new instance
+     * @param declaration Algorithm declaration
+     */
     public ACAQIteratingAlgorithm(ACAQAlgorithmDeclaration declaration) {
         super(declaration, null, null);
     }
 
+    /**
+     * Copies the algorithm
+     * @param other The original
+     */
     public ACAQIteratingAlgorithm(ACAQIteratingAlgorithm other) {
         super(other);
     }
@@ -50,7 +69,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
     /**
      * Runs code on one data row
      *
-     * @param dataInterface
+     * @param dataInterface The data interface
      */
     protected abstract void runIteration(ACAQDataInterface dataInterface);
 }

@@ -16,8 +16,14 @@ package org.hkijena.acaq5.extensions.standardplots.ui.plots;
 import org.hkijena.acaq5.ui.plotbuilder.ACAQPlot;
 import org.hkijena.acaq5.ui.plotbuilder.DefaultACAQPlotSettingsUI;
 
+/**
+ * UI for {@link CategoryPlot}
+ */
 public class CategoryPlotSettingsUI extends DefaultACAQPlotSettingsUI {
 
+    /**
+     * @param plot the plot
+     */
     public CategoryPlotSettingsUI(ACAQPlot plot) {
         super(plot);
         initialize();

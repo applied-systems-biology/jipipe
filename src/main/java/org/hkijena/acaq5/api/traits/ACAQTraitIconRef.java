@@ -25,6 +25,9 @@ public class ACAQTraitIconRef {
         this.iconName = iconName;
     }
 
+    /**
+     * Serializes {@link ACAQTraitIconRef}
+     */
     public static class Serializer extends JsonSerializer<ACAQTraitIconRef> {
         @Override
         public void serialize(ACAQTraitIconRef ref, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
@@ -32,6 +35,9 @@ public class ACAQTraitIconRef {
         }
     }
 
+    /**
+     * Deserializes {@link ACAQTraitIconRef}
+     */
     public static class Deserializer extends JsonDeserializer<ACAQTraitIconRef> {
 
         @Override

@@ -22,16 +22,31 @@ import java.util.Map;
 public abstract class ACAQSlotConfiguration {
     private EventBus eventBus = new EventBus();
 
+    /**
+     * @return the slots
+     */
     public abstract Map<String, ACAQSlotDefinition> getSlots();
 
+    /**
+     * @return the input slot order
+     */
     public abstract List<String> getInputSlotOrder();
 
+    /**
+     * @return the output slot order
+     */
     public abstract List<String> getOutputSlotOrder();
 
+    /**
+     * @return the event bus
+     */
     public EventBus getEventBus() {
         return eventBus;
     }
 
+    /**
+     * @return the input slots
+     */
     public Map<String, ACAQSlotDefinition> getInputSlots() {
         Map<String, ACAQSlotDefinition> result = new HashMap<>();
         for (Map.Entry<String, ACAQSlotDefinition> kv : getSlots().entrySet()) {
@@ -41,6 +56,9 @@ public abstract class ACAQSlotConfiguration {
         return result;
     }
 
+    /**
+     * @return the output slots
+     */
     public Map<String, ACAQSlotDefinition> getOutputSlots() {
         Map<String, ACAQSlotDefinition> result = new HashMap<>();
         for (Map.Entry<String, ACAQSlotDefinition> kv : getSlots().entrySet()) {
@@ -69,10 +87,13 @@ public abstract class ACAQSlotConfiguration {
     /**
      * Loads this configuration from JSON
      *
-     * @param jsonNode
+     * @param jsonNode JSON data
      */
     public abstract void fromJson(JsonNode jsonNode);
 
+    /**
+     * Serializes the configuration
+     */
     public static class Serializer extends JsonSerializer<ACAQSlotConfiguration> {
 
         @Override

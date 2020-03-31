@@ -8,6 +8,9 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.ACAQFolderData;
 import org.hkijena.acaq5.utils.PathFilter;
 
+/**
+ * Algorithm that filters folders
+ */
 @ACAQDocumentation(name = "Filter folders", description = "Filters the input folders by their name")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.FileSystem)
 
@@ -20,10 +23,18 @@ public class ACAQFilterFolders extends ACAQIteratingAlgorithm {
 
     private PathFilter filter = new PathFilter();
 
+    /**
+     * Initializes the algorithm
+     * @param declaration Algorithm declaration
+     */
     public ACAQFilterFolders(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
     }
 
+    /**
+     * Copies the algorithm
+     * @param other The original
+     */
     public ACAQFilterFolders(ACAQFilterFolders other) {
         super(other);
         this.filter = new PathFilter(other.filter);
@@ -42,12 +53,19 @@ public class ACAQFilterFolders extends ACAQIteratingAlgorithm {
         report.forCategory("Filter").report(filter);
     }
 
+    /**
+     * @return The filter
+     */
     @ACAQParameter("filter")
     @ACAQDocumentation(name = "Filter")
     public PathFilter getFilter() {
         return filter;
     }
 
+    /**
+     * Sets the filter
+     * @param filter The filter
+     */
     @ACAQParameter("filter")
     public void setFilter(PathFilter filter) {
         this.filter = filter;

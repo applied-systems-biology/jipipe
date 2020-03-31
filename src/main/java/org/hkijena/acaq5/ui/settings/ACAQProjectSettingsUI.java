@@ -7,7 +7,13 @@ import org.hkijena.acaq5.ui.components.MarkdownDocument;
 
 import java.awt.*;
 
+/**
+ * UI around the metadata of an {@link org.hkijena.acaq5.api.ACAQProject}
+ */
 public class ACAQProjectSettingsUI extends ACAQProjectUIPanel {
+    /**
+     * @param workbenchUI The workbench UI
+     */
     public ACAQProjectSettingsUI(ACAQProjectUI workbenchUI) {
         super(workbenchUI);
         initialize();

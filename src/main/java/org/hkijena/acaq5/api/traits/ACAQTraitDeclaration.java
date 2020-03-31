@@ -4,6 +4,9 @@ import org.hkijena.acaq5.ACAQDependency;
 
 import java.util.Set;
 
+/**
+ * Describes an {@link ACAQTrait}
+ */
 public interface ACAQTraitDeclaration {
 
     /**
@@ -23,7 +26,7 @@ public interface ACAQTraitDeclaration {
     /**
      * Creates a new instance
      *
-     * @return
+     * @return new instance
      */
     ACAQTrait newInstance();
 
@@ -31,8 +34,8 @@ public interface ACAQTraitDeclaration {
      * Creates a new instance with a discriminator value.
      * If the trait is not discriminating, ths returns the same as newInstance()
      *
-     * @param value
-     * @return
+     * @param value discriminator value
+     * @return new instance
      */
     ACAQTrait newInstance(String value);
 

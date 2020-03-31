@@ -12,10 +12,26 @@
 
 package org.hkijena.acaq5.ui.tableanalyzer;
 
+/**
+ * Operation that processes a vector
+ */
 public interface ACAQTableVectorOperation {
+    /**
+     * @param input input objects
+     * @return output objects
+     */
     Object[] process(Object[] input);
 
+    /**
+     * Returns if the input can be processed
+     * @param inputItemCount how many items the input contains
+     * @return if the input can be processed
+     */
     boolean inputMatches(int inputItemCount);
 
+    /**
+     * @param inputItemCount how many items the input contains
+     * @return how many entries are generated
+     */
     int getOutputCount(int inputItemCount);
 }

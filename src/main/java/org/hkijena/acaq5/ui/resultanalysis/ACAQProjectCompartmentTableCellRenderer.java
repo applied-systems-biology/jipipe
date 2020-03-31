@@ -7,8 +7,14 @@ import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
+/**
+ * Renders an {@link org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment} cell
+ */
 public class ACAQProjectCompartmentTableCellRenderer extends JLabel implements TableCellRenderer {
 
+    /**
+     * Creates new instance
+     */
     public ACAQProjectCompartmentTableCellRenderer() {
         setOpaque(true);
         setIcon(UIUtils.getIconFromResources("graph-compartment.png"));

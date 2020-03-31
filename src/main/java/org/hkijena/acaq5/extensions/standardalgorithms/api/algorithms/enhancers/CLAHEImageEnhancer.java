@@ -11,6 +11,9 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleData;
 
+/**
+ * Applies CLAHE image enhancing
+ */
 @ACAQDocumentation(name = "CLAHE enhancer")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
 
@@ -34,10 +37,17 @@ public class CLAHEImageEnhancer extends ACAQIteratingAlgorithm {
     private float maxSlope = 3.0f;
     private boolean fastMode = false;
 
+    /**
+     * @param declaration the declaration
+     */
     public CLAHEImageEnhancer(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
     }
 
+    /**
+     * Copies the algorithm
+     * @param other the original
+     */
     public CLAHEImageEnhancer(CLAHEImageEnhancer other) {
         super(other);
         this.blocks = other.blocks;

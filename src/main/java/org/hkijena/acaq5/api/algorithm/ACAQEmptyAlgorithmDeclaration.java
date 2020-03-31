@@ -14,6 +14,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * An empty algorithm declaration.
+ * Use this when you initialize an {@link ACAQAlgorithm} manually within another algorithm.
+ * Warning: May break the algorithm.
+ */
 @JsonSerialize(using = ACAQEmptyAlgorithmDeclaration.Serializer.class)
 public class ACAQEmptyAlgorithmDeclaration implements ACAQAlgorithmDeclaration {
     @Override
@@ -86,6 +91,9 @@ public class ACAQEmptyAlgorithmDeclaration implements ACAQAlgorithmDeclaration {
         return Collections.emptySet();
     }
 
+    /**
+     * Serializes the empty algorithm declaration
+     */
     public static class Serializer extends JsonSerializer<ACAQEmptyAlgorithmDeclaration> {
         @Override
         public void serialize(ACAQEmptyAlgorithmDeclaration acaqEmptyAlgorithmDeclaration, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {

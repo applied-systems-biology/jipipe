@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Installs Drag&Drop features that create filesystem nodes
+ */
 public class ACAQAlgorithmGraphUIDragAndDrop implements DropTargetListener {
 
     private ACAQAlgorithmGraphCanvasUI canvasUI;
@@ -102,6 +105,10 @@ public class ACAQAlgorithmGraphUIDragAndDrop implements DropTargetListener {
         }
     }
 
+    /**
+     * Installs the drag&drop into the specified {@link ACAQAlgorithmGraphCanvasUI}
+     * @param canvasUI The target
+     */
     public static void install(ACAQAlgorithmGraphCanvasUI canvasUI) {
         new DropTarget(canvasUI, new ACAQAlgorithmGraphUIDragAndDrop(canvasUI));
     }

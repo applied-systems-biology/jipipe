@@ -32,6 +32,9 @@ import java.util.stream.Collectors;
 
 import static org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph.COMPARTMENT_DEFAULT;
 
+/**
+ * Graph editor UI for a project compartment graph
+ */
 public class ACAQCompartmentGraphUI extends ACAQProjectUIPanel implements MouseListener, MouseMotionListener {
 
     protected JMenuBar menuBar = new JMenuBar();
@@ -50,6 +53,9 @@ public class ACAQCompartmentGraphUI extends ACAQProjectUIPanel implements MouseL
 
     private Set<ACAQAlgorithmUI> selection = new HashSet<>();
 
+    /**
+     * @param workbenchUI The workbench UI
+     */
     public ACAQCompartmentGraphUI(ACAQProjectUI workbenchUI) {
         super(workbenchUI);
         this.compartmentGraph = workbenchUI.getProject().getCompartmentGraph();
@@ -92,6 +98,9 @@ public class ACAQCompartmentGraphUI extends ACAQProjectUIPanel implements MouseL
         compartmentGraph.getEventBus().register(this);
     }
 
+    /**
+     * Initializes the toolbar
+     */
     protected void initializeToolbar() {
         initializeAddNodesMenus();
 
@@ -138,6 +147,9 @@ public class ACAQCompartmentGraphUI extends ACAQProjectUIPanel implements MouseL
         }
     }
 
+    /**
+     * Initializes the "Add nodes" area
+     */
     protected void initializeAddNodesMenus() {
         ACAQAlgorithmDeclaration declaration = ACAQAlgorithmRegistry.getInstance().getDeclarationById("acaq:project-compartment");
 
@@ -180,11 +192,18 @@ public class ACAQCompartmentGraphUI extends ACAQProjectUIPanel implements MouseL
         }
     }
 
+    /**
+     * @return The edited graph
+     */
     public ACAQAlgorithmGraph getCompartmentGraph() {
         return compartmentGraph;
     }
 
 
+    /**
+     * Should be triggered when a user double-clicks a graph node to open it in the graph editor
+     * @param event Generated event
+     */
     @Subscribe
     public void onOpenCompartment(DefaultUIActionRequestedEvent event) {
         if (event.getUi() != null && event.getUi().getAlgorithm() instanceof ACAQProjectCompartment) {
@@ -192,6 +211,10 @@ public class ACAQCompartmentGraphUI extends ACAQProjectUIPanel implements MouseL
         }
     }
 
+    /**
+     * Should be triggered when a user selects a node
+     * @param event Generated event
+     */
     @Subscribe
     public void onAlgorithmSelected(AlgorithmSelectedEvent event) {
         if (event.getUi() != null) {
@@ -209,6 +232,9 @@ public class ACAQCompartmentGraphUI extends ACAQProjectUIPanel implements MouseL
         }
     }
 
+    /**
+     * Clears the selection
+     */
     public void clearSelection() {
         for (ACAQAlgorithmUI ui : selection) {
             ui.setSelected(false);
@@ -219,6 +245,10 @@ public class ACAQCompartmentGraphUI extends ACAQProjectUIPanel implements MouseL
         splitPane.setDividerLocation(dividerLocation);
     }
 
+    /**
+     * Selects only one algorithm
+     * @param ui Algorithm
+     */
     public void selectOnly(ACAQAlgorithmUI ui) {
         if (selection.isEmpty()) {
             addToSelection(ui);
@@ -233,6 +263,10 @@ public class ACAQCompartmentGraphUI extends ACAQProjectUIPanel implements MouseL
         }
     }
 
+    /**
+     * Adds an algorithm to the selection
+     * @param ui The algorithm
+     */
     public void addToSelection(ACAQAlgorithmUI ui) {
         selection.add(ui);
         ui.setSelected(true);
@@ -248,6 +282,10 @@ public class ACAQCompartmentGraphUI extends ACAQProjectUIPanel implements MouseL
         }
     }
 
+    /**
+     * Removes an algorithm from the selection
+     * @param ui The algorithm
+     */
     public void removeFromSelection(ACAQAlgorithmUI ui) {
         if (selection.contains(ui)) {
             selection.remove(ui);
@@ -266,6 +304,10 @@ public class ACAQCompartmentGraphUI extends ACAQProjectUIPanel implements MouseL
         }
     }
 
+    /**
+     * Should be triggered when the algorithm graph is changed
+     * @param event Generated event
+     */
     @Subscribe
     public void onGraphChanged(AlgorithmGraphChangedEvent event) {
         if (selection.stream().anyMatch(ui -> !compartmentGraph.getAlgorithmNodes().containsValue(ui.getAlgorithm()))) {

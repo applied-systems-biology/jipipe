@@ -19,10 +19,21 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * UI around a {@link ACAQParameterHolder}
+ */
 public class ACAQParameterAccessUI extends FormPanel implements Contextual {
     private Context context;
     private ACAQParameterHolder parameterHolder;
 
+    /**
+     * @param context SciJava context
+     * @param parameterHolder Parameter holder
+     * @param documentation Optional documentation. Can be null.
+     * @param documentationBelow If true, show documentation below
+     * @param withDocumentation If documentation is shown
+     * @param withScrolling Allows disabling the scroll view
+     */
     public ACAQParameterAccessUI(Context context, ACAQParameterHolder parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation, boolean withScrolling) {
         super(documentation, documentationBelow, withDocumentation, withScrolling);
         this.context = context;
@@ -30,18 +41,42 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
         reloadForm();
     }
 
+    /**
+     * @param context SciJava context
+     * @param parameterHolder Parameter holder
+     * @param documentation Optional documentation. Can be null.
+     * @param documentationBelow If true, show documentation below
+     * @param withDocumentation If documentation is shown
+     */
     public ACAQParameterAccessUI(Context context, ACAQParameterHolder parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
         this(context, parameterHolder, documentation, documentationBelow, withDocumentation, true);
     }
 
+    /**
+     * @param workbenchUI Workbench UI
+     * @param parameterHolder Parameter holder
+     * @param documentation Optional documentation. Can be null.
+     * @param documentationBelow If true, show documentation below
+     * @param withDocumentation If documentation is shown
+     */
     public ACAQParameterAccessUI(ACAQProjectUI workbenchUI, ACAQParameterHolder parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
         this(workbenchUI.getContext(), parameterHolder, documentation, documentationBelow, withDocumentation, true);
     }
 
+    /**
+     * @param workbenchUI Workbench UI
+     * @param parameterHolder Parameter holder
+     * @param documentation Optional documentation. Can be null.
+     * @param documentationBelow If true, show documentation below
+     * @param withDocumentation If documentation is shown
+     */
     public ACAQParameterAccessUI(ACAQJsonExtensionUI workbenchUI, ACAQParameterHolder parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
         this(workbenchUI.getContext(), parameterHolder, documentation, documentationBelow, withDocumentation, true);
     }
 
+    /**
+     * Reloads the form
+     */
     public void reloadForm() {
         clear();
         Map<String, ACAQParameterAccess> parameters = ACAQParameterAccess.getParameters(getParameterHolder());
@@ -193,6 +228,9 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
         }
     }
 
+    /**
+     * @return The parameterized object
+     */
     public ACAQParameterHolder getParameterHolder() {
         return parameterHolder;
     }

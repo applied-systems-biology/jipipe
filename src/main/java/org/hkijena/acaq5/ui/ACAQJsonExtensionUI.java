@@ -17,6 +17,9 @@ import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * UI around a {@link ACAQJsonExtension}
+ */
 public class ACAQJsonExtensionUI extends JPanel {
     private final ACAQJsonExtensionWindow window;
     private final ACAQGUICommand command;
@@ -25,6 +28,11 @@ public class ACAQJsonExtensionUI extends JPanel {
     private JLabel statusText;
     private ReloadableValidityChecker validityCheckerPanel;
 
+    /**
+     * @param window The parent window
+     * @param command The command that executed the UI
+     * @param project The project
+     */
     public ACAQJsonExtensionUI(ACAQJsonExtensionWindow window, ACAQGUICommand command, ACAQJsonExtension project) {
         this.window = window;
         this.command = command;
@@ -81,6 +89,10 @@ public class ACAQJsonExtensionUI extends JPanel {
         add(statusBar, BorderLayout.SOUTH);
     }
 
+    /**
+     * Sends a text to the status bar
+     * @param text The text
+     */
     public void sendStatusBarText(String text) {
         LocalDateTime localDateTime = LocalDateTime.now();
         statusText.setText(localDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE) + " " + localDateTime.format(DateTimeFormatter.ofPattern("HH:mm:ss")) + " " + text);
@@ -183,18 +195,30 @@ public class ACAQJsonExtensionUI extends JPanel {
         }
     }
 
+    /**
+     * @return The window that contains the UI
+     */
     public ACAQJsonExtensionWindow getWindow() {
         return window;
     }
 
+    /**
+     * @return The extension project
+     */
     public ACAQJsonExtension getProject() {
         return project;
     }
 
+    /**
+     * @return The SciJava context
+     */
     public Context getContext() {
         return command.getContext();
     }
 
+    /**
+     * @return The tab pane
+     */
     public DocumentTabPane getDocumentTabPane() {
         return documentTabPane;
     }

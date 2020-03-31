@@ -11,6 +11,9 @@ import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.ACAQFileData;
 import org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors.ACAQTraitDeclarationRefParameterSettings;
 
+/**
+ * Generates annotations from filenames
+ */
 @ACAQDocumentation(name = "Files to annotations", description = "Creates an annotation for each file based on its file name")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Annotation)
 
@@ -23,11 +26,19 @@ public class ACAQFileAnnotationGenerator extends ACAQIteratingAlgorithm {
 
     private ACAQTraitDeclarationRef generatedAnnotation = new ACAQTraitDeclarationRef();
 
+    /**
+     * New instance
+     * @param declaration Algorithm declaration
+     */
     public ACAQFileAnnotationGenerator(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
         updateSlotTraits();
     }
 
+    /**
+     * Copies the algorithm
+     * @param other Original algorithm
+     */
     public ACAQFileAnnotationGenerator(ACAQFileAnnotationGenerator other) {
         super(other);
         this.generatedAnnotation = new ACAQTraitDeclarationRef(other.generatedAnnotation.getDeclaration());
@@ -57,6 +68,9 @@ public class ACAQFileAnnotationGenerator extends ACAQIteratingAlgorithm {
         traitConfiguration.postChangedEvent();
     }
 
+    /**
+     * @return Generated annotation type
+     */
     @ACAQDocumentation(name = "Generated annotation", description = "Select which annotation type is generated for each file")
     @ACAQTraitDeclarationRefParameterSettings(traitBaseClass = ACAQDiscriminator.class)
     @ACAQParameter("generated-annotation")
@@ -64,6 +78,10 @@ public class ACAQFileAnnotationGenerator extends ACAQIteratingAlgorithm {
         return generatedAnnotation;
     }
 
+    /**
+     * Sets generated annotation type
+     * @param generatedAnnotation Annotation type
+     */
     @ACAQParameter("generated-annotation")
     public void setGeneratedAnnotation(ACAQTraitDeclarationRef generatedAnnotation) {
         this.generatedAnnotation = generatedAnnotation;

@@ -22,6 +22,9 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
+/**
+ * UI for {@link ACAQTestbench}
+ */
 public class ACAQTestBenchUI extends ACAQProjectUIPanel {
 
     private ACAQTestbench testbench;
@@ -29,6 +32,10 @@ public class ACAQTestBenchUI extends ACAQProjectUIPanel {
     private JButton newTestButton;
     private JSplitPane splitPane;
 
+    /**
+     * @param workbenchUI the workbench
+     * @param testbench the testbench
+     */
     public ACAQTestBenchUI(ACAQProjectUI workbenchUI, ACAQTestbench testbench) {
         super(workbenchUI);
         this.testbench = testbench;
@@ -154,6 +161,10 @@ public class ACAQTestBenchUI extends ACAQProjectUIPanel {
         ACAQRunnerQueue.getInstance().enqueue(testbench);
     }
 
+    /**
+     * Triggered when the testbench finished calculating
+     * @param event Generated event
+     */
     @Subscribe
     public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
         if (event.getRun() == testbench) {
@@ -164,6 +175,10 @@ public class ACAQTestBenchUI extends ACAQProjectUIPanel {
         }
     }
 
+    /**
+     * Triggered when the testbench finished calculating
+     * @param event Generated event
+     */
     @Subscribe
     public void onWorkerInterrupted(RunUIWorkerInterruptedEvent event) {
         if (event.getRun() == testbench) {

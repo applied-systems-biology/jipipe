@@ -7,8 +7,14 @@ import org.hkijena.acaq5.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Renders an {@link ACAQDependency}
+ */
 public class ACAQDependencyListCellRenderer extends JLabel implements ListCellRenderer<ACAQDependency> {
 
+    /**
+     * Creates a new renderer
+     */
     public ACAQDependencyListCellRenderer() {
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));

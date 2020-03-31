@@ -20,26 +20,52 @@ import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
+/**
+ * Registry for plot
+ */
 public class ACAQPlotBuilderRegistry {
 
     private Map<Class<? extends ACAQPlot>, Entry> entries = new HashMap<>();
 
+    /**
+     * Registers a plot type
+     * @param plotType Plot instance
+     * @param settingsType Settings UI
+     * @param name Plot name
+     * @param icon Plot icon
+     */
     public void register(Class<? extends ACAQPlot> plotType, Class<? extends ACAQPlotSettingsUI> settingsType, String name, Icon icon) {
         entries.put(plotType, new Entry(plotType, settingsType, name, icon));
     }
 
+    /**
+     * @return Registered entries
+     */
     public Collection<Entry> getEntries() {
         return entries.values();
     }
 
+    /**
+     * @param plot The plot
+     * @return Name of the plot type
+     */
     public String getNameOf(ACAQPlot plot) {
         return entries.get(plot.getClass()).getName();
     }
 
+    /**
+     * @param plot The plot
+     * @return Icon for the plot
+     */
     public Icon getIconOf(ACAQPlot plot) {
         return entries.get(plot.getClass()).getIcon();
     }
 
+    /**
+     * Creates all plots for the data
+     * @param seriesDataList The data
+     * @return List of plots
+     */
     public List<ACAQPlot> createAllPlots(List<ACAQPlotSeriesData> seriesDataList) {
         List<ACAQPlot> plots = new ArrayList<>();
         for (Entry entry : entries.values()) {
@@ -52,6 +78,11 @@ public class ACAQPlotBuilderRegistry {
         return plots;
     }
 
+    /**
+     * Creates settings UI for the plot
+     * @param plot The plot
+     * @return Plot settings UI
+     */
     public ACAQPlotSettingsUI createSettingsUIFor(ACAQPlot plot) {
         try {
             return entries.get(plot.getClass()).getSettingsType().getConstructor(ACAQPlot.class).newInstance(plot);
@@ -60,12 +91,21 @@ public class ACAQPlotBuilderRegistry {
         }
     }
 
+    /**
+     * Registry entry
+     */
     public static class Entry {
         private Class<? extends ACAQPlot> plotType;
         private Class<? extends ACAQPlotSettingsUI> settingsType;
         private String name;
         private Icon icon;
 
+        /**
+         * @param plotType Plot type
+         * @param settingsType Plot UI type
+         * @param name Plot name
+         * @param icon Plot icon
+         */
         public Entry(Class<? extends ACAQPlot> plotType, Class<? extends ACAQPlotSettingsUI> settingsType, String name, Icon icon) {
             this.plotType = plotType;
             this.settingsType = settingsType;
@@ -73,18 +113,30 @@ public class ACAQPlotBuilderRegistry {
             this.icon = icon;
         }
 
+        /**
+         * @return The plot type
+         */
         public Class<? extends ACAQPlot> getPlotType() {
             return plotType;
         }
 
+        /**
+         * @return Plot type name
+         */
         public String getName() {
             return name;
         }
 
+        /**
+         * @return Plot type icon
+         */
         public Icon getIcon() {
             return icon;
         }
 
+        /**
+         * @return Plot type UI
+         */
         public Class<? extends ACAQPlotSettingsUI> getSettingsType() {
             return settingsType;
         }

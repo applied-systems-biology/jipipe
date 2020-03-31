@@ -15,10 +15,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * UI around {@link ACAQParameterCollectionVisibilities}
+ */
 public class ACAQParameterCollectionVisibilitiesParameterEditorUI extends ACAQParameterEditorUI {
 
     private FormPanel formPanel;
 
+    /**
+     * Creates new instance
+     * @param context SciJava context
+     * @param parameterAccess Parameter
+     */
     public ACAQParameterCollectionVisibilitiesParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
         super(context, parameterAccess);
         initialize();

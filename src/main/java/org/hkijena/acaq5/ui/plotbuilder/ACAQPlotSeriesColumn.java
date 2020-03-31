@@ -19,12 +19,20 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * @param <T> Stored data type
+ */
 public abstract class ACAQPlotSeriesColumn<T> {
     private List<ACAQPlotSeriesData> seriesDataList;
     private List<ACAQPlotSeriesGenerator<T>> generators;
     private int seriesDataIndex = -1;
     private EventBus eventBus = new EventBus();
 
+    /**
+     * @param seriesDataList Containing data
+     * @param defaultGenerator Generates default values
+     * @param additionalGenerators Additional generators
+     */
     @SafeVarargs
     public ACAQPlotSeriesColumn(List<ACAQPlotSeriesData> seriesDataList, ACAQPlotSeriesGenerator<T> defaultGenerator, ACAQPlotSeriesGenerator<T>... additionalGenerators) {
         this.seriesDataList = seriesDataList;
@@ -33,6 +41,12 @@ public abstract class ACAQPlotSeriesColumn<T> {
         this.generators.addAll(Arrays.asList(additionalGenerators));
     }
 
+    /**
+     * Gets the first n rows.
+     * Generates data if not available
+     * @param rowCount the number of rows to return
+     * @return Row values
+     */
     public List<T> getValues(int rowCount) {
         if (seriesDataIndex < 0) {
             ACAQPlotSeriesGenerator<T> generator = generators.get(-seriesDataIndex - 1);
@@ -46,8 +60,14 @@ public abstract class ACAQPlotSeriesColumn<T> {
         }
     }
 
+    /**
+     * @return Data extracted from table
+     */
     protected abstract List<T> getValuesFromTable();
 
+    /**
+     * @return The current series data
+     */
     public ACAQPlotSeriesData getSeriesData() {
         if (seriesDataIndex >= 0)
             return seriesDataList.get(seriesDataIndex);
@@ -55,10 +75,17 @@ public abstract class ACAQPlotSeriesColumn<T> {
             return null;
     }
 
+    /**
+     * @return The current series data index
+     */
     public int getSeriesDataIndex() {
         return seriesDataIndex;
     }
 
+    /**
+     * Sets the current series data index
+     * @param seriesDataIndex index
+     */
     public void setSeriesDataIndex(int seriesDataIndex) {
         this.seriesDataIndex = seriesDataIndex;
         eventBus.post(new DataChangedEvent(this));
@@ -68,7 +95,7 @@ public abstract class ACAQPlotSeriesColumn<T> {
      * Gets the number of rows that is required to hold this data
      * If data is generated, it returns 0
      *
-     * @return
+     * @return rows that is required to hold this data. If data is generated, it returns 0
      */
     public int getRequiredRowCount() {
         if (seriesDataIndex >= 0) {
@@ -78,21 +105,36 @@ public abstract class ACAQPlotSeriesColumn<T> {
         }
     }
 
+    /**
+     * @return The event bus
+     */
     public EventBus getEventBus() {
         return eventBus;
     }
 
+    /**
+     * @return Available generators
+     */
     public List<ACAQPlotSeriesGenerator<T>> getGenerators() {
         return Collections.unmodifiableList(generators);
     }
 
+    /**
+     * Triggered when data is changed
+     */
     public static class DataChangedEvent {
         private ACAQPlotSeriesColumn seriesColumn;
 
+        /**
+         * @param seriesColumn Event source
+         */
         public DataChangedEvent(ACAQPlotSeriesColumn seriesColumn) {
             this.seriesColumn = seriesColumn;
         }
 
+        /**
+         * @return Event source
+         */
         public ACAQPlotSeriesColumn getSeriesColumn() {
             return seriesColumn;
         }

@@ -23,6 +23,9 @@ import java.awt.event.MouseEvent;
 import java.nio.file.Path;
 import java.util.List;
 
+/**
+ * Displays the result of multiple {@link ACAQDataSlot}
+ */
 public class ACAQMultipleResultDataSlotTableUI extends ACAQProjectUIPanel {
 
     private final List<ACAQDataSlot> slots;
@@ -31,6 +34,11 @@ public class ACAQMultipleResultDataSlotTableUI extends ACAQProjectUIPanel {
     private ACAQMergedExportedDataTable mergedDataTable;
     private FormPanel rowUIList;
 
+    /**
+     * @param workbenchUI The workbench
+     * @param run The algorithm run
+     * @param slots The displayed slots
+     */
     public ACAQMultipleResultDataSlotTableUI(ACAQProjectUI workbenchUI, ACAQRun run, List<ACAQDataSlot> slots) {
         super(workbenchUI);
         this.run = run;

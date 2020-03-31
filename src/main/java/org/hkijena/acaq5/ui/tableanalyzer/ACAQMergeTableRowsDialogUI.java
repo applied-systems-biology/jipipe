@@ -25,12 +25,19 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * UI that merges table rows
+ */
 public class ACAQMergeTableRowsDialogUI extends JDialog {
     private ACAQTableAnalyzerUI tableAnalyzerUI;
     private JComboBox<DocumentTabPane.DocumentTab> tableSelection;
     private JCheckBox addMissingColumnsCheckBox;
     private JXTable jxTable;
 
+    /**
+     * Creates new instance
+     * @param tableAnalyzerUI The table analyzer
+     */
     public ACAQMergeTableRowsDialogUI(ACAQTableAnalyzerUI tableAnalyzerUI) {
         this.tableAnalyzerUI = tableAnalyzerUI;
         initialize();
@@ -86,9 +93,7 @@ public class ACAQMergeTableRowsDialogUI extends JDialog {
 
             Set<Integer> assignedTargetColumns = new HashSet<>();
             int[] sourceToTargetColumnMapping = new int[sourceModel.getColumnCount()];
-            for (int i = 0; i < sourceToTargetColumnMapping.length; ++i) {
-                sourceToTargetColumnMapping[i] = -1;
-            }
+            Arrays.fill(sourceToTargetColumnMapping, -1);
 
             final int initialTargetColumnCount = targetModel.getColumnCount();
             for (int i = 0; i < sourceModel.getColumnCount(); ++i) {

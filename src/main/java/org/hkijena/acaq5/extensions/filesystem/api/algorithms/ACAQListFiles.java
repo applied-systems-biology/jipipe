@@ -11,6 +11,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Collectors;
 
+/**
+ * Algorithm that lists files in each folder
+ */
 @ACAQDocumentation(name = "List files", description = "Lists all files in the input folder")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.FileSystem)
 
@@ -21,10 +24,18 @@ import java.util.stream.Collectors;
 // Traits
 public class ACAQListFiles extends ACAQIteratingAlgorithm {
 
+    /**
+     * Creates new instance
+     * @param declaration The declaration
+     */
     public ACAQListFiles(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
     }
 
+    /**
+     * Copies the algorithm
+     * @param other The original
+     */
     public ACAQListFiles(ACAQListFiles other) {
         super(other);
     }

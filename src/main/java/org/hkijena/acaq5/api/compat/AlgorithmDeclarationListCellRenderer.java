@@ -7,8 +7,14 @@ import org.hkijena.acaq5.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Renderer for {@link ACAQAlgorithmDeclaration}
+ */
 public class AlgorithmDeclarationListCellRenderer extends JLabel implements ListCellRenderer<ACAQAlgorithmDeclaration> {
 
+    /**
+     * Creates a new renderer
+     */
     public AlgorithmDeclarationListCellRenderer() {
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));

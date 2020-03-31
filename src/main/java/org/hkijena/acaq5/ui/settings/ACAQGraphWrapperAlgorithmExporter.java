@@ -17,12 +17,20 @@ import org.hkijena.acaq5.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Exports a {@link GraphWrapperAlgorithmDeclaration}
+ */
 public class ACAQGraphWrapperAlgorithmExporter extends ACAQProjectUIPanel {
 
     private GraphWrapperAlgorithmDeclaration algorithmDeclaration;
     private ACAQParameterAccessUI parameterAccessUI;
     private JPopupMenu exportMenu;
 
+    /**
+     * Creates a new UI
+     * @param workbenchUI The workbench UI
+     * @param wrappedGraph The wrapped graph
+     */
     public ACAQGraphWrapperAlgorithmExporter(ACAQProjectUI workbenchUI, ACAQAlgorithmGraph wrappedGraph) {
         super(workbenchUI);
         algorithmDeclaration = new GraphWrapperAlgorithmDeclaration();
@@ -142,6 +150,9 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQProjectUIPanel {
 //        }
 //    }
 
+    /**
+     * @return The declaration
+     */
     public GraphWrapperAlgorithmDeclaration getAlgorithmDeclaration() {
         return algorithmDeclaration;
     }

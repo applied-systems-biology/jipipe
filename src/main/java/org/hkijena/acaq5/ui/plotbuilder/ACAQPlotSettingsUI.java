@@ -14,13 +14,22 @@ package org.hkijena.acaq5.ui.plotbuilder;
 
 import javax.swing.*;
 
+/**
+ * UI for a plot
+ */
 public class ACAQPlotSettingsUI extends JPanel {
     private ACAQPlot plot;
 
+    /**
+     * @param plot The plot
+     */
     public ACAQPlotSettingsUI(ACAQPlot plot) {
         this.plot = plot;
     }
 
+    /**
+     * @return The plot
+     */
     public ACAQPlot getPlot() {
         return plot;
     }

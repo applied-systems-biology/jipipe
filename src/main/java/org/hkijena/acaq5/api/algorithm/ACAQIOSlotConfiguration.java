@@ -4,7 +4,14 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
 
+/**
+ * Slot configuration that always ensures 1:1 relation between input and output slots
+ */
 public class ACAQIOSlotConfiguration extends ACAQMutableSlotConfiguration {
+
+    /**
+     * Creates a new instance
+     */
     public ACAQIOSlotConfiguration() {
     }
 

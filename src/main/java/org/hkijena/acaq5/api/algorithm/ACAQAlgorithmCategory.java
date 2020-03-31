@@ -43,6 +43,12 @@ public enum ACAQAlgorithmCategory {
      */
     Internal;
 
+    /**
+     * Converts the category into a color
+     * @param s HSV Saturation
+     * @param v HSV Color value
+     * @return Color instance
+     */
     public Color getColor(float s, float v) {
         ACAQAlgorithmCategory[] values = ACAQAlgorithmCategory.values();
         for (int i = 0; i < values.length; ++i) {

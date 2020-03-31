@@ -28,6 +28,9 @@ public class ACAQSlotEditorUI extends JPanel {
     private JTree slotTree;
     private MarkdownReader helpPanel;
 
+    /**
+     * @param algorithm The algorithm
+     */
     public ACAQSlotEditorUI(ACAQAlgorithm algorithm) {
         this.algorithm = algorithm;
         initialize();
@@ -160,6 +163,9 @@ public class ACAQSlotEditorUI extends JPanel {
         }
     }
 
+    /**
+     * Reloads the list
+     */
     public void reloadList() {
 
         ACAQDataSlot selectedSlot = getSelectedSlot();
@@ -194,6 +200,10 @@ public class ACAQSlotEditorUI extends JPanel {
         }
     }
 
+    /**
+     * Triggered when the algorithm slots are changed
+     * @param event Generated event
+     */
     @Subscribe
     public void onAlgorithmSlotsChanged(AlgorithmSlotsChangedEvent event) {
         reloadList();

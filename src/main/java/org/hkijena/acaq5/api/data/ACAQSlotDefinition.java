@@ -30,6 +30,12 @@ public class ACAQSlotDefinition {
     private String inheritedSlot;
     private Map<ACAQDataDeclaration, ACAQDataDeclaration> inheritanceConversions = new HashMap<>();
 
+    /**
+     * @param dataClass slot data class
+     * @param slotType slot type
+     * @param name unique slot name
+     * @param inheritedSlot only relevant if output slot. Can be an input slot name or '*' to automatically select the first input slot
+     */
     public ACAQSlotDefinition(Class<? extends ACAQData> dataClass, ACAQDataSlot.SlotType slotType, String name, String inheritedSlot) {
         this.dataClass = dataClass;
         this.slotType = slotType;
@@ -37,14 +43,24 @@ public class ACAQSlotDefinition {
         this.inheritedSlot = inheritedSlot;
     }
 
+    /**
+     * @param slot Imported annotation
+     */
     public ACAQSlotDefinition(AlgorithmInputSlot slot) {
         this(slot.value(), ACAQDataSlot.SlotType.Input, slot.slotName(), null);
     }
 
+    /**
+     * @param slot Imported annotation
+     */
     public ACAQSlotDefinition(AlgorithmOutputSlot slot) {
         this(slot.value(), ACAQDataSlot.SlotType.Output, slot.slotName(), null);
     }
 
+    /**
+     * Copies the definition
+     * @param other The original
+     */
     public ACAQSlotDefinition(ACAQSlotDefinition other) {
         this.dataClass = other.dataClass;
         this.slotType = other.slotType;
@@ -53,6 +69,10 @@ public class ACAQSlotDefinition {
         this.inheritanceConversions = new HashMap<>(other.inheritanceConversions);
     }
 
+    /**
+     * @param newName new name
+     * @return Slot definition copy with new name
+     */
     public ACAQSlotDefinition renamedCopy(String newName) {
         ACAQSlotDefinition result = new ACAQSlotDefinition(this);
         result.name = newName;
@@ -94,9 +114,9 @@ public class ACAQSlotDefinition {
      * Applies inheritance conversion.
      * This is a text replacement system with termination condition of never visiting the same time twice.
      *
-     * @param definition
-     * @param dataClass
-     * @return
+     * @param definition The slot definition
+     * @param dataClass The slot data
+     * @return The converted data
      */
     public static Class<? extends ACAQData> applyInheritanceConversion(ACAQSlotDefinition definition, Class<? extends ACAQData> dataClass) {
         Set<ACAQDataDeclaration> visited = new HashSet<>();
@@ -114,6 +134,9 @@ public class ACAQSlotDefinition {
         }
     }
 
+    /**
+     * Serializes an {@link ACAQSlotDefinition}
+     */
     public static class Serializer extends JsonSerializer<ACAQSlotDefinition> {
         @Override
         public void serialize(ACAQSlotDefinition definition, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
@@ -132,6 +155,9 @@ public class ACAQSlotDefinition {
         }
     }
 
+    /**
+     * Deserializes an {@link ACAQSlotDefinition}
+     */
     public static class Deserializer extends JsonDeserializer<ACAQSlotDefinition> {
 
         @Override

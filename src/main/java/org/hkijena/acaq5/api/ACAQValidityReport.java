@@ -22,9 +22,15 @@ public class ACAQValidityReport {
     private Map<String, Response> responses = new HashMap<>();
     private Map<String, String> messages = new HashMap<>();
 
+    /**
+     * Creates a new report instance
+     */
     public ACAQValidityReport() {
     }
 
+    /**
+     * Clears the report
+     */
     public void clear() {
         responses.clear();
         messages.clear();
@@ -51,6 +57,11 @@ public class ACAQValidityReport {
         return categories;
     }
 
+    /**
+     * Returns a report for the specified category
+     * @param category the category
+     * @return the sub-report
+     */
     public ACAQValidityReport forCategory(String category) {
         ACAQValidityReport result = new ACAQValidityReport();
         result.categories.addAll(categories);
@@ -60,28 +71,52 @@ public class ACAQValidityReport {
         return result;
     }
 
+    /**
+     * Reports a response
+     * @param response the response
+     * @param message the message
+     */
     public void report(Response response, String message) {
         String key = String.join("/", categories);
         responses.put(key, response);
         messages.put(key, message);
     }
 
+    /**
+     * Passes the report to another {@link ACAQValidatable}
+     * @param validatable the target
+     */
     public void report(ACAQValidatable validatable) {
         validatable.reportValidity(this);
     }
 
+    /**
+     * Reports validity or invalidity
+     * @param valid if the report is valid
+     * @param message the message
+     */
     public void report(boolean valid, String message) {
         report(valid ? Response.Valid : Response.Invalid, message);
     }
 
+    /**
+     * Report that is report is valid
+     */
     public void reportIsValid() {
         report(true, "");
     }
 
+    /**
+     * Reports that this report is invalid
+     * @param message The message
+     */
     public void reportIsInvalid(String message) {
         report(false, message);
     }
 
+    /**
+     * The response type
+     */
     public enum Response {
         Valid,
         Invalid

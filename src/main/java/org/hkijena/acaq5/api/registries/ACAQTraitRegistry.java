@@ -22,6 +22,9 @@ public class ACAQTraitRegistry implements ACAQValidatable {
     private Set<ACAQTraitRegistrationTask> registrationTasks = new HashSet<>();
     private EventBus eventBus = new EventBus();
 
+    /**
+     * New registry
+     */
     public ACAQTraitRegistry() {
 
     }
@@ -29,8 +32,9 @@ public class ACAQTraitRegistry implements ACAQValidatable {
     /**
      * Registers a trait class
      *
-     * @param klass
-     * @param source
+     * @param id trait id
+     * @param klass trait class
+     * @param source dependency that registers the trait
      */
     public void register(String id, Class<? extends ACAQTrait> klass, ACAQDependency source) {
         register(new ACAQJavaTraitDeclaration(id, klass), source);
@@ -39,8 +43,8 @@ public class ACAQTraitRegistry implements ACAQValidatable {
     /**
      * Registers a trait declaration
      *
-     * @param declaration
-     * @param source
+     * @param declaration trait declaration
+     * @param source dependency that registers the trait
      */
     public void register(ACAQTraitDeclaration declaration, ACAQDependency source) {
         registeredTraits.put(declaration.getId(), declaration);
@@ -53,7 +57,7 @@ public class ACAQTraitRegistry implements ACAQValidatable {
     /**
      * Schedules registration after all dependencies of the registration task are satisfied
      *
-     * @param task
+     * @param task registration task
      */
     public void scheduleRegister(ACAQTraitRegistrationTask task) {
         registrationTasks.add(task);
@@ -63,8 +67,8 @@ public class ACAQTraitRegistry implements ACAQValidatable {
     /**
      * Gets a registered declaration by its ID
      *
-     * @param id
-     * @return
+     * @param id trait id
+     * @return trait declaration by id
      */
     public ACAQTraitDeclaration getDeclarationById(String id) {
         return Objects.requireNonNull(registeredTraits.get(id));
@@ -82,8 +86,8 @@ public class ACAQTraitRegistry implements ACAQValidatable {
     /**
      * Returns true if there is a trait with given ID
      *
-     * @param id
-     * @return
+     * @param id trait id
+     * @return true if there is a trait with given ID
      */
     public boolean hasTraitWithId(String id) {
         return registeredTraits.containsKey(id);
@@ -92,8 +96,8 @@ public class ACAQTraitRegistry implements ACAQValidatable {
     /**
      * Returns the source of the trait
      *
-     * @param id
-     * @return
+     * @param id trait id
+     * @return dependency that registered the trait with id
      */
     public ACAQDependency getSourceOf(String id) {
         return registeredTraitSources.getOrDefault(id, null);
@@ -127,8 +131,8 @@ public class ACAQTraitRegistry implements ACAQValidatable {
     /**
      * Gets the traits registered by the dependency
      *
-     * @param dependency
-     * @return
+     * @param dependency the dependency
+     * @return list of traits registered by the dependency
      */
     public Set<ACAQTraitDeclaration> getDeclaredBy(ACAQDependency dependency) {
         Set<ACAQTraitDeclaration> result = new HashSet<>();

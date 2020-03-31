@@ -21,6 +21,9 @@ import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.util.Map;
 
+/**
+ * UI around an {@link ACAQPlotSeries}
+ */
 public class ACAQPlotSeriesUI extends JPanel {
     private static final Color BORDER_COLOR = new Color(128, 128, 128);
     private ACAQPlot plot;
@@ -30,6 +33,10 @@ public class ACAQPlotSeriesUI extends JPanel {
     private JButton moveUpButton;
     private JButton moveDownButton;
 
+    /**
+     * @param plot The plot that contains the series
+     * @param series The series
+     */
     public ACAQPlotSeriesUI(ACAQPlot plot, ACAQPlotSeries series) {
         this.plot = plot;
         this.series = series;
@@ -94,6 +101,10 @@ public class ACAQPlotSeriesUI extends JPanel {
         updateEnableDisableToggleButton();
     }
 
+    /**
+     * Triggered when the plot series list is changed
+     * @param event Generated event
+     */
     @Subscribe
     public void handlePlotSeriesChangedEvent(ACAQPlot.PlotSeriesListChangedEvent event) {
         updateTitleBarButtons();
@@ -225,11 +236,19 @@ public class ACAQPlotSeriesUI extends JPanel {
 
     }
 
+    /**
+     * Renders the contents of a {@link ACAQPlotSeriesColumn}
+     */
     public static class Renderer extends JLabel implements ListCellRenderer<Integer> {
 
         private ACAQPlotSeriesColumn column;
         private ACAQPlot plot;
 
+        /**
+         * Creates new renderer
+         * @param column The column
+         * @param plot The plot
+         */
         public Renderer(ACAQPlotSeriesColumn column, ACAQPlot plot) {
             this.column = column;
             this.plot = plot;

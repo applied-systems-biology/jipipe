@@ -26,6 +26,9 @@ public class ACAQAlgorithmRegistry implements ACAQValidatable {
     private Map<String, ACAQDependency> registeredAlgorithmSources = new HashMap<>();
     private EventBus eventBus = new EventBus();
 
+    /**
+     * Creates a new registry
+     */
     public ACAQAlgorithmRegistry() {
 
     }
@@ -33,7 +36,7 @@ public class ACAQAlgorithmRegistry implements ACAQValidatable {
     /**
      * Schedules registration after all dependencies of the registration task are satisfied
      *
-     * @param task
+     * @param task A registration task
      */
     public void scheduleRegister(ACAQAlgorithmRegistrationTask task) {
         registrationTasks.add(task);
@@ -61,6 +64,9 @@ public class ACAQAlgorithmRegistry implements ACAQValidatable {
         }
     }
 
+    /**
+     * @return The list of current registration tasks
+     */
     public Set<ACAQAlgorithmRegistrationTask> getScheduledRegistrationTasks() {
         return Collections.unmodifiableSet(registrationTasks);
     }
@@ -68,8 +74,8 @@ public class ACAQAlgorithmRegistry implements ACAQValidatable {
     /**
      * Registers an algorithm declaration
      *
-     * @param declaration
-     * @param source
+     * @param declaration The algorithm declaration
+     * @param source The dependency that registers the declaration
      */
     public void register(ACAQAlgorithmDeclaration declaration, ACAQDependency source) {
         registeredAlgorithms.put(declaration.getId(), declaration);
@@ -82,7 +88,7 @@ public class ACAQAlgorithmRegistry implements ACAQValidatable {
     /**
      * Gets the set of all known algorithms
      *
-     * @return
+     * @return Map from algorithm ID to algorithm declaration
      */
     public Map<String, ACAQAlgorithmDeclaration> getRegisteredAlgorithms() {
         return Collections.unmodifiableMap(registeredAlgorithms);
@@ -91,9 +97,9 @@ public class ACAQAlgorithmRegistry implements ACAQValidatable {
     /**
      * Returns data source algorithms that can generate the specified data type
      *
-     * @param <T>
-     * @param dataClass
-     * @return
+     * @param <T> The data class
+     * @param dataClass The data class
+     * @return Available datasource algorithms that generate the data
      */
     public <T extends ACAQData> Set<ACAQAlgorithmDeclaration> getDataSourcesFor(Class<? extends T> dataClass) {
         Set<ACAQAlgorithmDeclaration> result = new HashSet<>();
@@ -110,8 +116,8 @@ public class ACAQAlgorithmRegistry implements ACAQValidatable {
     /**
      * Gets all algorithms of specified category
      *
-     * @param category
-     * @return
+     * @param category The category
+     * @return Algorithms within the specified category
      */
     public Set<ACAQAlgorithmDeclaration> getAlgorithmsOfCategory(ACAQAlgorithmCategory category) {
         return registeredAlgorithms.values().stream().filter(d -> d.getCategory() == category).collect(Collectors.toSet());
@@ -120,8 +126,8 @@ public class ACAQAlgorithmRegistry implements ACAQValidatable {
     /**
      * Gets a matching declaration by Id
      *
-     * @param id
-     * @return
+     * @param id The declaration ID. Must exist.
+     * @return The declaration
      */
     public ACAQAlgorithmDeclaration getDeclarationById(String id) {
         return registeredAlgorithms.get(id);
@@ -130,8 +136,8 @@ public class ACAQAlgorithmRegistry implements ACAQValidatable {
     /**
      * Returns true if the algorithm ID already exists
      *
-     * @param id
-     * @return
+     * @param id The declaration ID
+     * @return If true, the ID exists
      */
     public boolean hasAlgorithmWithId(String id) {
         return registeredAlgorithms.containsKey(id);
@@ -140,7 +146,7 @@ public class ACAQAlgorithmRegistry implements ACAQValidatable {
     /**
      * Returns the event bus that posts registration events
      *
-     * @return
+     * @return Event bus instance
      */
     public EventBus getEventBus() {
         return eventBus;
@@ -159,7 +165,7 @@ public class ACAQAlgorithmRegistry implements ACAQValidatable {
      * Triggered when a trait was registered.
      * Attempts to register more algorithms
      *
-     * @param event
+     * @param event Generated event
      */
     @Subscribe
     public void onTraitRegistered(TraitRegisteredEvent event) {
@@ -170,7 +176,7 @@ public class ACAQAlgorithmRegistry implements ACAQValidatable {
      * Triggered when a datatype was registered.
      * Attempts to register more algorithms.
      *
-     * @param event
+     * @param event Generated event
      */
     @Subscribe
     public void onDatatypeRegistered(DatatypeRegisteredEvent event) {
@@ -180,8 +186,8 @@ public class ACAQAlgorithmRegistry implements ACAQValidatable {
     /**
      * Returns the source of a registered algorithm
      *
-     * @param algorithmId
-     * @return
+     * @param algorithmId The algorithm declaration ID
+     * @return The dependency that registered the algorithm
      */
     public ACAQDependency getSourceOf(String algorithmId) {
         return registeredAlgorithmSources.getOrDefault(algorithmId, null);
@@ -190,8 +196,8 @@ public class ACAQAlgorithmRegistry implements ACAQValidatable {
     /**
      * Gets all algorithms declared by the dependency
      *
-     * @param dependency
-     * @return
+     * @param dependency The dependency
+     * @return All algorithms that were registered by this dependency
      */
     public Set<ACAQAlgorithmDeclaration> getDeclaredBy(ACAQDependency dependency) {
         Set<ACAQAlgorithmDeclaration> result = new HashSet<>();
@@ -210,6 +216,9 @@ public class ACAQAlgorithmRegistry implements ACAQValidatable {
         }
     }
 
+    /**
+     * @return Singleton instance
+     */
     public static ACAQAlgorithmRegistry getInstance() {
         return ACAQDefaultRegistry.getInstance().getAlgorithmRegistry();
     }

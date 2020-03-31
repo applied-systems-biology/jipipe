@@ -8,7 +8,13 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ACAQDocumentation {
+    /**
+     * @return The name
+     */
     String name() default "";
 
+    /**
+     * @return The description
+     */
     String description() default "";
 }

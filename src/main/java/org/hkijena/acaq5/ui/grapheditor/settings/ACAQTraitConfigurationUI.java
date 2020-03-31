@@ -13,12 +13,18 @@ import java.awt.*;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
+/**
+ * UI for {@link org.hkijena.acaq5.api.data.traits.ACAQDataSlotTraitConfiguration}
+ */
 public class ACAQTraitConfigurationUI extends JPanel {
 
     private ACAQDataSlot slot;
     private ACAQTraitPicker traitPicker;
     private boolean isLoading = false;
 
+    /**
+     * @param slot targeted slot
+     */
     public ACAQTraitConfigurationUI(ACAQDataSlot slot) {
         this.slot = slot;
         initialize();
@@ -41,6 +47,10 @@ public class ACAQTraitConfigurationUI extends JPanel {
         add(traitPicker, BorderLayout.CENTER);
     }
 
+    /**
+     * Triggered when a trait is picked
+     * @param event Generated event
+     */
     @Subscribe
     public void onTraitSelected(ACAQTraitPicker.TraitSelectedEvent event) {
         if (isLoading)
@@ -50,6 +60,10 @@ public class ACAQTraitConfigurationUI extends JPanel {
         }
     }
 
+    /**
+     * Triggered when a trait is deselected
+     * @param event Generated event
+     */
     @Subscribe
     public void onTraitDeselected(ACAQTraitPicker.TraitDeselectedEvent event) {
         if (isLoading)
@@ -59,6 +73,10 @@ public class ACAQTraitConfigurationUI extends JPanel {
         }
     }
 
+    /**
+     * Triggered when the algorithm traits are changed
+     * @param event Generated event
+     */
     @Subscribe
     public void onTraitsChanged(SlotAnnotationsChanged event) {
         isLoading = true;

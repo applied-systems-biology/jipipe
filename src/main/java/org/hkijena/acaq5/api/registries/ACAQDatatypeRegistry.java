@@ -22,6 +22,9 @@ public class ACAQDatatypeRegistry {
     private Map<String, ACAQDependency> registeredDatatypeSources = new HashMap<>();
     private EventBus eventBus = new EventBus();
 
+    /**
+     * Creates a new instance
+     */
     public ACAQDatatypeRegistry() {
 
     }
@@ -29,9 +32,9 @@ public class ACAQDatatypeRegistry {
     /**
      * Registers a data type
      *
-     * @param id
-     * @param klass
-     * @param source
+     * @param id The datatype ID
+     * @param klass The data class
+     * @param source The dependency that registers the data
      */
     public void register(String id, Class<? extends ACAQData> klass, ACAQDependency source) {
         registeredDataTypes.put(id, klass);
@@ -44,7 +47,7 @@ public class ACAQDatatypeRegistry {
     /**
      * Gets all registered data types
      *
-     * @return
+     * @return Map from data type ID to data class
      */
     public Map<String, Class<? extends ACAQData>> getRegisteredDataTypes() {
         return Collections.unmodifiableMap(registeredDataTypes);
@@ -53,7 +56,7 @@ public class ACAQDatatypeRegistry {
     /**
      * Gets all data types that are not hidden
      *
-     * @return
+     * @return Map from data type ID to data class
      */
     public Map<String, Class<? extends ACAQData>> getUnhiddenRegisteredDataTypes() {
         Map<String, Class<? extends ACAQData>> result = new HashMap<>();
@@ -68,8 +71,8 @@ public class ACAQDatatypeRegistry {
     /**
      * Gets the ID of the data type
      *
-     * @param dataClass
-     * @return
+     * @param dataClass The data class
+     * @return The data type ID of the class
      */
     public String getIdOf(Class<? extends ACAQData> dataClass) {
         return registeredDataTypes.inverse().get(dataClass);
@@ -78,8 +81,8 @@ public class ACAQDatatypeRegistry {
     /**
      * Returns true if there is a data type with given ID
      *
-     * @param id
-     * @return
+     * @param id The data type ID
+     * @return True if the data type ID exists
      */
     public boolean hasDatatypeWithId(String id) {
         return registeredDataTypes.containsKey(id);
@@ -88,8 +91,8 @@ public class ACAQDatatypeRegistry {
     /**
      * Returns true if the data type with given ID is hidden
      *
-     * @param id
-     * @return
+     * @param id The data type ID
+     * @return True if the data type is hidden
      */
     public boolean isHidden(String id) {
         return hiddenDataTypeIds.contains(id);
@@ -98,7 +101,7 @@ public class ACAQDatatypeRegistry {
     /**
      * Gets the event bus that post registration events
      *
-     * @return
+     * @return The event bus
      */
     public EventBus getEventBus() {
         return eventBus;
@@ -107,8 +110,8 @@ public class ACAQDatatypeRegistry {
     /**
      * Returns the data class with specified ID
      *
-     * @param id
-     * @return
+     * @param id The data type ID
+     * @return The data class associated to the ID
      */
     public Class<? extends ACAQData> getById(String id) {
         return registeredDataTypes.get(id);
@@ -117,7 +120,7 @@ public class ACAQDatatypeRegistry {
     /**
      * Gets the registered data types, grouped by their menu paths
      *
-     * @return
+     * @return Map from menu path to data types with this menu path
      */
     public Map<String, Set<Class<? extends ACAQData>>> getDataTypesByMenuPaths() {
         return ACAQData.groupByMenuPath(registeredDataTypes.values());
@@ -126,8 +129,8 @@ public class ACAQDatatypeRegistry {
     /**
      * Returns the source that registered that data type
      *
-     * @param id
-     * @return
+     * @param id Data type id
+     * @return Dependency that registered the data type
      */
     public ACAQDependency getSourceOf(String id) {
         return registeredDatatypeSources.getOrDefault(id, null);
@@ -136,8 +139,8 @@ public class ACAQDatatypeRegistry {
     /**
      * Returns the source that registered that data type
      *
-     * @param dataClass
-     * @return
+     * @param dataClass The data class
+     * @return Dependency that registered the data type
      */
     public ACAQDependency getSourceOf(Class<? extends ACAQData> dataClass) {
         return getSourceOf(getIdOf(dataClass));
@@ -146,8 +149,8 @@ public class ACAQDatatypeRegistry {
     /**
      * Returns true if the specified data type class is registered
      *
-     * @param dataClass
-     * @return
+     * @param dataClass The data class
+     * @return True if the data class is registered
      */
     public boolean hasDataType(Class<? extends ACAQData> dataClass) {
         return registeredDataTypes.containsValue(dataClass);
@@ -156,8 +159,8 @@ public class ACAQDatatypeRegistry {
     /**
      * Returns all data declarations added by the dependency
      *
-     * @param dependency
-     * @return
+     * @param dependency The dependency
+     * @return Set of data declarations registered by the dependency
      */
     public Set<ACAQDataDeclaration> getDeclaredBy(ACAQDependency dependency) {
         Set<ACAQDataDeclaration> result = new HashSet<>();
@@ -169,6 +172,9 @@ public class ACAQDatatypeRegistry {
         return result;
     }
 
+    /**
+     * @return Singleton instance
+     */
     public static ACAQDatatypeRegistry getInstance() {
         return ACAQDefaultRegistry.getInstance().getDatatypeRegistry();
     }

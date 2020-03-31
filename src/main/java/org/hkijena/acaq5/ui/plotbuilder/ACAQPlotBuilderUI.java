@@ -33,6 +33,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * UI around data that can be plotted
+ */
 public class ACAQPlotBuilderUI extends ACAQProjectUIPanel {
 
     private JToolBar plotSeriesEditorToolBar;
@@ -45,6 +48,9 @@ public class ACAQPlotBuilderUI extends ACAQProjectUIPanel {
 
     private List<ACAQPlotSeriesData> seriesDataList = new ArrayList<>();
 
+    /**
+     * @param workbench The workbench
+     */
     public ACAQPlotBuilderUI(ACAQProjectUI workbench) {
         super(workbench);
         initialize();
@@ -52,6 +58,11 @@ public class ACAQPlotBuilderUI extends ACAQProjectUIPanel {
         updatePlot();
     }
 
+    /**
+     * Imports data from a table
+     * @param model The table
+     * @param name Table name
+     */
     public void importFromTable(DefaultTableModel model, String name) {
         for (int column = 0; column < model.getColumnCount(); ++column) {
             ACAQPlotSeriesData data = new ACAQPlotSeriesData(name + "." + model.getColumnName(column));
@@ -201,12 +212,20 @@ public class ACAQPlotBuilderUI extends ACAQProjectUIPanel {
         }
     }
 
+    /**
+     * Triggered when the plot settings were changed
+     * @param event Generated event
+     */
     @Subscribe
     public void handlePlotChangedEvent(ACAQPlot.PlotChangedEvent event) {
         if (toggleAutoUpdate.isSelected())
             updatePlot();
     }
 
+    /**
+     * Triggered when the data was changed
+     * @param event Generated event
+     */
     @Subscribe
     public void handlePlotChangedSeriesListEvent(ACAQPlot.PlotSeriesListChangedEvent event) {
         updatePlotSettings();
@@ -238,6 +257,9 @@ public class ACAQPlotBuilderUI extends ACAQProjectUIPanel {
         getWorkbenchUI().getDocumentTabPane().switchToLastTab();
     }
 
+    /**
+     * Renders a plot
+     */
     private static class Renderer extends JLabel implements ListCellRenderer<ACAQPlot> {
 
         public Renderer() {

@@ -1,9 +1,15 @@
 package org.hkijena.acaq5.api.traits;
 
+/**
+ * Default implementation of {@link ACAQTrait}
+ */
 public class ACAQDefaultTrait implements ACAQTrait {
 
     private ACAQTraitDeclaration declaration;
 
+    /**
+     * @param declaration The trait declaration
+     */
     public ACAQDefaultTrait(ACAQTraitDeclaration declaration) {
         this.declaration = declaration;
     }

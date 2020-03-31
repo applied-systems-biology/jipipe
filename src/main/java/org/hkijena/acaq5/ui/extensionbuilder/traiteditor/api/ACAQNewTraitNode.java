@@ -13,6 +13,9 @@ import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.Map;
 
+/**
+ * Structural node that represents a new trait
+ */
 @ACAQDocumentation(name = "Custom Annotation", description = "A custom annotation type")
 @AlgorithmInputSlot(ACAQTraitNodeInheritanceData.class)
 @AlgorithmOutputSlot(ACAQTraitNodeInheritanceData.class)
@@ -21,10 +24,18 @@ import java.util.Map;
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Annotation)
 public class ACAQNewTraitNode extends ACAQTraitNode implements ACAQCustomParameterHolder {
 
+    /**
+     * Creates new instance
+     * @param declaration The declaration
+     */
     public ACAQNewTraitNode(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
     }
 
+    /**
+     * Copies the node
+     * @param other The original
+     */
     public ACAQNewTraitNode(ACAQNewTraitNode other) {
         super(other);
     }
@@ -54,6 +65,10 @@ public class ACAQNewTraitNode extends ACAQTraitNode implements ACAQCustomParamet
         return ACAQParameterAccess.getParameters((ACAQParameterHolder) getTraitDeclaration());
     }
 
+    /**
+     * Triggered when the name, id or is-discriminator parameters are changed
+     * @param event Generated event
+     */
     @Subscribe
     public void onParameterChanged(ParameterChangedEvent event) {
         if ("name".equals(event.getKey()) || "id".equals(event.getKey())) {

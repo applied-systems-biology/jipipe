@@ -49,27 +49,49 @@ public class ACAQProject implements ACAQValidatable {
     private ACAQProjectMetadata metadata = new ACAQProjectMetadata();
     private Path workDirectory;
 
+    /**
+     * An ACAQ5 project
+     */
     public ACAQProject() {
         compartmentGraph.getEventBus().register(this);
     }
 
+    /**
+     * @return The event bus
+     */
     public EventBus getEventBus() {
         return eventBus;
     }
 
+    /**
+     * @return The algorithm graph
+     */
     public ACAQAlgorithmGraph getGraph() {
         return graph;
     }
 
+    /**
+     * Saves the project
+     * @param fileName Target file
+     * @throws IOException Triggered by {@link ObjectMapper}
+     */
     public void saveProject(Path fileName) throws IOException {
         ObjectMapper mapper = JsonUtils.getObjectMapper();
         mapper.writerWithDefaultPrettyPrinter().writeValue(fileName.toFile(), this);
     }
 
+    /**
+     * @return The current project compartments
+     */
     public BiMap<String, ACAQProjectCompartment> getCompartments() {
         return ImmutableBiMap.copyOf(compartments);
     }
 
+    /**
+     * Adds anew project compartment
+     * @param name Unique compartment ID
+     * @return The compartment
+     */
     public ACAQProjectCompartment addCompartment(String name) {
         ACAQProjectCompartment compartment = ACAQAlgorithm.newInstance("acaq:project-compartment");
         compartment.setProject(this);
@@ -78,6 +100,11 @@ public class ACAQProject implements ACAQValidatable {
         return compartment;
     }
 
+    /**
+     * Connects two compartments
+     * @param source Source compartment
+     * @param target Target compartment
+     */
     public void connectCompartments(ACAQProjectCompartment source, ACAQProjectCompartment target) {
         ACAQDataSlot sourceSlot = source.getFirstOutputSlot();
         List<ACAQDataSlot> openInputSlots = target.getOpenInputSlots();
@@ -135,6 +162,10 @@ public class ACAQProject implements ACAQValidatable {
         graph.getEventBus().post(new AlgorithmGraphChangedEvent(graph));
     }
 
+    /**
+     * Triggered when the compartment graph is changed
+     * @param event Generated event
+     */
     @Subscribe
     public void onCompartmentGraphChanged(AlgorithmGraphChangedEvent event) {
         if (event.getAlgorithmGraph() == compartmentGraph) {
@@ -154,10 +185,17 @@ public class ACAQProject implements ACAQValidatable {
         graph.reportValidity(report);
     }
 
+    /**
+     * @return The compartment graph. Contains only {@link ACAQProjectCompartment} nodes.
+     */
     public ACAQAlgorithmGraph getCompartmentGraph() {
         return compartmentGraph;
     }
 
+    /**
+     * Removes a compartment
+     * @param compartment The compartment
+     */
     public void removeCompartment(ACAQProjectCompartment compartment) {
         graph.removeCompartment(compartment.getProjectCompartmentId());
         compartments.remove(compartment.getProjectCompartmentId());
@@ -166,6 +204,9 @@ public class ACAQProject implements ACAQValidatable {
         eventBus.post(new CompartmentRemovedEvent(compartment));
     }
 
+    /**
+     * @return Project metadata
+     */
     public ACAQProjectMetadata getMetadata() {
         return metadata;
     }
@@ -173,7 +214,7 @@ public class ACAQProject implements ACAQValidatable {
     /**
      * Gets the folder where the project is currently working in
      *
-     * @return
+     * @return the folder where the project is currently working in
      */
     public Path getWorkDirectory() {
         return workDirectory;
@@ -183,7 +224,7 @@ public class ACAQProject implements ACAQValidatable {
      * Sets the folder where the project is currently working in.
      * This information is passed to the algorithms to adapt to the work directory if needed (usually ony Filesystem nodes are affected)
      *
-     * @param workDirectory
+     * @param workDirectory Project work directory
      */
     public void setWorkDirectory(Path workDirectory) {
         this.workDirectory = workDirectory;
@@ -193,25 +234,40 @@ public class ACAQProject implements ACAQValidatable {
         eventBus.post(new WorkDirectoryChangedEvent(workDirectory));
     }
 
+    /**
+     * @return All project dependencies
+     */
     public Set<ACAQDependency> getDependencies() {
         Set<ACAQDependency> dependencies = graph.getDependencies();
         dependencies.addAll(compartmentGraph.getDependencies());
         return dependencies;
     }
 
+    /**
+     * Loads a project from a file
+     * @param fileName JSON file
+     * @return Loaded project
+     * @throws IOException Triggered by {@link ObjectMapper}
+     */
     public static ACAQProject loadProject(Path fileName) throws IOException {
         return JsonUtils.getObjectMapper().readerFor(ACAQProject.class).readValue(fileName.toFile());
     }
 
+    /**
+     * Loads a project from JSON data
+     * @param node JSON data
+     * @return Loaded project
+     * @throws IOException Triggered by {@link ObjectMapper}
+     */
     public static ACAQProject loadProject(JsonNode node) throws IOException {
         return JsonUtils.getObjectMapper().readerFor(ACAQProject.class).readValue(node);
     }
 
     /**
-     * Deserializes the set of project dependencies from
-     *
-     * @param node
-     * @return
+     * Deserializes the set of project dependencies from JSON.
+     * Does not require the dependencies to be actually registered.
+     * @param node JSON node
+     * @return The dependencies as {@link org.hkijena.acaq5.ACAQMutableDependency}
      */
     public static Set<ACAQDependency> loadDependenciesFromJson(JsonNode node) {
         node = node.path("dependencies");
@@ -226,6 +282,9 @@ public class ACAQProject implements ACAQValidatable {
         }
     }
 
+    /**
+     * Serializes a project
+     */
     public static class Serializer extends JsonSerializer<ACAQProject> {
         @Override
         public void serialize(ACAQProject project, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
@@ -242,6 +301,9 @@ public class ACAQProject implements ACAQValidatable {
         }
     }
 
+    /**
+     * Deserializes a project
+     */
     public static class Deserializer extends JsonDeserializer<ACAQProject> {
 
         @Override

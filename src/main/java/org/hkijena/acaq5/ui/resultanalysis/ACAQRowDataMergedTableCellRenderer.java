@@ -10,10 +10,16 @@ import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
+/**
+ * Renders data in {@link ACAQMergedExportedDataTable}
+ */
 public class ACAQRowDataMergedTableCellRenderer implements TableCellRenderer {
 
     private ACAQProjectUI workbenchUI;
 
+    /**
+     * @param workbenchUI The workbench
+     */
     public ACAQRowDataMergedTableCellRenderer(ACAQProjectUI workbenchUI) {
         this.workbenchUI = workbenchUI;
     }

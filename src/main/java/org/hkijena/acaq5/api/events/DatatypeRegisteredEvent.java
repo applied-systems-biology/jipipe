@@ -6,6 +6,9 @@ package org.hkijena.acaq5.api.events;
 public class DatatypeRegisteredEvent {
     private String id;
 
+    /**
+     * @param id the data type id
+     */
     public DatatypeRegisteredEvent(String id) {
         this.id = id;
     }

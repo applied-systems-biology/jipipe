@@ -14,14 +14,14 @@ public @interface AlgorithmInputSlot {
     /**
      * The data class
      *
-     * @return
+     * @return data class
      */
     Class<? extends ACAQData> value();
 
     /**
      * An optional slot name. Cannot be empty if autoCreate is true.
      *
-     * @return
+     * @return slot name
      */
     String slotName() default "";
 
@@ -29,7 +29,7 @@ public @interface AlgorithmInputSlot {
      * If true, {@link ACAQAlgorithm} automatically configures its slots based on annotations (unless a custom {@link org.hkijena.acaq5.api.data.ACAQSlotConfiguration}
      * is provided.
      *
-     * @return
+     * @return if auto-configuration is enabled
      */
     boolean autoCreate() default false;
 }

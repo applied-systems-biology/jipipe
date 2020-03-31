@@ -19,11 +19,17 @@ import org.jfree.data.category.CategoryDataset;
 
 import java.util.List;
 
+/**
+ * A plot with categorical data
+ */
 public abstract class CategoryPlot extends ACAQPlot {
 
     private String categoryAxisLabel;
     private String valueAxisLabel;
 
+    /**
+     * @param seriesDataList the data
+     */
     protected CategoryPlot(List<ACAQPlotSeriesData> seriesDataList) {
         super(seriesDataList);
         addSeries();
@@ -55,8 +61,15 @@ public abstract class CategoryPlot extends ACAQPlot {
 
     public abstract CategoryDataset getDataset();
 
+    /**
+     * Updates the data set
+     */
     protected abstract void updateDataset();
 
+    /**
+     * Generates the chart
+     * @return the chart
+     */
     protected abstract JFreeChart createPlotFromDataset();
 
     @Override

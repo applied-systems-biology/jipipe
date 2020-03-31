@@ -23,11 +23,17 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Graph to organize new traits and create inheritance
+ */
 public class ACAQTraitGraph extends ACAQAlgorithmGraph {
     boolean initialized = false;
     private ACAQJsonExtension extension;
     private BiMap<ACAQTraitDeclaration, ACAQTraitNode> traitNodes = HashBiMap.create();
 
+    /**
+     * @param extension the extension
+     */
     public ACAQTraitGraph(ACAQJsonExtension extension) {
         this.extension = extension;
         initialize();
@@ -142,6 +148,9 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
         return false;
     }
 
+    /**
+     * Updates the inheritance edges
+     */
     public void updateInheritances() {
         if (!initialized)
             return;
@@ -176,6 +185,10 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
         return node;
     }
 
+    /**
+     * Triggered when a trait was added to the extension
+     * @param event Generated event
+     */
     @Subscribe
     public void onTraitAddedEvent(ExtensionContentAddedEvent event) {
         if (event.getContent() instanceof ACAQJsonTraitDeclaration) {
@@ -185,6 +198,10 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
         }
     }
 
+    /**
+     * Triggered when a trait was removed from the extension
+     * @param event Generated event
+     */
     @Subscribe
     public void onTraitRemovedEvent(ExtensionContentRemovedEvent event) {
         if (event.getContent() instanceof ACAQJsonTraitDeclaration) {
@@ -196,6 +213,10 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
         }
     }
 
+    /**
+     * Triggered when a trait ID was changed
+     * @param event Generated event
+     */
     @Subscribe
     public void onTraitIdChanged(ParameterChangedEvent event) {
         if ("id".equals(event.getKey())) {
@@ -205,10 +226,20 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
         }
     }
 
+    /**
+     * Contains true if the graph contains the trait
+     * @param declaration trait type
+     * @return if the graph contains the trait
+     */
     public boolean containsTrait(ACAQTraitDeclaration declaration) {
         return traitNodes.containsKey(declaration);
     }
 
+    /**
+     * Adds an external trait into the graph
+     * @param declaration External trait declaration
+     * @return node representing the trait
+     */
     public ACAQExistingTraitNode addExternalTrait(ACAQTraitDeclaration declaration) {
         ACAQExistingTraitNode node = ACAQAlgorithm.newInstance("acaq:existing-trait-node");
         node.setTraitDeclaration(declaration);
@@ -217,6 +248,11 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
         return node;
     }
 
+    /**
+     * Gets the node for the trait declaration
+     * @param declaration Trait declaration
+     * @return node representing the trait
+     */
     public ACAQTraitNode getNodeFor(ACAQTraitDeclaration declaration) {
         return traitNodes.getOrDefault(declaration, null);
     }

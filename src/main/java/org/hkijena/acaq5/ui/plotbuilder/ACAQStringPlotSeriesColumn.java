@@ -15,8 +15,16 @@ package org.hkijena.acaq5.ui.plotbuilder;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Column of strings
+ */
 public class ACAQStringPlotSeriesColumn extends ACAQPlotSeriesColumn<String> {
 
+    /**
+     * @param seriesDataList Series data
+     * @param defaultGenerator Generator for default values
+     * @param additionalGenerators Additional generators
+     */
     @SafeVarargs
     public ACAQStringPlotSeriesColumn(List<ACAQPlotSeriesData> seriesDataList, ACAQPlotSeriesGenerator<String> defaultGenerator, ACAQPlotSeriesGenerator<String>... additionalGenerators) {
         super(seriesDataList, defaultGenerator, additionalGenerators);

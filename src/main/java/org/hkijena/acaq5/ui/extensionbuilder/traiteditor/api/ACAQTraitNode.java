@@ -10,14 +10,24 @@ import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 
+/**
+ * Structural node that encapsulates an {@link ACAQTraitDeclaration}
+ */
 public class ACAQTraitNode extends ACAQAlgorithm {
 
     private ACAQTraitDeclaration traitDeclaration;
 
+    /**
+     * @param declaration algorithm declaration
+     */
     public ACAQTraitNode(ACAQAlgorithmDeclaration declaration) {
         super(declaration, createSlotConfiguration());
     }
 
+    /**
+     * Copies the node
+     * @param other original node
+     */
     public ACAQTraitNode(ACAQTraitNode other) {
         super(other);
     }
@@ -42,6 +52,9 @@ public class ACAQTraitNode extends ACAQAlgorithm {
         updateSlotTypes();
     }
 
+    /**
+     * Updates the slot data types depending on if the trait is a discriminator
+     */
     public void updateSlotTypes() {
         ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) getSlotConfiguration();
         slotConfiguration.getAllowedInputSlotTypes().clear();
@@ -55,6 +68,9 @@ public class ACAQTraitNode extends ACAQAlgorithm {
         getEventBus().post(new AlgorithmSlotsChangedEvent(this));
     }
 
+    /**
+     * @return The slot configuration
+     */
     public static ACAQSlotConfiguration createSlotConfiguration() {
         return ACAQMutableSlotConfiguration.builder()
                 .restrictInputTo(ACAQTraitNodeInheritanceData.class, ACAQDiscriminatorNodeInheritanceData.class)

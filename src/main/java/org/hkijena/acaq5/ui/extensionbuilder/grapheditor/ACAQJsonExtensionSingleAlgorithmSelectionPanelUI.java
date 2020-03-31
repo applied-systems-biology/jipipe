@@ -15,10 +15,18 @@ import org.hkijena.acaq5.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Shown when one algorithm is selected
+ */
 public class ACAQJsonExtensionSingleAlgorithmSelectionPanelUI extends ACAQJsonExtensionUIPanel {
     private ACAQAlgorithmGraph graph;
     private ACAQAlgorithm algorithm;
 
+    /**
+     * @param workbenchUI The workbench UI
+     * @param graph The algorithm graph
+     * @param algorithm The algorithm
+     */
     public ACAQJsonExtensionSingleAlgorithmSelectionPanelUI(ACAQJsonExtensionUI workbenchUI, ACAQAlgorithmGraph graph, ACAQAlgorithm algorithm) {
         super(workbenchUI);
         this.graph = graph;
@@ -81,6 +89,9 @@ public class ACAQJsonExtensionSingleAlgorithmSelectionPanelUI extends ACAQJsonEx
         }
     }
 
+    /**
+     * @return The algorithm
+     */
     public ACAQAlgorithm getAlgorithm() {
         return algorithm;
     }

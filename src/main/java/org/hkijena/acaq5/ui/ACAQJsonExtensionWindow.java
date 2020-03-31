@@ -23,6 +23,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Window that displays {@link ACAQJsonExtension} UIs
+ */
 public class ACAQJsonExtensionWindow extends JFrame {
 
     private static Set<ACAQJsonExtensionWindow> OPEN_WINDOWS = new HashSet<>();
@@ -31,6 +34,11 @@ public class ACAQJsonExtensionWindow extends JFrame {
     private ACAQJsonExtensionUI projectUI;
     private Path projectSavePath;
 
+    /**
+     * Creates a new instance
+     * @param command The command that issued the UI
+     * @param project The project
+     */
     public ACAQJsonExtensionWindow(ACAQGUICommand command, ACAQJsonExtension project) {
         OPEN_WINDOWS.add(this);
         this.command = command;
@@ -60,12 +68,19 @@ public class ACAQJsonExtensionWindow extends JFrame {
         super.setTitle("ACAQ5 extension builder - " + title);
     }
 
+    /**
+     * Loads a project into the window and replaces the current project
+     * @param project The project
+     */
     public void loadProject(ACAQJsonExtension project) {
         this.project = project;
         this.projectUI = new ACAQJsonExtensionUI(this, command, project);
         setContentPane(projectUI);
     }
 
+    /**
+     * Creates a new project and asks the user if it should be opened in this or a new window
+     */
     public void newProject() {
         ACAQJsonExtension project = new ACAQJsonExtension();
         ACAQJsonExtensionWindow window = openProjectInThisOrNewWindow("New extension", project);
@@ -76,6 +91,11 @@ public class ACAQJsonExtensionWindow extends JFrame {
         window.getProjectUI().sendStatusBarText("Created new extension");
     }
 
+    /**
+     * Opens a project from a file
+     * Asks the user if it should be opened in this or a new window
+     * @param path JSON file path
+     */
     public void openProject(Path path) {
         try {
             JsonNode jsonData = JsonUtils.getObjectMapper().readValue(path.toFile(), JsonNode.class);
@@ -99,6 +119,10 @@ public class ACAQJsonExtensionWindow extends JFrame {
         }
     }
 
+    /**
+     * Displays a file chooser where the user can open a project.
+     * Asks the user if it should be opened in this or a new window.
+     */
     public void openProject() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -108,6 +132,10 @@ public class ACAQJsonExtensionWindow extends JFrame {
         }
     }
 
+    /**
+     * Saves the project
+     * @param avoidDialog If true, the project is silently written if a save path was set
+     */
     public void saveProjectAs(boolean avoidDialog) {
         Path savePath = null;
         if (avoidDialog && projectSavePath != null)
@@ -135,9 +163,10 @@ public class ACAQJsonExtensionWindow extends JFrame {
     }
 
     /**
-     * @param messageTitle
-     * @param project
-     * @return
+     * Asks the user if a project should be opened in this or a new window
+     * @param messageTitle How the project was loaded
+     * @param project The project
+     * @return The window that hosts the porject UI
      */
     private ACAQJsonExtensionWindow openProjectInThisOrNewWindow(String messageTitle, ACAQJsonExtension project) {
         switch (UIUtils.askOpenInCurrentWindow(this, messageTitle)) {
@@ -150,22 +179,40 @@ public class ACAQJsonExtensionWindow extends JFrame {
         return null;
     }
 
+    /**
+     * @return The command that issued the GUI
+     */
     public ACAQGUICommand getCommand() {
         return command;
     }
 
+    /**
+     * @return The project
+     */
     public ACAQJsonExtension getProject() {
         return project;
     }
 
+    /**
+     * @return The current UI
+     */
     public ACAQJsonExtensionUI getProjectUI() {
         return projectUI;
     }
 
+    /**
+     * @return The path where the project was loaded from or saved last
+     */
     public Path getProjectSavePath() {
         return projectSavePath;
     }
 
+    /**
+     * Opens a new window
+     * @param command The command that issued the GUI
+     * @param project The project
+     * @return The window
+     */
     public static ACAQJsonExtensionWindow newWindow(ACAQGUICommand command, ACAQJsonExtension project) {
         ACAQJsonExtensionWindow frame = new ACAQJsonExtensionWindow(command, project);
         frame.pack();
@@ -177,6 +224,7 @@ public class ACAQJsonExtensionWindow extends JFrame {
 
     /**
      * Allows the user to select files to install
+     * @param parent The parent component
      */
     public static void installExtensions(Component parent) {
         JFileChooser fileChooser = new JFileChooser();
@@ -192,8 +240,8 @@ public class ACAQJsonExtensionWindow extends JFrame {
     /**
      * Loads a project and installs it
      *
-     * @param parent
-     * @param filePath
+     * @param parent The parent component
+     * @param filePath The file path
      */
     public static void installExtensionFromFile(Component parent, Path filePath) {
         try {
@@ -215,8 +263,8 @@ public class ACAQJsonExtensionWindow extends JFrame {
     /**
      * Installs a loaded project
      *
-     * @param parent
-     * @param extension
+     * @param parent The parent component
+     * @param extension The extension
      */
     public static void installExtension(Component parent, ACAQJsonExtension extension) {
         boolean alreadyExists = ACAQDefaultRegistry.getInstance().getRegisteredExtensionIds().contains(extension.getDependencyId());
@@ -266,6 +314,9 @@ public class ACAQJsonExtensionWindow extends JFrame {
         ACAQDefaultRegistry.getInstance().register(extension);
     }
 
+    /**
+     * @return The list of open windows
+     */
     public static Set<ACAQJsonExtensionWindow> getOpenWindows() {
         return Collections.unmodifiableSet(OPEN_WINDOWS);
     }

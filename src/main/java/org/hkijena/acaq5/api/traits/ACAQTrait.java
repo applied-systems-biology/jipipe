@@ -33,8 +33,8 @@ public interface ACAQTrait {
     /**
      * Returns the name of given trait
      *
-     * @param klass
-     * @return
+     * @param klass data class
+     * @return name
      */
     static String getNameOf(Class<? extends ACAQTrait> klass) {
         ACAQDocumentation[] annotations = klass.getAnnotationsByType(ACAQDocumentation.class);
@@ -48,8 +48,8 @@ public interface ACAQTrait {
     /**
      * Returns the description of given trait
      *
-     * @param klass
-     * @return
+     * @param klass data class
+     * @return description
      */
     static String getDescriptionOf(Class<? extends ACAQTrait> klass) {
         ACAQDocumentation[] annotations = klass.getAnnotationsByType(ACAQDocumentation.class);
@@ -63,9 +63,9 @@ public interface ACAQTrait {
     /**
      * Faster method to compare traits
      *
-     * @param first
-     * @param second
-     * @return
+     * @param first first trait
+     * @param second second trait
+     * @return if traits are equivalent
      */
     static boolean equals(ACAQTrait first, ACAQTrait second) {
         if (first == null && second == null)
@@ -82,6 +82,9 @@ public interface ACAQTrait {
             return true;
     }
 
+    /**
+     * Serializes an {@link ACAQTrait}
+     */
     class Serializer extends JsonSerializer<ACAQTrait> {
         @Override
         public void serialize(ACAQTrait trait, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
@@ -92,6 +95,9 @@ public interface ACAQTrait {
         }
     }
 
+    /**
+     * Deserializes an {@link ACAQTrait}
+     */
     class Deserializer extends JsonDeserializer<ACAQTrait> {
         @Override
         public ACAQTrait deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {

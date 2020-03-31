@@ -9,9 +9,15 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Registry for annotations
+ */
 public class ACAQUITraitRegistry {
     private Map<ACAQTraitDeclaration, URL> icons = new HashMap<>();
 
+    /**
+     * Creates new instance
+     */
     public ACAQUITraitRegistry() {
 
     }
@@ -19,8 +25,8 @@ public class ACAQUITraitRegistry {
     /**
      * Registers a custom icon for a trait
      *
-     * @param declaration
-     * @param resourcePath
+     * @param declaration the trait type
+     * @param resourcePath icon url
      */
     public void registerIcon(ACAQTraitDeclaration declaration, URL resourcePath) {
         icons.put(declaration, resourcePath);
@@ -29,8 +35,8 @@ public class ACAQUITraitRegistry {
     /**
      * Returns the icon resource path URL for a trait
      *
-     * @param klass
-     * @return
+     * @param klass trait type
+     * @return icon url
      */
     public URL getIconURLFor(ACAQTraitDeclaration klass) {
         return icons.getOrDefault(klass, ResourceUtils.getPluginResource("icons/traits/trait.png"));
@@ -39,8 +45,8 @@ public class ACAQUITraitRegistry {
     /**
      * Returns the icon for a trait
      *
-     * @param declaration
-     * @return
+     * @param declaration trait type
+     * @return icon instance
      */
     public ImageIcon getIconFor(ACAQTraitDeclaration declaration) {
         URL uri = icons.getOrDefault(declaration, ResourceUtils.getPluginResource("icons/traits/trait.png"));

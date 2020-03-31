@@ -21,10 +21,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * UI when multiple algorithms are selected
+ */
 public class ACAQMultiAlgorithmSelectionPanelUI extends ACAQProjectUIPanel {
     private ACAQAlgorithmGraph graph;
     private Set<ACAQAlgorithm> algorithms;
 
+    /**
+     * @param workbenchUI The workbench
+     * @param graph The algorithm graph
+     * @param algorithms The algorithm selection
+     */
     public ACAQMultiAlgorithmSelectionPanelUI(ACAQProjectUI workbenchUI, ACAQAlgorithmGraph graph, Set<ACAQAlgorithm> algorithms) {
         super(workbenchUI);
         this.graph = graph;

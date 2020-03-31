@@ -11,6 +11,9 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 
+/**
+ * Algorithm that annotates all data with the same annotation
+ */
 @ACAQDocumentation(name = "Annotate data", description = "Annotates each data with the specified annotation")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Annotation)
 
@@ -20,10 +23,17 @@ public class AnnotateAll extends ACAQAlgorithm {
     private ACAQTrait annotation;
     private boolean overwrite = false;
 
+    /**
+     * @param declaration the declaration
+     */
     public AnnotateAll(ACAQAlgorithmDeclaration declaration) {
         super(declaration, new ACAQIOSlotConfiguration());
     }
 
+    /**
+     * Copies the algorithm
+     * @param other the original
+     */
     public AnnotateAll(AnnotateAll other) {
         super(other);
         this.annotation = other.annotation;

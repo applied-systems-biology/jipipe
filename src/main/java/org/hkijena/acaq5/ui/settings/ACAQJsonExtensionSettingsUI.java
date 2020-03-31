@@ -7,7 +7,13 @@ import org.hkijena.acaq5.ui.components.MarkdownDocument;
 
 import java.awt.*;
 
+/**
+ * Panel containing algorithm settings when algorithms are edited in a {@link org.hkijena.acaq5.ACAQJsonExtension}
+ */
 public class ACAQJsonExtensionSettingsUI extends ACAQJsonExtensionUIPanel {
+    /**
+     * @param workbenchUI The workbench UI
+     */
     public ACAQJsonExtensionSettingsUI(ACAQJsonExtensionUI workbenchUI) {
         super(workbenchUI);
         initialize();

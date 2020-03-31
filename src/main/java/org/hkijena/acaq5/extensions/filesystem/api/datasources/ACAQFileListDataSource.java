@@ -24,10 +24,18 @@ public class ACAQFileListDataSource extends ACAQAlgorithm {
     private PathCollection fileNames = new PathCollection();
     private Path currentWorkingDirectory;
 
+    /**
+     * Initializes the algorithm
+     * @param declaration The algorithm declaration
+     */
     public ACAQFileListDataSource(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
     }
 
+    /**
+     * Copies the algorithm
+     * @param other The original
+     */
     public ACAQFileListDataSource(ACAQFileListDataSource other) {
         super(other);
         this.fileNames.addAll(other.fileNames);
@@ -41,6 +49,9 @@ public class ACAQFileListDataSource extends ACAQAlgorithm {
         }
     }
 
+    /**
+     * @return The file names
+     */
     @ACAQParameter("file-names")
     @ACAQDocumentation(name = "File names")
     @FilePathParameterSettings(ioMode = FileSelection.IOMode.Open, pathMode = FileSelection.PathMode.FilesOnly)
@@ -48,12 +59,19 @@ public class ACAQFileListDataSource extends ACAQAlgorithm {
         return fileNames;
     }
 
+    /**
+     * Sets the file names
+     * @param fileNames The file names
+     */
     @ACAQParameter("file-names")
     public void setFileNames(PathCollection fileNames) {
         this.fileNames = fileNames;
         getEventBus().post(new ParameterChangedEvent(this, "file-names"));
     }
 
+    /**
+     * @return Absolute file names
+     */
     public PathCollection getAbsoluteFileNames() {
         PathCollection result = new PathCollection();
         for (Path fileName : fileNames) {

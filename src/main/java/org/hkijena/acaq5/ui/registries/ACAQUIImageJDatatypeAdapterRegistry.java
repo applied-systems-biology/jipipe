@@ -10,9 +10,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Registry for {@link org.hkijena.acaq5.api.compat.ImageJDatatypeAdapter} UIs
+ */
 public class ACAQUIImageJDatatypeAdapterRegistry {
     private Map<Class<?>, Class<? extends ImageJDatatypeImporterUI>> registeredImporters = new HashMap<>();
 
+    /**
+     * @param imageJDataType imageJ data type
+     * @param importerClass importer UI class
+     */
     public void registerImporterFor(Class<?> imageJDataType, Class<? extends ImageJDatatypeImporterUI> importerClass) {
         registeredImporters.put(imageJDataType, importerClass);
     }
@@ -24,8 +31,8 @@ public class ACAQUIImageJDatatypeAdapterRegistry {
     /**
      * Gets the importer for the specified ImageJ data type
      *
-     * @param imageJDataType
-     * @return
+     * @param imageJDataType imageJ data type
+     * @return importer UI class
      */
     public Class<? extends ImageJDatatypeImporterUI> getImporterClassFor(Class<?> imageJDataType) {
         Class<? extends ImageJDatatypeImporterUI> importerClass = registeredImporters.getOrDefault(imageJDataType, null);
@@ -44,8 +51,8 @@ public class ACAQUIImageJDatatypeAdapterRegistry {
     /**
      * Generates a UI for the importer
      *
-     * @param importer
-     * @return
+     * @param importer importer
+     * @return UI instance
      */
     public ImageJDatatypeImporterUI getUIFor(ImageJDatatypeImporter importer) {
         Class<? extends ImageJDatatypeImporterUI> importerClass = getImporterClassFor(importer.getAdapter().getImageJDatatype());

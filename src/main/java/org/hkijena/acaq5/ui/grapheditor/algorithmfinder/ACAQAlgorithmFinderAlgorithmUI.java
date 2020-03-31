@@ -18,6 +18,9 @@ import java.awt.*;
 
 import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_HEIGHT;
 
+/**
+ * UI for finding algorithms
+ */
 public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
     private ACAQDataSlot outputSlot;
     private ACAQAlgorithmGraph graph;
@@ -29,6 +32,15 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
     private EventBus eventBus = new EventBus();
     private String compartment;
 
+    /**
+     * Creates an algorithm UI for one target algorithm
+     * @param outputSlot The output slot to connect
+     * @param graph The graph
+     * @param compartment The compartment
+     * @param declaration The target algorithm
+     * @param score Score of the target algorithm
+     * @param maxScore Maximum score that was possible
+     */
     public ACAQAlgorithmFinderAlgorithmUI(ACAQDataSlot outputSlot, ACAQAlgorithmGraph graph, String compartment, ACAQAlgorithmDeclaration declaration, int score, int maxScore) {
         this.outputSlot = outputSlot;
         this.graph = graph;
@@ -41,6 +53,15 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
         initialize();
     }
 
+    /**
+     * Creates an algorithm UI for one target algorithm
+     * @param outputSlot The output slot to connect
+     * @param graph The graph
+     * @param compartment The compartment
+     * @param algorithm The target algorithm
+     * @param score Score of the target algorithm
+     * @param maxScore Maximum score that was possible
+     */
     public ACAQAlgorithmFinderAlgorithmUI(ACAQDataSlot outputSlot, ACAQAlgorithmGraph graph, String compartment, ACAQAlgorithm algorithm, int score, int maxScore) {
         this.outputSlot = outputSlot;
         this.graph = graph;
@@ -94,6 +115,9 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
         add(slotPanel, BorderLayout.EAST);
     }
 
+    /**
+     * Reloads the slots
+     */
     public void reloadSlotUI() {
         slotPanel.removeAll();
 
@@ -131,16 +155,28 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
         return button;
     }
 
+    /**
+     * Should trigger when the target algorithm slots are changed
+     * @param event Generated event
+     */
     @Subscribe
     public void onAlgorithmSlotsChanged(AlgorithmSlotsChangedEvent event) {
         reloadSlotUI();
     }
 
+    /**
+     * Should trigger when a successful connection was made. Passes the event to the parent.
+     * @param event Generated event
+     */
     @Subscribe
     public void onAlgorithmFinderSuccess(AlgorithmFinderSuccessEvent event) {
         eventBus.post(event);
     }
 
+    /**
+     * Returns the event bus
+     * @return Event Bus instance
+     */
     public EventBus getEventBus() {
         return eventBus;
     }

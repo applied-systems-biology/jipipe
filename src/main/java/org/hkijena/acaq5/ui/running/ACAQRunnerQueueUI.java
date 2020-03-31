@@ -19,6 +19,9 @@ public class ACAQRunnerQueueUI extends JPanel {
     private JPanel runningQueuePanel;
     private JProgressBar runningQueueProgress;
 
+    /**
+     * Creates new instance
+     */
     public ACAQRunnerQueueUI() {
         initialize();
         updateStatus();
@@ -59,6 +62,9 @@ public class ACAQRunnerQueueUI extends JPanel {
             ACAQRunnerQueue.getInstance().cancel(ACAQRunnerQueue.getInstance().getCurrentRun());
     }
 
+    /**
+     * Updates the UI status
+     */
     public void updateStatus() {
         if (ACAQRunnerQueue.getInstance().getCurrentRun() != null) {
             removeAll();
@@ -73,21 +79,37 @@ public class ACAQRunnerQueueUI extends JPanel {
         }
     }
 
+    /**
+     * Triggered when a worker is started
+     * @param event Generated event
+     */
     @Subscribe
     public void onWorkerStarted(RunUIWorkerStartedEvent event) {
         updateStatus();
     }
 
+    /**
+     * Triggered when a worker is finished
+     * @param event Generated event
+     */
     @Subscribe
     public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
         updateStatus();
     }
 
+    /**
+     * Triggered when a worker is interrupted
+     * @param event Generated event
+     */
     @Subscribe
     public void onWorkerInterrupted(RunUIWorkerInterruptedEvent event) {
         updateStatus();
     }
 
+    /**
+     * Triggered when a worker reports progress
+     * @param event Generated event
+     */
     @Subscribe
     public void onWorkerProgress(RunUIWorkerProgressEvent event) {
         runningQueueProgress.setMaximum(event.getStatus().getMaxProgress());

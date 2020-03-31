@@ -20,6 +20,12 @@ public class ACAQDefaultResultDataSlotRowUI extends ACAQResultDataSlotRowUI {
 
     private List<SlotAction> registeredSlotActions = new ArrayList<>();
 
+    /**
+     * Creates a new UI
+     * @param workbenchUI The workbench UI
+     * @param slot The data slot
+     * @param row The data slow row
+     */
     public ACAQDefaultResultDataSlotRowUI(ACAQProjectUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
         super(workbenchUI, slot, row);
         registerActions();
@@ -67,10 +73,10 @@ public class ACAQDefaultResultDataSlotRowUI extends ACAQResultDataSlotRowUI {
     /**
      * Registers an action for the data slot
      *
-     * @param name
-     * @param description
-     * @param icon
-     * @param action
+     * @param name The name of the action
+     * @param description A description of the action
+     * @param icon An icon
+     * @param action A method called when the action is activated
      */
     protected void registerAction(String name, String description, Icon icon, Consumer<ACAQDataSlot> action) {
         registeredSlotActions.add(new SlotAction(name, description, icon, action));
@@ -92,6 +98,9 @@ public class ACAQDefaultResultDataSlotRowUI extends ACAQResultDataSlotRowUI {
         }
     }
 
+    /**
+     * Encapsulates a slot action
+     */
     private static class SlotAction {
         private String name;
         private String description;

@@ -8,15 +8,24 @@ import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 
+/**
+ * Button that checks the plugin validity and shows the report if clicked
+ */
 public class ACAQPluginValidityCheckerButton extends JButton {
 
     private ACAQValidityReport report = new ACAQValidityReport();
 
+    /**
+     * Creates new instance
+     */
     public ACAQPluginValidityCheckerButton() {
         recheckValidity();
         ACAQDefaultRegistry.getInstance().getEventBus().register(this);
     }
 
+    /**
+     * Triggers a validity check
+     */
     public void recheckValidity() {
         report.clear();
         ACAQDefaultRegistry.getInstance().reportValidity(report);
@@ -30,6 +39,11 @@ public class ACAQPluginValidityCheckerButton extends JButton {
         }
     }
 
+    /**
+     * Triggered when an extension is registered.
+     * Rechecks validity.
+     * @param event Generated event
+     */
     @Subscribe
     public void onExtensionRegistered(ExtensionRegisteredEvent event) {
         recheckValidity();

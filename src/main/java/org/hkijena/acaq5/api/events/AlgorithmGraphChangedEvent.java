@@ -8,6 +8,9 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 public class AlgorithmGraphChangedEvent {
     private ACAQAlgorithmGraph algorithmGraph;
 
+    /**
+     * @param algorithmGraph the graph
+     */
     public AlgorithmGraphChangedEvent(ACAQAlgorithmGraph algorithmGraph) {
         this.algorithmGraph = algorithmGraph;
     }

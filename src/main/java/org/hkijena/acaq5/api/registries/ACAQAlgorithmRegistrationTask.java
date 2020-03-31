@@ -15,7 +15,7 @@ public interface ACAQAlgorithmRegistrationTask extends ACAQValidatable {
      * Returns true if the registration can be done
      * This function should fail as fast as possible
      *
-     * @return
+     * @return true if dependencies are met
      */
     boolean canRegister();
 }

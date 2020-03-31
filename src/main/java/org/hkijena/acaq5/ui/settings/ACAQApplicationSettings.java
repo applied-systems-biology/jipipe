@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Global settings for ACAQ
+ */
 public class ACAQApplicationSettings {
 
     private static ACAQApplicationSettings instance;
@@ -25,37 +28,60 @@ public class ACAQApplicationSettings {
     private List<Path> recentProjects = new ArrayList<>();
     private List<Path> recentJsonExtensions = new ArrayList<>();
 
+    /**
+     * Creates a new settings instance
+     */
     public ACAQApplicationSettings() {
 
     }
 
+    /**
+     * @return The event bus
+     */
     public EventBus getEventBus() {
         return eventBus;
     }
 
+    /**
+     * @return Recent projects
+     */
     @JsonGetter("recent-projects")
     public List<Path> getRecentProjects() {
         return recentProjects.stream().filter(p -> Files.exists(p)).collect(Collectors.toList());
     }
 
+    /**
+     * Sets recent projects
+     * @param recentProjects Recent project files
+     */
     @JsonSetter("recent-projects")
     public void setRecentProjects(List<Path> recentProjects) {
         this.recentProjects = recentProjects;
         eventBus.post(new ParameterChangedEvent(this, "recent-projects"));
     }
 
+    /**
+     * Clears recent projects
+     */
     public void clearRecentProjects() {
         recentProjects.clear();
         save();
         eventBus.post(new ParameterChangedEvent(this, "recent-projects"));
     }
 
+    /**
+     * Clears recent JSON extension projects
+     */
     public void clearRecentJsonExtensions() {
         recentJsonExtensions.clear();
         save();
         eventBus.post(new ParameterChangedEvent(this, "recent-json-extensions"));
     }
 
+    /**
+     * Adds a project file to the list of recent projects
+     * @param fileName Project file
+     */
     public void addRecentProject(Path fileName) {
         int index = recentProjects.indexOf(fileName);
         if (index == -1) {
@@ -70,6 +96,10 @@ public class ACAQApplicationSettings {
         }
     }
 
+    /**
+     * Adds a JSON extension file to the list of recent JSON extensions
+     * @param fileName JSON extension file
+     */
     public void addRecentJsonExtension(Path fileName) {
         int index = recentJsonExtensions.indexOf(fileName);
         if (index == -1) {
@@ -84,6 +114,9 @@ public class ACAQApplicationSettings {
         }
     }
 
+    /**
+     * Saves the settings
+     */
     public void save() {
         File targetFile = getPropertyFile();
         try {
@@ -93,16 +126,26 @@ public class ACAQApplicationSettings {
         }
     }
 
+    /**
+     * @return Recent JSON extension projects
+     */
     @JsonGetter("recent-json-extensions")
     public List<Path> getRecentJsonExtensions() {
         return recentJsonExtensions;
     }
 
+    /**
+     * Sets recent JSON extension project files
+     * @param recentJsonExtensions recent JSON extension project files
+     */
     @JsonGetter("recent-json-extensions")
     public void setRecentJsonExtensions(List<Path> recentJsonExtensions) {
         this.recentJsonExtensions = recentJsonExtensions;
     }
 
+    /**
+     * @return Singleton instance
+     */
     public static ACAQApplicationSettings getInstance() {
         if (instance == null) {
             File targetFile = getPropertyFile();
@@ -120,6 +163,9 @@ public class ACAQApplicationSettings {
         return instance;
     }
 
+    /**
+     * @return The location of the property file. Always a valid location.
+     */
     public static File getPropertyFile() {
         Path imageJDir = Paths.get(Prefs.getImageJDir());
         if (!Files.isDirectory(imageJDir)) {

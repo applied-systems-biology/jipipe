@@ -92,10 +92,19 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
         initializeTraits();
     }
 
+    /**
+     * Initializes a new algorithm instance and sets a custom slot configuration
+     * @param declaration The algorithm declaration
+     * @param slotConfiguration The slot configuration
+     */
     public ACAQAlgorithm(ACAQAlgorithmDeclaration declaration, ACAQSlotConfiguration slotConfiguration) {
         this(declaration, slotConfiguration, null);
     }
 
+    /**
+     * Initializes a new algorithm instance
+     * @param declaration The algorithm declaration
+     */
     public ACAQAlgorithm(ACAQAlgorithmDeclaration declaration) {
         this(declaration, null, null);
     }
@@ -103,7 +112,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
     /**
      * Copies the input algorithm's properties into this algorithm
      *
-     * @param other
+     * @param other Copied algorithm
      */
     public ACAQAlgorithm(ACAQAlgorithm other) {
         this.declaration = other.declaration;
@@ -145,8 +154,8 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
      * Copies the slot configuration from the other algorithm to this algorithm
      * Override this method for special configuration cases
      *
-     * @param other
-     * @return
+     * @param other Copied slot configuration
+     * @return Copy
      */
     protected ACAQSlotConfiguration copySlotConfiguration(ACAQAlgorithm other) {
         ACAQMutableSlotConfiguration configuration = ACAQMutableSlotConfiguration.builder().build();
@@ -154,18 +163,28 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
         return configuration;
     }
 
+    /**
+     * Initializes the algorithm
+     */
     private void initalize() {
         for (Map.Entry<String, ACAQSlotDefinition> kv : slotConfiguration.getSlots().entrySet()) {
             slots.put(kv.getKey(), new ACAQDataSlot(this, kv.getValue().getSlotType(), kv.getKey(), kv.getValue().getDataClass()));
         }
     }
 
+    /**
+     * Runs the workload
+     */
     public abstract void run();
 
     public EventBus getEventBus() {
         return eventBus;
     }
 
+    /**
+     * Returns the algorithm name
+     * @return algorithm name
+     */
     @ACAQParameter(value = "name", visibility = ACAQParameterVisibility.Visible)
     @ACAQDocumentation(name = "Name", description = "Custom algorithm name.")
     public String getName() {
@@ -174,40 +193,76 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
         return customName;
     }
 
+    /**
+     * Sets a custom name. If set to null, the standard algorithm name is automatically used by getName()
+     * @param customName custom name
+     */
     @ACAQParameter("name")
     public void setCustomName(String customName) {
         this.customName = customName;
         getEventBus().post(new ParameterChangedEvent(this, "name"));
     }
 
+    /**
+     * Gets the algorithm category
+     * @return The category
+     */
     public ACAQAlgorithmCategory getCategory() {
         return getDeclaration().getCategory();
     }
 
+    /**
+     * Gets the preferred traits
+     * @return Preferred traits
+     */
     Set<ACAQTraitDeclaration> getPreferredTraits() {
         return getDeclaration().getPreferredTraits();
     }
 
+    /**
+     * Gets the unwanted traits
+     * @return Unwanted traits
+     */
     Set<ACAQTraitDeclaration> getUnwantedTraits() {
         return getDeclaration().getUnwantedTraits();
     }
 
+    /**
+     * Gets the slot configuration
+     * @return Slot configuration
+     */
     public ACAQSlotConfiguration getSlotConfiguration() {
         return slotConfiguration;
     }
 
+    /**
+     * Gets all slot instances
+     * @return Current algorithm slots
+     */
     public Map<String, ACAQDataSlot> getSlots() {
         return Collections.unmodifiableMap(slots);
     }
 
+    /**
+     * Gets the input slot order
+     * @return List of slot names
+     */
     public List<String> getInputSlotOrder() {
         return getSlotConfiguration().getInputSlotOrder();
     }
 
+    /**
+     * Gets the output slot order
+     * @return List of slot names
+     */
     public List<String> getOutputSlotOrder() {
         return getSlotConfiguration().getOutputSlotOrder();
     }
 
+    /**
+     * Returns all input slots ordered by the slot order
+     * @return List of slots
+     */
     public List<ACAQDataSlot> getInputSlots() {
         List<ACAQDataSlot> result = new ArrayList<>();
         for (String key : getInputSlotOrder()) {
@@ -217,6 +272,10 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
         return Collections.unmodifiableList(result);
     }
 
+    /**
+     * Returns all output slots ordered by the slot order
+     * @return List of slots
+     */
     public List<ACAQDataSlot> getOutputSlots() {
         List<ACAQDataSlot> result = new ArrayList<>();
         for (String key : getOutputSlotOrder()) {
@@ -226,6 +285,10 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
         return Collections.unmodifiableList(result);
     }
 
+    /**
+     * Should be triggered when a slot is added to the slot configuration
+     * @param event The event
+     */
     @Subscribe
     public void onSlotAdded(SlotAddedEvent event) {
         ACAQSlotDefinition definition = slotConfiguration.getSlots().get(event.getSlotName());
@@ -234,6 +297,10 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
         updateSlotInheritance();
     }
 
+    /**
+     * Should be triggered when a slot is removed from the slot configuration
+     * @param event The event
+     */
     @Subscribe
     public void onSlotRemoved(SlotRemovedEvent event) {
         slots.remove(event.getSlotName());
@@ -241,6 +308,10 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
         updateSlotInheritance();
     }
 
+    /**
+     * Should be triggered when a slot is renamed in the slot configuration
+     * @param event The event
+     */
     @Subscribe
     public void onSlotRenamed(SlotRenamedEvent event) {
         ACAQDataSlot slot = slots.get(event.getOldSlotName());
@@ -250,24 +321,47 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
         updateSlotInheritance();
     }
 
+    /**
+     * Should be triggered when slots are reordered in the slot configuration
+     * @param event The event
+     */
     @Subscribe
     public void onSlotOrderChanged(SlotOrderChangedEvent event) {
         eventBus.post(new AlgorithmSlotsChangedEvent(this));
         updateSlotInheritance();
     }
 
+    /**
+     * Returns the UI location within the respective compartments.
+     * This map is writable.
+     * @return Map from compartment name to UI location
+     */
     public Map<String, Point> getLocations() {
         return locations;
     }
 
+    /**
+     * Returns the location within the specified compartment or null if none is set
+     * @param compartment The compartment ID
+     * @return The UI location or null if unset
+     */
     public Point getLocationWithin(String compartment) {
         return locations.getOrDefault(compartment, null);
     }
 
+    /**
+     * Sets the UI location of this algorithm within the specified compartment
+     * @param compartment The compartment ID
+     * @param location The UI location. Can be null to reset the location
+     */
     public void setLocationWithin(String compartment, Point location) {
         this.locations.put(compartment, location);
     }
 
+    /**
+     * Loads this algorithm from JSON
+     * @param node The JSON data to load from
+     */
     public void fromJson(JsonNode node) {
 
         // Load compartment
@@ -315,53 +409,103 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
      * The storage path is used in {@link ACAQRun} to indicate where output data is written
      * This is only used internally
      *
-     * @return
+     * @return Storage path
      */
     public Path getStoragePath() {
         return storagePath;
     }
 
+    /**
+     * Sets the storage path. Used by {@link ACAQRun}
+     * @param storagePath Storage path
+     */
     public void setStoragePath(Path storagePath) {
         this.storagePath = storagePath;
     }
 
+    /**
+     * Returns the trait configuration of this algorithm
+     * @return Trait configuration
+     */
     public ACAQTraitConfiguration getTraitConfiguration() {
         return traitConfiguration;
     }
 
+    /**
+     * Returns the internal storage path relative to the output folder.
+     * Used internally by {@link ACAQRun}
+     * @return Storage path relative to the output folder
+     */
     public Path getInternalStoragePath() {
         return internalStoragePath;
     }
 
+    /**
+     * Sets the internal storage path relative to the ouput folder.
+     * Used internally by {@link ACAQRun}
+     * @param internalStoragePath Path relative to the output folder
+     */
     public void setInternalStoragePath(Path internalStoragePath) {
         this.internalStoragePath = internalStoragePath;
     }
 
+    /**
+     * Returns the {@link ACAQAlgorithmDeclaration} that describes this algorithm
+     * @return The declaration
+     */
     public ACAQAlgorithmDeclaration getDeclaration() {
         return declaration;
     }
 
+    /**
+     * Returns the compartment the algorithm is located within
+     * @return Compartment ID
+     */
     public String getCompartment() {
         return compartment;
     }
 
+    /**
+     * Sets the compartment the algorithm is location in
+     * @param compartment Compartment ID
+     */
     public void setCompartment(String compartment) {
         this.compartment = compartment;
     }
 
+    /**
+     * Returns true if this algorithm is visible in the specified container compartment
+     * @param containerCompartment The compartment ID the container displays
+     * @return If this algorithm should be visible
+     */
     public boolean isVisibleIn(String containerCompartment) {
         return StringUtils.isNullOrEmpty(compartment) || StringUtils.isNullOrEmpty(containerCompartment) ||
                 containerCompartment.equals(compartment) || visibleCompartments.contains(containerCompartment);
     }
 
+    /**
+     * Returns the list of additional compartments this algorithm is visible in.
+     * This list is writable.
+     * @return Writeable list of project compartment IDs
+     */
     public Set<String> getVisibleCompartments() {
         return visibleCompartments;
     }
 
+    /**
+     * Sets the list of additional compartments this algorithm is visible in.
+     * @param visibleCompartments List of compartment Ids
+     */
     public void setVisibleCompartments(Set<String> visibleCompartments) {
         this.visibleCompartments = visibleCompartments;
     }
 
+    /**
+     * Returns the output slot with the specified name.
+     * Throws {@link NullPointerException} if the slot does not exist and {@link IllegalArgumentException} if the slot is not an output
+     * @param name Slot name
+     * @return Slot instance
+     */
     public ACAQDataSlot getOutputSlot(String name) {
         ACAQDataSlot slot = slots.get(name);
         if (!slot.isOutput())
@@ -369,6 +513,12 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
         return slot;
     }
 
+    /**
+     * Returns the input slot with the specified name.
+     * Throws {@link NullPointerException} if the slot does not exist and {@link IllegalArgumentException} if the slot is not an input
+     * @param name Slot name
+     * @return Slot instance
+     */
     public ACAQDataSlot getInputSlot(String name) {
         ACAQDataSlot slot = slots.get(name);
         if (!slot.isInput())
@@ -376,6 +526,10 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
         return slot;
     }
 
+    /**
+     * Returns all input slots that do not have data set.
+     * @return List of slots
+     */
     public List<ACAQDataSlot> getOpenInputSlots() {
         List<ACAQDataSlot> result = new ArrayList<>();
         for (ACAQDataSlot inputSlot : getInputSlots()) {
@@ -386,32 +540,66 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
         return result;
     }
 
+    /**
+     * Returns the first output slot according to the slot order.
+     * Throws {@link IndexOutOfBoundsException} if there is no output slot.
+     * @return Slot instance
+     */
     public ACAQDataSlot getFirstOutputSlot() {
         return getOutputSlots().get(0);
     }
 
+    /**
+     * Returns the first input slot according to the slot order.
+     * Throws {@link IndexOutOfBoundsException} if there is no input slot.
+     * @return Slot instance
+     */
     public ACAQDataSlot getFirstInputSlot() {
         return getInputSlots().get(0);
     }
 
+    /**
+     * Returns the last output slot according to the slot order.
+     * Throws {@link IndexOutOfBoundsException} if there is no output slot.
+     * @return Slot instance
+     */
     public ACAQDataSlot getLastOutputSlot() {
         List<ACAQDataSlot> outputSlots = getOutputSlots();
         return outputSlots.get(outputSlots.size() - 1);
     }
 
+    /**
+     * Returns the last input slot according to the slot order.
+     * Throws {@link IndexOutOfBoundsException} if there is no input slot.
+     * @return Slot instance
+     */
     public ACAQDataSlot getLastInputSlot() {
         List<ACAQDataSlot> inputSlots = getInputSlots();
         return inputSlots.get(inputSlots.size() - 1);
     }
 
+    /**
+     * Returns the graph this algorithm is located in.
+     * Can be null.
+     * @return Graph instance or null
+     */
     public ACAQAlgorithmGraph getGraph() {
         return graph;
     }
 
+    /**
+     * Sets the graph this algorithm is location in.
+     * This has no side effects and is only for reference usage.
+     * @param graph Graph instance or null
+     */
     public void setGraph(ACAQAlgorithmGraph graph) {
         this.graph = graph;
     }
 
+    /**
+     * Returns the ID within the current graph. Requires that getGraph() is not null.
+     * @return The ID within getGraph()
+     */
     public String getIdInGraph() {
         return graph.getIdOf(this);
     }
@@ -423,6 +611,10 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
         locations.clear();
     }
 
+    /**
+     * Returns the custom description that is set by the user
+     * @return Description or null
+     */
     @ACAQDocumentation(name = "Description", description = "A custom description")
     @StringParameterSettings(multiline = true)
     @ACAQParameter(value = "description", visibility = ACAQParameterVisibility.Visible)
@@ -430,20 +622,37 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
         return customDescription;
     }
 
+    /**
+     * Sets a custom description. Can be null.
+     * @param customDescription Description string
+     */
     @ACAQParameter("description")
     public void setCustomDescription(String customDescription) {
         this.customDescription = customDescription;
     }
 
+    /**
+     * Returns the current work directory of this algorithm. This is used internally to allow relative data paths.
+     * @return The current work directory or null.
+     */
     public Path getWorkDirectory() {
         return workDirectory;
     }
 
+    /**
+     * Sets the current work directory of this algorithm. This is used internally to allow loading data from relative paths.
+     * This triggeres a {@link WorkDirectoryChangedEvent} that can be received by {@link ACAQDataSlot} instances to adapt to the work directory.
+     * @param workDirectory The work directory. Can be null
+     */
     public void setWorkDirectory(Path workDirectory) {
         this.workDirectory = workDirectory;
         eventBus.post(new WorkDirectoryChangedEvent(workDirectory));
     }
 
+    /**
+     * Called by an {@link ACAQAlgorithmGraph} when a slot was connected. Triggers update of slot trait inheritance.
+     * @param event The event generated by the graph
+     */
     public void onSlotConnected(AlgorithmGraphConnectedEvent event) {
         updateSlotInheritance();
     }
@@ -467,6 +676,10 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
         return ACAQSlotDefinition.applyInheritanceConversion(slotDefinition, sourceSlot.getAcceptedDataType());
     }
 
+    /**
+     * Updates the inheritance: Passes traits from input slots to output slots while modifying the results depending on
+     * the trait configuration.
+     */
     public void updateSlotInheritance() {
         if (graph != null) {
             boolean modified = false;
@@ -496,14 +709,18 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
         }
     }
 
+    /**
+     * Called by the {@link ACAQAlgorithmGraph} to trigger slot inheritance updates when a slot is disconnected
+     * @param event The generated event
+     */
     public void onSlotDisconnected(AlgorithmGraphDisconnectedEvent event) {
         updateSlotInheritance();
     }
 
     /**
-     * Returns a list of all dependencies
+     * Returns a list of all dependencies this algorithm currently has.
      *
-     * @return
+     * @return List of dependencies
      */
     public Set<ACAQDependency> getDependencies() {
         Set<ACAQDependency> result = new HashSet<>();
@@ -535,14 +752,17 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
     /**
      * Utility function to create an algorithm instance from its id
      *
-     * @param id
-     * @param <T>
-     * @return
+     * @param id Algorithm ID
+     * @param <T> Algorithm class
+     * @return Algorithm instance
      */
     public static <T extends ACAQAlgorithm> T newInstance(String id) {
         return (T) ACAQAlgorithmRegistry.getInstance().getDeclarationById(id).newInstance();
     }
 
+    /**
+     * Serializes an {@link ACAQAlgorithm} instance
+     */
     public static class Serializer extends JsonSerializer<ACAQAlgorithm> {
         @Override
         public void serialize(ACAQAlgorithm algorithm, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
