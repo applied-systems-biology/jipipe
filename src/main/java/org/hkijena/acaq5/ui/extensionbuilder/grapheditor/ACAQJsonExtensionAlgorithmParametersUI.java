@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.ui.extensionbuilder.grapheditor;
 
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.ui.ACAQJsonExtensionUI;
+import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
 import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 
@@ -21,7 +21,7 @@ public class ACAQJsonExtensionAlgorithmParametersUI extends ACAQParameterAccessU
      * @param documentationBelow If the documentation should be displayed below
      * @param withDocumentation  If documentation should be shown
      */
-    public ACAQJsonExtensionAlgorithmParametersUI(ACAQJsonExtensionUI workbenchUI, ACAQAlgorithm algorithm, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
+    public ACAQJsonExtensionAlgorithmParametersUI(ACAQJsonExtensionWorkbench workbenchUI, ACAQAlgorithm algorithm, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
         super(workbenchUI, algorithm, documentation, documentationBelow, withDocumentation);
         this.algorithm = algorithm;
     }

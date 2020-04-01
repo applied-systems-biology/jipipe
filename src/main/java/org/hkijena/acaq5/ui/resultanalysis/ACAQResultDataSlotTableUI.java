@@ -4,8 +4,8 @@ import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.ui.ACAQProjectUI;
-import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.TooltipUtils;
@@ -22,7 +22,7 @@ import java.nio.file.Path;
 /**
  * UI that displays the {@link ACAQExportedDataTable} of an {@link ACAQDataSlot}
  */
-public class ACAQResultDataSlotTableUI extends ACAQProjectUIPanel {
+public class ACAQResultDataSlotTableUI extends ACAQProjectWorkbenchPanel {
 
     private ACAQRun run;
     private ACAQDataSlot slot;
@@ -35,7 +35,7 @@ public class ACAQResultDataSlotTableUI extends ACAQProjectUIPanel {
      * @param run         The run
      * @param slot        The slot
      */
-    public ACAQResultDataSlotTableUI(ACAQProjectUI workbenchUI, ACAQRun run, ACAQDataSlot slot) {
+    public ACAQResultDataSlotTableUI(ACAQProjectWorkbench workbenchUI, ACAQRun run, ACAQDataSlot slot) {
         super(workbenchUI);
         this.run = run;
         this.slot = slot;
@@ -49,7 +49,7 @@ public class ACAQResultDataSlotTableUI extends ACAQProjectUIPanel {
         table = new JXTable();
         table.setRowHeight(25);
         table.setDefaultRenderer(Path.class, new ACAQRowLocationTableCellRenderer());
-        table.setDefaultRenderer(ACAQExportedDataTable.Row.class, new ACAQRowDataTableCellRenderer(getWorkbenchUI(), slot));
+        table.setDefaultRenderer(ACAQExportedDataTable.Row.class, new ACAQRowDataTableCellRenderer(getProjectWorkbench(), slot));
         table.setDefaultRenderer(ACAQTrait.class, new ACAQTraitTableCellRenderer());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
@@ -80,7 +80,7 @@ public class ACAQResultDataSlotTableUI extends ACAQProjectUIPanel {
     private void handleSlotRowDefaultAction(int selectedRow) {
         int row = table.getRowSorter().convertRowIndexToModel(selectedRow);
         ACAQExportedDataTable.Row rowInstance = dataTable.getRowList().get(row);
-        ACAQResultDataSlotRowUI ui = ACAQUIDatatypeRegistry.getInstance().getUIForResultSlot(getWorkbenchUI(), slot, rowInstance);
+        ACAQResultDataSlotRowUI ui = ACAQUIDatatypeRegistry.getInstance().getUIForResultSlot(getProjectWorkbench(), slot, rowInstance);
         ui.handleDefaultAction();
     }
 
@@ -91,7 +91,7 @@ public class ACAQResultDataSlotTableUI extends ACAQProjectUIPanel {
             ACAQExportedDataTable.Row rowInstance = dataTable.getRowList().get(row);
             JLabel nameLabel = new JLabel(rowInstance.getLocation().toString(), ACAQUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()), JLabel.LEFT);
             nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot));
-            ACAQResultDataSlotRowUI rowUI = ACAQUIDatatypeRegistry.getInstance().getUIForResultSlot(getWorkbenchUI(), slot, rowInstance);
+            ACAQResultDataSlotRowUI rowUI = ACAQUIDatatypeRegistry.getInstance().getUIForResultSlot(getProjectWorkbench(), slot, rowInstance);
             rowUIList.addToForm(rowUI, nameLabel, null);
         }
     }

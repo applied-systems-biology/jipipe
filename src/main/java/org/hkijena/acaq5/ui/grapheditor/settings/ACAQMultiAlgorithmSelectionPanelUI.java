@@ -5,8 +5,8 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.ui.ACAQProjectUI;
-import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 /**
  * UI when multiple algorithms are selected
  */
-public class ACAQMultiAlgorithmSelectionPanelUI extends ACAQProjectUIPanel {
+public class ACAQMultiAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPanel {
     private ACAQAlgorithmGraph graph;
     private Set<ACAQAlgorithm> algorithms;
 
@@ -33,7 +33,7 @@ public class ACAQMultiAlgorithmSelectionPanelUI extends ACAQProjectUIPanel {
      * @param graph       The algorithm graph
      * @param algorithms  The algorithm selection
      */
-    public ACAQMultiAlgorithmSelectionPanelUI(ACAQProjectUI workbenchUI, ACAQAlgorithmGraph graph, Set<ACAQAlgorithm> algorithms) {
+    public ACAQMultiAlgorithmSelectionPanelUI(ACAQProjectWorkbench workbenchUI, ACAQAlgorithmGraph graph, Set<ACAQAlgorithm> algorithms) {
         super(workbenchUI);
         this.graph = graph;
         this.algorithms = algorithms;
@@ -105,12 +105,12 @@ public class ACAQMultiAlgorithmSelectionPanelUI extends ACAQProjectUIPanel {
             }
         }
 
-        ACAQGraphWrapperAlgorithmExporter exporter = new ACAQGraphWrapperAlgorithmExporter(getWorkbenchUI(), graph);
-        getWorkbenchUI().getDocumentTabPane().addTab("Export custom algorithm",
+        ACAQGraphWrapperAlgorithmExporter exporter = new ACAQGraphWrapperAlgorithmExporter(getProjectWorkbench(), graph);
+        getProjectWorkbench().getDocumentTabPane().addTab("Export custom algorithm",
                 UIUtils.getIconFromResources("export.png"),
                 exporter,
                 DocumentTabPane.CloseMode.withAskOnCloseButton);
-        getWorkbenchUI().getDocumentTabPane().switchToLastTab();
+        getProjectWorkbench().getDocumentTabPane().switchToLastTab();
     }
 
     private void deleteAlgorithms() {

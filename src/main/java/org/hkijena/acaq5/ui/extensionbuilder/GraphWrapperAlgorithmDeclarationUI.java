@@ -1,11 +1,12 @@
 package org.hkijena.acaq5.ui.extensionbuilder;
 
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro.GraphWrapperAlgorithmDeclaration;
-import org.hkijena.acaq5.ui.ACAQJsonExtensionUI;
-import org.hkijena.acaq5.ui.ACAQJsonExtensionUIPanel;
+import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
+import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.extensionbuilder.grapheditor.ACAQJsonExtensionAlgorithmGraphUI;
+import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -15,7 +16,7 @@ import java.awt.*;
 /**
  * UI around a {@link GraphWrapperAlgorithmDeclaration}
  */
-public class GraphWrapperAlgorithmDeclarationUI extends ACAQJsonExtensionUIPanel {
+public class GraphWrapperAlgorithmDeclarationUI extends ACAQJsonExtensionWorkbenchPanel {
 
     private GraphWrapperAlgorithmDeclaration declaration;
 
@@ -23,7 +24,7 @@ public class GraphWrapperAlgorithmDeclarationUI extends ACAQJsonExtensionUIPanel
      * @param workbenchUI the workbench
      * @param declaration the algorithm declaration
      */
-    public GraphWrapperAlgorithmDeclarationUI(ACAQJsonExtensionUI workbenchUI, GraphWrapperAlgorithmDeclaration declaration) {
+    public GraphWrapperAlgorithmDeclarationUI(ACAQJsonExtensionWorkbench workbenchUI, GraphWrapperAlgorithmDeclaration declaration) {
         super(workbenchUI);
         this.declaration = declaration;
 
@@ -33,7 +34,7 @@ public class GraphWrapperAlgorithmDeclarationUI extends ACAQJsonExtensionUIPanel
     private void initialize() {
         setLayout(new BorderLayout());
 
-        ACAQParameterAccessUI parameterAccessUI = new ACAQParameterAccessUI(getWorkbenchUI(), declaration,
+        ACAQParameterAccessUI parameterAccessUI = new ACAQParameterAccessUI(getExtensionWorkbenchUI(), declaration,
                 null, false, false);
         add(parameterAccessUI, BorderLayout.CENTER);
 
@@ -59,19 +60,20 @@ public class GraphWrapperAlgorithmDeclarationUI extends ACAQJsonExtensionUIPanel
     }
 
     private void editAlgorithm() {
-        for (DocumentTabPane.DocumentTab tab : getWorkbenchUI().getDocumentTabPane().getTabs()) {
+        for (DocumentTabPane.DocumentTab tab : getExtensionWorkbenchUI().getDocumentTabPane().getTabs()) {
             if (tab.getContent() instanceof ACAQJsonExtensionAlgorithmGraphUI) {
                 ACAQJsonExtensionAlgorithmGraphUI ui = (ACAQJsonExtensionAlgorithmGraphUI) tab.getContent();
                 if (ui.getAlgorithmGraph() == declaration.getGraph()) {
-                    getWorkbenchUI().getDocumentTabPane().switchToContent(ui);
+                    getExtensionWorkbenchUI().getDocumentTabPane().switchToContent(ui);
                     return;
                 }
             }
         }
-        ACAQJsonExtensionAlgorithmGraphUI ui = new ACAQJsonExtensionAlgorithmGraphUI(getWorkbenchUI(), declaration.getGraph(), "");
-        getWorkbenchUI().getDocumentTabPane().addTab(declaration.getName(), UIUtils.getIconFromResources("cog.png"),
+        ACAQJsonExtensionAlgorithmGraphUI ui = new ACAQJsonExtensionAlgorithmGraphUI(getExtensionWorkbenchUI(), declaration.getGraph(), "");
+        String name = StringUtils.orElse(declaration.getName(), "<Unnamed algorithm>");
+        getExtensionWorkbenchUI().getDocumentTabPane().addTab(name, UIUtils.getIconFromResources("cog.png"),
                 ui, DocumentTabPane.CloseMode.withSilentCloseButton, true);
-        getWorkbenchUI().getDocumentTabPane().switchToLastTab();
+        getExtensionWorkbenchUI().getDocumentTabPane().switchToLastTab();
     }
 
     private void deleteAlgorithm() {
@@ -80,5 +82,9 @@ public class GraphWrapperAlgorithmDeclarationUI extends ACAQJsonExtensionUIPanel
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             getProject().removeAlgorithm(declaration);
         }
+    }
+
+    public GraphWrapperAlgorithmDeclaration getDeclaration() {
+        return declaration;
     }
 }

@@ -43,7 +43,7 @@ public class ACAQMergeTableRowsDialogUI extends JDialog {
         this.tableAnalyzerUI = tableAnalyzerUI;
         initialize();
 
-        for (DocumentTabPane.DocumentTab tab : tableAnalyzerUI.getWorkbenchUI().getDocumentTabPane().getTabs()) {
+        for (DocumentTabPane.DocumentTab tab : tableAnalyzerUI.getProjectWorkbench().getDocumentTabPane().getTabs()) {
             if (tab.getContent() instanceof ACAQTableAnalyzerUI && tab.getContent() != tableAnalyzerUI) {
                 tableSelection.addItem(tab);
             }

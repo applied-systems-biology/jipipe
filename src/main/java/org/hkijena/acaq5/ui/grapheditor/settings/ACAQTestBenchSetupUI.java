@@ -5,8 +5,8 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.testbench.ACAQTestbench;
-import org.hkijena.acaq5.ui.ACAQProjectUI;
-import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.*;
 import org.hkijena.acaq5.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.acaq5.ui.events.RunUIWorkerInterruptedEvent;
@@ -26,7 +26,7 @@ import java.nio.file.Path;
 /**
  * UI for generating {@link ACAQTestbench}
  */
-public class ACAQTestBenchSetupUI extends ACAQProjectUIPanel {
+public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
 
     private ACAQAlgorithm algorithm;
     private ACAQAlgorithmGraph graph;
@@ -40,7 +40,7 @@ public class ACAQTestBenchSetupUI extends ACAQProjectUIPanel {
      * @param algorithm   the target algorithm
      * @param graph       the graph
      */
-    public ACAQTestBenchSetupUI(ACAQProjectUI workbenchUI, ACAQAlgorithm algorithm, ACAQAlgorithmGraph graph) {
+    public ACAQTestBenchSetupUI(ACAQProjectWorkbench workbenchUI, ACAQAlgorithm algorithm, ACAQAlgorithmGraph graph) {
         super(workbenchUI);
         this.algorithm = algorithm;
         this.graph = graph;
@@ -176,11 +176,11 @@ public class ACAQTestBenchSetupUI extends ACAQProjectUIPanel {
             tryShowSetupPanel();
 
             try {
-                ACAQTestBenchUI testBenchUI = new ACAQTestBenchUI(getWorkbenchUI(), currentTestBench);
+                ACAQTestBenchUI testBenchUI = new ACAQTestBenchUI(getProjectWorkbench(), currentTestBench);
                 String name = "Testbench: " + algorithm.getName();
-                getWorkbenchUI().getDocumentTabPane().addTab(name, UIUtils.getIconFromResources("testbench.png"),
+                getProjectWorkbench().getDocumentTabPane().addTab(name, UIUtils.getIconFromResources("testbench.png"),
                         testBenchUI, DocumentTabPane.CloseMode.withAskOnCloseButton, true);
-                getWorkbenchUI().getDocumentTabPane().switchToLastTab();
+                getProjectWorkbench().getDocumentTabPane().switchToLastTab();
                 currentTestBench = null;
             } catch (Exception e) {
                 openError(e);

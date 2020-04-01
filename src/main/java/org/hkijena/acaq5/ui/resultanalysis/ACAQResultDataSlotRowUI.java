@@ -2,8 +2,8 @@ package org.hkijena.acaq5.ui.resultanalysis;
 
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
-import org.hkijena.acaq5.ui.ACAQProjectUI;
-import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 
 import java.nio.file.Path;
 
@@ -12,7 +12,7 @@ import java.nio.file.Path;
  * Please note that the data is not present in the data slot anymore at this point, but instead
  * stored in output files. The folder that contains the files can be accessed via getRowStorageFolder()
  */
-public abstract class ACAQResultDataSlotRowUI extends ACAQProjectUIPanel {
+public abstract class ACAQResultDataSlotRowUI extends ACAQProjectWorkbenchPanel {
     private ACAQDataSlot slot;
     private ACAQExportedDataTable.Row row;
 
@@ -21,7 +21,7 @@ public abstract class ACAQResultDataSlotRowUI extends ACAQProjectUIPanel {
      * @param slot        The data slow
      * @param row         The slow row
      */
-    public ACAQResultDataSlotRowUI(ACAQProjectUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
+    public ACAQResultDataSlotRowUI(ACAQProjectWorkbench workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
         super(workbenchUI);
         this.slot = slot;
         this.row = row;
@@ -56,7 +56,7 @@ public abstract class ACAQResultDataSlotRowUI extends ACAQProjectUIPanel {
      * @return the compartment name of the algorithm that generated the data
      */
     public String getAlgorithmCompartment() {
-        return getWorkbenchUI().getProject().getCompartments().get(slot.getAlgorithm().getCompartment()).getName();
+        return getProjectWorkbench().getProject().getCompartments().get(slot.getAlgorithm().getCompartment()).getName();
     }
 
     /**

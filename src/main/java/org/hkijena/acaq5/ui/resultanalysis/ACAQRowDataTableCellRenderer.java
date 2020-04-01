@@ -2,7 +2,7 @@ package org.hkijena.acaq5.ui.resultanalysis;
 
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
-import org.hkijena.acaq5.ui.ACAQProjectUI;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 
 import javax.swing.*;
@@ -14,14 +14,14 @@ import java.awt.*;
  */
 public class ACAQRowDataTableCellRenderer implements TableCellRenderer {
 
-    private ACAQProjectUI workbenchUI;
+    private ACAQProjectWorkbench workbenchUI;
     private ACAQDataSlot slot;
 
     /**
      * @param workbenchUI the workbench
      * @param slot        the data slot
      */
-    public ACAQRowDataTableCellRenderer(ACAQProjectUI workbenchUI, ACAQDataSlot slot) {
+    public ACAQRowDataTableCellRenderer(ACAQProjectWorkbench workbenchUI, ACAQDataSlot slot) {
         this.workbenchUI = workbenchUI;
         this.slot = slot;
     }

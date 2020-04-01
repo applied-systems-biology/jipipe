@@ -10,8 +10,10 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.traits.ACAQJsonTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro.GraphWrapperAlgorithmDeclaration;
-import org.hkijena.acaq5.ui.ACAQJsonExtensionUI;
-import org.hkijena.acaq5.ui.ACAQJsonExtensionUIPanel;
+import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
+import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
+import org.hkijena.acaq5.ui.components.DocumentTabPane;
+import org.hkijena.acaq5.ui.extensionbuilder.grapheditor.ACAQJsonExtensionAlgorithmGraphUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -24,7 +26,7 @@ import java.util.stream.Collectors;
 /**
  * Lists the content of an {@link org.hkijena.acaq5.ACAQJsonExtension}
  */
-public class ACAQJsonExtensionContentListUI extends ACAQJsonExtensionUIPanel {
+public class ACAQJsonExtensionContentListUI extends ACAQJsonExtensionWorkbenchPanel {
 
     private JList<Object> list;
     private JSplitPane splitPane;
@@ -35,7 +37,7 @@ public class ACAQJsonExtensionContentListUI extends ACAQJsonExtensionUIPanel {
      *
      * @param workbenchUI The workbench UI
      */
-    public ACAQJsonExtensionContentListUI(ACAQJsonExtensionUI workbenchUI) {
+    public ACAQJsonExtensionContentListUI(ACAQJsonExtensionWorkbench workbenchUI) {
         super(workbenchUI);
         initialize();
         reload();
@@ -183,9 +185,9 @@ public class ACAQJsonExtensionContentListUI extends ACAQJsonExtensionUIPanel {
             this.currentlySelectedValue = currentlySelectedValue;
             if (currentlySelectedValue != null) {
                 if (currentlySelectedValue instanceof GraphWrapperAlgorithmDeclaration) {
-                    splitPane.setRightComponent(new GraphWrapperAlgorithmDeclarationUI(getWorkbenchUI(), (GraphWrapperAlgorithmDeclaration) currentlySelectedValue));
+                    splitPane.setRightComponent(new GraphWrapperAlgorithmDeclarationUI(getExtensionWorkbenchUI(), (GraphWrapperAlgorithmDeclaration) currentlySelectedValue));
                 } else if (currentlySelectedValue instanceof ACAQJsonTraitDeclaration) {
-                    splitPane.setRightComponent(new ACAQJsonTraitDeclarationUI(getWorkbenchUI(), (ACAQJsonTraitDeclaration) currentlySelectedValue));
+                    splitPane.setRightComponent(new ACAQJsonTraitDeclarationUI(getExtensionWorkbenchUI(), (ACAQJsonTraitDeclaration) currentlySelectedValue));
                 }
             } else {
                 splitPane.setRightComponent(new JPanel());

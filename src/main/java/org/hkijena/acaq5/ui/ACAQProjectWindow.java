@@ -22,14 +22,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Window that holds an {@link ACAQProjectUI} instance
+ * Window that holds an {@link ACAQProjectWorkbench} instance
  */
 public class ACAQProjectWindow extends JFrame {
 
     private static Set<ACAQProjectWindow> OPEN_WINDOWS = new HashSet<>();
     private ACAQGUICommand command;
     private ACAQProject project;
-    private ACAQProjectUI projectUI;
+    private ACAQProjectWorkbench projectUI;
     private Path projectSavePath;
 
     /**
@@ -68,7 +68,7 @@ public class ACAQProjectWindow extends JFrame {
      */
     public void loadProject(ACAQProject project) {
         this.project = project;
-        this.projectUI = new ACAQProjectUI(this, command, project);
+        this.projectUI = new ACAQProjectWorkbench(this, command, project);
         setContentPane(projectUI);
     }
 
@@ -237,7 +237,7 @@ public class ACAQProjectWindow extends JFrame {
     /**
      * @return The current project UI
      */
-    public ACAQProjectUI getProjectUI() {
+    public ACAQProjectWorkbench getProjectUI() {
         return projectUI;
     }
 

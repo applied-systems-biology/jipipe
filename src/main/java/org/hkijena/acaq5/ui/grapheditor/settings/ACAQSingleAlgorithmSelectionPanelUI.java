@@ -4,8 +4,8 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
-import org.hkijena.acaq5.ui.ACAQProjectUI;
-import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
@@ -19,7 +19,7 @@ import java.awt.*;
 /**
  * UI for a single {@link ACAQAlgorithm}
  */
-public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectUIPanel {
+public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPanel {
     private ACAQAlgorithmGraph graph;
     private ACAQAlgorithm algorithm;
 
@@ -28,7 +28,7 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectUIPanel {
      * @param graph       the graph
      * @param algorithm   the algorithm
      */
-    public ACAQSingleAlgorithmSelectionPanelUI(ACAQProjectUI workbenchUI, ACAQAlgorithmGraph graph, ACAQAlgorithm algorithm) {
+    public ACAQSingleAlgorithmSelectionPanelUI(ACAQProjectWorkbench workbenchUI, ACAQAlgorithmGraph graph, ACAQAlgorithm algorithm) {
         super(workbenchUI);
         this.graph = graph;
         this.algorithm = algorithm;
@@ -39,7 +39,7 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectUIPanel {
         setLayout(new BorderLayout());
         DocumentTabPane tabbedPane = new DocumentTabPane();
 
-        ACAQAlgorithmParametersUI parametersUI = new ACAQAlgorithmParametersUI(getWorkbenchUI(),
+        ACAQAlgorithmParametersUI parametersUI = new ACAQAlgorithmParametersUI(getProjectWorkbench(),
                 algorithm,
                 MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md"),
                 true, true);
@@ -61,7 +61,7 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectUIPanel {
                 false);
 
         if (algorithm.getCategory() != ACAQAlgorithmCategory.Internal) {
-            ACAQTestBenchSetupUI testBenchSetupUI = new ACAQTestBenchSetupUI(getWorkbenchUI(), algorithm, graph);
+            ACAQTestBenchSetupUI testBenchSetupUI = new ACAQTestBenchSetupUI(getProjectWorkbench(), algorithm, graph);
             tabbedPane.addTab("Testbench", UIUtils.getIconFromResources("testbench.png"),
                     testBenchSetupUI,
                     DocumentTabPane.CloseMode.withoutCloseButton,
@@ -106,14 +106,14 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectUIPanel {
 
         ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
         graph.insertNode(algorithm.getDeclaration().clone(algorithm), ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
-        ACAQGraphWrapperAlgorithmExporter exporter = new ACAQGraphWrapperAlgorithmExporter(getWorkbenchUI(), graph);
+        ACAQGraphWrapperAlgorithmExporter exporter = new ACAQGraphWrapperAlgorithmExporter(getProjectWorkbench(), graph);
         exporter.getAlgorithmDeclaration().getMetadata().setName(algorithm.getName());
         exporter.getAlgorithmDeclaration().getMetadata().setDescription(algorithm.getCustomDescription());
-        getWorkbenchUI().getDocumentTabPane().addTab("Export algorithm '" + algorithm.getName() + "'",
+        getProjectWorkbench().getDocumentTabPane().addTab("Export algorithm '" + algorithm.getName() + "'",
                 UIUtils.getIconFromResources("export.png"),
                 exporter,
                 DocumentTabPane.CloseMode.withAskOnCloseButton);
-        getWorkbenchUI().getDocumentTabPane().switchToLastTab();
+        getProjectWorkbench().getDocumentTabPane().switchToLastTab();
     }
 
     private void deleteAlgorithm() {

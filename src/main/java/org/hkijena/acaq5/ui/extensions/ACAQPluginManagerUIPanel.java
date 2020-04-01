@@ -7,8 +7,8 @@ import org.hkijena.acaq5.ACAQGUICommand;
 import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.api.events.ExtensionRegisteredEvent;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWindow;
-import org.hkijena.acaq5.ui.ACAQProjectUI;
-import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -19,7 +19,7 @@ import java.awt.event.ComponentEvent;
 /**
  * UI that lists all plugins
  */
-public class ACAQPluginManagerUIPanel extends ACAQProjectUIPanel {
+public class ACAQPluginManagerUIPanel extends ACAQProjectWorkbenchPanel {
 
     private JList<ACAQDependency> dependencyJList;
     private JSplitPane splitPane;
@@ -28,7 +28,7 @@ public class ACAQPluginManagerUIPanel extends ACAQProjectUIPanel {
     /**
      * @param ui The project UI
      */
-    public ACAQPluginManagerUIPanel(ACAQProjectUI ui) {
+    public ACAQPluginManagerUIPanel(ACAQProjectWorkbench ui) {
         super(ui);
         this.command = ui.getCommand();
         initialize();
@@ -88,7 +88,7 @@ public class ACAQPluginManagerUIPanel extends ACAQProjectUIPanel {
         toolBar.add(Box.createHorizontalGlue());
 
         ACAQPluginValidityCheckerButton validityCheckerButton = new ACAQPluginValidityCheckerButton();
-        validityCheckerButton.addActionListener(e -> getWorkbenchUI().getDocumentTabPane().selectSingletonTab("PLUGIN_VALIDITY_CHECK"));
+        validityCheckerButton.addActionListener(e -> getProjectWorkbench().getDocumentTabPane().selectSingletonTab("PLUGIN_VALIDITY_CHECK"));
         toolBar.add(validityCheckerButton);
 
         add(toolBar, BorderLayout.NORTH);

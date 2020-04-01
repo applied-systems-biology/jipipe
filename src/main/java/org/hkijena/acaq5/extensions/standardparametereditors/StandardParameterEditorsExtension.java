@@ -2,6 +2,7 @@ package org.hkijena.acaq5.extensions.standardparametereditors;
 
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollectionVisibilities;
+import org.hkijena.acaq5.api.parameters.CollectionParameter;
 import org.hkijena.acaq5.api.parameters.PathCollection;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
@@ -61,5 +62,6 @@ public class StandardParameterEditorsExtension extends ACAQPrepackagedDefaultJav
         registerParameterType(ACAQTrait.class, ACAQTraitParameterEditorUI.class, "Annotation", "An ACAQ5 annotation");
         registerParameterType(ACAQParameterCollectionVisibilities.class, ACAQParameterCollectionVisibilitiesParameterEditorUI.class, "Parameter visibilities", "ACAQ5 parameter visibilities");
         registerParameterType(ACAQTraitIconRef.class, ACAQTraitIconRefParameterEditorUI.class, "Annotation icon", "An icon of an annotation type");
+        registerParameterType(CollectionParameter.class, CollectionParameterEditorUI.class, "Collection", "A collection of parameters");
     }
 }

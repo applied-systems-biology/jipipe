@@ -1,25 +1,21 @@
 package org.hkijena.acaq5.ui.extensionbuilder.grapheditor;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.ACAQDefaultRegistry;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
-import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.AlgorithmRegisteredEvent;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
-import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
-import org.hkijena.acaq5.ui.ACAQJsonExtensionUI;
-import org.hkijena.acaq5.ui.ACAQJsonExtensionUIPanel;
-import org.hkijena.acaq5.ui.components.ColorIcon;
+import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro.GraphWrapperAlgorithmDeclaration;
+import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
+import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphUIDragAndDrop;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
-import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.imageio.ImageIO;
@@ -28,16 +24,14 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Graph editor UI used within an {@link org.hkijena.acaq5.ACAQJsonExtension}
+ * Graph editor UI used within an {@link ACAQJsonExtension}
  */
-public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQJsonExtensionUIPanel implements MouseListener, MouseMotionListener {
+public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQJsonExtensionWorkbenchPanel implements MouseListener, MouseMotionListener {
 
     protected JMenuBar menuBar = new JMenuBar();
     private ACAQAlgorithmGraphCanvasUI graphUI;
@@ -62,7 +56,7 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQJsonExtensionUIPanel 
      * @param algorithmGraph The algorithm graph
      * @param compartment    The compartment
      */
-    public ACAQJsonExtensionAlgorithmGraphUI(ACAQJsonExtensionUI workbenchUI, ACAQAlgorithmGraph algorithmGraph, String compartment) {
+    public ACAQJsonExtensionAlgorithmGraphUI(ACAQJsonExtensionWorkbench workbenchUI, ACAQAlgorithmGraph algorithmGraph, String compartment) {
         super(workbenchUI);
         this.algorithmGraph = algorithmGraph;
         this.compartment = compartment;
@@ -115,7 +109,7 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQJsonExtensionUIPanel 
     @Subscribe
     public void onAlgorithmRegistryChanged(AlgorithmRegisteredEvent event) {
         reloadMenuBar();
-        getWorkbenchUI().sendStatusBarText("Plugins were updated");
+        getExtensionWorkbenchUI().sendStatusBarText("Plugins were updated");
     }
 
     /**
@@ -130,7 +124,7 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQJsonExtensionUIPanel 
      * Initializes the toolbar
      */
     protected void initializeToolbar() {
-        initializeAddNodesMenus();
+        ACAQAlgorithmGraphUI.initializeAddNodesMenus(menuBar, algorithmGraph, compartment);
 
         menuBar.add(Box.createHorizontalGlue());
 
@@ -168,107 +162,9 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQJsonExtensionUIPanel 
         if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
                 ImageIO.write(screenshot, "PNG", fileChooser.getSelectedFile());
-                getWorkbenchUI().sendStatusBarText("Exported graph as " + fileChooser.getSelectedFile());
+                getExtensionWorkbenchUI().sendStatusBarText("Exported graph as " + fileChooser.getSelectedFile());
             } catch (IOException e) {
                 throw new RuntimeException(e);
-            }
-        }
-    }
-
-    /**
-     * Initializes the "Add nodes" menu
-     */
-    protected void initializeAddNodesMenus() {
-        JMenu addDataSourceMenu = new JMenu("Add data");
-        addDataSourceMenu.setIcon(UIUtils.getIconFromResources("database.png"));
-        initializeAddDataSourceMenu(addDataSourceMenu);
-        menuBar.add(addDataSourceMenu);
-
-        JMenu addFilesystemMenu = new JMenu("Filesystem");
-        addFilesystemMenu.setIcon(UIUtils.getIconFromResources("tree.png"));
-        initializeMenuForCategory(addFilesystemMenu, ACAQAlgorithmCategory.FileSystem);
-        menuBar.add(addFilesystemMenu);
-
-        JMenu addAnnotationMenu = new JMenu("Annotation");
-        addAnnotationMenu.setIcon(UIUtils.getIconFromResources("label.png"));
-        initializeMenuForCategory(addAnnotationMenu, ACAQAlgorithmCategory.Annotation);
-        menuBar.add(addAnnotationMenu);
-
-        JMenu addEnhancerMenu = new JMenu("Enhance");
-        addEnhancerMenu.setIcon(UIUtils.getIconFromResources("magic.png"));
-        initializeMenuForCategory(addEnhancerMenu, ACAQAlgorithmCategory.Enhancer);
-        menuBar.add(addEnhancerMenu);
-
-        JMenu addSegmenterMenu = new JMenu("Segment");
-        addSegmenterMenu.setIcon(UIUtils.getIconFromResources("segment.png"));
-        initializeMenuForCategory(addSegmenterMenu, ACAQAlgorithmCategory.Segmentation);
-        menuBar.add(addSegmenterMenu);
-
-        JMenu addConverterMenu = new JMenu("Convert");
-        addConverterMenu.setIcon(UIUtils.getIconFromResources("convert.png"));
-        initializeMenuForCategory(addConverterMenu, ACAQAlgorithmCategory.Converter);
-        menuBar.add(addConverterMenu);
-
-        JMenu addQuantifierMenu = new JMenu("Quantify");
-        addQuantifierMenu.setIcon(UIUtils.getIconFromResources("statistics.png"));
-        initializeMenuForCategory(addQuantifierMenu, ACAQAlgorithmCategory.Quantifier);
-        menuBar.add(addQuantifierMenu);
-
-        JMenu addMiscMenu = new JMenu("Miscellaneous");
-        addMiscMenu.setIcon(UIUtils.getIconFromResources("module.png"));
-        initializeMenuForCategory(addMiscMenu, ACAQAlgorithmCategory.Miscellaneous);
-        menuBar.add(addMiscMenu);
-    }
-
-    /**
-     * Initializes the menu for a category
-     *
-     * @param menu     The menu
-     * @param category The category
-     */
-    protected void initializeMenuForCategory(JMenu menu, ACAQAlgorithmCategory category) {
-        ACAQDefaultRegistry registryService = ACAQDefaultRegistry.getInstance();
-        boolean isEmpty = true;
-        Icon icon = new ColorIcon(16, 16, UIUtils.getFillColorFor(category));
-        for (ACAQAlgorithmDeclaration declaration : registryService.getAlgorithmRegistry().getAlgorithmsOfCategory(category)
-                .stream().sorted(Comparator.comparing(ACAQAlgorithmDeclaration::getName)).collect(Collectors.toList())) {
-            JMenuItem addItem = new JMenuItem(declaration.getName(), icon);
-            addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
-            addItem.addActionListener(e -> algorithmGraph.insertNode(declaration.newInstance(), compartment));
-            menu.add(addItem);
-            isEmpty = false;
-        }
-        if (isEmpty)
-            menu.setVisible(false);
-    }
-
-    private void initializeAddDataSourceMenu(JMenu menu) {
-        ACAQDefaultRegistry registryService = ACAQDefaultRegistry.getInstance();
-        Map<String, Set<Class<? extends ACAQData>>> dataTypesByMenuPaths = ACAQDatatypeRegistry.getInstance().getDataTypesByMenuPaths();
-        Map<String, JMenu> menuTree = UIUtils.createMenuTree(menu, dataTypesByMenuPaths.keySet());
-
-        for (Map.Entry<String, Set<Class<? extends ACAQData>>> entry : dataTypesByMenuPaths.entrySet()) {
-            JMenu subMenu = menuTree.get(entry.getKey());
-            for (Class<? extends ACAQData> dataClass : ACAQData.getSortedList(entry.getValue())) {
-                if (ACAQData.isHidden(dataClass))
-                    continue;
-                Set<ACAQAlgorithmDeclaration> dataSources = registryService.getAlgorithmRegistry().getDataSourcesFor(dataClass);
-                boolean isEmpty = true;
-                Icon icon = registryService.getUIDatatypeRegistry().getIconFor(dataClass);
-                JMenu dataMenu = new JMenu(ACAQData.getNameOf(dataClass));
-                dataMenu.setIcon(icon);
-
-                for (ACAQAlgorithmDeclaration declaration : dataSources) {
-                    JMenuItem addItem = new JMenuItem(declaration.getName(), icon);
-                    addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
-                    addItem.addActionListener(e -> algorithmGraph.insertNode(declaration.newInstance(), compartment));
-                    dataMenu.add(addItem);
-                    isEmpty = false;
-                }
-
-                subMenu.add(dataMenu);
-                if (isEmpty)
-                    dataMenu.setVisible(false);
             }
         }
     }
@@ -348,9 +244,9 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQJsonExtensionUIPanel 
             if (selection.isEmpty()) {
                 splitPane.setRightComponent(documentationPanel);
             } else if (selection.size() == 1) {
-                splitPane.setRightComponent(new ACAQJsonExtensionSingleAlgorithmSelectionPanelUI(getWorkbenchUI(), algorithmGraph, ui.getAlgorithm()));
+                splitPane.setRightComponent(new ACAQJsonExtensionSingleAlgorithmSelectionPanelUI(getExtensionWorkbenchUI(), algorithmGraph, ui.getAlgorithm()));
             } else {
-                splitPane.setRightComponent(new ACAQJsonExtensionMultiAlgorithmSelectionPanelUI(getWorkbenchUI(), algorithmGraph,
+                splitPane.setRightComponent(new ACAQJsonExtensionMultiAlgorithmSelectionPanelUI(getExtensionWorkbenchUI(), algorithmGraph,
                         selection.stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet())));
             }
             splitPane.setDividerLocation(dividerLocation);
@@ -367,11 +263,11 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQJsonExtensionUIPanel 
         ui.setSelected(true);
         if (selection.size() == 1) {
             int dividerLocation = splitPane.getDividerLocation();
-            splitPane.setRightComponent(new ACAQJsonExtensionSingleAlgorithmSelectionPanelUI(getWorkbenchUI(), algorithmGraph, ui.getAlgorithm()));
+            splitPane.setRightComponent(new ACAQJsonExtensionSingleAlgorithmSelectionPanelUI(getExtensionWorkbenchUI(), algorithmGraph, ui.getAlgorithm()));
             splitPane.setDividerLocation(dividerLocation);
         } else {
             int dividerLocation = splitPane.getDividerLocation();
-            splitPane.setRightComponent(new ACAQJsonExtensionMultiAlgorithmSelectionPanelUI(getWorkbenchUI(), algorithmGraph,
+            splitPane.setRightComponent(new ACAQJsonExtensionMultiAlgorithmSelectionPanelUI(getExtensionWorkbenchUI(), algorithmGraph,
                     selection.stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet())));
             splitPane.setDividerLocation(dividerLocation);
         }

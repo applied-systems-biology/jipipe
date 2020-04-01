@@ -1,8 +1,8 @@
 package org.hkijena.acaq5.ui.extensionbuilder;
 
 import org.hkijena.acaq5.api.traits.ACAQJsonTraitDeclaration;
-import org.hkijena.acaq5.ui.ACAQJsonExtensionUI;
-import org.hkijena.acaq5.ui.ACAQJsonExtensionUIPanel;
+import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
+import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -13,7 +13,7 @@ import java.awt.*;
 /**
  * UI around an {@link ACAQJsonTraitDeclaration}
  */
-public class ACAQJsonTraitDeclarationUI extends ACAQJsonExtensionUIPanel {
+public class ACAQJsonTraitDeclarationUI extends ACAQJsonExtensionWorkbenchPanel {
 
     private ACAQJsonTraitDeclaration declaration;
 
@@ -21,7 +21,7 @@ public class ACAQJsonTraitDeclarationUI extends ACAQJsonExtensionUIPanel {
      * @param workbenchUI The workbench UI
      * @param declaration The declaration
      */
-    public ACAQJsonTraitDeclarationUI(ACAQJsonExtensionUI workbenchUI, ACAQJsonTraitDeclaration declaration) {
+    public ACAQJsonTraitDeclarationUI(ACAQJsonExtensionWorkbench workbenchUI, ACAQJsonTraitDeclaration declaration) {
         super(workbenchUI);
         this.declaration = declaration;
 
@@ -31,7 +31,7 @@ public class ACAQJsonTraitDeclarationUI extends ACAQJsonExtensionUIPanel {
     private void initialize() {
         setLayout(new BorderLayout());
 
-        ACAQParameterAccessUI parameterAccessUI = new ACAQParameterAccessUI(getWorkbenchUI(), declaration,
+        ACAQParameterAccessUI parameterAccessUI = new ACAQParameterAccessUI(getExtensionWorkbenchUI(), declaration,
                 null, false, false);
         add(parameterAccessUI, BorderLayout.CENTER);
 
@@ -65,6 +65,6 @@ public class ACAQJsonTraitDeclarationUI extends ACAQJsonExtensionUIPanel {
     }
 
     private void editTraitGraph() {
-        getWorkbenchUI().getDocumentTabPane().selectSingletonTab("TRAIT_GRAPH");
+        getExtensionWorkbenchUI().getDocumentTabPane().selectSingletonTab("TRAIT_GRAPH");
     }
 }

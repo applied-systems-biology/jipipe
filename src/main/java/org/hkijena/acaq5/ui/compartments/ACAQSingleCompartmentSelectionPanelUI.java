@@ -3,8 +3,8 @@ package org.hkijena.acaq5.ui.compartments;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.compartments.ACAQExportedCompartment;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
-import org.hkijena.acaq5.ui.ACAQProjectUI;
-import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
@@ -22,14 +22,14 @@ import java.nio.file.Path;
 /**
  * UI for a single {@link ACAQProjectCompartment}
  */
-public class ACAQSingleCompartmentSelectionPanelUI extends ACAQProjectUIPanel {
+public class ACAQSingleCompartmentSelectionPanelUI extends ACAQProjectWorkbenchPanel {
     private ACAQProjectCompartment compartment;
 
     /**
      * @param workbenchUI the workbench
      * @param compartment the compartment
      */
-    public ACAQSingleCompartmentSelectionPanelUI(ACAQProjectUI workbenchUI, ACAQProjectCompartment compartment) {
+    public ACAQSingleCompartmentSelectionPanelUI(ACAQProjectWorkbench workbenchUI, ACAQProjectCompartment compartment) {
         super(workbenchUI);
         this.compartment = compartment;
         initialize();
@@ -39,7 +39,7 @@ public class ACAQSingleCompartmentSelectionPanelUI extends ACAQProjectUIPanel {
         setLayout(new BorderLayout());
         DocumentTabPane tabbedPane = new DocumentTabPane();
 
-        ACAQAlgorithmParametersUI parametersUI = new ACAQAlgorithmParametersUI(getWorkbenchUI(),
+        ACAQAlgorithmParametersUI parametersUI = new ACAQAlgorithmParametersUI(getProjectWorkbench(),
                 compartment,
                 MarkdownDocument.fromPluginResource("documentation/compartment-graph.md"),
                 true, true);
@@ -93,7 +93,7 @@ public class ACAQSingleCompartmentSelectionPanelUI extends ACAQProjectUIPanel {
         ACAQExportedCompartment exportedCompartment = new ACAQExportedCompartment(compartment);
         exportedCompartment.getMetadata().setName(compartment.getName());
         exportedCompartment.getMetadata().setDescription("An exported ACAQ5 compartment");
-        ACAQParameterAccessUI metadataEditor = new ACAQParameterAccessUI(getWorkbenchUI(), exportedCompartment.getMetadata(),
+        ACAQParameterAccessUI metadataEditor = new ACAQParameterAccessUI(getProjectWorkbench(), exportedCompartment.getMetadata(),
                 null,
                 false,
                 false);
@@ -107,7 +107,7 @@ public class ACAQSingleCompartmentSelectionPanelUI extends ACAQProjectUIPanel {
                 Path savePath = fileChooser.getSelectedFile().toPath();
                 try {
                     exportedCompartment.saveToJson(savePath);
-                    getWorkbenchUI().sendStatusBarText("Exported compartment '" + compartment.getName() + "' to " + savePath);
+                    getProjectWorkbench().sendStatusBarText("Exported compartment '" + compartment.getName() + "' to " + savePath);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -116,7 +116,7 @@ public class ACAQSingleCompartmentSelectionPanelUI extends ACAQProjectUIPanel {
     }
 
     private void openInEditor() {
-        getWorkbenchUI().openCompartmentGraph(compartment, true);
+        getProjectWorkbench().openCompartmentGraph(compartment, true);
     }
 
     private void deleteCompartment() {

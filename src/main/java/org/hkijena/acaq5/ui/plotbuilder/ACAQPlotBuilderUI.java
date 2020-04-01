@@ -14,8 +14,8 @@ package org.hkijena.acaq5.ui.plotbuilder;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQDefaultRegistry;
-import org.hkijena.acaq5.ui.ACAQProjectUI;
-import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.PlotReader;
 import org.hkijena.acaq5.ui.registries.ACAQPlotBuilderRegistry;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 /**
  * UI around data that can be plotted
  */
-public class ACAQPlotBuilderUI extends ACAQProjectUIPanel {
+public class ACAQPlotBuilderUI extends ACAQProjectWorkbenchPanel {
 
     private JToolBar plotSeriesEditorToolBar;
     private JXPanel plotSeriesListPanel;
@@ -51,7 +51,7 @@ public class ACAQPlotBuilderUI extends ACAQProjectUIPanel {
     /**
      * @param workbench The workbench
      */
-    public ACAQPlotBuilderUI(ACAQProjectUI workbench) {
+    public ACAQPlotBuilderUI(ACAQProjectWorkbench workbench) {
         super(workbench);
         initialize();
         updatePlotSettings();
@@ -157,7 +157,7 @@ public class ACAQPlotBuilderUI extends ACAQProjectUIPanel {
 
     private void importTable() {
         DefaultTableModel model = new DefaultTableModel();
-        ACAQMergeTableColumnsDialogUI dialog = new ACAQMergeTableColumnsDialogUI(getWorkbenchUI(), model);
+        ACAQMergeTableColumnsDialogUI dialog = new ACAQMergeTableColumnsDialogUI(getProjectWorkbench(), model);
         dialog.pack();
         dialog.setSize(800, 600);
         dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
@@ -253,11 +253,11 @@ public class ACAQPlotBuilderUI extends ACAQProjectUIPanel {
             tableModel.addRow(rowBuffer);
         }
 
-        getWorkbenchUI().getDocumentTabPane().addTab("Table",
+        getProjectWorkbench().getDocumentTabPane().addTab("Table",
                 UIUtils.getIconFromResources("table.png"),
-                new ACAQTableAnalyzerUI(getWorkbenchUI(), tableModel),
+                new ACAQTableAnalyzerUI(getProjectWorkbench(), tableModel),
                 DocumentTabPane.CloseMode.withAskOnCloseButton, true);
-        getWorkbenchUI().getDocumentTabPane().switchToLastTab();
+        getProjectWorkbench().getDocumentTabPane().switchToLastTab();
     }
 
     /**

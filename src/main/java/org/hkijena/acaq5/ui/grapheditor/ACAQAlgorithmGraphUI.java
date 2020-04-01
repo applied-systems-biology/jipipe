@@ -10,8 +10,8 @@ import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.AlgorithmRegisteredEvent;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
-import org.hkijena.acaq5.ui.ACAQProjectUI;
-import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 /**
  * Editor for a project graph compartment
  */
-public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseListener, MouseMotionListener {
+public class ACAQAlgorithmGraphUI extends ACAQProjectWorkbenchPanel implements MouseListener, MouseMotionListener {
 
     protected JMenuBar menuBar = new JMenuBar();
     private ACAQAlgorithmGraphCanvasUI graphUI;
@@ -61,7 +61,7 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseLis
      * @param algorithmGraph The graph
      * @param compartment    The compartment
      */
-    public ACAQAlgorithmGraphUI(ACAQProjectUI workbenchUI, ACAQAlgorithmGraph algorithmGraph, String compartment) {
+    public ACAQAlgorithmGraphUI(ACAQProjectWorkbench workbenchUI, ACAQAlgorithmGraph algorithmGraph, String compartment) {
         super(workbenchUI);
         this.algorithmGraph = algorithmGraph;
         this.compartment = compartment;
@@ -114,7 +114,7 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseLis
     @Subscribe
     public void onAlgorithmRegistryChanged(AlgorithmRegisteredEvent event) {
         reloadMenuBar();
-        getWorkbenchUI().sendStatusBarText("Plugins were updated");
+        getProjectWorkbench().sendStatusBarText("Plugins were updated");
     }
 
     /**
@@ -129,7 +129,7 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseLis
      * Initializes the tool bar
      */
     protected void initializeToolbar() {
-        initializeAddNodesMenus();
+        initializeAddNodesMenus(menuBar, algorithmGraph, compartment);
 
         menuBar.add(Box.createHorizontalGlue());
 
@@ -167,7 +167,7 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseLis
         if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
                 ImageIO.write(screenshot, "PNG", fileChooser.getSelectedFile());
-                getWorkbenchUI().sendStatusBarText("Exported graph as " + fileChooser.getSelectedFile());
+                getProjectWorkbench().sendStatusBarText("Exported graph as " + fileChooser.getSelectedFile());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -176,46 +176,49 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseLis
 
     /**
      * Initializes the "Add nodes" menus
+     * @param menuBar The menu bar where the items are created
+     * @param algorithmGraph the algorithm graph where nodes are put
+     * @param compartment the graph compartment where nodes are put
      */
-    protected void initializeAddNodesMenus() {
+    public static void initializeAddNodesMenus(JMenuBar menuBar, ACAQAlgorithmGraph algorithmGraph, String compartment) {
         JMenu addDataSourceMenu = new JMenu("Add data");
         addDataSourceMenu.setIcon(UIUtils.getIconFromResources("database.png"));
-        initializeAddDataSourceMenu(addDataSourceMenu);
+        initializeAddDataSourceMenu(addDataSourceMenu, algorithmGraph, compartment);
         menuBar.add(addDataSourceMenu);
 
         JMenu addFilesystemMenu = new JMenu("Filesystem");
         addFilesystemMenu.setIcon(UIUtils.getIconFromResources("tree.png"));
-        initializeMenuForCategory(addFilesystemMenu, ACAQAlgorithmCategory.FileSystem);
+        initializeMenuForCategory(addFilesystemMenu, ACAQAlgorithmCategory.FileSystem, algorithmGraph, compartment);
         menuBar.add(addFilesystemMenu);
 
         JMenu addAnnotationMenu = new JMenu("Annotation");
         addAnnotationMenu.setIcon(UIUtils.getIconFromResources("label.png"));
-        initializeMenuForCategory(addAnnotationMenu, ACAQAlgorithmCategory.Annotation);
+        initializeMenuForCategory(addAnnotationMenu, ACAQAlgorithmCategory.Annotation, algorithmGraph, compartment);
         menuBar.add(addAnnotationMenu);
 
         JMenu addEnhancerMenu = new JMenu("Enhance");
         addEnhancerMenu.setIcon(UIUtils.getIconFromResources("magic.png"));
-        initializeMenuForCategory(addEnhancerMenu, ACAQAlgorithmCategory.Enhancer);
+        initializeMenuForCategory(addEnhancerMenu, ACAQAlgorithmCategory.Enhancer, algorithmGraph, compartment);
         menuBar.add(addEnhancerMenu);
 
         JMenu addSegmenterMenu = new JMenu("Segment");
         addSegmenterMenu.setIcon(UIUtils.getIconFromResources("segment.png"));
-        initializeMenuForCategory(addSegmenterMenu, ACAQAlgorithmCategory.Segmentation);
+        initializeMenuForCategory(addSegmenterMenu, ACAQAlgorithmCategory.Segmentation, algorithmGraph, compartment);
         menuBar.add(addSegmenterMenu);
 
         JMenu addConverterMenu = new JMenu("Convert");
         addConverterMenu.setIcon(UIUtils.getIconFromResources("convert.png"));
-        initializeMenuForCategory(addConverterMenu, ACAQAlgorithmCategory.Converter);
+        initializeMenuForCategory(addConverterMenu, ACAQAlgorithmCategory.Converter, algorithmGraph, compartment);
         menuBar.add(addConverterMenu);
 
         JMenu addQuantifierMenu = new JMenu("Quantify");
         addQuantifierMenu.setIcon(UIUtils.getIconFromResources("statistics.png"));
-        initializeMenuForCategory(addQuantifierMenu, ACAQAlgorithmCategory.Quantifier);
+        initializeMenuForCategory(addQuantifierMenu, ACAQAlgorithmCategory.Quantifier, algorithmGraph, compartment);
         menuBar.add(addQuantifierMenu);
 
         JMenu addMiscMenu = new JMenu("Miscellaneous");
         addMiscMenu.setIcon(UIUtils.getIconFromResources("module.png"));
-        initializeMenuForCategory(addMiscMenu, ACAQAlgorithmCategory.Miscellaneous);
+        initializeMenuForCategory(addMiscMenu, ACAQAlgorithmCategory.Miscellaneous, algorithmGraph, compartment);
         menuBar.add(addMiscMenu);
     }
 
@@ -224,8 +227,10 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseLis
      *
      * @param menu     The menu
      * @param category The algorithm category
+     * @param algorithmGraph the algorithm graph where nodes are added
+     * @param compartment the graph compartment where nodes are put
      */
-    protected void initializeMenuForCategory(JMenu menu, ACAQAlgorithmCategory category) {
+    public static void initializeMenuForCategory(JMenu menu, ACAQAlgorithmCategory category, ACAQAlgorithmGraph algorithmGraph, String compartment) {
         ACAQDefaultRegistry registryService = ACAQDefaultRegistry.getInstance();
         boolean isEmpty = true;
         Icon icon = new ColorIcon(16, 16, UIUtils.getFillColorFor(category));
@@ -241,7 +246,13 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseLis
             menu.setVisible(false);
     }
 
-    private void initializeAddDataSourceMenu(JMenu menu) {
+    /**
+     * Initializes a menu that adds data sources
+     * @param menu the target menu
+     * @param algorithmGraph the algorithm graph where nodes are put
+     * @param compartment the compartment where nodes are put
+     */
+    public static void initializeAddDataSourceMenu(JMenu menu, ACAQAlgorithmGraph algorithmGraph, String compartment) {
         ACAQDefaultRegistry registryService = ACAQDefaultRegistry.getInstance();
         Map<String, Set<Class<? extends ACAQData>>> dataTypesByMenuPaths = ACAQDatatypeRegistry.getInstance().getDataTypesByMenuPaths();
         Map<String, JMenu> menuTree = UIUtils.createMenuTree(menu, dataTypesByMenuPaths.keySet());
@@ -347,9 +358,9 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseLis
             if (selection.isEmpty()) {
                 splitPane.setRightComponent(documentationPanel);
             } else if (selection.size() == 1) {
-                splitPane.setRightComponent(new ACAQSingleAlgorithmSelectionPanelUI(getWorkbenchUI(), algorithmGraph, ui.getAlgorithm()));
+                splitPane.setRightComponent(new ACAQSingleAlgorithmSelectionPanelUI(getProjectWorkbench(), algorithmGraph, ui.getAlgorithm()));
             } else {
-                splitPane.setRightComponent(new ACAQMultiAlgorithmSelectionPanelUI(getWorkbenchUI(), algorithmGraph,
+                splitPane.setRightComponent(new ACAQMultiAlgorithmSelectionPanelUI(getProjectWorkbench(), algorithmGraph,
                         selection.stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet())));
             }
             splitPane.setDividerLocation(dividerLocation);
@@ -366,11 +377,11 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseLis
         ui.setSelected(true);
         if (selection.size() == 1) {
             int dividerLocation = splitPane.getDividerLocation();
-            splitPane.setRightComponent(new ACAQSingleAlgorithmSelectionPanelUI(getWorkbenchUI(), algorithmGraph, ui.getAlgorithm()));
+            splitPane.setRightComponent(new ACAQSingleAlgorithmSelectionPanelUI(getProjectWorkbench(), algorithmGraph, ui.getAlgorithm()));
             splitPane.setDividerLocation(dividerLocation);
         } else {
             int dividerLocation = splitPane.getDividerLocation();
-            splitPane.setRightComponent(new ACAQMultiAlgorithmSelectionPanelUI(getWorkbenchUI(), algorithmGraph,
+            splitPane.setRightComponent(new ACAQMultiAlgorithmSelectionPanelUI(getProjectWorkbench(), algorithmGraph,
                     selection.stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet())));
             splitPane.setDividerLocation(dividerLocation);
         }

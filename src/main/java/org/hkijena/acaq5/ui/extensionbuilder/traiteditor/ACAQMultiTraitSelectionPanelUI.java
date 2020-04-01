@@ -1,8 +1,8 @@
 package org.hkijena.acaq5.ui.extensionbuilder.traiteditor;
 
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.ui.ACAQJsonExtensionUI;
-import org.hkijena.acaq5.ui.ACAQJsonExtensionUIPanel;
+import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
+import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api.ACAQTraitGraph;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 /**
  * UI when multiple {@link ACAQTraitNode} are selected
  */
-public class ACAQMultiTraitSelectionPanelUI extends ACAQJsonExtensionUIPanel {
+public class ACAQMultiTraitSelectionPanelUI extends ACAQJsonExtensionWorkbenchPanel {
     private Set<ACAQTraitNode> algorithms;
     private ACAQTraitGraph graph;
 
@@ -28,7 +28,7 @@ public class ACAQMultiTraitSelectionPanelUI extends ACAQJsonExtensionUIPanel {
      * @param graph       The trait graph
      * @param algorithms  The selected trait nodes
      */
-    public ACAQMultiTraitSelectionPanelUI(ACAQJsonExtensionUI workbenchUI, ACAQTraitGraph graph, Set<ACAQTraitNode> algorithms) {
+    public ACAQMultiTraitSelectionPanelUI(ACAQJsonExtensionWorkbench workbenchUI, ACAQTraitGraph graph, Set<ACAQTraitNode> algorithms) {
         super(workbenchUI);
         this.graph = graph;
         this.algorithms = algorithms;

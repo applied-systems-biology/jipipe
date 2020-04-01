@@ -6,7 +6,7 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.ACAQFileData;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.ACAQFolderData;
-import org.hkijena.acaq5.ui.ACAQProjectUI;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultResultDataSlotRowUI;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.PathUtils;
@@ -31,7 +31,7 @@ public class FilesystemDataSlotRowUI extends ACAQDefaultResultDataSlotRowUI {
      * @param slot        the data slot
      * @param row         the slot row
      */
-    public FilesystemDataSlotRowUI(ACAQProjectUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
+    public FilesystemDataSlotRowUI(ACAQProjectWorkbench workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
         super(workbenchUI, slot, row);
     }
 

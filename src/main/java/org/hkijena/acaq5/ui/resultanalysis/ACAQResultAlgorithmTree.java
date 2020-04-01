@@ -4,8 +4,8 @@ import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.ui.ACAQProjectUI;
-import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 /**
  * Displays a tree where the user can select data slots
  */
-public class ACAQResultAlgorithmTree extends ACAQProjectUIPanel {
+public class ACAQResultAlgorithmTree extends ACAQProjectWorkbenchPanel {
     private ACAQRun run;
     private JScrollPane treeScollPane;
     private JTree tree;
@@ -28,7 +28,7 @@ public class ACAQResultAlgorithmTree extends ACAQProjectUIPanel {
      * @param workbenchUI Workbench ui
      * @param run         The run
      */
-    public ACAQResultAlgorithmTree(ACAQProjectUI workbenchUI, ACAQRun run) {
+    public ACAQResultAlgorithmTree(ACAQProjectWorkbench workbenchUI, ACAQRun run) {
         super(workbenchUI);
         this.run = run;
         initialize();

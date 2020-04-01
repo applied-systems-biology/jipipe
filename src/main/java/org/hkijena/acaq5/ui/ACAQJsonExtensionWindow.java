@@ -31,7 +31,7 @@ public class ACAQJsonExtensionWindow extends JFrame {
     private static Set<ACAQJsonExtensionWindow> OPEN_WINDOWS = new HashSet<>();
     private ACAQGUICommand command;
     private ACAQJsonExtension project;
-    private ACAQJsonExtensionUI projectUI;
+    private ACAQJsonExtensionWorkbench projectUI;
     private Path projectSavePath;
 
     /**
@@ -76,7 +76,7 @@ public class ACAQJsonExtensionWindow extends JFrame {
      */
     public void loadProject(ACAQJsonExtension project) {
         this.project = project;
-        this.projectUI = new ACAQJsonExtensionUI(this, command, project);
+        this.projectUI = new ACAQJsonExtensionWorkbench(this, command, project);
         setContentPane(projectUI);
     }
 
@@ -201,7 +201,7 @@ public class ACAQJsonExtensionWindow extends JFrame {
     /**
      * @return The current UI
      */
-    public ACAQJsonExtensionUI getProjectUI() {
+    public ACAQJsonExtensionWorkbench getProjectUI() {
         return projectUI;
     }
 

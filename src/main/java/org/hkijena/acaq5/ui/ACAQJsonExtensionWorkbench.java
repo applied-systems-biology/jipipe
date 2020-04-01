@@ -1,10 +1,15 @@
 package org.hkijena.acaq5.ui;
 
+import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQGUICommand;
 import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.api.events.ExtensionContentRemovedEvent;
+import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro.GraphWrapperAlgorithmDeclaration;
 import org.hkijena.acaq5.ui.components.*;
 import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonExtensionContentListUI;
+import org.hkijena.acaq5.ui.extensionbuilder.GraphWrapperAlgorithmDeclarationUI;
+import org.hkijena.acaq5.ui.extensionbuilder.grapheditor.ACAQJsonExtensionAlgorithmGraphUI;
 import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.ACAQTraitGraphUI;
 import org.hkijena.acaq5.ui.settings.ACAQJsonExtensionSettingsUI;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -16,11 +21,13 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * UI around a {@link ACAQJsonExtension}
  */
-public class ACAQJsonExtensionUI extends JPanel {
+public class ACAQJsonExtensionWorkbench extends JPanel implements ACAQWorkbench {
     private final ACAQJsonExtensionWindow window;
     private final ACAQGUICommand command;
     private final ACAQJsonExtension project;
@@ -33,11 +40,13 @@ public class ACAQJsonExtensionUI extends JPanel {
      * @param command The command that executed the UI
      * @param project The project
      */
-    public ACAQJsonExtensionUI(ACAQJsonExtensionWindow window, ACAQGUICommand command, ACAQJsonExtension project) {
+    public ACAQJsonExtensionWorkbench(ACAQJsonExtensionWindow window, ACAQGUICommand command, ACAQJsonExtension project) {
         this.window = window;
         this.command = command;
         this.project = project;
         initialize();
+
+        this.project.getEventBus().register(this);
     }
 
     private void initialize() {
@@ -75,6 +84,8 @@ public class ACAQJsonExtensionUI extends JPanel {
         sendStatusBarText("Welcome to the ACAQ5 extension builder");
 
         add(documentTabPane, BorderLayout.CENTER);
+
+        getDocumentTabPane().selectSingletonTab("INTRODUCTION");
     }
 
     private void validateProject() {
@@ -94,6 +105,7 @@ public class ACAQJsonExtensionUI extends JPanel {
      *
      * @param text The text
      */
+    @Override
     public void sendStatusBarText(String text) {
         LocalDateTime localDateTime = LocalDateTime.now();
         statusText.setText(localDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE) + " " + localDateTime.format(DateTimeFormatter.ofPattern("HH:mm:ss")) + " " + text);
@@ -213,6 +225,7 @@ public class ACAQJsonExtensionUI extends JPanel {
     /**
      * @return The SciJava context
      */
+    @Override
     public Context getContext() {
         return command.getContext();
     }
@@ -220,7 +233,34 @@ public class ACAQJsonExtensionUI extends JPanel {
     /**
      * @return The tab pane
      */
+    @Override
     public DocumentTabPane getDocumentTabPane() {
         return documentTabPane;
+    }
+
+    /**
+     * Triggered when content was removed
+     *
+     * @param event Generated event
+     */
+    @Subscribe
+    public void onContentRemovedEvent(ExtensionContentRemovedEvent event) {
+        removeUnnecessaryAlgorithmGraphEditors();
+    }
+
+    private void removeUnnecessaryAlgorithmGraphEditors() {
+        Set<DocumentTabPane.DocumentTab> toRemove = new HashSet<>();
+        for (DocumentTabPane.DocumentTab tab : getDocumentTabPane().getTabs()) {
+            if(tab.getContent() instanceof ACAQJsonExtensionAlgorithmGraphUI) {
+                ACAQJsonExtensionAlgorithmGraphUI graphUI = (ACAQJsonExtensionAlgorithmGraphUI) tab.getContent();
+                boolean notFound = project.getAlgorithmDeclarations().stream().noneMatch(d -> d.getGraph() == graphUI.getAlgorithmGraph());
+                if(notFound) {
+                    toRemove.add(tab);
+                }
+            }
+        }
+        for (DocumentTabPane.DocumentTab documentTab : toRemove) {
+            getDocumentTabPane().forceCloseTab(documentTab);
+        }
     }
 }

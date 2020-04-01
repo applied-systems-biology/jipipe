@@ -3,7 +3,7 @@ package org.hkijena.acaq5.ui.resultanalysis;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
 import org.hkijena.acaq5.api.data.ACAQMergedExportedDataTable;
-import org.hkijena.acaq5.ui.ACAQProjectUI;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 
 import javax.swing.*;
@@ -15,12 +15,12 @@ import java.awt.*;
  */
 public class ACAQRowDataMergedTableCellRenderer implements TableCellRenderer {
 
-    private ACAQProjectUI workbenchUI;
+    private ACAQProjectWorkbench workbenchUI;
 
     /**
      * @param workbenchUI The workbench
      */
-    public ACAQRowDataMergedTableCellRenderer(ACAQProjectUI workbenchUI) {
+    public ACAQRowDataMergedTableCellRenderer(ACAQProjectWorkbench workbenchUI) {
         this.workbenchUI = workbenchUI;
     }
 

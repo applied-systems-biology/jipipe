@@ -7,8 +7,8 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
 import org.hkijena.acaq5.api.data.ACAQMergedExportedDataTable;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.ui.ACAQProjectUI;
-import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.TooltipUtils;
@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * Displays the result of multiple {@link ACAQDataSlot}
  */
-public class ACAQMultipleResultDataSlotTableUI extends ACAQProjectUIPanel {
+public class ACAQMultipleResultDataSlotTableUI extends ACAQProjectWorkbenchPanel {
 
     private final List<ACAQDataSlot> slots;
     private ACAQRun run;
@@ -39,7 +39,7 @@ public class ACAQMultipleResultDataSlotTableUI extends ACAQProjectUIPanel {
      * @param run         The algorithm run
      * @param slots       The displayed slots
      */
-    public ACAQMultipleResultDataSlotTableUI(ACAQProjectUI workbenchUI, ACAQRun run, List<ACAQDataSlot> slots) {
+    public ACAQMultipleResultDataSlotTableUI(ACAQProjectWorkbench workbenchUI, ACAQRun run, List<ACAQDataSlot> slots) {
         super(workbenchUI);
         this.run = run;
         this.slots = slots;
@@ -55,7 +55,7 @@ public class ACAQMultipleResultDataSlotTableUI extends ACAQProjectUIPanel {
         table.setDefaultRenderer(Path.class, new ACAQRowLocationTableCellRenderer());
         table.setDefaultRenderer(ACAQAlgorithm.class, new ACAQAlgorithmTableCellRenderer());
         table.setDefaultRenderer(ACAQProjectCompartment.class, new ACAQProjectCompartmentTableCellRenderer());
-        table.setDefaultRenderer(ACAQExportedDataTable.Row.class, new ACAQRowDataMergedTableCellRenderer(getWorkbenchUI()));
+        table.setDefaultRenderer(ACAQExportedDataTable.Row.class, new ACAQRowDataMergedTableCellRenderer(getProjectWorkbench()));
         table.setDefaultRenderer(ACAQTrait.class, new ACAQTraitTableCellRenderer());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
@@ -87,7 +87,7 @@ public class ACAQMultipleResultDataSlotTableUI extends ACAQProjectUIPanel {
         int row = table.getRowSorter().convertRowIndexToModel(selectedRow);
         ACAQExportedDataTable.Row rowInstance = mergedDataTable.getRowList().get(row);
         ACAQDataSlot slot = mergedDataTable.getSlot(row);
-        ACAQResultDataSlotRowUI ui = ACAQUIDatatypeRegistry.getInstance().getUIForResultSlot(getWorkbenchUI(), slot, rowInstance);
+        ACAQResultDataSlotRowUI ui = ACAQUIDatatypeRegistry.getInstance().getUIForResultSlot(getProjectWorkbench(), slot, rowInstance);
         ui.handleDefaultAction();
     }
 
@@ -99,7 +99,7 @@ public class ACAQMultipleResultDataSlotTableUI extends ACAQProjectUIPanel {
             ACAQDataSlot slot = mergedDataTable.getSlot(row);
             JLabel nameLabel = new JLabel(rowInstance.getLocation().toString(), ACAQUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()), JLabel.LEFT);
             nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot));
-            ACAQResultDataSlotRowUI rowUI = ACAQUIDatatypeRegistry.getInstance().getUIForResultSlot(getWorkbenchUI(), slot, rowInstance);
+            ACAQResultDataSlotRowUI rowUI = ACAQUIDatatypeRegistry.getInstance().getUIForResultSlot(getProjectWorkbench(), slot, rowInstance);
             rowUIList.addToForm(rowUI, nameLabel, null);
         }
     }

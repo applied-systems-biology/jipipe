@@ -9,8 +9,8 @@ import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQJsonTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
-import org.hkijena.acaq5.ui.ACAQJsonExtensionUI;
-import org.hkijena.acaq5.ui.ACAQJsonExtensionUIPanel;
+import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
+import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.ACAQTraitPicker;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
@@ -37,7 +37,7 @@ import static org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph.COMPARTMENT_DEF
 /**
  * Graph editor UI to organize traits
  */
-public class ACAQTraitGraphUI extends ACAQJsonExtensionUIPanel implements MouseListener, MouseMotionListener {
+public class ACAQTraitGraphUI extends ACAQJsonExtensionWorkbenchPanel implements MouseListener, MouseMotionListener {
 
     protected JMenuBar menuBar = new JMenuBar();
     private ACAQAlgorithmGraphCanvasUI graphUI;
@@ -59,7 +59,7 @@ public class ACAQTraitGraphUI extends ACAQJsonExtensionUIPanel implements MouseL
     /**
      * @param workbenchUI the workbench
      */
-    public ACAQTraitGraphUI(ACAQJsonExtensionUI workbenchUI) {
+    public ACAQTraitGraphUI(ACAQJsonExtensionWorkbench workbenchUI) {
         super(workbenchUI);
         this.graph = new ACAQTraitGraph(getProject());
         initialize();
@@ -143,7 +143,7 @@ public class ACAQTraitGraphUI extends ACAQJsonExtensionUIPanel implements MouseL
         if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
                 ImageIO.write(screenshot, "PNG", fileChooser.getSelectedFile());
-                getWorkbenchUI().sendStatusBarText("Exported graph as " + fileChooser.getSelectedFile());
+                getExtensionWorkbenchUI().sendStatusBarText("Exported graph as " + fileChooser.getSelectedFile());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -263,11 +263,11 @@ public class ACAQTraitGraphUI extends ACAQJsonExtensionUIPanel implements MouseL
         ui.setSelected(true);
         if (selection.size() == 1) {
             int dividerLocation = splitPane.getDividerLocation();
-            splitPane.setRightComponent(new ACAQSingleTraitSelectionPanelUI(getWorkbenchUI(), (ACAQTraitNode) ui.getAlgorithm(), graph));
+            splitPane.setRightComponent(new ACAQSingleTraitSelectionPanelUI(getExtensionWorkbenchUI(), (ACAQTraitNode) ui.getAlgorithm(), graph));
             splitPane.setDividerLocation(dividerLocation);
         } else {
             int dividerLocation = splitPane.getDividerLocation();
-            splitPane.setRightComponent(new ACAQMultiTraitSelectionPanelUI(getWorkbenchUI(),
+            splitPane.setRightComponent(new ACAQMultiTraitSelectionPanelUI(getExtensionWorkbenchUI(),
                     graph, selection.stream().map(a -> (ACAQTraitNode) a.getAlgorithm()).collect(Collectors.toSet())));
             splitPane.setDividerLocation(dividerLocation);
         }
@@ -287,9 +287,9 @@ public class ACAQTraitGraphUI extends ACAQJsonExtensionUIPanel implements MouseL
             if (selection.isEmpty()) {
                 splitPane.setRightComponent(documentationPanel);
             } else if (selection.size() == 1) {
-                splitPane.setRightComponent(new ACAQSingleTraitSelectionPanelUI(getWorkbenchUI(), (ACAQTraitNode) ui.getAlgorithm(), graph));
+                splitPane.setRightComponent(new ACAQSingleTraitSelectionPanelUI(getExtensionWorkbenchUI(), (ACAQTraitNode) ui.getAlgorithm(), graph));
             } else {
-                splitPane.setRightComponent(new ACAQMultiTraitSelectionPanelUI(getWorkbenchUI(),
+                splitPane.setRightComponent(new ACAQMultiTraitSelectionPanelUI(getExtensionWorkbenchUI(),
                         graph, selection.stream().map(a -> (ACAQTraitNode) a.getAlgorithm()).collect(Collectors.toSet())));
             }
             splitPane.setDividerLocation(dividerLocation);

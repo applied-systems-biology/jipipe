@@ -15,8 +15,7 @@ import java.util.ArrayList;
  * A parameter that is a collection of another parameter type
  */
 @JsonSerialize(using = CollectionParameter.Serializer.class)
-@JsonDeserialize(using = CollectionParameter.Deserializer.class)
-public class CollectionParameter<T> extends ArrayList<T> {
+public abstract class CollectionParameter<T> extends ArrayList<T> {
     private Class<T> contentClass;
 
     /**
@@ -31,30 +30,52 @@ public class CollectionParameter<T> extends ArrayList<T> {
     }
 
     /**
+     * Adds a new instance of the content class
+     * @return the instance
+     */
+    public T addNewInstance() {
+        try {
+            T instance = getContentClass().newInstance();
+            add(instance);
+            return instance;
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
      * Serializes the parameter
      */
     public static class Serializer extends JsonSerializer<CollectionParameter<?>> {
         @Override
         public void serialize(CollectionParameter<?> objects, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
-            jsonGenerator.writeStartObject();
-            jsonGenerator.writeObjectField("content-class", objects.contentClass);
-            jsonGenerator.writeObjectField("entries", new ArrayList<>(objects));
-            jsonGenerator.writeEndObject();
+            jsonGenerator.writeStartArray();
+            for (Object object : objects) {
+                jsonGenerator.writeObject(object);
+            }
+            jsonGenerator.writeEndArray();
         }
     }
 
     /**
      * Deserializes the parameter
      */
-    public static class Deserializer extends JsonDeserializer<CollectionParameter<?>> {
-        @Override
-        public CollectionParameter<?> deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
-            JsonNode root = jsonParser.readValueAsTree();
-            Class<?> contentClass = JsonUtils.getObjectMapper().readerFor(Class.class).readValue(root.get("content-class"));
-            JavaType listType = JsonUtils.getObjectMapper().getTypeFactory().constructCollectionType(ArrayList.class, contentClass);
-            ArrayList<?> entries = JsonUtils.getObjectMapper().readerFor(listType).readValue(root.get("entries"));
+    public abstract static class Deserializer<T> extends JsonDeserializer<CollectionParameter<T>> {
 
-            CollectionParameter collectionParameter = new CollectionParameter<>(contentClass);
+        public abstract Class<T> getContentClass();
+
+        /**
+         * @return New instance of the collection
+         */
+        public abstract CollectionParameter<T> newInstance();
+
+        @Override
+        public CollectionParameter<T> deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+            JsonNode root = jsonParser.readValueAsTree();
+            JavaType listType = JsonUtils.getObjectMapper().getTypeFactory().constructCollectionType(ArrayList.class, getContentClass());
+            ArrayList<T> entries = JsonUtils.getObjectMapper().readerFor(listType).readValue(root);
+
+            CollectionParameter<T> collectionParameter = newInstance();
             collectionParameter.addAll(entries);
 
             return collectionParameter;

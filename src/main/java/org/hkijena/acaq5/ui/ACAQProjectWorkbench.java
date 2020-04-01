@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * UI around an {@link ACAQProject}
  */
-public class ACAQProjectUI extends JPanel {
+public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
 
     public DocumentTabPane documentTabPane;
     private ACAQProjectWindow window;
@@ -47,7 +47,7 @@ public class ACAQProjectUI extends JPanel {
      * @param command GUI command
      * @param project The project
      */
-    public ACAQProjectUI(ACAQProjectWindow window, ACAQGUICommand command, ACAQProject project) {
+    public ACAQProjectWorkbench(ACAQProjectWindow window, ACAQGUICommand command, ACAQProject project) {
         this.window = window;
         this.project = project;
         this.command = command;

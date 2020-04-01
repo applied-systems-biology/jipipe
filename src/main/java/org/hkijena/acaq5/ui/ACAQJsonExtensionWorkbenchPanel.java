@@ -7,21 +7,22 @@ import javax.swing.*;
 /**
  * UI panel that contains references to an {@link ACAQJsonExtension} UI
  */
-public class ACAQJsonExtensionUIPanel extends JPanel {
+public class ACAQJsonExtensionWorkbenchPanel extends ACAQWorkbenchPanel {
 
-    private final ACAQJsonExtensionUI workbenchUI;
+    private final ACAQJsonExtensionWorkbench workbenchUI;
 
     /**
      * @param workbenchUI The workbench UI
      */
-    public ACAQJsonExtensionUIPanel(ACAQJsonExtensionUI workbenchUI) {
+    public ACAQJsonExtensionWorkbenchPanel(ACAQJsonExtensionWorkbench workbenchUI) {
+        super(workbenchUI);
         this.workbenchUI = workbenchUI;
     }
 
     /**
      * @return The workbench
      */
-    public ACAQJsonExtensionUI getWorkbenchUI() {
+    public ACAQJsonExtensionWorkbench getExtensionWorkbenchUI() {
         return workbenchUI;
     }
 

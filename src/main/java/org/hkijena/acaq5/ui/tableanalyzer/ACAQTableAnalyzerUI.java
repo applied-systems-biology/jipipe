@@ -16,8 +16,8 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.primitives.Ints;
 import org.hkijena.acaq5.ACAQDefaultRegistry;
-import org.hkijena.acaq5.ui.ACAQProjectUI;
-import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.plotbuilder.ACAQPlotBuilderUI;
 import org.hkijena.acaq5.ui.registries.ACAQTableAnalyzerUIOperationRegistry;
@@ -37,7 +37,7 @@ import java.util.*;
 /**
  * Spreadsheet UI
  */
-public class ACAQTableAnalyzerUI extends ACAQProjectUIPanel {
+public class ACAQTableAnalyzerUI extends ACAQProjectWorkbenchPanel {
     private static final int MAX_UNDO = 10;
     private DefaultTableModel tableModel;
     private JXTable jxTable;
@@ -51,7 +51,7 @@ public class ACAQTableAnalyzerUI extends ACAQProjectUIPanel {
      * @param workbench  the workbench
      * @param tableModel the table
      */
-    public ACAQTableAnalyzerUI(ACAQProjectUI workbench, DefaultTableModel tableModel) {
+    public ACAQTableAnalyzerUI(ACAQProjectWorkbench workbench, DefaultTableModel tableModel) {
         super(workbench);
         this.tableModel = tableModel;
         initialize();
@@ -233,13 +233,13 @@ public class ACAQTableAnalyzerUI extends ACAQProjectUIPanel {
     }
 
     private void createNewPlot() {
-        ACAQPlotBuilderUI plotBuilderUI = new ACAQPlotBuilderUI(getWorkbenchUI());
-        plotBuilderUI.importFromTable(tableModel, getWorkbenchUI().documentTabPane.findTabNameFor(this));
-        getWorkbenchUI().getDocumentTabPane().addTab("Plot",
+        ACAQPlotBuilderUI plotBuilderUI = new ACAQPlotBuilderUI(getProjectWorkbench());
+        plotBuilderUI.importFromTable(tableModel, getProjectWorkbench().documentTabPane.findTabNameFor(this));
+        getProjectWorkbench().getDocumentTabPane().addTab("Plot",
                 UIUtils.getIconFromResources("graph.png"),
                 plotBuilderUI,
                 DocumentTabPane.CloseMode.withAskOnCloseButton, true);
-        getWorkbenchUI().getDocumentTabPane().switchToLastTab();
+        getProjectWorkbench().getDocumentTabPane().switchToLastTab();
     }
 
     private void collapseColumns() {
@@ -341,11 +341,11 @@ public class ACAQTableAnalyzerUI extends ACAQProjectUIPanel {
     }
 
     private void cloneDataToNewTab() {
-        getWorkbenchUI().getDocumentTabPane().addTab("Table",
+        getProjectWorkbench().getDocumentTabPane().addTab("Table",
                 UIUtils.getIconFromResources("table.png"),
-                new ACAQTableAnalyzerUI(getWorkbenchUI(), TableUtils.cloneTableModel(tableModel)),
+                new ACAQTableAnalyzerUI(getProjectWorkbench(), TableUtils.cloneTableModel(tableModel)),
                 DocumentTabPane.CloseMode.withAskOnCloseButton, true);
-        getWorkbenchUI().getDocumentTabPane().switchToLastTab();
+        getProjectWorkbench().getDocumentTabPane().switchToLastTab();
     }
 
     private void updateConvertMenu() {
@@ -661,7 +661,7 @@ public class ACAQTableAnalyzerUI extends ACAQProjectUIPanel {
      * @param fileName    CSV file
      * @param workbenchUI workbench
      */
-    public static void importTableFromCSV(Path fileName, ACAQProjectUI workbenchUI) {
+    public static void importTableFromCSV(Path fileName, ACAQProjectWorkbench workbenchUI) {
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName.toFile()))) {
             DefaultTableModel tableModel = new DefaultTableModel();
             String currentLine;

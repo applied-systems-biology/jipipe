@@ -3,8 +3,8 @@ package org.hkijena.acaq5.ui.components;
 import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.parameters.*;
-import org.hkijena.acaq5.ui.ACAQJsonExtensionUI;
-import org.hkijena.acaq5.ui.ACAQProjectUI;
+import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIParametertypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -59,7 +59,7 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
      * @param documentationBelow If true, show documentation below
      * @param withDocumentation  If documentation is shown
      */
-    public ACAQParameterAccessUI(ACAQProjectUI workbenchUI, ACAQParameterHolder parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
+    public ACAQParameterAccessUI(ACAQProjectWorkbench workbenchUI, ACAQParameterHolder parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
         this(workbenchUI.getContext(), parameterHolder, documentation, documentationBelow, withDocumentation, true);
     }
 
@@ -70,7 +70,7 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
      * @param documentationBelow If true, show documentation below
      * @param withDocumentation  If documentation is shown
      */
-    public ACAQParameterAccessUI(ACAQJsonExtensionUI workbenchUI, ACAQParameterHolder parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
+    public ACAQParameterAccessUI(ACAQJsonExtensionWorkbench workbenchUI, ACAQParameterHolder parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
         this(workbenchUI.getContext(), parameterHolder, documentation, documentationBelow, withDocumentation, true);
     }
 

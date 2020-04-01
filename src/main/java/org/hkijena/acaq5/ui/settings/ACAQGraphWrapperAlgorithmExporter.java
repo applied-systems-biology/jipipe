@@ -7,8 +7,8 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro.GraphWrapperAlgorithmDeclaration;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWindow;
-import org.hkijena.acaq5.ui.ACAQProjectUI;
-import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.utils.StringUtils;
@@ -20,7 +20,7 @@ import java.awt.*;
 /**
  * Exports a {@link GraphWrapperAlgorithmDeclaration}
  */
-public class ACAQGraphWrapperAlgorithmExporter extends ACAQProjectUIPanel {
+public class ACAQGraphWrapperAlgorithmExporter extends ACAQProjectWorkbenchPanel {
 
     private GraphWrapperAlgorithmDeclaration algorithmDeclaration;
     private ACAQParameterAccessUI parameterAccessUI;
@@ -32,7 +32,7 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQProjectUIPanel {
      * @param workbenchUI  The workbench UI
      * @param wrappedGraph The wrapped graph
      */
-    public ACAQGraphWrapperAlgorithmExporter(ACAQProjectUI workbenchUI, ACAQAlgorithmGraph wrappedGraph) {
+    public ACAQGraphWrapperAlgorithmExporter(ACAQProjectWorkbench workbenchUI, ACAQAlgorithmGraph wrappedGraph) {
         super(workbenchUI);
         algorithmDeclaration = new GraphWrapperAlgorithmDeclaration();
         algorithmDeclaration.setGraph(wrappedGraph);
@@ -48,7 +48,7 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQProjectUIPanel {
     private void initialize() {
         setLayout(new BorderLayout());
 
-        parameterAccessUI = new ACAQParameterAccessUI(getWorkbenchUI(),
+        parameterAccessUI = new ACAQParameterAccessUI(getProjectWorkbench(),
                 algorithmDeclaration,
                 MarkdownDocument.fromPluginResource("documentation/exporting-algorithms.md"),
                 false,
@@ -105,7 +105,7 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQProjectUIPanel {
         if (!checkValidity())
             return;
         extension.addAlgorithm(algorithmDeclaration);
-        getWorkbenchUI().getDocumentTabPane().remove(this);
+        getProjectWorkbench().getDocumentTabPane().remove(this);
     }
 
     private void exportToNewExtension() {
@@ -113,8 +113,8 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQProjectUIPanel {
             return;
         ACAQJsonExtension extension = new ACAQJsonExtension();
         extension.addAlgorithm(algorithmDeclaration);
-        getWorkbenchUI().getDocumentTabPane().remove(this);
-        ACAQJsonExtensionWindow.newWindow(getWorkbenchUI().getCommand(), extension);
+        getProjectWorkbench().getDocumentTabPane().remove(this);
+        ACAQJsonExtensionWindow.newWindow(getProjectWorkbench().getCommand(), extension);
     }
 
     private void createRandomId() {

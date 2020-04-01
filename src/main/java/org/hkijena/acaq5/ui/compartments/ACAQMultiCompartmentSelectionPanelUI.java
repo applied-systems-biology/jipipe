@@ -2,8 +2,8 @@ package org.hkijena.acaq5.ui.compartments;
 
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
-import org.hkijena.acaq5.ui.ACAQProjectUI;
-import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.utils.TooltipUtils;
@@ -18,14 +18,14 @@ import java.util.stream.Collectors;
 /**
  * UI when multiple {@link ACAQProjectCompartment} instances are selected
  */
-public class ACAQMultiCompartmentSelectionPanelUI extends ACAQProjectUIPanel {
+public class ACAQMultiCompartmentSelectionPanelUI extends ACAQProjectWorkbenchPanel {
     private Set<ACAQProjectCompartment> compartments;
 
     /**
      * @param workbenchUI  The workbench UI
      * @param compartments The compartment selection
      */
-    public ACAQMultiCompartmentSelectionPanelUI(ACAQProjectUI workbenchUI, Set<ACAQProjectCompartment> compartments) {
+    public ACAQMultiCompartmentSelectionPanelUI(ACAQProjectWorkbench workbenchUI, Set<ACAQProjectCompartment> compartments) {
         super(workbenchUI);
         this.compartments = compartments;
         initialize();
@@ -68,7 +68,7 @@ public class ACAQMultiCompartmentSelectionPanelUI extends ACAQProjectUIPanel {
 
     private void openInEditor() {
         for (ACAQProjectCompartment compartment : compartments) {
-            getWorkbenchUI().openCompartmentGraph(compartment, true);
+            getProjectWorkbench().openCompartmentGraph(compartment, true);
         }
     }
 

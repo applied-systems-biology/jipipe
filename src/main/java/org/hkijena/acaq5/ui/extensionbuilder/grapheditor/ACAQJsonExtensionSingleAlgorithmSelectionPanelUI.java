@@ -2,8 +2,8 @@ package org.hkijena.acaq5.ui.extensionbuilder.grapheditor;
 
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
-import org.hkijena.acaq5.ui.ACAQJsonExtensionUI;
-import org.hkijena.acaq5.ui.ACAQJsonExtensionUIPanel;
+import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
+import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
@@ -18,7 +18,7 @@ import java.awt.*;
 /**
  * Shown when one algorithm is selected
  */
-public class ACAQJsonExtensionSingleAlgorithmSelectionPanelUI extends ACAQJsonExtensionUIPanel {
+public class ACAQJsonExtensionSingleAlgorithmSelectionPanelUI extends ACAQJsonExtensionWorkbenchPanel {
     private ACAQAlgorithmGraph graph;
     private ACAQAlgorithm algorithm;
 
@@ -27,7 +27,7 @@ public class ACAQJsonExtensionSingleAlgorithmSelectionPanelUI extends ACAQJsonEx
      * @param graph       The algorithm graph
      * @param algorithm   The algorithm
      */
-    public ACAQJsonExtensionSingleAlgorithmSelectionPanelUI(ACAQJsonExtensionUI workbenchUI, ACAQAlgorithmGraph graph, ACAQAlgorithm algorithm) {
+    public ACAQJsonExtensionSingleAlgorithmSelectionPanelUI(ACAQJsonExtensionWorkbench workbenchUI, ACAQAlgorithmGraph graph, ACAQAlgorithm algorithm) {
         super(workbenchUI);
         this.graph = graph;
         this.algorithm = algorithm;
@@ -38,7 +38,7 @@ public class ACAQJsonExtensionSingleAlgorithmSelectionPanelUI extends ACAQJsonEx
         setLayout(new BorderLayout());
         DocumentTabPane tabbedPane = new DocumentTabPane();
 
-        ACAQJsonExtensionAlgorithmParametersUI parametersUI = new ACAQJsonExtensionAlgorithmParametersUI(getWorkbenchUI(),
+        ACAQJsonExtensionAlgorithmParametersUI parametersUI = new ACAQJsonExtensionAlgorithmParametersUI(getExtensionWorkbenchUI(),
                 algorithm,
                 MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md"),
                 true, true);

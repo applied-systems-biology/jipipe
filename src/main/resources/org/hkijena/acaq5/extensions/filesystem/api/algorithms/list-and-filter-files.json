@@ -30,10 +30,10 @@
         "acaq:algorithm-ui-location" : { },
         "acaq:algorithm-type" : "file-filter",
         "acaq:algorithm-compartment" : "DEFAULT",
-        "filter" : {
+        "filters" : [{
           "mode" : "Contains",
           "filterString" : null
-        },
+        }],
         "name" : "Filter files",
         "description" : null,
         "acaq:trait-generation" : {

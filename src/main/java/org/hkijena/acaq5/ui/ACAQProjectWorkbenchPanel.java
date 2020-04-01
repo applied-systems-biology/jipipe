@@ -5,23 +5,24 @@ import org.hkijena.acaq5.api.ACAQProject;
 import javax.swing.*;
 
 /**
- * Panel that holds a reference to {@link ACAQProjectUI}
+ * Panel that holds a reference to {@link ACAQProjectWorkbench}
  */
-public class ACAQProjectUIPanel extends JPanel {
+public class ACAQProjectWorkbenchPanel extends ACAQWorkbenchPanel {
 
-    private final ACAQProjectUI workbenchUI;
+    private final ACAQProjectWorkbench workbenchUI;
 
     /**
      * @param workbenchUI The workbench UI
      */
-    public ACAQProjectUIPanel(ACAQProjectUI workbenchUI) {
+    public ACAQProjectWorkbenchPanel(ACAQProjectWorkbench workbenchUI) {
+        super(workbenchUI);
         this.workbenchUI = workbenchUI;
     }
 
     /**
      * @return The workbench UI
      */
-    public ACAQProjectUI getWorkbenchUI() {
+    public ACAQProjectWorkbench getProjectWorkbench() {
         return workbenchUI;
     }
 

@@ -4,8 +4,8 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.testbench.ACAQTestbench;
 import org.hkijena.acaq5.api.testbench.ACAQTestbenchSnapshot;
-import org.hkijena.acaq5.ui.ACAQProjectUI;
-import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.ConfirmingButton;
@@ -25,7 +25,7 @@ import java.awt.event.ComponentEvent;
 /**
  * UI for {@link ACAQTestbench}
  */
-public class ACAQTestBenchUI extends ACAQProjectUIPanel {
+public class ACAQTestBenchUI extends ACAQProjectWorkbenchPanel {
 
     private ACAQTestbench testbench;
     private JComboBox<ACAQTestbenchSnapshot> backupSelection;
@@ -36,7 +36,7 @@ public class ACAQTestBenchUI extends ACAQProjectUIPanel {
      * @param workbenchUI the workbench
      * @param testbench   the testbench
      */
-    public ACAQTestBenchUI(ACAQProjectUI workbenchUI, ACAQTestbench testbench) {
+    public ACAQTestBenchUI(ACAQProjectWorkbench workbenchUI, ACAQTestbench testbench) {
         super(workbenchUI);
         this.testbench = testbench;
 
@@ -117,7 +117,7 @@ public class ACAQTestBenchUI extends ACAQProjectUIPanel {
         if (backupSelection.getSelectedItem() instanceof ACAQTestbenchSnapshot) {
             ACAQTestbenchSnapshot backup = (ACAQTestbenchSnapshot) backupSelection.getSelectedItem();
             backup.getAlgorithmBackup(testbench.getBenchedAlgorithm()).restoreParameters(testbench.getTargetAlgorithm());
-            getWorkbenchUI().sendStatusBarText("Copied parameters from testbench to " + testbench.getTargetAlgorithm().getName());
+            getProjectWorkbench().sendStatusBarText("Copied parameters from testbench to " + testbench.getTargetAlgorithm().getName());
         }
     }
 
@@ -195,12 +195,12 @@ public class ACAQTestBenchUI extends ACAQProjectUIPanel {
 
         backup.restore();
 
-        ACAQParameterAccessUI parameters = new ACAQParameterAccessUI(getWorkbenchUI(), testbench.getBenchedAlgorithm(),
+        ACAQParameterAccessUI parameters = new ACAQParameterAccessUI(getProjectWorkbench(), testbench.getBenchedAlgorithm(),
                 MarkdownDocument.fromPluginResource("documentation/testbench.md"),
                 true, true);
         splitPane.setLeftComponent(parameters);
 
-        ACAQResultUI resultUI = new ACAQResultUI(getWorkbenchUI(), testbench.getTestbenchRun());
+        ACAQResultUI resultUI = new ACAQResultUI(getProjectWorkbench(), testbench.getTestbenchRun());
         splitPane.setRightComponent(resultUI);
 
         revalidate();

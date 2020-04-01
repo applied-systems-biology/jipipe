@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.ui.grapheditor.settings;
 
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.ui.ACAQProjectUI;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 
@@ -21,7 +21,7 @@ public class ACAQAlgorithmParametersUI extends ACAQParameterAccessUI {
      * @param documentationBelow If true, show documentation below
      * @param withDocumentation  If false, disable documentation
      */
-    public ACAQAlgorithmParametersUI(ACAQProjectUI workbenchUI, ACAQAlgorithm algorithm, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
+    public ACAQAlgorithmParametersUI(ACAQProjectWorkbench workbenchUI, ACAQAlgorithm algorithm, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
         super(workbenchUI, algorithm, documentation, documentationBelow, withDocumentation);
         this.algorithm = algorithm;
     }

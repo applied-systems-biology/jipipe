@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.ui.extensionbuilder.traiteditor;
 
-import org.hkijena.acaq5.ui.ACAQJsonExtensionUI;
-import org.hkijena.acaq5.ui.ACAQJsonExtensionUIPanel;
+import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
+import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
@@ -20,7 +20,7 @@ import java.awt.*;
 /**
  * UI for a single {@link ACAQTraitNode}
  */
-public class ACAQSingleTraitSelectionPanelUI extends ACAQJsonExtensionUIPanel {
+public class ACAQSingleTraitSelectionPanelUI extends ACAQJsonExtensionWorkbenchPanel {
     private ACAQTraitNode node;
     private ACAQTraitGraph graph;
 
@@ -29,7 +29,7 @@ public class ACAQSingleTraitSelectionPanelUI extends ACAQJsonExtensionUIPanel {
      * @param node        the node
      * @param graph       the graph
      */
-    public ACAQSingleTraitSelectionPanelUI(ACAQJsonExtensionUI workbenchUI, ACAQTraitNode node, ACAQTraitGraph graph) {
+    public ACAQSingleTraitSelectionPanelUI(ACAQJsonExtensionWorkbench workbenchUI, ACAQTraitNode node, ACAQTraitGraph graph) {
         super(workbenchUI);
         this.node = node;
         this.graph = graph;
@@ -40,7 +40,7 @@ public class ACAQSingleTraitSelectionPanelUI extends ACAQJsonExtensionUIPanel {
         setLayout(new BorderLayout());
         DocumentTabPane tabbedPane = new DocumentTabPane();
 
-        ACAQJsonExtensionAlgorithmParametersUI parametersUI = new ACAQJsonExtensionAlgorithmParametersUI(getWorkbenchUI(),
+        ACAQJsonExtensionAlgorithmParametersUI parametersUI = new ACAQJsonExtensionAlgorithmParametersUI(getExtensionWorkbenchUI(),
                 node,
                 MarkdownDocument.fromPluginResource("documentation/trait-graph.md"),
                 true, true);

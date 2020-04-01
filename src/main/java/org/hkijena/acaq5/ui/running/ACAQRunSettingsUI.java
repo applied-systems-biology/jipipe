@@ -4,8 +4,8 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQMutableRunConfiguration;
 import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.ui.ACAQProjectUI;
-import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.components.ACAQValidityReportUI;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
@@ -25,14 +25,14 @@ import java.io.StringWriter;
 /**
  * Settings UI for {@link org.hkijena.acaq5.api.ACAQRunConfiguration}
  */
-public class ACAQRunSettingsUI extends ACAQProjectUIPanel {
+public class ACAQRunSettingsUI extends ACAQProjectWorkbenchPanel {
 
     private ACAQRun run;
 
     /**
      * @param workbenchUI workbench UI
      */
-    public ACAQRunSettingsUI(ACAQProjectUI workbenchUI) {
+    public ACAQRunSettingsUI(ACAQProjectWorkbench workbenchUI) {
         super(workbenchUI);
         initialize();
         ACAQRunnerQueue.getInstance().getEventBus().register(this);
@@ -42,7 +42,7 @@ public class ACAQRunSettingsUI extends ACAQProjectUIPanel {
         setLayout(new BorderLayout(8, 8));
 
         ACAQValidityReport report = new ACAQValidityReport();
-        getWorkbenchUI().getProject().reportValidity(report);
+        getProjectWorkbench().getProject().reportValidity(report);
         if (report.isValid()) {
             initializeSetupGUI();
         } else {
@@ -81,8 +81,8 @@ public class ACAQRunSettingsUI extends ACAQProjectUIPanel {
         JButton runButton = new JButton("Retry", UIUtils.getIconFromResources("refresh.png"));
         runButton.addActionListener(e -> {
             report.clear();
-            getWorkbenchUI().getProject().reportValidity(report);
-            getWorkbenchUI().sendStatusBarText("Re-validated ACAQ5 project");
+            getProjectWorkbench().getProject().reportValidity(report);
+            getProjectWorkbench().sendStatusBarText("Re-validated ACAQ5 project");
             if (report.isValid())
                 initializeSetupGUI();
             else
@@ -97,7 +97,7 @@ public class ACAQRunSettingsUI extends ACAQProjectUIPanel {
     private void initializeSetupGUI() {
 
         try {
-            run = new ACAQRun(getWorkbenchUI().getProject(), new ACAQMutableRunConfiguration());
+            run = new ACAQRun(getProjectWorkbench().getProject(), new ACAQMutableRunConfiguration());
         } catch (Exception e) {
             openError(e);
             return;
@@ -105,7 +105,7 @@ public class ACAQRunSettingsUI extends ACAQProjectUIPanel {
 
         removeAll();
         JPanel setupPanel = new JPanel(new BorderLayout());
-        ACAQParameterAccessUI formPanel = new ACAQParameterAccessUI(getWorkbenchUI(), run.getConfiguration(),
+        ACAQParameterAccessUI formPanel = new ACAQParameterAccessUI(getProjectWorkbench(), run.getConfiguration(),
                 MarkdownDocument.fromPluginResource("documentation/run.md"),
                 false,
                 true);
@@ -170,7 +170,7 @@ public class ACAQRunSettingsUI extends ACAQProjectUIPanel {
     }
 
     private void openResults() {
-        ACAQResultUI resultUI = new ACAQResultUI(getWorkbenchUI(), run);
+        ACAQResultUI resultUI = new ACAQResultUI(getProjectWorkbench(), run);
         removeAll();
         add(resultUI, BorderLayout.CENTER);
         revalidate();

@@ -2,7 +2,7 @@ package org.hkijena.acaq5.ui.resultanalysis;
 
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
-import org.hkijena.acaq5.ui.ACAQProjectUI;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -27,7 +27,7 @@ public class ACAQDefaultResultDataSlotRowUI extends ACAQResultDataSlotRowUI {
      * @param slot        The data slot
      * @param row         The data slow row
      */
-    public ACAQDefaultResultDataSlotRowUI(ACAQProjectUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
+    public ACAQDefaultResultDataSlotRowUI(ACAQProjectWorkbench workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
         super(workbenchUI, slot, row);
         registerActions();
         initialize();

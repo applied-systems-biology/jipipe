@@ -4,8 +4,8 @@ import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.ui.ACAQProjectUI;
-import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * UI around an {@link ACAQRun} result
  */
-public class ACAQResultUI extends ACAQProjectUIPanel {
+public class ACAQResultUI extends ACAQProjectWorkbenchPanel {
     private ACAQRun run;
     private JSplitPane splitPane;
     private ACAQResultAlgorithmTree algorithmTree;
@@ -30,7 +30,7 @@ public class ACAQResultUI extends ACAQProjectUIPanel {
      * @param workbenchUI the workbench
      * @param run         the finished run
      */
-    public ACAQResultUI(ACAQProjectUI workbenchUI, ACAQRun run) {
+    public ACAQResultUI(ACAQProjectWorkbench workbenchUI, ACAQRun run) {
         super(workbenchUI);
         this.run = run;
         initialize();
@@ -39,7 +39,7 @@ public class ACAQResultUI extends ACAQProjectUIPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        algorithmTree = new ACAQResultAlgorithmTree(getWorkbenchUI(), run);
+        algorithmTree = new ACAQResultAlgorithmTree(getProjectWorkbench(), run);
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, algorithmTree,
                 new JPanel());
@@ -110,13 +110,13 @@ public class ACAQResultUI extends ACAQProjectUIPanel {
     }
 
     private void showDataSlots(List<ACAQDataSlot> slots) {
-        ACAQMultipleResultDataSlotTableUI ui = new ACAQMultipleResultDataSlotTableUI(getWorkbenchUI(), run, slots);
+        ACAQMultipleResultDataSlotTableUI ui = new ACAQMultipleResultDataSlotTableUI(getProjectWorkbench(), run, slots);
         splitPane.setRightComponent(ui);
         revalidate();
     }
 
     private void showDataSlot(ACAQDataSlot dataSlot) {
-        ACAQResultDataSlotTableUI ui = new ACAQResultDataSlotTableUI(getWorkbenchUI(), run, dataSlot);
+        ACAQResultDataSlotTableUI ui = new ACAQResultDataSlotTableUI(getProjectWorkbench(), run, dataSlot);
         splitPane.setRightComponent(ui);
         revalidate();
     }

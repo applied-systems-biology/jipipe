@@ -8,14 +8,14 @@ import java.awt.*;
 /**
  * UI that shows some introduction
  */
-public class ACAQInfoUI extends ACAQProjectUIPanel {
+public class ACAQInfoUI extends ACAQProjectWorkbenchPanel {
 
     /**
      * Creates a new instance
      *
      * @param workbenchUI The workbench UI
      */
-    public ACAQInfoUI(ACAQProjectUI workbenchUI) {
+    public ACAQInfoUI(ACAQProjectWorkbench workbenchUI) {
         super(workbenchUI);
         initialize();
     }

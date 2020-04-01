@@ -3,7 +3,7 @@ package org.hkijena.acaq5.extensions.imagejdatatypes.resultanalysis;
 import ij.measure.ResultsTable;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
-import org.hkijena.acaq5.ui.ACAQProjectUI;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultResultDataSlotRowUI;
 import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableAnalyzerUI;
 import org.hkijena.acaq5.utils.PathUtils;
@@ -23,7 +23,7 @@ public class ResultsTableDataSlotRowUI extends ACAQDefaultResultDataSlotRowUI {
      * @param slot        the slot
      * @param row         the data row
      */
-    public ResultsTableDataSlotRowUI(ACAQProjectUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
+    public ResultsTableDataSlotRowUI(ACAQProjectWorkbench workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
         super(workbenchUI, slot, row);
     }
 
@@ -41,8 +41,8 @@ public class ResultsTableDataSlotRowUI extends ACAQDefaultResultDataSlotRowUI {
         Path csvFile = findResultsTableFile();
         if (csvFile != null) {
             registerAction("Open in ACAQ5", "Opens the table in ACAQ5", UIUtils.getIconFromResources("acaq5.png"), e -> {
-                ACAQTableAnalyzerUI.importTableFromCSV(csvFile, getWorkbenchUI());
-                getWorkbenchUI().getDocumentTabPane().switchToLastTab();
+                ACAQTableAnalyzerUI.importTableFromCSV(csvFile, getProjectWorkbench());
+                getProjectWorkbench().getDocumentTabPane().switchToLastTab();
             });
             registerAction("Open in ImageJ", "Imports the table '" + csvFile + "' into ImageJ", UIUtils.getIconFromResources("imagej.png"), e -> {
                 importCSV(csvFile);

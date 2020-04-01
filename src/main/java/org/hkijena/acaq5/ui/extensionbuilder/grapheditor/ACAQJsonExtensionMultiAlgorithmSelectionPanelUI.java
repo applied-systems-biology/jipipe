@@ -2,8 +2,8 @@ package org.hkijena.acaq5.ui.extensionbuilder.grapheditor;
 
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
-import org.hkijena.acaq5.ui.ACAQJsonExtensionUI;
-import org.hkijena.acaq5.ui.ACAQJsonExtensionUIPanel;
+import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
+import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.utils.TooltipUtils;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 /**
  * Panel shown when multiple algorithms are selected
  */
-public class ACAQJsonExtensionMultiAlgorithmSelectionPanelUI extends ACAQJsonExtensionUIPanel {
+public class ACAQJsonExtensionMultiAlgorithmSelectionPanelUI extends ACAQJsonExtensionWorkbenchPanel {
     private ACAQAlgorithmGraph graph;
     private Set<ACAQAlgorithm> algorithms;
 
@@ -27,7 +27,7 @@ public class ACAQJsonExtensionMultiAlgorithmSelectionPanelUI extends ACAQJsonExt
      * @param graph       The graph
      * @param algorithms  Selected algorithms
      */
-    public ACAQJsonExtensionMultiAlgorithmSelectionPanelUI(ACAQJsonExtensionUI workbenchUI, ACAQAlgorithmGraph graph, Set<ACAQAlgorithm> algorithms) {
+    public ACAQJsonExtensionMultiAlgorithmSelectionPanelUI(ACAQJsonExtensionWorkbench workbenchUI, ACAQAlgorithmGraph graph, Set<ACAQAlgorithm> algorithms) {
         super(workbenchUI);
         this.graph = graph;
         this.algorithms = algorithms;

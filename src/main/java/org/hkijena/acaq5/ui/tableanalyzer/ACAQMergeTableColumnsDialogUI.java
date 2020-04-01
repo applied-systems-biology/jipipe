@@ -12,7 +12,7 @@
 
 package org.hkijena.acaq5.ui.tableanalyzer;
 
-import org.hkijena.acaq5.ui.ACAQProjectUI;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.components.DocumentTabListCellRenderer;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.utils.TableUtils;
@@ -42,7 +42,7 @@ public class ACAQMergeTableColumnsDialogUI extends JDialog {
         this.tableAnalyzerUI = tableAnalyzerUI;
         this.tableModel = tableAnalyzerUI.getTableModel();
 
-        for (DocumentTabPane.DocumentTab tab : tableAnalyzerUI.getWorkbenchUI().getDocumentTabPane().getTabs()) {
+        for (DocumentTabPane.DocumentTab tab : tableAnalyzerUI.getProjectWorkbench().getDocumentTabPane().getTabs()) {
             if (tab.getContent() instanceof ACAQTableAnalyzerUI && tab.getContent() != tableAnalyzerUI) {
                 tableSelection.addItem(tab);
             }
@@ -53,7 +53,7 @@ public class ACAQMergeTableColumnsDialogUI extends JDialog {
      * @param workbenchUI The workbench
      * @param tableModel  The table
      */
-    public ACAQMergeTableColumnsDialogUI(ACAQProjectUI workbenchUI, DefaultTableModel tableModel) {
+    public ACAQMergeTableColumnsDialogUI(ACAQProjectWorkbench workbenchUI, DefaultTableModel tableModel) {
         this.tableModel = tableModel;
         initialize();
 

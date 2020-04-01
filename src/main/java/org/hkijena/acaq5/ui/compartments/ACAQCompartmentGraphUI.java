@@ -8,8 +8,8 @@ import org.hkijena.acaq5.api.compartments.ACAQExportedCompartment;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
-import org.hkijena.acaq5.ui.ACAQProjectUI;
-import org.hkijena.acaq5.ui.ACAQProjectUIPanel;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
@@ -35,7 +35,7 @@ import static org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph.COMPARTMENT_DEF
 /**
  * Graph editor UI for a project compartment graph
  */
-public class ACAQCompartmentGraphUI extends ACAQProjectUIPanel implements MouseListener, MouseMotionListener {
+public class ACAQCompartmentGraphUI extends ACAQProjectWorkbenchPanel implements MouseListener, MouseMotionListener {
 
     protected JMenuBar menuBar = new JMenuBar();
     private ACAQAlgorithmGraphCanvasUI graphUI;
@@ -56,7 +56,7 @@ public class ACAQCompartmentGraphUI extends ACAQProjectUIPanel implements MouseL
     /**
      * @param workbenchUI The workbench UI
      */
-    public ACAQCompartmentGraphUI(ACAQProjectUI workbenchUI) {
+    public ACAQCompartmentGraphUI(ACAQProjectWorkbench workbenchUI) {
         super(workbenchUI);
         this.compartmentGraph = workbenchUI.getProject().getCompartmentGraph();
         initialize();
@@ -140,7 +140,7 @@ public class ACAQCompartmentGraphUI extends ACAQProjectUIPanel implements MouseL
         if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
                 ImageIO.write(screenshot, "PNG", fileChooser.getSelectedFile());
-                getWorkbenchUI().sendStatusBarText("Exported graph as " + fileChooser.getSelectedFile());
+                getProjectWorkbench().sendStatusBarText("Exported graph as " + fileChooser.getSelectedFile());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -208,7 +208,7 @@ public class ACAQCompartmentGraphUI extends ACAQProjectUIPanel implements MouseL
     @Subscribe
     public void onOpenCompartment(DefaultUIActionRequestedEvent event) {
         if (event.getUi() != null && event.getUi().getAlgorithm() instanceof ACAQProjectCompartment) {
-            getWorkbenchUI().openCompartmentGraph((ACAQProjectCompartment) event.getUi().getAlgorithm(), true);
+            getProjectWorkbench().openCompartmentGraph((ACAQProjectCompartment) event.getUi().getAlgorithm(), true);
         }
     }
 
@@ -276,11 +276,11 @@ public class ACAQCompartmentGraphUI extends ACAQProjectUIPanel implements MouseL
         ui.setSelected(true);
         if (selection.size() == 1) {
             int dividerLocation = splitPane.getDividerLocation();
-            splitPane.setRightComponent(new ACAQSingleCompartmentSelectionPanelUI(getWorkbenchUI(), (ACAQProjectCompartment) ui.getAlgorithm()));
+            splitPane.setRightComponent(new ACAQSingleCompartmentSelectionPanelUI(getProjectWorkbench(), (ACAQProjectCompartment) ui.getAlgorithm()));
             splitPane.setDividerLocation(dividerLocation);
         } else {
             int dividerLocation = splitPane.getDividerLocation();
-            splitPane.setRightComponent(new ACAQMultiCompartmentSelectionPanelUI(getWorkbenchUI(),
+            splitPane.setRightComponent(new ACAQMultiCompartmentSelectionPanelUI(getProjectWorkbench(),
                     selection.stream().map(a -> (ACAQProjectCompartment) a.getAlgorithm()).collect(Collectors.toSet())));
             splitPane.setDividerLocation(dividerLocation);
         }
@@ -300,9 +300,9 @@ public class ACAQCompartmentGraphUI extends ACAQProjectUIPanel implements MouseL
             if (selection.isEmpty()) {
                 splitPane.setRightComponent(documentationPanel);
             } else if (selection.size() == 1) {
-                splitPane.setRightComponent(new ACAQSingleCompartmentSelectionPanelUI(getWorkbenchUI(), (ACAQProjectCompartment) ui.getAlgorithm()));
+                splitPane.setRightComponent(new ACAQSingleCompartmentSelectionPanelUI(getProjectWorkbench(), (ACAQProjectCompartment) ui.getAlgorithm()));
             } else {
-                splitPane.setRightComponent(new ACAQMultiCompartmentSelectionPanelUI(getWorkbenchUI(),
+                splitPane.setRightComponent(new ACAQMultiCompartmentSelectionPanelUI(getProjectWorkbench(),
                         selection.stream().map(a -> (ACAQProjectCompartment) a.getAlgorithm()).collect(Collectors.toSet())));
             }
             splitPane.setDividerLocation(dividerLocation);
