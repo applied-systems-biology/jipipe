@@ -1,5 +1,7 @@
 package org.hkijena.acaq5.extensions.filesystem.ui.resultanalysis;
 
+import ij.IJ;
+import ij.io.Opener;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.ACAQFileData;
@@ -68,6 +70,23 @@ public class FilesystemDataSlotRowUI extends ACAQDefaultResultDataSlotRowUI {
                         e -> copyPathToClipboard(finalFileOrFolderPath));
                 registerAction("Open", "Opens '" + fileOrFolderPath + "' in the default application", UIUtils.getIconFromResources("open.png"),
                         e -> open(finalFileOrFolderPath));
+                if (Files.isRegularFile(fileOrFolderPath)) {
+                    String fileType = Opener.getFileFormat(fileOrFolderPath.toString());
+                    switch (fileType) {
+                        case "tif":
+                        case "dcm":
+                        case "fits":
+                        case "pgm":
+                        case "jpg":
+                        case "gif":
+                        case "lut":
+                        case "bmp":
+                        case "roi": {
+                            registerAction("Import", "Imports the data into ImageJ",
+                                    UIUtils.getIconFromResources("imagej.png"), e -> IJ.open(finalFileOrFolderPath.toString()));
+                        }
+                    }
+                }
             }
         }
     }
