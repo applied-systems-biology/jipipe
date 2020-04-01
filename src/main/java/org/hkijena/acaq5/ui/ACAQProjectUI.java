@@ -151,7 +151,7 @@ public class ACAQProjectUI extends JPanel {
             if (switchToTab)
                 documentTabPane.switchToLastTab();
         } else if (switchToTab) {
-            documentTabPane.setSelectedComponent(compartmentUIs.get(0));
+            documentTabPane.switchToContent(compartmentUIs.get(0));
         }
     }
 
@@ -336,8 +336,8 @@ public class ACAQProjectUI extends JPanel {
     }
 
     private void newCompartmentAfterCurrent() {
-        if (documentTabPane.getSelectedComponent() instanceof ACAQCompartmentUI) {
-            ACAQCompartmentUI ui = (ACAQCompartmentUI) documentTabPane.getSelectedComponent();
+        if (documentTabPane.getCurrentContent() instanceof ACAQCompartmentUI) {
+            ACAQCompartmentUI ui = (ACAQCompartmentUI) documentTabPane.getCurrentContent();
             String compartmentName = UIUtils.getUniqueStringByDialog(this, "Please enter the name of the compartment",
                     "Compartment", s -> project.getCompartments().containsKey(s));
             if (compartmentName != null && !compartmentName.trim().isEmpty()) {

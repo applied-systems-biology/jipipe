@@ -26,9 +26,20 @@ import java.util.stream.Collectors;
 /**
  * {@link JTabbedPane} with larger tabs, ability to close tabs, singleton tabs that are hidden instead of being closed
  */
-public class DocumentTabPane extends JTabbedPane {
+public class DocumentTabPane extends JPanel {
 
+    private JTabbedPane tabbedPane;
+
+    /**
+     * List of open tabs
+     */
     private List<DocumentTab> tabs = new ArrayList<>();
+
+    /**
+     * Last tabs have priority over lower index tabs
+     */
+    private List<DocumentTab> tabHistory = new ArrayList<>();
+
     /**
      * Contains tabs that can be closed, but opened again
      */
@@ -38,8 +49,38 @@ public class DocumentTabPane extends JTabbedPane {
      * Creates a new instance
      */
     public DocumentTabPane() {
-        super(JTabbedPane.TOP);
-        setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+        initialize();
+    }
+
+    private void initialize() {
+        setLayout(new BorderLayout());
+        tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+        tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+        tabbedPane.addChangeListener(e -> updateTabHistory());
+        add(tabbedPane, BorderLayout.CENTER);
+    }
+
+    /**
+     * Updates the order of tabs we go though when tabs are closed
+     */
+    private void updateTabHistory() {
+        DocumentTab tab = getTabContaining(tabbedPane.getSelectedComponent());
+        if(tab != null) {
+            int indexInHistory = tabHistory.indexOf(tab);
+            if (indexInHistory >= 0) {
+                tabHistory.remove(indexInHistory);
+            }
+            tabHistory.add(tab);
+        }
+    }
+
+    /**
+     * Returns the tab that contains the specified content
+     * @param content the content
+     * @return the tab containing the content. Null if not found
+     */
+    public DocumentTab getTabContaining(Component content) {
+        return tabs.stream().filter(t -> t.getContent() == content).findFirst().orElse(null);
     }
 
     public List<DocumentTab> getTabs() {
@@ -69,7 +110,7 @@ public class DocumentTabPane extends JTabbedPane {
         tabPanel.add(titleLabel);
         tabPanel.add(Box.createHorizontalGlue());
 
-        DocumentTab tab = new DocumentTab(title, icon, tabPanel, component);
+        DocumentTab tab = new DocumentTab(title, icon, tabPanel, component, closeMode);
 
         if (allowRename) {
             JButton renameButton = new JButton(UIUtils.getIconFromResources("label.png"));
@@ -92,15 +133,7 @@ public class DocumentTabPane extends JTabbedPane {
             closeButton.setBackground(Color.WHITE);
             closeButton.setOpaque(false);
             closeButton.setEnabled(closeMode != CloseMode.withDisabledCloseButton);
-            closeButton.addActionListener(e -> {
-                if (closeMode == CloseMode.withAskOnCloseButton &&
-                        JOptionPane.showConfirmDialog(component, "Do you really want to close this?",
-                                "Close tab", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) != JOptionPane.YES_OPTION) {
-                    return;
-                }
-                remove(component);
-                tabs.remove(tab);
-            });
+            closeButton.addActionListener(e -> closeTab(tab));
             tabPanel.add(Box.createHorizontalStrut(8));
             tabPanel.add(closeButton);
 
@@ -108,15 +141,9 @@ public class DocumentTabPane extends JTabbedPane {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     if (SwingUtilities.isMiddleMouseButton(e)) {
-                        if (closeMode == CloseMode.withAskOnCloseButton &&
-                                JOptionPane.showConfirmDialog(component, "Do you really want to close this?",
-                                        "Close tab", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) != JOptionPane.YES_OPTION) {
-                            return;
-                        }
-                        remove(component);
-                        tabs.remove(tab);
+                        closeTab(tab);
                     } else {
-                        setSelectedComponent(component);
+                        tabbedPane.setSelectedComponent(component);
                     }
                 }
             });
@@ -124,6 +151,37 @@ public class DocumentTabPane extends JTabbedPane {
 
         addTab(tab);
         return tab;
+    }
+
+    /**
+     * Closes the tab. This includes user interaction.
+     *
+     * @param tab the tab
+     */
+    public void closeTab(DocumentTab tab) {
+        if (tab.closeMode == CloseMode.withAskOnCloseButton) {
+            if (JOptionPane.showConfirmDialog(tab.getContent(), "Do you really want to close this?",
+                    "Close tab", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                forceCloseTab(tab);
+            }
+        } else {
+            forceCloseTab(tab);
+        }
+    }
+
+    /**
+     * Closes the tab. Has no user interaction.
+     *
+     * @param tab the tab
+     */
+    public void forceCloseTab(DocumentTab tab) {
+        tabs.remove(tab);
+        tabHistory.remove(tab);
+
+        if(!tabHistory.isEmpty()) {
+            tabbedPane.setSelectedComponent(tabHistory.get(tabHistory.size() - 1).getContent());
+        }
+        tabbedPane.remove(tab.getContent());
     }
 
     /**
@@ -140,12 +198,19 @@ public class DocumentTabPane extends JTabbedPane {
     }
 
     /**
+     * @return the number of managed tabs
+     */
+    public int getTabCount() {
+        return tabbedPane.getTabCount();
+    }
+
+    /**
      * Switches the the last tab.
      * Fails silently if there are no tabs
      */
     public void switchToLastTab() {
         if (getTabCount() > 0) {
-            setSelectedIndex(getTabCount() - 1);
+            tabbedPane.setSelectedIndex(getTabCount() - 1);
         }
     }
 
@@ -162,7 +227,7 @@ public class DocumentTabPane extends JTabbedPane {
         DocumentTab tab = addTab(title, icon, component, CloseMode.withSilentCloseButton);
         singletonTabs.put(id, tab);
         if (hidden) {
-            remove(tab.getContent());
+            forceCloseTab(tab);
         }
     }
 
@@ -174,21 +239,22 @@ public class DocumentTabPane extends JTabbedPane {
     public void selectSingletonTab(String id) {
         DocumentTab tab = singletonTabs.get(id);
         for (int i = 0; i < getTabCount(); ++i) {
-            if (getTabComponentAt(i) == tab.getTabComponent()) {
-                setSelectedComponent(tab.getContent());
+            if (tabbedPane.getTabComponentAt(i) == tab.getTabComponent()) {
+                tabbedPane.setSelectedComponent(tab.getContent());
                 return;
             }
         }
 
         // Was closed; reinstantiate the component
         addTab(tab);
-        setSelectedIndex(getTabCount() - 1);
+        tabbedPane.setSelectedIndex(getTabCount() - 1);
     }
 
     private void addTab(DocumentTab tab) {
-        addTab(tab.getTitle(), tab.getIcon(), tab.getContent());
-        setTabComponentAt(getTabCount() - 1, tab.getTabComponent());
+        tabbedPane.addTab(tab.getTitle(), tab.getIcon(), tab.getContent());
+        tabbedPane.setTabComponentAt(getTabCount() - 1, tab.getTabComponent());
         tabs.add(tab);
+        tabHistory.add(tab);
     }
 
     /**
@@ -203,6 +269,22 @@ public class DocumentTabPane extends JTabbedPane {
                 return tab.getTitle();
         }
         return "Document";
+    }
+
+    /**
+     * Switches to the provided content
+     *
+     * @param content the tab content
+     */
+    public void switchToContent(Component content) {
+        tabbedPane.setSelectedComponent(content);
+    }
+
+    /**
+     * @return the currently selected content
+     */
+    public Component getCurrentContent() {
+        return tabbedPane.getSelectedComponent();
     }
 
     /**
@@ -235,12 +317,14 @@ public class DocumentTabPane extends JTabbedPane {
         private Icon icon;
         private Component tabComponent;
         private Component content;
+        private CloseMode closeMode;
 
-        private DocumentTab(String title, Icon icon, Component tabComponent, Component content) {
+        private DocumentTab(String title, Icon icon, Component tabComponent, Component content, CloseMode closeMode) {
             this.title = title;
             this.icon = icon;
             this.tabComponent = tabComponent;
             this.content = content;
+            this.closeMode = closeMode;
         }
 
         public String getTitle() {
@@ -261,6 +345,10 @@ public class DocumentTabPane extends JTabbedPane {
 
         public Component getContent() {
             return content;
+        }
+
+        public CloseMode getCloseMode() {
+            return closeMode;
         }
     }
 

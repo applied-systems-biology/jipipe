@@ -63,8 +63,7 @@ public class GraphWrapperAlgorithmDeclarationUI extends ACAQJsonExtensionUIPanel
             if (tab.getContent() instanceof ACAQJsonExtensionAlgorithmGraphUI) {
                 ACAQJsonExtensionAlgorithmGraphUI ui = (ACAQJsonExtensionAlgorithmGraphUI) tab.getContent();
                 if (ui.getAlgorithmGraph() == declaration.getGraph()) {
-                    getWorkbenchUI().getDocumentTabPane().setSelectedComponent(ui);
-                    ;
+                    getWorkbenchUI().getDocumentTabPane().switchToContent(ui);
                     return;
                 }
             }
