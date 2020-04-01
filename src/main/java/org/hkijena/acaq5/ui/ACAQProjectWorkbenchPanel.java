@@ -2,8 +2,6 @@ package org.hkijena.acaq5.ui;
 
 import org.hkijena.acaq5.api.ACAQProject;
 
-import javax.swing.*;
-
 /**
  * Panel that holds a reference to {@link ACAQProjectWorkbench}
  */

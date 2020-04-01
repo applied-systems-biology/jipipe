@@ -23,7 +23,7 @@ import org.hkijena.acaq5.utils.PathFilterCollection;
 // Traits
 public class ACAQFilterFiles extends ACAQIteratingAlgorithm {
 
-//    private PathFilter filter = new PathFilter();
+    //    private PathFilter filter = new PathFilter();
     private PathFilterCollection filters = new PathFilterCollection();
 
     /**
@@ -53,22 +53,21 @@ public class ACAQFilterFiles extends ACAQIteratingAlgorithm {
     protected void runIteration(ACAQDataInterface dataInterface) {
         ACAQFileData inputData = dataInterface.getInputData("Files");
         ACAQDataSlot firstOutputSlot = getFirstOutputSlot();
-        if(!filters.isEmpty()) {
+        if (!filters.isEmpty()) {
             for (PathFilter filter : filters) {
                 if (filter.test(inputData.getFilePath())) {
                     dataInterface.addOutputData(firstOutputSlot, inputData);
                     break;
                 }
             }
-        }
-        else {
+        } else {
             dataInterface.addOutputData(firstOutputSlot, inputData);
         }
     }
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        for(int i = 0; i < filters.size(); ++i) {
+        for (int i = 0; i < filters.size(); ++i) {
             report.forCategory("Filter").forCategory("Item " + (i + 1)).report(filters.get(i));
         }
     }

@@ -65,7 +65,7 @@ public class DocumentTabPane extends JPanel {
      */
     private void updateTabHistory() {
         DocumentTab tab = getTabContaining(tabbedPane.getSelectedComponent());
-        if(tab != null) {
+        if (tab != null) {
             int indexInHistory = tabHistory.indexOf(tab);
             if (indexInHistory >= 0) {
                 tabHistory.remove(indexInHistory);
@@ -76,6 +76,7 @@ public class DocumentTabPane extends JPanel {
 
     /**
      * Returns the tab that contains the specified content
+     *
      * @param content the content
      * @return the tab containing the content. Null if not found
      */
@@ -178,7 +179,7 @@ public class DocumentTabPane extends JPanel {
         tabs.remove(tab);
         tabHistory.remove(tab);
 
-        if(!tabHistory.isEmpty()) {
+        if (!tabHistory.isEmpty()) {
             tabbedPane.setSelectedComponent(tabHistory.get(tabHistory.size() - 1).getContent());
         }
         tabbedPane.remove(tab.getContent());

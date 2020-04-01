@@ -129,8 +129,8 @@ public class ScreenImage {
      * which all extend from Component, not JComponent.
      *
      * @param component AWT component to create image from
-     * @throws AWTException see Robot class constructors
      * @return image the image for the given region
+     * @throws AWTException see Robot class constructors
      */
     public static BufferedImage createImage(Component component)
             throws AWTException {

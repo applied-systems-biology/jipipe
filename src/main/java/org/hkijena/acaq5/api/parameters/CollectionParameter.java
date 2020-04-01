@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.acaq5.utils.JsonUtils;
 
@@ -31,6 +30,7 @@ public abstract class CollectionParameter<T> extends ArrayList<T> {
 
     /**
      * Adds a new instance of the content class
+     *
      * @return the instance
      */
     public T addNewInstance() {

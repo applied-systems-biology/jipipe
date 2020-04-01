@@ -12,8 +12,6 @@ import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro.GraphWrapperAlgorithmDeclaration;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
-import org.hkijena.acaq5.ui.components.DocumentTabPane;
-import org.hkijena.acaq5.ui.extensionbuilder.grapheditor.ACAQJsonExtensionAlgorithmGraphUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;

@@ -15,10 +15,11 @@ public class CollectionEntryParameterAccess<T> implements ACAQParameterAccess {
 
     /**
      * Creates a new instance
-     * @param parent the parent access
+     *
+     * @param parent    the parent access
      * @param entryList the list
      * @param entryType type of the content
-     * @param index the list entry index
+     * @param index     the list entry index
      */
     public CollectionEntryParameterAccess(ACAQParameterAccess parent, List<T> entryList, Class<T> entryType, int index) {
         this.entryList = entryList;
@@ -59,12 +60,12 @@ public class CollectionEntryParameterAccess<T> implements ACAQParameterAccess {
 
     @Override
     public <U> U get() {
-        return (U)entryList.get(index);
+        return (U) entryList.get(index);
     }
 
     @Override
     public <U> boolean set(U value) {
-        entryList.set(index, (T)value);
+        entryList.set(index, (T) value);
         return true;
     }
 

@@ -2,8 +2,6 @@ package org.hkijena.acaq5.ui;
 
 import org.hkijena.acaq5.ACAQJsonExtension;
 
-import javax.swing.*;
-
 /**
  * UI panel that contains references to an {@link ACAQJsonExtension} UI
  */

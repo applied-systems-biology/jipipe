@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors;
 
-import org.hkijena.acaq5.api.parameters.ACAQMutableParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.CollectionEntryParameterAccess;
 import org.hkijena.acaq5.api.parameters.CollectionParameter;
@@ -9,7 +8,6 @@ import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIParametertypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Context;
-import org.scijava.ui.ToolBar;
 
 import javax.swing.*;
 import java.awt.*;
