@@ -35,6 +35,7 @@ public class ACAQRunCommand implements Command {
         ACAQDefaultRegistry.instantiate(pluginService);
         try {
             ACAQProject project = ACAQProject.loadProject(parameterFile.toPath());
+            project.setWorkDirectory(parameterFile.toPath().getParent());
             ACAQMutableRunConfiguration configuration = new ACAQMutableRunConfiguration();
             configuration.setOutputPath(outputDirectory.toPath());
             ACAQRun run = new ACAQRun(project, configuration);

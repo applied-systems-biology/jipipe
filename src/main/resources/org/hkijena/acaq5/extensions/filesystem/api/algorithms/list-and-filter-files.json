@@ -10,7 +10,7 @@
   },
   "category" : "FileSystem",
   "parameter-visibilities" : {
-    "visible-keys" : [ "default-preprocessing-filter-files/filter" ]
+    "visible-keys" : [ "default-preprocessing-filter-files/filters" ]
   },
   "graph" : {
     "nodes" : {

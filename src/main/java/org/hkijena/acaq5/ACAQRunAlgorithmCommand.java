@@ -85,6 +85,7 @@ public class ACAQRunAlgorithmCommand extends DynamicCommand implements Initializ
                 return;
             }
         }
+        IJ.showStatus("Running ACAQ5 algorithm ...");
         IJ.showProgress(1, 3);
         settings.pushInput();
         IJ.showProgress(2, 3);

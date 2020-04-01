@@ -1,6 +1,7 @@
 package org.hkijena.acaq5;
 
 import com.google.common.eventbus.EventBus;
+import ij.IJ;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.events.ExtensionRegisteredEvent;
 import org.hkijena.acaq5.api.registries.*;
@@ -68,8 +69,12 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
      * @param pluginService The plugin service
      */
     private void discover(PluginService pluginService) {
-        for (PluginInfo<ACAQJavaExtension> info : pluginService.getPluginsOfType(ACAQJavaExtension.class).stream()
-                .sorted(ACAQDefaultRegistry::comparePlugins).collect(Collectors.toList())) {
+        IJ.showStatus("Initializing ACAQ5 ...");
+        List<PluginInfo<ACAQJavaExtension>> pluginList = pluginService.getPluginsOfType(ACAQJavaExtension.class).stream()
+                .sorted(ACAQDefaultRegistry::comparePlugins).collect(Collectors.toList());
+        for (int i = 0; i < pluginList.size(); ++i) {
+            PluginInfo<ACAQJavaExtension> info = pluginList.get(i);
+            IJ.showProgress(i + 1, pluginList.size());
             System.out.println("ACAQ5: Registering plugin " + info);
             try {
                 ACAQJavaExtension extension = info.createInstance();

@@ -27,7 +27,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -416,7 +415,7 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectWorkbenchPanel implements M
     public static void initializeMenuForCategory(JMenu menu, ACAQAlgorithmCategory category, ACAQAlgorithmGraph algorithmGraph, String compartment) {
         ACAQDefaultRegistry registryService = ACAQDefaultRegistry.getInstance();
         Set<ACAQAlgorithmDeclaration> algorithmsOfCategory = registryService.getAlgorithmRegistry().getAlgorithmsOfCategory(category);
-        if(algorithmsOfCategory.isEmpty()) {
+        if (algorithmsOfCategory.isEmpty()) {
             menu.setVisible(false);
             return;
         }

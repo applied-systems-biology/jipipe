@@ -138,6 +138,7 @@ public interface ACAQAlgorithmDeclaration {
 
     /**
      * Gets a sorted list of algorithms
+     *
      * @param entries the algorithms to sort
      * @return sorted list
      */
