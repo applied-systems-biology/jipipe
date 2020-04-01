@@ -13,6 +13,7 @@ import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.events.AlgorithmRegisteredEvent;
 import org.hkijena.acaq5.api.events.DatatypeRegisteredEvent;
 import org.hkijena.acaq5.api.events.TraitRegisteredEvent;
+import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;

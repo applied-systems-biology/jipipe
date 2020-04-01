@@ -3,9 +3,10 @@ package org.hkijena.acaq5.api.algorithm;
 import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.data.traits.ACAQDataSlotTraitConfiguration;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
+import org.hkijena.acaq5.utils.StringUtils;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Describes an {@link ACAQAlgorithm}
@@ -113,4 +114,34 @@ public interface ACAQAlgorithmDeclaration {
      * @return List of dependencies
      */
     Set<ACAQDependency> getDependencies();
+
+    /**
+     * Gets the registered algorithms, grouped by their menu paths
+     *
+     * @param declarations The declarations to group
+     * @return Map from menu path to algorithms with this menu path
+     */
+    static Map<String, Set<ACAQAlgorithmDeclaration>> groupByMenuPaths(Set<ACAQAlgorithmDeclaration> declarations) {
+        Map<String, Set<ACAQAlgorithmDeclaration>> result = new HashMap<>();
+        for (ACAQAlgorithmDeclaration declaration : declarations) {
+            String menuPath = StringUtils.getCleanedMenuPath(declaration.getMenuPath());
+            Set<ACAQAlgorithmDeclaration> group = result.getOrDefault(menuPath, null);
+            if (group == null) {
+                group = new HashSet<>();
+                result.put(menuPath, group);
+            }
+            group.add(declaration);
+        }
+
+        return result;
+    }
+
+    /**
+     * Gets a sorted list of algorithms
+     * @param entries the algorithms to sort
+     * @return sorted list
+     */
+    static List<ACAQAlgorithmDeclaration> getSortedList(Set<ACAQAlgorithmDeclaration> entries) {
+        return entries.stream().sorted(Comparator.comparing(ACAQAlgorithmDeclaration::getName)).collect(Collectors.toList());
+    }
 }

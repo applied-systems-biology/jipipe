@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.extensions.filesystem.api.algorithms;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.ACAQFileData;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
  */
 @ACAQDocumentation(name = "List files", description = "Lists all files in the input folder")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.FileSystem)
+@ACAQOrganization(menuPath = "List")
 
 // Algorithm flow
 @AlgorithmInputSlot(value = ACAQFolderData.class, slotName = "Folders", autoCreate = true)

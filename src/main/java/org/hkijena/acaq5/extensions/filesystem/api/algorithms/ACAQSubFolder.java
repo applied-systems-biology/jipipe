@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.extensions.filesystem.api.algorithms;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
@@ -11,6 +12,7 @@ import org.hkijena.acaq5.extensions.filesystem.api.dataypes.ACAQFolderData;
  */
 @ACAQDocumentation(name = "Subfolders", description = "Goes to the specified subfolder")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.FileSystem)
+@ACAQOrganization(menuPath = "Navigate")
 
 // Algorithm flow
 @AlgorithmInputSlot(value = ACAQFolderData.class, slotName = "Folders", autoCreate = true)

@@ -415,18 +415,25 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectWorkbenchPanel implements M
      */
     public static void initializeMenuForCategory(JMenu menu, ACAQAlgorithmCategory category, ACAQAlgorithmGraph algorithmGraph, String compartment) {
         ACAQDefaultRegistry registryService = ACAQDefaultRegistry.getInstance();
-        boolean isEmpty = true;
-        Icon icon = new ColorIcon(16, 16, UIUtils.getFillColorFor(category));
-        for (ACAQAlgorithmDeclaration declaration : registryService.getAlgorithmRegistry().getAlgorithmsOfCategory(category)
-                .stream().sorted(Comparator.comparing(ACAQAlgorithmDeclaration::getName)).collect(Collectors.toList())) {
-            JMenuItem addItem = new JMenuItem(declaration.getName(), icon);
-            addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
-            addItem.addActionListener(e -> algorithmGraph.insertNode(declaration.newInstance(), compartment));
-            menu.add(addItem);
-            isEmpty = false;
-        }
-        if (isEmpty)
+        Set<ACAQAlgorithmDeclaration> algorithmsOfCategory = registryService.getAlgorithmRegistry().getAlgorithmsOfCategory(category);
+        if(algorithmsOfCategory.isEmpty()) {
             menu.setVisible(false);
+            return;
+        }
+
+        Icon icon = new ColorIcon(16, 16, UIUtils.getFillColorFor(category));
+        Map<String, Set<ACAQAlgorithmDeclaration>> byMenuPath = ACAQAlgorithmDeclaration.groupByMenuPaths(algorithmsOfCategory);
+        Map<String, JMenu> menuTree = UIUtils.createMenuTree(menu, byMenuPath.keySet());
+
+        for (Map.Entry<String, Set<ACAQAlgorithmDeclaration>> entry : byMenuPath.entrySet()) {
+            JMenu subMenu = menuTree.get(entry.getKey());
+            for (ACAQAlgorithmDeclaration declaration : ACAQAlgorithmDeclaration.getSortedList(entry.getValue())) {
+                JMenuItem addItem = new JMenuItem(declaration.getName(), icon);
+                addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
+                addItem.addActionListener(e -> algorithmGraph.insertNode(declaration.newInstance(), compartment));
+                subMenu.add(addItem);
+            }
+        }
     }
 
     /**

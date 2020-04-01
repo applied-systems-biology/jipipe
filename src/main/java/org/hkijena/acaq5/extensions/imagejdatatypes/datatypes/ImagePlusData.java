@@ -2,6 +2,7 @@ package org.hkijena.acaq5.extensions.imagejdatatypes.datatypes;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.plugin.Converter;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.data.ACAQData;
