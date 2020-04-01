@@ -11,6 +11,9 @@ public class ImageJDatatypeImporter implements Supplier<ACAQData> {
     private ImageJDatatypeAdapter adapter;
     private String windowName;
 
+    /**
+     * @param adapter the adapter
+     */
     public ImageJDatatypeImporter(ImageJDatatypeAdapter adapter) {
         this.adapter = adapter;
     }

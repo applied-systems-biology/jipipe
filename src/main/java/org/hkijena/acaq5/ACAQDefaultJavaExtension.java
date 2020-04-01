@@ -116,9 +116,9 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
      * Registers a new annotation type. The {@link ACAQTraitDeclaration} is generated from the class as {@link ACAQJavaTraitDeclaration}.
      * It is assumed that all dependencies are met.
      *
-     * @param id Annotation type ID
+     * @param id         Annotation type ID
      * @param traitClass Annotation class
-     * @param icon Annotation icon. Can be null.
+     * @param icon       Annotation icon. Can be null.
      */
     public void registerTrait(String id, Class<? extends ACAQTrait> traitClass, URL icon) {
         registerTrait(new ACAQJavaTraitDeclaration(id, traitClass), icon);
@@ -128,7 +128,7 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
      * Registers a new annotation type. It is assumed that all dependencies are met.
      *
      * @param traitDeclaration Annotation declaration
-     * @param icon Annotation icon. Can be null.
+     * @param icon             Annotation icon. Can be null.
      */
     public void registerTrait(ACAQTraitDeclaration traitDeclaration, URL icon) {
         registry.getTraitRegistry().register(traitDeclaration, this);
@@ -140,11 +140,11 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
     /**
      * Registers a new data type
      *
-     * @param id Data type id
+     * @param id        Data type id
      * @param dataClass Data class
-     * @param icon Icon for the data type. Can be null.
-     * @param rowUI Results analyzer row UI for the data type. Can be null.
-     * @param cellUI Results table cell UI. Can be null.
+     * @param icon      Icon for the data type. Can be null.
+     * @param rowUI     Results analyzer row UI for the data type. Can be null.
+     * @param cellUI    Results table cell UI. Can be null.
      */
     public void registerDatatype(String id, Class<? extends ACAQData> dataClass, URL icon, Class<? extends ACAQResultDataSlotRowUI> rowUI, ACAQResultDataSlotCellUI cellUI) {
         registry.getDatatypeRegistry().register(id, dataClass, this);
@@ -162,7 +162,7 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
     /**
      * Registers a new algorithm. The {@link ACAQAlgorithmDeclaration} is generated as {@link org.hkijena.acaq5.api.algorithm.ACAQJavaAlgorithmDeclaration}.
      *
-     * @param id Algorithm ID
+     * @param id             Algorithm ID
      * @param algorithmClass Algorithm class
      */
     public void registerAlgorithm(String id, Class<? extends ACAQAlgorithm> algorithmClass) {
@@ -193,9 +193,9 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
      * Registers a new parameter type and respective editors
      *
      * @param parameterClass Parameter class
-     * @param uiClass Parameter editor UI
-     * @param name Parameter class name
-     * @param description Description for the parameter type
+     * @param uiClass        Parameter editor UI
+     * @param name           Parameter class name
+     * @param description    Description for the parameter type
      */
     public void registerParameterType(Class<?> parameterClass, Class<? extends ACAQParameterEditorUI> uiClass, String name, String description) {
         ACAQUIParametertypeRegistry parametertypeRegistry = registry.getUIParametertypeRegistry();
@@ -206,10 +206,10 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
     /**
      * Registers a new plot type
      *
-     * @param plotClass Plot class
+     * @param plotClass           Plot class
      * @param plotSettingsUIClass Settings UI class for the plot
-     * @param name Plot type name
-     * @param icon Plot type icon
+     * @param name                Plot type name
+     * @param icon                Plot type icon
      */
     public void registerPlot(Class<? extends ACAQPlot> plotClass, Class<? extends ACAQPlotSettingsUI> plotSettingsUIClass, String name, ImageIcon icon) {
         registry.getPlotBuilderRegistry().register(plotClass, plotSettingsUIClass, name, icon);
@@ -219,11 +219,11 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
      * Registers a new table operation
      *
      * @param operationClass Operation class
-     * @param uiClass UI for the operation
-     * @param name Operation name
-     * @param shortcut Shortcut displayed in the table column headers
-     * @param description Description
-     * @param icon Icon
+     * @param uiClass        UI for the operation
+     * @param name           Operation name
+     * @param shortcut       Shortcut displayed in the table column headers
+     * @param description    Description
+     * @param icon           Icon
      */
     public void registerTableOperation(Class<? extends ACAQTableVectorOperation> operationClass,
                                        Class<? extends ACAQTableVectorOperationUI> uiClass,
@@ -237,7 +237,7 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
     /**
      * Registers an adapter between ImageJ and ACAQ5 data types
      *
-     * @param adapter An adapter
+     * @param adapter         An adapter
      * @param importerUIClass User interface class used for importing ImageJ data
      */
     public void registerImageJDataAdapter(ImageJDatatypeAdapter adapter, Class<? extends ImageJDatatypeImporterUI> importerUIClass) {

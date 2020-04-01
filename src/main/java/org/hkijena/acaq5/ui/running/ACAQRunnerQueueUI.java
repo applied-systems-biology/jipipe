@@ -81,6 +81,7 @@ public class ACAQRunnerQueueUI extends JPanel {
 
     /**
      * Triggered when a worker is started
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -90,6 +91,7 @@ public class ACAQRunnerQueueUI extends JPanel {
 
     /**
      * Triggered when a worker is finished
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -99,6 +101,7 @@ public class ACAQRunnerQueueUI extends JPanel {
 
     /**
      * Triggered when a worker is interrupted
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -108,6 +111,7 @@ public class ACAQRunnerQueueUI extends JPanel {
 
     /**
      * Triggered when a worker reports progress
+     *
      * @param event Generated event
      */
     @Subscribe

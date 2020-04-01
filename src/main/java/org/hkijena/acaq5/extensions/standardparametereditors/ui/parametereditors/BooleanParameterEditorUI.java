@@ -17,7 +17,7 @@ public class BooleanParameterEditorUI extends ACAQParameterEditorUI {
     private boolean isReloading = false;
 
     /**
-     * @param context SciJava context
+     * @param context         SciJava context
      * @param parameterAccess the parameter
      */
     public BooleanParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {

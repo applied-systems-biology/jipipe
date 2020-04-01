@@ -18,10 +18,18 @@ import java.util.List;
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
 public class ROIDataFromFile extends ACAQIteratingAlgorithm {
 
+    /**
+     * @param declaration the algorithm declaration
+     */
     public ROIDataFromFile(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
     }
 
+    /**
+     * Copies the algorithm
+     *
+     * @param other the original
+     */
     public ROIDataFromFile(ROIDataFromFile other) {
         super(other);
     }

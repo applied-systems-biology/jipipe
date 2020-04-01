@@ -63,6 +63,7 @@ public class ACAQProjectWindow extends JFrame {
 
     /**
      * Loads a project into the window
+     *
      * @param project The project
      */
     public void loadProject(ACAQProject project) {
@@ -88,6 +89,7 @@ public class ACAQProjectWindow extends JFrame {
     /**
      * Opens a project from a file or folder
      * Asks the user if it should replace the currently displayed project
+     *
      * @param path JSON project file or result folder
      */
     public void openProject(Path path) {
@@ -172,6 +174,7 @@ public class ACAQProjectWindow extends JFrame {
 
     /**
      * Saves the project
+     *
      * @param avoidDialog If true, the project is stored in the last known valid output location if possible
      */
     public void saveProjectAs(boolean avoidDialog) {
@@ -203,7 +206,7 @@ public class ACAQProjectWindow extends JFrame {
 
     /**
      * @param messageTitle Description of the project source
-     * @param project The project
+     * @param project      The project
      * @return The window that holds the project
      */
     private ACAQProjectWindow openProjectInThisOrNewWindow(String messageTitle, ACAQProject project) {
@@ -247,6 +250,7 @@ public class ACAQProjectWindow extends JFrame {
 
     /**
      * Creates a new window
+     *
      * @param command GUI command
      * @param project The project
      * @return The window

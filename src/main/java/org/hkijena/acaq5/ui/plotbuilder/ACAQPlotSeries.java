@@ -3,7 +3,7 @@
  * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
  * https://www.leibniz-hki.de/en/applied-systems-biology.html
  * HKI-Center for Systems Biology of Infection
- * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Insitute (HKI)
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
  * This code is licensed under BSD 2-Clause
@@ -37,7 +37,8 @@ public class ACAQPlotSeries {
 
     /**
      * Adds a column
-     * @param name Name
+     *
+     * @param name   Name
      * @param column Column
      */
     public void addColumn(String name, ACAQPlotSeriesColumn column) {
@@ -47,6 +48,7 @@ public class ACAQPlotSeries {
 
     /**
      * Triggered when column data was changed
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -70,7 +72,8 @@ public class ACAQPlotSeries {
 
     /**
      * Adds a parameter
-     * @param key Unique parameter key
+     *
+     * @param key          Unique parameter key
      * @param defaultValue Default value
      */
     public void addParameter(String key, Object defaultValue) {
@@ -80,6 +83,7 @@ public class ACAQPlotSeries {
 
     /**
      * Gets the type of the parameter
+     *
      * @param key Unique parameter key
      * @return Parameter field tye
      */
@@ -89,6 +93,7 @@ public class ACAQPlotSeries {
 
     /**
      * Gets parameter value
+     *
      * @param key Unique parameter key
      * @return Parameter value
      */
@@ -98,7 +103,8 @@ public class ACAQPlotSeries {
 
     /**
      * Sets a parameter value
-     * @param key Unique parameter key
+     *
+     * @param key   Unique parameter key
      * @param value Parameter value
      */
     public void setParameterValue(String key, Object value) {
@@ -115,6 +121,7 @@ public class ACAQPlotSeries {
 
     /**
      * Converts a column into a numeric column
+     *
      * @param name Column name
      * @return Numeric column
      */
@@ -124,6 +131,7 @@ public class ACAQPlotSeries {
 
     /**
      * Converts a column into a string column
+     *
      * @param name Column name
      * @return String column
      */
@@ -152,6 +160,7 @@ public class ACAQPlotSeries {
     /**
      * Enables/Disables the series.
      * A disabled series will not be displayed.
+     *
      * @param enabled Enables/Disables the series
      */
     public void setEnabled(boolean enabled) {

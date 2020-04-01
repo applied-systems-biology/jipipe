@@ -25,8 +25,9 @@ public class ACAQDataSlotTraitUI extends JPanel {
 
     /**
      * Creates a new UI
+     *
      * @param graph The graph
-     * @param slot The slot
+     * @param slot  The slot
      */
     public ACAQDataSlotTraitUI(ACAQAlgorithmGraph graph, ACAQDataSlot slot) {
         this.graph = graph;
@@ -91,6 +92,7 @@ public class ACAQDataSlotTraitUI extends JPanel {
 
     /**
      * Should be triggered when an algorithm's slot annotations are changed
+     *
      * @param event Generated event
      */
     @Subscribe

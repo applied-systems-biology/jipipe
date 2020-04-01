@@ -107,6 +107,7 @@ public class ACAQAlgorithmGraphUIDragAndDrop implements DropTargetListener {
 
     /**
      * Installs the drag&drop into the specified {@link ACAQAlgorithmGraphCanvasUI}
+     *
      * @param canvasUI The target
      */
     public static void install(ACAQAlgorithmGraphCanvasUI canvasUI) {

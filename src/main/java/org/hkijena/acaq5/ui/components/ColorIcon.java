@@ -3,7 +3,7 @@
  * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
  * https://www.leibniz-hki.de/en/applied-systems-biology.html
  * HKI-Center for Systems Biology of Infection
- * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Insitute (HKI)
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
  * This code is licensed under BSD 2-Clause
@@ -35,7 +35,8 @@ public class ColorIcon implements Icon {
 
     /**
      * Creates a black icon
-     * @param width icon width
+     *
+     * @param width  icon width
      * @param height icon height
      */
     public ColorIcon(int width, int height) {
@@ -43,9 +44,9 @@ public class ColorIcon implements Icon {
     }
 
     /**
-     * @param width icon width
+     * @param width  icon width
      * @param height icon height
-     * @param c icon color
+     * @param c      icon color
      */
     public ColorIcon(int width, int height, Color c) {
         imageWidth = width;

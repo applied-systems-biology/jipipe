@@ -42,6 +42,7 @@ public class ACAQPluginValidityCheckerButton extends JButton {
     /**
      * Triggered when an extension is registered.
      * Rechecks validity.
+     *
      * @param event Generated event
      */
     @Subscribe

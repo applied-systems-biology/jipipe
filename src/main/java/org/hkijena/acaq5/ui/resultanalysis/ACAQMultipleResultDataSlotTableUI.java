@@ -36,8 +36,8 @@ public class ACAQMultipleResultDataSlotTableUI extends ACAQProjectUIPanel {
 
     /**
      * @param workbenchUI The workbench
-     * @param run The algorithm run
-     * @param slots The displayed slots
+     * @param run         The algorithm run
+     * @param slots       The displayed slots
      */
     public ACAQMultipleResultDataSlotTableUI(ACAQProjectUI workbenchUI, ACAQRun run, List<ACAQDataSlot> slots) {
         super(workbenchUI);

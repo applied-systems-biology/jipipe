@@ -23,9 +23,9 @@ public interface ACAQMutableTraitConfiguration extends ACAQTraitConfiguration {
     /**
      * Set how a trait is modified
      *
-     * @param slotName The slot name
+     * @param slotName         The slot name
      * @param traitDeclaration The trait declaration
-     * @param operation The operation
+     * @param operation        The operation
      */
     void setTraitModification(String slotName, ACAQTraitDeclaration traitDeclaration, ACAQTraitModificationOperation operation);
 

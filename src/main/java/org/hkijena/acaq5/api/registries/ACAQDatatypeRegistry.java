@@ -32,8 +32,8 @@ public class ACAQDatatypeRegistry {
     /**
      * Registers a data type
      *
-     * @param id The datatype ID
-     * @param klass The data class
+     * @param id     The datatype ID
+     * @param klass  The data class
      * @param source The dependency that registers the data
      */
     public void register(String id, Class<? extends ACAQData> klass, ACAQDependency source) {

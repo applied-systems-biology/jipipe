@@ -9,10 +9,16 @@ import org.hkijena.acaq5.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Imports an {@link ImagePlus}
+ */
 public class ImagePlusDataImporterUI extends ImageJDatatypeImporterUI {
 
     private JComboBox<ImagePlus> imageSelection;
 
+    /**
+     * @param importer the importer
+     */
     public ImagePlusDataImporterUI(ImageJDatatypeImporter importer) {
         super(importer);
         initialize();

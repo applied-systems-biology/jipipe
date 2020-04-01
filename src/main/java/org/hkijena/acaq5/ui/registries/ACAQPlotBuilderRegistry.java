@@ -3,7 +3,7 @@
  * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
  * https://www.leibniz-hki.de/en/applied-systems-biology.html
  * HKI-Center for Systems Biology of Infection
- * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Insitute (HKI)
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
  * This code is licensed under BSD 2-Clause
@@ -29,10 +29,11 @@ public class ACAQPlotBuilderRegistry {
 
     /**
      * Registers a plot type
-     * @param plotType Plot instance
+     *
+     * @param plotType     Plot instance
      * @param settingsType Settings UI
-     * @param name Plot name
-     * @param icon Plot icon
+     * @param name         Plot name
+     * @param icon         Plot icon
      */
     public void register(Class<? extends ACAQPlot> plotType, Class<? extends ACAQPlotSettingsUI> settingsType, String name, Icon icon) {
         entries.put(plotType, new Entry(plotType, settingsType, name, icon));
@@ -63,6 +64,7 @@ public class ACAQPlotBuilderRegistry {
 
     /**
      * Creates all plots for the data
+     *
      * @param seriesDataList The data
      * @return List of plots
      */
@@ -80,6 +82,7 @@ public class ACAQPlotBuilderRegistry {
 
     /**
      * Creates settings UI for the plot
+     *
      * @param plot The plot
      * @return Plot settings UI
      */
@@ -101,10 +104,10 @@ public class ACAQPlotBuilderRegistry {
         private Icon icon;
 
         /**
-         * @param plotType Plot type
+         * @param plotType     Plot type
          * @param settingsType Plot UI type
-         * @param name Plot name
-         * @param icon Plot icon
+         * @param name         Plot name
+         * @param icon         Plot icon
          */
         public Entry(Class<? extends ACAQPlot> plotType, Class<? extends ACAQPlotSettingsUI> settingsType, String name, Icon icon) {
             this.plotType = plotType;

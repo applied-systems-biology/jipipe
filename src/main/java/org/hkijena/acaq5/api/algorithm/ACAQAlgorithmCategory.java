@@ -17,7 +17,7 @@ public enum ACAQAlgorithmCategory {
     /**
      * Algorithms that convert real-space data into binary-space data
      */
-    Segmenter,
+    Segmentation,
     /**
      * Algorithms that produce tabular, relational, or any quantification result data
      */
@@ -45,6 +45,7 @@ public enum ACAQAlgorithmCategory {
 
     /**
      * Converts the category into a color
+     *
      * @param s HSV Saturation
      * @param v HSV Color value
      * @return Color instance

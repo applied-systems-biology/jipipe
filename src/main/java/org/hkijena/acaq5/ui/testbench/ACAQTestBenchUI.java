@@ -34,7 +34,7 @@ public class ACAQTestBenchUI extends ACAQProjectUIPanel {
 
     /**
      * @param workbenchUI the workbench
-     * @param testbench the testbench
+     * @param testbench   the testbench
      */
     public ACAQTestBenchUI(ACAQProjectUI workbenchUI, ACAQTestbench testbench) {
         super(workbenchUI);
@@ -163,6 +163,7 @@ public class ACAQTestBenchUI extends ACAQProjectUIPanel {
 
     /**
      * Triggered when the testbench finished calculating
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -177,6 +178,7 @@ public class ACAQTestBenchUI extends ACAQProjectUIPanel {
 
     /**
      * Triggered when the testbench finished calculating
+     *
      * @param event Generated event
      */
     @Subscribe

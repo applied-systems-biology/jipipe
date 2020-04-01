@@ -3,7 +3,7 @@
  * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
  * https://www.leibniz-hki.de/en/applied-systems-biology.html
  * HKI-Center for Systems Biology of Infection
- * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Insitute (HKI)
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
  * This code is licensed under BSD 2-Clause
@@ -60,8 +60,9 @@ public class ACAQPlotBuilderUI extends ACAQProjectUIPanel {
 
     /**
      * Imports data from a table
+     *
      * @param model The table
-     * @param name Table name
+     * @param name  Table name
      */
     public void importFromTable(DefaultTableModel model, String name) {
         for (int column = 0; column < model.getColumnCount(); ++column) {
@@ -214,6 +215,7 @@ public class ACAQPlotBuilderUI extends ACAQProjectUIPanel {
 
     /**
      * Triggered when the plot settings were changed
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -224,6 +226,7 @@ public class ACAQPlotBuilderUI extends ACAQProjectUIPanel {
 
     /**
      * Triggered when the data was changed
+     *
      * @param event Generated event
      */
     @Subscribe

@@ -14,11 +14,12 @@ public class ACAQJsonExtensionAlgorithmParametersUI extends ACAQParameterAccessU
 
     /**
      * Creates new instance
-     * @param workbenchUI The workbench UI
-     * @param algorithm The algorithm
-     * @param documentation The documentation
+     *
+     * @param workbenchUI        The workbench UI
+     * @param algorithm          The algorithm
+     * @param documentation      The documentation
      * @param documentationBelow If the documentation should be displayed below
-     * @param withDocumentation If documentation should be shown
+     * @param withDocumentation  If documentation should be shown
      */
     public ACAQJsonExtensionAlgorithmParametersUI(ACAQJsonExtensionUI workbenchUI, ACAQAlgorithm algorithm, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
         super(workbenchUI, algorithm, documentation, documentationBelow, withDocumentation);

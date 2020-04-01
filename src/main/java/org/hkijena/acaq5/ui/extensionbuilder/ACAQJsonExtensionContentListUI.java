@@ -32,6 +32,7 @@ public class ACAQJsonExtensionContentListUI extends ACAQJsonExtensionUIPanel {
 
     /**
      * Creates new instance
+     *
      * @param workbenchUI The workbench UI
      */
     public ACAQJsonExtensionContentListUI(ACAQJsonExtensionUI workbenchUI) {
@@ -135,6 +136,7 @@ public class ACAQJsonExtensionContentListUI extends ACAQJsonExtensionUIPanel {
 
     /**
      * Triggered when a name was changed
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -146,6 +148,7 @@ public class ACAQJsonExtensionContentListUI extends ACAQJsonExtensionUIPanel {
 
     /**
      * Triggered when content was added
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -155,6 +158,7 @@ public class ACAQJsonExtensionContentListUI extends ACAQJsonExtensionUIPanel {
 
     /**
      * Triggered when content was removed
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -171,6 +175,7 @@ public class ACAQJsonExtensionContentListUI extends ACAQJsonExtensionUIPanel {
 
     /**
      * Sets the selected value
+     *
      * @param currentlySelectedValue The value
      */
     public void setCurrentlySelectedValue(Object currentlySelectedValue) {

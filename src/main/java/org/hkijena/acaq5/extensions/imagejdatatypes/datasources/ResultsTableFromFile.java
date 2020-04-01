@@ -9,16 +9,27 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 
 import java.io.IOException;
 
+/**
+ * Imports {@link ResultsTableData} from a file
+ */
 @ACAQDocumentation(name = "Results table from file")
 @AlgorithmInputSlot(value = ACAQFileData.class, slotName = "Files", autoCreate = true)
 @AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Results table", autoCreate = true)
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
 public class ResultsTableFromFile extends ACAQIteratingAlgorithm {
 
+    /**
+     * @param declaration algorithm declaration
+     */
     public ResultsTableFromFile(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
     }
 
+    /**
+     * Copies the algorithm
+     *
+     * @param other the original
+     */
     public ResultsTableFromFile(ResultsTableFromFile other) {
         super(other);
     }

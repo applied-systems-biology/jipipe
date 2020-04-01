@@ -29,7 +29,7 @@ public class ACAQTraitDeclarationRefCollectionParameterEditorUI extends ACAQPara
     private JDialog pickerDialog;
 
     /**
-     * @param context SciJava context
+     * @param context         SciJava context
      * @param parameterAccess the parameter
      */
     public ACAQTraitDeclarationRefCollectionParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
@@ -116,6 +116,7 @@ public class ACAQTraitDeclarationRefCollectionParameterEditorUI extends ACAQPara
 
     /**
      * Triggered when a trait is selected
+     *
      * @param event Generated event
      */
     @Subscribe

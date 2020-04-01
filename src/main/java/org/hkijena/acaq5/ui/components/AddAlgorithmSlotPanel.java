@@ -42,7 +42,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
 
     /**
      * @param algorithm the target algorithm
-     * @param slotType the slot type to be created
+     * @param slotType  the slot type to be created
      */
     public AddAlgorithmSlotPanel(ACAQAlgorithm algorithm, ACAQDataSlot.SlotType slotType) {
         this.algorithm = algorithm;
@@ -322,9 +322,10 @@ public class AddAlgorithmSlotPanel extends JPanel {
 
     /**
      * Shows a dialog for adding slots
-     * @param parent parent component
+     *
+     * @param parent    parent component
      * @param algorithm target algorithm
-     * @param slotType slot type to be created
+     * @param slotType  slot type to be created
      */
     public static void showDialog(Component parent, ACAQAlgorithm algorithm, ACAQDataSlot.SlotType slotType) {
         JDialog dialog = new JDialog();

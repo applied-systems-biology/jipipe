@@ -44,7 +44,7 @@ public class ACAQAlgorithmRegistry implements ACAQValidatable {
     }
 
     /**
-     * Attempts to run registration tasks that have registered dependecies
+     * Attempts to run registration tasks that have registered dependencies
      */
     public void runRegistrationTasks() {
         if (registrationTasks.isEmpty())
@@ -75,7 +75,7 @@ public class ACAQAlgorithmRegistry implements ACAQValidatable {
      * Registers an algorithm declaration
      *
      * @param declaration The algorithm declaration
-     * @param source The dependency that registers the declaration
+     * @param source      The dependency that registers the declaration
      */
     public void register(ACAQAlgorithmDeclaration declaration, ACAQDependency source) {
         registeredAlgorithms.put(declaration.getId(), declaration);
@@ -97,7 +97,7 @@ public class ACAQAlgorithmRegistry implements ACAQValidatable {
     /**
      * Returns data source algorithms that can generate the specified data type
      *
-     * @param <T> The data class
+     * @param <T>       The data class
      * @param dataClass The data class
      * @return Available datasource algorithms that generate the data
      */

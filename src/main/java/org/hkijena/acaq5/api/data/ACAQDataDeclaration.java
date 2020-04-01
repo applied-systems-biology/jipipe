@@ -102,6 +102,7 @@ public class ACAQDataDeclaration implements Comparable<ACAQDataDeclaration> {
      * Returns a {@link ACAQDataDeclaration} instance for the data class.
      * Does not require the data type to be registered.
      * Instances are cached.
+     *
      * @param klass The data class
      * @return The declaration instance
      */
@@ -118,6 +119,7 @@ public class ACAQDataDeclaration implements Comparable<ACAQDataDeclaration> {
      * Returns a {@link ACAQDataDeclaration} instance for the data type ID.
      * Requires that the data type ID is registered.
      * Instances are cached.
+     *
      * @param id Data type ID
      * @return The declaration instance
      */

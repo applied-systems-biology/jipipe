@@ -16,6 +16,10 @@ public class EnumParameterEditorUI extends ACAQParameterEditorUI {
     private boolean isReloading = false;
     private JComboBox<Object> comboBox;
 
+    /**
+     * @param context         SciJava context
+     * @param parameterAccess the parameter
+     */
     public EnumParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
         super(context, parameterAccess);
         initialize();

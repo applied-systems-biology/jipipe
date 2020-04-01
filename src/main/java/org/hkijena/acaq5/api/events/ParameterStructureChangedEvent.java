@@ -8,6 +8,9 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterHolder;
 public class ParameterStructureChangedEvent {
     private ACAQParameterHolder parameterHolder;
 
+    /**
+     * @param parameterHolder event source
+     */
     public ParameterStructureChangedEvent(ACAQParameterHolder parameterHolder) {
         this.parameterHolder = parameterHolder;
     }

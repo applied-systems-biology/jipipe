@@ -37,8 +37,8 @@ public class ACAQTestBenchSetupUI extends ACAQProjectUIPanel {
 
     /**
      * @param workbenchUI the workbench
-     * @param algorithm the target algorithm
-     * @param graph the graph
+     * @param algorithm   the target algorithm
+     * @param graph       the graph
      */
     public ACAQTestBenchSetupUI(ACAQProjectUI workbenchUI, ACAQAlgorithm algorithm, ACAQAlgorithmGraph graph) {
         super(workbenchUI);
@@ -167,6 +167,7 @@ public class ACAQTestBenchSetupUI extends ACAQProjectUIPanel {
 
     /**
      * Triggered when a worker is finished
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -189,6 +190,7 @@ public class ACAQTestBenchSetupUI extends ACAQProjectUIPanel {
 
     /**
      * Triggered when a worker is interrupted
+     *
      * @param event Generated event
      */
     @Subscribe

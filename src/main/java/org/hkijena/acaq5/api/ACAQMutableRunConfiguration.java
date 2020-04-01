@@ -29,6 +29,7 @@ public class ACAQMutableRunConfiguration implements ACAQRunConfiguration {
 
     /**
      * Sets the output path
+     *
      * @param outputPath The output path
      */
     @ACAQParameter("output-path")
@@ -44,6 +45,7 @@ public class ACAQMutableRunConfiguration implements ACAQRunConfiguration {
 
     /**
      * Enables/Disables if data is written
+     *
      * @param flushingEnabled Enables/Disables writing data
      */
     public void setFlushingEnabled(boolean flushingEnabled) {
@@ -58,6 +60,7 @@ public class ACAQMutableRunConfiguration implements ACAQRunConfiguration {
     /**
      * Enables/Disables if only the last algorithm is run.
      * Used for {@link org.hkijena.acaq5.api.testbench.ACAQTestbench}
+     *
      * @param onlyRunningEndAlgorithm Enables/Disables if only the last algorithm is run.
      */
     public void setOnlyRunningEndAlgorithm(boolean onlyRunningEndAlgorithm) {
@@ -71,6 +74,7 @@ public class ACAQMutableRunConfiguration implements ACAQRunConfiguration {
 
     /**
      * Enables/Disables if data is kept after writing.
+     *
      * @param flushingKeepsDataEnabled Enables/Disables if data is kept after writing.
      */
     public void setFlushingKeepsDataEnabled(boolean flushingKeepsDataEnabled) {
@@ -84,6 +88,7 @@ public class ACAQMutableRunConfiguration implements ACAQRunConfiguration {
 
     /**
      * Sets the end algorithm ID. Effective with isOnlyRunningEndAlgorithm()
+     *
      * @param endAlgorithmId The algorithm ID
      */
     public void setEndAlgorithmId(String endAlgorithmId) {

@@ -20,6 +20,7 @@ public class ACAQFolderData implements ACAQData {
 
     /**
      * Instantiates the data from a folder path
+     *
      * @param folderPath Folder path
      */
     public ACAQFolderData(Path folderPath) {
@@ -44,6 +45,7 @@ public class ACAQFolderData implements ACAQData {
 
     /**
      * Gets the data type name
+     *
      * @return Data type name
      */
     @JsonGetter("acaq:data-type")
@@ -61,6 +63,7 @@ public class ACAQFolderData implements ACAQData {
 
     /**
      * Sets the folder path
+     *
      * @param path Folder path
      */
     @JsonSetter("folder-path")

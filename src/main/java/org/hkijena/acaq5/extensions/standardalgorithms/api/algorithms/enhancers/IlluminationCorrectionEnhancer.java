@@ -13,6 +13,9 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.Image
 import org.hkijena.acaq5.utils.ImageJUtils;
 import org.hkijena.acaq5.utils.MacroSetting;
 
+/**
+ * Applies illumination correction
+ */
 @ACAQDocumentation(name = "Illumination correction enhancer")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
 
@@ -30,10 +33,18 @@ public class IlluminationCorrectionEnhancer extends ACAQIteratingAlgorithm {
 
     private int gaussianSigma = 21;
 
+    /**
+     * @param declaration the algorithm declaration
+     */
     public IlluminationCorrectionEnhancer(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
     }
 
+    /**
+     * Copies the algorithm
+     *
+     * @param other the original
+     */
     public IlluminationCorrectionEnhancer(IlluminationCorrectionEnhancer other) {
         super(other);
         this.gaussianSigma = other.gaussianSigma;

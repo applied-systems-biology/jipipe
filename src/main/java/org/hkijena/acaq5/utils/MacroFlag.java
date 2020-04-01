@@ -7,6 +7,10 @@ public class MacroFlag {
     private String key;
     private boolean visible;
 
+    /**
+     * @param key     macro parameter key
+     * @param visible if the parameter is visible
+     */
     public MacroFlag(String key, boolean visible) {
         this.key = key;
         this.visible = visible;

@@ -35,6 +35,9 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+/**
+ * UI for {@link SingleImageJAlgorithmRun}
+ */
 public class RunSingleAlgorithmDialog extends JDialog {
     private Context context;
     private boolean canceled = true;
@@ -44,6 +47,9 @@ public class RunSingleAlgorithmDialog extends JDialog {
     private JSplitPane splitPane;
     private FormPanel formPanel;
 
+    /**
+     * @param context SciJava context
+     */
     public RunSingleAlgorithmDialog(Context context) {
         this.context = context;
         initialize();
@@ -276,6 +282,11 @@ public class RunSingleAlgorithmDialog extends JDialog {
         }
     }
 
+    /**
+     * Triggered when algorithm slots are changed
+     *
+     * @param event Generated event
+     */
     @Subscribe
     public void onAlgorithmSlotsChanged(AlgorithmSlotsChangedEvent event) {
         reloadAlgorithmProperties();

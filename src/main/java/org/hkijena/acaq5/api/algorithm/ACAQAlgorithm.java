@@ -88,13 +88,14 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
         this.traitConfiguration = traitConfiguration;
         slotConfiguration.getEventBus().register(this);
         traitConfiguration.getEventBus().register(this);
-        initalize();
+        initialize();
         initializeTraits();
     }
 
     /**
      * Initializes a new algorithm instance and sets a custom slot configuration
-     * @param declaration The algorithm declaration
+     *
+     * @param declaration       The algorithm declaration
      * @param slotConfiguration The slot configuration
      */
     public ACAQAlgorithm(ACAQAlgorithmDeclaration declaration, ACAQSlotConfiguration slotConfiguration) {
@@ -103,6 +104,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Initializes a new algorithm instance
+     *
      * @param declaration The algorithm declaration
      */
     public ACAQAlgorithm(ACAQAlgorithmDeclaration declaration) {
@@ -124,7 +126,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
         this.customName = other.customName;
         slotConfiguration.getEventBus().register(this);
         traitConfiguration.getEventBus().register(this);
-        initalize();
+        initialize();
         initializeTraits();
     }
 
@@ -166,7 +168,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
     /**
      * Initializes the algorithm
      */
-    private void initalize() {
+    private void initialize() {
         for (Map.Entry<String, ACAQSlotDefinition> kv : slotConfiguration.getSlots().entrySet()) {
             slots.put(kv.getKey(), new ACAQDataSlot(this, kv.getValue().getSlotType(), kv.getKey(), kv.getValue().getDataClass()));
         }
@@ -183,6 +185,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Returns the algorithm name
+     *
      * @return algorithm name
      */
     @ACAQParameter(value = "name", visibility = ACAQParameterVisibility.Visible)
@@ -195,6 +198,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Sets a custom name. If set to null, the standard algorithm name is automatically used by getName()
+     *
      * @param customName custom name
      */
     @ACAQParameter("name")
@@ -205,6 +209,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Gets the algorithm category
+     *
      * @return The category
      */
     public ACAQAlgorithmCategory getCategory() {
@@ -213,6 +218,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Gets the preferred traits
+     *
      * @return Preferred traits
      */
     Set<ACAQTraitDeclaration> getPreferredTraits() {
@@ -221,6 +227,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Gets the unwanted traits
+     *
      * @return Unwanted traits
      */
     Set<ACAQTraitDeclaration> getUnwantedTraits() {
@@ -229,6 +236,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Gets the slot configuration
+     *
      * @return Slot configuration
      */
     public ACAQSlotConfiguration getSlotConfiguration() {
@@ -237,6 +245,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Gets all slot instances
+     *
      * @return Current algorithm slots
      */
     public Map<String, ACAQDataSlot> getSlots() {
@@ -245,6 +254,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Gets the input slot order
+     *
      * @return List of slot names
      */
     public List<String> getInputSlotOrder() {
@@ -253,6 +263,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Gets the output slot order
+     *
      * @return List of slot names
      */
     public List<String> getOutputSlotOrder() {
@@ -261,6 +272,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Returns all input slots ordered by the slot order
+     *
      * @return List of slots
      */
     public List<ACAQDataSlot> getInputSlots() {
@@ -274,6 +286,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Returns all output slots ordered by the slot order
+     *
      * @return List of slots
      */
     public List<ACAQDataSlot> getOutputSlots() {
@@ -287,6 +300,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Should be triggered when a slot is added to the slot configuration
+     *
      * @param event The event
      */
     @Subscribe
@@ -299,6 +313,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Should be triggered when a slot is removed from the slot configuration
+     *
      * @param event The event
      */
     @Subscribe
@@ -310,6 +325,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Should be triggered when a slot is renamed in the slot configuration
+     *
      * @param event The event
      */
     @Subscribe
@@ -323,6 +339,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Should be triggered when slots are reordered in the slot configuration
+     *
      * @param event The event
      */
     @Subscribe
@@ -334,6 +351,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
     /**
      * Returns the UI location within the respective compartments.
      * This map is writable.
+     *
      * @return Map from compartment name to UI location
      */
     public Map<String, Point> getLocations() {
@@ -342,6 +360,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Returns the location within the specified compartment or null if none is set
+     *
      * @param compartment The compartment ID
      * @return The UI location or null if unset
      */
@@ -351,8 +370,9 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Sets the UI location of this algorithm within the specified compartment
+     *
      * @param compartment The compartment ID
-     * @param location The UI location. Can be null to reset the location
+     * @param location    The UI location. Can be null to reset the location
      */
     public void setLocationWithin(String compartment, Point location) {
         this.locations.put(compartment, location);
@@ -360,6 +380,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Loads this algorithm from JSON
+     *
      * @param node The JSON data to load from
      */
     public void fromJson(JsonNode node) {
@@ -417,6 +438,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Sets the storage path. Used by {@link ACAQRun}
+     *
      * @param storagePath Storage path
      */
     public void setStoragePath(Path storagePath) {
@@ -425,6 +447,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Returns the trait configuration of this algorithm
+     *
      * @return Trait configuration
      */
     public ACAQTraitConfiguration getTraitConfiguration() {
@@ -434,6 +457,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
     /**
      * Returns the internal storage path relative to the output folder.
      * Used internally by {@link ACAQRun}
+     *
      * @return Storage path relative to the output folder
      */
     public Path getInternalStoragePath() {
@@ -441,8 +465,9 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
     }
 
     /**
-     * Sets the internal storage path relative to the ouput folder.
+     * Sets the internal storage path relative to the output folder.
      * Used internally by {@link ACAQRun}
+     *
      * @param internalStoragePath Path relative to the output folder
      */
     public void setInternalStoragePath(Path internalStoragePath) {
@@ -451,6 +476,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Returns the {@link ACAQAlgorithmDeclaration} that describes this algorithm
+     *
      * @return The declaration
      */
     public ACAQAlgorithmDeclaration getDeclaration() {
@@ -459,6 +485,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Returns the compartment the algorithm is located within
+     *
      * @return Compartment ID
      */
     public String getCompartment() {
@@ -467,6 +494,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Sets the compartment the algorithm is location in
+     *
      * @param compartment Compartment ID
      */
     public void setCompartment(String compartment) {
@@ -475,6 +503,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Returns true if this algorithm is visible in the specified container compartment
+     *
      * @param containerCompartment The compartment ID the container displays
      * @return If this algorithm should be visible
      */
@@ -486,6 +515,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
     /**
      * Returns the list of additional compartments this algorithm is visible in.
      * This list is writable.
+     *
      * @return Writeable list of project compartment IDs
      */
     public Set<String> getVisibleCompartments() {
@@ -494,6 +524,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Sets the list of additional compartments this algorithm is visible in.
+     *
      * @param visibleCompartments List of compartment Ids
      */
     public void setVisibleCompartments(Set<String> visibleCompartments) {
@@ -503,6 +534,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
     /**
      * Returns the output slot with the specified name.
      * Throws {@link NullPointerException} if the slot does not exist and {@link IllegalArgumentException} if the slot is not an output
+     *
      * @param name Slot name
      * @return Slot instance
      */
@@ -516,6 +548,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
     /**
      * Returns the input slot with the specified name.
      * Throws {@link NullPointerException} if the slot does not exist and {@link IllegalArgumentException} if the slot is not an input
+     *
      * @param name Slot name
      * @return Slot instance
      */
@@ -528,6 +561,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Returns all input slots that do not have data set.
+     *
      * @return List of slots
      */
     public List<ACAQDataSlot> getOpenInputSlots() {
@@ -543,6 +577,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
     /**
      * Returns the first output slot according to the slot order.
      * Throws {@link IndexOutOfBoundsException} if there is no output slot.
+     *
      * @return Slot instance
      */
     public ACAQDataSlot getFirstOutputSlot() {
@@ -552,6 +587,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
     /**
      * Returns the first input slot according to the slot order.
      * Throws {@link IndexOutOfBoundsException} if there is no input slot.
+     *
      * @return Slot instance
      */
     public ACAQDataSlot getFirstInputSlot() {
@@ -561,6 +597,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
     /**
      * Returns the last output slot according to the slot order.
      * Throws {@link IndexOutOfBoundsException} if there is no output slot.
+     *
      * @return Slot instance
      */
     public ACAQDataSlot getLastOutputSlot() {
@@ -571,6 +608,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
     /**
      * Returns the last input slot according to the slot order.
      * Throws {@link IndexOutOfBoundsException} if there is no input slot.
+     *
      * @return Slot instance
      */
     public ACAQDataSlot getLastInputSlot() {
@@ -581,6 +619,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
     /**
      * Returns the graph this algorithm is located in.
      * Can be null.
+     *
      * @return Graph instance or null
      */
     public ACAQAlgorithmGraph getGraph() {
@@ -590,6 +629,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
     /**
      * Sets the graph this algorithm is location in.
      * This has no side effects and is only for reference usage.
+     *
      * @param graph Graph instance or null
      */
     public void setGraph(ACAQAlgorithmGraph graph) {
@@ -598,6 +638,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Returns the ID within the current graph. Requires that getGraph() is not null.
+     *
      * @return The ID within getGraph()
      */
     public String getIdInGraph() {
@@ -613,6 +654,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Returns the custom description that is set by the user
+     *
      * @return Description or null
      */
     @ACAQDocumentation(name = "Description", description = "A custom description")
@@ -624,6 +666,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Sets a custom description. Can be null.
+     *
      * @param customDescription Description string
      */
     @ACAQParameter("description")
@@ -633,6 +676,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Returns the current work directory of this algorithm. This is used internally to allow relative data paths.
+     *
      * @return The current work directory or null.
      */
     public Path getWorkDirectory() {
@@ -641,7 +685,8 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Sets the current work directory of this algorithm. This is used internally to allow loading data from relative paths.
-     * This triggeres a {@link WorkDirectoryChangedEvent} that can be received by {@link ACAQDataSlot} instances to adapt to the work directory.
+     * This triggers a {@link WorkDirectoryChangedEvent} that can be received by {@link ACAQDataSlot} instances to adapt to the work directory.
+     *
      * @param workDirectory The work directory. Can be null
      */
     public void setWorkDirectory(Path workDirectory) {
@@ -651,6 +696,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Called by an {@link ACAQAlgorithmGraph} when a slot was connected. Triggers update of slot trait inheritance.
+     *
      * @param event The event generated by the graph
      */
     public void onSlotConnected(AlgorithmGraphConnectedEvent event) {
@@ -711,6 +757,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Called by the {@link ACAQAlgorithmGraph} to trigger slot inheritance updates when a slot is disconnected
+     *
      * @param event The generated event
      */
     public void onSlotDisconnected(AlgorithmGraphDisconnectedEvent event) {
@@ -752,7 +799,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
     /**
      * Utility function to create an algorithm instance from its id
      *
-     * @param id Algorithm ID
+     * @param id  Algorithm ID
      * @param <T> Algorithm class
      * @return Algorithm instance
      */
@@ -789,7 +836,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
                 jsonGenerator.writeObjectField("acaq:trait-generation", algorithm.getTraitConfiguration());
             }
 
-            // Save dynamic parameter storages
+            // Save dynamic parameter storage
             jsonGenerator.writeFieldName("acaq:dynamic-parameters");
             jsonGenerator.writeStartObject();
             Map<String, ACAQDynamicParameterHolder> dynamicParameterHolders = ACAQDynamicParameterHolder.findDynamicParameterHolders(algorithm);

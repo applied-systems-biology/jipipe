@@ -202,6 +202,7 @@ public class ACAQCompartmentGraphUI extends ACAQProjectUIPanel implements MouseL
 
     /**
      * Should be triggered when a user double-clicks a graph node to open it in the graph editor
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -213,6 +214,7 @@ public class ACAQCompartmentGraphUI extends ACAQProjectUIPanel implements MouseL
 
     /**
      * Should be triggered when a user selects a node
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -247,6 +249,7 @@ public class ACAQCompartmentGraphUI extends ACAQProjectUIPanel implements MouseL
 
     /**
      * Selects only one algorithm
+     *
      * @param ui Algorithm
      */
     public void selectOnly(ACAQAlgorithmUI ui) {
@@ -265,6 +268,7 @@ public class ACAQCompartmentGraphUI extends ACAQProjectUIPanel implements MouseL
 
     /**
      * Adds an algorithm to the selection
+     *
      * @param ui The algorithm
      */
     public void addToSelection(ACAQAlgorithmUI ui) {
@@ -284,6 +288,7 @@ public class ACAQCompartmentGraphUI extends ACAQProjectUIPanel implements MouseL
 
     /**
      * Removes an algorithm from the selection
+     *
      * @param ui The algorithm
      */
     public void removeFromSelection(ACAQAlgorithmUI ui) {
@@ -306,6 +311,7 @@ public class ACAQCompartmentGraphUI extends ACAQProjectUIPanel implements MouseL
 
     /**
      * Should be triggered when the algorithm graph is changed
+     *
      * @param event Generated event
      */
     @Subscribe

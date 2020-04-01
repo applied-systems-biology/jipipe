@@ -28,7 +28,8 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQProjectUIPanel {
 
     /**
      * Creates a new UI
-     * @param workbenchUI The workbench UI
+     *
+     * @param workbenchUI  The workbench UI
      * @param wrappedGraph The wrapped graph
      */
     public ACAQGraphWrapperAlgorithmExporter(ACAQProjectUI workbenchUI, ACAQAlgorithmGraph wrappedGraph) {

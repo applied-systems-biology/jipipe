@@ -32,6 +32,7 @@ public class ACAQParameterCollectionVisibilities {
 
     /**
      * Sets the list of available parameters
+     *
      * @param availableParameters list of available parameters
      */
     public void setAvailableParameters(Map<String, ACAQParameterAccess> availableParameters) {
@@ -40,7 +41,8 @@ public class ACAQParameterCollectionVisibilities {
 
     /**
      * Sets the visibility of parameter with specified key
-     * @param key Unique parameter key
+     *
+     * @param key     Unique parameter key
      * @param visible Visibility
      */
     public void setVisibility(String key, boolean visible) {
@@ -60,6 +62,7 @@ public class ACAQParameterCollectionVisibilities {
 
     /**
      * Sets visible parameters
+     *
      * @param visibleParameters visible parameters
      */
     @JsonSetter("visible-keys")
@@ -69,6 +72,7 @@ public class ACAQParameterCollectionVisibilities {
 
     /**
      * Returns if the parameter is visible
+     *
      * @param key Parameter key
      * @return If visible
      */

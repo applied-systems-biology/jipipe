@@ -3,7 +3,7 @@
  * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
  * https://www.leibniz-hki.de/en/applied-systems-biology.html
  * HKI-Center for Systems Biology of Infection
- * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Insitute (HKI)
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
  * This code is licensed under BSD 2-Clause
@@ -23,10 +23,19 @@ public class MonochromeColorIcon implements Icon {
     private BufferedImage template;
     private Color color;
 
+    /**
+     * Creates a white icon
+     *
+     * @param template the template icon. Should be a greyscale image representing the alpha channel.
+     */
     public MonochromeColorIcon(ImageIcon template) {
         this(template, Color.WHITE);
     }
 
+    /**
+     * @param template the template icon. Should be a greyscale image representing the alpha channel.
+     * @param color    the icon color
+     */
     public MonochromeColorIcon(ImageIcon template, Color color) {
         this.template = new BufferedImage(template.getIconWidth(), template.getIconHeight(), BufferedImage.TYPE_BYTE_GRAY);
         Graphics2D graphics2D = this.template.createGraphics();

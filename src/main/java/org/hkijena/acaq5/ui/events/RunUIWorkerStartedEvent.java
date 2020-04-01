@@ -3,11 +3,18 @@ package org.hkijena.acaq5.ui.events;
 import org.hkijena.acaq5.api.ACAQRunnable;
 import org.hkijena.acaq5.ui.running.ACAQRunWorker;
 
+/**
+ * Generated when an {@link ACAQRunWorker} was started
+ */
 public class RunUIWorkerStartedEvent {
 
     private ACAQRunnable run;
     private ACAQRunWorker worker;
 
+    /**
+     * @param run    the run
+     * @param worker the worker
+     */
     public RunUIWorkerStartedEvent(ACAQRunnable run, ACAQRunWorker worker) {
         this.run = run;
         this.worker = worker;

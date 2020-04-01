@@ -30,6 +30,7 @@ public class ACAQSubFolder extends ACAQIteratingAlgorithm {
 
     /**
      * Copies the algorithm
+     *
      * @param other The original
      */
     public ACAQSubFolder(ACAQSubFolder other) {
@@ -60,6 +61,7 @@ public class ACAQSubFolder extends ACAQIteratingAlgorithm {
 
     /**
      * Sets the subfolder
+     *
      * @param subFolder the subfolder
      */
     @ACAQParameter("subfolder")

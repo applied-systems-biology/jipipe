@@ -33,7 +33,7 @@ public class ACAQValidityReportUI extends JPanel {
     }
 
     /**
-     * @param withHelp if a help panel should be shown
+     * @param withHelp     if a help panel should be shown
      * @param helpDocument a custom help document
      */
     public ACAQValidityReportUI(boolean withHelp, MarkdownDocument helpDocument) {

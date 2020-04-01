@@ -12,9 +12,12 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIData;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Appends the ROI into one list
+ */
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
 @ACAQOrganization(menuPath = "Merge")
-@ACAQDocumentation(name = "Merge ROI")
+@ACAQDocumentation(name = "Merge ROI", description = "Appends the ROI into one list")
 
 // Data flow
 @AlgorithmInputSlot(ROIData.class)
@@ -22,12 +25,20 @@ import java.util.List;
 
 // Traits
 public class MergeROIEnhancer extends ACAQIteratingAlgorithm {
+    /**
+     * @param declaration the algorithm declaration
+     */
     public MergeROIEnhancer(ACAQAlgorithmDeclaration declaration) {
         super(declaration, ACAQMutableSlotConfiguration.builder().restrictInputTo(ROIData.class)
                 .addOutputSlot("ROI", "", ROIData.class)
                 .sealOutput().build(), null);
     }
 
+    /**
+     * Copies the algorithm
+     *
+     * @param other the original
+     */
     public MergeROIEnhancer(MergeROIEnhancer other) {
         super(other);
     }

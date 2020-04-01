@@ -41,6 +41,9 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.resultanalysis.ResultsTableD
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
 
+/**
+ * Provides ImageJ data types
+ */
 @Plugin(type = ACAQJavaExtension.class)
 public class ImageJDataTypesExtension extends ACAQPrepackagedDefaultJavaExtension {
 

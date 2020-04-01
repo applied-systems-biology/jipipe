@@ -32,6 +32,7 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
 
     /**
      * Sets the algorithm class
+     *
      * @param algorithmClass The algorithm class
      */
     public void setAlgorithmClass(Class<? extends ACAQAlgorithm> algorithmClass) {
@@ -45,6 +46,7 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
 
     /**
      * Sets the name
+     *
      * @param name The name
      */
     public void setName(String name) {
@@ -58,6 +60,7 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
 
     /**
      * Sets the description
+     *
      * @param description The description
      */
     public void setDescription(String description) {
@@ -71,6 +74,7 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
 
     /**
      * Sets the category
+     *
      * @param category The category
      */
     public void setCategory(ACAQAlgorithmCategory category) {
@@ -84,6 +88,7 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
 
     /**
      * Sets preferred traits
+     *
      * @param preferredTraits The preferred traits
      */
     public void setPreferredTraits(Set<ACAQTraitDeclaration> preferredTraits) {
@@ -97,6 +102,7 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
 
     /**
      * Sets unwanted traits
+     *
      * @param unwantedTraits Unwanted traits
      */
     public void setUnwantedTraits(Set<ACAQTraitDeclaration> unwantedTraits) {
@@ -110,6 +116,7 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
 
     /**
      * Sets the input slots
+     *
      * @param inputSlots Input slots
      */
     public void setInputSlots(List<AlgorithmInputSlot> inputSlots) {
@@ -123,6 +130,7 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
 
     /**
      * Sets the output slots
+     *
      * @param outputSlots Output slots
      */
     public void setOutputSlots(List<AlgorithmOutputSlot> outputSlots) {
@@ -136,6 +144,7 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
 
     /**
      * Sets the ID
+     *
      * @param id A unique ID
      */
     public void setId(String id) {
@@ -149,6 +158,7 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
 
     /**
      * Sets the slot trait configuration
+     *
      * @param slotTraitConfiguration The configuration
      */
     public void setSlotTraitConfiguration(ACAQDataSlotTraitConfiguration slotTraitConfiguration) {
@@ -162,6 +172,7 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
 
     /**
      * Sets the menu path. Menu items are separated by newlines
+     *
      * @param menuPath The menu path
      */
     public void setMenuPath(String menuPath) {

@@ -50,6 +50,7 @@ public class BioformatsImporter extends ACAQIteratingAlgorithm {
 
     /**
      * Copies the algorithm
+     *
      * @param other the original
      */
     public BioformatsImporter(BioformatsImporter other) {
@@ -237,6 +238,9 @@ public class BioformatsImporter extends ACAQIteratingAlgorithm {
         getEventBus().post(new ParameterChangedEvent(this, "stitch-tiles"));
     }
 
+    /**
+     * Wrapper around Bioformats color modes
+     */
     public enum ColorMode {
         Default,
         Composite,
@@ -245,6 +249,9 @@ public class BioformatsImporter extends ACAQIteratingAlgorithm {
         Custom
     }
 
+    /**
+     * Wrapper around Bioformats plane orders
+     */
     public enum Order {
         Default,
         XYZCT,

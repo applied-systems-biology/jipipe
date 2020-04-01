@@ -11,7 +11,7 @@ public class AlgorithmFinderSuccessEvent {
 
     /**
      * @param outputSlot The output slot
-     * @param inputSlot The target slot
+     * @param inputSlot  The target slot
      */
     public AlgorithmFinderSuccessEvent(ACAQDataSlot outputSlot, ACAQDataSlot inputSlot) {
         this.outputSlot = outputSlot;

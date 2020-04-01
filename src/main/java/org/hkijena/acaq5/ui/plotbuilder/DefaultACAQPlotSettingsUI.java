@@ -3,7 +3,7 @@
  * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
  * https://www.leibniz-hki.de/en/applied-systems-biology.html
  * HKI-Center for Systems Biology of Infection
- * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Insitute (HKI)
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
  * This code is licensed under BSD 2-Clause
@@ -44,8 +44,9 @@ public class DefaultACAQPlotSettingsUI extends ACAQPlotSettingsUI {
 
     /**
      * Adds a component
-     * @param label label
-     * @param icon icon
+     *
+     * @param label     label
+     * @param icon      icon
      * @param component component
      */
     protected void addComponent(String label, Icon icon, Component component) {
@@ -72,7 +73,8 @@ public class DefaultACAQPlotSettingsUI extends ACAQPlotSettingsUI {
 
     /**
      * Adds a string editor component
-     * @param label label
+     *
+     * @param label  label
      * @param getter getter function
      * @param setter setter function
      */

@@ -3,7 +3,7 @@
  * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
  * https://www.leibniz-hki.de/en/applied-systems-biology.html
  * HKI-Center for Systems Biology of Infection
- * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Insitute (HKI)
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
  * This code is licensed under BSD 2-Clause
@@ -33,12 +33,13 @@ public class ACAQTableAnalyzerUIOperationRegistry {
 
     /**
      * Registers a new operation
+     *
      * @param operationClass The operation class
-     * @param uiClass User interface
-     * @param name Operation name
-     * @param shortcut Short operation name shown in table columns
-     * @param description Description
-     * @param icon Icon for the operation
+     * @param uiClass        User interface
+     * @param name           Operation name
+     * @param shortcut       Short operation name shown in table columns
+     * @param description    Description
+     * @param icon           Icon for the operation
      */
     public void register(Class<? extends ACAQTableVectorOperation> operationClass,
                          Class<? extends ACAQTableVectorOperationUI> uiClass,
@@ -143,11 +144,11 @@ public class ACAQTableAnalyzerUIOperationRegistry {
 
         /**
          * @param operationClass the operation class
-         * @param uiClass the UI class
-         * @param name the name
-         * @param shortcut the shortcut
-         * @param description the description
-         * @param icon the icon
+         * @param uiClass        the UI class
+         * @param name           the name
+         * @param shortcut       the shortcut
+         * @param description    the description
+         * @param icon           the icon
          */
         public VectorOperationEntry(Class<? extends ACAQTableVectorOperation> operationClass, Class<? extends ACAQTableVectorOperationUI> uiClass, String name, String shortcut, String description, Icon icon) {
             this.operationClass = operationClass;
@@ -206,10 +207,10 @@ public class ACAQTableAnalyzerUIOperationRegistry {
 
         /**
          * @param operationClass the operation class
-         * @param uiClass UI class
-         * @param name operation name
-         * @param description description
-         * @param icon Icon
+         * @param uiClass        UI class
+         * @param name           operation name
+         * @param description    description
+         * @param icon           Icon
          */
         public TableToTableOperationEntry(Class<? extends ACAQTableToTableOperation> operationClass, Class<? extends ACAQTableToTableOperationUI> uiClass, String name, String description, Icon icon) {
             this.operationClass = operationClass;

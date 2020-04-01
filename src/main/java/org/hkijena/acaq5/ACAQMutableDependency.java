@@ -31,6 +31,7 @@ public class ACAQMutableDependency implements ACAQDependency {
 
     /**
      * Sets the metadata
+     *
      * @param metadata The metadata
      */
     @JsonSetter("metadata")
@@ -53,6 +54,7 @@ public class ACAQMutableDependency implements ACAQDependency {
 
     /**
      * Sets the ID
+     *
      * @param dependencyId The ID
      */
     @JsonSetter("id")
@@ -71,6 +73,7 @@ public class ACAQMutableDependency implements ACAQDependency {
 
     /**
      * Sets the version
+     *
      * @param dependencyVersion The version
      */
     @JsonSetter("version")

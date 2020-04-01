@@ -16,6 +16,7 @@ public class ACAQDataSlotTableColumnHeaderRenderer implements TableCellRenderer 
 
     /**
      * Creates a new instance
+     *
      * @param dataTable The table
      */
     public ACAQDataSlotTableColumnHeaderRenderer(ACAQExportedDataTable dataTable) {

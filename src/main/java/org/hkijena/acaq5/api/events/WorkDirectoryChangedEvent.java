@@ -8,6 +8,9 @@ import java.nio.file.Path;
 public class WorkDirectoryChangedEvent {
     private Path workDirectory;
 
+    /**
+     * @param workDirectory the work directory
+     */
     public WorkDirectoryChangedEvent(Path workDirectory) {
         this.workDirectory = workDirectory;
     }

@@ -21,7 +21,7 @@ import org.hkijena.acaq5.utils.ImageJUtils;
  * Segmenter node that thresholds via an auto threshold
  */
 @ACAQDocumentation(name = "Auto threshold segmentation")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmentation)
 
 // Algorithm flow
 @AlgorithmInputSlot(value = ImagePlus2DGreyscaleData.class, slotName = "Image", autoCreate = true)
@@ -47,6 +47,7 @@ public class AutoThresholdSegmenter extends ACAQIteratingAlgorithm {
 
     /**
      * Copies the algorithm
+     *
      * @param other the original
      */
     public AutoThresholdSegmenter(AutoThresholdSegmenter other) {

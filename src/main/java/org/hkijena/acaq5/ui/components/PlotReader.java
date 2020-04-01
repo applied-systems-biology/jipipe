@@ -3,7 +3,7 @@
  * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
  * https://www.leibniz-hki.de/en/applied-systems-biology.html
  * HKI-Center for Systems Biology of Infection
- * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Insitute (HKI)
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
  * This code is licensed under BSD 2-Clause
@@ -19,11 +19,17 @@ import org.jfree.chart.JFreeChart;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Displays a plot
+ */
 public class PlotReader extends JPanel {
 
     private ChartPanel chartPanel;
     private JToolBar toolBar;
 
+    /**
+     * Creates a new instance
+     */
     public PlotReader() {
         initialize();
     }
@@ -62,6 +68,9 @@ public class PlotReader extends JPanel {
         return chartPanel;
     }
 
+    /**
+     * Redraws the plot
+     */
     public void redrawPlot() {
         JFreeChart chart = chartPanel.getChart();
         chartPanel.setChart(null);

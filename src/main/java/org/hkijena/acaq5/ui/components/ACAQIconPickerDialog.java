@@ -24,8 +24,8 @@ public class ACAQIconPickerDialog extends JDialog implements MouseListener {
     private JList<String> iconList;
 
     /**
-     * @param parent The window parent
-     * @param prefix The resource prefix
+     * @param parent         The window parent
+     * @param prefix         The resource prefix
      * @param availableIcons Icon names without resource prefix
      */
     public ACAQIconPickerDialog(Window parent, String prefix, Set<String> availableIcons) {
@@ -157,8 +157,9 @@ public class ACAQIconPickerDialog extends JDialog implements MouseListener {
 
     /**
      * Picks an icon name using a dialog
-     * @param parent The parent component
-     * @param prefix The prefix put in front of the icon names for rendering the icon
+     *
+     * @param parent         The parent component
+     * @param prefix         The prefix put in front of the icon names for rendering the icon
      * @param availableIcons Icon names without prefix
      * @return The selected icon or null
      */

@@ -39,9 +39,10 @@ public class ACAQDataSlot implements TableModel {
 
     /**
      * Creates a new slot
-     * @param algorithm The algorithm that contains the slot
-     * @param slotType The slot type
-     * @param name The unique slot name
+     *
+     * @param algorithm        The algorithm that contains the slot
+     * @param slotType         The slot type
+     * @param name             The unique slot name
      * @param acceptedDataType The accepted data type
      */
     public ACAQDataSlot(ACAQAlgorithm algorithm, SlotType slotType, String name, Class<? extends ACAQData> acceptedDataType) {
@@ -70,6 +71,7 @@ public class ACAQDataSlot implements TableModel {
 
     /**
      * Returns true if the slot can carry the provided data
+     *
      * @param data Data
      * @return True if the slot accepts the data
      */
@@ -83,8 +85,8 @@ public class ACAQDataSlot implements TableModel {
      * Gets the data stored in a specific row
      *
      * @param row The row
-     * @return Data at row
      * @param <T> Data type
+     * @return Data at row
      */
     public <T> T getData(int row) {
         return (T) data.get(row);
@@ -129,7 +131,7 @@ public class ACAQDataSlot implements TableModel {
     /**
      * Adds a data row
      *
-     * @param value The data
+     * @param value  The data
      * @param traits Optional traits
      */
     public void addData(ACAQData value, List<ACAQTrait> traits) {
@@ -150,7 +152,7 @@ public class ACAQDataSlot implements TableModel {
     /**
      * Adds an annotation to all existing data
      *
-     * @param trait The trait instance
+     * @param trait     The trait instance
      * @param overwrite If false, existing annotations of the same type are not overwritten
      */
     public void addAnnotationToAllData(ACAQTrait trait, boolean overwrite) {
@@ -232,6 +234,7 @@ public class ACAQDataSlot implements TableModel {
     /**
      * Returns a name that includes the algorithm name and the slot name.
      * Should not be used outside of UI.
+     *
      * @return Display name that includes the algorithm name, as well as the slot name.
      */
     public String getNameWithAlgorithmName() {
@@ -303,6 +306,7 @@ public class ACAQDataSlot implements TableModel {
 
     /**
      * Sets storage path that is used during running the algorithm for saving the results
+     *
      * @param storagePath Data storage paths
      */
     public void setStoragePath(Path storagePath) {
@@ -514,7 +518,7 @@ public class ACAQDataSlot implements TableModel {
      * Updates the trait declaration to add this trait
      *
      * @param declaration Annotation type
-     * @param operation The operation
+     * @param operation   The operation
      */
     public void setSlotTraitToTraitConfiguration(ACAQTraitDeclaration declaration, ACAQTraitModificationOperation operation) {
         if (algorithm.getTraitConfiguration() instanceof ACAQMutableTraitConfiguration) {

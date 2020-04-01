@@ -20,8 +20,16 @@ import java.awt.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+/**
+ * Result UI for {@link ROIData}
+ */
 public class ROIDataSlotRowUI extends ACAQDefaultResultDataSlotRowUI {
 
+    /**
+     * @param workbenchUI the workbench
+     * @param slot        the data slot
+     * @param row         the slot row
+     */
     public ROIDataSlotRowUI(ACAQProjectUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
         super(workbenchUI, slot, row);
     }

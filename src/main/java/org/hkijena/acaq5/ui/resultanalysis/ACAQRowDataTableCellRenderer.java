@@ -19,7 +19,7 @@ public class ACAQRowDataTableCellRenderer implements TableCellRenderer {
 
     /**
      * @param workbenchUI the workbench
-     * @param slot the data slot
+     * @param slot        the data slot
      */
     public ACAQRowDataTableCellRenderer(ACAQProjectUI workbenchUI, ACAQDataSlot slot) {
         this.workbenchUI = workbenchUI;

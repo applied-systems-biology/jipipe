@@ -26,6 +26,7 @@ public class ACAQListFiles extends ACAQIteratingAlgorithm {
 
     /**
      * Creates new instance
+     *
      * @param declaration The declaration
      */
     public ACAQListFiles(ACAQAlgorithmDeclaration declaration) {
@@ -34,6 +35,7 @@ public class ACAQListFiles extends ACAQIteratingAlgorithm {
 
     /**
      * Copies the algorithm
+     *
      * @param other The original
      */
     public ACAQListFiles(ACAQListFiles other) {

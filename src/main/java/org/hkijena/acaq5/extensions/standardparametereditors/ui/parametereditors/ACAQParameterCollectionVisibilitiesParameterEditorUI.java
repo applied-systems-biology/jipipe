@@ -24,7 +24,8 @@ public class ACAQParameterCollectionVisibilitiesParameterEditorUI extends ACAQPa
 
     /**
      * Creates new instance
-     * @param context SciJava context
+     *
+     * @param context         SciJava context
      * @param parameterAccess Parameter
      */
     public ACAQParameterCollectionVisibilitiesParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {

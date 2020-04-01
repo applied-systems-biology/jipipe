@@ -24,8 +24,8 @@ public class ACAQJsonExtensionMultiAlgorithmSelectionPanelUI extends ACAQJsonExt
 
     /**
      * @param workbenchUI Workbench UI
-     * @param graph The graph
-     * @param algorithms Selected algorithms
+     * @param graph       The graph
+     * @param algorithms  Selected algorithms
      */
     public ACAQJsonExtensionMultiAlgorithmSelectionPanelUI(ACAQJsonExtensionUI workbenchUI, ACAQAlgorithmGraph graph, Set<ACAQAlgorithm> algorithms) {
         super(workbenchUI);

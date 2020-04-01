@@ -25,9 +25,10 @@ public class ACAQMergedExportedDataTable implements TableModel {
 
     /**
      * Adds an {@link ACAQExportedDataTable}
-     * @param project The project
+     *
+     * @param project  The project
      * @param dataSlot The data slot
-     * @param table The table
+     * @param table    The table
      */
     public void add(ACAQProject project, ACAQDataSlot dataSlot, ACAQExportedDataTable table) {
         for (ACAQTraitDeclaration traitColumn : table.getTraitColumns()) {
@@ -129,6 +130,7 @@ public class ACAQMergedExportedDataTable implements TableModel {
 
     /**
      * Gets the slot that defined the specified row
+     *
      * @param row Row index
      * @return The slot that defined the row
      */

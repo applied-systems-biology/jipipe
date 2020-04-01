@@ -3,7 +3,7 @@
  * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
  * https://www.leibniz-hki.de/en/applied-systems-biology.html
  * HKI-Center for Systems Biology of Infection
- * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Insitute (HKI)
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
  * This code is licensed under BSD 2-Clause
@@ -37,109 +37,20 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+/**
+ * Utils for UI
+ */
 public class UIUtils {
 
     public static final Insets UI_PADDING = new Insets(4, 4, 4, 4);
 
-    public static JLabel createDescriptionLabelUI(JPanel panel, String text, int row, int column) {
-        JLabel description = new JLabel(text);
-        panel.add(description, new GridBagConstraints() {
-            {
-                anchor = GridBagConstraints.WEST;
-                gridx = column;
-                gridy = row;
-                insets = UI_PADDING;
-            }
-        });
-        return description;
-    }
-
-    public static JTextField createDescriptionTextFieldUI(JPanel panel, String text, int row, int column) {
-        JTextField description = new JTextField(text);
-        description.setEditable(false);
-        description.setBorder(null);
-        panel.add(description, new GridBagConstraints() {
-            {
-                anchor = GridBagConstraints.WEST;
-                gridx = column;
-                gridy = row;
-                insets = UI_PADDING;
-                fill = GridBagConstraints.HORIZONTAL;
-                weightx = 1;
-            }
-        });
-        return description;
-    }
-
-    public static JTextArea createDescriptionTextAreaUI(JPanel panel, String text, int row, int column) {
-        JTextArea description = new JTextArea(text);
-        description.setEditable(false);
-        description.setBorder(null);
-        description.setOpaque(false);
-        description.setWrapStyleWord(true);
-        description.setLineWrap(true);
-        panel.add(description, new GridBagConstraints() {
-            {
-                anchor = GridBagConstraints.WEST;
-                gridx = column;
-                gridy = row;
-                insets = UI_PADDING;
-                fill = GridBagConstraints.HORIZONTAL;
-                weightx = 1;
-            }
-        });
-        return description;
-    }
-
-    public static void addToGridBag(JPanel panel, JButton component, int row, int column) {
-        panel.add(component, new GridBagConstraints() {
-            {
-                anchor = GridBagConstraints.WEST;
-                gridx = column;
-                gridy = row;
-                insets = UI_PADDING;
-                fill = GridBagConstraints.HORIZONTAL;
-            }
-        });
-    }
-
-    public static JLabel backgroundColorJLabel(JLabel label, Color color) {
-        label.setOpaque(true);
-        label.setBackground(color);
-
-        // Set the text color to white if needed
-        double r = color.getRed() / 255.0;
-        double g = color.getGreen() / 255.0;
-        double b = color.getBlue() / 255.0;
-        double max = Math.max(r, Math.max(g, b));
-        double min = Math.min(r, Math.min(g, b));
-
-        double v = (max + min) / 2.0;
-        if (v < 0.5) {
-            label.setForeground(Color.WHITE);
-        }
-
-        return label;
-    }
-
-    public static JLabel borderedJLabel(JLabel label) {
-        label.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        return label;
-    }
-
-    public static void addFillerGridBagComponent(Container component, int row) {
-        component.add(new JPanel(), new GridBagConstraints() {
-            {
-                anchor = GridBagConstraints.PAGE_START;
-                gridx = 0;
-                gridy = row;
-                fill = GridBagConstraints.HORIZONTAL | GridBagConstraints.VERTICAL;
-                weightx = 1;
-                weighty = 1;
-            }
-        });
-    }
-
+    /**
+     * Equivalent of {@link Box}.verticalGlue() for {@link GridBagLayout}
+     *
+     * @param component the target component that has {@link GridBagLayout}
+     * @param row       the row
+     * @param column    the column
+     */
     public static void addFillerGridBagComponent(Container component, int row, int column) {
         component.add(new JPanel(), new GridBagConstraints() {
             {
@@ -153,6 +64,12 @@ public class UIUtils {
         });
     }
 
+    /**
+     * Adds a popup menu to a button
+     *
+     * @param target target button
+     * @return the popup menu
+     */
     public static JPopupMenu addPopupMenuToComponent(AbstractButton target) {
         JPopupMenu popupMenu = new JPopupMenu();
         target.addMouseListener(new MouseAdapter() {
@@ -163,68 +80,41 @@ public class UIUtils {
             }
         });
         target.addActionListener(e -> {
-
-            if (MouseInfo.getPointerInfo().getLocation().x >= target.getLocationOnScreen().x
-                    && MouseInfo.getPointerInfo().getLocation().x <= target.getLocationOnScreen().x + target.getWidth()
-                    && MouseInfo.getPointerInfo().getLocation().y >= target.getLocationOnScreen().y
-                    && MouseInfo.getPointerInfo().getLocation().y <= target.getLocationOnScreen().y + target.getHeight()) {
-
-            } else {
+            if (MouseInfo.getPointerInfo().getLocation().x < target.getLocationOnScreen().x
+                    || MouseInfo.getPointerInfo().getLocation().x > target.getLocationOnScreen().x + target.getWidth()
+                    || MouseInfo.getPointerInfo().getLocation().y < target.getLocationOnScreen().y
+                    || MouseInfo.getPointerInfo().getLocation().y > target.getLocationOnScreen().y + target.getHeight()) {
                 popupMenu.show(target, 0, target.getHeight());
             }
         });
         return popupMenu;
     }
 
-    public static JPopupMenu addContextMenuToComponent(Component target) {
-        JPopupMenu popupMenu = new JPopupMenu();
-        target.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent mouseEvent) {
-                super.mouseClicked(mouseEvent);
-                if (SwingUtilities.isRightMouseButton(mouseEvent)) {
-                    popupMenu.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());
-                }
-            }
-        });
-        return popupMenu;
-    }
-
-    public static void addPopupPanelToComponent(AbstractButton target, JPanel panel) {
-        PopupFactory popupFactory = PopupFactory.getSharedInstance();
-
-        target.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent mouseEvent) {
-                super.mouseClicked(mouseEvent);
-                Point l = target.getLocationOnScreen();
-                Popup popup = popupFactory.getPopup(target, panel, l.x, l.y + target.getHeight());
-                popup.show();
-            }
-        });
-        target.addActionListener(e -> {
-
-            if (MouseInfo.getPointerInfo().getLocation().x >= target.getLocationOnScreen().x
-                    && MouseInfo.getPointerInfo().getLocation().x <= target.getLocationOnScreen().x + target.getWidth()
-                    && MouseInfo.getPointerInfo().getLocation().y >= target.getLocationOnScreen().y
-                    && MouseInfo.getPointerInfo().getLocation().y <= target.getLocationOnScreen().y + target.getHeight()) {
-
-            } else {
-                Point l = target.getLocationOnScreen();
-                Popup popup = popupFactory.getPopup(target, panel, l.x, l.y + target.getHeight());
-                popup.show();
-            }
-        });
-    }
-
+    /**
+     * Returns an icon from ACAQ5 resources
+     *
+     * @param iconName relative to the icons/ plugin resource
+     * @return the icon instance
+     */
     public static ImageIcon getIconFromResources(String iconName) {
         return new ImageIcon(ResourceUtils.getPluginResource("icons/" + iconName));
     }
 
+    /**
+     * Creates 16x16 a color icon
+     *
+     * @param color the color
+     * @return the icon
+     */
     public static ColorIcon getIconFromColor(Color color) {
         return new ColorIcon(16, 16, color);
     }
 
+    /**
+     * Makes a button flat
+     *
+     * @param component the button
+     */
     public static void makeFlat(AbstractButton component) {
         component.setBackground(Color.WHITE);
         component.setOpaque(false);
@@ -233,6 +123,11 @@ public class UIUtils {
         component.setBorder(compound);
     }
 
+    /**
+     * Makes a button flat and 25x25 size
+     *
+     * @param component the button
+     */
     public static void makeFlat25x25(AbstractButton component) {
         component.setBackground(Color.WHITE);
         component.setOpaque(false);
@@ -244,6 +139,11 @@ public class UIUtils {
         component.setBorder(compound);
     }
 
+    /**
+     * Makes a button flat and have a height of 25px
+     *
+     * @param component the button
+     */
     public static void makeFlatH25(AbstractButton component) {
         component.setBackground(Color.WHITE);
         component.setOpaque(false);
@@ -255,12 +155,24 @@ public class UIUtils {
         component.setBorder(compound);
     }
 
+    /**
+     * Makes a component borderless
+     *
+     * @param component the component
+     */
     public static void makeBorderlessWithoutMargin(AbstractButton component) {
         component.setBackground(Color.WHITE);
         component.setOpaque(false);
         component.setBorder(null);
     }
 
+    /**
+     * Installs an event to the window that asks the user before the window is closes
+     *
+     * @param window  the window
+     * @param message the close message
+     * @param title   the close message title
+     */
     public static void setToAskOnClose(JFrame window, String message, String title) {
         window.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         window.addWindowListener(new WindowAdapter() {
@@ -274,15 +186,10 @@ public class UIUtils {
         });
     }
 
-    public static Color stringToColor(String string, float s, float b) {
-        float h = Math.abs(string.hashCode() % 256) / 255.0f;
-        return Color.getHSBColor(h, s, b);
-    }
-
     /**
      * Expands the whole tree
      *
-     * @param tree
+     * @param tree the tree
      */
     public static void expandAllTree(JTree tree) {
         for (int i = 0; i < tree.getRowCount(); i++) {
@@ -290,6 +197,13 @@ public class UIUtils {
         }
     }
 
+    /**
+     * Asks the user how to open a project: In the current window or a new window
+     *
+     * @param parent parent component
+     * @param title  window title
+     * @return {@link JOptionPane}.YES_OPTION to open in this window; {@link JOptionPane}.NO_OPTION to open in a new window; {@link JOptionPane}.CANCEL_OPTION to cancel.
+     */
     public static int askOpenInCurrentWindow(Component parent, String title) {
         return JOptionPane.showOptionDialog(parent,
                 "Projects can either be opened in a new window or replace the project in an existing window.",
@@ -304,9 +218,10 @@ public class UIUtils {
     /**
      * Creates a read-only "star-rating" label
      *
-     * @param stars
-     * @param maximum
-     * @return
+     * @param title   the label title
+     * @param stars   the number of stars
+     * @param maximum the maximum number of stars
+     * @return the generated label
      */
     public static JLabel createStarRatingLabel(String title, double stars, int maximum) {
         StringBuilder builder = new StringBuilder();
@@ -329,6 +244,12 @@ public class UIUtils {
         return new JLabel(builder.toString());
     }
 
+    /**
+     * Opens a dialog showing an exception
+     *
+     * @param parent    the parent component
+     * @param exception the exception
+     */
     public static void openErrorDialog(Component parent, Exception exception) {
         StringWriter writer = new StringWriter();
         exception.printStackTrace(new PrintWriter(writer));
@@ -345,6 +266,12 @@ public class UIUtils {
         dialog.setVisible(true);
     }
 
+    /**
+     * Opens a dialog showing a validity report
+     *
+     * @param parent the parent component
+     * @param report the report
+     */
     public static void openValidityReportDialog(Component parent, ACAQValidityReport report) {
         ACAQValidityReportUI ui = new ACAQValidityReportUI(true);
         ui.setReport(report);
@@ -358,6 +285,15 @@ public class UIUtils {
         dialog.setVisible(true);
     }
 
+    /**
+     * Continuously asks for an unique string
+     *
+     * @param parent       parent component
+     * @param message      the message
+     * @param initialValue the initial string
+     * @param exists       function that returns true if the value exists
+     * @return unique string or null if canceled
+     */
     public static String getUniqueStringByDialog(Component parent, String message, String initialValue, Predicate<String> exists) {
         if (initialValue != null)
             initialValue = StringUtils.makeUniqueString(initialValue, " ", exists);
@@ -373,6 +309,12 @@ public class UIUtils {
         return value;
     }
 
+    /**
+     * Returns a fill color for {@link ACAQAlgorithmDeclaration}
+     *
+     * @param declaration the algorithm type
+     * @return the fill color
+     */
     public static Color getFillColorFor(ACAQAlgorithmDeclaration declaration) {
         if (declaration.getAlgorithmClass() == ACAQProjectCompartment.class)
             return new Color(254, 254, 255);
@@ -383,10 +325,22 @@ public class UIUtils {
         return declaration.getCategory().getColor(0.1f, 0.9f);
     }
 
+    /**
+     * Returns a fill color for {@link ACAQAlgorithmCategory}
+     *
+     * @param category the category
+     * @return the fill color
+     */
     public static Color getFillColorFor(ACAQAlgorithmCategory category) {
         return category.getColor(0.1f, 0.9f);
     }
 
+    /**
+     * Returns a border color for {@link ACAQAlgorithmDeclaration}
+     *
+     * @param declaration the algorithm type
+     * @return the border color
+     */
     public static Color getBorderColorFor(ACAQAlgorithmDeclaration declaration) {
         if (declaration.getAlgorithmClass() == ACAQProjectCompartment.class)
             return new Color(6, 20, 57);
@@ -397,10 +351,21 @@ public class UIUtils {
         return declaration.getCategory().getColor(0.1f, 0.5f);
     }
 
+    /**
+     * Makes a toggle button readonly without greying it out
+     *
+     * @param toggleButton toggle button
+     */
     public static void makeToggleReadonly(JToggleButton toggleButton) {
         toggleButton.addActionListener(e -> toggleButton.setSelected(!toggleButton.isSelected()));
     }
 
+    /**
+     * Creates a readonly text field
+     *
+     * @param value text
+     * @return textfield
+     */
     public static JTextField makeReadonlyTextField(String value) {
         JTextField textField = new JTextField();
         textField.setText(value);
@@ -408,6 +373,12 @@ public class UIUtils {
         return textField;
     }
 
+    /**
+     * Creates a readonly text area
+     *
+     * @param text text
+     * @return text area
+     */
     public static JTextArea makeReadonlyTextArea(String text) {
         JTextArea textArea = new JTextArea();
         textArea.setBorder(BorderFactory.createEtchedBorder());
@@ -418,6 +389,11 @@ public class UIUtils {
         return textArea;
     }
 
+    /**
+     * Fits the row heights of a {@link JTable}
+     *
+     * @param table the table
+     */
     public static void fitRowHeights(JTable table) {
         for (int row = 0; row < table.getRowCount(); row++) {
             int rowHeight = table.getRowHeight();
@@ -431,6 +407,13 @@ public class UIUtils {
         }
     }
 
+    /**
+     * Creates a hierarchy of menus based on the menu paths vector
+     *
+     * @param rootMenu  the root menu
+     * @param menuPaths strings that have menu items separated by newlines
+     * @return map from menu path to submenu
+     */
     public static Map<String, JMenu> createMenuTree(JMenu rootMenu, Set<String> menuPaths) {
         Set<String> decomposedPaths = new HashSet<>();
         for (String menuPath : menuPaths) {
@@ -468,61 +451,25 @@ public class UIUtils {
         return result;
     }
 
-    public static Map<String, Object> createPopupMenuTree(JPopupMenu rootMenu, Set<String> menuPaths) {
-        Set<String> decomposedPaths = new HashSet<>();
-        for (String menuPath : menuPaths) {
-            String[] components = menuPath.split("\n");
-            String path = null;
-            for (String component : components) {
-                if (path == null)
-                    path = component;
-                else
-                    path += "\n" + component;
-                decomposedPaths.add(path);
-            }
-        }
-
-        Map<String, Object> result = new HashMap<>();
-        List<String> sortedMenuPaths = decomposedPaths.stream().sorted().collect(Collectors.toList());
-        result.put("", rootMenu);
-        for (String menuPath : sortedMenuPaths) {
-            if (menuPath != null && !menuPath.isEmpty()) {
-                if (!menuPath.contains("\n")) {
-                    JMenu menu = new JMenu(menuPath);
-                    rootMenu.add(menu);
-                    result.put(menuPath, menu);
-                } else {
-                    int lastNewLine = menuPath.lastIndexOf("\n");
-                    String parentMenuPath = menuPath.substring(0, lastNewLine);
-                    String lastComponent = menuPath.substring(lastNewLine + 1);
-                    JMenu menu = new JMenu(lastComponent);
-                    Object parentMenu = result.get(parentMenuPath);
-                    if (parentMenu instanceof JPopupMenu)
-                        ((JPopupMenu) parentMenu).add(menu);
-                    else if (parentMenu instanceof JMenu)
-                        ((JMenu) parentMenu).add(menu);
-                    result.put(menuPath, menu);
-                }
-            }
-        }
-        return result;
-    }
-
+    /**
+     * Makes a {@link JDialog} close when the escape key is hit
+     *
+     * @param dialog the dialog
+     */
     public static void addEscapeListener(final JDialog dialog) {
-        ActionListener escListener = new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.setVisible(false);
-            }
-        };
-
+        ActionListener escListener = e -> dialog.setVisible(false);
         dialog.getRootPane().registerKeyboardAction(escListener,
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
     }
 
+    /**
+     * Makes a label that contains a URL and opens the URL when clicked
+     *
+     * @param url the URL
+     * @return the label
+     */
     public static JLabel makeURLLabel(String url) {
         JLabel label = new JLabel("<html><a href=\"" + url + "\">" + url + "</a></html>");
         label.setCursor(new Cursor(Cursor.HAND_CURSOR));

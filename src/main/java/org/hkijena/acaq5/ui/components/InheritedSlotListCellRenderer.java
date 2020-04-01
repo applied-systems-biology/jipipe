@@ -8,10 +8,16 @@ import org.hkijena.acaq5.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Renders an available entry for inherited slot in {@link org.hkijena.acaq5.api.data.ACAQSlotDefinition}
+ */
 public class InheritedSlotListCellRenderer extends JLabel implements ListCellRenderer<String> {
 
     private ACAQAlgorithm algorithm;
 
+    /**
+     * @param algorithm the algorithm that contains the input slots
+     */
     public InheritedSlotListCellRenderer(ACAQAlgorithm algorithm) {
         this.algorithm = algorithm;
         setOpaque(true);

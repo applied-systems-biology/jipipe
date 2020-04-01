@@ -8,6 +8,9 @@ import org.hkijena.acaq5.api.data.traits.ACAQTraitConfiguration;
 public class TraitConfigurationChangedEvent {
     private ACAQTraitConfiguration source;
 
+    /**
+     * @param source event source
+     */
     public TraitConfigurationChangedEvent(ACAQTraitConfiguration source) {
         this.source = source;
     }

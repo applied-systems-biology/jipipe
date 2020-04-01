@@ -32,8 +32,8 @@ public class ACAQResultDataSlotTableUI extends ACAQProjectUIPanel {
 
     /**
      * @param workbenchUI the workbench UI
-     * @param run The run
-     * @param slot The slot
+     * @param run         The run
+     * @param slot        The slot
      */
     public ACAQResultDataSlotTableUI(ACAQProjectUI workbenchUI, ACAQRun run, ACAQDataSlot slot) {
         super(workbenchUI);

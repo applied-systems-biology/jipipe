@@ -6,6 +6,9 @@ import org.hkijena.acaq5.extensions.standardtableoperations.ui.tableoperations.*
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.plugin.Plugin;
 
+/**
+ * Standard set of table operations
+ */
 @Plugin(type = ACAQJavaExtension.class)
 public class StandardTableOperationsExtension extends ACAQPrepackagedDefaultJavaExtension {
 

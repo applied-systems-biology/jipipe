@@ -36,6 +36,7 @@ public class ACAQJsonExtensionWindow extends JFrame {
 
     /**
      * Creates a new instance
+     *
      * @param command The command that issued the UI
      * @param project The project
      */
@@ -70,6 +71,7 @@ public class ACAQJsonExtensionWindow extends JFrame {
 
     /**
      * Loads a project into the window and replaces the current project
+     *
      * @param project The project
      */
     public void loadProject(ACAQJsonExtension project) {
@@ -94,6 +96,7 @@ public class ACAQJsonExtensionWindow extends JFrame {
     /**
      * Opens a project from a file
      * Asks the user if it should be opened in this or a new window
+     *
      * @param path JSON file path
      */
     public void openProject(Path path) {
@@ -134,6 +137,7 @@ public class ACAQJsonExtensionWindow extends JFrame {
 
     /**
      * Saves the project
+     *
      * @param avoidDialog If true, the project is silently written if a save path was set
      */
     public void saveProjectAs(boolean avoidDialog) {
@@ -164,8 +168,9 @@ public class ACAQJsonExtensionWindow extends JFrame {
 
     /**
      * Asks the user if a project should be opened in this or a new window
+     *
      * @param messageTitle How the project was loaded
-     * @param project The project
+     * @param project      The project
      * @return The window that hosts the porject UI
      */
     private ACAQJsonExtensionWindow openProjectInThisOrNewWindow(String messageTitle, ACAQJsonExtension project) {
@@ -209,6 +214,7 @@ public class ACAQJsonExtensionWindow extends JFrame {
 
     /**
      * Opens a new window
+     *
      * @param command The command that issued the GUI
      * @param project The project
      * @return The window
@@ -224,6 +230,7 @@ public class ACAQJsonExtensionWindow extends JFrame {
 
     /**
      * Allows the user to select files to install
+     *
      * @param parent The parent component
      */
     public static void installExtensions(Component parent) {
@@ -240,7 +247,7 @@ public class ACAQJsonExtensionWindow extends JFrame {
     /**
      * Loads a project and installs it
      *
-     * @param parent The parent component
+     * @param parent   The parent component
      * @param filePath The file path
      */
     public static void installExtensionFromFile(Component parent, Path filePath) {
@@ -263,7 +270,7 @@ public class ACAQJsonExtensionWindow extends JFrame {
     /**
      * Installs a loaded project
      *
-     * @param parent The parent component
+     * @param parent    The parent component
      * @param extension The extension
      */
     public static void installExtension(Component parent, ACAQJsonExtension extension) {

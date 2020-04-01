@@ -18,6 +18,9 @@ import org.scijava.plugin.Plugin;
 import java.io.IOException;
 import java.util.Set;
 
+/**
+ * Provides some standard algorithms
+ */
 @Plugin(type = ACAQJavaExtension.class)
 public class StandardAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtension {
 

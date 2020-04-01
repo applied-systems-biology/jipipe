@@ -35,7 +35,7 @@ public class ACAQTraitParameterEditorUI extends ACAQParameterEditorUI {
     private boolean isReloading = false;
 
     /**
-     * @param context SciJava context
+     * @param context         SciJava context
      * @param parameterAccess the parameter
      */
     public ACAQTraitParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
@@ -163,6 +163,7 @@ public class ACAQTraitParameterEditorUI extends ACAQParameterEditorUI {
 
     /**
      * Triggered when a trait is selected
+     *
      * @param event Generated event
      */
     @Subscribe

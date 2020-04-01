@@ -17,18 +17,36 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+/**
+ * Contains {@link Roi}
+ */
 @ACAQDocumentation(name = "ROI", description = "Collection of ROI")
 public class ROIData implements ACAQData {
     private List<Roi> roi;
 
-    public ROIData(Path storageFilePath) throws IOException {
+    /**
+     * Loads {@link Roi} from a path that contains a zip file
+     *
+     * @param storageFilePath path that contains a zip file
+     */
+    public ROIData(Path storageFilePath) {
         this.roi = loadRoiListFromFile(PathUtils.findFileByExtensionIn(storageFilePath, ".zip"));
     }
 
+    /**
+     * Initialize from a list of {@link Roi}
+     *
+     * @param roi ROI list
+     */
     public ROIData(List<Roi> roi) {
         this.roi = roi;
     }
 
+    /**
+     * Initializes from a RoiManager
+     *
+     * @param roiManager the ROI manager
+     */
     public ROIData(RoiManager roiManager) {
         this.roi = new ArrayList<>();
         this.roi.addAll(Arrays.asList(roiManager.getRoisAsArray()));
@@ -62,6 +80,8 @@ public class ROIData implements ACAQData {
 
     /**
      * Adds the ROI to an existing ROI manager instance
+     *
+     * @param roiManager the ROI manager
      */
     public void addToRoiManager(RoiManager roiManager) {
         for (Roi roi : getROI()) {
@@ -72,8 +92,8 @@ public class ROIData implements ACAQData {
     /**
      * Loads a set of ROI from a zip file
      *
-     * @param fileName
-     * @return
+     * @param fileName the zip file
+     * @return the Roi list
      */
     public static List<Roi> loadRoiListFromFile(Path fileName) {
         // Code adapted from ImageJ RoiManager

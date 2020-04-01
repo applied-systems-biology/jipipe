@@ -10,11 +10,19 @@ import java.awt.*;
 import java.nio.file.Path;
 import java.util.Set;
 
+/**
+ * Shown when unsatisfied dependencies are found
+ */
 public class UnsatisfiedDependenciesDialog extends JDialog {
     private Path fileName;
     private Set<ACAQDependency> dependencySet;
     private boolean continueLoading = false;
 
+    /**
+     * @param parent        Parent component
+     * @param fileName      the project file or folder. Only for informational purposes
+     * @param dependencySet the unsatisfied dependencies
+     */
     public UnsatisfiedDependenciesDialog(Component parent, Path fileName, Set<ACAQDependency> dependencySet) {
         super(SwingUtilities.getWindowAncestor(parent));
         this.fileName = fileName;
@@ -70,9 +78,9 @@ public class UnsatisfiedDependenciesDialog extends JDialog {
     /**
      * Shows the dialog
      *
-     * @param parent
-     * @param fileName
-     * @param dependencySet
+     * @param parent        the parent
+     * @param fileName      the project file or folder. Only for informational purposes
+     * @param dependencySet the unsatisfied dependencies
      * @return if loading should be continued anyways
      */
     public static boolean showDialog(Component parent, Path fileName, Set<ACAQDependency> dependencySet) {

@@ -10,7 +10,7 @@ public class AlgorithmSelectedEvent {
     private boolean addToSelection;
 
     /**
-     * @param ui the algorithm UI
+     * @param ui             the algorithm UI
      * @param addToSelection if the algorithm should be added to the selection
      */
     public AlgorithmSelectedEvent(ACAQAlgorithmUI ui, boolean addToSelection) {

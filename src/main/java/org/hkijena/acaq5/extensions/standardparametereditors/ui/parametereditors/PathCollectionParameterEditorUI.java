@@ -13,6 +13,9 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.Arrays;
 
+/**
+ * Editor for {@link PathCollection}
+ */
 public class PathCollectionParameterEditorUI extends ACAQParameterEditorUI {
 
     private JList<String> listPanel;
@@ -20,6 +23,10 @@ public class PathCollectionParameterEditorUI extends ACAQParameterEditorUI {
     private FileSelection.PathMode pathMode = FileSelection.PathMode.FilesOnly;
     private JFileChooser fileChooser = new JFileChooser();
 
+    /**
+     * @param context         SciJava context
+     * @param parameterAccess the parameter
+     */
     public PathCollectionParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
         super(context, parameterAccess);
         initializeFileSelection();

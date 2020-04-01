@@ -16,8 +16,11 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.Image
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleMaskData;
 import org.hkijena.acaq5.utils.Hough_Circle;
 
+/**
+ * Segments using a Hough circle transform
+ */
 @ACAQDocumentation(name = "Hough segmentation")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmentation)
 
 // Algorithm flow
 @AlgorithmInputSlot(value = ImagePlus2DGreyscaleData.class, slotName = "Image", autoCreate = true)
@@ -42,10 +45,18 @@ public class HoughSegmenter extends ACAQIteratingAlgorithm {
     private int bandwidth = 10;
     private int localRadius = 10;
 
+    /**
+     * @param declaration algorithm declaration
+     */
     public HoughSegmenter(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
     }
 
+    /**
+     * Copies the algorithm
+     *
+     * @param other the original
+     */
     public HoughSegmenter(HoughSegmenter other) {
         super(other);
         this.minRadius = other.minRadius;

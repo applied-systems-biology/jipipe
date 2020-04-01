@@ -41,7 +41,7 @@ public interface ACAQParameterAccess {
      * Finds an annotation for this parameter
      *
      * @param klass Annotation class
-     * @param <T> Annotation type
+     * @param <T>   Annotation type
      * @return Annotation or null if not found
      */
     <T extends Annotation> T getAnnotationOfType(Class<T> klass);
@@ -65,7 +65,7 @@ public interface ACAQParameterAccess {
      * Sets the parameter value
      *
      * @param value Parameter value
-     * @param <T> Parameter data type
+     * @param <T>   Parameter data type
      * @return If setting the value was successful
      */
     <T> boolean set(T value);

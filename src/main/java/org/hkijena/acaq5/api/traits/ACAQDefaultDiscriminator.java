@@ -9,8 +9,9 @@ public class ACAQDefaultDiscriminator extends ACAQDefaultTrait implements ACAQDi
 
     /**
      * Creates a new discriminator
+     *
      * @param declaration The declaration
-     * @param value The value
+     * @param value       The value
      */
     public ACAQDefaultDiscriminator(ACAQTraitDeclaration declaration, String value) {
         super(declaration);
@@ -24,6 +25,7 @@ public class ACAQDefaultDiscriminator extends ACAQDefaultTrait implements ACAQDi
 
     /**
      * Sets the value
+     *
      * @param value The value
      */
     public void setValue(String value) {

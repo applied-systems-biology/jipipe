@@ -12,12 +12,19 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
 
+/**
+ * Parameter editor for {@link MacroCode}
+ */
 public class MacroParameterEditorUI extends ACAQParameterEditorUI {
 
     private boolean skipNextReload = false;
     private boolean isReloading = false;
     private EditorPane textArea;
 
+    /**
+     * @param context         SciJava context
+     * @param parameterAccess the parameter
+     */
     public MacroParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
         super(context, parameterAccess);
         registerIJMacroLanguage();

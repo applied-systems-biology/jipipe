@@ -28,6 +28,7 @@ public class ACAQFolderAnnotationGenerator extends ACAQIteratingAlgorithm {
 
     /**
      * Creates a new instance
+     *
      * @param declaration The algorithm declaration
      */
     public ACAQFolderAnnotationGenerator(ACAQAlgorithmDeclaration declaration) {
@@ -37,6 +38,7 @@ public class ACAQFolderAnnotationGenerator extends ACAQIteratingAlgorithm {
 
     /**
      * Copies the algorithm
+     *
      * @param other The original
      */
     public ACAQFolderAnnotationGenerator(ACAQFolderAnnotationGenerator other) {
@@ -80,6 +82,7 @@ public class ACAQFolderAnnotationGenerator extends ACAQIteratingAlgorithm {
 
     /**
      * Sets the generated annotation type
+     *
      * @param generatedAnnotation The annotation type
      */
     @ACAQParameter("generated-annotation")

@@ -6,6 +6,9 @@ import org.hkijena.acaq5.extensions.standardplots.ui.plots.*;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.plugin.Plugin;
 
+/**
+ * Provides a standard selection of plots
+ */
 @Plugin(type = ACAQJavaExtension.class)
 public class StandardPlotsExtension extends ACAQPrepackagedDefaultJavaExtension {
 

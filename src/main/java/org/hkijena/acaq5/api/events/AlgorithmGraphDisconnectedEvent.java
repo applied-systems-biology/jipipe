@@ -12,7 +12,7 @@ public class AlgorithmGraphDisconnectedEvent {
     private ACAQDataSlot target;
 
     /**
-     * @param graph the graph
+     * @param graph  the graph
      * @param source the source slot
      * @param target the target slot
      */

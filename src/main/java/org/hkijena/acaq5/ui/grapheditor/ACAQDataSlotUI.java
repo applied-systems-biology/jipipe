@@ -36,9 +36,10 @@ public class ACAQDataSlotUI extends JPanel {
 
     /**
      * Creates a new UI
-     * @param graph The graph
+     *
+     * @param graph       The graph
      * @param compartment The compartment ID
-     * @param slot The slot instance
+     * @param slot        The slot instance
      */
     public ACAQDataSlotUI(ACAQAlgorithmGraph graph, String compartment, ACAQDataSlot slot) {
         this.graph = graph;
@@ -210,7 +211,7 @@ public class ACAQDataSlotUI extends JPanel {
         centerPanel.setOpaque(false);
 
         JLabel nameLabel = new JLabel(getDisplayedName());
-        nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot, graph, false));
+        nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot, false));
         nameLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
         nameLabel.setIcon(ACAQUIDatatypeRegistry.getInstance().getIconFor(getSlotDataType()));
         centerPanel.add(nameLabel);
@@ -293,6 +294,7 @@ public class ACAQDataSlotUI extends JPanel {
 
     /**
      * Should be triggered when the slots are changed
+     *
      * @param event Generated event
      */
     @Subscribe

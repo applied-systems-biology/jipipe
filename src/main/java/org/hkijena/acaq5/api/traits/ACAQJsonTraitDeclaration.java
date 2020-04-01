@@ -94,6 +94,7 @@ public class ACAQJsonTraitDeclaration extends ACAQMutableTraitDeclaration implem
 
     /**
      * Sets the Ids of inherited {@link ACAQTraitDeclaration}
+     *
      * @param inheritedIds The Ids
      */
     @JsonSetter("inherited-annotation-ids")
@@ -125,6 +126,7 @@ public class ACAQJsonTraitDeclaration extends ACAQMutableTraitDeclaration implem
 
     /**
      * Sets the icon
+     *
      * @param traitIcon The icon
      */
     @JsonSetter("icon")

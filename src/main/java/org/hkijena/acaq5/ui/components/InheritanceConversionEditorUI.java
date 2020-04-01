@@ -9,10 +9,16 @@ import java.awt.*;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Editor for an inheritance conversion stored in an {@link org.hkijena.acaq5.api.data.ACAQSlotDefinition}
+ */
 public class InheritanceConversionEditorUI extends JPanel {
     private Map<ACAQDataDeclaration, ACAQDataDeclaration> inheritanceConversions;
     private JList<Map.Entry<ACAQDataDeclaration, ACAQDataDeclaration>> list;
 
+    /**
+     * @param inheritanceConversions the inheritance conversion
+     */
     public InheritanceConversionEditorUI(Map<ACAQDataDeclaration, ACAQDataDeclaration> inheritanceConversions) {
         this.inheritanceConversions = inheritanceConversions;
         initialize();

@@ -17,8 +17,18 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+/**
+ * Shows filesystem data results
+ */
 public class FilesystemDataSlotRowUI extends ACAQDefaultResultDataSlotRowUI {
 
+    /**
+     * Creates a new UI
+     *
+     * @param workbenchUI the workbench
+     * @param slot        the data slot
+     * @param row         the slot row
+     */
     public FilesystemDataSlotRowUI(ACAQProjectUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
         super(workbenchUI, slot, row);
     }

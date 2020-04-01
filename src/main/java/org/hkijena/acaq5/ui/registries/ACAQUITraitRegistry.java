@@ -25,7 +25,7 @@ public class ACAQUITraitRegistry {
     /**
      * Registers a custom icon for a trait
      *
-     * @param declaration the trait type
+     * @param declaration  the trait type
      * @param resourcePath icon url
      */
     public void registerIcon(ACAQTraitDeclaration declaration, URL resourcePath) {

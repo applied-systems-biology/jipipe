@@ -25,6 +25,7 @@ public class ACAQListSubfolders extends ACAQIteratingAlgorithm {
 
     /**
      * Creates a new instance
+     *
      * @param declaration The algorithm declaration
      */
     public ACAQListSubfolders(ACAQAlgorithmDeclaration declaration) {
@@ -33,6 +34,7 @@ public class ACAQListSubfolders extends ACAQIteratingAlgorithm {
 
     /**
      * Copies the algorithm
+     *
      * @param other The original
      */
     public ACAQListSubfolders(ACAQListSubfolders other) {

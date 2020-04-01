@@ -35,6 +35,7 @@ public class ACAQDependencyUI extends JPanel {
 
     /**
      * Creates a new UI
+     *
      * @param dependency The dependency
      */
     public ACAQDependencyUI(ACAQDependency dependency) {

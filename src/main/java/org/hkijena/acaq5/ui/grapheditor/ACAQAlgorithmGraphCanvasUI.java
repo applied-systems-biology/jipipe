@@ -39,8 +39,9 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
     /**
      * Creates a new UI
+     *
      * @param algorithmGraph The algorithm graph
-     * @param compartment The compartment to show
+     * @param compartment    The compartment to show
      */
     public ACAQAlgorithmGraphCanvasUI(ACAQAlgorithmGraph algorithmGraph, String compartment) {
         super(null);
@@ -296,6 +297,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     /**
      * Should be triggered when the algorithm graph is changed.
      * Triggers a node update.
+     *
      * @param event The generated event
      */
     @Subscribe
@@ -306,6 +308,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
     /**
      * Should be triggered when a connection is made
+     *
      * @param event The generated event
      */
     @Subscribe
@@ -321,6 +324,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
     /**
      * Should be triggered when an {@link ACAQAlgorithmUI} requests that the algorithm settings should be opened
+     *
      * @param event The generated event
      */
     @Subscribe
@@ -479,6 +483,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
     /**
      * Enables or disables the layout helper
+     *
      * @param layoutHelperEnabled If the layout helper should be enabled
      */
     public void setLayoutHelperEnabled(boolean layoutHelperEnabled) {
@@ -494,6 +499,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
     /**
      * Creates a screenshot of the whole graph compartment
+     *
      * @return The screenshot image
      */
     public BufferedImage createScreenshot() {

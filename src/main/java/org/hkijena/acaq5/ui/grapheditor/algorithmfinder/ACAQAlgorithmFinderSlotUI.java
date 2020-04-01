@@ -31,10 +31,11 @@ public class ACAQAlgorithmFinderSlotUI extends JPanel {
 
     /**
      * Creates a slot UI
-     * @param outputSlot The slot
-     * @param graph The graph
-     * @param compartment The compartment
-     * @param inputSlot The target slot
+     *
+     * @param outputSlot         The slot
+     * @param graph              The graph
+     * @param compartment        The compartment
+     * @param inputSlot          The target slot
      * @param isExistingInstance If true, the algorithm already exists within the graph
      */
     public ACAQAlgorithmFinderSlotUI(ACAQDataSlot outputSlot, ACAQAlgorithmGraph graph, String compartment, ACAQDataSlot inputSlot, boolean isExistingInstance) {
@@ -126,6 +127,7 @@ public class ACAQAlgorithmFinderSlotUI extends JPanel {
 
     /**
      * Returns the event bus.
+     *
      * @return Event bus instance.
      */
     public EventBus getEventBus() {
@@ -134,6 +136,7 @@ public class ACAQAlgorithmFinderSlotUI extends JPanel {
 
     /**
      * Returns the compartment ID
+     *
      * @return Compartment ID
      */
     public String getCompartment() {

@@ -10,17 +10,28 @@ import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 
+/**
+ * Merges the input slot tables into one data slot
+ */
 @ACAQDocumentation(name = "Merge slots", description = "Merges the input slot tables into one data slot")
 @ACAQOrganization(menuPath = "Merge")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
 public class MergeDataEnhancer extends ACAQAlgorithm {
 
+    /**
+     * @param declaration the algorithm declaration
+     */
     public MergeDataEnhancer(ACAQAlgorithmDeclaration declaration) {
         super(declaration, ACAQMutableSlotConfiguration.builder()
                 .restrictOutputSlotCount(1)
                 .build());
     }
 
+    /**
+     * Copies the algorithm
+     *
+     * @param other the original
+     */
     public MergeDataEnhancer(MergeDataEnhancer other) {
         super(other);
     }

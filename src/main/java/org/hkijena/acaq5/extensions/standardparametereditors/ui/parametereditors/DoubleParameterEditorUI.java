@@ -7,11 +7,18 @@ import org.scijava.Context;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Editor for a {@link Double} parameter
+ */
 public class DoubleParameterEditorUI extends ACAQParameterEditorUI {
     private JSpinner spinner;
     private boolean skipNextReload = false;
     private boolean isReloading = false;
 
+    /**
+     * @param context         SciJava context
+     * @param parameterAccess the parameter
+     */
     public DoubleParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
         super(context, parameterAccess);
         initialize();

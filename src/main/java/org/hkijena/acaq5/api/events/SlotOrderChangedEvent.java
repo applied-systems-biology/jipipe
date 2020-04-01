@@ -8,6 +8,9 @@ import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
 public class SlotOrderChangedEvent {
     private ACAQSlotConfiguration configuration;
 
+    /**
+     * @param configuration the slot configuration
+     */
     public SlotOrderChangedEvent(ACAQSlotConfiguration configuration) {
         this.configuration = configuration;
     }

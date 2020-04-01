@@ -15,8 +15,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+/**
+ * Renders filesystem data as table cell
+ */
 public class FilesystemDataSlotCellUI extends ACAQResultDataSlotCellUI {
 
+    /**
+     * Creates a new renderer
+     */
     public FilesystemDataSlotCellUI() {
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));

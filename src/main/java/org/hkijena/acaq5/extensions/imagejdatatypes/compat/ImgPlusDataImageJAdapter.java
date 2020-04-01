@@ -12,12 +12,15 @@ import org.hkijena.acaq5.utils.StringUtils;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * Adapter for a type th
+ * Adapter between {@link ImagePlus} and {@link ImagePlusData}
  */
 public class ImgPlusDataImageJAdapter implements ImageJDatatypeAdapter {
 
     private Class<? extends ImagePlusData> acaqDataClass;
 
+    /**
+     * @param acaqDataClass the ACAQ data class
+     */
     public ImgPlusDataImageJAdapter(Class<? extends ImagePlusData> acaqDataClass) {
         this.acaqDataClass = acaqDataClass;
     }
@@ -46,8 +49,8 @@ public class ImgPlusDataImageJAdapter implements ImageJDatatypeAdapter {
      * Converts {@link ImagePlus} to an {@link ImagePlusData} instance.
      * If the imageJData is a {@link String}, the image is taken from the window with this name
      *
-     * @param imageJData
-     * @return
+     * @param imageJData the ImageJ data
+     * @return the converted data
      */
     @Override
     public ACAQData convertImageJToACAQ(Object imageJData) {

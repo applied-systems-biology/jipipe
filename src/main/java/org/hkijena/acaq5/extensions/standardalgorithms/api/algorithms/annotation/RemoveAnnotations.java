@@ -10,6 +10,9 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
 
+/**
+ * Removes a specified annotation
+ */
 @ACAQDocumentation(name = "Remove annotation", description = "Removes a specified annotation")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Annotation)
 
@@ -18,10 +21,18 @@ public class RemoveAnnotations extends ACAQAlgorithm {
 
     private ACAQTraitDeclarationRef annotationType;
 
+    /**
+     * @param declaration algorithm declaration
+     */
     public RemoveAnnotations(ACAQAlgorithmDeclaration declaration) {
         super(declaration, new ACAQIOSlotConfiguration());
     }
 
+    /**
+     * Copies the algorithm
+     *
+     * @param other the original
+     */
     public RemoveAnnotations(RemoveAnnotations other) {
         super(other);
         this.annotationType = other.annotationType;

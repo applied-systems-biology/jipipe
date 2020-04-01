@@ -19,7 +19,7 @@ public class ACAQJsonTraitRegistrationTask implements ACAQTraitRegistrationTask 
 
     /**
      * @param declaration The declaration
-     * @param source The dependency that registers the declaration
+     * @param source      The dependency that registers the declaration
      */
     public ACAQJsonTraitRegistrationTask(ACAQJsonTraitDeclaration declaration, ACAQDependency source) {
         this.declaration = declaration;

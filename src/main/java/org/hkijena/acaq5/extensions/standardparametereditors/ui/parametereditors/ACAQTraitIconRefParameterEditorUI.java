@@ -24,7 +24,7 @@ public class ACAQTraitIconRefParameterEditorUI extends ACAQParameterEditorUI {
     private JButton currentlyDisplayed;
 
     /**
-     * @param context SciJava context
+     * @param context         SciJava context
      * @param parameterAccess the parameter
      */
     public ACAQTraitIconRefParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {

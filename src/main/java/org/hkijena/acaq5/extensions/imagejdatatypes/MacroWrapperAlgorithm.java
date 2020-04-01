@@ -60,6 +60,9 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
     private List<ImagePlus> initiallyOpenedImages = new ArrayList<>();
     private List<Window> initiallyOpenedWindows = new ArrayList<>();
 
+    /**
+     * @param declaration the declaration
+     */
     public MacroWrapperAlgorithm(ACAQAlgorithmDeclaration declaration) {
         super(declaration, ACAQMutableSlotConfiguration.builder()
                 .allowOutputSlotInheritance(true)
@@ -69,6 +72,11 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
         this.macroParameters.getEventBus().register(this);
     }
 
+    /**
+     * Copies the algorithm
+     *
+     * @param other the original
+     */
     public MacroWrapperAlgorithm(MacroWrapperAlgorithm other) {
         super(other);
         this.code = new MacroCode(other.code);
@@ -273,6 +281,11 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
         return macroParameters;
     }
 
+    /**
+     * Triggered when the parameter structure of macro parameters is changed
+     *
+     * @param event generated event
+     */
     @Subscribe
     public void onParameterStructureChanged(ParameterStructureChangedEvent event) {
         getEventBus().post(event);

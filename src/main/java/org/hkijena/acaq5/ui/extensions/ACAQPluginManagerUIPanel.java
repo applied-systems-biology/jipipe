@@ -109,6 +109,7 @@ public class ACAQPluginManagerUIPanel extends ACAQProjectUIPanel {
 
     /**
      * Triggered when an extension is registered
+     *
      * @param event Generated event
      */
     @Subscribe

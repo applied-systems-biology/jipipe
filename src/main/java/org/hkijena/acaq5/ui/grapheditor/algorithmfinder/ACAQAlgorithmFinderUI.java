@@ -39,8 +39,9 @@ public class ACAQAlgorithmFinderUI extends JPanel {
 
     /**
      * Creates a new UI
-     * @param outputSlot The target slot
-     * @param graph The graph
+     *
+     * @param outputSlot  The target slot
+     * @param graph       The graph
      * @param compartment The graph compartment. Algorithms outside of the compartment are not detected.
      */
     public ACAQAlgorithmFinderUI(ACAQDataSlot outputSlot, ACAQAlgorithmGraph graph, String compartment) {
@@ -71,7 +72,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
         toolBar.add(algorithmNameLabel);
         toolBar.add(Box.createHorizontalStrut(5));
         JLabel slotNameLabel = new JLabel(outputSlot.getName(), ACAQUIDatatypeRegistry.getInstance().getIconFor(outputSlot.getAcceptedDataType()), JLabel.LEFT);
-        slotNameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(outputSlot, graph, true));
+        slotNameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(outputSlot, true));
         toolBar.add(slotNameLabel);
 
         toolBar.add(Box.createHorizontalGlue());
@@ -190,6 +191,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
 
     /**
      * Should trigger when a target slot was successfully found.
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -199,6 +201,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
 
     /**
      * Returns the event bus
+     *
      * @return Event bus instance
      */
     public EventBus getEventBus() {
@@ -207,6 +210,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
 
     /**
      * Returns the graph compartment
+     *
      * @return Compartment ID
      */
     public String getCompartment() {
@@ -215,10 +219,11 @@ public class ACAQAlgorithmFinderUI extends JPanel {
 
     /**
      * Scores how well an algorithm fits to the specified target slot
+     *
      * @param declaration The algorithm
-     * @param slot The target slot
-     * @param graph The algorithm graph
-     * @return Unnormalized score
+     * @param slot        The target slot
+     * @param graph       The algorithm graph
+     * @return Non-normalized score
      */
     public static int scoreAlgorithmForOutputSlot(ACAQAlgorithmDeclaration declaration, ACAQDataSlot slot, ACAQAlgorithmGraph graph) {
         Set<ACAQTraitDeclaration> preferredTraits = declaration.getPreferredTraits();
@@ -238,6 +243,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
 
     /**
      * Finds all algorithms that fit to the slot according to the information in {@link ACAQAlgorithmDeclaration}
+     *
      * @param slot The target slot
      * @return Unsorted list of algorithm declarations
      */

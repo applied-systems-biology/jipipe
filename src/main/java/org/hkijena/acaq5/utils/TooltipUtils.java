@@ -14,11 +14,21 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Utilities that generate tooltips or other text from ACAQ5 data data structures
+ */
 public class TooltipUtils {
     private TooltipUtils() {
 
     }
 
+    /**
+     * Creates a tooltip for a project compartment
+     *
+     * @param compartment  the compartment
+     * @param projectGraph the project graph
+     * @return tooltip
+     */
     public static String getProjectCompartmentTooltip(ACAQProjectCompartment compartment, ACAQAlgorithmGraph projectGraph) {
         StringBuilder builder = new StringBuilder();
         builder.append("<html>");
@@ -39,7 +49,14 @@ public class TooltipUtils {
         return builder.toString();
     }
 
-    public static String getSlotInstanceTooltip(ACAQDataSlot slot, ACAQAlgorithmGraph graph, boolean withAnnotations) {
+    /**
+     * Creates a tooltip for an {@link ACAQDataSlot}
+     *
+     * @param slot            the slot
+     * @param withAnnotations if annotations should be displayed
+     * @return the toopltip
+     */
+    public static String getSlotInstanceTooltip(ACAQDataSlot slot, boolean withAnnotations) {
         StringBuilder builder = new StringBuilder();
         builder.append("<html>");
         builder.append("<table>");
@@ -77,10 +94,23 @@ public class TooltipUtils {
         return builder.toString();
     }
 
+    /**
+     * Creates a tooltip for an algorithm. Has a title
+     *
+     * @param declaration the algorithm type
+     * @return the tooltip
+     */
     public static String getAlgorithmTooltip(ACAQAlgorithmDeclaration declaration) {
         return getAlgorithmTooltip(declaration, true);
     }
 
+    /**
+     * Creates a tooltip for an algorithm
+     *
+     * @param declaration the algorithm
+     * @param withTitle   if a title is displayed
+     * @return the tooltip
+     */
     public static String getAlgorithmTooltip(ACAQAlgorithmDeclaration declaration, boolean withTitle) {
         StringBuilder builder = new StringBuilder();
         builder.append("<html>");
@@ -185,6 +215,15 @@ public class TooltipUtils {
 //        return builder.toString();
 //    }
 
+    /**
+     * Creates a table that has two columns of {@link ACAQTraitDeclaration}
+     *
+     * @param builder     the string builder
+     * @param leftTraits  left traits
+     * @param leftTitle   left title
+     * @param rightTraits right traits
+     * @param rightTitle  right title
+     */
     public static void insertOpposingTraitTableContent(StringBuilder builder, Set<ACAQTraitDeclaration> leftTraits, String leftTitle, Set<ACAQTraitDeclaration> rightTraits, String rightTitle) {
 //        builder.append("<table>");
         builder.append("<tr><td><i>").append(leftTitle).append("</i></td><td><i>").append(rightTitle).append("</i></td></tr>");
@@ -211,6 +250,12 @@ public class TooltipUtils {
 //        builder.append("</table>");
     }
 
+    /**
+     * Creates a table of {@link ACAQTraitDeclaration}
+     *
+     * @param builder builder
+     * @param traits  the traits
+     */
     public static void insertTraitTable(StringBuilder builder, Set<ACAQTraitDeclaration> traits) {
         builder.append("<table>");
         for (ACAQTraitDeclaration trait : traits) {
@@ -224,6 +269,12 @@ public class TooltipUtils {
         builder.append("</table>");
     }
 
+    /**
+     * Creates a tooltip for an {@link ACAQDataSlot}
+     *
+     * @param slot the slot
+     * @return tooltip
+     */
     public static String getSlotInstanceTooltip(ACAQDataSlot slot) {
         StringBuilder builder = new StringBuilder();
         builder.append("<html>");
@@ -253,6 +304,12 @@ public class TooltipUtils {
         return builder.toString();
     }
 
+    /**
+     * Gets a tooltip for an {@link ACAQTraitDeclaration}
+     *
+     * @param trait the trait type
+     * @return the tooltip
+     */
     public static String getTraitTooltip(ACAQTraitDeclaration trait) {
         String name = trait.getName();
         String description = trait.getDescription();
@@ -290,6 +347,13 @@ public class TooltipUtils {
         return builder.toString();
     }
 
+    /**
+     * Creates a slot definition table.
+     * Has a HTML root
+     *
+     * @param slotDefinitions the slots
+     * @return the tooltip
+     */
     public static String getSlotTable(Collection<ACAQSlotDefinition> slotDefinitions) {
         StringBuilder builder = new StringBuilder();
         builder.append("<html><table>");
@@ -305,6 +369,13 @@ public class TooltipUtils {
         return builder.toString();
     }
 
+    /**
+     * Creates a trait declaration table
+     * Has a HTML root
+     *
+     * @param traitDeclarations the declarations
+     * @return the tooltip
+     */
     public static String getTraitTable(Collection<ACAQTraitDeclaration> traitDeclarations) {
         StringBuilder builder = new StringBuilder();
         builder.append("<html><table>");

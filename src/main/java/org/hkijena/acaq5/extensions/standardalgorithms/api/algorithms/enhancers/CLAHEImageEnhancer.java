@@ -46,6 +46,7 @@ public class CLAHEImageEnhancer extends ACAQIteratingAlgorithm {
 
     /**
      * Copies the algorithm
+     *
      * @param other the original
      */
     public CLAHEImageEnhancer(CLAHEImageEnhancer other) {

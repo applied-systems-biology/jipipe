@@ -57,9 +57,10 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQJsonExtensionUIPanel 
 
     /**
      * Creates a new instance
-     * @param workbenchUI The workbench UI
+     *
+     * @param workbenchUI    The workbench UI
      * @param algorithmGraph The algorithm graph
-     * @param compartment The compartment
+     * @param compartment    The compartment
      */
     public ACAQJsonExtensionAlgorithmGraphUI(ACAQJsonExtensionUI workbenchUI, ACAQAlgorithmGraph algorithmGraph, String compartment) {
         super(workbenchUI);
@@ -108,6 +109,7 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQJsonExtensionUIPanel 
     /**
      * Should be triggered when an algorithm was registered.
      * Updates menus.
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -199,7 +201,7 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQJsonExtensionUIPanel 
 
         JMenu addSegmenterMenu = new JMenu("Segment");
         addSegmenterMenu.setIcon(UIUtils.getIconFromResources("segment.png"));
-        initializeMenuForCategory(addSegmenterMenu, ACAQAlgorithmCategory.Segmenter);
+        initializeMenuForCategory(addSegmenterMenu, ACAQAlgorithmCategory.Segmentation);
         menuBar.add(addSegmenterMenu);
 
         JMenu addConverterMenu = new JMenu("Convert");
@@ -220,7 +222,8 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQJsonExtensionUIPanel 
 
     /**
      * Initializes the menu for a category
-     * @param menu The menu
+     *
+     * @param menu     The menu
      * @param category The category
      */
     protected void initializeMenuForCategory(JMenu menu, ACAQAlgorithmCategory category) {
@@ -279,6 +282,7 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQJsonExtensionUIPanel 
 
     /**
      * Should be triggered when an algorithm was selected
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -313,6 +317,7 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQJsonExtensionUIPanel 
 
     /**
      * Selects only the specified algorithm
+     *
      * @param ui The algorithm
      */
     public void selectOnly(ACAQAlgorithmUI ui) {
@@ -331,6 +336,7 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQJsonExtensionUIPanel 
 
     /**
      * Removes an algorithm from the selection
+     *
      * @param ui The algorithm
      */
     public void removeFromSelection(ACAQAlgorithmUI ui) {
@@ -353,6 +359,7 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQJsonExtensionUIPanel 
 
     /**
      * Add to selection
+     *
      * @param ui The algorithm
      */
     public void addToSelection(ACAQAlgorithmUI ui) {
@@ -372,6 +379,7 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQJsonExtensionUIPanel 
 
     /**
      * Triggered when a graph was changed
+     *
      * @param event Generated event
      */
     @Subscribe

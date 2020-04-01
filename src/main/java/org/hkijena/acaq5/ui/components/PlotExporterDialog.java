@@ -3,7 +3,7 @@
  * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
  * https://www.leibniz-hki.de/en/applied-systems-biology.html
  * HKI-Center for Systems Biology of Infection
- * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Insitute (HKI)
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
  * This code is licensed under BSD 2-Clause
@@ -22,6 +22,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 
+/**
+ * Dialog that exports plots as image
+ */
 public class PlotExporterDialog extends JDialog {
 
     private JFreeChart chart;
@@ -30,6 +33,9 @@ public class PlotExporterDialog extends JDialog {
     private JSpinner plotWidth;
     private JSpinner plotHeight;
 
+    /**
+     * @param chart the plot
+     */
     public PlotExporterDialog(JFreeChart chart) {
         this.chart = chart;
         initialize();
@@ -188,6 +194,9 @@ public class PlotExporterDialog extends JDialog {
         setVisible(false);
     }
 
+    /**
+     * Available file formats
+     */
     enum FileFormat {
         PNG,
         JPEG,

@@ -25,8 +25,8 @@ public class ACAQMultiTraitSelectionPanelUI extends ACAQJsonExtensionUIPanel {
 
     /**
      * @param workbenchUI The workbench
-     * @param graph The trait graph
-     * @param algorithms The selected trait nodes
+     * @param graph       The trait graph
+     * @param algorithms  The selected trait nodes
      */
     public ACAQMultiTraitSelectionPanelUI(ACAQJsonExtensionUI workbenchUI, ACAQTraitGraph graph, Set<ACAQTraitNode> algorithms) {
         super(workbenchUI);

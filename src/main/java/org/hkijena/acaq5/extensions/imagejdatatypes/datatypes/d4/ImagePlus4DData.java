@@ -5,9 +5,15 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
+/**
+ * 4D image
+ */
 @ACAQDocumentation(name = "4D image")
 @ACAQOrganization(menuPath = "Images\n4D")
 public class ImagePlus4DData extends ImagePlusData {
+    /**
+     * @param image wrapped image
+     */
     public ImagePlus4DData(ImagePlus image) {
         super(image);
     }

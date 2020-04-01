@@ -19,7 +19,8 @@ public abstract class ACAQParameterEditorUI extends JPanel implements Contextual
 
     /**
      * Creates new instance
-     * @param context SciJava context
+     *
+     * @param context         SciJava context
      * @param parameterAccess Parameter
      */
     public ACAQParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {

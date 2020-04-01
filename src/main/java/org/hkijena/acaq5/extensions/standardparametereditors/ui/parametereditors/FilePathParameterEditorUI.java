@@ -7,12 +7,19 @@ import org.scijava.Context;
 
 import java.awt.*;
 
+/**
+ * Editor for a {@link java.nio.file.Path} parameter
+ */
 public class FilePathParameterEditorUI extends ACAQParameterEditorUI {
 
     private boolean skipNextReload = false;
     private boolean isReloading = false;
     private FileSelection fileSelection;
 
+    /**
+     * @param context         SciJava context
+     * @param parameterAccess the parameter
+     */
     public FilePathParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
         super(context, parameterAccess);
         initialize();

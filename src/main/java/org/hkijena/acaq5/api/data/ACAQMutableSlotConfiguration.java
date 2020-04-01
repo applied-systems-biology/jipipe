@@ -43,6 +43,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
     /**
      * Returns true if there is a slot with name
+     *
      * @param name The name
      * @return True if a slot with the name exists
      */
@@ -52,7 +53,8 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
     /**
      * Adds a slots
-     * @param name Unique slot name
+     *
+     * @param name       Unique slot name
      * @param definition Defines the slot
      */
     public void addSlot(String name, ACAQSlotDefinition definition) {
@@ -98,6 +100,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
     /**
      * Removes the slot with given name
+     *
      * @param name Slot name
      */
     public void removeSlot(String name) {
@@ -199,6 +202,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
     /**
      * Moves the specified slot up in its order
+     *
      * @param slot Slot name
      */
     public void moveUp(String slot) {
@@ -227,6 +231,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
     /**
      * Moves the specified slot down in order
+     *
      * @param slot Slot name
      */
     public void moveDown(String slot) {
@@ -311,6 +316,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
     /**
      * Seals/Unseals input slots
+     *
      * @param b Seals/Unseals input slots
      */
     public void setInputSealed(boolean b) {
@@ -319,6 +325,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
     /**
      * Seals/Unseals output slots
+     *
      * @param b Seals/Unseals output slots
      */
     public void setOutputSealed(boolean b) {
@@ -327,6 +334,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
     /**
      * Returns if an input slot with specified type can be created
+     *
      * @param acceptedDataType Slot data type
      * @return True if it can be added
      */
@@ -349,6 +357,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
     /**
      * Sets maximum number of input slots
+     *
      * @param maxInputSlots Number
      */
     public void setMaxInputSlots(int maxInputSlots) {
@@ -364,6 +373,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
     /**
      * Sets maximum number of output slots
+     *
      * @param maxOutputSlots Number
      */
     public void setMaxOutputSlots(int maxOutputSlots) {
@@ -419,6 +429,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
     /**
      * Enables/Disables if output slots can inherit from input slots
+     *
      * @param allowInheritedOutputSlots Enables/Disables if output slots can inherit from input slots
      */
     public void setAllowInheritedOutputSlots(boolean allowInheritedOutputSlots) {
@@ -444,7 +455,8 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
         /**
          * Adds an input slot
-         * @param name Unique slot name
+         *
+         * @param name  Unique slot name
          * @param klass Slot data class
          * @return The builder
          */
@@ -455,9 +467,10 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
         /**
          * Adds an output slot
-         * @param name Unique slot name
+         *
+         * @param name          Unique slot name
          * @param inheritedSlot From which slot the data type is inherited. Slot name of an input or '*' to select the first available slot. Can be null or empty.
-         * @param klass Slot data class
+         * @param klass         Slot data class
          * @return The builder
          */
         public Builder addOutputSlot(String name, String inheritedSlot, Class<? extends ACAQData> klass) {
@@ -467,6 +480,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
         /**
          * Adds a slot
+         *
          * @param definition Slot definition
          * @return The builder
          */
@@ -477,6 +491,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
         /**
          * Restrict the number of input slots
+         *
          * @param maxCount Maximum input slot number
          * @return The builder
          */
@@ -487,6 +502,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
         /**
          * Restrict the number output slots
+         *
          * @param maxCount Maximum output slot number
          * @return The builder
          */
@@ -497,6 +513,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
         /**
          * Disables input
+         *
          * @return The builder
          */
         public Builder withoutInput() {
@@ -507,6 +524,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
         /**
          * Disables output
+         *
          * @return The builder
          */
         public Builder withoutOutput() {
@@ -517,6 +535,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
         /**
          * Seals input and output
+         *
          * @return The builder
          */
         public Builder seal() {
@@ -527,6 +546,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
         /**
          * Seals input
+         *
          * @return The builder
          */
         public Builder sealInput() {
@@ -536,6 +556,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
         /**
          * Seals output
+         *
          * @return The builder
          */
         public Builder sealOutput() {
@@ -545,6 +566,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
         /**
          * Enables/disables if slot inheritance is allowed
+         *
          * @param enabled Enables/disables if slot inheritance is allowed
          * @return The builder
          */
@@ -555,6 +577,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
         /**
          * Restricts the slot to specified data types
+         *
          * @param types Allowed data types
          * @return The builder
          */
@@ -566,6 +589,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
         /**
          * Restricts the slot to specified data types
+         *
          * @param types Allowed data types
          * @return The builder
          */

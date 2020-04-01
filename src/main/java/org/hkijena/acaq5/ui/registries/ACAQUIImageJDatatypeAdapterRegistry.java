@@ -18,7 +18,7 @@ public class ACAQUIImageJDatatypeAdapterRegistry {
 
     /**
      * @param imageJDataType imageJ data type
-     * @param importerClass importer UI class
+     * @param importerClass  importer UI class
      */
     public void registerImporterFor(Class<?> imageJDataType, Class<? extends ImageJDatatypeImporterUI> importerClass) {
         registeredImporters.put(imageJDataType, importerClass);

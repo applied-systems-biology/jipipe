@@ -28,9 +28,10 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
 
     /**
      * Creates a new instance
+     *
      * @param parameterHolder The object that holds the parameter
-     * @param key Unique parameter key
-     * @param fieldClass Parameter field type
+     * @param key             Unique parameter key
+     * @param fieldClass      Parameter field type
      */
     public ACAQMutableParameterAccess(ACAQParameterHolder parameterHolder, String key, Class<?> fieldClass) {
         this.parameterHolder = parameterHolder;
@@ -40,6 +41,7 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
 
     /**
      * Copies the parameter access
+     *
      * @param other The original
      */
     public ACAQMutableParameterAccess(ACAQMutableParameterAccess other) {
@@ -76,6 +78,7 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
 
     /**
      * Sets the name
+     *
      * @param name The name
      */
     @JsonSetter("name")
@@ -91,6 +94,7 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
 
     /**
      * Sets the description
+     *
      * @param description The description
      */
     @JsonSetter("description")
@@ -108,6 +112,7 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
 
     /**
      * Sets the visibility
+     *
      * @param visibility The visibilities
      */
     @JsonSetter("visibility")
@@ -175,6 +180,7 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
 
     /**
      * Sets a description that describes the parameter holder
+     *
      * @param holderDescription Parameter holder description
      */
     public void setHolderDescription(String holderDescription) {
@@ -188,6 +194,7 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
 
     /**
      * Sets a name for the parameter holder
+     *
      * @param holderName Parameter holder name
      */
     public void setHolderName(String holderName) {

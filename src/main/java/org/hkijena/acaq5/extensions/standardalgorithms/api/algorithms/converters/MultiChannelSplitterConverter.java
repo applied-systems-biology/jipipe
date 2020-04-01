@@ -12,6 +12,9 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.color.ImagePlus2DColorData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleData;
 
+/**
+ * Splits a color image's channels
+ */
 // Algorithm metadata
 @ACAQDocumentation(name = "Split multichannel image")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Converter)
@@ -24,6 +27,9 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.Image
 @ConfigTraits(allowModify = true)
 public class MultiChannelSplitterConverter extends ACAQIteratingAlgorithm {
 
+    /**
+     * @param declaration algorithm declaration
+     */
     public MultiChannelSplitterConverter(ACAQAlgorithmDeclaration declaration) {
         super(declaration, ACAQMutableSlotConfiguration.builder()
                 .addInputSlot("Multichannel image", ImagePlusData.class)
@@ -32,6 +38,11 @@ public class MultiChannelSplitterConverter extends ACAQIteratingAlgorithm {
                 .build(), null);
     }
 
+    /**
+     * Copies the algorithm
+     *
+     * @param other the original
+     */
     public MultiChannelSplitterConverter(MultiChannelSplitterConverter other) {
         super(other);
     }

@@ -10,6 +10,11 @@ public class SlotRenamedEvent {
     private String oldSlotName;
     private String newSlotName;
 
+    /**
+     * @param slotConfiguration the slot configuration
+     * @param oldSlotName       old slot name
+     * @param newSlotName       new slot name
+     */
     public SlotRenamedEvent(ACAQMutableSlotConfiguration slotConfiguration, String oldSlotName, String newSlotName) {
         this.slotConfiguration = slotConfiguration;
         this.oldSlotName = oldSlotName;

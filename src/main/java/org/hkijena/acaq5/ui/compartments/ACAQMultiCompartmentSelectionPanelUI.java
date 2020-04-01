@@ -22,7 +22,7 @@ public class ACAQMultiCompartmentSelectionPanelUI extends ACAQProjectUIPanel {
     private Set<ACAQProjectCompartment> compartments;
 
     /**
-     * @param workbenchUI The workbench UI
+     * @param workbenchUI  The workbench UI
      * @param compartments The compartment selection
      */
     public ACAQMultiCompartmentSelectionPanelUI(ACAQProjectUI workbenchUI, Set<ACAQProjectCompartment> compartments) {

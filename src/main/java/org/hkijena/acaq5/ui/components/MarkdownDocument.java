@@ -20,6 +20,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Contains Markdown data
+ */
 public class MarkdownDocument {
 
     static final MutableDataHolder OPTIONS = new MutableDataSet()
@@ -36,6 +39,9 @@ public class MarkdownDocument {
     private String markdown;
     private String renderedHTML;
 
+    /**
+     * @param markdown markdown text
+     */
     public MarkdownDocument(String markdown) {
         this.markdown = markdown;
         render();
@@ -56,6 +62,12 @@ public class MarkdownDocument {
         return markdown;
     }
 
+    /**
+     * Loads a document from file
+     *
+     * @param fileName filename
+     * @return the document
+     */
     public static MarkdownDocument fromFile(Path fileName) {
         try {
             MarkdownDocument existing = fromFileCache.getOrDefault(fileName, null);
@@ -70,6 +82,12 @@ public class MarkdownDocument {
         }
     }
 
+    /**
+     * Loads a document from the ACAQ5 plugin resources
+     *
+     * @param internalPath resource path. Relative to ACAQ5 resources
+     * @return the document
+     */
     public static MarkdownDocument fromPluginResource(String internalPath) {
         try {
             URL resourcePath = ResourceUtils.getPluginResource(internalPath);

@@ -28,6 +28,9 @@ import org.hkijena.acaq5.utils.StringUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Declaration of a {@link GraphWrapperAlgorithm}
+ */
 public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQValidatable, ACAQParameterHolder {
 
     private EventBus eventBus = new EventBus();
@@ -46,6 +49,9 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     private String menuPath = "";
     private Map<ACAQDataSlot, String> exportedSlotNames = new HashMap<>();
 
+    /**
+     * Creates a new declaration
+     */
     public GraphWrapperAlgorithmDeclaration() {
         graph.getEventBus().register(this);
     }
@@ -154,8 +160,7 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
 
     @Override
     public Set<ACAQDependency> getDependencies() {
-        Set<ACAQDependency> result = new HashSet<>();
-        result.addAll(graph.getDependencies());
+        Set<ACAQDependency> result = new HashSet<>(graph.getDependencies());
         for (ACAQTraitDeclaration declaration : preferredTraits) {
             result.add(ACAQTraitRegistry.getInstance().getSourceOf(declaration.getId()));
             result.addAll(declaration.getDependencies());
@@ -272,6 +277,11 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
         }
     }
 
+    /**
+     * Triggered when the wrapped graph changed
+     *
+     * @param event generated event
+     */
     @Subscribe
     public void onGraphChanged(AlgorithmGraphChangedEvent event) {
         updateSlots();
@@ -279,6 +289,12 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
         getEventBus().post(new ParameterChangedEvent(this, "parameter-visibilities"));
     }
 
+    /**
+     * Triggered when the parameter structure of an algorithm is changed
+     * Updates the list of available parameters
+     *
+     * @param event generated event
+     */
     @Subscribe
     public void onGraphParameterStructureChanged(ParameterStructureChangedEvent event) {
         parameterCollectionVisibilities.setAvailableParameters(getAvailableParameters());

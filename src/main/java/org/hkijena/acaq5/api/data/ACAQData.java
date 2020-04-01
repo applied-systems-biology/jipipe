@@ -117,9 +117,9 @@ public interface ACAQData {
      * Instantiates a data class with the provided parameters
      * This method is helpful if output data is constructed based on slot types
      *
-     * @param klass The data class
+     * @param klass                 The data class
      * @param constructorParameters Constructor parameters
-     * @param <T> Data class
+     * @param <T>                   Data class
      * @return Data instance
      */
     static <T extends ACAQData> T createInstance(Class<T> klass, Object... constructorParameters) {

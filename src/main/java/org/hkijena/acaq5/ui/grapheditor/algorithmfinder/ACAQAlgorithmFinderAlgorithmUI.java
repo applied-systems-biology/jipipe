@@ -34,12 +34,13 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
 
     /**
      * Creates an algorithm UI for one target algorithm
-     * @param outputSlot The output slot to connect
-     * @param graph The graph
+     *
+     * @param outputSlot  The output slot to connect
+     * @param graph       The graph
      * @param compartment The compartment
      * @param declaration The target algorithm
-     * @param score Score of the target algorithm
-     * @param maxScore Maximum score that was possible
+     * @param score       Score of the target algorithm
+     * @param maxScore    Maximum score that was possible
      */
     public ACAQAlgorithmFinderAlgorithmUI(ACAQDataSlot outputSlot, ACAQAlgorithmGraph graph, String compartment, ACAQAlgorithmDeclaration declaration, int score, int maxScore) {
         this.outputSlot = outputSlot;
@@ -55,12 +56,13 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
 
     /**
      * Creates an algorithm UI for one target algorithm
-     * @param outputSlot The output slot to connect
-     * @param graph The graph
+     *
+     * @param outputSlot  The output slot to connect
+     * @param graph       The graph
      * @param compartment The compartment
-     * @param algorithm The target algorithm
-     * @param score Score of the target algorithm
-     * @param maxScore Maximum score that was possible
+     * @param algorithm   The target algorithm
+     * @param score       Score of the target algorithm
+     * @param maxScore    Maximum score that was possible
      */
     public ACAQAlgorithmFinderAlgorithmUI(ACAQDataSlot outputSlot, ACAQAlgorithmGraph graph, String compartment, ACAQAlgorithm algorithm, int score, int maxScore) {
         this.outputSlot = outputSlot;
@@ -157,6 +159,7 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
 
     /**
      * Should trigger when the target algorithm slots are changed
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -166,6 +169,7 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
 
     /**
      * Should trigger when a successful connection was made. Passes the event to the parent.
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -175,6 +179,7 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
 
     /**
      * Returns the event bus
+     *
      * @return Event Bus instance
      */
     public EventBus getEventBus() {

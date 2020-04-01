@@ -10,6 +10,10 @@ public class ExtensionRegisteredEvent {
     private ACAQRegistry registry;
     private ACAQDependency extension;
 
+    /**
+     * @param registry  event source
+     * @param extension registered extension
+     */
     public ExtensionRegisteredEvent(ACAQRegistry registry, ACAQDependency extension) {
         this.registry = registry;
         this.extension = extension;

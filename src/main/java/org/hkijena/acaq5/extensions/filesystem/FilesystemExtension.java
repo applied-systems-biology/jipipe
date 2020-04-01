@@ -22,6 +22,9 @@ import org.scijava.plugin.Plugin;
 import java.io.IOException;
 import java.util.Set;
 
+/**
+ * Extension that provides filesystem data types
+ */
 @Plugin(type = ACAQJavaExtension.class)
 public class FilesystemExtension extends ACAQPrepackagedDefaultJavaExtension {
 

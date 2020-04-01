@@ -56,9 +56,10 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseLis
 
     /**
      * Creates a project graph compartment editor
-     * @param workbenchUI The workbench
+     *
+     * @param workbenchUI    The workbench
      * @param algorithmGraph The graph
-     * @param compartment The compartment
+     * @param compartment    The compartment
      */
     public ACAQAlgorithmGraphUI(ACAQProjectUI workbenchUI, ACAQAlgorithmGraph algorithmGraph, String compartment) {
         super(workbenchUI);
@@ -107,6 +108,7 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseLis
     /**
      * Should be triggered when new algorithms are registered.
      * Reloads the menu
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -198,7 +200,7 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseLis
 
         JMenu addSegmenterMenu = new JMenu("Segment");
         addSegmenterMenu.setIcon(UIUtils.getIconFromResources("segment.png"));
-        initializeMenuForCategory(addSegmenterMenu, ACAQAlgorithmCategory.Segmenter);
+        initializeMenuForCategory(addSegmenterMenu, ACAQAlgorithmCategory.Segmentation);
         menuBar.add(addSegmenterMenu);
 
         JMenu addConverterMenu = new JMenu("Convert");
@@ -219,7 +221,8 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseLis
 
     /**
      * Initializes a menu for one algorithm category
-     * @param menu The menu
+     *
+     * @param menu     The menu
      * @param category The algorithm category
      */
     protected void initializeMenuForCategory(JMenu menu, ACAQAlgorithmCategory category) {
@@ -278,6 +281,7 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseLis
 
     /**
      * Should be triggered when an algorithm was selected
+     *
      * @param event The generated event
      */
     @Subscribe
@@ -312,6 +316,7 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseLis
 
     /**
      * Selects only the specified algorithm
+     *
      * @param ui The algorithm UI
      */
     public void selectOnly(ACAQAlgorithmUI ui) {
@@ -330,6 +335,7 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseLis
 
     /**
      * Removes an algorithm from the selection
+     *
      * @param ui The algorithm UI
      */
     public void removeFromSelection(ACAQAlgorithmUI ui) {
@@ -352,6 +358,7 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseLis
 
     /**
      * Adds an algorithm to the selection
+     *
      * @param ui The algorithm UI
      */
     public void addToSelection(ACAQAlgorithmUI ui) {
@@ -371,6 +378,7 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectUIPanel implements MouseLis
 
     /**
      * Should be triggered when the algorithm graph is changed
+     *
      * @param event The generated event
      */
     @Subscribe

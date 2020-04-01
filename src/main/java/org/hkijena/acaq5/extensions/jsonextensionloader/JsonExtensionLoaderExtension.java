@@ -21,6 +21,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Extension that loads {@link ACAQJsonExtension}
+ */
 @Plugin(type = ACAQJavaExtension.class)
 public class JsonExtensionLoaderExtension extends ACAQPrepackagedDefaultJavaExtension {
 
@@ -74,6 +77,9 @@ public class JsonExtensionLoaderExtension extends ACAQPrepackagedDefaultJavaExte
         return "1.0.0";
     }
 
+    /**
+     * Tries to register more extensions waiting for dependencies
+     */
     public void updateRegistrationTasks() {
         if (registrationTasks.isEmpty())
             return;
@@ -92,6 +98,12 @@ public class JsonExtensionLoaderExtension extends ACAQPrepackagedDefaultJavaExte
         }
     }
 
+    /**
+     * Immediately runs a registration task.
+     * Dependencies are not checked.
+     *
+     * @param task the task
+     */
     public void runRegistrationTask(JsonExtensionRegistrationTask task) {
         try {
             ACAQJsonExtension extension = JsonUtils.getObjectMapper().readerFor(ACAQJsonExtension.class).readValue(task.getJsonNode());
@@ -101,6 +113,11 @@ public class JsonExtensionLoaderExtension extends ACAQPrepackagedDefaultJavaExte
         }
     }
 
+    /**
+     * Schedules a registration task for the file path
+     *
+     * @param filePath extension file
+     */
     public void registerJsonExtensionFromFile(Path filePath) {
         try {
             scheduleRegisterJsonExtension(filePath, JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(filePath.toFile()));
@@ -109,6 +126,11 @@ public class JsonExtensionLoaderExtension extends ACAQPrepackagedDefaultJavaExte
         }
     }
 
+    /**
+     * Schedules a registration task for a resource path
+     *
+     * @param resourcePath the resource
+     */
     public void registerJsonExtensionFromResource(String resourcePath) {
         try {
             JsonNode node = JsonUtils.getObjectMapper().readValue(ResourceUtils.class.getResource(resourcePath), JsonNode.class);
@@ -118,6 +140,13 @@ public class JsonExtensionLoaderExtension extends ACAQPrepackagedDefaultJavaExte
         }
     }
 
+    /**
+     * Schedules the registration of an extension
+     * Invalid JSON data is skipped
+     *
+     * @param filePath the file path where the JSON was loaded. This is only used for information. Can be null.
+     * @param jsonNode JSON data that contains the serialized extension
+     */
     public void scheduleRegisterJsonExtension(Path filePath, JsonNode jsonNode) {
         JsonNode projectTypeNode = jsonNode.path("acaq:project-type");
         if (projectTypeNode.isMissingNode() || !projectTypeNode.isTextual() || !"json-extension".equals(projectTypeNode.textValue())) {
@@ -137,6 +166,11 @@ public class JsonExtensionLoaderExtension extends ACAQPrepackagedDefaultJavaExte
         }
     }
 
+    /**
+     * Triggered when an extension is registered.
+     *
+     * @param event Generated event
+     */
     @Subscribe
     public void onExtensionRegistered(ExtensionRegisteredEvent event) {
         updateRegistrationTasks();

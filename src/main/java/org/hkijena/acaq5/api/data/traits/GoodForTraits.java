@@ -5,8 +5,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Array of {@link GoodForTrait}
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface GoodForTraits {
+    /**
+     * @return trait ids
+     */
     GoodForTrait[] value();
 }

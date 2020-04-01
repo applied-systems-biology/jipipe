@@ -13,8 +13,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+/**
+ * Results UI for {@link org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData}
+ */
 public class ResultsTableDataSlotRowUI extends ACAQDefaultResultDataSlotRowUI {
 
+    /**
+     * @param workbenchUI the workbench
+     * @param slot        the slot
+     * @param row         the data row
+     */
     public ResultsTableDataSlotRowUI(ACAQProjectUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
         super(workbenchUI, slot, row);
     }

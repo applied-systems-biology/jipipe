@@ -30,8 +30,8 @@ public class ACAQMultiAlgorithmSelectionPanelUI extends ACAQProjectUIPanel {
 
     /**
      * @param workbenchUI The workbench
-     * @param graph The algorithm graph
-     * @param algorithms The algorithm selection
+     * @param graph       The algorithm graph
+     * @param algorithms  The algorithm selection
      */
     public ACAQMultiAlgorithmSelectionPanelUI(ACAQProjectUI workbenchUI, ACAQAlgorithmGraph graph, Set<ACAQAlgorithm> algorithms) {
         super(workbenchUI);

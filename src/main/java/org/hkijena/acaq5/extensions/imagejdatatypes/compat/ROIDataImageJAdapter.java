@@ -33,8 +33,8 @@ public class ROIDataImageJAdapter implements ImageJDatatypeAdapter {
      * Converts a {@link RoiManager} to {@link ROIData}.
      * If imageJData is null, the currently active {@link RoiManager} is used.
      *
-     * @param imageJData
-     * @return
+     * @param imageJData The ImageJ data
+     * @return The ACAQ data
      */
     @Override
     public ACAQData convertImageJToACAQ(Object imageJData) {

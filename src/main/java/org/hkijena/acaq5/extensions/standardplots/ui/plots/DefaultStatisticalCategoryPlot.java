@@ -3,7 +3,7 @@
  * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
  * https://www.leibniz-hki.de/en/applied-systems-biology.html
  * HKI-Center for Systems Biology of Infection
- * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Insitute (HKI)
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
  * This code is licensed under BSD 2-Clause
@@ -23,10 +23,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A statistical category plot.
+ * Has columns "X" (String), "Category" (String), "Value" (Numeric)
+ */
 public abstract class DefaultStatisticalCategoryPlot extends CategoryPlot {
 
     private DefaultStatisticalCategoryDataset dataset = new DefaultStatisticalCategoryDataset();
 
+    /**
+     * @param seriesDataList the data
+     */
     protected DefaultStatisticalCategoryPlot(List<ACAQPlotSeriesData> seriesDataList) {
         super(seriesDataList);
         addSeries();

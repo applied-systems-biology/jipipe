@@ -20,8 +20,9 @@ public class ACAQDataInterface {
 
     /**
      * Creates a new interface
-     * @param algorithm The algorithm
-     * @param referenceInputSlot The reference input slot
+     *
+     * @param algorithm             The algorithm
+     * @param referenceInputSlot    The reference input slot
      * @param referenceInputSlotRow The reference input slot row
      */
     public ACAQDataInterface(ACAQAlgorithm algorithm, ACAQDataSlot referenceInputSlot, int referenceInputSlotRow) {
@@ -47,7 +48,7 @@ public class ACAQDataInterface {
      * Gets stored data from an input slot
      *
      * @param slotName The slot name
-     * @param <T> Data type
+     * @param <T>      Data type
      * @return Input data with provided name
      */
     public <T extends ACAQData> T getInputData(String slotName) {
@@ -58,7 +59,7 @@ public class ACAQDataInterface {
      * Gets stored data from an input slot
      *
      * @param slot The slot
-     * @param <T> Data type
+     * @param <T>  Data type
      * @return Input data with provided name
      */
     public <T extends ACAQData> T getInputData(ACAQDataSlot slot) {
@@ -115,7 +116,7 @@ public class ACAQDataInterface {
      * Please note that annotations should be set up till this point
      *
      * @param slotName Slot name
-     * @param data Added data
+     * @param data     Added data
      */
     public void addOutputData(String slotName, ACAQData data) {
         addOutputData(algorithm.getOutputSlot(slotName), data);

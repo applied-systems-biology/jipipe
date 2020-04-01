@@ -18,6 +18,7 @@ public class ACAQAlgorithmGraphEdge extends DefaultEdge {
 
     /**
      * Initializes a new graph edge
+     *
      * @param userDisconnectable If a user is allowed to disconnect this edge
      */
     public ACAQAlgorithmGraphEdge(boolean userDisconnectable) {

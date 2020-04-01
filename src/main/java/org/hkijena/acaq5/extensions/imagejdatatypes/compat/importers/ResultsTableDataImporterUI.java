@@ -6,7 +6,13 @@ import org.hkijena.acaq5.ui.compat.ImageJDatatypeImporterUI;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * UI for a {@link org.hkijena.acaq5.extensions.imagejdatatypes.compat.ResultsTableDataImageJAdapter}
+ */
 public class ResultsTableDataImporterUI extends ImageJDatatypeImporterUI {
+    /**
+     * @param importer the importer
+     */
     public ResultsTableDataImporterUI(ImageJDatatypeImporter importer) {
         super(importer);
         initialize();

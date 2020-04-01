@@ -17,6 +17,7 @@ public class ACAQCompartmentOutput extends ACAQAlgorithm {
     /**
      * Creates a new instance.
      * Please do not use this constructor manually, but instead use {@link ACAQAlgorithm}'s newInstance() method
+     *
      * @param declaration The algorithm declaration
      */
     public ACAQCompartmentOutput(ACAQAlgorithmDeclaration declaration) {
@@ -25,6 +26,7 @@ public class ACAQCompartmentOutput extends ACAQAlgorithm {
 
     /**
      * Creates a copy of the other algorithm
+     *
      * @param other The original
      */
     public ACAQCompartmentOutput(ACAQCompartmentOutput other) {

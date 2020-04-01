@@ -9,9 +9,9 @@ public class ACAQRunnerStatus {
     private String message;
 
     /**
-     * @param progress Progress
+     * @param progress    Progress
      * @param maxProgress Maximum progress
-     * @param message Message
+     * @param message     Message
      */
     public ACAQRunnerStatus(int progress, int maxProgress, String message) {
         this.progress = progress;

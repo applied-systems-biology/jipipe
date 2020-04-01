@@ -26,6 +26,7 @@ public class ACAQTraitNode extends ACAQAlgorithm {
 
     /**
      * Copies the node
+     *
      * @param other original node
      */
     public ACAQTraitNode(ACAQTraitNode other) {

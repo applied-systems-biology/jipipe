@@ -26,7 +26,8 @@ public class ACAQJavaAlgorithmDeclaration extends ACAQMutableAlgorithmDeclaratio
 
     /**
      * Creates a new algorithm declaration
-     * @param id Algorithm ID
+     *
+     * @param id             Algorithm ID
      * @param algorithmClass Algorithm class
      */
     public ACAQJavaAlgorithmDeclaration(String id, Class<? extends ACAQAlgorithm> algorithmClass) {

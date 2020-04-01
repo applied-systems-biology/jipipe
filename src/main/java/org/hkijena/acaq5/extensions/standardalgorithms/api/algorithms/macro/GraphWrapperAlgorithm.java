@@ -28,6 +28,9 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
     private Map<String, ACAQDataSlot> graphSlots = new HashMap<>();
     private Map<String, ACAQParameterAccess> parameterAccessMap = new HashMap<>();
 
+    /**
+     * @param declaration the declaration
+     */
     public GraphWrapperAlgorithm(GraphWrapperAlgorithmDeclaration declaration) {
         super(declaration, new ACAQMutableSlotConfiguration());
         this.wrappedGraph = new ACAQAlgorithmGraph(declaration.getGraph());
@@ -36,6 +39,11 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
         initializeParameters();
     }
 
+    /**
+     * Copies the algorithm
+     *
+     * @param other the original
+     */
     public GraphWrapperAlgorithm(GraphWrapperAlgorithm other) {
         super(other);
         this.wrappedGraph = new ACAQAlgorithmGraph(other.wrappedGraph);

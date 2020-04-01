@@ -3,7 +3,7 @@
  * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
  * https://www.leibniz-hki.de/en/applied-systems-biology.html
  * HKI-Center for Systems Biology of Infection
- * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Insitute (HKI)
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
  * This code is licensed under BSD 2-Clause
@@ -59,6 +59,7 @@ public class ACAQValidityReport {
 
     /**
      * Returns a report for the specified category
+     *
      * @param category the category
      * @return the sub-report
      */
@@ -73,8 +74,9 @@ public class ACAQValidityReport {
 
     /**
      * Reports a response
+     *
      * @param response the response
-     * @param message the message
+     * @param message  the message
      */
     public void report(Response response, String message) {
         String key = String.join("/", categories);
@@ -84,6 +86,7 @@ public class ACAQValidityReport {
 
     /**
      * Passes the report to another {@link ACAQValidatable}
+     *
      * @param validatable the target
      */
     public void report(ACAQValidatable validatable) {
@@ -92,7 +95,8 @@ public class ACAQValidityReport {
 
     /**
      * Reports validity or invalidity
-     * @param valid if the report is valid
+     *
+     * @param valid   if the report is valid
      * @param message the message
      */
     public void report(boolean valid, String message) {
@@ -108,6 +112,7 @@ public class ACAQValidityReport {
 
     /**
      * Reports that this report is invalid
+     *
      * @param message The message
      */
     public void reportIsInvalid(String message) {

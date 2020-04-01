@@ -1,13 +1,11 @@
 package org.hkijena.acaq5.ui.extensionbuilder.traiteditor;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
-import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQJsonTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
@@ -203,6 +201,7 @@ public class ACAQTraitGraphUI extends ACAQJsonExtensionUIPanel implements MouseL
 
     /**
      * Triggered when a trait node is selected
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -237,6 +236,7 @@ public class ACAQTraitGraphUI extends ACAQJsonExtensionUIPanel implements MouseL
 
     /**
      * Selects only one trait
+     *
      * @param ui the UI
      */
     public void selectOnly(ACAQAlgorithmUI ui) {
@@ -255,6 +255,7 @@ public class ACAQTraitGraphUI extends ACAQJsonExtensionUIPanel implements MouseL
 
     /**
      * Adds a node to the selection
+     *
      * @param ui the UI
      */
     public void addToSelection(ACAQAlgorithmUI ui) {
@@ -274,6 +275,7 @@ public class ACAQTraitGraphUI extends ACAQJsonExtensionUIPanel implements MouseL
 
     /**
      * Removes a node from the selection
+     *
      * @param ui the UI
      */
     public void removeFromSelection(ACAQAlgorithmUI ui) {
@@ -296,6 +298,7 @@ public class ACAQTraitGraphUI extends ACAQJsonExtensionUIPanel implements MouseL
 
     /**
      * Triggered when the graph is changed
+     *
      * @param event Generated event
      */
     @Subscribe

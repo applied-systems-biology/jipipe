@@ -22,6 +22,7 @@ public class ACAQExistingTraitNode extends ACAQTraitNode implements ACAQCustomPa
 
     /**
      * Creates a new instance
+     *
      * @param declaration The algorithm declaration
      */
     public ACAQExistingTraitNode(ACAQAlgorithmDeclaration declaration) {
@@ -32,6 +33,7 @@ public class ACAQExistingTraitNode extends ACAQTraitNode implements ACAQCustomPa
 
     /**
      * Copies the instance
+     *
      * @param other The original
      */
     public ACAQExistingTraitNode(ACAQExistingTraitNode other) {

@@ -26,7 +26,7 @@ public class ACAQRun implements ACAQRunnable {
     private ACAQRunConfiguration configuration;
 
     /**
-     * @param project The project
+     * @param project       The project
      * @param configuration Run configuration
      */
     public ACAQRun(ACAQProject project, ACAQRunConfiguration configuration) {

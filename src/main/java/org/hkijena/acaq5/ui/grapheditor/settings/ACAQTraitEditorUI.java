@@ -90,6 +90,7 @@ public class ACAQTraitEditorUI extends JPanel {
 
     /**
      * Triggered when algorithm slots are changed
+     *
      * @param event Generated event
      */
     @Subscribe

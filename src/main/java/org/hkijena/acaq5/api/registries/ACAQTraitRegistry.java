@@ -32,8 +32,8 @@ public class ACAQTraitRegistry implements ACAQValidatable {
     /**
      * Registers a trait class
      *
-     * @param id trait id
-     * @param klass trait class
+     * @param id     trait id
+     * @param klass  trait class
      * @param source dependency that registers the trait
      */
     public void register(String id, Class<? extends ACAQTrait> klass, ACAQDependency source) {
@@ -44,7 +44,7 @@ public class ACAQTraitRegistry implements ACAQValidatable {
      * Registers a trait declaration
      *
      * @param declaration trait declaration
-     * @param source dependency that registers the trait
+     * @param source      dependency that registers the trait
      */
     public void register(ACAQTraitDeclaration declaration, ACAQDependency source) {
         registeredTraits.put(declaration.getId(), declaration);

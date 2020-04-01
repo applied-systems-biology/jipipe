@@ -24,8 +24,8 @@ public class ACAQJsonExtensionSingleAlgorithmSelectionPanelUI extends ACAQJsonEx
 
     /**
      * @param workbenchUI The workbench UI
-     * @param graph The algorithm graph
-     * @param algorithm The algorithm
+     * @param graph       The algorithm graph
+     * @param algorithm   The algorithm
      */
     public ACAQJsonExtensionSingleAlgorithmSelectionPanelUI(ACAQJsonExtensionUI workbenchUI, ACAQAlgorithmGraph graph, ACAQAlgorithm algorithm) {
         super(workbenchUI);

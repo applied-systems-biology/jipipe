@@ -25,6 +25,7 @@ public class ACAQFileDataSource extends ACAQAlgorithm {
 
     /**
      * Initializes the algorithm
+     *
      * @param declaration The algorithm declaration
      */
     public ACAQFileDataSource(ACAQAlgorithmDeclaration declaration) {
@@ -33,6 +34,7 @@ public class ACAQFileDataSource extends ACAQAlgorithm {
 
     /**
      * Copies the algorithm
+     *
      * @param other The original
      */
     public ACAQFileDataSource(ACAQFileDataSource other) {
@@ -58,6 +60,7 @@ public class ACAQFileDataSource extends ACAQAlgorithm {
 
     /**
      * Sets the file name
+     *
      * @param fileName The file name
      */
     @ACAQParameter("file-name")

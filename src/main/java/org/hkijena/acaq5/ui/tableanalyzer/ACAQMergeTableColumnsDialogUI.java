@@ -3,7 +3,7 @@
  * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
  * https://www.leibniz-hki.de/en/applied-systems-biology.html
  * HKI-Center for Systems Biology of Infection
- * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Insitute (HKI)
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
  * This code is licensed under BSD 2-Clause
@@ -51,7 +51,7 @@ public class ACAQMergeTableColumnsDialogUI extends JDialog {
 
     /**
      * @param workbenchUI The workbench
-     * @param tableModel The table
+     * @param tableModel  The table
      */
     public ACAQMergeTableColumnsDialogUI(ACAQProjectUI workbenchUI, DefaultTableModel tableModel) {
         this.tableModel = tableModel;
@@ -66,6 +66,7 @@ public class ACAQMergeTableColumnsDialogUI extends JDialog {
 
     /**
      * Finds the tab that contains the selected table
+     *
      * @return The tab
      */
     public DocumentTabPane.DocumentTab getMergedTab() {

@@ -26,6 +26,7 @@ public class ACAQNewTraitNode extends ACAQTraitNode implements ACAQCustomParamet
 
     /**
      * Creates new instance
+     *
      * @param declaration The declaration
      */
     public ACAQNewTraitNode(ACAQAlgorithmDeclaration declaration) {
@@ -34,6 +35,7 @@ public class ACAQNewTraitNode extends ACAQTraitNode implements ACAQCustomParamet
 
     /**
      * Copies the node
+     *
      * @param other The original
      */
     public ACAQNewTraitNode(ACAQNewTraitNode other) {
@@ -67,6 +69,7 @@ public class ACAQNewTraitNode extends ACAQTraitNode implements ACAQCustomParamet
 
     /**
      * Triggered when the name, id or is-discriminator parameters are changed
+     *
      * @param event Generated event
      */
     @Subscribe

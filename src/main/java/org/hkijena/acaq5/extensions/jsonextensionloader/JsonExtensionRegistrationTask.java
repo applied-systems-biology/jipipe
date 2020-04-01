@@ -11,6 +11,9 @@ import java.nio.file.Path;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Registers a {@link org.hkijena.acaq5.ACAQJsonExtension}
+ */
 public class JsonExtensionRegistrationTask implements ACAQValidatable {
 
     private final Set<String> dependencyIds;
@@ -18,6 +21,11 @@ public class JsonExtensionRegistrationTask implements ACAQValidatable {
     private Path filePath;
     private JsonNode jsonNode;
 
+    /**
+     * @param registry the registry
+     * @param filePath the path the JSON data came from. Has only informational value. Can be null.
+     * @param jsonNode the JSON data node that contains the serialized extension
+     */
     public JsonExtensionRegistrationTask(ACAQDefaultRegistry registry, Path filePath, JsonNode jsonNode) {
         this.registry = registry;
         this.filePath = filePath;
@@ -26,6 +34,9 @@ public class JsonExtensionRegistrationTask implements ACAQValidatable {
         this.dependencyIds = dependencies.stream().map(ACAQDependency::getDependencyId).collect(Collectors.toSet());
     }
 
+    /**
+     * @return true if the extension can be registered
+     */
     public boolean canRegister() {
         return registry.getRegisteredExtensionIds().containsAll(dependencyIds);
     }

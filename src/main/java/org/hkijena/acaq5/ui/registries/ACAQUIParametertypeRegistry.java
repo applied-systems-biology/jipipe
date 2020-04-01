@@ -27,8 +27,9 @@ public class ACAQUIParametertypeRegistry {
 
     /**
      * Registers a new parameter type
+     *
      * @param parameterType parameter type
-     * @param uiClass corresponding editor UI
+     * @param uiClass       corresponding editor UI
      */
     public void registerParameterEditor(Class<?> parameterType, Class<? extends ACAQParameterEditorUI> uiClass) {
         parameterTypes.put(parameterType, uiClass);
@@ -36,6 +37,7 @@ public class ACAQUIParametertypeRegistry {
 
     /**
      * Registers documentation for a parameter type
+     *
      * @param parameterType parameter type
      * @param documentation the documentation
      */
@@ -45,6 +47,7 @@ public class ACAQUIParametertypeRegistry {
 
     /**
      * Gets documentation for a parameter type
+     *
      * @param parameterType parameter type
      * @return documentation. Can be null.
      */
@@ -54,7 +57,8 @@ public class ACAQUIParametertypeRegistry {
 
     /**
      * Creates editor for the parameter
-     * @param context SciJava context
+     *
+     * @param context         SciJava context
      * @param parameterAccess the parameter
      * @return Parameter editor UI
      */

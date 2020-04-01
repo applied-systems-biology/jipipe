@@ -28,6 +28,7 @@ public class ACAQProjectMetadata implements ACAQParameterHolder {
 
     /**
      * Copies metadata
+     *
      * @param other The original metadata
      */
     public ACAQProjectMetadata(ACAQProjectMetadata other) {
@@ -51,6 +52,7 @@ public class ACAQProjectMetadata implements ACAQParameterHolder {
 
     /**
      * Sets the name
+     *
      * @param name the name
      */
     @ACAQParameter("name")
@@ -73,6 +75,7 @@ public class ACAQProjectMetadata implements ACAQParameterHolder {
 
     /**
      * Sets the description
+     *
      * @param description the description
      */
     @ACAQParameter("description")
@@ -94,6 +97,7 @@ public class ACAQProjectMetadata implements ACAQParameterHolder {
 
     /**
      * Sets the authors
+     *
      * @param authors the authors
      */
     @ACAQParameter("authors")
@@ -115,6 +119,7 @@ public class ACAQProjectMetadata implements ACAQParameterHolder {
 
     /**
      * Sets the website
+     *
      * @param website the website
      */
     @ACAQParameter("website")
@@ -136,6 +141,7 @@ public class ACAQProjectMetadata implements ACAQParameterHolder {
 
     /**
      * Sets the license
+     *
      * @param license the license
      */
     @ACAQParameter("license")
@@ -157,6 +163,7 @@ public class ACAQProjectMetadata implements ACAQParameterHolder {
 
     /**
      * Sets the citation
+     *
      * @param citation the citation
      */
     @ACAQParameter("citation")

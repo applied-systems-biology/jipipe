@@ -29,7 +29,7 @@ public class ACAQTraitPicker extends JPanel {
     private Set<ACAQTraitDeclaration> selectedTraits = new HashSet<>();
 
     /**
-     * @param mode the mode
+     * @param mode            the mode
      * @param availableTraits list of available trait types
      */
     public ACAQTraitPicker(Mode mode, Set<ACAQTraitDeclaration> availableTraits) {
@@ -114,6 +114,7 @@ public class ACAQTraitPicker extends JPanel {
 
     /**
      * Selects a trait
+     *
      * @param traitDeclaration selected trait
      */
     public void selectTrait(ACAQTraitDeclaration traitDeclaration) {
@@ -131,6 +132,7 @@ public class ACAQTraitPicker extends JPanel {
 
     /**
      * Deselect a trait
+     *
      * @param traitDeclaration trait
      */
     public void deselectTrait(ACAQTraitDeclaration traitDeclaration) {
@@ -188,8 +190,9 @@ public class ACAQTraitPicker extends JPanel {
 
     /**
      * Shows a dialog to pick traits
-     * @param parent parent component
-     * @param mode mode
+     *
+     * @param parent          parent component
+     * @param mode            mode
      * @param availableTraits list of available traits
      * @return picked traits
      */
@@ -264,7 +267,7 @@ public class ACAQTraitPicker extends JPanel {
         private ACAQTraitDeclaration traitDeclaration;
 
         /**
-         * @param traitPicker event source
+         * @param traitPicker      event source
          * @param traitDeclaration picked trait
          */
         public TraitSelectedEvent(ACAQTraitPicker traitPicker, ACAQTraitDeclaration traitDeclaration) {
@@ -289,7 +292,7 @@ public class ACAQTraitPicker extends JPanel {
         private ACAQTraitDeclaration traitDeclaration;
 
         /**
-         * @param traitPicker event source
+         * @param traitPicker      event source
          * @param traitDeclaration deselected trait
          */
         public TraitDeselectedEvent(ACAQTraitPicker traitPicker, ACAQTraitDeclaration traitDeclaration) {

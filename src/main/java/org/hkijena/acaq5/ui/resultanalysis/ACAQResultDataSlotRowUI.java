@@ -18,8 +18,8 @@ public abstract class ACAQResultDataSlotRowUI extends ACAQProjectUIPanel {
 
     /**
      * @param workbenchUI The workbench
-     * @param slot The data slow
-     * @param row The slow row
+     * @param slot        The data slow
+     * @param row         The slow row
      */
     public ACAQResultDataSlotRowUI(ACAQProjectUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
         super(workbenchUI);

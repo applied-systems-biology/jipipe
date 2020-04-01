@@ -32,7 +32,8 @@ public class ACAQExportedDataTable implements TableModel {
 
     /**
      * Initializes a new table from a slot
-     * @param slot The slot
+     *
+     * @param slot            The slot
      * @param dataOutputPaths output path for each slot row
      */
     public ACAQExportedDataTable(ACAQDataSlot slot, List<Path> dataOutputPaths) {
@@ -66,6 +67,7 @@ public class ACAQExportedDataTable implements TableModel {
 
     /**
      * Sets the algorithm ID
+     *
      * @param algorithmId the algorithm ID
      */
     @JsonSetter("algorithm-id")
@@ -83,6 +85,7 @@ public class ACAQExportedDataTable implements TableModel {
 
     /**
      * Sets the slot name
+     *
      * @param slotName The slot name
      */
     @JsonSetter("slot")
@@ -100,6 +103,7 @@ public class ACAQExportedDataTable implements TableModel {
 
     /**
      * Sets the internal path
+     *
      * @param internalPath The internal path
      */
     @JsonSetter("internal-path")
@@ -117,6 +121,7 @@ public class ACAQExportedDataTable implements TableModel {
 
     /**
      * Sets the accepted datatype ID
+     *
      * @param id Datatype ID
      */
     @JsonSetter("data-type")
@@ -134,6 +139,7 @@ public class ACAQExportedDataTable implements TableModel {
 
     /**
      * Sets list of rows
+     *
      * @param rowList Row list
      */
     @JsonSetter("rows")
@@ -143,7 +149,8 @@ public class ACAQExportedDataTable implements TableModel {
 
     /**
      * Saves the table to JSON
-     * @param fileName  JSON file
+     *
+     * @param fileName JSON file
      * @throws IOException Triggered by {@link com.fasterxml.jackson.databind.ObjectMapper}
      */
     public void saveAsJson(Path fileName) throws IOException {
@@ -152,7 +159,8 @@ public class ACAQExportedDataTable implements TableModel {
 
     /**
      * Saves the table to CSV
-     * @param fileName  CSV file
+     *
+     * @param fileName CSV file
      * @throws IOException Triggered by {@link ResultsTable}
      */
     public void saveAsCSV(Path fileName) throws IOException {
@@ -255,6 +263,7 @@ public class ACAQExportedDataTable implements TableModel {
 
     /**
      * Loads the table from JSON
+     *
      * @param fileName JSON file
      * @return Loaded table
      */
@@ -289,6 +298,7 @@ public class ACAQExportedDataTable implements TableModel {
 
         /**
          * Sets the location
+         *
          * @param location Internal location relative to the output folder
          */
         @JsonSetter("location")
@@ -306,6 +316,7 @@ public class ACAQExportedDataTable implements TableModel {
 
         /**
          * Sets annotations
+         *
          * @param traits List of annotations
          */
         @JsonSetter("traits")

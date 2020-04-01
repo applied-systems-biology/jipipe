@@ -29,8 +29,8 @@ public class ACAQTraitTransferTask {
     private Set<ACAQTraitDeclaration> traitRestrictions;
 
     /**
-     * @param inputSlotName input slot
-     * @param outputSlotName output slot
+     * @param inputSlotName     input slot
+     * @param outputSlotName    output slot
      * @param traitRestrictions If empty, no restrictions apply
      */
     public ACAQTraitTransferTask(String inputSlotName, String outputSlotName, Set<ACAQTraitDeclaration> traitRestrictions) {
@@ -41,6 +41,7 @@ public class ACAQTraitTransferTask {
 
     /**
      * Applies the transfer to the algorithm
+     *
      * @param algorithm the algorithm
      */
     public void applyTo(ACAQAlgorithm algorithm) {

@@ -11,6 +11,9 @@ import org.hkijena.acaq5.utils.JsonUtils;
 import java.io.IOException;
 import java.util.Map;
 
+/**
+ * Registers a {@link GraphWrapperAlgorithmDeclaration}
+ */
 public class GraphWrapperAlgorithmRegistrationTask extends ACAQDefaultAlgorithmRegistrationTask {
 
     private JsonNode jsonNode;
@@ -18,7 +21,7 @@ public class GraphWrapperAlgorithmRegistrationTask extends ACAQDefaultAlgorithmR
 
     /**
      * @param jsonNode The JSON serialized graph wrapper algorithm
-     * @param source
+     * @param source   dependency that registers the algorithm
      */
     public GraphWrapperAlgorithmRegistrationTask(JsonNode jsonNode, ACAQDependency source) {
         this.jsonNode = jsonNode;

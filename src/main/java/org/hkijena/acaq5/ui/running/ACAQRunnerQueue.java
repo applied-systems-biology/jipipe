@@ -31,6 +31,7 @@ public class ACAQRunnerQueue {
 
     /**
      * Schedules a new runnable
+     *
      * @param run The runnable
      * @return The worker associated to the run
      */
@@ -45,6 +46,7 @@ public class ACAQRunnerQueue {
 
     /**
      * Finds the worker associated to the {@link ACAQRunnable}
+     *
      * @param run The runnable
      * @return The associated worker
      */
@@ -65,6 +67,7 @@ public class ACAQRunnerQueue {
 
     /**
      * Cancels a runnable
+     *
      * @param run The runnable
      */
     public void cancel(ACAQRunnable run) {
@@ -83,6 +86,7 @@ public class ACAQRunnerQueue {
 
     /**
      * Triggered when a worker is finished
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -97,6 +101,7 @@ public class ACAQRunnerQueue {
 
     /**
      * Triggered when a worker is interrupted
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -111,6 +116,7 @@ public class ACAQRunnerQueue {
 
     /**
      * Triggered when a worker reports progress
+     *
      * @param event Generated event
      */
     @Subscribe

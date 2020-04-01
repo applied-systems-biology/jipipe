@@ -52,6 +52,7 @@ public class ACAQApplicationSettings {
 
     /**
      * Sets recent projects
+     *
      * @param recentProjects Recent project files
      */
     @JsonSetter("recent-projects")
@@ -80,6 +81,7 @@ public class ACAQApplicationSettings {
 
     /**
      * Adds a project file to the list of recent projects
+     *
      * @param fileName Project file
      */
     public void addRecentProject(Path fileName) {
@@ -98,6 +100,7 @@ public class ACAQApplicationSettings {
 
     /**
      * Adds a JSON extension file to the list of recent JSON extensions
+     *
      * @param fileName JSON extension file
      */
     public void addRecentJsonExtension(Path fileName) {
@@ -136,6 +139,7 @@ public class ACAQApplicationSettings {
 
     /**
      * Sets recent JSON extension project files
+     *
      * @param recentJsonExtensions recent JSON extension project files
      */
     @JsonGetter("recent-json-extensions")

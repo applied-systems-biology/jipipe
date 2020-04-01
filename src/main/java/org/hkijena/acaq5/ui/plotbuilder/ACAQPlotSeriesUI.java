@@ -3,7 +3,7 @@
  * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
  * https://www.leibniz-hki.de/en/applied-systems-biology.html
  * HKI-Center for Systems Biology of Infection
- * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Insitute (HKI)
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
  * This code is licensed under BSD 2-Clause
@@ -34,7 +34,7 @@ public class ACAQPlotSeriesUI extends JPanel {
     private JButton moveDownButton;
 
     /**
-     * @param plot The plot that contains the series
+     * @param plot   The plot that contains the series
      * @param series The series
      */
     public ACAQPlotSeriesUI(ACAQPlot plot, ACAQPlotSeries series) {
@@ -103,6 +103,7 @@ public class ACAQPlotSeriesUI extends JPanel {
 
     /**
      * Triggered when the plot series list is changed
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -246,8 +247,9 @@ public class ACAQPlotSeriesUI extends JPanel {
 
         /**
          * Creates new renderer
+         *
          * @param column The column
-         * @param plot The plot
+         * @param plot   The plot
          */
         public Renderer(ACAQPlotSeriesColumn column, ACAQPlot plot) {
             this.column = column;

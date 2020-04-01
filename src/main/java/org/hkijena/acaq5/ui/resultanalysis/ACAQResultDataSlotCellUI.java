@@ -19,9 +19,10 @@ public abstract class ACAQResultDataSlotCellUI extends JLabel {
 
     /**
      * Renders the data slot row
+     *
      * @param workbenchUI the workbench
-     * @param slot The data slot
-     * @param row The data slot row
+     * @param slot        The data slot
+     * @param row         The data slot row
      */
     public abstract void render(ACAQProjectUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row);
 
@@ -29,7 +30,7 @@ public abstract class ACAQResultDataSlotCellUI extends JLabel {
      * Returns the compartment name of the algorithm that generated the data
      *
      * @param workbenchUI The workbench
-     * @param slot The data slot
+     * @param slot        The data slot
      * @return The algorithm compartment
      */
     public static String getAlgorithmCompartment(ACAQProjectUI workbenchUI, ACAQDataSlot slot) {
@@ -50,8 +51,8 @@ public abstract class ACAQResultDataSlotCellUI extends JLabel {
      * Returns a name that identifies this row
      *
      * @param workbenchUI The workbench UI
-     * @param slot The data slot
-     * @param row The data slot row
+     * @param slot        The data slot
+     * @param row         The data slot row
      * @return The display name
      */
     public static String getDisplayName(ACAQProjectUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
@@ -62,7 +63,7 @@ public abstract class ACAQResultDataSlotCellUI extends JLabel {
      * Returns the folder where the data is stored
      *
      * @param slot The data slot
-     * @param row The data slot row
+     * @param row  The data slot row
      * @return The row storage folder
      */
     public static Path getRowStorageFolder(ACAQDataSlot slot, ACAQExportedDataTable.Row row) {

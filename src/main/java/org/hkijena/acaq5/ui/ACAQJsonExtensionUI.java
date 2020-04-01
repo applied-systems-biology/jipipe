@@ -29,7 +29,7 @@ public class ACAQJsonExtensionUI extends JPanel {
     private ReloadableValidityChecker validityCheckerPanel;
 
     /**
-     * @param window The parent window
+     * @param window  The parent window
      * @param command The command that executed the UI
      * @param project The project
      */
@@ -91,6 +91,7 @@ public class ACAQJsonExtensionUI extends JPanel {
 
     /**
      * Sends a text to the status bar
+     *
      * @param text The text
      */
     public void sendStatusBarText(String text) {

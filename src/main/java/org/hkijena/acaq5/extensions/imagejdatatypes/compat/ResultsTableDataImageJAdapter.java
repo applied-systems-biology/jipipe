@@ -5,6 +5,9 @@ import org.hkijena.acaq5.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 
+/**
+ * Adapter between {@link ResultsTableData} and {@link ResultsTable}
+ */
 public class ResultsTableDataImageJAdapter implements ImageJDatatypeAdapter {
     @Override
     public boolean canConvertImageJToACAQ(Object imageJData) {
@@ -30,8 +33,8 @@ public class ResultsTableDataImageJAdapter implements ImageJDatatypeAdapter {
      * Converts {@link ResultsTable} to {@link ResultsTableData}.
      * If imageJData is null, the currently active {@link ResultsTable} is used.
      *
-     * @param imageJData
-     * @return
+     * @param imageJData ImageJ data
+     * @return converted data
      */
     @Override
     public ACAQData convertImageJToACAQ(Object imageJData) {

@@ -7,6 +7,10 @@ public class MacroSetting {
     private String key;
     private String value;
 
+    /**
+     * @param key   setting key
+     * @param value setting value
+     */
     public MacroSetting(String key, Object value) {
         this.key = key;
         this.value = "" + value;

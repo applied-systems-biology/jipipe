@@ -25,6 +25,7 @@ public class ACAQFolderDataSource extends ACAQAlgorithm {
 
     /**
      * Initializes the algorithm
+     *
      * @param declaration Algorithm declaration
      */
     public ACAQFolderDataSource(ACAQAlgorithmDeclaration declaration) {
@@ -33,6 +34,7 @@ public class ACAQFolderDataSource extends ACAQAlgorithm {
 
     /**
      * Copies the algorithm
+     *
      * @param other The original
      */
     public ACAQFolderDataSource(ACAQFolderDataSource other) {
@@ -58,6 +60,7 @@ public class ACAQFolderDataSource extends ACAQAlgorithm {
 
     /**
      * Sets the folder path
+     *
      * @param folderPath The folder path
      */
     @ACAQParameter("folder-path")

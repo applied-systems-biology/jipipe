@@ -25,8 +25,8 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectUIPanel {
 
     /**
      * @param workbenchUI the workbench UI
-     * @param graph the graph
-     * @param algorithm the algorithm
+     * @param graph       the graph
+     * @param algorithm   the algorithm
      */
     public ACAQSingleAlgorithmSelectionPanelUI(ACAQProjectUI workbenchUI, ACAQAlgorithmGraph graph, ACAQAlgorithm algorithm) {
         super(workbenchUI);

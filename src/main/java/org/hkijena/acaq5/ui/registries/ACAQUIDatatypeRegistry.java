@@ -39,7 +39,7 @@ public class ACAQUIDatatypeRegistry {
     /**
      * Registers a custom icon for a datatype
      *
-     * @param klass data class
+     * @param klass        data class
      * @param resourcePath icon resource
      */
     public void registerIcon(Class<? extends ACAQData> klass, URL resourcePath) {
@@ -49,7 +49,7 @@ public class ACAQUIDatatypeRegistry {
     /**
      * Registers a custom UI for a result data slot
      *
-     * @param klass data class
+     * @param klass   data class
      * @param uiClass slot ui
      */
     public void registerResultSlotUI(Class<? extends ACAQData> klass, Class<? extends ACAQResultDataSlotRowUI> uiClass) {
@@ -59,7 +59,7 @@ public class ACAQUIDatatypeRegistry {
     /**
      * Registers a custom renderer for the data displayed in the dataslot result table
      *
-     * @param klass data class
+     * @param klass    data class
      * @param renderer cell renderer
      */
     public void registerResultTableCellUI(Class<? extends ACAQData> klass, ACAQResultDataSlotCellUI renderer) {
@@ -81,8 +81,8 @@ public class ACAQUIDatatypeRegistry {
      * Generates a UI for a result data slot
      *
      * @param workbenchUI workbench UI
-     * @param slot data slot
-     * @param row table row
+     * @param slot        data slot
+     * @param row         table row
      * @return slot UI
      */
     public ACAQResultDataSlotRowUI getUIForResultSlot(ACAQProjectUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
@@ -111,6 +111,7 @@ public class ACAQUIDatatypeRegistry {
 
     /**
      * Gets an icon for each algorithm category
+     *
      * @param category algorithm category
      * @return icon for the category
      */
@@ -124,7 +125,7 @@ public class ACAQUIDatatypeRegistry {
                 return ResourceUtils.getPluginResource("icons/label.png");
             case Enhancer:
                 return ResourceUtils.getPluginResource("icons/magic.png");
-            case Segmenter:
+            case Segmentation:
                 return ResourceUtils.getPluginResource("icons/binary.png");
             case Converter:
                 return ResourceUtils.getPluginResource("icons/convert.png");

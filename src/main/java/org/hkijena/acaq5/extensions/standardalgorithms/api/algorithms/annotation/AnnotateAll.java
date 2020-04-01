@@ -32,6 +32,7 @@ public class AnnotateAll extends ACAQAlgorithm {
 
     /**
      * Copies the algorithm
+     *
      * @param other the original
      */
     public AnnotateAll(AnnotateAll other) {

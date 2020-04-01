@@ -35,6 +35,7 @@ public class ACAQDataSlotTraitConfiguration {
 
     /**
      * Copies a configuration
+     *
      * @param other The original
      */
     public ACAQDataSlotTraitConfiguration(ACAQDataSlotTraitConfiguration other) {
@@ -50,6 +51,7 @@ public class ACAQDataSlotTraitConfiguration {
 
     /**
      * Merges another instance into this one
+     *
      * @param other The other instance
      */
     public void merge(ACAQDataSlotTraitConfiguration other) {
@@ -60,6 +62,7 @@ public class ACAQDataSlotTraitConfiguration {
 
     /**
      * Applies the operations to the slot
+     *
      * @param slot The slot
      */
     public void applyTo(ACAQDataSlot slot) {
@@ -81,8 +84,9 @@ public class ACAQDataSlotTraitConfiguration {
 
     /**
      * Sets the operation for an annotation type
+     *
      * @param traitDeclaration Annotation type
-     * @param operation The operation
+     * @param operation        The operation
      */
     public void set(ACAQTraitDeclaration traitDeclaration, ACAQTraitModificationOperation operation) {
         operations.put(traitDeclaration, operation);
@@ -91,6 +95,7 @@ public class ACAQDataSlotTraitConfiguration {
     /**
      * Returns map of operations for each annotation type.
      * The map is writable.
+     *
      * @return A map of operations for each annotation type
      */
     public Map<ACAQTraitDeclaration, ACAQTraitModificationOperation> getOperations() {

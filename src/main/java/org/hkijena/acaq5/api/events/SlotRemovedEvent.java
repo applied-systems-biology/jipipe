@@ -9,6 +9,10 @@ public class SlotRemovedEvent {
     private ACAQMutableSlotConfiguration slotConfiguration;
     private String slotName;
 
+    /**
+     * @param slotConfiguration the slot configuration
+     * @param slotName          the slot name
+     */
     public SlotRemovedEvent(ACAQMutableSlotConfiguration slotConfiguration, String slotName) {
         this.slotConfiguration = slotConfiguration;
         this.slotName = slotName;

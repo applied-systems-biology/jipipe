@@ -43,7 +43,7 @@ public class ACAQProjectUI extends JPanel {
     private ACAQPluginValidityCheckerPanel pluginValidityCheckerPanel;
 
     /**
-     * @param window Parent window
+     * @param window  Parent window
      * @param command GUI command
      * @param project The project
      */
@@ -118,6 +118,7 @@ public class ACAQProjectUI extends JPanel {
 
     /**
      * Finds open {@link ACAQCompartmentUI} tabs
+     *
      * @param compartment Targeted compartment
      * @return List of UIs
      */
@@ -134,6 +135,7 @@ public class ACAQProjectUI extends JPanel {
 
     /**
      * Opens the graph editor for specified compartment
+     *
      * @param compartment The compartment
      * @param switchToTab If true, switch to the tab
      */
@@ -162,6 +164,7 @@ public class ACAQProjectUI extends JPanel {
 
     /**
      * Sends a text to the status bar
+     *
      * @param text The text
      */
     public void sendStatusBarText(String text) {
@@ -304,6 +307,7 @@ public class ACAQProjectUI extends JPanel {
 
     /**
      * Validates the project
+     *
      * @param avoidSwitching Do no switch to the validity checker tab if the project is OK
      */
     public void validateProject(boolean avoidSwitching) {
@@ -314,7 +318,8 @@ public class ACAQProjectUI extends JPanel {
 
     /**
      * Validates the plugins
-     * @param avoidSwitching  Do no switch to the validity checker tab if the plugins are OK
+     *
+     * @param avoidSwitching Do no switch to the validity checker tab if the plugins are OK
      */
     public void validatePlugins(boolean avoidSwitching) {
         pluginValidityCheckerPanel.recheckValidity();
@@ -376,6 +381,7 @@ public class ACAQProjectUI extends JPanel {
     /**
      * Triggered when a compartment is deleted.
      * Closes corresponding tabs.
+     *
      * @param event Generated event
      */
     @Subscribe

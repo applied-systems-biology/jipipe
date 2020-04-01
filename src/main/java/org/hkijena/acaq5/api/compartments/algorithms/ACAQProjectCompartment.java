@@ -26,6 +26,7 @@ public class ACAQProjectCompartment extends ACAQAlgorithm {
 
     /**
      * Creates new instance
+     *
      * @param declaration Algorithm declaration
      */
     public ACAQProjectCompartment(ACAQAlgorithmDeclaration declaration) {
@@ -34,6 +35,7 @@ public class ACAQProjectCompartment extends ACAQAlgorithm {
 
     /**
      * Copies the compartment
+     *
      * @param other Original compartment
      */
     public ACAQProjectCompartment(ACAQProjectCompartment other) {
@@ -82,6 +84,7 @@ public class ACAQProjectCompartment extends ACAQAlgorithm {
 
     /**
      * Sets the project. Internal use only.
+     *
      * @param project The project
      */
     public void setProject(ACAQProject project) {
@@ -97,6 +100,7 @@ public class ACAQProjectCompartment extends ACAQAlgorithm {
 
     /**
      * Sets the compartment output. Internal use only.
+     *
      * @param outputNode the compartment output
      */
     public void setOutputNode(ACAQCompartmentOutput outputNode) {

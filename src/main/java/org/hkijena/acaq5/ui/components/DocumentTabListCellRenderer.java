@@ -3,7 +3,7 @@
  * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
  * https://www.leibniz-hki.de/en/applied-systems-biology.html
  * HKI-Center for Systems Biology of Infection
- * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Insitute (HKI)
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
  * This code is licensed under BSD 2-Clause
@@ -15,8 +15,14 @@ package org.hkijena.acaq5.ui.components;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Renders {@link DocumentTabPane} tabs
+ */
 public class DocumentTabListCellRenderer extends JLabel implements ListCellRenderer<DocumentTabPane.DocumentTab> {
 
+    /**
+     * Creates a new renderer
+     */
     public DocumentTabListCellRenderer() {
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
     }

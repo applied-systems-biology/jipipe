@@ -19,10 +19,18 @@ public class PathFilter implements Predicate<Path>, ACAQValidatable {
     private String filterString;
     private PathMatcher globPathMatcher;
 
+    /**
+     * Initializes a new filter. Defaults to no filter string and Mode.Contains
+     */
     public PathFilter() {
 
     }
 
+    /**
+     * Copies the filter
+     *
+     * @param other the original
+     */
     public PathFilter(PathFilter other) {
         this.mode = other.mode;
         this.filterString = other.filterString;
@@ -81,9 +89,21 @@ public class PathFilter implements Predicate<Path>, ACAQValidatable {
         }
     }
 
+    /**
+     * Available filter modes
+     */
     public enum Mode {
+        /**
+         * Checks via String.contains
+         */
         Contains,
+        /**
+         * Checks via a Glob matcher
+         */
         Glob,
+        /**
+         * Checks via a regular expression
+         */
         Regex
     }
 

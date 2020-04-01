@@ -25,6 +25,7 @@ public class ACAQFilterFiles extends ACAQIteratingAlgorithm {
 
     /**
      * Instantiates the algorithm
+     *
      * @param declaration Algorithm declaration
      */
     public ACAQFilterFiles(ACAQAlgorithmDeclaration declaration) {
@@ -33,6 +34,7 @@ public class ACAQFilterFiles extends ACAQIteratingAlgorithm {
 
     /**
      * Copies the algorithm
+     *
      * @param other The original
      */
     public ACAQFilterFiles(ACAQFilterFiles other) {
@@ -65,6 +67,7 @@ public class ACAQFilterFiles extends ACAQIteratingAlgorithm {
     /**
      * Sets the filter.
      * Cannot be null.
+     *
      * @param filter The filter
      */
     @ACAQParameter("filter")

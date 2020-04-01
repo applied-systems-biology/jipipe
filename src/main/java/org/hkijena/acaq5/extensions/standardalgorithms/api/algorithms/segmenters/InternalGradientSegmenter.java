@@ -18,8 +18,11 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.Image
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.enhancers.CLAHEImageEnhancer;
 import org.hkijena.acaq5.utils.ImageJUtils;
 
+/**
+ * Internal gradient segmenter
+ */
 @ACAQDocumentation(name = "Internal gradient segmentation")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmentation)
 
 // Algorithm flow
 @AlgorithmInputSlot(value = ImagePlus2DGreyscaleData.class, slotName = "Image", autoCreate = true)
@@ -40,10 +43,18 @@ public class InternalGradientSegmenter extends ACAQIteratingAlgorithm {
     private AutoThresholdSegmenter autoThresholdSegmenter = new AutoThresholdSegmenter(new ACAQEmptyAlgorithmDeclaration());
     private CLAHEImageEnhancer claheImageEnhancer = new CLAHEImageEnhancer(new ACAQEmptyAlgorithmDeclaration());
 
+    /**
+     * @param declaration the algorithm declaration
+     */
     public InternalGradientSegmenter(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
     }
 
+    /**
+     * Copies the algorithm
+     *
+     * @param other the original
+     */
     public InternalGradientSegmenter(InternalGradientSegmenter other) {
         super(other);
         this.gaussSigma = other.gaussSigma;

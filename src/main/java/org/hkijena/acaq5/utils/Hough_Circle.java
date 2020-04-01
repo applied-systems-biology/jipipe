@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.utils;
 
-/**
+/*
  * Hough_Circle.java:
  * <p>
  * This program is free software; you can redistribute it and/or modify
@@ -137,7 +137,29 @@ public class Hough_Circle extends SwingWorker<Integer, String> {
     //private int totalTime = 0; //Variable to test beenfits of multithreading
     // </editor-fold>
 
-    //Import values from GUI class before starting the analysis thread
+
+    /**
+     * Import values from GUI class before starting the analysis thread
+     *
+     * @param radiusMin
+     * @param radiusMax
+     * @param radiusInc
+     * @param minCircles
+     * @param maxCircles
+     * @param thresholdRatio
+     * @param resolution
+     * @param ratio
+     * @param searchBand
+     * @param searchRadius
+     * @param reduce
+     * @param local
+     * @param houghSeries
+     * @param showCircles
+     * @param showID
+     * @param showScores
+     * @param results
+     * @param isGUI
+     */
     public void setParameters(int radiusMin, int radiusMax, int radiusInc, int minCircles, int maxCircles, double thresholdRatio, int resolution, double ratio, int searchBand,
                               int searchRadius, boolean reduce, boolean local, boolean houghSeries, boolean showCircles, boolean showID, boolean showScores, boolean results, boolean isGUI) {
 
@@ -1246,7 +1268,6 @@ public class Hough_Circle extends SwingWorker<Integer, String> {
 
     /**
      * Search for a fixed number of circles.
-     *
      */
     private void getCenterPoints() {
 

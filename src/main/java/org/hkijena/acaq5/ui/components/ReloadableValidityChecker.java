@@ -7,16 +7,27 @@ import org.hkijena.acaq5.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Panel that encapsulates a {@link ACAQValidityReportUI} and an {@link ACAQValidatable}.
+ * Allows users to reevaluate the {@link ACAQValidatable}
+ */
 public class ReloadableValidityChecker extends JPanel {
     private ACAQValidatable validatable;
     private MarkdownDocument helpDocument;
     private ACAQValidityReportUI reportUI;
     private ACAQValidityReport report = new ACAQValidityReport();
 
+    /**
+     * @param validatable the validated object
+     */
     public ReloadableValidityChecker(ACAQValidatable validatable) {
         this(validatable, null);
     }
 
+    /**
+     * @param validatable  the validated object
+     * @param helpDocument custom documentation. Can be null
+     */
     public ReloadableValidityChecker(ACAQValidatable validatable, MarkdownDocument helpDocument) {
         this.validatable = validatable;
         this.helpDocument = helpDocument;
@@ -40,6 +51,9 @@ public class ReloadableValidityChecker extends JPanel {
         add(toolBar, BorderLayout.NORTH);
     }
 
+    /**
+     * Revalidates the object
+     */
     public void recheckValidity() {
         report.clear();
         validatable.reportValidity(report);

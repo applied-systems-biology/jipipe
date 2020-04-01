@@ -15,7 +15,7 @@ public @interface RemovesTrait {
     /**
      * The removed trait of same or specialized type
      *
-     * @return
+     * @return trait type
      */
     String value();
 }

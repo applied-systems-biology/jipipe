@@ -28,6 +28,7 @@ public class ACAQFileAnnotationGenerator extends ACAQIteratingAlgorithm {
 
     /**
      * New instance
+     *
      * @param declaration Algorithm declaration
      */
     public ACAQFileAnnotationGenerator(ACAQAlgorithmDeclaration declaration) {
@@ -37,6 +38,7 @@ public class ACAQFileAnnotationGenerator extends ACAQIteratingAlgorithm {
 
     /**
      * Copies the algorithm
+     *
      * @param other Original algorithm
      */
     public ACAQFileAnnotationGenerator(ACAQFileAnnotationGenerator other) {
@@ -80,6 +82,7 @@ public class ACAQFileAnnotationGenerator extends ACAQIteratingAlgorithm {
 
     /**
      * Sets generated annotation type
+     *
      * @param generatedAnnotation Annotation type
      */
     @ACAQParameter("generated-annotation")

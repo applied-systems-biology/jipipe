@@ -213,6 +213,7 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
 
     /**
      * Compares two plugins and sorts them by priority
+     *
      * @param p0 Plugin
      * @param p1 Plugin
      * @return Comparator result

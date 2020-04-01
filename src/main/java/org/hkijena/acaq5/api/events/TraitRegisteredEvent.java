@@ -8,6 +8,9 @@ import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 public class TraitRegisteredEvent {
     private ACAQTraitDeclaration traitDeclaration;
 
+    /**
+     * @param traitDeclaration the registered trait type
+     */
     public TraitRegisteredEvent(ACAQTraitDeclaration traitDeclaration) {
         this.traitDeclaration = traitDeclaration;
     }

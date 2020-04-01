@@ -13,6 +13,9 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleMaskData;
 
+/**
+ * Applies distance transform watershed
+ */
 @ACAQDocumentation(name = "Watershed enhancer")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
 
@@ -32,10 +35,18 @@ public class WatershedMaskEnhancer extends ACAQIteratingAlgorithm {
 
     private int erosionIterations = 0;
 
+    /**
+     * @param declaration algorithm declaration
+     */
     public WatershedMaskEnhancer(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
     }
 
+    /**
+     * Copies the algorithm
+     *
+     * @param other the original
+     */
     public WatershedMaskEnhancer(WatershedMaskEnhancer other) {
         super(other);
         this.erosionIterations = other.erosionIterations;

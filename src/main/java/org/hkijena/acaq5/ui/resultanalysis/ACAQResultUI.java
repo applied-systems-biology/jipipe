@@ -28,7 +28,7 @@ public class ACAQResultUI extends ACAQProjectUIPanel {
 
     /**
      * @param workbenchUI the workbench
-     * @param run the finished run
+     * @param run         the finished run
      */
     public ACAQResultUI(ACAQProjectUI workbenchUI, ACAQRun run) {
         super(workbenchUI);

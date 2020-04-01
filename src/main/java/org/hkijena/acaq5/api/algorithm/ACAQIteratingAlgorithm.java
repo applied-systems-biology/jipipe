@@ -14,8 +14,9 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
 
     /**
      * Creates a new instance
-     * @param declaration Algorithm declaration
-     * @param slotConfiguration Slot configuration override
+     *
+     * @param declaration        Algorithm declaration
+     * @param slotConfiguration  Slot configuration override
      * @param traitConfiguration Trait configuration override
      */
     public ACAQIteratingAlgorithm(ACAQAlgorithmDeclaration declaration, ACAQSlotConfiguration slotConfiguration, ACAQTraitConfiguration traitConfiguration) {
@@ -24,7 +25,8 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
 
     /**
      * Creates a new instance
-     * @param declaration Algorithm declaration
+     *
+     * @param declaration       Algorithm declaration
      * @param slotConfiguration Slot configuration override
      */
     public ACAQIteratingAlgorithm(ACAQAlgorithmDeclaration declaration, ACAQSlotConfiguration slotConfiguration) {
@@ -33,6 +35,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
 
     /**
      * Creates a new instance
+     *
      * @param declaration Algorithm declaration
      */
     public ACAQIteratingAlgorithm(ACAQAlgorithmDeclaration declaration) {
@@ -41,6 +44,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
 
     /**
      * Copies the algorithm
+     *
      * @param other The original
      */
     public ACAQIteratingAlgorithm(ACAQIteratingAlgorithm other) {

@@ -14,8 +14,8 @@ public class DefaultAlgorithmInputSlot implements AlgorithmInputSlot {
     private boolean mAutoCreate;
 
     /**
-     * @param mValue the value
-     * @param mSlotName the slot name
+     * @param mValue      the value
+     * @param mSlotName   the slot name
      * @param mAutoCreate if the slot should be automatically created
      */
     public DefaultAlgorithmInputSlot(Class<? extends ACAQData> mValue, String mSlotName, boolean mAutoCreate) {

@@ -37,6 +37,7 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
 
     /**
      * Creates a new instance
+     *
      * @param algorithm The algorithm
      */
     public ACAQDefaultMutableTraitConfiguration(ACAQAlgorithm algorithm) {
@@ -118,6 +119,7 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
 
     /**
      * Enable to transfer traits automatically from all input slots to all output slots
+     *
      * @param transferAllToAll Enabled
      */
     public void setTransferAllToAll(boolean transferAllToAll) {
@@ -142,6 +144,7 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
 
     /**
      * Loads from JSON
+     *
      * @param jsonNode JSON data
      */
     public void fromJson(JsonNode jsonNode) {
@@ -180,6 +183,7 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
 
     /**
      * Returns a mutable slot configuration
+     *
      * @param slotName Slot name
      * @return Slot configuration
      */
@@ -199,6 +203,7 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
 
     /**
      * Seals/unseals trait modifications
+     *
      * @param traitModificationsSealed seal/unseal modfications
      */
     public void setTraitModificationsSealed(boolean traitModificationsSealed) {
@@ -225,6 +230,7 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
 
     /**
      * Seals/unseals trait transfers
+     *
      * @param traitTransfersSealed If sealed or unsealed
      */
     public void setTraitTransfersSealed(boolean traitTransfersSealed) {
@@ -254,6 +260,7 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
 
     /**
      * Sets the modification tasks
+     *
      * @param slotTraitModificationTasks List of modification tasks
      */
     public void setMutableSlotTraitModificationTasks(Map<String, ACAQDataSlotTraitConfiguration> slotTraitModificationTasks) {
@@ -270,6 +277,7 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
 
     /**
      * Sets modification tasks
+     *
      * @param globalTraitModificationTasks Modification tasks
      */
     public void setMutableGlobalTraitModificationTasks(ACAQDataSlotTraitConfiguration globalTraitModificationTasks) {

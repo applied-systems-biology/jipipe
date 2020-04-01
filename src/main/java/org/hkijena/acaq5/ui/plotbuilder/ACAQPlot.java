@@ -3,7 +3,7 @@
  * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
  * https://www.leibniz-hki.de/en/applied-systems-biology.html
  * HKI-Center for Systems Biology of Infection
- * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Insitute (HKI)
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
  * This code is licensed under BSD 2-Clause
@@ -32,6 +32,7 @@ public abstract class ACAQPlot {
 
     /**
      * Creates a new instance
+     *
      * @param seriesDataList List of data series
      */
     protected ACAQPlot(List<ACAQPlotSeriesData> seriesDataList) {
@@ -67,6 +68,7 @@ public abstract class ACAQPlot {
 
     /**
      * Removes the series
+     *
      * @param series The removed series
      */
     public void removeSeries(ACAQPlotSeries series) {
@@ -80,6 +82,7 @@ public abstract class ACAQPlot {
     /**
      * Moves the series up in order.
      * Silently fails if the index is already 0
+     *
      * @param series The series
      */
     public void moveSeriesUp(ACAQPlotSeries series) {
@@ -95,6 +98,7 @@ public abstract class ACAQPlot {
     /**
      * Moves the series down in order.
      * Silently fails if the index is already maximum.
+     *
      * @param series The series
      */
     public void moveSeriesDown(ACAQPlotSeries series) {
@@ -109,6 +113,7 @@ public abstract class ACAQPlot {
 
     /**
      * Triggered when a series' data is changed
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -142,6 +147,7 @@ public abstract class ACAQPlot {
 
     /**
      * Sets the plot title
+     *
      * @param title The title
      */
     public void setTitle(String title) {

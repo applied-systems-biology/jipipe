@@ -69,6 +69,7 @@ public class ACAQRunExecuterUI extends JPanel {
 
     /**
      * Triggered when a scheduled worker is finished
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -81,6 +82,7 @@ public class ACAQRunExecuterUI extends JPanel {
 
     /**
      * Triggered when a schedules worker is interrupted
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -93,6 +95,7 @@ public class ACAQRunExecuterUI extends JPanel {
 
     /**
      * Triggered when a worker reports progress
+     *
      * @param event Generated event
      */
     @Subscribe

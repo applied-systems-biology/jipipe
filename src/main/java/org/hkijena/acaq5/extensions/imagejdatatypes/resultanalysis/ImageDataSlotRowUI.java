@@ -12,8 +12,16 @@ import org.hkijena.acaq5.utils.UIUtils;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+/**
+ * Result UI for {@link ImagePlus} data
+ */
 public class ImageDataSlotRowUI extends ACAQDefaultResultDataSlotRowUI {
 
+    /**
+     * @param workbenchUI the workbench
+     * @param slot        the data slot
+     * @param row         the data row
+     */
     public ImageDataSlotRowUI(ACAQProjectUI workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
         super(workbenchUI, slot, row);
     }

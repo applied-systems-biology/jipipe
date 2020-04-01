@@ -10,6 +10,9 @@ import javax.swing.*;
 public class ImageJDatatypeImporterUI extends JPanel {
     private ImageJDatatypeImporter importer;
 
+    /**
+     * @param importer the importer
+     */
     public ImageJDatatypeImporterUI(ImageJDatatypeImporter importer) {
         this.importer = importer;
     }

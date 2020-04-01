@@ -20,7 +20,7 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.Image
  * Applies Bright spots segmentation
  */
 @ACAQDocumentation(name = "Bright spots segmentation")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmentation)
 
 // Algorithm flow
 @AlgorithmInputSlot(value = ImagePlus2DGreyscaleData.class, slotName = "Image", autoCreate = true)
@@ -49,6 +49,7 @@ public class BrightSpotsSegmenter extends ACAQIteratingAlgorithm {
 
     /**
      * Copies the algorithm
+     *
      * @param other the original
      */
     public BrightSpotsSegmenter(BrightSpotsSegmenter other) {

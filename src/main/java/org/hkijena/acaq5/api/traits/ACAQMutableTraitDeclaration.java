@@ -36,6 +36,7 @@ public abstract class ACAQMutableTraitDeclaration implements ACAQTraitDeclaratio
 
     /**
      * Sets the ID
+     *
      * @param id The ID
      */
     @JsonSetter("id")
@@ -52,6 +53,7 @@ public abstract class ACAQMutableTraitDeclaration implements ACAQTraitDeclaratio
 
     /**
      * Sets the trait class
+     *
      * @param traitClass The trait class
      */
     public void setTraitClass(Class<? extends ACAQTrait> traitClass) {
@@ -65,6 +67,7 @@ public abstract class ACAQMutableTraitDeclaration implements ACAQTraitDeclaratio
 
     /**
      * Sets if the declaration is a discriminator
+     *
      * @param discriminator Sets if the declaration is a discriminator
      */
     public void setDiscriminator(boolean discriminator) {
@@ -81,6 +84,7 @@ public abstract class ACAQMutableTraitDeclaration implements ACAQTraitDeclaratio
 
     /**
      * Sets the name
+     *
      * @param name The name
      */
     @JsonSetter("name")
@@ -100,6 +104,7 @@ public abstract class ACAQMutableTraitDeclaration implements ACAQTraitDeclaratio
 
     /**
      * Sets the description
+     *
      * @param description The description
      */
     @JsonSetter("description")
@@ -116,6 +121,7 @@ public abstract class ACAQMutableTraitDeclaration implements ACAQTraitDeclaratio
 
     /**
      * Sets the inherited
+     *
      * @param inherited The inherited traits
      */
     public void setInherited(Set<ACAQTraitDeclaration> inherited) {
@@ -132,6 +138,7 @@ public abstract class ACAQMutableTraitDeclaration implements ACAQTraitDeclaratio
 
     /**
      * Sets if the trait should be hidden from the user
+     *
      * @param hidden Sets if the trait should be hidden from the user
      */
     @JsonSetter("hidden")

@@ -72,6 +72,7 @@ public class ACAQProject implements ACAQValidatable {
 
     /**
      * Saves the project
+     *
      * @param fileName Target file
      * @throws IOException Triggered by {@link ObjectMapper}
      */
@@ -89,6 +90,7 @@ public class ACAQProject implements ACAQValidatable {
 
     /**
      * Adds anew project compartment
+     *
      * @param name Unique compartment ID
      * @return The compartment
      */
@@ -102,6 +104,7 @@ public class ACAQProject implements ACAQValidatable {
 
     /**
      * Connects two compartments
+     *
      * @param source Source compartment
      * @param target Target compartment
      */
@@ -164,6 +167,7 @@ public class ACAQProject implements ACAQValidatable {
 
     /**
      * Triggered when the compartment graph is changed
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -194,6 +198,7 @@ public class ACAQProject implements ACAQValidatable {
 
     /**
      * Removes a compartment
+     *
      * @param compartment The compartment
      */
     public void removeCompartment(ACAQProjectCompartment compartment) {
@@ -245,6 +250,7 @@ public class ACAQProject implements ACAQValidatable {
 
     /**
      * Loads a project from a file
+     *
      * @param fileName JSON file
      * @return Loaded project
      * @throws IOException Triggered by {@link ObjectMapper}
@@ -255,6 +261,7 @@ public class ACAQProject implements ACAQValidatable {
 
     /**
      * Loads a project from JSON data
+     *
      * @param node JSON data
      * @return Loaded project
      * @throws IOException Triggered by {@link ObjectMapper}
@@ -266,6 +273,7 @@ public class ACAQProject implements ACAQValidatable {
     /**
      * Deserializes the set of project dependencies from JSON.
      * Does not require the dependencies to be actually registered.
+     *
      * @param node JSON node
      * @return The dependencies as {@link org.hkijena.acaq5.ACAQMutableDependency}
      */

@@ -19,8 +19,11 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.Image
 
 import java.util.Vector;
 
+/**
+ * Segments using a Hessian
+ */
 @ACAQDocumentation(name = "Hessian segmenter")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmenter)
+@AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmentation)
 
 // Algorithm flow
 @AlgorithmInputSlot(value = ImagePlus2DGreyscaleData.class, slotName = "Image", autoCreate = true)
@@ -34,10 +37,18 @@ public class HessianSegmenter extends ACAQIteratingAlgorithm {
     private double gradientRadius = 1;
     private AutoThresholdSegmenter autoThresholdSegmenter = new AutoThresholdSegmenter(new ACAQEmptyAlgorithmDeclaration());
 
+    /**
+     * @param declaration the algorithm declaration
+     */
     public HessianSegmenter(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
     }
 
+    /**
+     * Copies the algorithm
+     *
+     * @param other the original
+     */
     public HessianSegmenter(HessianSegmenter other) {
         super(other);
         this.smoothing = other.smoothing;

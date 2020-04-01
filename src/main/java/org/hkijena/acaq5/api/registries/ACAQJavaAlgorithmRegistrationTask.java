@@ -21,9 +21,10 @@ public class ACAQJavaAlgorithmRegistrationTask extends ACAQDefaultAlgorithmRegis
 
     /**
      * Creates a new registration task
-     * @param id The id
+     *
+     * @param id             The id
      * @param algorithmClass The algorithm class
-     * @param source The dependency the registers the algorithm
+     * @param source         The dependency the registers the algorithm
      */
     public ACAQJavaAlgorithmRegistrationTask(String id, Class<? extends ACAQAlgorithm> algorithmClass, ACAQDependency source) {
         this.source = source;

@@ -13,7 +13,13 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface FilePathParameterSettings {
+    /**
+     * @return If the path is an input or an output
+     */
     FileSelection.IOMode ioMode();
 
+    /**
+     * @return If the path should be a file, directory or anything
+     */
     FileSelection.PathMode pathMode();
 }

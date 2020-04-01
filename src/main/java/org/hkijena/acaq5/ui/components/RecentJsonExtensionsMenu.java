@@ -8,10 +8,18 @@ import org.hkijena.acaq5.ui.settings.ACAQApplicationSettings;
 import javax.swing.*;
 import java.nio.file.Path;
 
+/**
+ * Menu that displays recently opened {@link org.hkijena.acaq5.ACAQJsonExtension}
+ */
 public class RecentJsonExtensionsMenu extends JMenu {
 
     private ACAQJsonExtensionWindow workbenchWindow;
 
+    /**
+     * @param text            item text
+     * @param icon            item icon
+     * @param workbenchWindow the workbench
+     */
     public RecentJsonExtensionsMenu(String text, Icon icon, ACAQJsonExtensionWindow workbenchWindow) {
         super(text);
         this.setIcon(icon);
@@ -39,6 +47,11 @@ public class RecentJsonExtensionsMenu extends JMenu {
         workbenchWindow.openProject(path);
     }
 
+    /**
+     * Triggered when the list should be changed
+     *
+     * @param event generated event
+     */
     @Subscribe
     public void onApplicationSettingsChanged(ParameterChangedEvent event) {
         if ("recent-json-extensions".equals(event.getKey())) {

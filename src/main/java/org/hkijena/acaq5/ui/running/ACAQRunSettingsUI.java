@@ -139,6 +139,7 @@ public class ACAQRunSettingsUI extends ACAQProjectUIPanel {
 
     /**
      * Triggered when the run is finished
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -149,6 +150,7 @@ public class ACAQRunSettingsUI extends ACAQProjectUIPanel {
 
     /**
      * Triggered when the run is interrupted
+     *
      * @param event Generated event
      */
     @Subscribe

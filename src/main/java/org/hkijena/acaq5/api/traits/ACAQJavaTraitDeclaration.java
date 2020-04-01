@@ -17,7 +17,8 @@ public class ACAQJavaTraitDeclaration extends ACAQMutableTraitDeclaration {
 
     /**
      * Creates a new instance
-     * @param id The trait id
+     *
+     * @param id    The trait id
      * @param klass The trait class
      */
     public ACAQJavaTraitDeclaration(String id, Class<? extends ACAQTrait> klass) {

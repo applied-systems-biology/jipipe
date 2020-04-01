@@ -11,7 +11,8 @@ public class ACAQDefaultDocumentation implements ACAQDocumentation {
 
     /**
      * Creates a new instance
-     * @param name The name
+     *
+     * @param name        The name
      * @param description The description
      */
     public ACAQDefaultDocumentation(String name, String description) {

@@ -3,7 +3,7 @@
  * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
  * https://www.leibniz-hki.de/en/applied-systems-biology.html
  * HKI-Center for Systems Biology of Infection
- * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Insitute (HKI)
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
  * This code is licensed under BSD 2-Clause
@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * {@link JTabbedPane} with larger tabs, ability to close tabs, singleton tabs that are hidden instead of being closed
+ */
 public class DocumentTabPane extends JTabbedPane {
 
     private List<DocumentTab> tabs = new ArrayList<>();
@@ -31,6 +34,9 @@ public class DocumentTabPane extends JTabbedPane {
      */
     private Map<String, DocumentTab> singletonTabs = new HashMap<>();
 
+    /**
+     * Creates a new instance
+     */
     public DocumentTabPane() {
         super(JTabbedPane.TOP);
         setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
@@ -41,17 +47,18 @@ public class DocumentTabPane extends JTabbedPane {
     }
 
     /**
-     * Adds a document tab
+     * Adds a new tab
      *
-     * @param title
-     * @param icon
-     * @param component
-     * @param closeMode
-     * @return The tab component
+     * @param title       The tab title
+     * @param icon        The tab icon
+     * @param component   The tab content
+     * @param closeMode   Behavior of the close button
+     * @param allowRename if true, users can rename the tab
+     * @return The tab
      */
     public DocumentTab addTab(String title, Icon icon, Component component, CloseMode closeMode, boolean allowRename) {
 
-        title = StringUtils.makeUniqueString(title, " ", tabs.stream().map(documentTab -> documentTab.getTitle()).collect(Collectors.toList()));
+        title = StringUtils.makeUniqueString(title, " ", tabs.stream().map(DocumentTab::getTitle).collect(Collectors.toList()));
 
         // Create tab panel
         JPanel tabPanel = new JPanel();
@@ -119,10 +126,23 @@ public class DocumentTabPane extends JTabbedPane {
         return tab;
     }
 
+    /**
+     * Adds a new tab
+     *
+     * @param title     the tab icon
+     * @param icon      the tab icon
+     * @param component the tab content
+     * @param closeMode Behavior of the close button
+     * @return The tab
+     */
     public DocumentTab addTab(String title, Icon icon, Component component, CloseMode closeMode) {
         return addTab(title, icon, component, closeMode, false);
     }
 
+    /**
+     * Switches the the last tab.
+     * Fails silently if there are no tabs
+     */
     public void switchToLastTab() {
         if (getTabCount() > 0) {
             setSelectedIndex(getTabCount() - 1);
@@ -132,9 +152,11 @@ public class DocumentTabPane extends JTabbedPane {
     /**
      * Adds a tab that can be silently closed and brought up again
      *
-     * @param title
-     * @param icon
-     * @param component
+     * @param id        Unique tab identifier
+     * @param title     Tab title
+     * @param icon      Tab icon
+     * @param component Tab content
+     * @param hidden    If the tab is hidden by default
      */
     public void addSingletonTab(String id, String title, Icon icon, Component component, boolean hidden) {
         DocumentTab tab = addTab(title, icon, component, CloseMode.withSilentCloseButton);
@@ -146,6 +168,8 @@ public class DocumentTabPane extends JTabbedPane {
 
     /**
      * Re-opens or selects a singleton tab
+     *
+     * @param id the singleton tab ID
      */
     public void selectSingletonTab(String id) {
         DocumentTab tab = singletonTabs.get(id);
@@ -167,6 +191,12 @@ public class DocumentTabPane extends JTabbedPane {
         tabs.add(tab);
     }
 
+    /**
+     * Finds the tab title for the content
+     *
+     * @param component the tab content
+     * @return the tab title. Returns "Document" if the tab could not be found
+     */
     public String findTabNameFor(Component component) {
         for (DocumentTab tab : getTabs()) {
             if (tab.getContent() == component)
@@ -175,13 +205,31 @@ public class DocumentTabPane extends JTabbedPane {
         return "Document";
     }
 
+    /**
+     * Behavior of the tab close button
+     */
     public enum CloseMode {
+        /**
+         * Close button silently closes the tab
+         */
         withSilentCloseButton,
+        /**
+         * User must confirm to close the tab
+         */
         withAskOnCloseButton,
+        /**
+         * No close button
+         */
         withoutCloseButton,
+        /**
+         * Close button is shown, but disabled
+         */
         withDisabledCloseButton
     }
 
+    /**
+     * Encapsulates a tab
+     */
     public static class DocumentTab {
         private String title;
         private Icon icon;

@@ -37,6 +37,7 @@ public class ACAQExportedCompartment {
 
     /**
      * Initializes the instance from a compartment
+     *
      * @param compartment The compartment
      */
     public ACAQExportedCompartment(ACAQProjectCompartment compartment) {
@@ -77,7 +78,8 @@ public class ACAQExportedCompartment {
 
     /**
      * Adds the compartment to a project as the specified compartment name
-     * @param project Target project
+     *
+     * @param project         Target project
      * @param compartmentName Target compartment name
      */
     public void addTo(ACAQProject project, String compartmentName) {
@@ -113,6 +115,7 @@ public class ACAQExportedCompartment {
 
     /**
      * Saves the exported compartment to JSON
+     *
      * @param fileName The JSON filename
      * @throws IOException Triggered by ObjectMapper
      */
@@ -129,6 +132,7 @@ public class ACAQExportedCompartment {
 
     /**
      * Sets the metadata
+     *
      * @param metadata The metadata
      */
     public void setMetadata(ACAQProjectMetadata metadata) {

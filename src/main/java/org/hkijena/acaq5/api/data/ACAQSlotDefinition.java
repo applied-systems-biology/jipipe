@@ -31,9 +31,9 @@ public class ACAQSlotDefinition {
     private Map<ACAQDataDeclaration, ACAQDataDeclaration> inheritanceConversions = new HashMap<>();
 
     /**
-     * @param dataClass slot data class
-     * @param slotType slot type
-     * @param name unique slot name
+     * @param dataClass     slot data class
+     * @param slotType      slot type
+     * @param name          unique slot name
      * @param inheritedSlot only relevant if output slot. Can be an input slot name or '*' to automatically select the first input slot
      */
     public ACAQSlotDefinition(Class<? extends ACAQData> dataClass, ACAQDataSlot.SlotType slotType, String name, String inheritedSlot) {
@@ -59,6 +59,7 @@ public class ACAQSlotDefinition {
 
     /**
      * Copies the definition
+     *
      * @param other The original
      */
     public ACAQSlotDefinition(ACAQSlotDefinition other) {
@@ -115,7 +116,7 @@ public class ACAQSlotDefinition {
      * This is a text replacement system with termination condition of never visiting the same time twice.
      *
      * @param definition The slot definition
-     * @param dataClass The slot data
+     * @param dataClass  The slot data
      * @return The converted data
      */
     public static Class<? extends ACAQData> applyInheritanceConversion(ACAQSlotDefinition definition, Class<? extends ACAQData> dataClass) {

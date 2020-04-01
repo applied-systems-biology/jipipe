@@ -3,7 +3,7 @@
  * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
  * https://www.leibniz-hki.de/en/applied-systems-biology.html
  * HKI-Center for Systems Biology of Infection
- * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Insitute (HKI)
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
  * This code is licensed under BSD 2-Clause
@@ -38,12 +38,19 @@ public class FileSelection extends JPanel {
     private Set<ActionListener> listeners = new HashSet<>();
     private JButton generateRandomButton;
 
+    /**
+     * Creates a new file selection that opens a file
+     */
     public FileSelection() {
         setPathMode(PathMode.FilesOnly);
         initialize();
         setIoMode(IOMode.Open);
     }
 
+    /**
+     * @param ioMode   If a path is opened or saved
+     * @param pathMode If the path is a file, directory or anything
+     */
     public FileSelection(IOMode ioMode, PathMode pathMode) {
         setPathMode(pathMode);
         initialize();
@@ -90,7 +97,7 @@ public class FileSelection extends JPanel {
             }
         });
 
-        selectButton.addActionListener(e -> selectFromFilesystem());
+        selectButton.addActionListener(e -> showFileChooser());
 
         pathEdit.getDocument().addDocumentListener(new DocumentChangeListener() {
             @Override
@@ -100,7 +107,10 @@ public class FileSelection extends JPanel {
         });
     }
 
-    public void selectFromFilesystem() {
+    /**
+     * Opens the file chooser
+     */
+    public void showFileChooser() {
         if (ioMode == IOMode.Open) {
             if (getFileChooser().showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 pathEdit.setText(getFileChooser().getSelectedFile().toString());
@@ -145,10 +155,18 @@ public class FileSelection extends JPanel {
         }
     }
 
+    /**
+     * Adds a listener for when the path property changes
+     *
+     * @param listener Listens to when a file is selected
+     */
     public void addActionListener(ActionListener listener) {
         listeners.add(listener);
     }
 
+    /**
+     * @param listener Registered listener
+     */
     public void removeActionListener(ActionListener listener) {
         listeners.remove(listener);
     }
@@ -181,11 +199,17 @@ public class FileSelection extends JPanel {
         }
     }
 
+    /**
+     * Determines if a path is opened or saved
+     */
     public enum IOMode {
         Open,
         Save
     }
 
+    /**
+     * Determines the type of selected path
+     */
     public enum PathMode {
         FilesOnly,
         DirectoriesOnly,

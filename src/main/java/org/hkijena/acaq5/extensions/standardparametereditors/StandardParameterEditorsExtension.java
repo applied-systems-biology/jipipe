@@ -14,6 +14,9 @@ import org.scijava.plugin.Plugin;
 
 import java.nio.file.Path;
 
+/**
+ * Provides some standard parameters
+ */
 @Plugin(type = ACAQJavaExtension.class)
 public class StandardParameterEditorsExtension extends ACAQPrepackagedDefaultJavaExtension {
 

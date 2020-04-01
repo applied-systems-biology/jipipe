@@ -84,6 +84,7 @@ public interface ACAQRegistry extends Service, ACAQValidatable {
 
     /**
      * Finds an extension by its ID
+     *
      * @param dependencyId The extension ID
      * @return The extension. Null if its not found.
      */

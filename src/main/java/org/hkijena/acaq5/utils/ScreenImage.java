@@ -14,49 +14,48 @@ import java.util.List;
  https://tips4java.wordpress.com/2008/10/13/screen-image/
  */
 
-/*
- *  Convenience class to create and optionally save to a file a
- *  BufferedImage of an area on the screen. Generally there are
- *  four different scenarios. Create an image of:
- *
- *  a) an entire component
- *  b) a region of the component
- *  c) the entire desktop
- *  d) a region of the desktop
- *
- *  The first two use the Swing paint() method to draw the
- *  component image to the BufferedImage. The latter two use the
- *  AWT Robot to create the BufferedImage.
- *
- *	The created image can then be saved to a file by usig the
- *  writeImage(...) method. The type of file must be supported by the
- *  ImageIO write method.
- *
- *  Although this class was originally designed to create an image of a
- *  component on the screen it can be used to create an image of components
- *  not displayed on a GUI. Behind the scenes the component will be given a
- *  size and the component will be layed out. The default size will be the
- *  preferred size of the component although you can invoke the setSize()
- *  method on the component before invoking a createImage(...) method. The
- *  default functionality should work in most cases. However the only
- *  foolproof way to get a image to is make sure the component has been
- *  added to a realized window with code something like the following:
- *
- *  JFrame frame = new JFrame();
- *  frame.setContentPane( someComponent );
- *  frame.pack();
- *  ScreenImage.createImage( someComponent );
- *
+/**
+ * Convenience class to create and optionally save to a file a
+ * BufferedImage of an area on the screen. Generally there are
+ * four different scenarios. Create an image of:
+ * <p>
+ * a) an entire component
+ * b) a region of the component
+ * c) the entire desktop
+ * d) a region of the desktop
+ * <p>
+ * The first two use the Swing paint() method to draw the
+ * component image to the BufferedImage. The latter two use the
+ * AWT Robot to create the BufferedImage.
+ * <p>
+ * The created image can then be saved to a file by usig the
+ * writeImage(...) method. The type of file must be supported by the
+ * ImageIO write method.
+ * <p>
+ * Although this class was originally designed to create an image of a
+ * component on the screen it can be used to create an image of components
+ * not displayed on a GUI. Behind the scenes the component will be given a
+ * size and the component will be layed out. The default size will be the
+ * preferred size of the component although you can invoke the setSize()
+ * method on the component before invoking a createImage(...) method. The
+ * default functionality should work in most cases. However the only
+ * foolproof way to get a image to is make sure the component has been
+ * added to a realized window with code something like the following:
+ * <p>
+ * JFrame frame = new JFrame();
+ * frame.setContentPane( someComponent );
+ * frame.pack();
+ * ScreenImage.createImage( someComponent );
  */
 public class ScreenImage {
     private static List<String> types = Arrays.asList(ImageIO.getWriterFileSuffixes());
 
-    /*
-     *  Create a BufferedImage for Swing components.
-     *  The entire component will be captured to an image.
+    /**
+     * Create a BufferedImage for Swing components.
+     * The entire component will be captured to an image.
      *
-     *  @param  component Swing component to create image from
-     *  @return	image the image for the given region
+     * @param component Swing component to create image from
+     * @return image the image for the given region
      */
     public static BufferedImage createImage(JComponent component) {
         Dimension d = component.getSize();
@@ -70,13 +69,13 @@ public class ScreenImage {
         return ScreenImage.createImage(component, region);
     }
 
-    /*
-     *  Create a BufferedImage for Swing components.
-     *  All or part of the component can be captured to an image.
+    /**
+     * Create a BufferedImage for Swing components.
+     * All or part of the component can be captured to an image.
      *
-     *  @param  component Swing component to create image from
-     *  @param  region The region of the component to be captured to an image
-     *  @return	image the image for the given region
+     * @param component Swing component to create image from
+     * @param region    The region of the component to be captured to an image
+     * @return image the image for the given region
      */
     public static BufferedImage createImage(JComponent component, Rectangle region) {
         //  Make sure the component has a size and has been layed out.
@@ -124,14 +123,14 @@ public class ScreenImage {
         return ScreenImage.createImage(region);
     }
 
-    /*
-     *  Create a BufferedImage for AWT components.
-     *  This will include Swing components JFrame, JDialog and JWindow
-     *  which all extend from Component, not JComponent.
+    /**
+     * Create a BufferedImage for AWT components.
+     * This will include Swing components JFrame, JDialog and JWindow
+     * which all extend from Component, not JComponent.
      *
-     *  @param  component AWT component to create image from
-     *  @return	image the image for the given region
-     *  @exception AWTException see Robot class constructors
+     * @param component AWT component to create image from
+     * @throws AWTException see Robot class constructors
+     * @return image the image for the given region
      */
     public static BufferedImage createImage(Component component)
             throws AWTException {

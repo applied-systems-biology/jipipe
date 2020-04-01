@@ -37,6 +37,7 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
 
     /**
      * Copies the parameters from the original
+     *
      * @param other The original
      */
     public ACAQDynamicParameterHolder(ACAQDynamicParameterHolder other) {
@@ -65,7 +66,8 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
 
     /**
      * Adds a new parameter
-     * @param key A unique key
+     *
+     * @param key        A unique key
      * @param fieldClass The parameter class
      * @return The created parameter access
      */
@@ -81,6 +83,7 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
 
     /**
      * Removes a parameter
+     *
      * @param key The parameter key
      */
     public void removeParameter(String key) {
@@ -89,6 +92,7 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
 
     /**
      * Gets a parameter by its key
+     *
      * @param key The parameter key
      * @return The parameter access
      */
@@ -98,6 +102,7 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
 
     /**
      * Gets a parameter value
+     *
      * @param key The parameter key
      * @param <T> The parameter type
      * @return The parameter value
@@ -108,9 +113,10 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
 
     /**
      * Sets a parameter value
-     * @param key The parameter key
+     *
+     * @param key   The parameter key
      * @param value The parameter value
-     * @param <T> The parameter type
+     * @param <T>   The parameter type
      * @return True if setting the value was successful
      */
     public <T> boolean setValue(String key, T value) {
@@ -126,6 +132,7 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
 
     /**
      * Sets allowed parameter types
+     *
      * @param allowedTypes Parameter types
      */
     public void setAllowedTypes(Set<Class<?>> allowedTypes) {
@@ -148,6 +155,7 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
 
     /**
      * Loads the holder from JSON
+     *
      * @param node JSON data
      */
     public void fromJson(JsonNode node) {
@@ -174,6 +182,7 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
 
     /**
      * Enabled/disables if modification is allowed
+     *
      * @param allowModification True if modification is allowed
      */
     public void setAllowModification(boolean allowModification) {

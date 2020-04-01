@@ -52,7 +52,8 @@ public class ACAQAlgorithmUI extends JPanel {
 
     /**
      * Creates a new UI
-     * @param graphUI The graph UI that contains this UI
+     *
+     * @param graphUI   The graph UI that contains this UI
      * @param algorithm The algorithm
      */
     public ACAQAlgorithmUI(ACAQAlgorithmGraphCanvasUI graphUI, ACAQAlgorithm algorithm) {
@@ -441,6 +442,7 @@ public class ACAQAlgorithmUI extends JPanel {
     /**
      * Should be triggered when the algorithm's slots are changed.
      * Triggers slot UI updates
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -450,6 +452,7 @@ public class ACAQAlgorithmUI extends JPanel {
 
     /**
      * Should be triggered when the algorithm's slot traits are changed
+     *
      * @param event The generated event
      */
     @Subscribe
@@ -461,6 +464,7 @@ public class ACAQAlgorithmUI extends JPanel {
 
     /**
      * Should be triggered when an algorithm's name parameter is changed
+     *
      * @param event The generated event
      */
     @Subscribe
@@ -494,6 +498,7 @@ public class ACAQAlgorithmUI extends JPanel {
 
     /**
      * Returns if the selected-flag was set. This does not mean that the algorithm is actually selected in the graph UI
+     *
      * @return True if this algorithm is selected.
      */
     public boolean isSelected() {
@@ -503,6 +508,7 @@ public class ACAQAlgorithmUI extends JPanel {
     /**
      * Sets the selected-flag and updates the UI
      * This does not select the algorithm the graph UI
+     *
      * @param selected if the algorithm is selected
      */
     public void setSelected(boolean selected) {

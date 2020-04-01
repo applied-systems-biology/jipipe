@@ -3,7 +3,7 @@
  * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
  * https://www.leibniz-hki.de/en/applied-systems-biology.html
  * HKI-Center for Systems Biology of Infection
- * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Insitute (HKI)
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
  * This code is licensed under BSD 2-Clause
@@ -19,10 +19,17 @@ import org.jfree.data.general.DefaultPieDataset;
 
 import java.util.List;
 
+/**
+ * Base class for pie plots
+ * Expects data "Category" (String) and "Amount" (Numeric)
+ */
 public abstract class PiePlot extends ACAQPlot {
 
     private DefaultPieDataset dataset = new DefaultPieDataset();
 
+    /**
+     * @param seriesDataList the data
+     */
     public PiePlot(List<ACAQPlotSeriesData> seriesDataList) {
         super(seriesDataList);
         addSeries();
@@ -52,6 +59,9 @@ public abstract class PiePlot extends ACAQPlot {
         return dataset;
     }
 
+    /**
+     * Updates the data set
+     */
     protected void updateDataset() {
         dataset.clear();
         ACAQPlotSeries series = getSeries().get(0);
@@ -67,6 +77,12 @@ public abstract class PiePlot extends ACAQPlot {
         }
     }
 
+    /**
+     * Creates the plot
+     *
+     * @param dataset the dataset
+     * @return the plot
+     */
     protected abstract JFreeChart createPlotFromDataset(DefaultPieDataset dataset);
 
     @Override

@@ -64,6 +64,7 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
 
     /**
      * Sets metadata
+     *
      * @param metadata Metadata
      */
     @JsonSetter("metadata")
@@ -87,6 +88,7 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
 
     /**
      * Sets the ID
+     *
      * @param id ID
      */
     @JsonSetter("id")
@@ -110,6 +112,7 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
 
     /**
      * Sets the version
+     *
      * @param version Version
      */
     @JsonSetter("version")
@@ -161,6 +164,7 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
 
     /**
      * Sets the registry instance
+     *
      * @param registry The registry
      */
     public void setRegistry(ACAQDefaultRegistry registry) {
@@ -183,6 +187,7 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
 
     /**
      * Saves the extension
+     *
      * @param savePath The save path
      * @throws IOException Triggered by {@link com.fasterxml.jackson.databind.ObjectMapper}
      */
@@ -193,6 +198,7 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
 
     /**
      * Adds a new algorithm of specified type
+     *
      * @param algorithmDeclaration The algorithm type
      */
     public void addAlgorithm(GraphWrapperAlgorithmDeclaration algorithmDeclaration) {
@@ -202,6 +208,7 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
 
     /**
      * Adds a new trait fo specified type
+     *
      * @param traitDeclaration The trait type
      */
     public void addTrait(ACAQJsonTraitDeclaration traitDeclaration) {
@@ -219,6 +226,7 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
 
     /**
      * Sets algorithm declarations
+     *
      * @param algorithmDeclarations Declarations
      */
     @JsonSetter("algorithms")
@@ -228,6 +236,7 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
 
     /**
      * Gets trait types
+     *
      * @return Trait types
      */
     @JsonGetter("annotations")
@@ -237,6 +246,7 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
 
     /**
      * Sets trait types
+     *
      * @param traitDeclarations Trait types
      */
     @JsonSetter("annotations")
@@ -289,6 +299,7 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
 
     /**
      * Removes an algorithm
+     *
      * @param declaration Algorithm type
      */
     public void removeAlgorithm(GraphWrapperAlgorithmDeclaration declaration) {
@@ -299,6 +310,7 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
 
     /**
      * Removes a trait type
+     *
      * @param declaration Trait type
      */
     public void removeAnnotation(ACAQJsonTraitDeclaration declaration) {
@@ -309,6 +321,7 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
 
     /**
      * Loads a {@link ACAQJsonExtension} from JSON
+     *
      * @param jsonData JSON data
      * @return Loaded instance
      */

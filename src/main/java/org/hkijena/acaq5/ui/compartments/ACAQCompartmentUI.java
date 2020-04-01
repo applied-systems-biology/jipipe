@@ -18,6 +18,7 @@ public class ACAQCompartmentUI extends ACAQProjectUIPanel {
 
     /**
      * Creates a new editor
+     *
      * @param workbenchUI the workbench UI
      * @param compartment the compartment
      */

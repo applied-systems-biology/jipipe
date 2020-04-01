@@ -122,8 +122,8 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
     }
 
     @Override
-    public void connect(ACAQDataSlot source, ACAQDataSlot target, boolean userDisconnectable) {
-        super.connect(source, target, userDisconnectable);
+    public void connect(ACAQDataSlot source, ACAQDataSlot target, boolean userCanDisconnect) {
+        super.connect(source, target, userCanDisconnect);
         updateInheritances();
 
         // Helper functions to find IDs
@@ -187,6 +187,7 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
 
     /**
      * Triggered when a trait was added to the extension
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -200,6 +201,7 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
 
     /**
      * Triggered when a trait was removed from the extension
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -215,6 +217,7 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
 
     /**
      * Triggered when a trait ID was changed
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -228,6 +231,7 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
 
     /**
      * Contains true if the graph contains the trait
+     *
      * @param declaration trait type
      * @return if the graph contains the trait
      */
@@ -237,6 +241,7 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
 
     /**
      * Adds an external trait into the graph
+     *
      * @param declaration External trait declaration
      * @return node representing the trait
      */
@@ -250,6 +255,7 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
 
     /**
      * Gets the node for the trait declaration
+     *
      * @param declaration Trait declaration
      * @return node representing the trait
      */

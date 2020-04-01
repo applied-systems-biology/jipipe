@@ -63,7 +63,7 @@ public interface ACAQTrait {
     /**
      * Faster method to compare traits
      *
-     * @param first first trait
+     * @param first  first trait
      * @param second second trait
      * @return if traits are equivalent
      */

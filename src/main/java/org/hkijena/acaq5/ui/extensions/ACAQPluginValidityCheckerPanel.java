@@ -21,6 +21,7 @@ public class ACAQPluginValidityCheckerPanel extends ReloadableValidityChecker {
 
     /**
      * Triggered when a new extension is registered
+     *
      * @param event Generated event
      */
     @Subscribe

@@ -11,8 +11,15 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
 
+/**
+ * Editor for {@link PathFilter}
+ */
 public class PathFilterParameterEditorUI extends ACAQParameterEditorUI {
 
+    /**
+     * @param context         SciJava context
+     * @param parameterAccess the parameter
+     */
     public PathFilterParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
         super(context, parameterAccess);
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));

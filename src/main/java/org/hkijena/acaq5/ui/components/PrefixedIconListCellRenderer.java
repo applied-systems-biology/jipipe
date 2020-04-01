@@ -5,10 +5,16 @@ import org.hkijena.acaq5.utils.ResourceUtils;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Renders entries in {@link ACAQIconPickerDialog}
+ */
 public class PrefixedIconListCellRenderer extends JLabel implements ListCellRenderer<String> {
 
     private String prefix;
 
+    /**
+     * @param prefix the resource prefix to prepend to the icon names
+     */
     public PrefixedIconListCellRenderer(String prefix) {
         this.prefix = prefix;
         setOpaque(true);

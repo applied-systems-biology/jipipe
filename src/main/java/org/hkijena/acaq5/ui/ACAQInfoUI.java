@@ -12,6 +12,7 @@ public class ACAQInfoUI extends ACAQProjectUIPanel {
 
     /**
      * Creates a new instance
+     *
      * @param workbenchUI The workbench UI
      */
     public ACAQInfoUI(ACAQProjectUI workbenchUI) {

@@ -3,7 +3,7 @@
  * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
  * https://www.leibniz-hki.de/en/applied-systems-biology.html
  * HKI-Center for Systems Biology of Infection
- * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Insitute (HKI)
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
  * This code is licensed under BSD 2-Clause
@@ -48,7 +48,7 @@ public class ACAQTableAnalyzerUI extends ACAQProjectUIPanel {
     private JPopupMenu convertSelectedCellsMenu;
 
     /**
-     * @param workbench the workbench
+     * @param workbench  the workbench
      * @param tableModel the table
      */
     public ACAQTableAnalyzerUI(ACAQProjectUI workbench, DefaultTableModel tableModel) {
@@ -657,7 +657,8 @@ public class ACAQTableAnalyzerUI extends ACAQProjectUIPanel {
 
     /**
      * Imports a table from CSV and creates a new {@link ACAQTableAnalyzerUI} tab
-     * @param fileName CSV file
+     *
+     * @param fileName    CSV file
      * @param workbenchUI workbench
      */
     public static void importTableFromCSV(Path fileName, ACAQProjectUI workbenchUI) {

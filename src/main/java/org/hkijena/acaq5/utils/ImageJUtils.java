@@ -8,11 +8,22 @@ import ij.plugin.PlugIn;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+/**
+ * Utility functions for ImageJ
+ */
 public class ImageJUtils {
     private ImageJUtils() {
 
     }
 
+    /**
+     * Runs a command on an ImageJ image
+     *
+     * @param img        the image
+     * @param command    the command
+     * @param parameters command parameters
+     * @return Result image
+     */
     public static ImagePlus runOnImage(ImagePlus img, String command, Object... parameters) {
         String params = toParameterString(parameters);
         WindowManager.setTempCurrentImage(img);
@@ -21,6 +32,14 @@ public class ImageJUtils {
         return img;
     }
 
+    /**
+     * Runs a command on a copy of an ImageJ image
+     *
+     * @param img        the image
+     * @param command    the command
+     * @param parameters the command parameters
+     * @return Result image
+     */
     public static ImagePlus runOnNewImage(ImagePlus img, String command, Object... parameters) {
         ImagePlus copy = img.duplicate();
         String params = toParameterString(parameters);
@@ -30,6 +49,14 @@ public class ImageJUtils {
         return copy;
     }
 
+    /**
+     * Runs a command on a copy of an ImageJ image
+     *
+     * @param img        the image
+     * @param plugin     the command
+     * @param parameters the command parameters
+     * @return Result image
+     */
     public static ImagePlus runOnImage(ImagePlus img, PlugIn plugin, Object... parameters) {
         String params = toParameterString(parameters);
         WindowManager.setTempCurrentImage(img);
@@ -38,6 +65,14 @@ public class ImageJUtils {
         return img;
     }
 
+    /**
+     * Runs a command on a copy of an ImageJ image
+     *
+     * @param img        the image
+     * @param plugin     the command
+     * @param parameters the command parameters
+     * @return Result image
+     */
     public static ImagePlus runOnNewImage(ImagePlus img, PlugIn plugin, Object... parameters) {
         ImagePlus copy = img.duplicate();
         String params = toParameterString(parameters);
@@ -47,6 +82,12 @@ public class ImageJUtils {
         return copy;
     }
 
+    /**
+     * Converts a list of parameters into a space-delimited
+     *
+     * @param parameters the parameters
+     * @return Joined string
+     */
     public static String toParameterString(Object... parameters) {
         return Arrays.stream(parameters).map(Object::toString).collect(Collectors.joining(" "));
     }

@@ -49,6 +49,7 @@ public class ACAQTestbenchSnapshot {
 
     /**
      * Restores the snapshot into the target algorithm
+     *
      * @param algorithm the target algorithm
      */
     public void restore(ACAQAlgorithm algorithm) {
@@ -117,6 +118,7 @@ public class ACAQTestbenchSnapshot {
 
         /**
          * Restores the parameter to a compatible foreign algorithm
+         *
          * @param targetAlgorithm the target algorithm
          */
         public void restoreParameters(ACAQAlgorithm targetAlgorithm) {

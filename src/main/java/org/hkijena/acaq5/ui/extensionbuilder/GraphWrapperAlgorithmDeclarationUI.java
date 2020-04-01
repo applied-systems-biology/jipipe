@@ -12,10 +12,17 @@ import org.hkijena.acaq5.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * UI around a {@link GraphWrapperAlgorithmDeclaration}
+ */
 public class GraphWrapperAlgorithmDeclarationUI extends ACAQJsonExtensionUIPanel {
 
     private GraphWrapperAlgorithmDeclaration declaration;
 
+    /**
+     * @param workbenchUI the workbench
+     * @param declaration the algorithm declaration
+     */
     public GraphWrapperAlgorithmDeclarationUI(ACAQJsonExtensionUI workbenchUI, GraphWrapperAlgorithmDeclaration declaration) {
         super(workbenchUI);
         this.declaration = declaration;

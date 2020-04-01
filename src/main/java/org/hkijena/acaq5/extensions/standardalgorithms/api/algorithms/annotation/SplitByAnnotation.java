@@ -16,6 +16,9 @@ import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
 
 import java.util.List;
 
+/**
+ * Algorithm that splits the input data by a specified annotation
+ */
 // Algorithm metadata
 @ACAQDocumentation(name = "Split by annotation", description = "Splits the input data by a specified annotation. " +
         "Output slots should correspond to the annotation values. The last slot is reserved for cases where the annotation could not be found.")
@@ -26,10 +29,18 @@ public class SplitByAnnotation extends ACAQAlgorithm {
 
     private ACAQTraitDeclarationRef annotationType = new ACAQTraitDeclarationRef();
 
+    /**
+     * @param declaration algorithm declaration
+     */
     public SplitByAnnotation(ACAQAlgorithmDeclaration declaration) {
         super(declaration, ACAQMutableSlotConfiguration.builder().restrictInputSlotCount(1).build());
     }
 
+    /**
+     * Copies the algorithm
+     *
+     * @param other the original
+     */
     public SplitByAnnotation(SplitByAnnotation other) {
         super(other);
         this.annotationType = other.annotationType;

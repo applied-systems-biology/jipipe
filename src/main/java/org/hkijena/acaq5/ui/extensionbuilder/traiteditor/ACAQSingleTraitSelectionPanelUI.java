@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.ui.extensionbuilder.traiteditor;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionUI;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionUIPanel;
 import org.hkijena.acaq5.ui.components.ColorIcon;
@@ -27,8 +26,8 @@ public class ACAQSingleTraitSelectionPanelUI extends ACAQJsonExtensionUIPanel {
 
     /**
      * @param workbenchUI the workbench
-     * @param node the node
-     * @param graph the graph
+     * @param node        the node
+     * @param graph       the graph
      */
     public ACAQSingleTraitSelectionPanelUI(ACAQJsonExtensionUI workbenchUI, ACAQTraitNode node, ACAQTraitGraph graph) {
         super(workbenchUI);
@@ -89,7 +88,6 @@ public class ACAQSingleTraitSelectionPanelUI extends ACAQJsonExtensionUIPanel {
     }
 
     /**
-     *
      * @return the trait node
      */
     public ACAQTraitNode getTraitNode() {

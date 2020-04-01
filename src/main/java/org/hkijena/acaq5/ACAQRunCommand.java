@@ -1,22 +1,14 @@
 package org.hkijena.acaq5;
 
-import io.scif.services.DatasetIOService;
-import net.imagej.DatasetService;
-import net.imagej.ops.OpService;
 import org.hkijena.acaq5.api.ACAQMutableRunConfiguration;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.ACAQRunnerStatus;
 import org.scijava.app.StatusService;
 import org.scijava.command.Command;
-import org.scijava.command.CommandService;
-import org.scijava.display.DisplayService;
-import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
-import org.scijava.thread.ThreadService;
-import org.scijava.ui.UIService;
 
 import java.io.File;
 import java.io.IOException;

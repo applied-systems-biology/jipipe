@@ -20,6 +20,7 @@ public class ACAQFileData implements ACAQData {
 
     /**
      * Initializes file data from a file
+     *
      * @param filePath File path
      */
     public ACAQFileData(Path filePath) {
@@ -42,6 +43,7 @@ public class ACAQFileData implements ACAQData {
 
     /**
      * Returns the data type name stored into the JSON
+     *
      * @return data type id
      */
     @JsonGetter("acaq:data-type")
@@ -59,6 +61,7 @@ public class ACAQFileData implements ACAQData {
 
     /**
      * Sets the file
+     *
      * @param path The file path
      */
     @JsonSetter("file-path")

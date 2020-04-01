@@ -3,10 +3,6 @@ package org.hkijena.acaq5.ui.components;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.hkijena.acaq5.utils.UIUtils.UI_PADDING;
 
@@ -17,10 +13,15 @@ public class FormPanel extends JPanel {
 
     private int numRows = 0;
     private String currentGroup;
-    private Map<String, List<Component>> componentGroups = new HashMap<>();
     private JPanel forms = new JPanel();
     private MarkdownReader parameterHelp;
 
+    /**
+     * @param document           the default documentation. Can be null.
+     * @param documentationBelow if true, show documentation below
+     * @param withDocumentation  if true, show documentation
+     * @param withScrolling      if true, wrap contents in a scroll bar
+     */
     public FormPanel(MarkdownDocument document, boolean documentationBelow, boolean withDocumentation, boolean withScrolling) {
         setLayout(new BorderLayout());
         forms.setLayout(new GridBagLayout());
@@ -53,14 +54,31 @@ public class FormPanel extends JPanel {
         }
     }
 
+    /**
+     * Creates a form panel with scrolling
+     *
+     * @param document           the default documentation. Can be null.
+     * @param documentationBelow if true, show documentation below
+     * @param withDocumentation  if true, show documentation
+     */
     public FormPanel(MarkdownDocument document, boolean documentationBelow, boolean withDocumentation) {
         this(document, documentationBelow, withDocumentation, true);
     }
 
+    /**
+     * Creates a form panel with scrolling and documentation
+     *
+     * @param document           the default documentation. Can be null.
+     * @param documentationBelow if true, show documentation below
+     */
     public FormPanel(MarkdownDocument document, boolean documentationBelow) {
         this(document, documentationBelow, true);
     }
 
+    /**
+     * Creates a form panel without default documentation, documentation shown on the right hand side, and
+     * scrolling enabled
+     */
     public FormPanel() {
         this(null, false);
     }
@@ -82,6 +100,14 @@ public class FormPanel extends JPanel {
         });
     }
 
+    /**
+     * Adds a component to the form
+     *
+     * @param component     The component
+     * @param documentation Optional documentation for this component. Can be null.
+     * @param <T>           Component type
+     * @return The component
+     */
     public <T extends Component> T addToForm(T component, MarkdownDocument documentation) {
         forms.add(component, new GridBagConstraints() {
             {
@@ -95,11 +121,19 @@ public class FormPanel extends JPanel {
             }
         });
         ++numRows;
-        getComponentListForCurrentGroup().add(component);
         documentComponent(component, documentation);
         return component;
     }
 
+    /**
+     * Adds a component to the form
+     *
+     * @param component     The component
+     * @param description   A description component displayed on the left hand side
+     * @param documentation Optional documentation for this component. Can be null.
+     * @param <T>           Component type
+     * @return The component
+     */
     public <T extends Component> T addToForm(T component, Component description, MarkdownDocument documentation) {
         forms.add(component, new GridBagConstraints() {
             {
@@ -122,13 +156,19 @@ public class FormPanel extends JPanel {
             }
         });
         ++numRows;
-        getComponentListForCurrentGroup().add(component);
-        getComponentListForCurrentGroup().add(description);
         documentComponent(component, documentation);
         documentComponent(description, documentation);
         return component;
     }
 
+    /**
+     * Adds a component. Its size is two columns.
+     *
+     * @param component     The component
+     * @param documentation Optional documentation. Can be null.
+     * @param <T>           Component type
+     * @return The component
+     */
     public <T extends Component> T addWideToForm(T component, MarkdownDocument documentation) {
         forms.add(component, new GridBagConstraints() {
             {
@@ -142,26 +182,26 @@ public class FormPanel extends JPanel {
             }
         });
         ++numRows;
-        getComponentListForCurrentGroup().add(component);
         documentComponent(component, documentation);
         return component;
     }
 
+    /**
+     * Adds a group header
+     *
+     * @param text Group text
+     * @param icon Group icon
+     * @return the panel that allows adding more components to it
+     */
     public GroupHeaderPanel addGroupHeader(String text, Icon icon) {
         GroupHeaderPanel panel = new GroupHeaderPanel(text, icon);
         addWideToForm(panel, null);
         return panel;
     }
 
-    private List<Component> getComponentListForCurrentGroup() {
-        List<Component> result = componentGroups.getOrDefault(currentGroup, null);
-        if (result == null) {
-            result = new ArrayList<>();
-            componentGroups.put(currentGroup, result);
-        }
-        return result;
-    }
-
+    /**
+     * Adds a component that acts as Box.verticalGlue()
+     */
     public void addVerticalGlue() {
         forms.add(new JPanel(), new GridBagConstraints() {
             {
@@ -176,43 +216,9 @@ public class FormPanel extends JPanel {
         ++numRows;
     }
 
-    public void addSeparator() {
-        forms.add(new JPanel() {
-            {
-                setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
-            }
-        }, new GridBagConstraints() {
-            {
-                anchor = GridBagConstraints.WEST;
-                gridx = 0;
-                gridy = numRows;
-                fill = GridBagConstraints.HORIZONTAL;
-                weightx = 1;
-                gridwidth = 2;
-            }
-        });
-        ++numRows;
-    }
-
-    public void setGroupVisiblity(String group, boolean visible) {
-        for (Component component : componentGroups.get(group)) {
-            component.setVisible(visible);
-        }
-    }
-
-    public void addGroupToggle(AbstractButton toggle, String group) {
-        toggle.addActionListener(e -> setGroupVisiblity(group, toggle.isSelected()));
-        setGroupVisiblity(group, toggle.isSelected());
-    }
-
-    public String getCurrentGroup() {
-        return currentGroup;
-    }
-
-    public void setCurrentGroup(String currentGroup) {
-        this.currentGroup = currentGroup;
-    }
-
+    /**
+     * Removes all components
+     */
     public void clear() {
         forms.removeAll();
         numRows = 0;
@@ -224,10 +230,17 @@ public class FormPanel extends JPanel {
         return parameterHelp;
     }
 
+    /**
+     * Panel that contains a group header
+     */
     public static class GroupHeaderPanel extends JPanel {
         private final JLabel titleLabel;
         private int columnCount = 0;
 
+        /**
+         * @param text the text
+         * @param icon the icon
+         */
         public GroupHeaderPanel(String text, Icon icon) {
             setBorder(BorderFactory.createEmptyBorder(8, 0, 4, 0));
             setLayout(new GridBagLayout());
@@ -260,6 +273,11 @@ public class FormPanel extends JPanel {
             return titleLabel;
         }
 
+        /**
+         * Adds an additional component on the right hand side
+         *
+         * @param component the component
+         */
         public void addColumn(Component component) {
             add(component, new GridBagConstraints() {
                 {

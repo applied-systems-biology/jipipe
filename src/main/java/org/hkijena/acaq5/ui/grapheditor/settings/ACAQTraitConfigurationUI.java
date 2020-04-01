@@ -49,6 +49,7 @@ public class ACAQTraitConfigurationUI extends JPanel {
 
     /**
      * Triggered when a trait is picked
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -62,6 +63,7 @@ public class ACAQTraitConfigurationUI extends JPanel {
 
     /**
      * Triggered when a trait is deselected
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -75,6 +77,7 @@ public class ACAQTraitConfigurationUI extends JPanel {
 
     /**
      * Triggered when the algorithm traits are changed
+     *
      * @param event Generated event
      */
     @Subscribe

@@ -94,6 +94,7 @@ public abstract class ACAQDefaultAlgorithmRegistrationTask implements ACAQAlgori
 
     /**
      * Sets dependency data classes. The task will wait until the data class is registered.
+     *
      * @param dependencyDatatypeClasses Dependency data classes
      */
     public void setDependencyDatatypeClasses(Set<Class<? extends ACAQData>> dependencyDatatypeClasses) {

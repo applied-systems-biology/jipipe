@@ -3,12 +3,23 @@ package org.hkijena.acaq5.extensions.imagejdatatypes;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
+/**
+ * Encapsulates ImageJ macro code to be detected by the parameter system
+ */
 public class MacroCode {
     private String code = "";
 
+    /**
+     * Creates a new empty code
+     */
     public MacroCode() {
     }
 
+    /**
+     * Copies the code
+     *
+     * @param other the original
+     */
     public MacroCode(MacroCode other) {
         this.code = other.code;
     }

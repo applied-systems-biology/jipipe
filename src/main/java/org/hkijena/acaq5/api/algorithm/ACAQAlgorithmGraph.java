@@ -55,6 +55,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
     /**
      * Creates a deep copy of the other algorithm graph
+     *
      * @param other The original graph
      */
     public ACAQAlgorithmGraph(ACAQAlgorithmGraph other) {
@@ -81,8 +82,8 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     /**
      * Inserts an algorithm into the graph
      *
-     * @param key       The unique ID
-     * @param algorithm The algorithm
+     * @param key         The unique ID
+     * @param algorithm   The algorithm
      * @param compartment The compartment where the algorithm will be placed
      */
     public void insertNode(String key, ACAQAlgorithm algorithm, String compartment) {
@@ -108,7 +109,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * Inserts an algorithm into the graph.
      * The name is automatically generated
      *
-     * @param algorithm The algorithm
+     * @param algorithm   The algorithm
      * @param compartment The compartment where the algorithm will be placed
      */
     public void insertNode(ACAQAlgorithm algorithm, String compartment) {
@@ -118,6 +119,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
     /**
      * Returns true if the user can delete the algorithm
+     *
      * @param algorithm The algorithm
      * @return True if the user can delete the algorithm
      */
@@ -127,6 +129,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
     /**
      * Returns true if the user can disconnect the slots
+     *
      * @param source Source slot
      * @param target Target slot
      * @return True if the user can disconnect those slots. Returns false if the connection does not exist.
@@ -144,6 +147,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     /**
      * Removes a whole compartment from the graph.
      * Will fail silently if the ID does not exist
+     *
      * @param compartment The compartment ID
      */
     public void removeCompartment(String compartment) {
@@ -155,7 +159,8 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
     /**
      * Renames a compartment
-     * @param compartment Original compartment ID
+     *
+     * @param compartment    Original compartment ID
      * @param newCompartment New compartment ID
      */
     public void renameCompartment(String compartment, String newCompartment) {
@@ -168,6 +173,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     /**
      * Removes an algorithm.
      * The algorithm should exist within the graph.
+     *
      * @param algorithm The algorithm
      */
     public void removeNode(ACAQAlgorithm algorithm) {
@@ -199,7 +205,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      *
      * @param source Source slot. Must be an output.
      * @param target Target slot. Must be an input.
-     * @param user If true, the user is generating the connection
+     * @param user   If true, the user is generating the connection
      * @return True if the connection could be possible
      */
     public boolean canConnect(ACAQDataSlot source, ACAQDataSlot target, boolean user) {
@@ -216,7 +222,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      *
      * @param source Source slot. Must be an output.
      * @param target Target slot. Must be an input.
-     * @param user If triggered by a user
+     * @param user   If triggered by a user
      * @return True if the connection could be possible. Please check again with canConnect()
      */
     public boolean canConnectFast(ACAQDataSlot source, ACAQDataSlot target, boolean user) {
@@ -231,6 +237,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     /**
      * Connects an output slot to an input slot.
      * Allows users to disconnect this connection
+     *
      * @param source An output slot
      * @param target An input slot
      */
@@ -240,14 +247,15 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
     /**
      * Connects an output slot to an input slot.
-     * @param source An output slot.
-     * @param target An input slot.
-     * @param userDisconnectable If true, users are allowed to disconnect this connection again
+     *
+     * @param source            An output slot.
+     * @param target            An input slot.
+     * @param userCanDisconnect If true, users are allowed to disconnect this connection again
      */
-    public void connect(ACAQDataSlot source, ACAQDataSlot target, boolean userDisconnectable) {
+    public void connect(ACAQDataSlot source, ACAQDataSlot target, boolean userCanDisconnect) {
         if (!canConnect(source, target, false))
             throw new RuntimeException("Cannot connect data slots: " + source.getNameWithAlgorithmName() + " ==> " + target.getNameWithAlgorithmName());
-        graph.addEdge(source, target, new ACAQAlgorithmGraphEdge(userDisconnectable));
+        graph.addEdge(source, target, new ACAQAlgorithmGraphEdge(userCanDisconnect));
         getEventBus().post(new AlgorithmGraphChangedEvent(this));
         getEventBus().post(new AlgorithmGraphConnectedEvent(this, source, target));
         source.getAlgorithm().onSlotConnected(new AlgorithmGraphConnectedEvent(this, source, target));
@@ -353,7 +361,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * This function does not check for cycles.
      *
      * @param target An input slot
-     * @param user If true, only connections that can be created by a user are shown
+     * @param user   If true, only connections that can be created by a user are shown
      * @return Set of potential sources
      */
     public Set<ACAQDataSlot> getAvailableSources(ACAQDataSlot target, boolean user) {
@@ -397,9 +405,10 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
     /**
      * Disconnects an input and an output slot
+     *
      * @param source An output slot
      * @param target An input slot
-     * @param user Indicates if the command was issued by a user
+     * @param user   Indicates if the command was issued by a user
      * @return True if the disconnect was successful, otherwise false
      */
     public boolean disconnect(ACAQDataSlot source, ACAQDataSlot target, boolean user) {
@@ -422,7 +431,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * Does not check for cycles.
      *
      * @param source An output slot
-     * @param user Indicates that a user issues the connection
+     * @param user   Indicates that a user issues the connection
      * @return A list of all available input slots
      */
     public Set<ACAQDataSlot> getAvailableTargets(ACAQDataSlot source, boolean user) {
@@ -450,6 +459,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     /**
      * Should be triggered when an {@link ACAQAlgorithm}'s slots are changed.
      * Triggers a graph repair
+     *
      * @param event The generated event
      */
     @Subscribe
@@ -460,6 +470,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     /**
      * Should be triggered when an {@link ACAQAlgorithm}'s traits are changed
      * Updates the traits
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -471,6 +482,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     /**
      * Should be triggered when an {@link ACAQAlgorithm}'s parameter structure is changed.
      * This event is re-triggered into getEventBus()
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -511,6 +523,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
     /**
      * Gets all dependencies of all algorithms
+     *
      * @return Set of dependencies
      */
     public Set<ACAQDependency> getDependencies() {
@@ -523,6 +536,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
     /**
      * Returns the even bus
+     *
      * @return Event bus instance
      */
     public EventBus getEventBus() {
@@ -531,6 +545,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
     /**
      * Returns all algorithms
+     *
      * @return Map from algorithm instance ID to algorithm instance
      */
     public BiMap<String, ACAQAlgorithm> getAlgorithmNodes() {
@@ -539,6 +554,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
     /**
      * Returns true if this graph contains the algorithm
+     *
      * @param algorithm The algorithm instance
      * @return True if the algorithm is part of this graph
      */
@@ -565,6 +581,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
     /**
      * Loads this graph from JSON
+     *
      * @param node JSON data
      */
     public void fromJson(JsonNode node) {
@@ -629,6 +646,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
     /**
      * Saves the graph as DOT file
+     *
      * @param fileName Path where to save the file
      */
     public void exportDOT(Path fileName) {
@@ -643,6 +661,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     /**
      * Traverses the graph in topological order.
      * The order guarantees that input is always available
+     *
      * @return Sorted list of data slots
      */
     public List<ACAQDataSlot> traverse() {
@@ -657,6 +676,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
     /**
      * Traverses depth-first. The order is not suitable for running the algorithm graph.
+     *
      * @return Sorted list of data slots
      */
     public List<ACAQDataSlot> traverseDepthFirst() {
@@ -671,6 +691,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
     /**
      * Traverses the algorithms depth-first. The order is not suitable for running the algorithm graph.
+     *
      * @return Sorted list of algorithms
      */
     public List<ACAQAlgorithm> traverseAlgorithmsDepthFirst() {
@@ -695,6 +716,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     /**
      * Traverses the graph in topological order.
      * The order guarantees that input is always available
+     *
      * @return Sorted list of algorithms
      */
     public List<ACAQAlgorithm> traverseAlgorithms() {
@@ -725,6 +747,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
     /**
      * Returns true if the slot is in this graph
+     *
      * @param slot A slot
      * @return True if this graph contains the slot
      */
@@ -767,6 +790,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     /**
      * Returns the ID of the algorithm within this graph.
      * The algorithm must be a part of this graph.
+     *
      * @param algorithm The algorithm
      * @return The ID of this algorithm within the graph.
      */
@@ -776,7 +800,8 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
     /**
      * Returns true if this graph contains an algorithm with the same ID as the foreign algorithm in the foreign graph
-     * @param foreign An algorithm
+     *
+     * @param foreign      An algorithm
      * @param foreignGraph Graph that contains the foreign algorithm
      * @return True if this graph contains an equivalent algorithm (with the same ID)
      */
@@ -786,7 +811,8 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
     /**
      * Returns the algorithm that has the same ID as the foreign algorithm in the foreign graph.
-     * @param foreign  An algorithm
+     *
+     * @param foreign      An algorithm
      * @param foreignGraph Graph that contains the foreign algorithm
      * @return Equivalent algorithm within this graph
      */
@@ -797,6 +823,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     /**
      * Returns the graph compartment ID of the algorithm
      * This graph must contain the algorithm
+     *
      * @param algorithm An algorithm
      * @return The compartment ID
      */
@@ -824,6 +851,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
     /**
      * Returns the algorithms within the specified compartment ID.
+     *
      * @param compartmentId The compartment ID
      * @return Algorithms that have the specified compartment ID. Empty set if the compartment does not exist.
      */

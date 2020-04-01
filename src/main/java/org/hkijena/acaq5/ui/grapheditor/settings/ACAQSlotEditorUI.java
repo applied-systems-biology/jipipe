@@ -202,6 +202,7 @@ public class ACAQSlotEditorUI extends JPanel {
 
     /**
      * Triggered when the algorithm slots are changed
+     *
      * @param event Generated event
      */
     @Subscribe

@@ -26,7 +26,7 @@ public class ACAQResultAlgorithmTree extends ACAQProjectUIPanel {
 
     /**
      * @param workbenchUI Workbench ui
-     * @param run The run
+     * @param run         The run
      */
     public ACAQResultAlgorithmTree(ACAQProjectUI workbenchUI, ACAQRun run) {
         super(workbenchUI);

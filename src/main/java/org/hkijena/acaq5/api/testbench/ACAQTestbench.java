@@ -26,9 +26,9 @@ public class ACAQTestbench implements ACAQRunnable, ACAQValidatable {
     private List<ACAQTestbenchSnapshot> backupList = new ArrayList<>();
 
     /**
-     * @param project The project
+     * @param project         The project
      * @param targetAlgorithm The tested algorithm
-     * @param workDirectory A temporary work directory
+     * @param workDirectory   A temporary work directory
      */
     public ACAQTestbench(ACAQProject project, ACAQAlgorithm targetAlgorithm, Path workDirectory) {
         this.project = project;

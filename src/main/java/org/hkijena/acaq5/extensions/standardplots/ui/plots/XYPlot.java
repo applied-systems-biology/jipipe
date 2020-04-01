@@ -3,7 +3,7 @@
  * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
  * https://www.leibniz-hki.de/en/applied-systems-biology.html
  * HKI-Center for Systems Biology of Infection
- * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Insitute (HKI)
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
  * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
  * This code is licensed under BSD 2-Clause
@@ -23,12 +23,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * A XY point plot
+ */
 public abstract class XYPlot extends ACAQPlot {
 
     private String xAxisLabel = "X";
     private String yAxisLabel = "Y";
     private XYSeriesCollection dataset = new XYSeriesCollection();
 
+    /**
+     * @param seriesDataList the data
+     */
     public XYPlot(List<ACAQPlotSeriesData> seriesDataList) {
         super(seriesDataList);
         addSeries();
@@ -55,8 +61,15 @@ public abstract class XYPlot extends ACAQPlot {
         return series;
     }
 
+    /**
+     * @param dataset the data set
+     * @return the plot
+     */
     protected abstract JFreeChart createPlotFromDataset(XYSeriesCollection dataset);
 
+    /**
+     * Updates the data set
+     */
     protected void updateDataset() {
         dataset.removeAllSeries();
         Set<String> existingSeries = new HashSet<>();

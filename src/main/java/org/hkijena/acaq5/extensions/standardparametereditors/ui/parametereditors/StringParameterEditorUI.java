@@ -10,12 +10,19 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 
+/**
+ * Parameter editor for {@link String}
+ */
 public class StringParameterEditorUI extends ACAQParameterEditorUI {
 
     private JTextComponent textComponent;
     private boolean skipNextReload = false;
     private boolean isReloading = false;
 
+    /**
+     * @param context         SciJava context
+     * @param parameterAccess the parameter
+     */
     public StringParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
         super(context, parameterAccess);
         initialize();

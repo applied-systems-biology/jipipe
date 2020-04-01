@@ -37,6 +37,9 @@ public class SingleImageJAlgorithmRun implements ACAQValidatable {
     private ACAQAlgorithm algorithm;
     private Map<String, ImageJDatatypeImporter> inputSlotImporters = new HashMap<>();
 
+    /**
+     * @param algorithm the algorithm to be run
+     */
     public SingleImageJAlgorithmRun(ACAQAlgorithm algorithm) {
         this.algorithm = algorithm;
         updateSlots();
@@ -73,6 +76,9 @@ public class SingleImageJAlgorithmRun implements ACAQValidatable {
         }
     }
 
+    /**
+     * Pushes selected ImageJ data into the algorithm input slots
+     */
     public void pushInput() {
         for (Map.Entry<String, ImageJDatatypeImporter> entry : inputSlotImporters.entrySet()) {
             ACAQDataSlot slot = algorithm.getInputSlot(entry.getKey());
@@ -81,6 +87,9 @@ public class SingleImageJAlgorithmRun implements ACAQValidatable {
         }
     }
 
+    /**
+     * Extracts algorithm output into  ImageJ
+     */
     public void pullOutput() {
         for (ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
             ImageJDatatypeAdapter adapter = ACAQImageJAdapterRegistry.getInstance().getAdapterForACAQData(outputSlot.getAcceptedDataType());
@@ -91,6 +100,11 @@ public class SingleImageJAlgorithmRun implements ACAQValidatable {
         }
     }
 
+    /**
+     * Triggered when the algorithm's slots are changed
+     *
+     * @param event generated event
+     */
     @Subscribe
     public void onAlgorithmSlotsChanged(AlgorithmSlotsChangedEvent event) {
         updateSlots();
@@ -100,7 +114,7 @@ public class SingleImageJAlgorithmRun implements ACAQValidatable {
     /**
      * Loads data from JSON
      *
-     * @param jsonNode
+     * @param jsonNode JSON data
      */
     public void fromJson(JsonNode jsonNode) {
         if (jsonNode.has("parameters")) {
@@ -149,8 +163,8 @@ public class SingleImageJAlgorithmRun implements ACAQValidatable {
     /**
      * Returns true if an algorithm can be run in a single ImageJ algorithm run
      *
-     * @param declaration
-     * @return
+     * @param declaration the algorithm type
+     * @return if the algorithm is compatible
      */
     public static boolean isCompatible(ACAQAlgorithmDeclaration declaration) {
         switch (declaration.getCategory()) {
@@ -171,6 +185,9 @@ public class SingleImageJAlgorithmRun implements ACAQValidatable {
         return true;
     }
 
+    /**
+     * Serializes the run
+     */
     public static class Serializer extends JsonSerializer<SingleImageJAlgorithmRun> {
         @Override
         public void serialize(SingleImageJAlgorithmRun run, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {

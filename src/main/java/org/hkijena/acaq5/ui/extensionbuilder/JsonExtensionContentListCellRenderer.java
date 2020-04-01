@@ -8,8 +8,14 @@ import org.hkijena.acaq5.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Renders the contents of a {@link org.hkijena.acaq5.ACAQJsonExtension}
+ */
 public class JsonExtensionContentListCellRenderer extends JLabel implements ListCellRenderer<Object> {
 
+    /**
+     * Creates a new renderer
+     */
     public JsonExtensionContentListCellRenderer() {
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));

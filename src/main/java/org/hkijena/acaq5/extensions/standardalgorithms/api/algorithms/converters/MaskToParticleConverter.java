@@ -14,6 +14,9 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.Image
 
 import java.util.Arrays;
 
+/**
+ * Converts a mask to ROI and ROI measurements
+ */
 // Algorithm metadata
 @ACAQDocumentation(name = "Convert mask to particles")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.Converter)
@@ -31,10 +34,18 @@ public class MaskToParticleConverter extends ACAQIteratingAlgorithm {
     private double maxParticleCircularity = 1;
     private boolean excludeEdges = false;
 
+    /**
+     * @param declaration algorithm declaration
+     */
     public MaskToParticleConverter(ACAQAlgorithmDeclaration declaration) {
         super(declaration, null, null);
     }
 
+    /**
+     * Copies the algorithm
+     *
+     * @param other the original
+     */
     public MaskToParticleConverter(MaskToParticleConverter other) {
         super(other);
         this.minParticleSize = other.minParticleSize;
@@ -90,6 +101,10 @@ public class MaskToParticleConverter extends ACAQIteratingAlgorithm {
         return minParticleCircularity;
     }
 
+    /**
+     * @param minParticleCircularity value from 0 to 1
+     * @return if setting the value was successful
+     */
     @ACAQParameter("min-particle-circularity")
     public boolean setMinParticleCircularity(double minParticleCircularity) {
         if (minParticleCircularity < 0 || minParticleCircularity > 1)
@@ -105,6 +120,10 @@ public class MaskToParticleConverter extends ACAQIteratingAlgorithm {
         return maxParticleCircularity;
     }
 
+    /**
+     * @param maxParticleCircularity value from 0 to 1
+     * @return if setting the value was successful
+     */
     @ACAQParameter("max-particle-circularity")
     public boolean setMaxParticleCircularity(double maxParticleCircularity) {
         if (maxParticleCircularity < 0 || maxParticleCircularity > 1)

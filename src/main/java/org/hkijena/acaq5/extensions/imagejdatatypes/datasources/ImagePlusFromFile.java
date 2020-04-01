@@ -22,6 +22,10 @@ public class ImagePlusFromFile extends ACAQIteratingAlgorithm {
 
     private Class<? extends ACAQData> dataClass;
 
+    /**
+     * @param declaration algorithm declaration
+     * @param dataClass   loaded data class
+     */
     public ImagePlusFromFile(ACAQAlgorithmDeclaration declaration, Class<? extends ACAQData> dataClass) {
         super(declaration,
                 ACAQMutableSlotConfiguration.builder().addInputSlot("Files", ACAQFileData.class)
@@ -32,6 +36,11 @@ public class ImagePlusFromFile extends ACAQIteratingAlgorithm {
         this.dataClass = dataClass;
     }
 
+    /**
+     * Copies the algorithm
+     *
+     * @param other the original
+     */
     public ImagePlusFromFile(ImagePlusFromFile other) {
         super(other);
         this.dataClass = other.dataClass;
@@ -49,6 +58,12 @@ public class ImagePlusFromFile extends ACAQIteratingAlgorithm {
         dataInterface.addOutputData(getFirstOutputSlot(), readImageFrom(fileData.getFilePath()));
     }
 
+    /**
+     * Loads an image from a file path
+     *
+     * @param fileName the image file name
+     * @return the generated data
+     */
     protected ACAQData readImageFrom(Path fileName) {
         try {
             return dataClass.getConstructor(ImagePlus.class).newInstance(IJ.openImage(fileName.toString()));
