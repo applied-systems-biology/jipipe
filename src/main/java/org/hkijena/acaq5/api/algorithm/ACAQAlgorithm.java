@@ -170,7 +170,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
      */
     private void initialize() {
         for (Map.Entry<String, ACAQSlotDefinition> kv : slotConfiguration.getSlots().entrySet()) {
-            slots.put(kv.getKey(), new ACAQDataSlot(this, kv.getValue().getSlotType(), kv.getKey(), kv.getValue().getDataClass()));
+            slots.put(kv.getKey(), new ACAQDataSlot(kv.getValue(), this));
         }
     }
 
@@ -306,7 +306,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
     @Subscribe
     public void onSlotAdded(SlotAddedEvent event) {
         ACAQSlotDefinition definition = slotConfiguration.getSlots().get(event.getSlotName());
-        slots.put(definition.getName(), new ACAQDataSlot(this, definition.getSlotType(), definition.getName(), definition.getDataClass()));
+        slots.put(definition.getName(), new ACAQDataSlot(definition, this));
         eventBus.post(new AlgorithmSlotsChangedEvent(this));
         updateSlotInheritance();
     }

@@ -5,6 +5,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
@@ -84,6 +85,11 @@ public class ACAQSlotEditorUI extends JPanel {
 
         toolBar.add(Box.createHorizontalGlue());
 
+        JButton relabelButton = new JButton(UIUtils.getIconFromResources("label.png"));
+        relabelButton.setToolTipText("Sets a custom name for this slot without deleting it");
+        relabelButton.addActionListener(e -> relabelSlot());
+        toolBar.add(relabelButton);
+
         if (algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
             JButton moveUpButton = new JButton(UIUtils.getIconFromResources("arrow-up.png"));
             moveUpButton.setToolTipText("Move up");
@@ -101,6 +107,16 @@ public class ACAQSlotEditorUI extends JPanel {
             removeButton.setToolTipText("Remove selected slots");
             removeButton.addActionListener(e -> removeSelectedSlots());
             toolBar.add(removeButton);
+        }
+    }
+
+    private void relabelSlot() {
+        ACAQDataSlot slot = getSelectedSlot();
+        if (slot != null) {
+            String newLabel = JOptionPane.showInputDialog(this,
+                    "Please enter a new label for the slot.\nLeave the text empty to remove an existing label.",
+                    slot.getDefinition().getCustomName());
+            slot.getDefinition().setCustomName(newLabel);
         }
     }
 
@@ -180,12 +196,14 @@ public class ACAQSlotEditorUI extends JPanel {
 
         for (ACAQDataSlot slot : algorithm.getInputSlots()) {
             DefaultMutableTreeNode node = new DefaultMutableTreeNode(slot);
+            slot.getDefinition().getEventBus().register(this);
             if (slot == selectedSlot)
                 toSelect = node;
             inputNode.add(node);
         }
         for (ACAQDataSlot slot : algorithm.getOutputSlots()) {
             DefaultMutableTreeNode node = new DefaultMutableTreeNode(slot);
+            slot.getDefinition().getEventBus().register(this);
             if (slot == selectedSlot)
                 toSelect = node;
             outputNode.add(node);
@@ -208,5 +226,17 @@ public class ACAQSlotEditorUI extends JPanel {
     @Subscribe
     public void onAlgorithmSlotsChanged(AlgorithmSlotsChangedEvent event) {
         reloadList();
+    }
+
+    /**
+     * Triggered when the custom name of the slot definition is changed
+     *
+     * @param event Generated event
+     */
+    @Subscribe
+    public void onSlotNameChanged(ParameterChangedEvent event) {
+        if ("custom-name".equals(event.getKey())) {
+            reloadList();
+        }
     }
 }

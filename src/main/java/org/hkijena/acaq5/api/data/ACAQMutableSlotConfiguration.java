@@ -196,6 +196,13 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
+            } else {
+                try {
+                    ACAQSlotDefinition slotDefinition = objectReader.readValue(kv.getValue());
+                    slots.get(kv.getKey()).setTo(slotDefinition);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }

@@ -7,8 +7,13 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
+import com.google.common.eventbus.EventBus;
+import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
+import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.api.parameters.ACAQParameterHolder;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 
 import java.io.IOException;
@@ -23,12 +28,14 @@ import java.util.Set;
  */
 @JsonSerialize(using = ACAQSlotDefinition.Serializer.class)
 @JsonDeserialize(using = ACAQSlotDefinition.Deserializer.class)
-public class ACAQSlotDefinition {
+public class ACAQSlotDefinition implements ACAQParameterHolder {
+    private EventBus eventBus = new EventBus();
     private Class<? extends ACAQData> dataClass;
     private ACAQDataSlot.SlotType slotType;
     private String name;
     private String inheritedSlot;
     private Map<ACAQDataDeclaration, ACAQDataDeclaration> inheritanceConversions = new HashMap<>();
+    private String customName;
 
     /**
      * @param dataClass     slot data class
@@ -40,6 +47,20 @@ public class ACAQSlotDefinition {
         this.dataClass = dataClass;
         this.slotType = slotType;
         this.name = name;
+        this.inheritedSlot = inheritedSlot;
+    }
+
+    /**
+     * Creates an unnamed slot.
+     * The name is assigned from the {@link ACAQMutableSlotConfiguration}
+     *
+     * @param dataClass     slot data class
+     * @param slotType      slot type
+     * @param inheritedSlot only relevant if output slot. Can be an input slot name or '*' to automatically select the first input slot
+     */
+    public ACAQSlotDefinition(Class<? extends ACAQData> dataClass, ACAQDataSlot.SlotType slotType, String inheritedSlot) {
+        this.dataClass = dataClass;
+        this.slotType = slotType;
         this.inheritedSlot = inheritedSlot;
     }
 
@@ -68,6 +89,7 @@ public class ACAQSlotDefinition {
         this.name = other.name;
         this.inheritedSlot = other.inheritedSlot;
         this.inheritanceConversions = new HashMap<>(other.inheritanceConversions);
+        this.customName = other.customName;
     }
 
     /**
@@ -112,6 +134,40 @@ public class ACAQSlotDefinition {
     }
 
     /**
+     * @return A custom name that the UI is displaying instead of getName() if the return value is not null or empty
+     */
+    @ACAQParameter("custom-name")
+    @ACAQDocumentation(name = "Custom label", description = "Custom name for this slot. This does not change how the output folders are named.")
+    public String getCustomName() {
+        return customName;
+    }
+
+    /**
+     * Overrides the name displayed in the UI
+     *
+     * @param customName a custom name or null to reset the custom name
+     */
+    @ACAQParameter("custom-name")
+    public void setCustomName(String customName) {
+        this.customName = customName;
+        eventBus.post(new ParameterChangedEvent(this, "custom-name"));
+    }
+
+    /**
+     * Copies additional parameters such as custom names from the other slot
+     *
+     * @param other other slot
+     */
+    public void setTo(ACAQSlotDefinition other) {
+        setCustomName(other.getCustomName());
+    }
+
+    @Override
+    public EventBus getEventBus() {
+        return eventBus;
+    }
+
+    /**
      * Applies inheritance conversion.
      * This is a text replacement system with termination condition of never visiting the same time twice.
      *
@@ -145,13 +201,14 @@ public class ACAQSlotDefinition {
             jsonGenerator.writeStringField("slot-data-type", ACAQDatatypeRegistry.getInstance().getIdOf(definition.dataClass));
             jsonGenerator.writeStringField("slot-type", definition.slotType.name());
             jsonGenerator.writeStringField("inherited-slot", definition.inheritedSlot);
+            jsonGenerator.writeStringField("name", definition.name);
+            jsonGenerator.writeStringField("custom-name", definition.customName);
             jsonGenerator.writeFieldName("inheritance-conversions");
             jsonGenerator.writeStartObject();
             for (Map.Entry<ACAQDataDeclaration, ACAQDataDeclaration> entry : definition.getInheritanceConversions().entrySet()) {
                 jsonGenerator.writeStringField(entry.getKey().getId(), entry.getValue().getId());
             }
             jsonGenerator.writeEndObject();
-            jsonGenerator.writeStringField("name", definition.name);
             jsonGenerator.writeEndObject();
         }
     }
@@ -178,6 +235,10 @@ public class ACAQSlotDefinition {
                     ACAQDataDeclaration value = ACAQDataDeclaration.getInstance(idValue);
                     definition.inheritanceConversions.put(key, value);
                 }
+            }
+            JsonNode customNameNode = node.path("custom-name");
+            if (!customNameNode.isMissingNode() && !customNameNode.isNull()) {
+                definition.customName = customNameNode.textValue();
             }
             return definition;
         }

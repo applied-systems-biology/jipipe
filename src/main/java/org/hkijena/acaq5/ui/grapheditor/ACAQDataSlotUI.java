@@ -7,9 +7,11 @@ import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.ui.events.AlgorithmFinderSuccessEvent;
 import org.hkijena.acaq5.ui.grapheditor.algorithmfinder.ACAQAlgorithmFinderUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
+import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -27,21 +29,25 @@ import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_WIDTH;
  * UI around an {@link ACAQDataSlot}
  */
 public class ACAQDataSlotUI extends JPanel {
+    private ACAQAlgorithmUI algorithmUI;
     private ACAQAlgorithmGraph graph;
     private String compartment;
     private ACAQDataSlot slot;
     private JButton assignButton;
     private JPopupMenu assignButtonMenu;
     private ACAQDataSlotTraitUI traitUI;
+    private JLabel nameLabel;
 
     /**
      * Creates a new UI
      *
+     * @param algorithmUI The parent algorithm UI
      * @param graph       The graph
      * @param compartment The compartment ID
      * @param slot        The slot instance
      */
-    public ACAQDataSlotUI(ACAQAlgorithmGraph graph, String compartment, ACAQDataSlot slot) {
+    public ACAQDataSlotUI(ACAQAlgorithmUI algorithmUI, ACAQAlgorithmGraph graph, String compartment, ACAQDataSlot slot) {
+        this.algorithmUI = algorithmUI;
         this.graph = graph;
         this.compartment = compartment;
         this.slot = slot;
@@ -50,6 +56,7 @@ public class ACAQDataSlotUI extends JPanel {
         reloadButtonStatus();
 
         graph.getEventBus().register(this);
+        slot.getDefinition().getEventBus().register(this);
     }
 
     private void reloadPopupMenu() {
@@ -82,6 +89,12 @@ public class ACAQDataSlotUI extends JPanel {
                     assignButtonMenu.add(deleteButton);
                 }
             }
+            if (assignButtonMenu.getComponentCount() > 0)
+                assignButtonMenu.addSeparator();
+            JMenuItem relabelButton = new JMenuItem("Label this slot", UIUtils.getIconFromResources("label.png"));
+            relabelButton.setToolTipText("Sets a custom name for this slot without deleting it");
+            relabelButton.addActionListener(e -> relabelSlot());
+            assignButtonMenu.add(relabelButton);
         } else if (slot.isOutput()) {
             Set<ACAQDataSlot> targetSlots = graph.getTargetSlots(slot);
             if (!targetSlots.isEmpty()) {
@@ -130,7 +143,20 @@ public class ACAQDataSlotUI extends JPanel {
                     assignButtonMenu.add(deleteButton);
                 }
             }
+            if (assignButtonMenu.getComponentCount() > 0)
+                assignButtonMenu.addSeparator();
+            JMenuItem relabelButton = new JMenuItem("Label this slot", UIUtils.getIconFromResources("label.png"));
+            relabelButton.setToolTipText("Sets a custom name for this slot without deleting it");
+            relabelButton.addActionListener(e -> relabelSlot());
+            assignButtonMenu.add(relabelButton);
         }
+    }
+
+    private void relabelSlot() {
+        String newLabel = JOptionPane.showInputDialog(this,
+                "Please enter a new label for the slot.\nLeave the text empty to remove an existing label.",
+                slot.getDefinition().getCustomName());
+        slot.getDefinition().setCustomName(newLabel);
     }
 
     private void deleteSlot() {
@@ -210,7 +236,8 @@ public class ACAQDataSlotUI extends JPanel {
         centerPanel.setLayout(new GridLayout(2, 1));
         centerPanel.setOpaque(false);
 
-        JLabel nameLabel = new JLabel(getDisplayedName());
+        nameLabel = new JLabel();
+        reloadName();
         nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot, false));
         nameLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
         nameLabel.setIcon(ACAQUIDatatypeRegistry.getInstance().getIconFor(getSlotDataType()));
@@ -244,6 +271,16 @@ public class ACAQDataSlotUI extends JPanel {
         add(centerPanel, BorderLayout.CENTER);
     }
 
+    private void reloadName() {
+        if (!StringUtils.isNullOrEmpty(slot.getDefinition().getCustomName())) {
+            nameLabel.setText(getDisplayedName());
+            nameLabel.setFont(nameLabel.getFont().deriveFont(Font.ITALIC));
+        } else {
+            nameLabel.setText(getDisplayedName());
+            nameLabel.setFont(nameLabel.getFont().deriveFont(Font.PLAIN));
+        }
+    }
+
     private Class<? extends ACAQData> getSlotDataType() {
         if (graph != null) {
             if (graph.containsNode(slot)) {
@@ -259,6 +296,10 @@ public class ACAQDataSlotUI extends JPanel {
      * @return The name that should be displayed
      */
     public String getDisplayedName() {
+        boolean hasCustomName = !StringUtils.isNullOrEmpty(slot.getDefinition().getCustomName());
+        if (hasCustomName) {
+            return slot.getDefinition().getCustomName();
+        }
         if (slot.getAlgorithm() instanceof ACAQCompartmentOutput) {
             if (slot.isOutput()) {
                 return slot.getName().substring("Output ".length());
@@ -302,6 +343,19 @@ public class ACAQDataSlotUI extends JPanel {
         if (graph.containsNode(slot)) {
             reloadPopupMenu();
             reloadButtonStatus();
+        }
+    }
+
+    /**
+     * Triggered when the custom name of the slot definition is changed
+     *
+     * @param event Generated event
+     */
+    @Subscribe
+    public void onSlotNameChanged(ParameterChangedEvent event) {
+        if ("custom-name".equals(event.getKey())) {
+            reloadName();
+            algorithmUI.updateSize();
         }
     }
 

@@ -242,7 +242,7 @@ public class ACAQAlgorithmUI extends JPanel {
                     bottomBorder = 1;
 
                 ACAQDataSlot slot = slots.get(i);
-                ACAQDataSlotUI ui = new ACAQDataSlotUI(graphUI.getAlgorithmGraph(), graphUI.getCompartment(), slot);
+                ACAQDataSlotUI ui = new ACAQDataSlotUI(this, graphUI.getAlgorithmGraph(), graphUI.getCompartment(), slot);
                 ui.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, bottomBorder, 1, borderColor),
                         BorderFactory.createEmptyBorder(0, 0, 0, 4)));
                 slotUIList.add(ui);
@@ -257,7 +257,7 @@ public class ACAQAlgorithmUI extends JPanel {
                 if (i < displayedRows - 1)
                     bottomBorder = 1;
                 ACAQDataSlot slot = slots.get(i);
-                ACAQDataSlotUI ui = new ACAQDataSlotUI(graphUI.getAlgorithmGraph(), graphUI.getCompartment(), slot);
+                ACAQDataSlotUI ui = new ACAQDataSlotUI(this, graphUI.getAlgorithmGraph(), graphUI.getCompartment(), slot);
                 ui.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 1, bottomBorder, 0, borderColor),
                         BorderFactory.createEmptyBorder(0, 4, 0, 0)));
                 slotUIList.add(ui);
@@ -457,7 +457,7 @@ public class ACAQAlgorithmUI extends JPanel {
      */
     @Subscribe
     public void onTraitsChanged(TraitConfigurationChangedEvent event) {
-        setSize(calculateWidth(), calculateHeight());
+        updateSize();
         revalidate();
         repaint();
     }
@@ -470,11 +470,18 @@ public class ACAQAlgorithmUI extends JPanel {
     @Subscribe
     public void onAlgorithmParametersChanged(ParameterChangedEvent event) {
         if (event.getParameterHolder() == algorithm && "name".equals(event.getKey())) {
-            setSize(calculateWidth(), calculateHeight());
+            updateSize();
             nameLabel.setText(algorithm.getName());
             revalidate();
             repaint();
         }
+    }
+
+    /**
+     * Recalculates the UI size
+     */
+    public void updateSize() {
+        setSize(calculateWidth(), calculateHeight());
     }
 
     @Override

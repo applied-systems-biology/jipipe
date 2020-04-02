@@ -2,6 +2,7 @@ package org.hkijena.acaq5.ui.grapheditor.settings;
 
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
+import org.hkijena.acaq5.utils.StringUtils;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -31,7 +32,11 @@ public class ACAQDataSlotTreeCellRenderer extends JLabel implements TreeCellRend
         Object o = ((DefaultMutableTreeNode) value).getUserObject();
         if (o instanceof ACAQDataSlot) {
             ACAQDataSlot slot = (ACAQDataSlot) o;
-            setText(slot.getName());
+            if (!StringUtils.isNullOrEmpty(slot.getDefinition().getCustomName())) {
+                setText("<html><i>" + slot.getDefinition().getCustomName() + "</i> [" + slot.getName() + "]</html>");
+            } else {
+                setText(slot.getName());
+            }
             setIcon(ACAQUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()));
         } else {
             setText(o.toString());

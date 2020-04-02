@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
  */
 public class ACAQDataSlot implements TableModel {
     private ACAQAlgorithm algorithm;
+    private ACAQSlotDefinition definition;
     private String name;
     private Class<? extends ACAQData> acceptedDataType;
     private SlotType slotType;
@@ -40,16 +41,15 @@ public class ACAQDataSlot implements TableModel {
     /**
      * Creates a new slot
      *
-     * @param algorithm        The algorithm that contains the slot
-     * @param slotType         The slot type
-     * @param name             The unique slot name
-     * @param acceptedDataType The accepted data type
+     * @param definition
+     * @param algorithm  The algorithm that contains the slot
      */
-    public ACAQDataSlot(ACAQAlgorithm algorithm, SlotType slotType, String name, Class<? extends ACAQData> acceptedDataType) {
+    public ACAQDataSlot(ACAQSlotDefinition definition, ACAQAlgorithm algorithm) {
+        this.definition = definition;
         this.algorithm = algorithm;
-        this.name = name;
-        this.slotType = slotType;
-        this.acceptedDataType = acceptedDataType;
+        this.name = definition.getName();
+        this.slotType = definition.getSlotType();
+        this.acceptedDataType = definition.getDataClass();
     }
 
     /**
@@ -533,6 +533,10 @@ public class ACAQDataSlot implements TableModel {
         data.clear();
         annotationColumns.clear();
         annotations.clear();
+    }
+
+    public ACAQSlotDefinition getDefinition() {
+        return definition;
     }
 
     /**
