@@ -5,6 +5,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.acaq5.api.ACAQAlgorithmGraphEdge;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
@@ -13,16 +14,17 @@ import org.hkijena.acaq5.api.events.AlgorithmGraphConnectedEvent;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.acaq5.ui.events.DefaultUIActionRequestedEvent;
 import org.hkijena.acaq5.utils.ScreenImage;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.traverse.TopologicalOrderIterator;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * UI that displays an {@link ACAQAlgorithmGraph}
@@ -137,15 +139,16 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
      * Auto-layouts all UIs
      */
     public void autoLayoutAll() {
-        int backup = newEntryLocationX;
-        newEntryLocationX = 0;
-        for (ACAQAlgorithm algorithm : ImmutableList.copyOf(nodeUIs.keySet())) {
-            algorithm.setLocationWithin(compartment, null);
-            remove(nodeUIs.get(algorithm));
-        }
-        nodeUIs.clear();
-        addNewNodes();
-        newEntryLocationX = backup;
+//        int backup = newEntryLocationX;
+//        newEntryLocationX = 0;
+//        for (ACAQAlgorithm algorithm : ImmutableList.copyOf(nodeUIs.keySet())) {
+//            algorithm.setLocationWithin(compartment, null);
+//            remove(nodeUIs.get(algorithm));
+//        }
+//        nodeUIs.clear();
+//        addNewNodes();
+//        newEntryLocationX = backup;
+        autoLayoutSugiyama();
     }
 
     private void autoPlaceAlgorithm(ACAQAlgorithmUI ui) {
@@ -504,5 +507,149 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
      */
     public BufferedImage createScreenshot() {
         return ScreenImage.createImage(this);
+    }
+
+    /**
+     * Uses the Method by Sugiyama.
+     * Code was adapted from https://blog.disy.net/sugiyama-method/
+     */
+    private void autoLayoutSugiyama() {
+        // Create an algorithm UI graph
+        DefaultDirectedGraph<SugiyamaVertex, DefaultEdge> sugiyamaGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
+        Map<ACAQAlgorithmUI, SugiyamaVertex> vertexMap = new HashMap<>();
+        for (ACAQAlgorithmUI ui : nodeUIs.values()) {
+            SugiyamaVertex sugiyamaVertex = new SugiyamaVertex(ui);
+            sugiyamaGraph.addVertex(sugiyamaVertex);
+            vertexMap.put(ui, sugiyamaVertex);
+        }
+        for (ACAQAlgorithmGraphEdge edge : algorithmGraph.getGraph().edgeSet()) {
+            ACAQAlgorithmUI sourceUI = nodeUIs.getOrDefault(algorithmGraph.getGraph().getEdgeSource(edge).getAlgorithm(), null);
+            ACAQAlgorithmUI targetUI = nodeUIs.getOrDefault(algorithmGraph.getGraph().getEdgeTarget(edge).getAlgorithm(), null);
+            if(sourceUI == null || targetUI == null)
+                continue;
+            if(sourceUI.getAlgorithm() == targetUI.getAlgorithm())
+                continue;
+            if(!sugiyamaGraph.containsEdge(vertexMap.get(sourceUI), vertexMap.get(targetUI)))
+                sugiyamaGraph.addEdge(vertexMap.get(sourceUI), vertexMap.get(targetUI));
+        }
+
+
+        // Skip: Remove cycles. ACAQAlgorithmGraph ensures that there are none
+
+        // Assign layerIndices
+        int maxLayer = 0;
+        for (SugiyamaVertex vertex : ImmutableList.copyOf(new TopologicalOrderIterator<>(sugiyamaGraph))) {
+            for (DefaultEdge edge : sugiyamaGraph.incomingEdgesOf(vertex)) {
+                SugiyamaVertex source = sugiyamaGraph.getEdgeSource(edge);
+                vertex.layer = Math.max(vertex.layer, source.layer) + 1;
+                maxLayer = Math.max(maxLayer, vertex.layer);
+            }
+        }
+
+        // Create virtual vertices
+        for (DefaultEdge edge : ImmutableList.copyOf(sugiyamaGraph.edgeSet())) {
+            SugiyamaVertex source = sugiyamaGraph.getEdgeSource(edge);
+            SugiyamaVertex target = sugiyamaGraph.getEdgeTarget(edge);
+            int layerDifference = target.layer - source.layer;
+            assert layerDifference >= 1;
+            if(layerDifference > 1) {
+                sugiyamaGraph.removeEdge(source, target);
+                SugiyamaVertex lastLayer = source;
+                for(int layer = source.layer + 1; layer < target.layer; ++layer) {
+                    SugiyamaVertex virtual = new SugiyamaVertex();
+                    virtual.layer = layer;
+                    sugiyamaGraph.addVertex(virtual);
+                    sugiyamaGraph.addEdge(lastLayer, virtual);
+                    lastLayer = virtual;
+                }
+                sugiyamaGraph.addEdge(lastLayer, target);
+            }
+        }
+
+        // Assign the row for each layer
+        int maxIndex = 0;
+        for(int layer = 0; layer <= maxLayer; ++layer) {
+            int row = 0;
+            for (SugiyamaVertex vertex : sugiyamaGraph.vertexSet()) {
+                if(vertex.layer == layer) {
+                    vertex.index = row++;
+                    maxIndex = Math.max(maxIndex, vertex.index);
+                }
+            }
+        }
+
+        // Reorder columns (23 is a magic number from the paper)
+        for(int i = 0; i < 23; ++i) {
+
+        }
+
+        // Create a table of column -> row -> vertex
+        int maxRow = maxIndex;
+        int maxColumn = maxLayer;
+        Map<Integer, Map<Integer, SugiyamaVertex>> vertexTable = new HashMap<>();
+        for(SugiyamaVertex vertex : sugiyamaGraph.vertexSet()) {
+            Map<Integer, SugiyamaVertex> column = vertexTable.getOrDefault(vertex.layer, null);
+            if(column == null) {
+                column = new HashMap<>();
+                vertexTable.put(vertex.layer, column);
+            }
+            column.put(vertex.index, vertex);
+        }
+
+        // Calculate widths and heights
+        Map<Integer, Integer> columnWidths = new HashMap<>();
+        Map<Integer, Integer> rowHeights = new HashMap<>();
+        for(SugiyamaVertex vertex : sugiyamaGraph.vertexSet()) {
+            if(!vertex.virtual) {
+                int column = vertex.layer;
+                int row = vertex.index;
+                int columnWidth = Math.max(vertex.algorithmUI.getWidth(), columnWidths.getOrDefault(column, 0));
+                int rowHeight = Math.max(vertex.algorithmUI.getHeight(), rowHeights.getOrDefault(row, 0));
+                columnWidths.put(column, columnWidth);
+                rowHeights.put(row,  rowHeight);
+            }
+        }
+        for (int column : columnWidths.keySet()) {
+            columnWidths.put(column, columnWidths.get(column) + 2 * ACAQAlgorithmUI.SLOT_UI_WIDTH);
+        }
+        for (int row : rowHeights.keySet()) {
+            rowHeights.put(row, rowHeights.get(row) + ACAQAlgorithmUI.SLOT_UI_HEIGHT);
+        }
+
+        // Rearrange algorithms
+        int x = ACAQAlgorithmUI.SLOT_UI_WIDTH;
+        for(int column = 0; column <= maxColumn; ++column) {
+            Map<Integer, SugiyamaVertex> columnMap = vertexTable.get(column);
+            int y = ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+            for(int row = 0; row <= maxRow; ++row) {
+                SugiyamaVertex vertex = columnMap.getOrDefault(row, null);
+                if(vertex != null && !vertex.virtual) {
+                    ACAQAlgorithmUI ui = vertex.algorithmUI;
+                    ui.setLocation(x, y);
+                }
+                y += rowHeights.getOrDefault(row, 0);
+            }
+            x += columnWidths.get(column);
+        }
+
+        repaint();
+    }
+
+    /**
+     * Used for autoLayoutSugiyama()
+     */
+    private static class SugiyamaVertex {
+        private ACAQAlgorithmUI algorithmUI;
+        private int layer = 0;
+        private int index = 0;
+        private boolean virtual = false;
+
+        private SugiyamaVertex(ACAQAlgorithmUI algorithmUI) {
+            this.algorithmUI = algorithmUI;
+        }
+
+        public SugiyamaVertex() {
+            this.virtual = true;
+        }
     }
 }
