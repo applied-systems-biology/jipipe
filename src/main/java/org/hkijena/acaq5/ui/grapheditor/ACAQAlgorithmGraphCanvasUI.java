@@ -11,6 +11,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.AlgorithmGraphConnectedEvent;
+import org.hkijena.acaq5.ui.components.PickAlgorithmDialog;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.acaq5.ui.events.DefaultUIActionRequestedEvent;
 import org.hkijena.acaq5.utils.ScreenImage;
@@ -24,8 +25,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 /**
  * UI that displays an {@link ACAQAlgorithmGraph}
@@ -39,7 +40,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     private int newEntryLocationX = ACAQAlgorithmUI.SLOT_UI_WIDTH * 4;
     private boolean layoutHelperEnabled;
     private String compartment;
-    private PopupMenu contextMenu;
+    private JPopupMenu contextMenu;
 
     /**
      * Creates a new UI
@@ -64,8 +65,24 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     }
 
     private void initializeContextMenu() {
-        contextMenu = new PopupMenu();
-        JMenuItem moveHereItem = new JMenuItem("Move node here ...", UIUtils.getIconFromResources("move.png"))
+        contextMenu = new JPopupMenu();
+        JMenuItem moveHereItem = new JMenuItem("Move node here ...", UIUtils.getIconFromResources("move.png"));
+        moveHereItem.setToolTipText("Move a specified node to the mouse position");
+        moveHereItem.addActionListener(e -> moveNodeHere());
+        contextMenu.add(moveHereItem);
+    }
+
+    private void moveNodeHere() {
+        Point mouseLocation = MouseInfo.getPointerInfo().getLocation();
+        SwingUtilities.convertPointFromScreen(mouseLocation, this);
+        ACAQAlgorithm algorithm = PickAlgorithmDialog.showDialog(this, nodeUIs.keySet(), "Move node");
+        if (algorithm != null) {
+            ACAQAlgorithmUI ui = nodeUIs.getOrDefault(algorithm, null);
+            if (ui != null) {
+                ui.trySetLocationInGrid(mouseLocation.x, mouseLocation.y);
+                repaint();
+            }
+        }
     }
 
     /**
@@ -242,6 +259,13 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             ACAQAlgorithmUI ui = pickComponent(mouseEvent);
             if (ui != null)
                 eventBus.post(new DefaultUIActionRequestedEvent(ui));
+        } else if (SwingUtilities.isRightMouseButton(mouseEvent)) {
+            ACAQAlgorithmUI ui = pickComponent(mouseEvent);
+            if (ui != null) {
+                ui.getContextMenu().show(this, mouseEvent.getX(), mouseEvent.getY());
+            } else {
+                contextMenu.show(this, mouseEvent.getX(), mouseEvent.getY());
+            }
         }
     }
 
@@ -533,11 +557,11 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         for (ACAQAlgorithmGraphEdge edge : algorithmGraph.getGraph().edgeSet()) {
             ACAQAlgorithmUI sourceUI = nodeUIs.getOrDefault(algorithmGraph.getGraph().getEdgeSource(edge).getAlgorithm(), null);
             ACAQAlgorithmUI targetUI = nodeUIs.getOrDefault(algorithmGraph.getGraph().getEdgeTarget(edge).getAlgorithm(), null);
-            if(sourceUI == null || targetUI == null)
+            if (sourceUI == null || targetUI == null)
                 continue;
-            if(sourceUI.getAlgorithm() == targetUI.getAlgorithm())
+            if (sourceUI.getAlgorithm() == targetUI.getAlgorithm())
                 continue;
-            if(!sugiyamaGraph.containsEdge(vertexMap.get(sourceUI), vertexMap.get(targetUI)))
+            if (!sugiyamaGraph.containsEdge(vertexMap.get(sourceUI), vertexMap.get(targetUI)))
                 sugiyamaGraph.addEdge(vertexMap.get(sourceUI), vertexMap.get(targetUI));
         }
 
@@ -560,10 +584,10 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             SugiyamaVertex target = sugiyamaGraph.getEdgeTarget(edge);
             int layerDifference = target.layer - source.layer;
             assert layerDifference >= 1;
-            if(layerDifference > 1) {
+            if (layerDifference > 1) {
                 sugiyamaGraph.removeEdge(source, target);
                 SugiyamaVertex lastLayer = source;
-                for(int layer = source.layer + 1; layer < target.layer; ++layer) {
+                for (int layer = source.layer + 1; layer < target.layer; ++layer) {
                     SugiyamaVertex virtual = new SugiyamaVertex();
                     virtual.layer = layer;
                     sugiyamaGraph.addVertex(virtual);
@@ -576,10 +600,10 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
         // Assign the row for each layer
         int maxIndex = 0;
-        for(int layer = 0; layer <= maxLayer; ++layer) {
+        for (int layer = 0; layer <= maxLayer; ++layer) {
             int row = 0;
             for (SugiyamaVertex vertex : sugiyamaGraph.vertexSet()) {
-                if(vertex.layer == layer) {
+                if (vertex.layer == layer) {
                     vertex.index = row++;
                     maxIndex = Math.max(maxIndex, vertex.index);
                 }
@@ -595,9 +619,9 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         int maxRow = maxIndex;
         int maxColumn = maxLayer;
         Map<Integer, Map<Integer, SugiyamaVertex>> vertexTable = new HashMap<>();
-        for(SugiyamaVertex vertex : sugiyamaGraph.vertexSet()) {
+        for (SugiyamaVertex vertex : sugiyamaGraph.vertexSet()) {
             Map<Integer, SugiyamaVertex> column = vertexTable.getOrDefault(vertex.layer, null);
-            if(column == null) {
+            if (column == null) {
                 column = new HashMap<>();
                 vertexTable.put(vertex.layer, column);
             }
@@ -607,14 +631,14 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         // Calculate widths and heights
         Map<Integer, Integer> columnWidths = new HashMap<>();
         Map<Integer, Integer> rowHeights = new HashMap<>();
-        for(SugiyamaVertex vertex : sugiyamaGraph.vertexSet()) {
-            if(!vertex.virtual) {
+        for (SugiyamaVertex vertex : sugiyamaGraph.vertexSet()) {
+            if (!vertex.virtual) {
                 int column = vertex.layer;
                 int row = vertex.index;
                 int columnWidth = Math.max(vertex.algorithmUI.getWidth(), columnWidths.getOrDefault(column, 0));
                 int rowHeight = Math.max(vertex.algorithmUI.getHeight(), rowHeights.getOrDefault(row, 0));
                 columnWidths.put(column, columnWidth);
-                rowHeights.put(row,  rowHeight);
+                rowHeights.put(row, rowHeight);
             }
         }
         for (int column : columnWidths.keySet()) {
@@ -626,12 +650,12 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
         // Rearrange algorithms
         int x = ACAQAlgorithmUI.SLOT_UI_WIDTH;
-        for(int column = 0; column <= maxColumn; ++column) {
+        for (int column = 0; column <= maxColumn; ++column) {
             Map<Integer, SugiyamaVertex> columnMap = vertexTable.get(column);
             int y = ACAQAlgorithmUI.SLOT_UI_HEIGHT;
-            for(int row = 0; row <= maxRow; ++row) {
+            for (int row = 0; row <= maxRow; ++row) {
                 SugiyamaVertex vertex = columnMap.getOrDefault(row, null);
-                if(vertex != null && !vertex.virtual) {
+                if (vertex != null && !vertex.virtual) {
                     ACAQAlgorithmUI ui = vertex.algorithmUI;
                     ui.setLocation(x, y);
                 }

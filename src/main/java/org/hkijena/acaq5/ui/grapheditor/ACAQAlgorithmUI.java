@@ -49,6 +49,7 @@ public class ACAQAlgorithmUI extends JPanel {
     private Color borderColor;
 
     private boolean selected;
+    private JPopupMenu contextMenu;
 
     /**
      * Creates a new UI
@@ -82,7 +83,8 @@ public class ACAQAlgorithmUI extends JPanel {
         nameLabel = new JLabel(algorithm.getName());
         JButton openSettingsButton = new JButton(UIUtils.getIconFromResources("wrench.png"));
         UIUtils.makeFlat25x25(openSettingsButton);
-        initializeContextMenu(UIUtils.addPopupMenuToComponent(openSettingsButton));
+        contextMenu = UIUtils.addPopupMenuToComponent(openSettingsButton);
+        initializeContextMenu();
 
 //        initializeContextMenu(UIUtils.addContextMenuToComponent(this));
 
@@ -115,30 +117,34 @@ public class ACAQAlgorithmUI extends JPanel {
         });
     }
 
-    private void initializeContextMenu(JPopupMenu menu) {
+    public JPopupMenu getContextMenu() {
+        return contextMenu;
+    }
+
+    private void initializeContextMenu() {
         JMenuItem selectOnlyButton = new JMenuItem("Open settings", UIUtils.getIconFromResources("cog.png"));
         selectOnlyButton.addActionListener(e -> eventBus.post(new AlgorithmSelectedEvent(this, false)));
-        menu.add(selectOnlyButton);
+        contextMenu.add(selectOnlyButton);
 
         JMenuItem addToSelectionButton = new JMenuItem("Add to selection", UIUtils.getIconFromResources("select.png"));
         addToSelectionButton.addActionListener(e -> eventBus.post(new AlgorithmSelectedEvent(this, true)));
-        menu.add(addToSelectionButton);
+        contextMenu.add(addToSelectionButton);
 
-        menu.addSeparator();
+        contextMenu.addSeparator();
 
         if (algorithm instanceof ACAQProjectCompartment) {
             JMenuItem deleteButton = new JMenuItem("Delete compartment", UIUtils.getIconFromResources("delete.png"));
             deleteButton.addActionListener(e -> removeCompartment());
-            menu.add(deleteButton);
+            contextMenu.add(deleteButton);
         } else if (algorithm instanceof ACAQTraitNode) {
             JMenuItem deleteButton = new JMenuItem("Delete annotation", UIUtils.getIconFromResources("delete.png"));
             deleteButton.addActionListener(e -> removeTrait());
-            menu.add(deleteButton);
+            contextMenu.add(deleteButton);
         } else {
             JMenuItem deleteButton = new JMenuItem("Delete algorithm", UIUtils.getIconFromResources("delete.png"));
             deleteButton.setEnabled(graphUI.getAlgorithmGraph().canUserDelete(algorithm));
             deleteButton.addActionListener(e -> removeAlgorithm());
-            menu.add(deleteButton);
+            contextMenu.add(deleteButton);
         }
 
     }
