@@ -82,6 +82,7 @@ public class ACAQTraitGraphUI extends ACAQJsonExtensionWorkbenchPanel implements
         documentationPanel.setDocument(MarkdownDocument.fromPluginResource("documentation/trait-graph.md"));
 
         graphUI = new ACAQAlgorithmGraphCanvasUI(graph, COMPARTMENT_DEFAULT);
+        graphUI.autoLayoutAll();
         graphUI.getEventBus().register(this);
         graphUI.addMouseListener(this);
         graphUI.addMouseMotionListener(this);

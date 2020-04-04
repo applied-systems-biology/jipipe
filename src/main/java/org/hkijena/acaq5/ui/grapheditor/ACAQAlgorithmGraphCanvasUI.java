@@ -578,10 +578,10 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             }
         }
 
-        // Reorder columns (23 is a magic number from the paper)
-        for(int i = 0; i < 23; ++i) {
-
-        }
+//        // Reorder columns (23 is a magic number from the paper)
+//        for(int i = 0; i < 23; ++i) {
+//
+//        }
 
         // Create a table of column -> row -> vertex
         int maxRow = maxIndex;
