@@ -14,6 +14,7 @@ import org.hkijena.acaq5.api.events.AlgorithmGraphConnectedEvent;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.acaq5.ui.events.DefaultUIActionRequestedEvent;
 import org.hkijena.acaq5.utils.ScreenImage;
+import org.hkijena.acaq5.utils.UIUtils;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.TopologicalOrderIterator;
@@ -38,6 +39,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     private int newEntryLocationX = ACAQAlgorithmUI.SLOT_UI_WIDTH * 4;
     private boolean layoutHelperEnabled;
     private String compartment;
+    private PopupMenu contextMenu;
 
     /**
      * Creates a new UI
@@ -58,6 +60,12 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         setBackground(Color.WHITE);
         addMouseListener(this);
         addMouseMotionListener(this);
+        initializeContextMenu();
+    }
+
+    private void initializeContextMenu() {
+        contextMenu = new PopupMenu();
+        JMenuItem moveHereItem = new JMenuItem("Move node here ...", UIUtils.getIconFromResources("move.png"))
     }
 
     /**
