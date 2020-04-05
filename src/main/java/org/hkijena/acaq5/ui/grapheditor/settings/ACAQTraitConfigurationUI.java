@@ -41,7 +41,9 @@ public class ACAQTraitConfigurationUI extends JPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        traitPicker = new ACAQTraitPicker(ACAQTraitPicker.Mode.Multiple,
+        boolean canEditTraits = slot.isOutput() && slot.getAlgorithm().getTraitConfiguration() instanceof ACAQMutableTraitConfiguration &&
+                !((ACAQMutableTraitConfiguration) slot.getAlgorithm().getTraitConfiguration()).isTraitModificationsSealed();
+        traitPicker = new ACAQTraitPicker(canEditTraits ? ACAQTraitPicker.Mode.Multiple : ACAQTraitPicker.Mode.NonInteractive,
                 new HashSet<>(ACAQTraitRegistry.getInstance().getRegisteredTraits().values().stream().filter(d -> !d.isHidden()).collect(Collectors.toSet())));
         traitPicker.getEventBus().register(this);
         add(traitPicker, BorderLayout.CENTER);
