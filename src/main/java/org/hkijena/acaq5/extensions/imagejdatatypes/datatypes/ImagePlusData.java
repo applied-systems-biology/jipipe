@@ -16,6 +16,12 @@ import java.nio.file.Path;
 @ACAQOrganization(menuPath = "Images")
 public class ImagePlusData implements ACAQData {
 
+    /**
+     * The dimensionality of this data.
+     * -1 means that we do not have information about the dimensionality
+     */
+    public static final int DIMENSIONALITY = -1;
+
     private ImagePlus image;
 
     /**
@@ -41,5 +47,18 @@ public class ImagePlusData implements ACAQData {
     @Override
     public void saveTo(Path storageFilePath, String name) {
         IJ.saveAsTiff(image, storageFilePath.resolve(name + ".tif").toString());
+    }
+
+    /**
+     * Gets the dimensionality of {@link ImagePlusData}
+     * @param klass the class
+     * @return the dimensionality
+     */
+    public static int getDimensionalityOf(Class<? extends ImagePlusData> klass) {
+        try {
+            return klass.getDeclaredField("DIMENSIONALITY").getInt(null);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

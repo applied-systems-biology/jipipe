@@ -2,6 +2,7 @@ package org.hkijena.acaq5.extensions.imagejdatatypes;
 
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
+import org.hkijena.acaq5.extensions.imagejdatatypes.algorithms.ImageTypeConverter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.compat.ImgPlusDataImageJAdapter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.compat.ROIDataImageJAdapter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.compat.ResultsTableDataImageJAdapter;
@@ -122,6 +123,7 @@ public class ImageJDataTypesExtension extends ACAQPrepackagedDefaultJavaExtensio
 
         // Register algorithms
         registerAlgorithm("external-imagej-macro", MacroWrapperAlgorithm.class);
+        registerAlgorithm("convert-imagej-image", ImageTypeConverter.class);
 
         // Register parameter editors
         registerParameterType(MacroCode.class, MacroParameterEditorUI.class, "ImageJ macro", "An ImageJ macro code");

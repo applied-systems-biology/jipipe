@@ -11,10 +11,20 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 @ACAQDocumentation(name = "3D image")
 @ACAQOrganization(menuPath = "Images\n3D")
 public class ImagePlus3DData extends ImagePlusData {
+
+    /**
+     * The dimensionality of this data
+     */
+    public static final int DIMENSIONALITY = 3;
+
     /**
      * @param image wrapped image
      */
     public ImagePlus3DData(ImagePlus image) {
         super(image);
+
+        if(image.getNDimensions() > 3) {
+            throw new IllegalArgumentException("Trying to fit higher-dimensional data into 3D data!");
+        }
     }
 }

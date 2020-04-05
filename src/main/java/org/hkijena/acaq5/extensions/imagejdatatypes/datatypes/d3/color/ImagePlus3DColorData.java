@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d3.color;
 
 import ij.ImagePlus;
+import ij.process.ImageConverter;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
@@ -11,10 +12,23 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData
 @ACAQDocumentation(name = "3D image (color)")
 @ACAQOrganization(menuPath = "Images\n3D\nColor")
 public class ImagePlus3DColorData extends ImagePlus3DData {
+
+    /**
+     * The dimensionality of this data
+     */
+    public static final int DIMENSIONALITY = 3;
+
     /**
      * @param image wrapped image
      */
     public ImagePlus3DColorData(ImagePlus image) {
         super(image);
+
+        // Apply conversion
+        if(image.getType() != ImagePlus.COLOR_256 && image.getType() != ImagePlus.COLOR_RGB) {
+            System.out.println("[WARNING] Attempt to store non-color data into a color image. Converting to RGB.");
+            ImageConverter ic = new ImageConverter(image);
+            ic.convertToRGB();
+        }
     }
 }
