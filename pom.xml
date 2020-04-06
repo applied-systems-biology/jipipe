@@ -100,6 +100,10 @@ See the LICENSE file provided with this code for the full license.
             <artifactId>imglib2-ij</artifactId>
         </dependency>
         <dependency>
+            <groupId>net.imagej</groupId>
+            <artifactId>imagej-legacy</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.scijava</groupId>
             <artifactId>scijava-log-slf4j</artifactId>
         </dependency>

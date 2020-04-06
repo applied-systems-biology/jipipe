@@ -4,6 +4,7 @@ import org.hkijena.acaq5.api.ACAQMutableRunConfiguration;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.ACAQRunnerStatus;
+import org.scijava.Context;
 import org.scijava.app.StatusService;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
@@ -18,6 +19,10 @@ import java.io.IOException;
  */
 @Plugin(type = Command.class, menuPath = "Plugins>ACAQ5>Run ACAQ5 project")
 public class ACAQRunCommand implements Command {
+
+    @Parameter
+    private Context context;
+
     @Parameter
     private StatusService status;
 
@@ -32,7 +37,7 @@ public class ACAQRunCommand implements Command {
 
     @Override
     public void run() {
-        ACAQDefaultRegistry.instantiate(pluginService);
+        ACAQDefaultRegistry.instantiate(context);
         try {
             ACAQProject project = ACAQProject.loadProject(parameterFile.toPath());
             project.setWorkDirectory(parameterFile.toPath().getParent());

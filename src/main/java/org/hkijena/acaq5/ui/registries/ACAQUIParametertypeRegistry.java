@@ -83,6 +83,15 @@ public class ACAQUIParametertypeRegistry {
         }
     }
 
+    /**
+     * Returns true if there is an editor for the parameter
+     * @param parameterType the parameter type
+     * @return if there is an editor for the parameter
+     */
+    public boolean hasEditorFor(Class<?> parameterType) {
+        return parameterTypes.containsKey(parameterType);
+    }
+
     public static ACAQUIParametertypeRegistry getInstance() {
         return ACAQDefaultRegistry.getInstance().getUIParametertypeRegistry();
     }

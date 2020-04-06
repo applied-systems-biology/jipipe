@@ -11,14 +11,16 @@ import org.hkijena.acaq5.api.traits.ACAQTraitIconRef;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors.*;
 import org.hkijena.acaq5.utils.PathFilter;
+import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
+import java.io.File;
 import java.nio.file.Path;
 
 /**
  * Provides some standard parameters
  */
-@Plugin(type = ACAQJavaExtension.class)
+@Plugin(type = ACAQJavaExtension.class, priority = Priority.FIRST)
 public class StandardParameterEditorsExtension extends ACAQPrepackagedDefaultJavaExtension {
 
     @Override
@@ -45,6 +47,7 @@ public class StandardParameterEditorsExtension extends ACAQPrepackagedDefaultJav
     public void register() {
         // Register parameter editor UIs
         registerParameterType(Path.class, FilePathParameterEditorUI.class, "Filesystem path", "A path");
+        registerParameterType(File.class, FileParameterEditorUI.class, "Filesystem path (legacy)", "A path (legacy)");
         registerParameterType(int.class, IntegerParameterEditorUI.class, "Integer number", "A integral number");
         registerParameterType(double.class, DoubleParameterEditorUI.class, "Floating point number (double)", "A floating point number with double precision");
         registerParameterType(float.class, FloatParameterEditorUI.class, "Floating point number (single)", "A floating point number with single precision");

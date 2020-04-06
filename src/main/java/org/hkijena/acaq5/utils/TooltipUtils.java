@@ -128,7 +128,7 @@ public class TooltipUtils {
                 builder.append("<tr><td><i>Input</i></td><td><i>Output</i></td></tr>");
                 for (int i = 0; i < displayedSlots; ++i) {
                     Class<? extends ACAQData> inputSlot = i < inputSlots.size() ? inputSlots.get(i).value() : null;
-                    Class<? extends ACAQData> outputSlot = i < inputSlots.size() ? outputSlots.get(i).value() : null;
+                    Class<? extends ACAQData> outputSlot = i < outputSlots.size() ? outputSlots.get(i).value() : null;
                     builder.append("<tr>");
                     if (inputSlot != null) {
                         builder.append("<td>");

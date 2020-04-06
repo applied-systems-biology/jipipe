@@ -18,6 +18,7 @@ public class ACAQJavaAlgorithmRegistrationTask extends ACAQDefaultAlgorithmRegis
     private ACAQDependency source;
     private String id;
     private Class<? extends ACAQAlgorithm> algorithmClass;
+    private boolean alreadyRegistered = false;
 
     /**
      * Creates a new registration task
@@ -53,6 +54,9 @@ public class ACAQJavaAlgorithmRegistrationTask extends ACAQDefaultAlgorithmRegis
 
     @Override
     public void register() {
+        if(alreadyRegistered)
+            return;
+        alreadyRegistered = true;
         ACAQAlgorithmRegistry.getInstance().register(new ACAQJavaAlgorithmDeclaration(id, algorithmClass), source);
     }
 

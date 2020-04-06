@@ -18,6 +18,7 @@ public class GraphWrapperAlgorithmRegistrationTask extends ACAQDefaultAlgorithmR
 
     private JsonNode jsonNode;
     private ACAQDependency source;
+    private boolean alreadyRegistered = false;
 
     /**
      * @param jsonNode The JSON serialized graph wrapper algorithm
@@ -52,6 +53,9 @@ public class GraphWrapperAlgorithmRegistrationTask extends ACAQDefaultAlgorithmR
 
     @Override
     public void register() {
+        if(alreadyRegistered)
+            return;
+        alreadyRegistered = true;
         try {
             GraphWrapperAlgorithmDeclaration declaration = JsonUtils.getObjectMapper().readerFor(GraphWrapperAlgorithmDeclaration.class).readValue(jsonNode);
             ACAQAlgorithmRegistry.getInstance().register(declaration, source);

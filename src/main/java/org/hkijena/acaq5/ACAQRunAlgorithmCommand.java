@@ -43,7 +43,7 @@ public class ACAQRunAlgorithmCommand extends DynamicCommand implements Initializ
 
     @Override
     public void run() {
-        ACAQDefaultRegistry.instantiate(getContext().getService(PluginService.class));
+        ACAQDefaultRegistry.instantiate(getContext());
         ACAQAlgorithm algorithm;
         SingleImageJAlgorithmRun settings;
         if (StringUtils.isNullOrEmpty(algorithmId) || StringUtils.isNullOrEmpty(algorithmParameters)) {

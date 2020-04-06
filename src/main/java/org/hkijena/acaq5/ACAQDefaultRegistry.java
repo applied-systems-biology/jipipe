@@ -6,7 +6,9 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.events.ExtensionRegisteredEvent;
 import org.hkijena.acaq5.api.registries.*;
 import org.hkijena.acaq5.ui.registries.*;
+import org.scijava.Context;
 import org.scijava.InstantiableException;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
@@ -34,6 +36,8 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
     private ACAQTableAnalyzerUIOperationRegistry tableAnalyzerUIOperationRegistry = new ACAQTableAnalyzerUIOperationRegistry();
     private ACAQImageJAdapterRegistry imageJDataAdapterRegistry = new ACAQImageJAdapterRegistry();
     private ACAQUIImageJDatatypeAdapterRegistry uiImageJDatatypeAdapterRegistry = new ACAQUIImageJDatatypeAdapterRegistry();
+
+    @Parameter
     private PluginService pluginService;
 
 
@@ -60,15 +64,14 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
         tableAnalyzerUIOperationRegistry = new ACAQTableAnalyzerUIOperationRegistry();
         imageJDataAdapterRegistry = new ACAQImageJAdapterRegistry();
         uiImageJDatatypeAdapterRegistry = new ACAQUIImageJDatatypeAdapterRegistry();
-        discover(pluginService);
+        discover();
     }
 
     /**
      * Discovers extension services that provide new ACAQ5 modules
      *
-     * @param pluginService The plugin service
      */
-    private void discover(PluginService pluginService) {
+    private void discover() {
         IJ.showStatus("Initializing ACAQ5 ...");
         List<PluginInfo<ACAQJavaExtension>> pluginList = pluginService.getPluginsOfType(ACAQJavaExtension.class).stream()
                 .sorted(ACAQDefaultRegistry::comparePlugins).collect(Collectors.toList());
@@ -78,7 +81,11 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
             System.out.println("ACAQ5: Registering plugin " + info);
             try {
                 ACAQJavaExtension extension = info.createInstance();
+                getContext().inject(extension);
                 extension.setRegistry(this);
+                if(extension instanceof AbstractService) {
+                    ((AbstractService) extension).setContext(getContext());
+                }
                 extension.register();
                 registeredExtensions.add(extension);
                 registeredExtensionIds.add(extension.getDependencyId());
@@ -191,6 +198,10 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
         return registeredExtensions.stream().filter(d -> Objects.equals(dependencyId, d.getDependencyId())).findFirst().orElse(null);
     }
 
+    public PluginService getPluginService() {
+        return pluginService;
+    }
+
     /**
      * @return Singleton instance
      */
@@ -201,15 +212,17 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
     /**
      * Instantiates the plugin service. This is done within {@link ACAQGUICommand}
      *
-     * @param pluginService The plugin service
+     * @param context the SciJava context
      */
-    public static void instantiate(PluginService pluginService) {
+    public static void instantiate(Context context) {
         if (instance == null) {
             try {
+                PluginService pluginService = context.getService(PluginService.class);
                 instance = (ACAQDefaultRegistry) pluginService.getPlugin(ACAQDefaultRegistry.class).createInstance();
-                instance.pluginService = pluginService;
+                context.inject(instance);
+                instance.setContext(context);
                 instance.installEvents();
-                instance.discover(pluginService);
+                instance.discover();
             } catch (InstantiableException e) {
                 throw new RuntimeException(e);
             }

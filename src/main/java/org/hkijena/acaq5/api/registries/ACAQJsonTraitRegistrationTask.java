@@ -16,6 +16,7 @@ public class ACAQJsonTraitRegistrationTask implements ACAQTraitRegistrationTask 
 
     private ACAQJsonTraitDeclaration declaration;
     private ACAQDependency source;
+    private boolean alreadyRegistered = false;
 
     /**
      * @param declaration The declaration
@@ -28,6 +29,9 @@ public class ACAQJsonTraitRegistrationTask implements ACAQTraitRegistrationTask 
 
     @Override
     public void register() {
+        if(alreadyRegistered)
+            return;
+        alreadyRegistered = true;
         declaration.updatedInheritedDeclarations();
         ACAQTraitRegistry.getInstance().register(declaration, source);
         if (declaration.getTraitIcon() != null && !StringUtils.isNullOrEmpty(declaration.getTraitIcon().getIconName())) {
