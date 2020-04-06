@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.annotation;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
@@ -9,6 +10,9 @@ import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Removes a specified annotation
@@ -40,7 +44,7 @@ public class RemoveAnnotations extends ACAQAlgorithm {
     }
 
     @Override
-    public void run() {
+    public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         for (ACAQDataSlot inputSlot : getInputSlots()) {
             ACAQDataSlot outputSlot = getSlots().get("Output " + inputSlot.getName());
             outputSlot.copyFrom(inputSlot);

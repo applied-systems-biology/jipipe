@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.annotation;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
@@ -15,6 +16,8 @@ import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
 
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Algorithm that splits the input data by a specified annotation
@@ -47,7 +50,7 @@ public class SplitByAnnotation extends ACAQAlgorithm {
     }
 
     @Override
-    public void run() {
+    public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ACAQDataSlot inputSlot = getFirstInputSlot();
         for (int row = 0; row < inputSlot.getRowCount(); ++row) {
             List<ACAQTrait> annotations = inputSlot.getAnnotations(row);

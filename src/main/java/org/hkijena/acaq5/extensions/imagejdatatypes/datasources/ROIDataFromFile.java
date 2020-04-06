@@ -2,12 +2,15 @@ package org.hkijena.acaq5.extensions.imagejdatatypes.datasources;
 
 import ij.gui.Roi;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.ACAQFileData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIData;
 
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Loads ROI data from a file via IJ.openFile()
@@ -35,7 +38,7 @@ public class ROIDataFromFile extends ACAQIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(ACAQDataInterface dataInterface) {
+    protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ACAQFileData fileData = dataInterface.getInputData(getFirstInputSlot());
         List<Roi> rois = ROIData.loadRoiListFromFile(fileData.getFilePath());
         dataInterface.addOutputData(getFirstOutputSlot(), new ROIData(rois));

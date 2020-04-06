@@ -139,6 +139,12 @@ public class ACAQRun implements ACAQRunnable {
             ACAQDataSlot slot = traversedSlots.get(i);
             onProgress.accept(new ACAQRunnerStatus(i, algorithmGraph.getSlotCount(), slot.getNameWithAlgorithmName()));
 
+            // Let algorithms provide sub-progress
+            String statusMessage = "Algorithm: " + slot.getAlgorithm().getName();
+            int traversionIndex = i;
+            Consumer<ACAQRunnerSubStatus> algorithmProgress = s -> onProgress.accept(new ACAQRunnerStatus(traversionIndex, algorithmGraph.getSlotCount(),
+                    statusMessage + " | " + s));
+
             if (slot.isInput()) {
                 // Copy data from source
                 ACAQDataSlot sourceSlot = algorithmGraph.getSourceSlot(slot);
@@ -149,8 +155,8 @@ public class ACAQRun implements ACAQRunnable {
             } else if (slot.isOutput()) {
                 // Ensure the algorithm has run
                 if (!executedAlgorithms.contains(slot.getAlgorithm()) && algorithmLimits.contains(slot.getAlgorithm())) {
-                    onProgress.accept(new ACAQRunnerStatus(i, algorithmGraph.getSlotCount(), "Algorithm: " + slot.getAlgorithm().getName()));
-                    slot.getAlgorithm().run();
+                    onProgress.accept(new ACAQRunnerStatus(i, algorithmGraph.getSlotCount(), statusMessage));
+                    slot.getAlgorithm().run(new ACAQRunnerSubStatus(), algorithmProgress, isCancelled);
                     executedAlgorithms.add(slot.getAlgorithm());
                 }
 

@@ -1,11 +1,15 @@
 package org.hkijena.acaq5.api.compartments.algorithms;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQIOSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * A graph compartment output
@@ -34,7 +38,7 @@ public class ACAQCompartmentOutput extends ACAQAlgorithm {
     }
 
     @Override
-    public void run() {
+    public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         for (ACAQDataSlot inputSlot : getInputSlots()) {
             ACAQDataSlot outputSlot = getSlots().get("Output " + inputSlot.getName());
             outputSlot.copyFrom(inputSlot);

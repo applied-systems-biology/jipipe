@@ -4,6 +4,7 @@ import ij.ImagePlus;
 import ij.plugin.filter.Binary;
 import ij.plugin.filter.EDM;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.traits.BadForTrait;
@@ -12,6 +13,9 @@ import org.hkijena.acaq5.api.data.traits.RemovesTrait;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleMaskData;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Applies distance transform watershed
@@ -53,7 +57,7 @@ public class WatershedMaskEnhancer extends ACAQIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(ACAQDataInterface dataInterface) {
+    protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlus2DGreyscaleMaskData inputData = dataInterface.getInputData(getFirstInputSlot());
         ImagePlus img = inputData.getImage();
 

@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.extensions.imagejdatatypes.algorithms;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.*;
@@ -9,6 +10,8 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Converts ImageJ data type into each other
@@ -32,7 +35,7 @@ public class ImageTypeConverter extends ACAQAlgorithm {
     }
 
     @Override
-    public void run() {
+    public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ACAQDataSlot inputSlot = getFirstInputSlot();
         ACAQDataSlot outputSlot = getFirstOutputSlot();
         for(int i = 0; i < inputSlot.getRowCount(); ++i) {

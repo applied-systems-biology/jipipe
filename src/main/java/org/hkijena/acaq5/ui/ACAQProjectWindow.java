@@ -197,7 +197,7 @@ public class ACAQProjectWindow extends JFrame {
             getProject().saveProject(savePath);
             setTitle(savePath.toString());
             projectSavePath = savePath;
-            projectUI.sendStatusBarText("Saved roject to " + savePath);
+            projectUI.sendStatusBarText("Saved project to " + savePath);
             ACAQApplicationSettings.getInstance().addRecentProject(savePath);
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -2,6 +2,7 @@ package org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.enhancers
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
+import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
@@ -9,6 +10,9 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Merges the input slot tables into one data slot
@@ -37,7 +41,7 @@ public class MergeDataEnhancer extends ACAQAlgorithm {
     }
 
     @Override
-    public void run() {
+    public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ACAQDataSlot outputSlot = getFirstOutputSlot();
         for (ACAQDataSlot inputSlot : getInputSlots()) {
             outputSlot.copyFrom(inputSlot);

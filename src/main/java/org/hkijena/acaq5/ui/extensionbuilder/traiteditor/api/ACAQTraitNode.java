@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api;
 
+import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
@@ -9,6 +10,9 @@ import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Structural node that encapsulates an {@link ACAQTraitDeclaration}
@@ -34,7 +38,7 @@ public class ACAQTraitNode extends ACAQAlgorithm {
     }
 
     @Override
-    public void run() {
+    public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
 
     }
 

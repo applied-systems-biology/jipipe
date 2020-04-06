@@ -2,10 +2,14 @@ package org.hkijena.acaq5.extensions.filesystem.api.algorithms;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
+import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.ACAQFolderData;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Applies subfolder navigation to each input folder
@@ -41,7 +45,7 @@ public class ACAQSubFolder extends ACAQIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(ACAQDataInterface dataInterface) {
+    protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ACAQFolderData inputFolder = dataInterface.getInputData("Folders");
         dataInterface.addOutputData("Subfolders", new ACAQFolderData(inputFolder.getFolderPath().resolve(subFolder)));
     }

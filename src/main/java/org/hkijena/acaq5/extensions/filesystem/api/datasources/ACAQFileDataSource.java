@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.extensions.filesystem.api.datasources;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
@@ -11,6 +12,8 @@ import org.hkijena.acaq5.ui.components.FileSelection;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Provides an input file
@@ -44,7 +47,7 @@ public class ACAQFileDataSource extends ACAQAlgorithm {
     }
 
     @Override
-    public void run() {
+    public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         getFirstOutputSlot().addData(new ACAQFileData(fileName));
     }
 

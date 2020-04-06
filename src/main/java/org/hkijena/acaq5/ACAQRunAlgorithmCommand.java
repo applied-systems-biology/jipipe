@@ -3,6 +3,7 @@ package org.hkijena.acaq5;
 import com.fasterxml.jackson.databind.JsonNode;
 import ij.IJ;
 import net.imagej.ImageJ;
+import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
@@ -17,7 +18,6 @@ import org.scijava.command.Command;
 import org.scijava.command.DynamicCommand;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.plugin.PluginService;
 
 import java.awt.*;
 import java.io.IOException;
@@ -89,7 +89,7 @@ public class ACAQRunAlgorithmCommand extends DynamicCommand implements Initializ
         IJ.showProgress(1, 3);
         settings.pushInput();
         IJ.showProgress(2, 3);
-        algorithm.run();
+        algorithm.run(new ACAQRunnerSubStatus(), s -> IJ.showStatus("Running ACAQ5 algorithm ... " + s), () -> false);
         IJ.showProgress(3, 3);
         settings.pullOutput();
     }

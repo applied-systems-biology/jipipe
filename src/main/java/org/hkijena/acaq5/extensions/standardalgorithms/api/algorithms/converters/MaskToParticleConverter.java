@@ -4,6 +4,7 @@ import ij.measure.ResultsTable;
 import ij.plugin.filter.ParticleAnalyzer;
 import ij.plugin.frame.RoiManager;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
@@ -13,6 +14,8 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleMaskData;
 
 import java.util.Arrays;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Converts a mask to ROI and ROI measurements
@@ -56,7 +59,7 @@ public class MaskToParticleConverter extends ACAQIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(ACAQDataInterface dataInterface) {
+    protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlus2DGreyscaleMaskData inputData = dataInterface.getInputData(getFirstInputSlot());
 
         ResultsTable resultsTable = new ResultsTable();

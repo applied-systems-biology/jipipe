@@ -2,6 +2,7 @@ package org.hkijena.acaq5.api.compartments.algorithms;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQProject;
+import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
@@ -11,6 +12,9 @@ import org.hkijena.acaq5.api.compartments.datatypes.ACAQCompartmentOutputData;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * A project compartment.
@@ -66,7 +70,7 @@ public class ACAQProjectCompartment extends ACAQAlgorithm {
     }
 
     @Override
-    public void run() {
+    public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
 
     }
 

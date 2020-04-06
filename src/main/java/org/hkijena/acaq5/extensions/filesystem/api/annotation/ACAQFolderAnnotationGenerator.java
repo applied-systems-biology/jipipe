@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.extensions.filesystem.api.annotation;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
@@ -10,6 +11,9 @@ import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.ACAQFolderData;
 import org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors.ACAQTraitDeclarationRefParameterSettings;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Algorithm that generates annotations from folder names
@@ -48,7 +52,7 @@ public class ACAQFolderAnnotationGenerator extends ACAQIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(ACAQDataInterface dataInterface) {
+    protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         if (generatedAnnotation.getDeclaration() != null) {
             ACAQFolderData inputData = dataInterface.getInputData(getFirstInputSlot());
             String discriminator = inputData.getFolderPath().getFileName().toString();

@@ -4,6 +4,7 @@ import ij.ImagePlus;
 import loci.formats.FormatException;
 import loci.plugins.in.*;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQData;
@@ -18,6 +19,8 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.Image
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleMaskData;
 
 import java.io.IOException;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * BioFormats importer wrapper
@@ -73,7 +76,7 @@ public class BioformatsImporter extends ACAQIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(ACAQDataInterface dataInterface) {
+    protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ACAQFileData inputFile = dataInterface.getInputData(getFirstInputSlot());
         ImporterOptions options;
         try {

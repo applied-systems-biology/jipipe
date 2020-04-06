@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro;
 
 import org.hkijena.acaq5.ACAQDependency;
+import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
@@ -18,6 +19,8 @@ import org.hkijena.acaq5.api.parameters.ACAQReflectionParameterAccess;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * An algorithm that wraps another algorithm graph
@@ -161,7 +164,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
     }
 
     @Override
-    public void run() {
+    public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         transferInputData();
 
         List<ACAQDataSlot> traversedSlots = wrappedGraph.traverse();
@@ -178,7 +181,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
             } else if (slot.isOutput()) {
                 // Ensure the algorithm has run
                 if (!executedAlgorithms.contains(slot.getAlgorithm())) {
-                    slot.getAlgorithm().run();
+                    slot.getAlgorithm().run(subProgress.resolve(slot.getAlgorithm().getName()), algorithmProgress, isCancelled);
                     executedAlgorithms.add(slot.getAlgorithm());
                 }
             }

@@ -6,6 +6,7 @@ import ij.plugin.filter.Binary;
 import ij.plugin.filter.GaussianBlur;
 import ij.plugin.filter.RankFilters;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.traits.GoodForTrait;
@@ -13,10 +14,14 @@ import org.hkijena.acaq5.api.data.traits.RemovesTrait;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleMaskData;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.enhancers.CLAHEImageEnhancer;
 import org.hkijena.acaq5.utils.ImageJUtils;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Internal gradient segmenter
@@ -77,24 +82,28 @@ public class InternalGradientSegmenter extends ACAQIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(ACAQDataInterface dataInterface) {
+    protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
 
+        // Apply CLAHE enhancer
+        claheImageEnhancer.clearSlotData();
         claheImageEnhancer.getFirstInputSlot().addData(dataInterface.getInputData(getFirstInputSlot()));
-        claheImageEnhancer.run();
+        claheImageEnhancer.run(subProgress.resolve("CLAHE Enhancer (1/2)"), algorithmProgress, isCancelled);
 
-        ImagePlus img = ((ImagePlus2DGreyscaleMaskData) claheImageEnhancer.getFirstOutputSlot().getData(0)).getImage().duplicate();
+        ImagePlus img = ((ImagePlusData) claheImageEnhancer.getFirstOutputSlot().getData(0)).getImage().duplicate();
         (new GaussianBlur()).blurGaussian(img.getProcessor(), gaussSigma);
         ImageJUtils.runOnImage(img, "8-bit");
         applyInternalGradient(img);
 
+        claheImageEnhancer.clearSlotData();
         claheImageEnhancer.getFirstInputSlot().addData(new ImagePlus2DGreyscaleData(img));
-        claheImageEnhancer.run();
-        img = ((ImagePlus2DGreyscaleData) claheImageEnhancer.getFirstOutputSlot().getData(0)).getImage();
+        claheImageEnhancer.run(subProgress.resolve("CLAHE Enhancer (2/2)"), algorithmProgress, isCancelled);
+        img = ((ImagePlusData) claheImageEnhancer.getFirstOutputSlot().getData(0)).getImage();
 
         // Convert image to mask and threshold with given auto threshold method
+        autoThresholdSegmenter.clearSlotData();
         autoThresholdSegmenter.getFirstInputSlot().addData(new ImagePlus2DGreyscaleData(img));
-        autoThresholdSegmenter.run();
-        img = ((ImagePlus2DGreyscaleMaskData) autoThresholdSegmenter.getFirstOutputSlot().getData(0)).getImage();
+        autoThresholdSegmenter.run(subProgress.resolve("Auto-thresholding"), algorithmProgress, isCancelled);
+        img = ((ImagePlusData) autoThresholdSegmenter.getFirstOutputSlot().getData(0)).getImage();
 
         // Apply set of rank filters
         Binary binaryFilter = new Binary();

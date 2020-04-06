@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.annotation;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
@@ -10,6 +11,9 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Algorithm that annotates all data with the same annotation
@@ -43,7 +47,7 @@ public class AnnotateAll extends ACAQAlgorithm {
     }
 
     @Override
-    public void run() {
+    public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         for (ACAQDataSlot inputSlot : getInputSlots()) {
             ACAQDataSlot outputSlot = getSlots().get("Output " + inputSlot.getName());
             outputSlot.copyFrom(inputSlot);

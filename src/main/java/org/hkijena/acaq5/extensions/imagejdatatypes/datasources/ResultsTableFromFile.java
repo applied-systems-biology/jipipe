@@ -2,12 +2,15 @@ package org.hkijena.acaq5.extensions.imagejdatatypes.datasources;
 
 import ij.measure.ResultsTable;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.ACAQFileData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 
 import java.io.IOException;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Imports {@link ResultsTableData} from a file
@@ -35,7 +38,7 @@ public class ResultsTableFromFile extends ACAQIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(ACAQDataInterface dataInterface) {
+    protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ACAQFileData fileData = dataInterface.getInputData(getFirstInputSlot());
         try {
             ResultsTable resultsTable = ResultsTable.open(fileData.getFilePath().toString());

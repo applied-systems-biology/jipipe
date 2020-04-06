@@ -3,6 +3,7 @@ package org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.enhancers
 import ij.gui.Roi;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
+import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
@@ -11,6 +12,8 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIData;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Appends the ROI into one list
@@ -44,7 +47,7 @@ public class MergeROIEnhancer extends ACAQIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(ACAQDataInterface dataInterface) {
+    protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         List<Roi> inputROI = new ArrayList<>();
         for (ACAQDataSlot slot : getInputSlots()) {
             ROIData data = dataInterface.getInputData(slot);

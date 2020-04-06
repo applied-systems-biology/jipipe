@@ -1,10 +1,13 @@
 package org.hkijena.acaq5.api.algorithm;
 
+import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQTraitConfiguration;
 
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * An {@link ACAQAlgorithm} that iterates through each data row
@@ -61,19 +64,24 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
     }
 
     @Override
-    public void run() {
+    public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         checkInputSlots();
         ACAQDataSlot referenceSlot = getInputSlots().get(0);
         for (int row = 0; row < referenceSlot.getRowCount(); ++row) {
+            if(isCancelled.get())
+                return;
+            algorithmProgress.accept(subProgress.resolve("Data row " + (row + 1) + " / " + referenceSlot.getRowCount()));
             ACAQDataInterface dataInterface = new ACAQDataInterface(this, referenceSlot, row);
-            runIteration(dataInterface);
+            runIteration(dataInterface, subProgress, algorithmProgress, isCancelled);
         }
     }
 
     /**
      * Runs code on one data row
-     *
      * @param dataInterface The data interface
+     * @param subProgress The current sub-progress this algorithm is scheduled in
+     * @param algorithmProgress Consumer to publish a new sub-progress
+     * @param isCancelled Supplier that informs if the current task was canceled
      */
-    protected abstract void runIteration(ACAQDataInterface dataInterface);
+    protected abstract void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled);
 }

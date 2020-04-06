@@ -2,6 +2,7 @@ package org.hkijena.acaq5.extensions.filesystem.api.algorithms;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
+import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
@@ -10,6 +11,9 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.ACAQFileData;
 import org.hkijena.acaq5.utils.PathFilter;
 import org.hkijena.acaq5.utils.PathFilterCollection;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Filters input files
@@ -52,7 +56,7 @@ public class ACAQFilterFiles extends ACAQIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(ACAQDataInterface dataInterface) {
+    protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ACAQFileData inputData = dataInterface.getInputData("Files");
         ACAQDataSlot firstOutputSlot = getFirstOutputSlot();
         if (!filters.isEmpty()) {

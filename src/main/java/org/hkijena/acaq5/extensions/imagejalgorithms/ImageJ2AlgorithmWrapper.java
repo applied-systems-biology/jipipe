@@ -3,21 +3,15 @@ package org.hkijena.acaq5.extensions.imagejalgorithms;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
-import com.sun.org.apache.xpath.internal.operations.Mod;
-import ij.ImageJ;
 import ij.ImagePlus;
 import net.imagej.Dataset;
-import net.imagej.legacy.LegacyService;
-import net.imagej.legacy.translate.ImageTranslator;
-import net.imglib2.img.display.imagej.ImageJFunctions;
 import org.apache.commons.lang.WordUtils;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.*;
-import org.hkijena.acaq5.api.parameters.ACAQCustomParameterHolder;
 import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterHolder;
-import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.ui.registries.ACAQUIParametertypeRegistry;
@@ -32,11 +26,10 @@ import org.scijava.module.ModuleException;
 import org.scijava.module.ModuleInfo;
 import org.scijava.module.ModuleItem;
 import org.scijava.service.SciJavaService;
-import org.scijava.ui.UIService;
 
-import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * An algorithm that wraps around an ImageJ2 {@link org.scijava.command.Command}
@@ -77,7 +70,7 @@ public class ImageJ2AlgorithmWrapper extends ACAQIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(ACAQDataInterface dataInterface) {
+    protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImageJ2AlgorithmWrapperDeclaration declaration = (ImageJ2AlgorithmWrapperDeclaration) getDeclaration();
         Module module;
         try {

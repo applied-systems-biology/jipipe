@@ -3,6 +3,7 @@ package org.hkijena.acaq5.extensions.imagejdatatypes.datasources;
 import ij.IJ;
 import ij.ImagePlus;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQData;
@@ -12,6 +13,8 @@ import org.hkijena.acaq5.extensions.filesystem.api.dataypes.ACAQFileData;
 
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Loads an image data from a file via IJ.openFile()
@@ -53,7 +56,7 @@ public class ImagePlusFromFile extends ACAQIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(ACAQDataInterface dataInterface) {
+    protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ACAQFileData fileData = dataInterface.getInputData(getFirstInputSlot());
         dataInterface.addOutputData(getFirstOutputSlot(), readImageFrom(fileData.getFilePath()));
     }

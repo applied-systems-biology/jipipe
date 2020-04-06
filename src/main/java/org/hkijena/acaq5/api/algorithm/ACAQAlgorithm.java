@@ -12,6 +12,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQRun;
+import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.data.*;
 import org.hkijena.acaq5.api.data.traits.*;
@@ -30,6 +31,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * An algorithm is is a set of input and output data slots, and a run() function
@@ -176,8 +179,11 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Runs the workload
+     * @param subProgress
+     * @param algorithmProgress
+     * @param isCancelled
      */
-    public abstract void run();
+    public abstract void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled);
 
     public EventBus getEventBus() {
         return eventBus;
@@ -794,6 +800,15 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
         }
 
         return result;
+    }
+
+    /**
+     * Clears all data slots
+     */
+    public void clearSlotData() {
+        for (ACAQDataSlot slot : slots.values()) {
+            slot.clearData();
+        }
     }
 
     /**
