@@ -273,13 +273,10 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             if (ui.getY() < minY || ui.isOverlapping()) {
                 if (!ui.trySetLocationNoGrid(minX, minY)) {
                     // Place anywhere
-                    int y = nodeUIs.values().stream().map(ACAQAlgorithmUI::getBottomY).max(Integer::compareTo).orElse(0);
-                    if (y == 0)
-                        y += 2 * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
-                    else
-                        y += ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+                    int x = nodeUIs.values().stream().map(ACAQAlgorithmUI::getRightX).max(Integer::compareTo).orElse(0);
+                    x += 2 * ACAQAlgorithmUI.SLOT_UI_WIDTH;
 
-                    ui.trySetLocationNoGrid(minX, y);
+                    ui.trySetLocationNoGrid(x, minY);
                 }
             }
         } else {

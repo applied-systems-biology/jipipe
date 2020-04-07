@@ -328,4 +328,8 @@ public abstract class ACAQAlgorithmUI extends JPanel {
     public ACAQAlgorithmGraphCanvasUI getGraphUI() {
         return graphUI;
     }
+
+    public int getRightX() {
+        return getX() + getWidth();
+    }
 }
