@@ -39,6 +39,7 @@ public class ACAQAlgorithmUI extends JPanel {
 
     private ACAQAlgorithmGraphCanvasUI graphUI;
     private ACAQAlgorithm algorithm;
+    private ACAQAlgorithmGraphCanvasUI.Direction direction;
     private JPanel inputSlotPanel;
     private JPanel outputSlotPanel;
     private List<ACAQDataSlotUI> slotUIList = new ArrayList<>();
@@ -53,13 +54,14 @@ public class ACAQAlgorithmUI extends JPanel {
 
     /**
      * Creates a new UI
-     *
-     * @param graphUI   The graph UI that contains this UI
+     *  @param graphUI   The graph UI that contains this UI
      * @param algorithm The algorithm
+     * @param direction Directionality of the canvas UI
      */
-    public ACAQAlgorithmUI(ACAQAlgorithmGraphCanvasUI graphUI, ACAQAlgorithm algorithm) {
+    public ACAQAlgorithmUI(ACAQAlgorithmGraphCanvasUI graphUI, ACAQAlgorithm algorithm, ACAQAlgorithmGraphCanvasUI.Direction direction) {
         this.graphUI = graphUI;
         this.algorithm = algorithm;
+        this.direction = direction;
         this.algorithm.getEventBus().register(this);
         this.algorithm.getTraitConfiguration().getEventBus().register(this);
         this.fillColor = UIUtils.getFillColorFor(algorithm.getDeclaration());
@@ -248,7 +250,7 @@ public class ACAQAlgorithmUI extends JPanel {
                     bottomBorder = 1;
 
                 ACAQDataSlot slot = slots.get(i);
-                ACAQDataSlotUI ui = new ACAQDataSlotUI(this, graphUI.getAlgorithmGraph(), graphUI.getCompartment(), slot);
+                ACAQDataSlotUI ui = new ACAQDataSlotUI(this, graphUI.getAlgorithmGraph(), graphUI.getCompartment(), slot, direction);
                 ui.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, bottomBorder, 1, borderColor),
                         BorderFactory.createEmptyBorder(0, 0, 0, 4)));
                 slotUIList.add(ui);
@@ -263,7 +265,7 @@ public class ACAQAlgorithmUI extends JPanel {
                 if (i < displayedRows - 1)
                     bottomBorder = 1;
                 ACAQDataSlot slot = slots.get(i);
-                ACAQDataSlotUI ui = new ACAQDataSlotUI(this, graphUI.getAlgorithmGraph(), graphUI.getCompartment(), slot);
+                ACAQDataSlotUI ui = new ACAQDataSlotUI(this, graphUI.getAlgorithmGraph(), graphUI.getCompartment(), slot, direction);
                 ui.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 1, bottomBorder, 0, borderColor),
                         BorderFactory.createEmptyBorder(0, 4, 0, 0)));
                 slotUIList.add(ui);
@@ -493,13 +495,13 @@ public class ACAQAlgorithmUI extends JPanel {
     @Override
     public void setLocation(int x, int y) {
         super.setLocation(x, y);
-        algorithm.setLocationWithin(graphUI.getCompartment(), new Point(x, y));
+        algorithm.setLocationWithin(graphUI.getCompartment(), new Point(x, y), direction.toString());
     }
 
     @Override
     public void setLocation(Point p) {
         super.setLocation(p);
-        algorithm.setLocationWithin(graphUI.getCompartment(), p);
+        algorithm.setLocationWithin(graphUI.getCompartment(), p, direction.toString());
     }
 
     /**
@@ -534,6 +536,27 @@ public class ACAQAlgorithmUI extends JPanel {
             setBorder(BorderFactory.createLineBorder(borderColor, 2));
         } else {
             setBorder(BorderFactory.createLineBorder(borderColor));
+        }
+    }
+
+    public ACAQAlgorithmGraphCanvasUI.Direction getDirection() {
+        return direction;
+    }
+
+    /**
+     * Returns the location of a slot in relative coordinates
+     * @param slot the slot
+     * @return coordinates relative to this algorithm UI
+     */
+    public Point getSlotLocation(ACAQDataSlot slot) {
+        if(slot.isInput()) {
+            return new Point(0, algorithm.getInputSlots().indexOf(slot) * SLOT_UI_HEIGHT + SLOT_UI_HEIGHT / 2);
+        }
+        else if(slot.isOutput()) {
+            return new Point(getWidth(), algorithm.getOutputSlots().indexOf(slot) * SLOT_UI_HEIGHT + SLOT_UI_HEIGHT / 2);
+        }
+        else {
+            throw new UnsupportedOperationException("Unknown slot type!");
         }
     }
 }

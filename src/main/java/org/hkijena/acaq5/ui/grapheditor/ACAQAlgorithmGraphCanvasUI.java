@@ -42,6 +42,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     private boolean layoutHelperEnabled;
     private String compartment;
     private JPopupMenu contextMenu;
+    private Direction currentDirection = Direction.Horizontal;
 
     /**
      * Creates a new UI
@@ -123,11 +124,11 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             if (nodeUIs.containsKey(algorithm))
                 continue;
 
-            ACAQAlgorithmUI ui = new ACAQAlgorithmUI(this, algorithm);
+            ACAQAlgorithmUI ui = new ACAQAlgorithmUI(this, algorithm, currentDirection);
             ui.getEventBus().register(this);
             add(ui);
             nodeUIs.put(algorithm, ui);
-            Point location = algorithm.getLocationWithin(compartment);
+            Point location = algorithm.getLocationWithin(compartment, currentDirection.toString());
             if (location == null || !ui.trySetLocationNoGrid(location.x, location.y)) {
                 autoPlaceAlgorithm(ui);
             }
@@ -385,36 +386,31 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
                 RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHints(rh);
 
-        // Draw the edges
+        // Draw the edges to outside compartments
+        // The edges should be at the center input point of the node
+        // They are not covered by the other method below
         g.setStroke(new BasicStroke(2));
         graphics.setColor(Color.LIGHT_GRAY);
         for (ACAQAlgorithmUI ui : nodeUIs.values()) {
             if (!ui.getAlgorithm().getVisibleCompartments().isEmpty()) {
-                int sourceY = 0;
-                int targetY = 0;
-                int sourceX = 0;
-                int targetX = 0;
+                Point sourcePoint = new Point();
+                Point targetPoint = new Point();
                 if (compartment.equals(ui.getAlgorithm().getCompartment())) {
-                    sourceX = ui.getX() + ui.getWidth();
-                    sourceY = ui.getY() + ACAQAlgorithmUI.SLOT_UI_HEIGHT / 2;
-                    targetX = getWidth();
-                    targetY = sourceY;
+                    sourcePoint.x = ui.getX() + ui.getWidth();
+                    sourcePoint.y = ui.getY() + ACAQAlgorithmUI.SLOT_UI_HEIGHT / 2;
+                    targetPoint.x = getWidth();
+                    targetPoint.y = sourcePoint.y;
                 } else {
-                    sourceX = 0;
-                    sourceY = ui.getY() + ACAQAlgorithmUI.SLOT_UI_HEIGHT / 2;
-                    targetX = ui.getX();
-                    targetY = sourceY;
+                    sourcePoint.x = 0;
+                    sourcePoint.y = ui.getY() + ACAQAlgorithmUI.SLOT_UI_HEIGHT / 2;
+                    targetPoint.x = ui.getX();
+                    targetPoint.y = sourcePoint.y;
                 }
-                Path2D.Float path = new Path2D.Float();
-                path.moveTo(sourceX, sourceY);
-                float dx = targetX - sourceX;
-                path.curveTo(sourceX + 0.4f * dx, sourceY,
-                        sourceX + 0.6f * dx, targetY,
-                        targetX, targetY);
-                g.draw(path);
+                drawEdge(g, sourcePoint, targetPoint);
             }
         }
 
+        // Draw edges between loaded algorithm UIs
         graphics.setColor(Color.DARK_GRAY);
         for (Map.Entry<ACAQDataSlot, ACAQDataSlot> kv : algorithmGraph.getSlotEdges()) {
             ACAQDataSlot source = kv.getKey();
@@ -431,66 +427,45 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             else
                 graphics.setColor(Color.RED);
 
-            int sourceY = 0;
-            int targetY = 0;
-            int sourceX = 0;
-            int targetX = 0;
+            Point sourcePoint = new Point();
+            Point targetPoint = new Point();
 
             if (sourceUI != null) {
-                if (source.isInput()) {
-                    sourceX = 0;
-                    sourceY = source.getAlgorithm().getInputSlots().indexOf(source);
-                } else if (source.isOutput()) {
-                    sourceX = sourceUI.getWidth();
-                    sourceY = source.getAlgorithm().getOutputSlots().indexOf(source);
-                }
-
-                // Convert into slot coordinates
-                sourceY = sourceY * ACAQAlgorithmUI.SLOT_UI_HEIGHT + ACAQAlgorithmUI.SLOT_UI_HEIGHT / 2;
-
-                // Convert into global coordinates
-                sourceX += sourceUI.getX();
-                sourceY += sourceUI.getY();
+                sourcePoint = sourceUI.getSlotLocation(source);
+                sourcePoint.x += sourceUI.getX();
+                sourcePoint.y += sourceUI.getY();
             }
 
             if (targetUI != null) {
-                if (target.isInput()) {
-                    targetX = 0;
-                    targetY = target.getAlgorithm().getInputSlots().indexOf(target);
-                } else if (target.isOutput()) {
-                    targetX = targetUI.getWidth();
-                    targetY = target.getAlgorithm().getOutputSlots().indexOf(target);
-                }
-
-                // Convert into slot coordinates
-                targetY = targetY * ACAQAlgorithmUI.SLOT_UI_HEIGHT + ACAQAlgorithmUI.SLOT_UI_HEIGHT / 2;
-
-                // Convert into global coordinates
-                targetX += targetUI.getX();
-                targetY += targetUI.getY();
+                targetPoint = targetUI.getSlotLocation(target);
+                targetPoint.x += targetUI.getX();
+                targetPoint.y += targetUI.getY();
             }
 
             if (sourceUI == null) {
-                sourceX = 0;
-                sourceY = targetY;
+                sourcePoint.x = 0;
+                sourcePoint.y = targetPoint.y;
             }
             if (targetUI == null) {
-                targetX = getWidth();
-                targetY = sourceY;
+                targetPoint.x = getWidth();
+                targetPoint.y = sourcePoint.y;
             }
 
             // Draw arrow
-            Path2D.Float path = new Path2D.Float();
-            path.moveTo(sourceX, sourceY);
-            float dx = targetX - sourceX;
-            path.curveTo(sourceX + 0.4f * dx, sourceY,
-                    sourceX + 0.6f * dx, targetY,
-                    targetX, targetY);
-            g.draw(path);
-//            g.drawLine(sourceX, sourceY, targetX, targetY);
+            drawEdge(g, sourcePoint, targetPoint);
         }
 
         g.setStroke(new BasicStroke(1));
+    }
+
+    private void drawEdge(Graphics2D g, Point sourcePoint, Point targetPoint) {
+        Path2D.Float path = new Path2D.Float();
+        path.moveTo(sourcePoint.x, sourcePoint.y);
+        float dx = targetPoint.x - sourcePoint.x;
+        path.curveTo(sourcePoint.x + 0.4f * dx, sourcePoint.y,
+                sourcePoint.x + 0.6f * dx, targetPoint.y,
+                targetPoint.x, targetPoint.y);
+        g.draw(path);
     }
 
     /**
@@ -686,5 +661,13 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         public SugiyamaVertex() {
             this.virtual = true;
         }
+    }
+
+    /**
+     * The direction how a canvas renders the nodes
+     */
+    public enum Direction {
+        Horizontal,
+        Vertical
     }
 }

@@ -356,33 +356,24 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
     }
 
     /**
-     * Returns the UI location within the respective compartments.
-     * This map is writable.
-     *
-     * @return Map from compartment name to UI location
-     */
-    public Map<String, Point> getLocations() {
-        return locations;
-    }
-
-    /**
      * Returns the location within the specified compartment or null if none is set
      *
      * @param compartment The compartment ID
+     * @param visualMode Used to differentiate between different visual modes
      * @return The UI location or null if unset
      */
-    public Point getLocationWithin(String compartment) {
-        return locations.getOrDefault(compartment, null);
+    public Point getLocationWithin(String compartment, String visualMode) {
+        return locations.getOrDefault(compartment + "{" + visualMode + "}", null);
     }
 
     /**
      * Sets the UI location of this algorithm within the specified compartment
-     *
-     * @param compartment The compartment ID
+     *  @param compartment The compartment ID
      * @param location    The UI location. Can be null to reset the location
+     * @param visualMode Used to differentiate between different visual modes
      */
-    public void setLocationWithin(String compartment, Point location) {
-        this.locations.put(compartment, location);
+    public void setLocationWithin(String compartment, Point location, String visualMode) {
+        this.locations.put(compartment + "{" + visualMode + "}", location);
     }
 
     /**
