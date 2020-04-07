@@ -249,7 +249,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
                 }
             }
         } else if (currentDirection == Direction.Vertical) {
-            // Find the source algorithm that is right-most
+            // Find the source algorithm that is bottom-most
             ACAQAlgorithmUI bottomMostSource = null;
             for (ACAQDataSlot target : targetAlgorithm.getInputSlots()) {
                 ACAQDataSlot source = algorithmGraph.getSourceSlot(target);
@@ -263,8 +263,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             }
 
             // Auto-place
-            int minY = 0;
-            minY += ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+            int minY = ACAQAlgorithmUI.SLOT_UI_HEIGHT;
             if (bottomMostSource != null) {
                 minY = Math.max(minY, bottomMostSource.getBottomY() + ACAQAlgorithmUI.SLOT_UI_HEIGHT);
             }
@@ -297,16 +296,25 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             return;
         }
 
-        int sourceSlotInternalY = sourceSlotIndex * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
-        int targetSlotInternalY = targetSlotIndex * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+        if(currentDirection == Direction.Horizontal) {
+            int sourceSlotInternalY = sourceSlotIndex * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+            int targetSlotInternalY = targetSlotIndex * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
 
-        int minX = sourceAlgorithmUI.getWidth() + sourceAlgorithmUI.getX() + ACAQAlgorithmUI.SLOT_UI_WIDTH * 2;
-        int targetY = sourceAlgorithmUI.getY() + sourceSlotInternalY - targetSlotInternalY;
+            int minX = sourceAlgorithmUI.getWidth() + sourceAlgorithmUI.getX() + ACAQAlgorithmUI.SLOT_UI_WIDTH * 2;
+            int targetY = sourceAlgorithmUI.getY() + sourceSlotInternalY - targetSlotInternalY;
 
-        int x = (int) (minX * 1.0 / ACAQAlgorithmUI.SLOT_UI_WIDTH) * ACAQAlgorithmUI.SLOT_UI_WIDTH;
-        int y = (int) (targetY * 1.0 / ACAQAlgorithmUI.SLOT_UI_HEIGHT) * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
-        if (!targetAlgorithmUI.trySetLocationNoGrid(x, y)) {
-            autoPlaceAlgorithm(targetAlgorithmUI);
+            int x = (int) (minX * 1.0 / ACAQAlgorithmUI.SLOT_UI_WIDTH) * ACAQAlgorithmUI.SLOT_UI_WIDTH;
+            int y = (int) (targetY * 1.0 / ACAQAlgorithmUI.SLOT_UI_HEIGHT) * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+            if (!targetAlgorithmUI.trySetLocationNoGrid(x, y)) {
+                autoPlaceAlgorithm(targetAlgorithmUI);
+            }
+        }
+        else {
+            int x = sourceAlgorithmUI.getX();
+            int y = targetAlgorithmUI.getBottomY() + ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+            if (!targetAlgorithmUI.trySetLocationNoGrid(x, y)) {
+                autoPlaceAlgorithm(targetAlgorithmUI);
+            }
         }
     }
 
