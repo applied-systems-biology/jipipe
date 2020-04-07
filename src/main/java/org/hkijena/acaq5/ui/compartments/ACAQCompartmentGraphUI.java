@@ -2,32 +2,22 @@ package org.hkijena.acaq5.ui.compartments;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.compartments.ACAQExportedCompartment;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
-import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
-import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
-import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.acaq5.ui.events.DefaultUIActionRequestedEvent;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphEditorUI;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph.COMPARTMENT_DEFAULT;
@@ -35,115 +25,36 @@ import static org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph.COMPARTMENT_DEF
 /**
  * Graph editor UI for a project compartment graph
  */
-public class ACAQCompartmentGraphUI extends ACAQProjectWorkbenchPanel implements MouseListener, MouseMotionListener {
-
-    protected JMenuBar menuBar = new JMenuBar();
-    private ACAQAlgorithmGraphCanvasUI graphUI;
-    private ACAQAlgorithmGraph compartmentGraph;
-
-    private JSplitPane splitPane;
-    private JScrollPane scrollPane;
-
-    private Point panningOffset = null;
-    private Point panningScrollbarOffset = null;
-    private boolean isPanning = false;
-    private JToggleButton switchPanningDirectionButton;
-
-    private MarkdownReader documentationPanel;
-
-    private Set<ACAQAlgorithmUI> selection = new HashSet<>();
+public class ACAQCompartmentGraphUI extends ACAQAlgorithmGraphEditorUI {
+    private final MarkdownReader documentationPanel;
 
     /**
      * @param workbenchUI The workbench UI
      */
     public ACAQCompartmentGraphUI(ACAQProjectWorkbench workbenchUI) {
-        super(workbenchUI);
-        this.compartmentGraph = workbenchUI.getProject().getCompartmentGraph();
-        initialize();
-    }
-
-    private void initialize() {
-        setLayout(new BorderLayout());
-        splitPane = new JSplitPane();
-        splitPane.setDividerSize(3);
-        splitPane.setResizeWeight(0.33);
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                super.componentResized(e);
-                splitPane.setDividerLocation(0.66);
-            }
-        });
-
+        super(workbenchUI, workbenchUI.getProject().getCompartmentGraph(), COMPARTMENT_DEFAULT);
         documentationPanel = new MarkdownReader(false);
         documentationPanel.setDocument(MarkdownDocument.fromPluginResource("documentation/compartment-graph.md"));
-
-        graphUI = new ACAQAlgorithmGraphCanvasUI(compartmentGraph, COMPARTMENT_DEFAULT);
-        graphUI.getEventBus().register(this);
-        graphUI.addMouseListener(this);
-        graphUI.addMouseMotionListener(this);
-        scrollPane = new JScrollPane(graphUI);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPane.getHorizontalScrollBar().addAdjustmentListener(e -> {
-            graphUI.setNewEntryLocationX(scrollPane.getHorizontalScrollBar().getValue());
-        });
-        splitPane.setLeftComponent(scrollPane);
-        splitPane.setRightComponent(documentationPanel);
-        add(splitPane, BorderLayout.CENTER);
-
-        add(menuBar, BorderLayout.NORTH);
-        initializeToolbar();
-
-        compartmentGraph.getEventBus().register(this);
+        setPropertyPanel(documentationPanel);
     }
 
-    /**
-     * Initializes the toolbar
-     */
-    protected void initializeToolbar() {
+    @Override
+    public void reloadMenuBar() {
+        getMenuBar().removeAll();
         initializeAddNodesMenus();
-
-        menuBar.add(Box.createHorizontalGlue());
-
-        JButton autoLayoutButton = new JButton(UIUtils.getIconFromResources("auto-layout-all.png"));
-        autoLayoutButton.setToolTipText("Auto-layout all nodes");
-        UIUtils.makeFlat25x25(autoLayoutButton);
-        autoLayoutButton.addActionListener(e -> graphUI.autoLayoutAll());
-        menuBar.add(autoLayoutButton);
-
-        switchPanningDirectionButton = new JToggleButton(UIUtils.getIconFromResources("cursor-arrow.png"));
-        switchPanningDirectionButton.setToolTipText("Reverse panning direction");
-        UIUtils.makeFlat25x25(switchPanningDirectionButton);
-        switchPanningDirectionButton.setToolTipText("Changes the direction how panning (middle mouse button) affects the view.");
-        menuBar.add(switchPanningDirectionButton);
-
-        JToggleButton layoutHelperButton;
-        layoutHelperButton = new JToggleButton(UIUtils.getIconFromResources("auto-layout-connections.png"), true);
-        UIUtils.makeFlat25x25(layoutHelperButton);
-        layoutHelperButton.setToolTipText("Auto-layout layout on making data slot connections");
-        graphUI.setLayoutHelperEnabled(true);
-        layoutHelperButton.addActionListener(e -> graphUI.setLayoutHelperEnabled(layoutHelperButton.isSelected()));
-        menuBar.add(layoutHelperButton);
-
-        JButton createScreenshotButton = new JButton(UIUtils.getIconFromResources("filetype-image.png"));
-        createScreenshotButton.setToolTipText("Export graph as *.png");
-        UIUtils.makeFlat25x25(createScreenshotButton);
-        createScreenshotButton.addActionListener(e -> createScreenshot());
-        menuBar.add(createScreenshotButton);
+        initializeCommonActions();
     }
 
-    private void createScreenshot() {
-        BufferedImage screenshot = graphUI.createScreenshot();
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Export graph as *.png");
-        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-            try {
-                ImageIO.write(screenshot, "PNG", fileChooser.getSelectedFile());
-                getProjectWorkbench().sendStatusBarText("Exported graph as " + fileChooser.getSelectedFile());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+    @Override
+    protected void updateSelection() {
+        if (getSelection().isEmpty()) {
+            setPropertyPanel(documentationPanel);
+        } else if (getSelection().size() == 1) {
+            setPropertyPanel(new ACAQSingleCompartmentSelectionPanelUI((ACAQProjectWorkbench) getWorkbench(),
+                    (ACAQProjectCompartment) getSelection().iterator().next().getAlgorithm()));
+        } else {
+            setPropertyPanel(new ACAQMultiCompartmentSelectionPanelUI((ACAQProjectWorkbench) getWorkbench(),
+                    getSelection().stream().map(ui -> (ACAQProjectCompartment) ui.getAlgorithm()).collect(Collectors.toSet())));
         }
     }
 
@@ -184,6 +95,14 @@ public class ACAQCompartmentGraphUI extends ACAQProjectWorkbenchPanel implements
         }
     }
 
+    private ACAQProject getProject() {
+        return ((ACAQProjectWorkbench) getWorkbench()).getProject();
+    }
+
+    private ACAQProjectWorkbench getProjectWorkbench() {
+        return (ACAQProjectWorkbench) getWorkbench();
+    }
+
     private void addCompartment() {
         String compartmentName = UIUtils.getUniqueStringByDialog(this, "Please enter the name of the compartment",
                 "Compartment", s -> getProject().getCompartments().containsKey(s));
@@ -191,14 +110,6 @@ public class ACAQCompartmentGraphUI extends ACAQProjectWorkbenchPanel implements
             getProject().addCompartment(compartmentName);
         }
     }
-
-    /**
-     * @return The edited graph
-     */
-    public ACAQAlgorithmGraph getCompartmentGraph() {
-        return compartmentGraph;
-    }
-
 
     /**
      * Should be triggered when a user double-clicks a graph node to open it in the graph editor
@@ -210,173 +121,5 @@ public class ACAQCompartmentGraphUI extends ACAQProjectWorkbenchPanel implements
         if (event.getUi() != null && event.getUi().getAlgorithm() instanceof ACAQProjectCompartment) {
             getProjectWorkbench().openCompartmentGraph((ACAQProjectCompartment) event.getUi().getAlgorithm(), true);
         }
-    }
-
-    /**
-     * Should be triggered when a user selects a node
-     *
-     * @param event Generated event
-     */
-    @Subscribe
-    public void onAlgorithmSelected(AlgorithmSelectedEvent event) {
-        if (event.getUi() != null) {
-            if (event.isAddToSelection()) {
-                if (selection.contains(event.getUi())) {
-                    removeFromSelection(event.getUi());
-                } else {
-                    addToSelection(event.getUi());
-                }
-            } else {
-                selectOnly(event.getUi());
-            }
-        } else {
-            clearSelection();
-        }
-    }
-
-    /**
-     * Clears the selection
-     */
-    public void clearSelection() {
-        for (ACAQAlgorithmUI ui : selection) {
-            ui.setSelected(false);
-        }
-        selection.clear();
-        int dividerLocation = splitPane.getDividerLocation();
-        splitPane.setRightComponent(documentationPanel);
-        splitPane.setDividerLocation(dividerLocation);
-    }
-
-    /**
-     * Selects only one algorithm
-     *
-     * @param ui Algorithm
-     */
-    public void selectOnly(ACAQAlgorithmUI ui) {
-        if (selection.isEmpty()) {
-            addToSelection(ui);
-        } else if (selection.size() == 1) {
-            if (selection.iterator().next() != ui) {
-                clearSelection();
-                addToSelection(ui);
-            }
-        } else {
-            clearSelection();
-            addToSelection(ui);
-        }
-    }
-
-    /**
-     * Adds an algorithm to the selection
-     *
-     * @param ui The algorithm
-     */
-    public void addToSelection(ACAQAlgorithmUI ui) {
-        selection.add(ui);
-        ui.setSelected(true);
-        if (selection.size() == 1) {
-            int dividerLocation = splitPane.getDividerLocation();
-            splitPane.setRightComponent(new ACAQSingleCompartmentSelectionPanelUI(getProjectWorkbench(), (ACAQProjectCompartment) ui.getAlgorithm()));
-            splitPane.setDividerLocation(dividerLocation);
-        } else {
-            int dividerLocation = splitPane.getDividerLocation();
-            splitPane.setRightComponent(new ACAQMultiCompartmentSelectionPanelUI(getProjectWorkbench(),
-                    selection.stream().map(a -> (ACAQProjectCompartment) a.getAlgorithm()).collect(Collectors.toSet())));
-            splitPane.setDividerLocation(dividerLocation);
-        }
-    }
-
-    /**
-     * Removes an algorithm from the selection
-     *
-     * @param ui The algorithm
-     */
-    public void removeFromSelection(ACAQAlgorithmUI ui) {
-        if (selection.contains(ui)) {
-            selection.remove(ui);
-            ui.setSelected(false);
-
-            int dividerLocation = splitPane.getDividerLocation();
-            if (selection.isEmpty()) {
-                splitPane.setRightComponent(documentationPanel);
-            } else if (selection.size() == 1) {
-                splitPane.setRightComponent(new ACAQSingleCompartmentSelectionPanelUI(getProjectWorkbench(), (ACAQProjectCompartment) ui.getAlgorithm()));
-            } else {
-                splitPane.setRightComponent(new ACAQMultiCompartmentSelectionPanelUI(getProjectWorkbench(),
-                        selection.stream().map(a -> (ACAQProjectCompartment) a.getAlgorithm()).collect(Collectors.toSet())));
-            }
-            splitPane.setDividerLocation(dividerLocation);
-        }
-    }
-
-    /**
-     * Should be triggered when the algorithm graph is changed
-     *
-     * @param event Generated event
-     */
-    @Subscribe
-    public void onGraphChanged(AlgorithmGraphChangedEvent event) {
-        if (selection.stream().anyMatch(ui -> !compartmentGraph.getAlgorithmNodes().containsValue(ui.getAlgorithm()))) {
-            clearSelection();
-        }
-    }
-
-    @Override
-    public void mouseClicked(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-        if (SwingUtilities.isMiddleMouseButton(e)) {
-            isPanning = true;
-            int x = e.getX() - scrollPane.getHorizontalScrollBar().getValue();
-            int y = e.getY() - scrollPane.getVerticalScrollBar().getValue();
-            panningOffset = new Point(x, y);
-            panningScrollbarOffset = new Point(scrollPane.getHorizontalScrollBar().getValue(),
-                    scrollPane.getVerticalScrollBar().getValue());
-            graphUI.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-        }
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-        if (isPanning) {
-            graphUI.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-        }
-        isPanning = false;
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseDragged(MouseEvent e) {
-        if (isPanning && panningOffset != null && panningScrollbarOffset != null) {
-            int x = e.getX() - scrollPane.getHorizontalScrollBar().getValue();
-            int y = e.getY() - scrollPane.getVerticalScrollBar().getValue();
-            int dx = x - panningOffset.x;
-            int dy = y - panningOffset.y;
-            if (!switchPanningDirectionButton.isSelected()) {
-                dx = -dx;
-                dy = -dy;
-            }
-            int nx = panningScrollbarOffset.x + dx;
-            int ny = panningScrollbarOffset.y + dy;
-            scrollPane.getHorizontalScrollBar().setValue(nx);
-            scrollPane.getVerticalScrollBar().setValue(ny);
-        }
-    }
-
-    @Override
-    public void mouseMoved(MouseEvent e) {
-
     }
 }

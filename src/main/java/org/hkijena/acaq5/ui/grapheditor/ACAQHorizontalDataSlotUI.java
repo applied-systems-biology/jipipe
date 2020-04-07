@@ -26,7 +26,8 @@ public class ACAQHorizontalDataSlotUI extends ACAQDataSlotUI {
 
     /**
      * Creates a new UI
-     *  @param algorithmUI The parent algorithm UI
+     *
+     * @param algorithmUI The parent algorithm UI
      * @param graph       The graph
      * @param compartment The compartment ID
      * @param slot        The slot instance

@@ -259,19 +259,17 @@ public class ACAQVerticalAlgorithmUI extends ACAQAlgorithmUI {
     public PointRange getSlotLocation(ACAQDataSlot slot) {
         int nColumns = getDisplayedColumns();
         int columnWidth = getWidth() / nColumns;
-        if(slot.isInput()) {
+        if (slot.isInput()) {
             int minX = getAlgorithm().getInputSlots().indexOf(slot) * columnWidth;
             return new PointRange(new Point(minX + columnWidth / 2, 3),
                     new Point(minX + 20, 3),
                     new Point(minX + columnWidth - 20, 3));
-        }
-        else if(slot.isOutput()) {
+        } else if (slot.isOutput()) {
             int minX = getAlgorithm().getOutputSlots().indexOf(slot) * columnWidth;
             return new PointRange(new Point(minX + columnWidth / 2, getHeight() - 3),
                     new Point(minX + 20, getHeight() - 3),
                     new Point(minX + columnWidth - 20, getHeight() - 3));
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException("Unknown slot type!");
         }
     }

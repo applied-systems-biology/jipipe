@@ -22,6 +22,7 @@ public class PointRange {
 
     /**
      * Creates a new point range without margins around it
+     *
      * @param x x coordinate
      * @param y y coordinate
      */
@@ -33,9 +34,10 @@ public class PointRange {
 
     /**
      * Creates a point range and initializes all values
+     *
      * @param center center coordinate
-     * @param min absolute min coordinate
-     * @param max absolute max coordinate
+     * @param min    absolute min coordinate
+     * @param max    absolute max coordinate
      */
     public PointRange(Point center, Point min, Point max) {
         this.center = center;
@@ -45,6 +47,7 @@ public class PointRange {
 
     /**
      * Adds the point's x and y coordinates to all points
+     *
      * @param point shift coordinate
      */
     public void add(Point point) {
@@ -58,8 +61,9 @@ public class PointRange {
 
     /**
      * Gets a point within the range that is closest to the target point
+     *
      * @param pointRange the point range
-     * @param target the target point
+     * @param target     the target point
      * @return point within the range that is closest to the target point
      */
     public static Point getTightenedTo(PointRange pointRange, Point target) {
@@ -69,8 +73,9 @@ public class PointRange {
 
     /**
      * Gets a point within the range that is closest to the target point range
+     *
      * @param pointRange the point range
-     * @param target the target point range
+     * @param target     the target point range
      * @return point within the range that is closest to the target point range
      */
     public static Point getTightenedTo(PointRange pointRange, PointRange target) {
@@ -82,6 +87,7 @@ public class PointRange {
     /**
      * Modifies the center points, so they are closer together.
      * The min and max ranges are conserved
+     *
      * @param p0 the first point
      * @param p1 the second point
      */

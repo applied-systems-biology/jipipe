@@ -77,7 +77,8 @@ public class UIUtils {
 
     /**
      * Adds an existing popup menu to a button
-     * @param target  target button
+     *
+     * @param target    target button
      * @param popupMenu the popup menu
      * @return the popup menu
      */
@@ -495,7 +496,6 @@ public class UIUtils {
         });
         return label;
     }
-
 
 
 }

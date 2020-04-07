@@ -359,7 +359,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
      * Returns the location within the specified compartment or null if none is set
      *
      * @param compartment The compartment ID
-     * @param visualMode Used to differentiate between different visual modes
+     * @param visualMode  Used to differentiate between different visual modes
      * @return The UI location or null if unset
      */
     public Point getLocationWithin(String compartment, String visualMode) {
@@ -368,9 +368,10 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Sets the UI location of this algorithm within the specified compartment
-     *  @param compartment The compartment ID
+     *
+     * @param compartment The compartment ID
      * @param location    The UI location. Can be null to reset the location
-     * @param visualMode Used to differentiate between different visual modes
+     * @param visualMode  Used to differentiate between different visual modes
      */
     public void setLocationWithin(String compartment, Point location, String visualMode) {
         this.locations.put(compartment + "{" + visualMode + "}", location);

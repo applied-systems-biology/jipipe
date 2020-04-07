@@ -139,7 +139,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
                 continue;
 
             ACAQAlgorithmUI ui;
-            switch(currentDirection) {
+            switch (currentDirection) {
                 case Horizontal:
                     ui = new ACAQHorizontalAlgorithmUI(this, algorithm);
                     break;
@@ -168,7 +168,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         revalidate();
         repaint();
 
-        if(newlyPlacedAlgorithms == nodeUIs.size()) {
+        if (newlyPlacedAlgorithms == nodeUIs.size()) {
             autoLayoutAll();
         }
     }
@@ -196,6 +196,8 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
      * Auto-layouts all UIs
      */
     public void autoLayoutAll() {
+        if (nodeUIs.isEmpty())
+            return;
 //        int backup = newEntryLocationX;
 //        newEntryLocationX = 0;
 //        for (ACAQAlgorithm algorithm : ImmutableList.copyOf(nodeUIs.keySet())) {
@@ -211,7 +213,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     private void autoPlaceAlgorithm(ACAQAlgorithmUI ui) {
         ACAQAlgorithm targetAlgorithm = ui.getAlgorithm();
 
-        if(currentDirection == Direction.Horizontal) {
+        if (currentDirection == Direction.Horizontal) {
             // Find the source algorithm that is right-most
             ACAQAlgorithmUI rightMostSource = null;
             for (ACAQDataSlot target : targetAlgorithm.getInputSlots()) {
@@ -246,8 +248,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
                     ui.trySetLocationNoGrid(minX, y);
                 }
             }
-        }
-        else if(currentDirection == Direction.Vertical) {
+        } else if (currentDirection == Direction.Vertical) {
             // Find the source algorithm that is right-most
             ACAQAlgorithmUI bottomMostSource = null;
             for (ACAQDataSlot target : targetAlgorithm.getInputSlots()) {
@@ -282,8 +283,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
                     ui.trySetLocationNoGrid(minX, y);
                 }
             }
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException("Unknown view mode!");
         }
 
@@ -468,7 +468,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             if (!ui.getAlgorithm().getVisibleCompartments().isEmpty()) {
                 Point sourcePoint = new Point();
                 Point targetPoint = new Point();
-                if(currentDirection == Direction.Horizontal) {
+                if (currentDirection == Direction.Horizontal) {
                     if (compartment.equals(ui.getAlgorithm().getCompartment())) {
                         sourcePoint.x = ui.getX() + ui.getWidth();
                         sourcePoint.y = ui.getY() + ACAQAlgorithmUI.SLOT_UI_HEIGHT / 2;
@@ -480,8 +480,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
                         targetPoint.x = ui.getX();
                         targetPoint.y = sourcePoint.y;
                     }
-                }
-                else {
+                } else {
                     if (compartment.equals(ui.getAlgorithm().getCompartment())) {
                         sourcePoint.x = ui.getX() + ui.getWidth() / 2;
                         sourcePoint.y = ui.getY() + ui.getHeight();
@@ -536,10 +535,18 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     private void drawEdge(Graphics2D g, Point sourcePoint, Point targetPoint) {
         Path2D.Float path = new Path2D.Float();
         path.moveTo(sourcePoint.x, sourcePoint.y);
-        float dx = targetPoint.x - sourcePoint.x;
-        path.curveTo(sourcePoint.x + 0.4f * dx, sourcePoint.y,
-                sourcePoint.x + 0.6f * dx, targetPoint.y,
-                targetPoint.x, targetPoint.y);
+
+        if (currentDirection == Direction.Horizontal) {
+            float dx = targetPoint.x - sourcePoint.x;
+            path.curveTo(sourcePoint.x + 0.5f * dx, sourcePoint.y,
+                    sourcePoint.x + 0.5f * dx, targetPoint.y,
+                    targetPoint.x, targetPoint.y);
+        } else {
+            float dy = targetPoint.y - sourcePoint.y;
+            path.curveTo(sourcePoint.x, sourcePoint.y + 0.5f * dy,
+                    targetPoint.x, sourcePoint.y + 0.5f * dy,
+                    targetPoint.x, targetPoint.y);
+        }
 
         g.draw(path);
     }
@@ -734,16 +741,16 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
     private void rearrangeSugiyamaVertical(DefaultDirectedGraph<SugiyamaVertex, DefaultEdge> sugiyamaGraph, int maxLayer, int maxIndex) {
         // Create a table of column -> row -> vertex
-        int maxRow = maxIndex;
-        int maxColumn = maxLayer;
+        int maxRow = maxLayer;
+        int maxColumn = maxIndex;
         Map<Integer, Map<Integer, SugiyamaVertex>> vertexTable = new HashMap<>();
         for (SugiyamaVertex vertex : sugiyamaGraph.vertexSet()) {
-            Map<Integer, SugiyamaVertex> column = vertexTable.getOrDefault(vertex.layer, null);
+            Map<Integer, SugiyamaVertex> column = vertexTable.getOrDefault(vertex.index, null);
             if (column == null) {
                 column = new HashMap<>();
-                vertexTable.put(vertex.layer, column);
+                vertexTable.put(vertex.index, column);
             }
-            column.put(vertex.index, vertex);
+            column.put(vertex.layer, vertex);
         }
 
         // Calculate widths and heights
@@ -751,8 +758,8 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         Map<Integer, Integer> rowHeights = new HashMap<>();
         for (SugiyamaVertex vertex : sugiyamaGraph.vertexSet()) {
             if (!vertex.virtual) {
-                int column = vertex.layer;
-                int row = vertex.index;
+                int column = vertex.index;
+                int row = vertex.layer;
                 int columnWidth = Math.max(vertex.algorithmUI.getWidth(), columnWidths.getOrDefault(column, 0));
                 int rowHeight = Math.max(vertex.algorithmUI.getHeight(), rowHeights.getOrDefault(row, 0));
                 columnWidths.put(column, columnWidth);
@@ -790,11 +797,19 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     }
 
     public void setCurrentDirection(Direction currentDirection) {
-        if(currentDirection != this.currentDirection) {
+        if (currentDirection != this.currentDirection) {
             this.currentDirection = currentDirection;
             removeAllNodes();
             addNewNodes();
         }
+    }
+
+    /**
+     * The direction how a canvas renders the nodes
+     */
+    public enum Direction {
+        Horizontal,
+        Vertical
     }
 
     /**
@@ -813,13 +828,5 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         public SugiyamaVertex() {
             this.virtual = true;
         }
-    }
-
-    /**
-     * The direction how a canvas renders the nodes
-     */
-    public enum Direction {
-        Horizontal,
-        Vertical
     }
 }

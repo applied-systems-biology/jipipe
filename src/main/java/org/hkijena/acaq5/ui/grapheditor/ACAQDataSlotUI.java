@@ -16,33 +16,28 @@ import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
 import java.util.Set;
 import java.util.function.Consumer;
-
-import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_HEIGHT;
-import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_WIDTH;
 
 /**
  * UI around an {@link ACAQDataSlot}
  */
 public abstract class ACAQDataSlotUI extends JPanel {
+    protected JPopupMenu assignButtonMenu;
     private ACAQAlgorithmUI algorithmUI;
     private ACAQAlgorithmGraph graph;
     private String compartment;
     private ACAQDataSlot slot;
     private ACAQAlgorithmGraphCanvasUI.Direction direction;
-    protected JPopupMenu assignButtonMenu;
 
     /**
      * Creates a new UI
-     *  @param algorithmUI The parent algorithm UI
+     *
+     * @param algorithmUI The parent algorithm UI
      * @param graph       The graph
      * @param compartment The compartment ID
      * @param slot        The slot instance
-     * @param direction  The directionality of this slot UI
+     * @param direction   The directionality of this slot UI
      */
     public ACAQDataSlotUI(ACAQAlgorithmUI algorithmUI, ACAQAlgorithmGraph graph, String compartment, ACAQDataSlot slot, ACAQAlgorithmGraphCanvasUI.Direction direction) {
         this.algorithmUI = algorithmUI;

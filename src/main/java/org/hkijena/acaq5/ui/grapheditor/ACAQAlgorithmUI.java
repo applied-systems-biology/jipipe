@@ -45,7 +45,8 @@ public abstract class ACAQAlgorithmUI extends JPanel {
 
     /**
      * Creates a new UI
-     *  @param graphUI   The graph UI that contains this UI
+     *
+     * @param graphUI   The graph UI that contains this UI
      * @param algorithm The algorithm
      * @param direction Directionality of the canvas UI
      */
@@ -310,6 +311,7 @@ public abstract class ACAQAlgorithmUI extends JPanel {
 
     /**
      * Returns the location of a slot in relative coordinates
+     *
      * @param slot the slot
      * @return coordinates relative to this algorithm UI
      */

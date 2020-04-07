@@ -250,13 +250,11 @@ public class ACAQHorizontalAlgorithmUI extends ACAQAlgorithmUI {
 
     @Override
     public PointRange getSlotLocation(ACAQDataSlot slot) {
-        if(slot.isInput()) {
+        if (slot.isInput()) {
             return new PointRange(0, getAlgorithm().getInputSlots().indexOf(slot) * SLOT_UI_HEIGHT + SLOT_UI_HEIGHT / 2);
-        }
-        else if(slot.isOutput()) {
+        } else if (slot.isOutput()) {
             return new PointRange(getWidth(), getAlgorithm().getOutputSlots().indexOf(slot) * SLOT_UI_HEIGHT + SLOT_UI_HEIGHT / 2);
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException("Unknown slot type!");
         }
     }

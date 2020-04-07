@@ -13,7 +13,6 @@ import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 
-import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_HEIGHT;
 import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_WIDTH;
 
 /**
@@ -26,7 +25,8 @@ public class ACAQVerticalDataSlotUI extends ACAQDataSlotUI {
 
     /**
      * Creates a new UI
-     *  @param algorithmUI The parent algorithm UI
+     *
+     * @param algorithmUI The parent algorithm UI
      * @param graph       The graph
      * @param compartment The compartment ID
      * @param slot        The slot instance
@@ -90,7 +90,7 @@ public class ACAQVerticalDataSlotUI extends ACAQDataSlotUI {
         centerPanel.add(traitUI);
 
         add(centerPanel, BorderLayout.CENTER);
-        if(getSlot().isInput())
+        if (getSlot().isInput())
             add(assignButton, BorderLayout.NORTH);
         else
             add(assignButton, BorderLayout.SOUTH);
