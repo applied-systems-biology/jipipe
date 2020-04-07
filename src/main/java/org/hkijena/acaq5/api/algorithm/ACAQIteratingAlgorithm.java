@@ -68,7 +68,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
         checkInputSlots();
         ACAQDataSlot referenceSlot = getInputSlots().get(0);
         for (int row = 0; row < referenceSlot.getRowCount(); ++row) {
-            if(isCancelled.get())
+            if (isCancelled.get())
                 return;
             algorithmProgress.accept(subProgress.resolve("Data row " + (row + 1) + " / " + referenceSlot.getRowCount()));
             ACAQDataInterface dataInterface = new ACAQDataInterface(this, referenceSlot, row);
@@ -78,10 +78,11 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
 
     /**
      * Runs code on one data row
-     * @param dataInterface The data interface
-     * @param subProgress The current sub-progress this algorithm is scheduled in
+     *
+     * @param dataInterface     The data interface
+     * @param subProgress       The current sub-progress this algorithm is scheduled in
      * @param algorithmProgress Consumer to publish a new sub-progress
-     * @param isCancelled Supplier that informs if the current task was canceled
+     * @param isCancelled       Supplier that informs if the current task was canceled
      */
     protected abstract void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled);
 }

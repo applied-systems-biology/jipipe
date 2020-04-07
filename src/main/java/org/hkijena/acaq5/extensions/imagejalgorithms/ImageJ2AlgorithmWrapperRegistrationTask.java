@@ -11,12 +11,12 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
  */
 public class ImageJ2AlgorithmWrapperRegistrationTask implements ACAQAlgorithmRegistrationTask {
 
+    boolean alreadyRegistered = false;
     private ImageJAlgorithmsExtension source;
     private ImageJ2AlgorithmWrapperDeclaration declaration;
-    boolean alreadyRegistered = false;
 
     /**
-     * @param source registering extension
+     * @param source      registering extension
      * @param declaration the registered declaration
      */
     public ImageJ2AlgorithmWrapperRegistrationTask(ImageJAlgorithmsExtension source, ImageJ2AlgorithmWrapperDeclaration declaration) {
@@ -26,7 +26,7 @@ public class ImageJ2AlgorithmWrapperRegistrationTask implements ACAQAlgorithmReg
 
     @Override
     public void register() {
-        if(alreadyRegistered)
+        if (alreadyRegistered)
             return;
         alreadyRegistered = true;
         declaration.initialize();
@@ -40,7 +40,7 @@ public class ImageJ2AlgorithmWrapperRegistrationTask implements ACAQAlgorithmReg
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        if(!ACAQDatatypeRegistry.getInstance().hasDataType(ImagePlusData.class)) {
+        if (!ACAQDatatypeRegistry.getInstance().hasDataType(ImagePlusData.class)) {
             report.reportIsInvalid("Required data types are not registered! Requires: " + ImagePlusData.class);
         }
     }

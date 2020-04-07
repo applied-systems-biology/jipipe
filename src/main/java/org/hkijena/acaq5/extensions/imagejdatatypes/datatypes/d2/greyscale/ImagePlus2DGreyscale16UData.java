@@ -24,7 +24,7 @@ public class ImagePlus2DGreyscale16UData extends ImagePlus2DGreyscaleData {
         super(image);
 
         // Apply conversion
-        if(image.getType() != ImagePlus.GRAY16) {
+        if (image.getType() != ImagePlus.GRAY16) {
             ImageConverter ic = new ImageConverter(image);
             ic.convertToGray16();
         }

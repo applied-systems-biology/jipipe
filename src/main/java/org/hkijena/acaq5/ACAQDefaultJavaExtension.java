@@ -8,6 +8,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.api.data.ACAQDataConverter;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistrationTask;
 import org.hkijena.acaq5.api.registries.ACAQJavaAlgorithmRegistrationTask;
 import org.hkijena.acaq5.api.traits.ACAQJavaTraitDeclaration;
@@ -135,6 +136,16 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
         if (icon != null) {
             registry.getUITraitRegistry().registerIcon(traitDeclaration, icon);
         }
+    }
+
+    /**
+     * Registers a non-trivial conversion between data types.
+     * Please note that ACAQ will prefer trivial conversions (using Java inheritance) to custom converters.
+     *
+     * @param converter the converter
+     */
+    public void registerDatatypeConversion(ACAQDataConverter converter) {
+        registry.getDatatypeRegistry().registerConversion(converter);
     }
 
     /**

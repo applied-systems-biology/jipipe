@@ -39,7 +39,7 @@ public class FileParameterEditorUI extends ACAQParameterEditorUI {
             return;
         }
         isReloading = true;
-        fileSelection.setPath(((File)getParameterAccess().get()).toPath());
+        fileSelection.setPath(((File) getParameterAccess().get()).toPath());
         isReloading = false;
     }
 
@@ -52,7 +52,7 @@ public class FileParameterEditorUI extends ACAQParameterEditorUI {
             fileSelection.setPathMode(settings.pathMode());
         }
 
-        fileSelection.setPath(((File)getParameterAccess().get()).toPath());
+        fileSelection.setPath(((File) getParameterAccess().get()).toPath());
         add(fileSelection, BorderLayout.CENTER);
         fileSelection.addActionListener(e -> {
             if (!isReloading) {

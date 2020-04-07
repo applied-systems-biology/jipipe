@@ -7,6 +7,7 @@ import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.ACAQHidden;
 import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.api.data.ACAQDataConverter;
 import org.hkijena.acaq5.api.data.ACAQDataDeclaration;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.DatatypeRegisteredEvent;
@@ -20,6 +21,7 @@ public class ACAQDatatypeRegistry {
     private BiMap<String, Class<? extends ACAQData>> registeredDataTypes = HashBiMap.create();
     private Set<String> hiddenDataTypeIds = new HashSet<>();
     private Map<String, ACAQDependency> registeredDatatypeSources = new HashMap<>();
+    private Map<Class<? extends ACAQData>, Map<Class<? extends ACAQData>, ACAQDataConverter>> registeredConverters = new HashMap<>();
     private EventBus eventBus = new EventBus();
 
     /**
@@ -27,6 +29,63 @@ public class ACAQDatatypeRegistry {
      */
     public ACAQDatatypeRegistry() {
 
+    }
+
+    /**
+     * Registers a data converter that allows implicit conversion between data types
+     *
+     * @param converter the converter
+     */
+    public void registerConversion(ACAQDataConverter converter) {
+        Map<Class<? extends ACAQData>, ACAQDataConverter> targetMap = registeredConverters.getOrDefault(converter.getInputType(), null);
+        if (targetMap == null) {
+            targetMap = new HashMap<>();
+            registeredConverters.put(converter.getInputType(), targetMap);
+        }
+        targetMap.put(converter.getOutputType(), converter);
+    }
+
+    /**
+     * Converts the input data to the output data type
+     *
+     * @param inputData      the input data
+     * @param outputDataType the output data type
+     * @return the converted input data. Throws an exception if conversion is not possible
+     */
+    public ACAQData convert(ACAQData inputData, Class<? extends ACAQData> outputDataType) {
+        if (isTriviallyConvertible(inputData.getClass(), outputDataType))
+            return inputData;
+        else {
+            Map<Class<? extends ACAQData>, ACAQDataConverter> targetMap = registeredConverters.getOrDefault(inputData.getClass(), null);
+            if (targetMap != null) {
+                ACAQDataConverter converter = targetMap.getOrDefault(outputDataType, null);
+                if (converter != null) {
+                    return converter.convert(inputData.duplicate());
+                }
+            }
+        }
+        throw new RuntimeException("Could not convert " + inputData.getClass() + " to " + outputDataType);
+    }
+
+    /**
+     * Returns true if the input data type can be converted into the output data type.
+     * Returns true if both data types are the same or trivially convertible (inheritance)
+     *
+     * @param inputDataType  the input data type
+     * @param outputDataType the output data type
+     * @return if the types are convertible
+     */
+    public boolean isConvertible(Class<? extends ACAQData> inputDataType, Class<? extends ACAQData> outputDataType) {
+        if (isTriviallyConvertible(inputDataType, outputDataType)) {
+            return true;
+        } else {
+            Map<Class<? extends ACAQData>, ACAQDataConverter> targetMap = registeredConverters.getOrDefault(inputDataType, null);
+            if (targetMap != null) {
+                return targetMap.containsKey(outputDataType);
+            } else {
+                return false;
+            }
+        }
     }
 
     /**
@@ -170,6 +229,18 @@ public class ACAQDatatypeRegistry {
                 result.add(ACAQDataDeclaration.getInstance(entry.getValue()));
         }
         return result;
+    }
+
+    /**
+     * Returns true if the input data type can be trivially converted into the output data type.
+     * A trivial conversion is applied when the input data is the same as the output data type or inherits from it.
+     *
+     * @param inputDataType  the input data type
+     * @param outputDataType the output data type
+     * @return if the output data type can be assigned from the input data type without any explicit conversion rules
+     */
+    public static boolean isTriviallyConvertible(Class<? extends ACAQData> inputDataType, Class<? extends ACAQData> outputDataType) {
+        return outputDataType.isAssignableFrom(inputDataType);
     }
 
     /**

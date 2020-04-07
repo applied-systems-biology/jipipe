@@ -25,7 +25,7 @@ public class ImagePlus2DColorData extends ImagePlus2DData {
         super(image);
 
         // Apply conversion
-        if(image.getType() != ImagePlus.COLOR_256 && image.getType() != ImagePlus.COLOR_RGB) {
+        if (image.getType() != ImagePlus.COLOR_256 && image.getType() != ImagePlus.COLOR_RGB) {
             System.out.println("[WARNING] Attempt to store non-color data into a color image. Converting to RGB.");
             ImageConverter ic = new ImageConverter(image);
             ic.convertToRGB();

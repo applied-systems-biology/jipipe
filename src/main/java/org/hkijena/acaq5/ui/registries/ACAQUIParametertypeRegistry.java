@@ -85,6 +85,7 @@ public class ACAQUIParametertypeRegistry {
 
     /**
      * Returns true if there is an editor for the parameter
+     *
      * @param parameterType the parameter type
      * @return if there is an editor for the parameter
      */

@@ -29,7 +29,7 @@ public class ACAQJsonTraitRegistrationTask implements ACAQTraitRegistrationTask 
 
     @Override
     public void register() {
-        if(alreadyRegistered)
+        if (alreadyRegistered)
             return;
         alreadyRegistered = true;
         declaration.updatedInheritedDeclarations();

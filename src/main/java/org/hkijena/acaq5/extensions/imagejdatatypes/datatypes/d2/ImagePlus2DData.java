@@ -23,7 +23,7 @@ public class ImagePlus2DData extends ImagePlusData {
     public ImagePlus2DData(ImagePlus image) {
         super(image);
 
-        if(image.getNDimensions() > 2) {
+        if (image.getNDimensions() > 2) {
             throw new IllegalArgumentException("Trying to fit higher-dimensional data into 2D data!");
         }
     }

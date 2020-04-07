@@ -49,8 +49,14 @@ public class ImagePlusData implements ACAQData {
         IJ.saveAsTiff(image, storageFilePath.resolve(name + ".tif").toString());
     }
 
+    @Override
+    public ACAQData duplicate() {
+        return ACAQData.createInstance(getClass(), image.duplicate());
+    }
+
     /**
      * Gets the dimensionality of {@link ImagePlusData}
+     *
      * @param klass the class
      * @return the dimensionality
      */

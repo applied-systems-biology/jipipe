@@ -43,6 +43,11 @@ public class ACAQFolderData implements ACAQData {
         }
     }
 
+    @Override
+    public ACAQData duplicate() {
+        return new ACAQFolderData(folderPath);
+    }
+
     /**
      * Gets the data type name
      *

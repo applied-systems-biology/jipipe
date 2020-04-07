@@ -12,6 +12,7 @@ public class ACAQRunnerSubStatus {
     /**
      * Adds a new sub-category to the current task.
      * It will be rendered with an additional pipe
+     *
      * @param category the sub-category
      * @return status for current category
      */

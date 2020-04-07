@@ -24,7 +24,7 @@ public class ImagePlus3DColorRGBData extends ImagePlus3DColorData {
         super(image);
 
         // Apply conversion
-        if(image.getType() != ImagePlus.COLOR_RGB) {
+        if (image.getType() != ImagePlus.COLOR_RGB) {
             ImageConverter ic = new ImageConverter(image);
             ic.convertToRGB();
         }

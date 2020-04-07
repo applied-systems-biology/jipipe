@@ -30,7 +30,7 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
     @Override
     public void register() {
         for (CommandInfo command : commandService.getCommands()) {
-            if(ImageJ2AlgorithmWrapper.isCompatible(command, getContext())) {
+            if (ImageJ2AlgorithmWrapper.isCompatible(command, getContext())) {
                 try {
                     ImageJ2AlgorithmWrapperDeclaration declaration = new ImageJ2AlgorithmWrapperDeclaration(command, getContext());
                     registerAlgorithm(new ImageJ2AlgorithmWrapperRegistrationTask(this, declaration));

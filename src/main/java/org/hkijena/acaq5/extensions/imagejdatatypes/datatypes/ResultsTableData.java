@@ -44,6 +44,11 @@ public class ResultsTableData implements ACAQData {
         }
     }
 
+    @Override
+    public ACAQData duplicate() {
+        return new ResultsTableData((ResultsTable) table.clone());
+    }
+
     public ResultsTable getTable() {
         return table;
     }

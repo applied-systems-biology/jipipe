@@ -16,6 +16,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.*;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
+import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.jgrapht.Graph;
@@ -228,7 +229,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     public boolean canConnectFast(ACAQDataSlot source, ACAQDataSlot target, boolean user) {
         if (!source.isOutput() || !target.isInput())
             return false;
-        if (user && !target.getAcceptedDataType().isAssignableFrom(source.getAcceptedDataType()))
+        if (user && !ACAQDatatypeRegistry.getInstance().isConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
             return false;
         return true;
     }

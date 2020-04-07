@@ -24,7 +24,7 @@ public class ImagePlus5DColorRGBData extends ImagePlus5DColorData {
         super(image);
 
         // Apply conversion
-        if(image.getType() != ImagePlus.COLOR_RGB) {
+        if (image.getType() != ImagePlus.COLOR_RGB) {
             ImageConverter ic = new ImageConverter(image);
             ic.convertToRGB();
         }

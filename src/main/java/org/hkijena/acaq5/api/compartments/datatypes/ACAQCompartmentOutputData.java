@@ -17,4 +17,9 @@ public class ACAQCompartmentOutputData implements ACAQData {
     public void saveTo(Path storageFilePath, String name) {
 
     }
+
+    @Override
+    public ACAQData duplicate() {
+        return new ACAQCompartmentOutputData();
+    }
 }

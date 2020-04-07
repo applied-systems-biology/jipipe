@@ -23,7 +23,7 @@ public class ImagePlus5DData extends ImagePlusData {
     public ImagePlus5DData(ImagePlus image) {
         super(image);
 
-        if(image.getNDimensions() > 5) {
+        if (image.getNDimensions() > 5) {
             throw new IllegalArgumentException("Trying to fit higher-dimensional data into 5D data!");
         }
     }

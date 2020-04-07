@@ -314,11 +314,19 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
         return allowedInputSlotTypes;
     }
 
+    public void setAllowedInputSlotTypes(Set<Class<? extends ACAQData>> allowedInputSlotTypes) {
+        this.allowedInputSlotTypes = allowedInputSlotTypes;
+    }
+
     /**
      * @return Allowed output slot types
      */
     public Set<Class<? extends ACAQData>> getAllowedOutputSlotTypes() {
         return allowedOutputSlotTypes;
+    }
+
+    public void setAllowedOutputSlotTypes(Set<Class<? extends ACAQData>> allowedOutputSlotTypes) {
+        this.allowedOutputSlotTypes = allowedOutputSlotTypes;
     }
 
     /**
@@ -448,14 +456,6 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
      */
     public static Builder builder() {
         return new Builder();
-    }
-
-    public void setAllowedInputSlotTypes(Set<Class<? extends ACAQData>> allowedInputSlotTypes) {
-        this.allowedInputSlotTypes = allowedInputSlotTypes;
-    }
-
-    public void setAllowedOutputSlotTypes(Set<Class<? extends ACAQData>> allowedOutputSlotTypes) {
-        this.allowedOutputSlotTypes = allowedOutputSlotTypes;
     }
 
     /**

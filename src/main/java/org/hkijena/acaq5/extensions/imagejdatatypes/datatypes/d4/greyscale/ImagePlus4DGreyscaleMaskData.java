@@ -24,7 +24,7 @@ public class ImagePlus4DGreyscaleMaskData extends ImagePlus4DGreyscale8UData {
         super(image);
 
         // Apply conversion
-        if(image.getType() != ImagePlus.GRAY8) {
+        if (image.getType() != ImagePlus.GRAY8) {
             ImageConverter ic = new ImageConverter(image);
             ic.convertToGray8();
         }

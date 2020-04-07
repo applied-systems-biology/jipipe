@@ -25,7 +25,7 @@ public class ImagePlus3DGreyscaleData extends ImagePlus3DData {
         super(image);
 
         // Apply conversion
-        if(image.getType() != ImagePlus.GRAY8 &&
+        if (image.getType() != ImagePlus.GRAY8 &&
                 image.getType() != ImagePlus.GRAY16 &&
                 image.getType() != ImagePlus.GRAY32) {
             System.out.println("[WARNING] Attempt to store non-grayscale data into a grayscale image. Converting to 32-bit floating point.");

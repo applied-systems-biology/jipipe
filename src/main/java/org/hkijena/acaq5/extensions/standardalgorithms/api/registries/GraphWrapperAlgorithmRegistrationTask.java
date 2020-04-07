@@ -53,7 +53,7 @@ public class GraphWrapperAlgorithmRegistrationTask extends ACAQDefaultAlgorithmR
 
     @Override
     public void register() {
-        if(alreadyRegistered)
+        if (alreadyRegistered)
             return;
         alreadyRegistered = true;
         try {

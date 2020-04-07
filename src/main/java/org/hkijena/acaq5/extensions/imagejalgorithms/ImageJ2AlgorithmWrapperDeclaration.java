@@ -2,7 +2,6 @@ package org.hkijena.acaq5.extensions.imagejalgorithms;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
 import ij.ImagePlus;
 import net.imagej.Dataset;
@@ -25,7 +24,10 @@ import org.scijava.module.ModuleException;
 import org.scijava.module.ModuleInfo;
 import org.scijava.module.ModuleItem;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -47,8 +49,9 @@ public class ImageJ2AlgorithmWrapperDeclaration implements ACAQAlgorithmDeclarat
 
     /**
      * Creates a new ImageJ wrapper algorithm type from an ImageJ command
+     *
      * @param commandInfo the command
-     * @param context the SciJava context
+     * @param context     the SciJava context
      * @throws ModuleException triggered when the command cannot be converted into a module
      */
     public ImageJ2AlgorithmWrapperDeclaration(CommandInfo commandInfo, Context context) throws ModuleException {
@@ -70,7 +73,7 @@ public class ImageJ2AlgorithmWrapperDeclaration implements ACAQAlgorithmDeclarat
     public void initialize() {
         this.slotConfiguration = new ACAQMutableSlotConfiguration();
         for (ModuleItem<?> moduleItem : ImmutableList.copyOf(moduleInfo.inputs())) {
-            if(Dataset.class.isAssignableFrom(moduleItem.getType()) || ImagePlus.class.isAssignableFrom(moduleItem.getType())) {
+            if (Dataset.class.isAssignableFrom(moduleItem.getType()) || ImagePlus.class.isAssignableFrom(moduleItem.getType())) {
                 String name = findInputSlotName(moduleItem);
                 inputMap.put(name, moduleItem.getName());
                 slotConfiguration.addSlot(name, new ACAQSlotDefinition(ImagePlusData.class, ACAQDataSlot.SlotType.Input, null));
@@ -78,7 +81,7 @@ public class ImageJ2AlgorithmWrapperDeclaration implements ACAQAlgorithmDeclarat
             }
         }
         for (ModuleItem<?> moduleItem : ImmutableList.copyOf(moduleInfo.outputs())) {
-            if(Dataset.class.isAssignableFrom(moduleItem.getType()) || ImagePlus.class.isAssignableFrom(moduleItem.getType())) {
+            if (Dataset.class.isAssignableFrom(moduleItem.getType()) || ImagePlus.class.isAssignableFrom(moduleItem.getType())) {
                 String name = findOutputSlotName(moduleItem);
                 outputMap.put(name, moduleItem.getName());
                 slotConfiguration.addSlot(name, new ACAQSlotDefinition(ImagePlusData.class, ACAQDataSlot.SlotType.Output, null));
@@ -97,7 +100,7 @@ public class ImageJ2AlgorithmWrapperDeclaration implements ACAQAlgorithmDeclarat
         String name = WordUtils.capitalize(moduleItem.getName());
         name = name.replace("input", "output")
                 .replace("Input", "Output");
-        if(slotConfiguration.hasSlot(name)) {
+        if (slotConfiguration.hasSlot(name)) {
             name = "Output " + name;
         }
         return StringUtils.makeUniqueString(name, " ", s -> slotConfiguration.hasSlot(s));

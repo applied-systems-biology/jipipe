@@ -12,8 +12,8 @@ import org.jdesktop.swingx.JXTextField;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -21,15 +21,14 @@ import java.util.stream.Collectors;
  */
 public class ACAQTraitPicker extends JPanel {
 
+    boolean reloading = false;
     private Mode mode;
-
     private EventBus eventBus = new EventBus();
     private JXTextField searchField;
     private JList<ACAQTraitDeclaration> traitList;
     private Set<ACAQTraitDeclaration> hiddenTraits = new HashSet<>();
     private List<ACAQTraitDeclaration> availableTraits;
     private Set<ACAQTraitDeclaration> selectedTraits = new HashSet<>();
-    boolean reloading = false;
 
     /**
      * @param mode            the mode
@@ -52,7 +51,7 @@ public class ACAQTraitPicker extends JPanel {
         searchField.getDocument().addDocumentListener(new DocumentChangeListener() {
             @Override
             public void changed(DocumentEvent documentEvent) {
-            refreshTraitList();
+                refreshTraitList();
             }
         });
         toolBar.add(searchField);
@@ -65,14 +64,12 @@ public class ACAQTraitPicker extends JPanel {
 
         traitList = new JList<>(new DefaultListModel<>());
         traitList.setCellRenderer(new Renderer());
-        if(mode == Mode.NonInteractive) {
+        if (mode == Mode.NonInteractive) {
             traitList.setEnabled(false);
-        }
-        else if(mode == Mode.Single) {
+        } else if (mode == Mode.Single) {
             traitList.setSelectionModel(new SingleSelectionModel());
             traitList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        }
-        else {
+        } else {
             traitList.setSelectionModel(new MultiSelectionModel());
             traitList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         }
@@ -81,21 +78,21 @@ public class ACAQTraitPicker extends JPanel {
     }
 
     private void updateSelection() {
-        if(reloading)
+        if (reloading)
             return;
         boolean changed = false;
         for (ACAQTraitDeclaration trait : availableTraits) {
-            if(hiddenTraits.contains(trait))
+            if (hiddenTraits.contains(trait))
                 continue;
             boolean uiSelected = traitList.getSelectedValuesList().contains(trait);
             boolean modelSelected = selectedTraits.contains(trait);
-            if(uiSelected != modelSelected) {
-                if(modelSelected) {
+            if (uiSelected != modelSelected) {
+                if (modelSelected) {
                     selectedTraits.remove(trait);
                     eventBus.post(new TraitDeselectedEvent(this, trait));
                     changed = true;
                 }
-                if(uiSelected) {
+                if (uiSelected) {
                     selectedTraits.add(trait);
                     eventBus.post(new TraitSelectedEvent(this, trait));
                     changed = true;
@@ -103,7 +100,7 @@ public class ACAQTraitPicker extends JPanel {
             }
         }
 
-        if(changed) {
+        if (changed) {
             eventBus.post(new SelectedTraitsChangedEvent(this));
         }
     }
@@ -126,7 +123,7 @@ public class ACAQTraitPicker extends JPanel {
             }
 
             model.addElement(trait);
-            if(selectedTraits.contains(trait)) {
+            if (selectedTraits.contains(trait)) {
                 selectedIndices.add(model.size() - 1);
             }
         }
@@ -135,7 +132,7 @@ public class ACAQTraitPicker extends JPanel {
     }
 
     private boolean searchStringsMatches(ACAQTraitDeclaration trait, String[] strings) {
-        if(trait == null)
+        if (trait == null)
             return true;
         if (strings == null)
             return true;
@@ -261,10 +258,9 @@ public class ACAQTraitPicker extends JPanel {
 
         @Override
         public Component getListCellRendererComponent(JList<? extends ACAQTraitDeclaration> list, ACAQTraitDeclaration value, int index, boolean isSelected, boolean cellHasFocus) {
-            if(value != null) {
+            if (value != null) {
                 setText(StringUtils.createIconTextHTMLTable(value.getName(), ACAQUITraitRegistry.getInstance().getIconURLFor(value)));
-            }
-            else{
+            } else {
                 setText(StringUtils.createIconTextHTMLTable("Select none", ResourceUtils.getPluginResource("icons/remove.png")));
             }
             setSelected(isSelected);
@@ -336,8 +332,7 @@ public class ACAQTraitPicker extends JPanel {
                 }
                 if (isSelectedIndex(startIndex)) {
                     clearSelection();
-                }
-                else {
+                } else {
                     super.setSelectionInterval(startIndex, endIndex);
                 }
             }
@@ -358,12 +353,10 @@ public class ACAQTraitPicker extends JPanel {
             if (startIndex == endIndex) {
                 if (isSelectedIndex(startIndex)) {
                     removeSelectionInterval(startIndex, endIndex);
-                }
-                else {
+                } else {
                     super.addSelectionInterval(startIndex, endIndex);
                 }
-            }
-            else {
+            } else {
                 super.addSelectionInterval(startIndex, endIndex);
             }
         }

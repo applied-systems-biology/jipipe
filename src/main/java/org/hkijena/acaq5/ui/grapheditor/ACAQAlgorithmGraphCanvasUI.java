@@ -11,6 +11,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.AlgorithmGraphConnectedEvent;
+import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.ui.components.PickAlgorithmDialog;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.acaq5.ui.events.DefaultUIActionRequestedEvent;
@@ -423,8 +424,10 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
             if (sourceUI == null && targetUI == null)
                 continue;
-            if (target.getAcceptedDataType().isAssignableFrom(source.getAcceptedDataType()))
+            if (ACAQDatatypeRegistry.isTriviallyConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
                 graphics.setColor(Color.DARK_GRAY);
+            else if (ACAQDatatypeRegistry.getInstance().isConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
+                graphics.setColor(Color.BLUE);
             else
                 graphics.setColor(Color.RED);
 

@@ -5,6 +5,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.data.traits.ACAQMutableTraitConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
 import org.hkijena.acaq5.api.events.SlotAnnotationsChanged;
+import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
@@ -70,7 +71,8 @@ public class ACAQDataSlot implements TableModel {
     }
 
     /**
-     * Returns true if the slot can carry the provided data
+     * Returns true if the slot can carry the provided data.
+     * This will also look up if the data can be converted
      *
      * @param data Data
      * @return True if the slot accepts the data
@@ -78,7 +80,7 @@ public class ACAQDataSlot implements TableModel {
     public boolean accepts(ACAQData data) {
         if (data == null)
             throw new NullPointerException("Data slots cannot accept null data!");
-        return acceptedDataType.isAssignableFrom(data.getClass());
+        return ACAQDatatypeRegistry.getInstance().isConvertible(data.getClass(), getAcceptedDataType());
     }
 
     /**
@@ -136,13 +138,13 @@ public class ACAQDataSlot implements TableModel {
      */
     public void addData(ACAQData value, List<ACAQTrait> traits) {
         if (!accepts(value))
-            throw new IllegalArgumentException("Tried to add data of type " + value.getClass() + ", but slot only accepts " + acceptedDataType);
+            throw new IllegalArgumentException("Tried to add data of type " + value.getClass() + ", but slot only accepts " + acceptedDataType + ". A converter could not be found.");
         if (uniqueData) {
             if (findRowWithTraits(traits) != -1) {
                 uniqueData = false;
             }
         }
-        data.add(value);
+        data.add(ACAQDatatypeRegistry.getInstance().convert(value, getAcceptedDataType()));
         for (ACAQTrait trait : traits) {
             List<ACAQTrait> traitArray = getOrCreateAnnotationColumnData(trait.getDeclaration());
             traitArray.set(getRowCount() - 1, trait);

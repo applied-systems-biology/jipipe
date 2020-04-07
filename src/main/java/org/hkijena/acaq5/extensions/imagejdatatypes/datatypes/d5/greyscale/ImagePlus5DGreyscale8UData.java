@@ -24,7 +24,7 @@ public class ImagePlus5DGreyscale8UData extends ImagePlus5DGreyscaleData {
         super(image);
 
         // Apply conversion
-        if(image.getType() != ImagePlus.GRAY8) {
+        if (image.getType() != ImagePlus.GRAY8) {
             ImageConverter ic = new ImageConverter(image);
             ic.convertToGray8();
         }

@@ -23,7 +23,7 @@ public class ImagePlus3DData extends ImagePlusData {
     public ImagePlus3DData(ImagePlus image) {
         super(image);
 
-        if(image.getNDimensions() > 3) {
+        if (image.getNDimensions() > 3) {
             throw new IllegalArgumentException("Trying to fit higher-dimensional data into 3D data!");
         }
     }

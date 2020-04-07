@@ -69,7 +69,6 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
 
     /**
      * Discovers extension services that provide new ACAQ5 modules
-     *
      */
     private void discover() {
         IJ.showStatus("Initializing ACAQ5 ...");
@@ -83,7 +82,7 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
                 ACAQJavaExtension extension = info.createInstance();
                 getContext().inject(extension);
                 extension.setRegistry(this);
-                if(extension instanceof AbstractService) {
+                if (extension instanceof AbstractService) {
                     ((AbstractService) extension).setContext(getContext());
                 }
                 extension.register();

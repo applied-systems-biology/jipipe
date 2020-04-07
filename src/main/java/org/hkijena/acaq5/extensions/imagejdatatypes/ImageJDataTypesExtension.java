@@ -1,8 +1,11 @@
 package org.hkijena.acaq5.extensions.imagejdatatypes;
 
 import org.hkijena.acaq5.ACAQJavaExtension;
+import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.imagejdatatypes.algorithms.ImageTypeConverter;
+import org.hkijena.acaq5.extensions.imagejdatatypes.algorithms.ImplicitImageTypeConverter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.compat.ImgPlusDataImageJAdapter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.compat.ROIDataImageJAdapter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.compat.ResultsTableDataImageJAdapter;
@@ -41,6 +44,10 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.resultanalysis.ROIDataSlotRo
 import org.hkijena.acaq5.extensions.imagejdatatypes.resultanalysis.ResultsTableDataSlotRowUI;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Provides ImageJ data types
@@ -108,6 +115,7 @@ public class ImageJDataTypesExtension extends ACAQPrepackagedDefaultJavaExtensio
         registerImageDataType("imagej-imgplus-5d-color", ImagePlus5DColorData.class, "icons/data-types/imgplus-5d-color.png");
         registerImageDataType("imagej-imgplus-5d-color-rgb", ImagePlus5DColorRGBData.class, "icons/data-types/imgplus-5d-color-rgb.png");
         registerImageDataType("imagej-imgplus-5d-color-8u", ImagePlus5DColor8UData.class, "icons/data-types/imgplus-5d-color-8u.png");
+        registerConverters();
 
         registerDatatype("imagej-roi", ROIData.class, ResourceUtils.getPluginResource("icons/data-types/roi.png"),
                 ROIDataSlotRowUI.class, null);
@@ -127,6 +135,39 @@ public class ImageJDataTypesExtension extends ACAQPrepackagedDefaultJavaExtensio
 
         // Register parameter editors
         registerParameterType(MacroCode.class, MacroParameterEditorUI.class, "ImageJ macro", "An ImageJ macro code");
+    }
+
+    /**
+     * Creates following converters:
+     * Lower dimensionality to higher dimensionality (e.g. 2D is also 3D data)
+     * Between same dimensionality
+     */
+    private void registerConverters() {
+        Map<Integer, List<Class<? extends ACAQData>>> groupedByDimensionality =
+                getRegistry().getDatatypeRegistry().getRegisteredDataTypes().values()
+                        .stream().filter(ImagePlusData.class::isAssignableFrom)
+                        .collect(Collectors.groupingBy(d -> (Integer) ImagePlusData.getDimensionalityOf((Class<? extends ImagePlusData>) d)));
+        // Create converters within the same dimension
+        for (Map.Entry<Integer, List<Class<? extends ACAQData>>> entry : groupedByDimensionality.entrySet()) {
+            if (entry.getKey() == -1)
+                continue;
+            int dimensionalityHere = entry.getKey();
+            List<Class<? extends ACAQData>> typesHere = entry.getValue();
+
+            for (Map.Entry<Integer, List<Class<? extends ACAQData>>> otherEntry : groupedByDimensionality.entrySet()) {
+                if (otherEntry.getKey() >= dimensionalityHere) {
+                    for (Class<? extends ACAQData> inputClass : typesHere) {
+                        for (Class<? extends ACAQData> outputClass : otherEntry.getValue()) {
+                            if (!ACAQDatatypeRegistry.isTriviallyConvertible(inputClass, outputClass)) {
+                                ImplicitImageTypeConverter converter = new ImplicitImageTypeConverter(inputClass, outputClass);
+                                registerDatatypeConversion(converter);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     private void registerImageDataType(String id, Class<? extends ImagePlusData> dataClass, String iconResource) {

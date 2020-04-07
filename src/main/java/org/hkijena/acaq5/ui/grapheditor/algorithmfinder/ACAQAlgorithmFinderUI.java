@@ -7,6 +7,7 @@ import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
+import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
@@ -252,7 +253,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
         List<ACAQAlgorithmDeclaration> result = new ArrayList<>();
         for (ACAQAlgorithmDeclaration declaration : ACAQAlgorithmRegistry.getInstance().getRegisteredAlgorithms().values()) {
             for (Class<? extends ACAQData> inputSlotDataClass : declaration.getInputSlots().stream().map(AlgorithmInputSlot::value).collect(Collectors.toList())) {
-                if (inputSlotDataClass.isAssignableFrom(outputSlotDataClass)) {
+                if (ACAQDatatypeRegistry.getInstance().isConvertible(inputSlotDataClass, outputSlotDataClass)) {
                     result.add(declaration);
                     break;
                 }

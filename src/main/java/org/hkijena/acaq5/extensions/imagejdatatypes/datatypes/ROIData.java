@@ -78,6 +78,11 @@ public class ROIData implements ACAQData {
         }
     }
 
+    @Override
+    public ACAQData duplicate() {
+        return new ROIData(new ArrayList<>(roi));
+    }
+
     /**
      * Adds the ROI to an existing ROI manager instance
      *

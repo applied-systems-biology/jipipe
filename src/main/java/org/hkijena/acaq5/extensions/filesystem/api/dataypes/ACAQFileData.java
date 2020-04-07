@@ -41,6 +41,11 @@ public class ACAQFileData implements ACAQData {
         }
     }
 
+    @Override
+    public ACAQData duplicate() {
+        return new ACAQFileData(filePath);
+    }
+
     /**
      * Returns the data type name stored into the JSON
      *

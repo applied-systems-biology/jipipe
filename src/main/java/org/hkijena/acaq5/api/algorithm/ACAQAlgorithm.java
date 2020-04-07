@@ -179,6 +179,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
 
     /**
      * Runs the workload
+     *
      * @param subProgress
      * @param algorithmProgress
      * @param isCancelled

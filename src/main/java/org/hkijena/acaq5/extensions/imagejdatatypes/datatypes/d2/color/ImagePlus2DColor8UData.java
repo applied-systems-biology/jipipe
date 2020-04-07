@@ -24,7 +24,7 @@ public class ImagePlus2DColor8UData extends ImagePlus2DColorData {
         super(image);
 
         // Apply conversion
-        if(image.getType() != ImagePlus.COLOR_256) {
+        if (image.getType() != ImagePlus.COLOR_256) {
             ImageConverter ic = new ImageConverter(image);
             ic.convertToRGB();
             ic.convertRGBtoIndexedColor(256);

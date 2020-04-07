@@ -23,7 +23,7 @@ public class ImagePlus4DData extends ImagePlusData {
     public ImagePlus4DData(ImagePlus image) {
         super(image);
 
-        if(image.getNDimensions() > 4) {
+        if (image.getNDimensions() > 4) {
             throw new IllegalArgumentException("Trying to fit higher-dimensional data into 4D data!");
         }
     }

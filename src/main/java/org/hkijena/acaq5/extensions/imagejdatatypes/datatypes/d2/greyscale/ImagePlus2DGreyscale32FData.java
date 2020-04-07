@@ -24,7 +24,7 @@ public class ImagePlus2DGreyscale32FData extends ImagePlus2DGreyscaleData {
         super(image);
 
         // Apply conversion
-        if(image.getType() != ImagePlus.GRAY32) {
+        if (image.getType() != ImagePlus.GRAY32) {
             ImageConverter ic = new ImageConverter(image);
             ic.convertToGray32();
         }

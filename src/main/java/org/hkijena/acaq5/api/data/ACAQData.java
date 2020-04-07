@@ -28,6 +28,13 @@ public interface ACAQData {
     void saveTo(Path storageFilePath, String name);
 
     /**
+     * Duplicates the data
+     *
+     * @return a deep copy of the data
+     */
+    ACAQData duplicate();
+
+    /**
      * Returns the name of a data type
      *
      * @param klass The data class

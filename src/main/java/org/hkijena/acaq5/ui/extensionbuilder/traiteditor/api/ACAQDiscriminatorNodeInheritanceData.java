@@ -16,4 +16,9 @@ public class ACAQDiscriminatorNodeInheritanceData implements ACAQData {
     public void saveTo(Path storageFilePath, String name) {
 
     }
+
+    @Override
+    public ACAQData duplicate() {
+        return new ACAQDiscriminatorNodeInheritanceData();
+    }
 }
