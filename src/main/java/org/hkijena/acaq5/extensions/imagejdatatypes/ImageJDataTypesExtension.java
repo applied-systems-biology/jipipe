@@ -47,6 +47,7 @@ import org.scijava.plugin.Plugin;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -143,14 +144,12 @@ public class ImageJDataTypesExtension extends ACAQPrepackagedDefaultJavaExtensio
      * Between same dimensionality
      */
     private void registerConverters() {
+        Set<Class<? extends ACAQData>> dataTypes = getRegistry().getDatatypeRegistry().getRegisteredDataTypes().values()
+                .stream().filter(ImagePlusData.class::isAssignableFrom).collect(Collectors.toSet());
         Map<Integer, List<Class<? extends ACAQData>>> groupedByDimensionality =
-                getRegistry().getDatatypeRegistry().getRegisteredDataTypes().values()
-                        .stream().filter(ImagePlusData.class::isAssignableFrom)
-                        .collect(Collectors.groupingBy(d -> (Integer) ImagePlusData.getDimensionalityOf((Class<? extends ImagePlusData>) d)));
+                dataTypes.stream().collect(Collectors.groupingBy(d -> (Integer) ImagePlusData.getDimensionalityOf((Class<? extends ImagePlusData>) d)));
         // Create converters within the same dimension
         for (Map.Entry<Integer, List<Class<? extends ACAQData>>> entry : groupedByDimensionality.entrySet()) {
-            if (entry.getKey() == -1)
-                continue;
             int dimensionalityHere = entry.getKey();
             List<Class<? extends ACAQData>> typesHere = entry.getValue();
 
@@ -167,7 +166,6 @@ public class ImageJDataTypesExtension extends ACAQPrepackagedDefaultJavaExtensio
                 }
             }
         }
-
     }
 
     private void registerImageDataType(String id, Class<? extends ImagePlusData> dataClass, String iconResource) {
