@@ -12,7 +12,7 @@ import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCompartmentUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphUIDragAndDrop;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -123,7 +123,7 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQJsonExtensionWorkbenc
      * Initializes the toolbar
      */
     protected void initializeToolbar() {
-        ACAQAlgorithmGraphUI.initializeAddNodesMenus(menuBar, algorithmGraph, compartment);
+        ACAQAlgorithmGraphCompartmentUI.initializeAddNodesMenus(menuBar, algorithmGraph, compartment);
 
         menuBar.add(Box.createHorizontalGlue());
 

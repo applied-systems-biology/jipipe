@@ -28,16 +28,13 @@ import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_WIDTH;
 /**
  * UI around an {@link ACAQDataSlot}
  */
-public class ACAQDataSlotUI extends JPanel {
+public abstract class ACAQDataSlotUI extends JPanel {
     private ACAQAlgorithmUI algorithmUI;
     private ACAQAlgorithmGraph graph;
     private String compartment;
     private ACAQDataSlot slot;
     private ACAQAlgorithmGraphCanvasUI.Direction direction;
-    private JButton assignButton;
-    private JPopupMenu assignButtonMenu;
-    private ACAQDataSlotTraitUI traitUI;
-    private JLabel nameLabel;
+    protected JPopupMenu assignButtonMenu;
 
     /**
      * Creates a new UI
@@ -45,7 +42,7 @@ public class ACAQDataSlotUI extends JPanel {
      * @param graph       The graph
      * @param compartment The compartment ID
      * @param slot        The slot instance
-     * @param direction
+     * @param direction  The directionality of this slot UI
      */
     public ACAQDataSlotUI(ACAQAlgorithmUI algorithmUI, ACAQAlgorithmGraph graph, String compartment, ACAQDataSlot slot, ACAQAlgorithmGraphCanvasUI.Direction direction) {
         this.algorithmUI = algorithmUI;
@@ -53,15 +50,15 @@ public class ACAQDataSlotUI extends JPanel {
         this.compartment = compartment;
         this.slot = slot;
         this.direction = direction;
-        initialize();
-        reloadPopupMenu();
-        reloadButtonStatus();
 
         graph.getEventBus().register(this);
         slot.getDefinition().getEventBus().register(this);
     }
 
-    private void reloadPopupMenu() {
+    /**
+     * Reloads the "Assign" popup menu
+     */
+    protected void reloadPopupMenu() {
         assignButtonMenu.removeAll();
 
         if (slot.isInput()) {
@@ -187,21 +184,14 @@ public class ACAQDataSlotUI extends JPanel {
         dialog.setVisible(true);
     }
 
-    private void reloadButtonStatus() {
-        if (slot.isInput()) {
-            if (graph.getSourceSlot(slot) == null) {
-                assignButton.setIcon(UIUtils.getIconFromResources("chevron-right-thin.png"));
-            } else {
-                assignButton.setIcon(UIUtils.getIconFromResources("chevron-right.png"));
-            }
-        } else if (slot.isOutput()) {
-            if (graph.getTargetSlots(slot).isEmpty()) {
-                assignButton.setIcon(UIUtils.getIconFromResources("chevron-right-thin.png"));
-            } else {
-                assignButton.setIcon(UIUtils.getIconFromResources("chevron-right.png"));
-            }
-        }
+    public ACAQAlgorithmGraph getGraph() {
+        return graph;
     }
+
+    /**
+     * Is called when the button's visual feedback should be updated
+     */
+    protected abstract void reloadButtonStatus();
 
     private void connectSlot(ACAQDataSlot source, ACAQDataSlot target) {
         if (graph.canConnect(source, target, true)) {
@@ -213,77 +203,12 @@ public class ACAQDataSlotUI extends JPanel {
         graph.disconnectAll(slot, true);
     }
 
-    private void initialize() {
-        setLayout(new BorderLayout());
+    /**
+     * Is called when the name parameter was changed
+     */
+    protected abstract void reloadName();
 
-        assignButton = new JButton(UIUtils.getIconFromResources("chevron-right.png"));
-        assignButton.setPreferredSize(new Dimension(25, SLOT_UI_HEIGHT));
-        assignButtonMenu = UIUtils.addPopupMenuToComponent(assignButton);
-        UIUtils.makeFlat(assignButton);
-
-        if (slot.getAlgorithm() instanceof ACAQCompartmentOutput) {
-            if (slot.getAlgorithm().getCompartment().equals(compartment)) {
-                if (slot.isOutput()) {
-                    assignButton.setEnabled(false);
-                }
-            } else {
-                if (slot.isInput()) {
-                    assignButton.setEnabled(false);
-                }
-            }
-        }
-
-        JPanel centerPanel = new JPanel();
-//        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
-        centerPanel.setLayout(new GridLayout(2, 1));
-        centerPanel.setOpaque(false);
-
-        nameLabel = new JLabel();
-        reloadName();
-        nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot, false));
-        nameLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
-        nameLabel.setIcon(ACAQUIDatatypeRegistry.getInstance().getIconFor(getSlotDataType()));
-        centerPanel.add(nameLabel);
-//        add(nameLabel, BorderLayout.CENTER);
-
-
-        if (slot.isInput()) {
-            add(assignButton, BorderLayout.WEST);
-            nameLabel.setHorizontalAlignment(JLabel.LEFT);
-            nameLabel.setHorizontalTextPosition(JLabel.RIGHT);
-
-//            // For preprocessing output, also create traits per input
-//            if(slot.getAlgorithm() instanceof ACAQPreprocessingOutput) {
-//                ACAQDataSlotTraitUI traitUI = new ACAQDataSlotTraitUI(graph, slot);
-//                add(traitUI, BorderLayout.EAST);
-//            }
-        } else if (slot.isOutput()) {
-            add(assignButton, BorderLayout.EAST);
-            nameLabel.setHorizontalAlignment(JLabel.RIGHT);
-            nameLabel.setHorizontalTextPosition(JLabel.LEFT);
-
-//            // Create trait UI
-//            ACAQDataSlotTraitUI traitUI = new ACAQDataSlotTraitUI(graph, slot);
-//            add(traitUI, BorderLayout.WEST);
-        }
-
-        traitUI = new ACAQDataSlotTraitUI(graph, slot);
-        centerPanel.add(traitUI);
-
-        add(centerPanel, BorderLayout.CENTER);
-    }
-
-    private void reloadName() {
-        if (!StringUtils.isNullOrEmpty(slot.getDefinition().getCustomName())) {
-            nameLabel.setText(getDisplayedName());
-            nameLabel.setFont(nameLabel.getFont().deriveFont(Font.ITALIC));
-        } else {
-            nameLabel.setText(getDisplayedName());
-            nameLabel.setFont(nameLabel.getFont().deriveFont(Font.PLAIN));
-        }
-    }
-
-    private Class<? extends ACAQData> getSlotDataType() {
+    protected Class<? extends ACAQData> getSlotDataType() {
         if (graph != null) {
             if (graph.containsNode(slot)) {
                 ACAQDataSlot sourceSlot = graph.getSourceSlot(slot);
@@ -316,17 +241,7 @@ public class ACAQDataSlotUI extends JPanel {
     /**
      * @return The width needed to display the slot
      */
-    public int calculateWidth() {
-        // First calculate the width caused by the label width
-        FontRenderContext frc = new FontRenderContext(null, false, false);
-        TextLayout layout = new TextLayout(getDisplayedName(), getFont(), frc);
-        double w = layout.getBounds().getWidth();
-        int labelWidth = (int) Math.ceil(w * 1.0 / SLOT_UI_WIDTH) * SLOT_UI_WIDTH;
-        int traitWidth = (int) Math.ceil(traitUI.calculateWidth() * 1.0 / SLOT_UI_WIDTH) * SLOT_UI_WIDTH;
-        int width = Math.max(labelWidth, traitWidth) + 75;
-
-        return width;
-    }
+    public abstract int calculateWidth();
 
     /**
      * @return The slot
@@ -370,5 +285,13 @@ public class ACAQDataSlotUI extends JPanel {
 
     public ACAQAlgorithmGraphCanvasUI.Direction getDirection() {
         return direction;
+    }
+
+    protected JPopupMenu getAssignButtonMenu() {
+        return assignButtonMenu;
+    }
+
+    protected void setAssignButtonMenu(JPopupMenu assignButtonMenu) {
+        this.assignButtonMenu = assignButtonMenu;
     }
 }

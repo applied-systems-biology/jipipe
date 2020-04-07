@@ -65,13 +65,23 @@ public class UIUtils {
     }
 
     /**
-     * Adds a popup menu to a button
+     * Adds a popup menu to a button.
+     * Creates a new popup menu instance.
      *
      * @param target target button
      * @return the popup menu
      */
     public static JPopupMenu addPopupMenuToComponent(AbstractButton target) {
-        JPopupMenu popupMenu = new JPopupMenu();
+        return addPopupMenuToComponent(target, new JPopupMenu());
+    }
+
+    /**
+     * Adds an existing popup menu to a button
+     * @param target  target button
+     * @param popupMenu the popup menu
+     * @return the popup menu
+     */
+    public static JPopupMenu addPopupMenuToComponent(AbstractButton target, JPopupMenu popupMenu) {
         target.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
@@ -485,6 +495,7 @@ public class UIUtils {
         });
         return label;
     }
+
 
 
 }

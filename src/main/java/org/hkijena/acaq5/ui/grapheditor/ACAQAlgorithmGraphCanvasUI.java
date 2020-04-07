@@ -15,6 +15,7 @@ import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.ui.components.PickAlgorithmDialog;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.acaq5.ui.events.DefaultUIActionRequestedEvent;
+import org.hkijena.acaq5.utils.PointRange;
 import org.hkijena.acaq5.utils.ScreenImage;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jgrapht.graph.DefaultDirectedGraph;
@@ -95,6 +96,18 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     }
 
     /**
+     * Removes all node UIs
+     */
+    private void removeAllNodes() {
+        for (ACAQAlgorithmUI ui : ImmutableList.copyOf(nodeUIs.values())) {
+            remove(ui);
+        }
+        nodeUIs.clear();
+        revalidate();
+        repaint();
+    }
+
+    /**
      * Removes node UIs that are not valid anymore
      */
     private void removeOldNodes() {
@@ -118,19 +131,32 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
      * Adds node UIs that are not in the canvas yet
      */
     private void addNewNodes() {
+        int newlyPlacedAlgorithms = 0;
         for (ACAQAlgorithm algorithm : algorithmGraph.traverseAlgorithms()) {
             if (!algorithm.isVisibleIn(compartment))
                 continue;
             if (nodeUIs.containsKey(algorithm))
                 continue;
 
-            ACAQAlgorithmUI ui = new ACAQAlgorithmUI(this, algorithm, currentDirection);
+            ACAQAlgorithmUI ui;
+            switch(currentDirection) {
+                case Horizontal:
+                    ui = new ACAQHorizontalAlgorithmUI(this, algorithm);
+                    break;
+                case Vertical:
+                    ui = new ACAQVerticalAlgorithmUI(this, algorithm);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown view mode!");
+            }
+
             ui.getEventBus().register(this);
             add(ui);
             nodeUIs.put(algorithm, ui);
             Point location = algorithm.getLocationWithin(compartment, currentDirection.toString());
             if (location == null || !ui.trySetLocationNoGrid(location.x, location.y)) {
                 autoPlaceAlgorithm(ui);
+                ++newlyPlacedAlgorithms;
             }
             ui.addComponentListener(new ComponentAdapter() {
                 @Override
@@ -141,6 +167,10 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         }
         revalidate();
         repaint();
+
+        if(newlyPlacedAlgorithms == nodeUIs.size()) {
+            autoLayoutAll();
+        }
     }
 
     /**
@@ -181,39 +211,82 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     private void autoPlaceAlgorithm(ACAQAlgorithmUI ui) {
         ACAQAlgorithm targetAlgorithm = ui.getAlgorithm();
 
-        // Find the source algorithm that is right-most
-        ACAQAlgorithmUI rightMostSource = null;
-        for (ACAQDataSlot target : targetAlgorithm.getInputSlots()) {
-            ACAQDataSlot source = algorithmGraph.getSourceSlot(target);
-            if (source != null) {
-                ACAQAlgorithmUI sourceUI = nodeUIs.getOrDefault(source.getAlgorithm(), null);
-                if (sourceUI != null) {
-                    if (rightMostSource == null || sourceUI.getX() > rightMostSource.getX())
-                        rightMostSource = sourceUI;
+        if(currentDirection == Direction.Horizontal) {
+            // Find the source algorithm that is right-most
+            ACAQAlgorithmUI rightMostSource = null;
+            for (ACAQDataSlot target : targetAlgorithm.getInputSlots()) {
+                ACAQDataSlot source = algorithmGraph.getSourceSlot(target);
+                if (source != null) {
+                    ACAQAlgorithmUI sourceUI = nodeUIs.getOrDefault(source.getAlgorithm(), null);
+                    if (sourceUI != null) {
+                        if (rightMostSource == null || sourceUI.getX() > rightMostSource.getX())
+                            rightMostSource = sourceUI;
+                    }
+                }
+            }
+
+            // Auto-place
+            int minX = (int) (newEntryLocationX * 1.0 / ACAQAlgorithmUI.SLOT_UI_WIDTH) * ACAQAlgorithmUI.SLOT_UI_WIDTH;
+            minX += ACAQAlgorithmUI.SLOT_UI_WIDTH * 4;
+            if (rightMostSource != null) {
+                minX = Math.max(minX, rightMostSource.getX() + rightMostSource.getWidth() + 2 * ACAQAlgorithmUI.SLOT_UI_WIDTH);
+            }
+
+            int minY = Math.max(ui.getY(), 2 * ACAQAlgorithmUI.SLOT_UI_HEIGHT);
+
+            if (ui.getX() < minX || ui.isOverlapping()) {
+                if (!ui.trySetLocationNoGrid(minX, minY)) {
+                    // Place anywhere
+                    int y = nodeUIs.values().stream().map(ACAQAlgorithmUI::getBottomY).max(Integer::compareTo).orElse(0);
+                    if (y == 0)
+                        y += 2 * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+                    else
+                        y += ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+
+                    ui.trySetLocationNoGrid(minX, y);
                 }
             }
         }
+        else if(currentDirection == Direction.Vertical) {
+            // Find the source algorithm that is right-most
+            ACAQAlgorithmUI bottomMostSource = null;
+            for (ACAQDataSlot target : targetAlgorithm.getInputSlots()) {
+                ACAQDataSlot source = algorithmGraph.getSourceSlot(target);
+                if (source != null) {
+                    ACAQAlgorithmUI sourceUI = nodeUIs.getOrDefault(source.getAlgorithm(), null);
+                    if (sourceUI != null) {
+                        if (bottomMostSource == null || sourceUI.getBottomY() > bottomMostSource.getBottomY())
+                            bottomMostSource = sourceUI;
+                    }
+                }
+            }
 
-        // Auto-place
-        int minX = (int) (newEntryLocationX * 1.0 / ACAQAlgorithmUI.SLOT_UI_WIDTH) * ACAQAlgorithmUI.SLOT_UI_WIDTH;
-        minX += ACAQAlgorithmUI.SLOT_UI_WIDTH * 4;
-        if (rightMostSource != null) {
-            minX = Math.max(minX, rightMostSource.getX() + rightMostSource.getWidth() + 2 * ACAQAlgorithmUI.SLOT_UI_WIDTH);
-        }
+            // Auto-place
+            int minY = 0;
+            minY += ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+            if (bottomMostSource != null) {
+                minY = Math.max(minY, bottomMostSource.getBottomY() + ACAQAlgorithmUI.SLOT_UI_HEIGHT);
+            }
 
-        int minY = Math.max(ui.getY(), 2 * ACAQAlgorithmUI.SLOT_UI_HEIGHT);
+            int minX = Math.max(ui.getX(), 2 * ACAQAlgorithmUI.SLOT_UI_HEIGHT);
 
-        if (ui.getX() < minX || ui.isOverlapping()) {
-            if (!ui.trySetLocationNoGrid(minX, minY)) {
-                int y = nodeUIs.values().stream().map(ACAQAlgorithmUI::getBottomY).max(Integer::compareTo).orElse(0);
-                if (y == 0)
-                    y += 2 * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
-                else
-                    y += ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+            if (ui.getY() < minY || ui.isOverlapping()) {
+                if (!ui.trySetLocationNoGrid(minX, minY)) {
+                    // Place anywhere
+                    int y = nodeUIs.values().stream().map(ACAQAlgorithmUI::getBottomY).max(Integer::compareTo).orElse(0);
+                    if (y == 0)
+                        y += 2 * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+                    else
+                        y += ACAQAlgorithmUI.SLOT_UI_HEIGHT;
 
-                ui.trySetLocationNoGrid(minX, y);
+                    ui.trySetLocationNoGrid(minX, y);
+                }
             }
         }
+        else {
+            throw new UnsupportedOperationException("Unknown view mode!");
+        }
+
     }
 
     private void autoPlaceTargetAdjacent(ACAQAlgorithmUI sourceAlgorithmUI, ACAQDataSlot source, ACAQAlgorithmUI targetAlgorithmUI, ACAQDataSlot target) {
@@ -395,16 +468,31 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             if (!ui.getAlgorithm().getVisibleCompartments().isEmpty()) {
                 Point sourcePoint = new Point();
                 Point targetPoint = new Point();
-                if (compartment.equals(ui.getAlgorithm().getCompartment())) {
-                    sourcePoint.x = ui.getX() + ui.getWidth();
-                    sourcePoint.y = ui.getY() + ACAQAlgorithmUI.SLOT_UI_HEIGHT / 2;
-                    targetPoint.x = getWidth();
-                    targetPoint.y = sourcePoint.y;
-                } else {
-                    sourcePoint.x = 0;
-                    sourcePoint.y = ui.getY() + ACAQAlgorithmUI.SLOT_UI_HEIGHT / 2;
-                    targetPoint.x = ui.getX();
-                    targetPoint.y = sourcePoint.y;
+                if(currentDirection == Direction.Horizontal) {
+                    if (compartment.equals(ui.getAlgorithm().getCompartment())) {
+                        sourcePoint.x = ui.getX() + ui.getWidth();
+                        sourcePoint.y = ui.getY() + ACAQAlgorithmUI.SLOT_UI_HEIGHT / 2;
+                        targetPoint.x = getWidth();
+                        targetPoint.y = sourcePoint.y;
+                    } else {
+                        sourcePoint.x = 0;
+                        sourcePoint.y = ui.getY() + ACAQAlgorithmUI.SLOT_UI_HEIGHT / 2;
+                        targetPoint.x = ui.getX();
+                        targetPoint.y = sourcePoint.y;
+                    }
+                }
+                else {
+                    if (compartment.equals(ui.getAlgorithm().getCompartment())) {
+                        sourcePoint.x = ui.getX() + ui.getWidth() / 2;
+                        sourcePoint.y = ui.getY() + ui.getHeight();
+                        targetPoint.x = sourcePoint.x;
+                        targetPoint.y = getHeight();
+                    } else {
+                        sourcePoint.x = ui.getX() + ui.getWidth() / 2;
+                        sourcePoint.y = ui.getY();
+                        targetPoint.x = sourcePoint.x;
+                        targetPoint.y = 0;
+                    }
                 }
                 drawEdge(g, sourcePoint, targetPoint);
             }
@@ -418,7 +506,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             ACAQAlgorithmUI sourceUI = nodeUIs.getOrDefault(source.getAlgorithm(), null);
             ACAQAlgorithmUI targetUI = nodeUIs.getOrDefault(target.getAlgorithm(), null);
 
-            if (sourceUI == null && targetUI == null)
+            if (sourceUI == null || targetUI == null)
                 continue;
             if (ACAQDatatypeRegistry.isTriviallyConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
                 graphics.setColor(Color.DARK_GRAY);
@@ -427,32 +515,19 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             else
                 graphics.setColor(Color.RED);
 
-            Point sourcePoint = new Point();
-            Point targetPoint = new Point();
+            PointRange sourcePoint;
+            PointRange targetPoint;
 
-            if (sourceUI != null) {
-                sourcePoint = sourceUI.getSlotLocation(source);
-                sourcePoint.x += sourceUI.getX();
-                sourcePoint.y += sourceUI.getY();
-            }
+            sourcePoint = sourceUI.getSlotLocation(source);
+            sourcePoint.add(sourceUI.getLocation());
+            targetPoint = targetUI.getSlotLocation(target);
+            targetPoint.add(targetUI.getLocation());
 
-            if (targetUI != null) {
-                targetPoint = targetUI.getSlotLocation(target);
-                targetPoint.x += targetUI.getX();
-                targetPoint.y += targetUI.getY();
-            }
-
-            if (sourceUI == null) {
-                sourcePoint.x = 0;
-                sourcePoint.y = targetPoint.y;
-            }
-            if (targetUI == null) {
-                targetPoint.x = getWidth();
-                targetPoint.y = sourcePoint.y;
-            }
+            // Tighten the point ranges: Bringing the centers together
+            PointRange.tighten(sourcePoint, targetPoint);
 
             // Draw arrow
-            drawEdge(g, sourcePoint, targetPoint);
+            drawEdge(g, sourcePoint.center, targetPoint.center);
         }
 
         g.setStroke(new BasicStroke(1));
@@ -465,6 +540,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         path.curveTo(sourcePoint.x + 0.4f * dx, sourcePoint.y,
                 sourcePoint.x + 0.6f * dx, targetPoint.y,
                 targetPoint.x, targetPoint.y);
+
         g.draw(path);
     }
 
@@ -592,7 +668,18 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 //        for(int i = 0; i < 23; ++i) {
 //
 //        }
+        switch (currentDirection) {
+            case Horizontal:
+                rearrangeSugiyamaHorizontal(sugiyamaGraph, maxLayer, maxIndex);
+                break;
+            case Vertical:
+                rearrangeSugiyamaVertical(sugiyamaGraph, maxLayer, maxIndex);
+                break;
+        }
 
+    }
+
+    private void rearrangeSugiyamaHorizontal(DefaultDirectedGraph<SugiyamaVertex, DefaultEdge> sugiyamaGraph, int maxLayer, int maxIndex) {
         // Create a table of column -> row -> vertex
         int maxRow = maxIndex;
         int maxColumn = maxLayer;
@@ -643,6 +730,71 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         }
 
         repaint();
+    }
+
+    private void rearrangeSugiyamaVertical(DefaultDirectedGraph<SugiyamaVertex, DefaultEdge> sugiyamaGraph, int maxLayer, int maxIndex) {
+        // Create a table of column -> row -> vertex
+        int maxRow = maxIndex;
+        int maxColumn = maxLayer;
+        Map<Integer, Map<Integer, SugiyamaVertex>> vertexTable = new HashMap<>();
+        for (SugiyamaVertex vertex : sugiyamaGraph.vertexSet()) {
+            Map<Integer, SugiyamaVertex> column = vertexTable.getOrDefault(vertex.layer, null);
+            if (column == null) {
+                column = new HashMap<>();
+                vertexTable.put(vertex.layer, column);
+            }
+            column.put(vertex.index, vertex);
+        }
+
+        // Calculate widths and heights
+        Map<Integer, Integer> columnWidths = new HashMap<>();
+        Map<Integer, Integer> rowHeights = new HashMap<>();
+        for (SugiyamaVertex vertex : sugiyamaGraph.vertexSet()) {
+            if (!vertex.virtual) {
+                int column = vertex.layer;
+                int row = vertex.index;
+                int columnWidth = Math.max(vertex.algorithmUI.getWidth(), columnWidths.getOrDefault(column, 0));
+                int rowHeight = Math.max(vertex.algorithmUI.getHeight(), rowHeights.getOrDefault(row, 0));
+                columnWidths.put(column, columnWidth);
+                rowHeights.put(row, rowHeight);
+            }
+        }
+        for (int column : columnWidths.keySet()) {
+            columnWidths.put(column, columnWidths.get(column) + 2 * ACAQAlgorithmUI.SLOT_UI_WIDTH);
+        }
+        for (int row : rowHeights.keySet()) {
+            rowHeights.put(row, rowHeights.get(row) + ACAQAlgorithmUI.SLOT_UI_HEIGHT);
+        }
+
+        // Rearrange algorithms
+        int x = ACAQAlgorithmUI.SLOT_UI_WIDTH;
+        for (int column = 0; column <= maxColumn; ++column) {
+            Map<Integer, SugiyamaVertex> columnMap = vertexTable.get(column);
+            int y = ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+            for (int row = 0; row <= maxRow; ++row) {
+                SugiyamaVertex vertex = columnMap.getOrDefault(row, null);
+                if (vertex != null && !vertex.virtual) {
+                    ACAQAlgorithmUI ui = vertex.algorithmUI;
+                    ui.setLocation(x, y);
+                }
+                y += rowHeights.getOrDefault(row, 0);
+            }
+            x += columnWidths.get(column);
+        }
+
+        repaint();
+    }
+
+    public Direction getCurrentDirection() {
+        return currentDirection;
+    }
+
+    public void setCurrentDirection(Direction currentDirection) {
+        if(currentDirection != this.currentDirection) {
+            this.currentDirection = currentDirection;
+            removeAllNodes();
+            addNewNodes();
+        }
     }
 
     /**

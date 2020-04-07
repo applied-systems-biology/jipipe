@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 /**
  * Editor for a project graph compartment
  */
-public class ACAQAlgorithmGraphUI extends ACAQProjectWorkbenchPanel implements MouseListener, MouseMotionListener {
+public class ACAQAlgorithmGraphCompartmentUI extends ACAQProjectWorkbenchPanel implements MouseListener, MouseMotionListener {
 
     protected JMenuBar menuBar = new JMenuBar();
     private ACAQAlgorithmGraphCanvasUI graphUI;
@@ -60,7 +60,7 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectWorkbenchPanel implements M
      * @param algorithmGraph The graph
      * @param compartment    The compartment
      */
-    public ACAQAlgorithmGraphUI(ACAQProjectWorkbench workbenchUI, ACAQAlgorithmGraph algorithmGraph, String compartment) {
+    public ACAQAlgorithmGraphCompartmentUI(ACAQProjectWorkbench workbenchUI, ACAQAlgorithmGraph algorithmGraph, String compartment) {
         super(workbenchUI);
         this.algorithmGraph = algorithmGraph;
         this.compartment = compartment;
@@ -121,15 +121,14 @@ public class ACAQAlgorithmGraphUI extends ACAQProjectWorkbenchPanel implements M
      */
     public void reloadMenuBar() {
         menuBar.removeAll();
-        initializeToolbar();
+        initializeAddNodesMenus(menuBar, algorithmGraph, compartment);
+        initializeCommonActions();
     }
 
     /**
      * Initializes the tool bar
      */
-    protected void initializeToolbar() {
-        initializeAddNodesMenus(menuBar, algorithmGraph, compartment);
-
+    private void initializeCommonActions() {
         menuBar.add(Box.createHorizontalGlue());
 
         JButton autoLayoutButton = new JButton(UIUtils.getIconFromResources("auto-layout-all.png"));

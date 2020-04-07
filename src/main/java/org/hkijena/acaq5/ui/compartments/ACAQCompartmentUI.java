@@ -3,18 +3,18 @@ package org.hkijena.acaq5.ui.compartments;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCompartmentUI;
 
 import java.awt.*;
 
 /**
  * Editor for one project compartment graph
- * Contains a {@link ACAQAlgorithmGraphUI} instance that allows editing the compartment's content
+ * Contains a {@link ACAQAlgorithmGraphCompartmentUI} instance that allows editing the compartment's content
  */
 public class ACAQCompartmentUI extends ACAQProjectWorkbenchPanel {
 
     private ACAQProjectCompartment compartment;
-    private ACAQAlgorithmGraphUI graphUI;
+    private ACAQAlgorithmGraphCompartmentUI graphUI;
 
     /**
      * Creates a new editor
@@ -32,7 +32,7 @@ public class ACAQCompartmentUI extends ACAQProjectWorkbenchPanel {
         setLayout(new BorderLayout());
         initializeToolbar();
 
-        graphUI = new ACAQAlgorithmGraphUI(getProjectWorkbench(), compartment.getProject().getGraph(), compartment.getProjectCompartmentId());
+        graphUI = new ACAQAlgorithmGraphCompartmentUI(getProjectWorkbench(), compartment.getProject().getGraph(), compartment.getProjectCompartmentId());
         add(graphUI, BorderLayout.CENTER);
     }
 
