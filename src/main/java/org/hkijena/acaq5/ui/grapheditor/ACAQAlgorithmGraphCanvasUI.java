@@ -43,7 +43,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     private boolean layoutHelperEnabled;
     private String compartment;
     private JPopupMenu contextMenu;
-    private Direction currentDirection = Direction.Horizontal;
+    private Direction currentDirection = Direction.Vertical;
 
     /**
      * Creates a new UI
@@ -293,7 +293,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             return;
         }
 
-        if(currentDirection == Direction.Horizontal) {
+        if (currentDirection == Direction.Horizontal) {
             int sourceSlotInternalY = sourceSlotIndex * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
             int targetSlotInternalY = targetSlotIndex * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
 
@@ -305,8 +305,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             if (!targetAlgorithmUI.trySetLocationNoGrid(x, y)) {
                 autoPlaceAlgorithm(targetAlgorithmUI);
             }
-        }
-        else {
+        } else {
             int x = sourceAlgorithmUI.getX();
             int y = targetAlgorithmUI.getBottomY() + ACAQAlgorithmUI.SLOT_UI_HEIGHT;
             if (!targetAlgorithmUI.trySetLocationNoGrid(x, y)) {
