@@ -69,7 +69,7 @@ public class ACAQMultiTraitSelectionPanelUI extends ACAQJsonExtensionWorkbenchPa
 
     private void deleteTraits() {
         if (JOptionPane.showConfirmDialog(this, "Do you really want to delete the annotations: " +
-                algorithms.stream().map(c -> "'" + c.getName() + "'").collect(Collectors.joining(", ")) + "?\n",
+                        algorithms.stream().map(c -> "'" + c.getName() + "'").collect(Collectors.joining(", ")) + "?\n",
                 "Delete annotations", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
             for (ACAQTraitNode node : algorithms) {
                 graph.removeNode(node);

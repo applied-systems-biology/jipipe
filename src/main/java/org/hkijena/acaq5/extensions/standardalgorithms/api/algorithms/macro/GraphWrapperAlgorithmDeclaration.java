@@ -22,6 +22,7 @@ import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefCollection;
+import org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors.ACAQTraitParameterSettings;
 import org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors.StringParameterSettings;
 import org.hkijena.acaq5.utils.StringUtils;
 
@@ -183,6 +184,7 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     @ACAQDocumentation(name = "Preferred annotations", description = "Marks the algorithm as good for handling the specified annotations")
     @ACAQParameter("preferred-traits")
     @JsonGetter("preferred-traits")
+    @ACAQTraitParameterSettings(showHidden = true)
     public ACAQTraitDeclarationRefCollection getPreferredTraitIds() {
         return new ACAQTraitDeclarationRefCollection(preferredTraits.stream().map(ACAQTraitDeclarationRef::new).collect(Collectors.toList()));
     }
@@ -200,6 +202,7 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     @ACAQDocumentation(name = "Unwanted annotations", description = "Marks the algorithm as bad for handling the specified annotations")
     @ACAQParameter("unwanted-traits")
     @JsonGetter("unwanted-traits")
+    @ACAQTraitParameterSettings(showHidden = true)
     public ACAQTraitDeclarationRefCollection getUnwantedTraitIds() {
         return new ACAQTraitDeclarationRefCollection(unwantedTraits.stream().map(ACAQTraitDeclarationRef::new).collect(Collectors.toList()));
     }
@@ -217,6 +220,7 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     @ACAQDocumentation(name = "Added annotations", description = "Annotations that are added to the algorithm outputs")
     @ACAQParameter("added-traits")
     @JsonGetter("added-traits")
+    @ACAQTraitParameterSettings(showHidden = true)
     public ACAQTraitDeclarationRefCollection getAddedTraitIds() {
         return new ACAQTraitDeclarationRefCollection(addedTraits.stream().map(ACAQTraitDeclarationRef::new).collect(Collectors.toList()));
     }
@@ -234,6 +238,7 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     @ACAQDocumentation(name = "Removed annotations", description = "Annotations that are removed from algorithm inputs")
     @ACAQParameter("removed-traits")
     @JsonGetter("removed-traits")
+    @ACAQTraitParameterSettings(showHidden = true)
     public ACAQTraitDeclarationRefCollection getRemovedTraitIds() {
         return new ACAQTraitDeclarationRefCollection(removedTraits.stream().map(ACAQTraitDeclarationRef::new).collect(Collectors.toList()));
     }

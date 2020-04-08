@@ -59,7 +59,7 @@ public class ImgPlusDataImageJAdapter implements ImageJDatatypeAdapter {
         if (imageJData instanceof String) {
             imageJData = WindowManager.getImage((String) imageJData);
         }
-        if(imageJData == null) {
+        if (imageJData == null) {
             imageJData = IJ.getImage();
         }
         try {
@@ -74,7 +74,7 @@ public class ImgPlusDataImageJAdapter implements ImageJDatatypeAdapter {
     public Object convertACAQToImageJ(ACAQData acaqData, boolean activate, boolean noWindow, String windowName) {
         ImagePlus img = ((ImagePlusData) acaqData).getImage();
         if (activate) {
-            if(!noWindow) {
+            if (!noWindow) {
                 img.show();
                 if (!StringUtils.isNullOrEmpty(windowName)) {
                     img.setTitle(windowName);

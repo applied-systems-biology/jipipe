@@ -19,6 +19,7 @@ import java.util.Objects;
  * Algorithms can modify output traits by adding or removing them.
  */
 @ACAQHidden
+@ACAQDocumentation(name = "Annotation", description = "An annotation")
 @JsonSerialize(using = ACAQTrait.Serializer.class)
 @JsonDeserialize(using = ACAQTrait.Deserializer.class)
 public interface ACAQTrait {

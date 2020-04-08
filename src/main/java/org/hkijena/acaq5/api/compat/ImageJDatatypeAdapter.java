@@ -50,7 +50,7 @@ public interface ImageJDatatypeAdapter {
      *
      * @param acaqData   ACAQ data
      * @param activate   If true, the data should be made visible in ImageJ
-     * @param noWindow If true, the conversion should not create GUI windows
+     * @param noWindow   If true, the conversion should not create GUI windows
      * @param windowName Window name of the ImageJ data. Might be ignored or used otherwise to identify data.
      * @return Converted object
      */

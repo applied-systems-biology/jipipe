@@ -20,4 +20,11 @@ public @interface ACAQTraitParameterSettings {
      * @return the trait base class
      */
     Class<? extends ACAQTrait> traitBaseClass() default ACAQTrait.class;
+
+    /**
+     * If true, users can pick hidden annotations
+     *
+     * @return if users can also pick hidden annotations
+     */
+    boolean showHidden() default false;
 }

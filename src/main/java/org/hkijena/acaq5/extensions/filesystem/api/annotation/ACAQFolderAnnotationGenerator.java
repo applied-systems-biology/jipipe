@@ -7,10 +7,8 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.ACAQFolderData;
-import org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors.ACAQTraitDeclarationRefParameterSettings;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -78,7 +76,6 @@ public class ACAQFolderAnnotationGenerator extends ACAQIteratingAlgorithm {
      * @return The generated annotation type
      */
     @ACAQDocumentation(name = "Generated annotation", description = "Select which annotation type is generated for each folder")
-    @ACAQTraitDeclarationRefParameterSettings(traitBaseClass = ACAQDiscriminator.class)
     @ACAQParameter("generated-annotation")
     public ACAQTraitDeclarationRef getGeneratedAnnotation() {
         return generatedAnnotation;

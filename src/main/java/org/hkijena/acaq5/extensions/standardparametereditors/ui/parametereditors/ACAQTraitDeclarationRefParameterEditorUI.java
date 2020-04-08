@@ -82,14 +82,16 @@ public class ACAQTraitDeclarationRefParameterEditorUI extends ACAQParameterEdito
 
     private void initializePicker() {
         Class<? extends ACAQTrait> baseClass = ACAQTrait.class;
-        ACAQTraitDeclarationRefParameterSettings settings = getParameterAccess().getAnnotationOfType(ACAQTraitDeclarationRefParameterSettings.class);
+        boolean showHidden = false;
+        ACAQTraitParameterSettings settings = getParameterAccess().getAnnotationOfType(ACAQTraitParameterSettings.class);
         if (settings != null) {
             baseClass = settings.traitBaseClass();
+            showHidden = settings.showHidden();
         }
 
         Set<ACAQTraitDeclaration> availableTraits = new HashSet<>();
         for (ACAQTraitDeclaration traitDeclaration : ACAQTraitRegistry.getInstance().getRegisteredTraits().values()) {
-            if (traitDeclaration.isHidden())
+            if (traitDeclaration.isHidden() && !showHidden)
                 continue;
             if (baseClass.isAssignableFrom(traitDeclaration.getTraitClass())) {
                 availableTraits.add(traitDeclaration);

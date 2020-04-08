@@ -4,11 +4,14 @@ import com.google.common.reflect.TypeToken;
 import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQHidden;
+import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * A {@link ACAQTraitDeclaration} generated from a Java class
@@ -32,6 +35,16 @@ public class ACAQJavaTraitDeclaration extends ACAQMutableTraitDeclaration {
         setDescription(getDescriptionOf(klass));
         setId(id);
         setHidden(getIsHidden(klass));
+
+        // Try to find inherited classes
+        Map<Class<? extends ACAQTrait>, ACAQTraitDeclaration> idMap = new HashMap<>();
+        for (ACAQTraitDeclaration declaration : ACAQTraitRegistry.getInstance().getRegisteredTraits().values()) {
+            idMap.put(declaration.getTraitClass(), declaration);
+        }
+        Set<Class<? extends ACAQTrait>> inheritedTraitClasses = getInheritedTraitClasses(klass);
+        inheritedTraitClasses.remove(ACAQTrait.class);
+        inheritedTraitClasses.remove(ACAQDiscriminator.class);
+        setInherited(inheritedTraitClasses.stream().map(idMap::get).collect(Collectors.toSet()));
     }
 
     @Override
@@ -56,7 +69,11 @@ public class ACAQJavaTraitDeclaration extends ACAQMutableTraitDeclaration {
 
     @Override
     public Set<ACAQDependency> getDependencies() {
-        return Collections.emptySet();
+        Set<ACAQDependency> result = new HashSet<>();
+        for (ACAQTraitDeclaration declaration : getInherited()) {
+            result.addAll(declaration.getDependencies());
+        }
+        return result;
     }
 
     @Override
