@@ -308,7 +308,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             }
         } else {
             int x = sourceAlgorithmUI.getX();
-            int y = targetAlgorithmUI.getBottomY() + ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+            int y = sourceAlgorithmUI.getBottomY() + ACAQAlgorithmUI.SLOT_UI_HEIGHT;
             if (!targetAlgorithmUI.trySetLocationNoGrid(x, y)) {
                 autoPlaceAlgorithm(targetAlgorithmUI);
             }
