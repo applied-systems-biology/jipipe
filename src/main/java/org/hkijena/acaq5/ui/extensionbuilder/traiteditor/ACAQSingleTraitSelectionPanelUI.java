@@ -80,8 +80,8 @@ public class ACAQSingleTraitSelectionPanelUI extends ACAQJsonExtensionWorkbenchP
         if (node instanceof ACAQExistingTraitNode) {
 
         } else if (node instanceof ACAQNewTraitNode) {
-            if (JOptionPane.showConfirmDialog(this, "Do you really want to delete the algorithm '" + node.getName() + "'?\n" +
-                    "You will lose all nodes stored in this algorithm.", "Delete algorithm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+            if (JOptionPane.showConfirmDialog(this, "Do you really want to delete the annotation type '" + node.getName() + "'?\n",
+                    "Delete annotation type", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
                 graph.removeNode(node);
             }
         }

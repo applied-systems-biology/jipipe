@@ -53,7 +53,7 @@ public class ACAQMultiTraitSelectionPanelUI extends ACAQJsonExtensionWorkbenchPa
 
     private void initializeToolbar() {
         JToolBar toolBar = new JToolBar();
-        JLabel nameLabel = new JLabel(algorithms.size() + " compartments", UIUtils.getIconFromResources("select.png"), JLabel.LEFT);
+        JLabel nameLabel = new JLabel(algorithms.size() + " annotation types", UIUtils.getIconFromResources("select.png"), JLabel.LEFT);
         toolBar.add(nameLabel);
 
         toolBar.add(Box.createHorizontalGlue());
@@ -68,9 +68,9 @@ public class ACAQMultiTraitSelectionPanelUI extends ACAQJsonExtensionWorkbenchPa
 
 
     private void deleteTraits() {
-        if (JOptionPane.showConfirmDialog(this, "Do you really want to delete the compartments: " +
-                algorithms.stream().map(c -> "'" + c.getName() + "'").collect(Collectors.joining(", ")) + "?\n" +
-                "You will lose all nodes stored in those compartments.", "Delete compartments", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+        if (JOptionPane.showConfirmDialog(this, "Do you really want to delete the annotations: " +
+                algorithms.stream().map(c -> "'" + c.getName() + "'").collect(Collectors.joining(", ")) + "?\n",
+                "Delete annotations", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
             for (ACAQTraitNode node : algorithms) {
                 graph.removeNode(node);
             }
