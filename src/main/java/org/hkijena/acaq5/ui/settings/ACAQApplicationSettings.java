@@ -6,6 +6,7 @@ import com.google.common.eventbus.EventBus;
 import ij.IJ;
 import ij.Prefs;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
+import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.io.File;
@@ -27,6 +28,7 @@ public class ACAQApplicationSettings {
 
     private List<Path> recentProjects = new ArrayList<>();
     private List<Path> recentJsonExtensions = new ArrayList<>();
+    private ACAQAlgorithmGraphCanvasUI.ViewMode viewMode = ACAQAlgorithmGraphCanvasUI.ViewMode.Vertical;
 
     /**
      * Creates a new settings instance
@@ -145,6 +147,20 @@ public class ACAQApplicationSettings {
     @JsonGetter("recent-json-extensions")
     public void setRecentJsonExtensions(List<Path> recentJsonExtensions) {
         this.recentJsonExtensions = recentJsonExtensions;
+    }
+
+    @JsonGetter("ui:graph-editor:view-mode")
+    public ACAQAlgorithmGraphCanvasUI.ViewMode getViewMode() {
+        if (viewMode == null)
+            return ACAQAlgorithmGraphCanvasUI.ViewMode.Vertical;
+        return viewMode;
+    }
+
+    @JsonSetter("ui:graph-editor:view-mode")
+    public void setViewMode(ACAQAlgorithmGraphCanvasUI.ViewMode viewMode) {
+        this.viewMode = viewMode;
+        eventBus.post(new ParameterChangedEvent(this, "ui:graph-editor:view-mode"));
+        save();
     }
 
     /**

@@ -32,7 +32,7 @@ public class ACAQVerticalDataSlotUI extends ACAQDataSlotUI {
      * @param slot        The slot instance
      */
     public ACAQVerticalDataSlotUI(ACAQAlgorithmUI algorithmUI, ACAQAlgorithmGraph graph, String compartment, ACAQDataSlot slot) {
-        super(algorithmUI, graph, compartment, slot, ACAQAlgorithmGraphCanvasUI.Direction.Vertical);
+        super(algorithmUI, graph, compartment, slot, ACAQAlgorithmGraphCanvasUI.ViewMode.Vertical);
         initialize();
         reloadPopupMenu();
         reloadButtonStatus();

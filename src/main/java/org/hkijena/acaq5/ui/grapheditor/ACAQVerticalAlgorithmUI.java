@@ -31,7 +31,7 @@ public class ACAQVerticalAlgorithmUI extends ACAQAlgorithmUI {
      * @param algorithm The algorithm
      */
     public ACAQVerticalAlgorithmUI(ACAQAlgorithmGraphCanvasUI graphUI, ACAQAlgorithm algorithm) {
-        super(graphUI, algorithm, ACAQAlgorithmGraphCanvasUI.Direction.Vertical);
+        super(graphUI, algorithm, ACAQAlgorithmGraphCanvasUI.ViewMode.Vertical);
         initialize();
         initializeContextMenu();
         updateAlgorithmSlotUIs();

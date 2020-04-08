@@ -34,7 +34,7 @@ public abstract class ACAQAlgorithmUI extends JPanel {
 
     private ACAQAlgorithmGraphCanvasUI graphUI;
     private ACAQAlgorithm algorithm;
-    private ACAQAlgorithmGraphCanvasUI.Direction direction;
+    private ACAQAlgorithmGraphCanvasUI.ViewMode viewMode;
     private EventBus eventBus = new EventBus();
 
     private Color fillColor;
@@ -48,12 +48,12 @@ public abstract class ACAQAlgorithmUI extends JPanel {
      *
      * @param graphUI   The graph UI that contains this UI
      * @param algorithm The algorithm
-     * @param direction Directionality of the canvas UI
+     * @param viewMode  Directionality of the canvas UI
      */
-    public ACAQAlgorithmUI(ACAQAlgorithmGraphCanvasUI graphUI, ACAQAlgorithm algorithm, ACAQAlgorithmGraphCanvasUI.Direction direction) {
+    public ACAQAlgorithmUI(ACAQAlgorithmGraphCanvasUI graphUI, ACAQAlgorithm algorithm, ACAQAlgorithmGraphCanvasUI.ViewMode viewMode) {
         this.graphUI = graphUI;
         this.algorithm = algorithm;
-        this.direction = direction;
+        this.viewMode = viewMode;
         this.algorithm.getEventBus().register(this);
         this.algorithm.getTraitConfiguration().getEventBus().register(this);
         this.fillColor = UIUtils.getFillColorFor(algorithm.getDeclaration());
@@ -261,13 +261,13 @@ public abstract class ACAQAlgorithmUI extends JPanel {
     @Override
     public void setLocation(int x, int y) {
         super.setLocation(x, y);
-        algorithm.setLocationWithin(graphUI.getCompartment(), new Point(x, y), direction.toString());
+        algorithm.setLocationWithin(graphUI.getCompartment(), new Point(x, y), viewMode.toString());
     }
 
     @Override
     public void setLocation(Point p) {
         super.setLocation(p);
-        algorithm.setLocationWithin(graphUI.getCompartment(), p, direction.toString());
+        algorithm.setLocationWithin(graphUI.getCompartment(), p, viewMode.toString());
     }
 
     /**
@@ -305,8 +305,8 @@ public abstract class ACAQAlgorithmUI extends JPanel {
         }
     }
 
-    public ACAQAlgorithmGraphCanvasUI.Direction getDirection() {
-        return direction;
+    public ACAQAlgorithmGraphCanvasUI.ViewMode getViewMode() {
+        return viewMode;
     }
 
     /**

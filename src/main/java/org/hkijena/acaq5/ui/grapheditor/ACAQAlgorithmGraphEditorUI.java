@@ -110,16 +110,16 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
         JToggleButton viewModeHorizontalButton = new JToggleButton(UIUtils.getIconFromResources("view-horizontal.png"));
         viewModeHorizontalButton.setToolTipText("Display nodes horizontally");
         UIUtils.makeFlat25x25(viewModeHorizontalButton);
-        viewModeHorizontalButton.setSelected(graphUI.getCurrentDirection() == ACAQAlgorithmGraphCanvasUI.Direction.Horizontal);
-        viewModeHorizontalButton.addActionListener(e -> graphUI.setCurrentDirection(ACAQAlgorithmGraphCanvasUI.Direction.Horizontal));
+        viewModeHorizontalButton.setSelected(graphUI.getCurrentViewMode() == ACAQAlgorithmGraphCanvasUI.ViewMode.Horizontal);
+        viewModeHorizontalButton.addActionListener(e -> graphUI.setCurrentViewMode(ACAQAlgorithmGraphCanvasUI.ViewMode.Horizontal));
         viewModeGroup.add(viewModeHorizontalButton);
         menuBar.add(viewModeHorizontalButton);
 
         JToggleButton viewModeVerticalButton = new JToggleButton(UIUtils.getIconFromResources("view-vertical.png"));
         viewModeVerticalButton.setToolTipText("Display nodes vertically");
         UIUtils.makeFlat25x25(viewModeVerticalButton);
-        viewModeVerticalButton.setSelected(graphUI.getCurrentDirection() == ACAQAlgorithmGraphCanvasUI.Direction.Vertical);
-        viewModeVerticalButton.addActionListener(e -> graphUI.setCurrentDirection(ACAQAlgorithmGraphCanvasUI.Direction.Vertical));
+        viewModeVerticalButton.setSelected(graphUI.getCurrentViewMode() == ACAQAlgorithmGraphCanvasUI.ViewMode.Vertical);
+        viewModeVerticalButton.addActionListener(e -> graphUI.setCurrentViewMode(ACAQAlgorithmGraphCanvasUI.ViewMode.Vertical));
         viewModeGroup.add(viewModeVerticalButton);
         menuBar.add(viewModeVerticalButton);
 

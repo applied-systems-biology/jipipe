@@ -15,6 +15,7 @@ import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.ui.components.PickAlgorithmDialog;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.acaq5.ui.events.DefaultUIActionRequestedEvent;
+import org.hkijena.acaq5.ui.settings.ACAQApplicationSettings;
 import org.hkijena.acaq5.utils.PointRange;
 import org.hkijena.acaq5.utils.ScreenImage;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -43,7 +44,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     private boolean layoutHelperEnabled;
     private String compartment;
     private JPopupMenu contextMenu;
-    private Direction currentDirection = Direction.Vertical;
+    private ViewMode currentViewMode = ACAQApplicationSettings.getInstance().getViewMode();
 
     /**
      * Creates a new UI
@@ -139,7 +140,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
                 continue;
 
             ACAQAlgorithmUI ui;
-            switch (currentDirection) {
+            switch (currentViewMode) {
                 case Horizontal:
                     ui = new ACAQHorizontalAlgorithmUI(this, algorithm);
                     break;
@@ -153,7 +154,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             ui.getEventBus().register(this);
             add(ui);
             nodeUIs.put(algorithm, ui);
-            Point location = algorithm.getLocationWithin(compartment, currentDirection.toString());
+            Point location = algorithm.getLocationWithin(compartment, currentViewMode.toString());
             if (location == null || !ui.trySetLocationNoGrid(location.x, location.y)) {
                 autoPlaceAlgorithm(ui);
                 ++newlyPlacedAlgorithms;
@@ -213,7 +214,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     private void autoPlaceAlgorithm(ACAQAlgorithmUI ui) {
         ACAQAlgorithm targetAlgorithm = ui.getAlgorithm();
 
-        if (currentDirection == Direction.Horizontal) {
+        if (currentViewMode == ViewMode.Horizontal) {
             // Find the source algorithm that is right-most
             ACAQAlgorithmUI rightMostSource = null;
             for (ACAQDataSlot target : targetAlgorithm.getInputSlots()) {
@@ -248,7 +249,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
                     ui.trySetLocationNoGrid(minX, y);
                 }
             }
-        } else if (currentDirection == Direction.Vertical) {
+        } else if (currentViewMode == ViewMode.Vertical) {
             // Find the source algorithm that is bottom-most
             ACAQAlgorithmUI bottomMostSource = null;
             for (ACAQDataSlot target : targetAlgorithm.getInputSlots()) {
@@ -293,7 +294,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             return;
         }
 
-        if (currentDirection == Direction.Horizontal) {
+        if (currentViewMode == ViewMode.Horizontal) {
             int sourceSlotInternalY = sourceSlotIndex * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
             int targetSlotInternalY = targetSlotIndex * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
 
@@ -472,7 +473,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             if (!ui.getAlgorithm().getVisibleCompartments().isEmpty()) {
                 Point sourcePoint = new Point();
                 Point targetPoint = new Point();
-                if (currentDirection == Direction.Horizontal) {
+                if (currentViewMode == ViewMode.Horizontal) {
                     if (compartment.equals(ui.getAlgorithm().getCompartment())) {
                         sourcePoint.x = ui.getX() + ui.getWidth();
                         sourcePoint.y = ui.getY() + ACAQAlgorithmUI.SLOT_UI_HEIGHT / 2;
@@ -540,7 +541,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         Path2D.Float path = new Path2D.Float();
         path.moveTo(sourcePoint.x, sourcePoint.y);
 
-        if (currentDirection == Direction.Horizontal) {
+        if (currentViewMode == ViewMode.Horizontal) {
             float dx = targetPoint.x - sourcePoint.x;
             path.curveTo(sourcePoint.x + 0.5f * dx, sourcePoint.y,
                     sourcePoint.x + 0.5f * dx, targetPoint.y,
@@ -679,7 +680,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 //        for(int i = 0; i < 23; ++i) {
 //
 //        }
-        switch (currentDirection) {
+        switch (currentViewMode) {
             case Horizontal:
                 rearrangeSugiyamaHorizontal(sugiyamaGraph, maxLayer, maxIndex);
                 break;
@@ -796,13 +797,13 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         repaint();
     }
 
-    public Direction getCurrentDirection() {
-        return currentDirection;
+    public ViewMode getCurrentViewMode() {
+        return currentViewMode;
     }
 
-    public void setCurrentDirection(Direction currentDirection) {
-        if (currentDirection != this.currentDirection) {
-            this.currentDirection = currentDirection;
+    public void setCurrentViewMode(ViewMode currentViewMode) {
+        if (currentViewMode != this.currentViewMode) {
+            this.currentViewMode = currentViewMode;
             removeAllNodes();
             addNewNodes();
         }
@@ -811,7 +812,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     /**
      * The direction how a canvas renders the nodes
      */
-    public enum Direction {
+    public enum ViewMode {
         Horizontal,
         Vertical
     }

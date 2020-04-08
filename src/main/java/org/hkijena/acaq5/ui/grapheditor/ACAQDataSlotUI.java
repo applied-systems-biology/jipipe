@@ -28,7 +28,7 @@ public abstract class ACAQDataSlotUI extends JPanel {
     private ACAQAlgorithmGraph graph;
     private String compartment;
     private ACAQDataSlot slot;
-    private ACAQAlgorithmGraphCanvasUI.Direction direction;
+    private ACAQAlgorithmGraphCanvasUI.ViewMode viewMode;
 
     /**
      * Creates a new UI
@@ -37,14 +37,14 @@ public abstract class ACAQDataSlotUI extends JPanel {
      * @param graph       The graph
      * @param compartment The compartment ID
      * @param slot        The slot instance
-     * @param direction   The directionality of this slot UI
+     * @param viewMode    The directionality of this slot UI
      */
-    public ACAQDataSlotUI(ACAQAlgorithmUI algorithmUI, ACAQAlgorithmGraph graph, String compartment, ACAQDataSlot slot, ACAQAlgorithmGraphCanvasUI.Direction direction) {
+    public ACAQDataSlotUI(ACAQAlgorithmUI algorithmUI, ACAQAlgorithmGraph graph, String compartment, ACAQDataSlot slot, ACAQAlgorithmGraphCanvasUI.ViewMode viewMode) {
         this.algorithmUI = algorithmUI;
         this.graph = graph;
         this.compartment = compartment;
         this.slot = slot;
-        this.direction = direction;
+        this.viewMode = viewMode;
 
         graph.getEventBus().register(this);
         slot.getDefinition().getEventBus().register(this);
@@ -278,8 +278,8 @@ public abstract class ACAQDataSlotUI extends JPanel {
         return compartment;
     }
 
-    public ACAQAlgorithmGraphCanvasUI.Direction getDirection() {
-        return direction;
+    public ACAQAlgorithmGraphCanvasUI.ViewMode getViewMode() {
+        return viewMode;
     }
 
     protected JPopupMenu getAssignButtonMenu() {

@@ -31,7 +31,7 @@ public class ACAQHorizontalAlgorithmUI extends ACAQAlgorithmUI {
      * @param algorithm The algorithm
      */
     public ACAQHorizontalAlgorithmUI(ACAQAlgorithmGraphCanvasUI graphUI, ACAQAlgorithm algorithm) {
-        super(graphUI, algorithm, ACAQAlgorithmGraphCanvasUI.Direction.Horizontal);
+        super(graphUI, algorithm, ACAQAlgorithmGraphCanvasUI.ViewMode.Horizontal);
         initialize();
         initializeContextMenu();
         updateAlgorithmSlotUIs();
