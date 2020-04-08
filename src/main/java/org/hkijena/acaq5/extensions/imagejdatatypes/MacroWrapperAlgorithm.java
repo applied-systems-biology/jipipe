@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.extensions.imagejdatatypes;
 
 import com.google.common.eventbus.Subscribe;
+import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.macro.Interpreter;
@@ -58,6 +59,7 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
 
     private MacroCode code = new MacroCode();
     private boolean strictMode = true;
+    private boolean batchMode = false;
     private ACAQDynamicParameterHolder macroParameters = new ACAQDynamicParameterHolder(ALLOWED_PARAMETER_CLASSES);
 
     private List<ImagePlus> initiallyOpenedImages = new ArrayList<>();
@@ -126,7 +128,13 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
 
         Interpreter interpreter = new Interpreter();
         try {
-            interpreter.run(finalCode.toString());
+            if(batchMode) {
+                ImagePlus result = interpreter.runBatchMacro(finalCode.toString(), IJ.getImage());
+                WindowManager.setTempCurrentImage(result);
+            }
+            else {
+                interpreter.run(finalCode.toString());
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
@@ -137,21 +145,12 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
 
     private void passOutputData(ACAQDataInterface dataInterface) {
         for (ACAQDataSlot outputSlot : getOutputSlots()) {
-//            if (ImagePlusData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
-//                ImagePlus image = WindowManager.getImage(outputSlot.getName());
-//                try {
-//                    dataInterface.addOutputData(outputSlot, outputSlot.getAcceptedDataType().getConstructor(ImagePlus.class).newInstance(image.duplicate()));
-//                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-//                    throw new RuntimeException(e);
-//                }
-//            } else if (ROIData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
-//                dataInterface.addOutputData(outputSlot, new ROIData(RoiManager.getRoiManager()));
-//            } else if (ResultsTableData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
-//                ResultsTable table = ResultsTable.getResultsTable();
-//                dataInterface.addOutputData(outputSlot, new ResultsTableData((ResultsTable) table.clone()));
-//            }
             ImageJDatatypeAdapter adapter = ACAQImageJAdapterRegistry.getInstance().getAdapterForACAQData(outputSlot.getAcceptedDataType());
-            ACAQData data = adapter.importFromImageJ(outputSlot.getName());
+            ACAQData data;
+            if(batchMode)
+                data = adapter.importFromImageJ(null); // Fetch from current image only
+            else
+                data = adapter.importFromImageJ(outputSlot.getName());
             dataInterface.addOutputData(outputSlot, data);
         }
     }
@@ -196,30 +195,29 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
         for (ACAQDataSlot inputSlot : getInputSlots()) {
             ACAQData data = dataInterface.getInputData(inputSlot);
             ImageJDatatypeAdapter adapter = ACAQImageJAdapterRegistry.getInstance().getAdapterForACAQData(data);
-            adapter.convertACAQToImageJ(data, true, inputSlot.getName());
-//            if (data instanceof ImagePlusData) {
-//                ImagePlus img = ((ImagePlusData) data).getImage().duplicate();
-//                img.setTitle(inputSlot.getName());
-//                img.show();
-//                WindowManager.setTempCurrentImage(img);
-//            } else if (data instanceof ROIData) {
-//                RoiManager.getRoiManager().reset();
-//                ((ROIData) data).addToRoiManager(RoiManager.getRoiManager());
-//            } else if (data instanceof ResultsTableData) {
-//                ResultsTable.getResultsTable().reset();
-//                ((ResultsTableData) data).addToTable(ResultsTable.getResultsTable());
-//            } else {
-//                throw new RuntimeException("Unsupported data: " + data);
-//            }
+            if(batchMode) {
+                adapter.convertACAQToImageJ(data, true, true, inputSlot.getName());
+            }
+            else {
+                adapter.convertACAQToImageJ(data, false, false, inputSlot.getName());
+            }
         }
     }
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
+        long imageInputSlotCount = getInputSlots().stream().filter(slot -> ImagePlusData.class.isAssignableFrom(slot.getAcceptedDataType())).count();
+        long imageOutputSlotCount = getOutputSlots().stream().filter(slot -> ImagePlusData.class.isAssignableFrom(slot.getAcceptedDataType())).count();
         long roiInputSlotCount = getInputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ROIData.class).count();
         long roiOutputSlotCount = getOutputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ROIData.class).count();
         long resultsTableInputSlotCount = getInputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ResultsTableData.class).count();
         long resultsTableOutputSlotCount = getOutputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ResultsTableData.class).count();
+        if(batchMode && imageInputSlotCount != 1) {
+            report.reportIsInvalid("Only exactly one input image is allowed! This requirement is caused by the batch mode setting.");
+        }
+        if(batchMode && imageOutputSlotCount != 1) {
+            report.reportIsInvalid("Only exactly one output image is allowed! This requirement is caused by the batch mode setting.");
+        }
         if (roiInputSlotCount > 1) {
             report.reportIsInvalid("Too many ROI inputs! Please make sure to only have at most one ROI data input.");
         }
@@ -238,7 +236,7 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
             }
         }
 
-        if (strictMode) {
+        if (strictMode  && !batchMode) {
             for (ACAQDataSlot inputSlot : getInputSlots()) {
                 if (ImagePlusData.class.isAssignableFrom(inputSlot.getAcceptedDataType())) {
                     if (!code.getCode().contains("\"" + inputSlot.getName() + "\"")) {
@@ -293,6 +291,18 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
     public void onParameterStructureChanged(ParameterStructureChangedEvent event) {
         getEventBus().post(event);
     }
+
+//    @ACAQDocumentation(name = "Batch mode", description = "If enabled, the macro might be able to run on servers.\n" +
+//            "Requires that there is exactly one input and one output image.")
+//    @ACAQParameter("batch-mode")
+//    public boolean isBatchMode() {
+//        return batchMode;
+//    }
+//
+//    @ACAQParameter("batch-mode")
+//    public void setBatchMode(boolean batchMode) {
+//        this.batchMode = batchMode;
+//    }
 
     public static Class[] getCompatibleTypes() {
         return ACAQImageJAdapterRegistry.getInstance().getSupportedACAQDataTypes().toArray(new Class[0]);

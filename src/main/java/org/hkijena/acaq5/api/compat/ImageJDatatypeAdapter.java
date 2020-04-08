@@ -50,10 +50,11 @@ public interface ImageJDatatypeAdapter {
      *
      * @param acaqData   ACAQ data
      * @param activate   If true, the data should be made visible in ImageJ
+     * @param noWindow If true, the conversion should not create GUI windows
      * @param windowName Window name of the ImageJ data. Might be ignored or used otherwise to identify data.
      * @return Converted object
      */
-    Object convertACAQToImageJ(ACAQData acaqData, boolean activate, String windowName);
+    Object convertACAQToImageJ(ACAQData acaqData, boolean activate, boolean noWindow, String windowName);
 
     /**
      * Imports ACAQ data from an ImageJ window

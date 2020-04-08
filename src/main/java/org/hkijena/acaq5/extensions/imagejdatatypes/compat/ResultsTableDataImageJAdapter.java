@@ -45,7 +45,7 @@ public class ResultsTableDataImageJAdapter implements ImageJDatatypeAdapter {
     }
 
     @Override
-    public Object convertACAQToImageJ(ACAQData acaqData, boolean activate, String windowName) {
+    public Object convertACAQToImageJ(ACAQData acaqData, boolean activate, boolean noWindow, String windowName) {
         ResultsTable resultsTable = ((ResultsTableData) acaqData).getTable();
         if (activate) {
             ResultsTable.getResultsTable().reset();

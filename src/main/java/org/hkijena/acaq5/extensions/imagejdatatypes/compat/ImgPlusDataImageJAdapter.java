@@ -48,6 +48,7 @@ public class ImgPlusDataImageJAdapter implements ImageJDatatypeAdapter {
     /**
      * Converts {@link ImagePlus} to an {@link ImagePlusData} instance.
      * If the imageJData is a {@link String}, the image is taken from the window with this name
+     * If the imageJData is null, it is taken from the current WindowManager image
      *
      * @param imageJData the ImageJ data
      * @return the converted data
@@ -58,6 +59,9 @@ public class ImgPlusDataImageJAdapter implements ImageJDatatypeAdapter {
         if (imageJData instanceof String) {
             imageJData = WindowManager.getImage((String) imageJData);
         }
+        if(imageJData == null) {
+            imageJData = IJ.getImage();
+        }
         try {
             ImagePlus img = ((ImagePlus) imageJData).duplicate();
             return (ACAQData) ConstructorUtils.invokeConstructor(acaqDataClass, img);
@@ -67,12 +71,14 @@ public class ImgPlusDataImageJAdapter implements ImageJDatatypeAdapter {
     }
 
     @Override
-    public Object convertACAQToImageJ(ACAQData acaqData, boolean activate, String windowName) {
+    public Object convertACAQToImageJ(ACAQData acaqData, boolean activate, boolean noWindow, String windowName) {
         ImagePlus img = ((ImagePlusData) acaqData).getImage();
         if (activate) {
-            img.show();
-            if (!StringUtils.isNullOrEmpty(windowName)) {
-                img.setTitle(windowName);
+            if(!noWindow) {
+                img.show();
+                if (!StringUtils.isNullOrEmpty(windowName)) {
+                    img.setTitle(windowName);
+                }
             }
             WindowManager.setTempCurrentImage(img);
         }
