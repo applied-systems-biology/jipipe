@@ -145,7 +145,7 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
                 }
             }
         }
-        return result;
+        return result.stream().map(ACAQMutableDependency::new).collect(Collectors.toSet());
     }
 
     /**

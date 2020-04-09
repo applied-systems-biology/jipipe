@@ -14,6 +14,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQDependency;
+import org.hkijena.acaq5.ACAQMutableDependency;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
@@ -33,6 +34,7 @@ import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * An ACAQ5 project.
@@ -299,7 +301,7 @@ public class ACAQProject implements ACAQValidatable {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("acaq:project-type", "project");
             jsonGenerator.writeObjectField("metadata", project.metadata);
-            jsonGenerator.writeObjectField("dependencies", project.getDependencies());
+            jsonGenerator.writeObjectField("dependencies", project.getDependencies().stream().map(ACAQMutableDependency::new).collect(Collectors.toList()));
             jsonGenerator.writeObjectField("algorithm-graph", project.graph);
             jsonGenerator.writeFieldName("compartments");
             jsonGenerator.writeStartObject();

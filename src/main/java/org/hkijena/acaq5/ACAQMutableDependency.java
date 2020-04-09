@@ -21,6 +21,22 @@ public class ACAQMutableDependency implements ACAQDependency {
     private String dependencyVersion = "1.0.0";
     private EventBus eventBus = new EventBus();
 
+    /**
+     * Creates a new instance
+     */
+    public ACAQMutableDependency() {
+    }
+
+    /**
+     * Copies the dependency
+     * @param other the original
+     */
+    public ACAQMutableDependency(ACAQDependency other) {
+        this.metadata = new ACAQProjectMetadata(other.getMetadata());
+        this.dependencyId = other.getDependencyId();
+        this.dependencyVersion = other.getDependencyVersion();
+    }
+
     @Override
     @JsonGetter("metadata")
     @ACAQSubParameters("metadata")
