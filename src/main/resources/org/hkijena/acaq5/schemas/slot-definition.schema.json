@@ -1,0 +1,76 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://applied-systems-biology.github.io/acaq5/schemas/slot-definition.schema.json",
+    "type": "object",
+    "title": "Slot definition",
+    "description": "Defines a data slot",
+    "required": [
+        "slot-data-type",
+        "slot-type",
+        "name"
+    ],
+    "properties": {
+        "slot-data-type": {
+            "$id": "#/properties/slot-data-type",
+            "type": "string",
+            "title": "Data type",
+            "description": "The data type ID of the data stored in this slot",
+            "default": "",
+            "examples": [
+                "imagej-imgplus-2d-greyscale"
+            ]
+        },
+        "slot-type": {
+            "$id": "#/properties/slot-type",
+            "type": "string",
+            "title": "Slot type",
+            "description": "Determines if the slot is an input or an output",
+            "default": "",
+            "enum": [
+                "Input",
+                "Output"
+            ]
+        },
+        "inherited-slot": {
+            "$id": "#/properties/inherited-slot",
+            "title": "Inherited slot",
+            "description": "Only valid for output slot. Defines from which slot to inherit the data type. Can be '*' to select the first available slot.",
+            "default": null,
+            "examples": [
+                null,
+                "*",
+                "Spores"
+            ]
+        },
+        "name": {
+            "$id": "#/properties/name",
+            "type": "string",
+            "title": "Name",
+            "description": "Unique slot name",
+            "default": "",
+            "examples": [
+                "Spores"
+            ]
+        },
+        "custom-name": {
+            "$id": "#/properties/custom-name",
+            "title": "Custom name",
+            "description": "User-customizable name. Only displayed in UI.",
+            "default": null,
+            "examples": [
+                null,
+                "Spores improved"
+            ]
+        },
+        "inheritance-conversions": {
+            "$id": "#/properties/inheritance-conversions",
+            "type": "object",
+            "title": "Inheritance conversions",
+            "description": "Only valid for slot inheritance. Applies conversiuons to the inherited type. Must contain map from input data type ID to output data type ID. Conversion is a finite text replacement system.",
+            "default": {},
+            "examples": [
+                {"imagej-imgplus-2d-greyscale-mask" : "imagej-imgplus-2d-greyscale-8u"}
+            ]
+        }
+    }
+}

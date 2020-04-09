@@ -1,0 +1,86 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://applied-systems-biology.github.io/acaq5/schemas/algorithm-node.schema.json",
+    "type": "object",
+    "title": "Algorithm node",
+    "description": "Node in a graph",
+    "required": [
+        "acaq:slot-configuration",
+        "acaq:algorithm-type",
+        "acaq:algorithm-compartment",
+        "name",
+        "description",
+        "acaq:trait-generation"
+    ],
+    "properties": {
+        "acaq:slot-configuration": {
+            "$id": "#/properties/acaq:slot-configuration",
+            "type": "object",
+            "title": "Slots",
+            "description": "User-defined slots. Might be ignored depending on the algorithm. The keys are the slot names.",
+            "default": {},
+            "examples": [
+                {}
+            ],
+            "additionalProperties": {
+              "$ref": "https://applied-systems-biology.github.io/acaq5/schemas/slot-definition.schema.json"
+            }
+        },
+        "acaq:algorithm-ui-location": {
+            "$id": "#/properties/acaq:algorithm-ui-location",
+            "type": "object",
+            "title": "UI locations",
+            "description": "Locations of this node within the UI. Optional. The keys depend on the UI implementation.",
+            "default": {},
+            "examples": [
+                {}
+            ],
+            "additionalProperties": {
+              "$ref": "https://applied-systems-biology.github.io/acaq5/schemas/point.schema.json"
+            }
+        },
+        "acaq:algorithm-type": {
+            "$id": "#/properties/acaq:algorithm-type",
+            "type": "string",
+            "title": "Algorithm ID",
+            "description": "Algorithm type ID",
+            "default": "",
+            "examples": [
+                "imagej-imgplus-2d-greyscale-from-file"
+            ]
+        },
+        "acaq:algorithm-compartment": {
+            "$id": "#/properties/acaq:algorithm-compartment",
+            "type": "string",
+            "title": "Graph compartment",
+            "description": "Compartment ID. Only important for the UI.",
+            "default": "DEFAULT",
+            "examples": [
+                "default-preprocessing"
+            ]
+        },
+        "name": {
+            "$id": "#/properties/name",
+            "type": "string",
+            "title": "Name",
+            "description": "A custom name for this algorithm. Only important for the UI. If null or empty, the UI will default to the algorithm type name.",
+            "default": "",
+            "examples": [
+                "Import 2D image (greyscale)"
+            ]
+        },
+        "description": {
+            "$id": "#/properties/description",
+            "title": "Description",
+            "description": "A custom description. Only important for the UI.",
+            "default": null,
+            "examples": [
+                null
+            ]
+        },
+        "acaq:trait-generation": {
+            "$id": "#/properties/acaq:trait-generation",
+            "$ref": "https://applied-systems-biology.github.io/acaq5/schemas/point.schema.json"
+        }
+    }
+}

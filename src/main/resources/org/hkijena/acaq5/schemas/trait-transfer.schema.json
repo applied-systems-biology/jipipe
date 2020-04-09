@@ -1,0 +1,51 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://applied-systems-biology.github.io/acaq5/schemas/trait-transfer.schema.json",
+    "type": "object",
+    "title": "Annotation transfer",
+    "description": "Transfers annotations from the input slot to the output slot",
+    "required": [
+        "input-slot",
+        "output-slot",
+        "trait-restrictions"
+    ],
+    "properties": {
+        "input-slot": {
+            "$id": "#/properties/input-slot",
+            "type": "string",
+            "title": "Input slot",
+            "description": "Unique name of the input slot",
+            "default": "",
+            "examples": [
+                "Image"
+            ]
+        },
+        "output-slot": {
+            "$id": "#/properties/output-slot",
+            "type": "string",
+            "title": "Output slot",
+            "description": "Unique name of the output slot",
+            "default": "",
+            "examples": [
+                "Blurred Image"
+            ]
+        },
+        "trait-restrictions": {
+            "$id": "#/properties/trait-restrictions",
+            "type": "array",
+            "title": "Type restrictions",
+            "description": "Restricts the types of transferred annotations. Currently without inheritance.",
+            "default": [],
+            "items": {
+                "$id": "#/properties/trait-restrictions/items",
+                "type": "string",
+                "title": "Annotation ID",
+                "description": "ID of an ACAQ annotation",
+                "default": "",
+                "examples": [
+                    "bioimage-object"
+                ]
+            }
+        }
+    }
+}

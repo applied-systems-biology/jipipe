@@ -1,0 +1,95 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://applied-systems-biology.github.io/acaq5/schemas/trait.schema.json",
+    "type": "object",
+    "title": "Annotation type",
+    "description": "A JSON-defined annotation type",
+    "required": [
+        "id",
+        "is-discriminator",
+        "hidden",
+        "name",
+        "description",
+        "inherited-annotation-ids",
+        "icon"
+    ],
+    "properties": {
+        "id": {
+            "$id": "#/properties/id",
+            "type": "string",
+            "title": "ID",
+            "description": "Unique annotation type ID",
+            "default": "",
+            "examples": [
+                "image-quality-brightness-nonuniform"
+            ]
+        },
+        "is-discriminator": {
+            "$id": "#/properties/is-discriminator",
+            "type": "boolean",
+            "title": "Is discriminator",
+            "description": "If true, the annotation carries a string value",
+            "default": false,
+            "examples": [
+                false
+            ]
+        },
+        "hidden": {
+            "$id": "#/properties/hidden",
+            "type": "boolean",
+            "title": "Is hidden",
+            "description": "If true, users cannot assign this annotation",
+            "default": false,
+            "examples": [
+                false
+            ]
+        },
+        "name": {
+            "$id": "#/properties/name",
+            "type": "string",
+            "title": "Name",
+            "description": "Name of this annotation",
+            "default": "",
+            "examples": [
+                "Non-uniform brightness image"
+            ]
+        },
+        "description": {
+            "$id": "#/properties/description",
+            "type": "string",
+            "title": "Description",
+            "description": "Description of this annotation",
+            "default": "",
+            "examples": [
+                "The image has non-uniform brightness"
+            ]
+        },
+        "inherited-annotation-ids": {
+            "$id": "#/properties/inherited-annotation-ids",
+            "type": "array",
+            "title": "Inherited annotations",
+            "description": "Annotations to inherit from",
+            "default": [],
+            "items": {
+                "$id": "#/properties/inherited-annotation-ids/items",
+                "type": "string",
+                "name": "Annotation ID",
+                "description": "An annotation ID",
+                "default": "",
+                "examples": [
+                    "image-quality-brightness"
+                ]
+            }
+        },
+        "icon": {
+            "$id": "#/properties/icon",
+            "type": "string",
+            "title": "Icon",
+            "description": "An icon within ACAQ5's standard icon library",
+            "default": "",
+            "examples": [
+                "non-uniform-brightness.png"
+            ]
+        }
+    }
+}
