@@ -2,8 +2,8 @@
     "$schema": "http://json-schema.org/draft-07/schema",
     "$id": "https://applied-systems-biology.github.io/acaq5/schemas/algorithm.schema.json",
     "type": "object",
-    "title": "The Root Schema",
-    "description": "The root schema comprises the entire JSON document.",
+    "title": "Algorithm node",
+    "description": "A node in the algorithm graph",
     "required": [
         "id",
         "metadata",
