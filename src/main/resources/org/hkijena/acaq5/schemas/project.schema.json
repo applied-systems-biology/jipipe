@@ -63,7 +63,7 @@
             "properties": {
                 "compartment-graph": {
                     "$id": "#/properties/compartments/properties/compartment-graph",
-                    "$ref": "https://applied-systems-biology.github.io/acaq5/schemas/graph.schema.json"
+                    "$ref": "https://applied-systems-biology.github.io/acaq5/schemas/graph.schema.json",
                     "type": "object",
                     "title": "Compartment graph",
                     "description": "Structural graph of compartments",
