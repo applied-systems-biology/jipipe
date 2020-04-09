@@ -44,7 +44,7 @@
         "target-slot": {
             "$id": "#/properties/target-slot",
             "type": "string",
-            "title": "The Target-slot Schema",
+            "title": "Target slot name",
             "description": "Slot name within the edge target algorithm",
             "default": "",
             "examples": [

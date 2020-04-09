@@ -33,8 +33,8 @@
         "dependencies": {
             "$id": "#/properties/dependencies",
             "type": "array",
-            "title": "The Dependencies Schema",
-            "description": "An explanation about the purpose of this instance.",
+            "title": "Dependencies",
+            "description": "Dependencies of this project",
             "default": [],
             "items": {
               "$ref": "https://applied-systems-biology.github.io/acaq5/schemas/dependency.schema.json"
@@ -43,8 +43,8 @@
         "algorithm-graph": {
             "$id": "#/properties/algorithm-graph",
             "type": "object",
-            "title": "The Algorithm-graph Schema",
-            "description": "An explanation about the purpose of this instance.",
+            "title": "Algorithm graph",
+            "description": "Contains the algorithms",
             "default": {
               "nodes": {},
               "edges": []

@@ -46,8 +46,8 @@
         "transfer": {
             "$id": "#/properties/transfer",
             "type": "object",
-            "title": "The Transfer Schema",
-            "description": "An explanation about the purpose of this instance.",
+            "title": "Annotation transfer behavior",
+            "description": "Determines how annotations are transferred through the algorithm",
             "default": {},
             "examples": [
                 {
