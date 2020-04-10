@@ -136,4 +136,6 @@ public class ACAQJavaTraitDeclaration extends ACAQMutableTraitDeclaration {
     static boolean getIsHidden(Class<? extends ACAQTrait> klass) {
         return klass.getAnnotationsByType(ACAQHidden.class).length > 0;
     }
+
+
 }

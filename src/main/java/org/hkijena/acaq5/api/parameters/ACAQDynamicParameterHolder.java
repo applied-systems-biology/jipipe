@@ -26,7 +26,8 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
     private Set<Class<?>> allowedTypes = new HashSet<>();
     private String name;
     private String description;
-    private boolean allowModification = true;
+    private boolean allowUserModification = true;
+    private boolean delayEvents = false;
 
     /**
      * @param allowedTypes The parameter types that can be added
@@ -65,6 +66,22 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
     }
 
     /**
+     * Adds a new parameter.
+     * The parameterHolder attribute is changed
+     * @param parameterAccess the parameter
+     * @return the parameter access
+     */
+    public ACAQMutableParameterAccess addParameter(ACAQMutableParameterAccess parameterAccess) {
+        if (parameters.containsKey(parameterAccess.getKey()))
+            throw new IllegalArgumentException("Parameter with key " + parameterAccess.getKey() + " already exists!");
+        parameterAccess.setParameterHolder(this);
+        parameters.put(parameterAccess.getKey(), parameterAccess);
+        if(!delayEvents)
+            getEventBus().post(new ParameterStructureChangedEvent(this));
+        return parameterAccess;
+    }
+
+    /**
      * Adds a new parameter
      *
      * @param key        A unique key
@@ -72,13 +89,18 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
      * @return The created parameter access
      */
     public ACAQMutableParameterAccess addParameter(String key, Class<?> fieldClass) {
-        if (parameters.containsKey(key))
-            throw new IllegalArgumentException("Parameter with key " + key + " already exists!");
         ACAQMutableParameterAccess parameterAccess = new ACAQMutableParameterAccess(this, key, fieldClass);
         parameterAccess.setName(key);
-        parameters.put(key, parameterAccess);
-        getEventBus().post(new ParameterStructureChangedEvent(this));
-        return parameterAccess;
+        return addParameter(parameterAccess);
+    }
+
+    /**
+     * Removes all parameters
+     */
+    public void clear() {
+        parameters.clear();
+        if(!delayEvents)
+            getEventBus().post(new ParameterStructureChangedEvent(this));
     }
 
     /**
@@ -88,6 +110,8 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
      */
     public void removeParameter(String key) {
         parameters.remove(key);
+        if(!delayEvents)
+            getEventBus().post(new ParameterStructureChangedEvent(this));
     }
 
     /**
@@ -174,24 +198,63 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
     }
 
     /**
-     * @return True if modification is allowed
+     * @return True if modification by users is allowed
      */
-    public boolean isAllowModification() {
-        return allowModification;
+    public boolean isAllowUserModification() {
+        return allowUserModification;
     }
 
     /**
-     * Enabled/disables if modification is allowed
+     * Enabled/disables if modification by users is allowed
      *
-     * @param allowModification True if modification is allowed
+     * @param allowUserModification True if modification is allowed
      */
-    public void setAllowModification(boolean allowModification) {
-        this.allowModification = allowModification;
+    public void setAllowUserModification(boolean allowUserModification) {
+        this.allowUserModification = allowUserModification;
     }
 
     @Override
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    /**
+     * Returns true if there is a parameter with given key
+     * @param key the parameter key
+     * @return if there is a parameter with given key
+     */
+    public boolean containsKey(String key) {
+        return parameters.containsKey(key);
+    }
+
+    /**
+     * Returns the parameter with key
+     * @param key the parameter key
+     * @return the parameter access
+     */
+    public ACAQParameterAccess get(String key) {
+        return parameters.get(key);
+    }
+
+    /**
+     * Halts all {@link ParameterStructureChangedEvent} until endModificationBlock() is called.
+     * Use this method for many changes at once
+     */
+    public void beginModificationBlock() {
+        if(delayEvents)
+            throw new UnsupportedOperationException("Modification block already started!");
+        delayEvents = true;
+    }
+
+    /**
+     * Ends a modification block started by beginModificationBlock().
+     * Triggers a {@link ParameterStructureChangedEvent}
+     */
+    public void endModificationBlock() {
+        if(!delayEvents)
+            throw new UnsupportedOperationException("No modification block!");
+        delayEvents = false;
+        eventBus.post(new ParameterStructureChangedEvent(this));
     }
 
     /**

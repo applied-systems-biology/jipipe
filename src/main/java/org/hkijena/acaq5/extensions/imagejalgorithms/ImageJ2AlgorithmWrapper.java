@@ -69,7 +69,7 @@ public class ImageJ2AlgorithmWrapper extends ACAQIteratingAlgorithm {
                 parameterMap.put(moduleItem.getName(), parameterName);
             }
         }
-        moduleParameters.setAllowModification(false);
+        moduleParameters.setAllowUserModification(false);
     }
 
     @Override

@@ -9,34 +9,34 @@ import java.lang.annotation.Annotation;
  */
 public class DefaultAlgorithmInputSlot implements AlgorithmInputSlot {
 
-    private Class<? extends ACAQData> mValue;
-    private String mSlotName;
-    private boolean mAutoCreate;
+    private Class<? extends ACAQData> value;
+    private String slotName;
+    private boolean autoCreate;
 
     /**
-     * @param mValue      the value
-     * @param mSlotName   the slot name
-     * @param mAutoCreate if the slot should be automatically created
+     * @param value      the value
+     * @param slotName   the slot name
+     * @param autoCreate if the slot should be automatically created
      */
-    public DefaultAlgorithmInputSlot(Class<? extends ACAQData> mValue, String mSlotName, boolean mAutoCreate) {
-        this.mValue = mValue;
-        this.mSlotName = mSlotName;
-        this.mAutoCreate = mAutoCreate;
+    public DefaultAlgorithmInputSlot(Class<? extends ACAQData> value, String slotName, boolean autoCreate) {
+        this.value = value;
+        this.slotName = slotName;
+        this.autoCreate = autoCreate;
     }
 
     @Override
     public Class<? extends ACAQData> value() {
-        return mValue;
+        return value;
     }
 
     @Override
     public String slotName() {
-        return mSlotName;
+        return slotName;
     }
 
     @Override
     public boolean autoCreate() {
-        return mAutoCreate;
+        return autoCreate;
     }
 
     @Override

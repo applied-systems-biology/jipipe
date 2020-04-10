@@ -44,6 +44,8 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
     private ACAQSlotConfiguration slotConfiguration;
     private ACAQTraitConfiguration traitConfiguration;
     private Map<String, ACAQDataSlot> slots = new HashMap<>();
+    private List<ACAQDataSlot> inputSlots = new ArrayList<>();
+    private List<ACAQDataSlot> outputSlots = new ArrayList<>();
     private EventBus eventBus = new EventBus();
     private Map<String, Point> locations = new HashMap<>();
     private Path internalStoragePath;
@@ -175,14 +177,16 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
         for (Map.Entry<String, ACAQSlotDefinition> kv : slotConfiguration.getSlots().entrySet()) {
             slots.put(kv.getKey(), new ACAQDataSlot(kv.getValue(), this));
         }
+        updateInputSlotList();
+        updateOutputSlotList();
     }
 
     /**
      * Runs the workload
      *
-     * @param subProgress
-     * @param algorithmProgress
-     * @param isCancelled
+     * @param subProgress allows algorithms to report sub-progress
+     * @param algorithmProgress call to provide sub-progress
+     * @param isCancelled returns if cancellation was requested
      */
     public abstract void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled);
 
@@ -283,12 +287,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
      * @return List of slots
      */
     public List<ACAQDataSlot> getInputSlots() {
-        List<ACAQDataSlot> result = new ArrayList<>();
-        for (String key : getInputSlotOrder()) {
-            if (slots.containsKey(key))
-                result.add(slots.get(key));
-        }
-        return Collections.unmodifiableList(result);
+        return Collections.unmodifiableList(inputSlots);
     }
 
     /**
@@ -297,12 +296,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
      * @return List of slots
      */
     public List<ACAQDataSlot> getOutputSlots() {
-        List<ACAQDataSlot> result = new ArrayList<>();
-        for (String key : getOutputSlotOrder()) {
-            if (slots.containsKey(key))
-                result.add(slots.get(key));
-        }
-        return Collections.unmodifiableList(result);
+        return Collections.unmodifiableList(outputSlots);
     }
 
     /**
@@ -313,7 +307,12 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
     @Subscribe
     public void onSlotAdded(SlotAddedEvent event) {
         ACAQSlotDefinition definition = slotConfiguration.getSlots().get(event.getSlotName());
-        slots.put(definition.getName(), new ACAQDataSlot(definition, this));
+        ACAQDataSlot slot = new ACAQDataSlot(definition, this);
+        slots.put(definition.getName(), slot);
+        if(slot.isInput())
+            inputSlots.add(slot);
+        if(slot.isOutput())
+            outputSlots.add(slot);
         eventBus.post(new AlgorithmSlotsChangedEvent(this));
         updateSlotInheritance();
     }
@@ -325,7 +324,10 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
      */
     @Subscribe
     public void onSlotRemoved(SlotRemovedEvent event) {
+        ACAQDataSlot slot = slots.get(event.getSlotName());
         slots.remove(event.getSlotName());
+        inputSlots.remove(slot);
+        outputSlots.remove(slot);
         eventBus.post(new AlgorithmSlotsChangedEvent(this));
         updateSlotInheritance();
     }
@@ -351,8 +353,26 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
      */
     @Subscribe
     public void onSlotOrderChanged(SlotOrderChangedEvent event) {
+        updateInputSlotList();
+        updateOutputSlotList();
         eventBus.post(new AlgorithmSlotsChangedEvent(this));
         updateSlotInheritance();
+    }
+
+    private void updateOutputSlotList() {
+        outputSlots.clear();
+        for (String key : getOutputSlotOrder()) {
+            if (slots.containsKey(key))
+                outputSlots.add(slots.get(key));
+        }
+    }
+
+    private void updateInputSlotList() {
+        inputSlots.clear();
+        for (String key : getInputSlotOrder()) {
+            if (slots.containsKey(key))
+                inputSlots.add(slots.get(key));
+        }
     }
 
     /**

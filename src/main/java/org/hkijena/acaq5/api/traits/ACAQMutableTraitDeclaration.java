@@ -152,4 +152,9 @@ public abstract class ACAQMutableTraitDeclaration implements ACAQTraitDeclaratio
     public EventBus getEventBus() {
         return eventBus;
     }
+
+    @Override
+    public String toString() {
+        return "" + id;
+    }
 }

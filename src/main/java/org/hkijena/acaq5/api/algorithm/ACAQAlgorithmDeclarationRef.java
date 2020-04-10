@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.api.traits;
+package org.hkijena.acaq5.api.algorithm;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -8,38 +8,40 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
+import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
+import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
 
 import java.io.IOException;
 
 /**
- * Helper to allow easy serialization of {@link ACAQTraitDeclaration} references
+ * A parameter that holds a reference to an {@link ACAQAlgorithmDeclaration}
  */
-@JsonSerialize(using = ACAQTraitDeclarationRef.Serializer.class)
-@JsonDeserialize(using = ACAQTraitDeclarationRef.Deserializer.class)
-public class ACAQTraitDeclarationRef implements ACAQValidatable {
-
-    private ACAQTraitDeclaration declaration;
+@JsonSerialize(using = ACAQAlgorithmDeclarationRef.Serializer.class)
+@JsonDeserialize(using = ACAQAlgorithmDeclarationRef.Deserializer.class)
+public class ACAQAlgorithmDeclarationRef implements ACAQValidatable {
+    private ACAQAlgorithmDeclaration declaration;
 
     /**
      * @param declaration The referenced declaration
      */
-    public ACAQTraitDeclarationRef(ACAQTraitDeclaration declaration) {
+    public ACAQAlgorithmDeclarationRef(ACAQAlgorithmDeclaration declaration) {
         this.declaration = declaration;
     }
 
     /**
      * New instance
      */
-    public ACAQTraitDeclarationRef() {
+    public ACAQAlgorithmDeclarationRef() {
 
     }
 
-    public ACAQTraitDeclaration getDeclaration() {
+    public ACAQAlgorithmDeclaration getDeclaration() {
         return declaration;
     }
 
-    public void setDeclaration(ACAQTraitDeclaration declaration) {
+    public void setDeclaration(ACAQAlgorithmDeclaration declaration) {
         this.declaration = declaration;
     }
 
@@ -52,10 +54,10 @@ public class ACAQTraitDeclarationRef implements ACAQValidatable {
     /**
      * Serializes the reference as ID
      */
-    public static class Serializer extends JsonSerializer<ACAQTraitDeclarationRef> {
+    public static class Serializer extends JsonSerializer<ACAQAlgorithmDeclarationRef> {
 
         @Override
-        public void serialize(ACAQTraitDeclarationRef ref, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+        public void serialize(ACAQAlgorithmDeclarationRef ref, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             jsonGenerator.writeString(ref.getDeclaration() != null ? ref.getDeclaration().getId() : null);
         }
 
@@ -64,14 +66,14 @@ public class ACAQTraitDeclarationRef implements ACAQValidatable {
     /**
      * Deserializes the reference from a string
      */
-    public static class Deserializer extends JsonDeserializer<ACAQTraitDeclarationRef> {
+    public static class Deserializer extends JsonDeserializer<ACAQAlgorithmDeclarationRef> {
 
         @Override
-        public ACAQTraitDeclarationRef deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+        public ACAQAlgorithmDeclarationRef deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JsonNode node = jsonParser.readValueAsTree();
-            ACAQTraitDeclarationRef result = new ACAQTraitDeclarationRef();
+            ACAQAlgorithmDeclarationRef result = new ACAQAlgorithmDeclarationRef();
             if (!node.isNull()) {
-                result.setDeclaration(ACAQTraitRegistry.getInstance().getDeclarationById(node.textValue()));
+                result.setDeclaration(ACAQAlgorithmRegistry.getInstance().getDeclarationById(node.textValue()));
             }
             return result;
         }

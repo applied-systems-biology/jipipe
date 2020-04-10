@@ -27,6 +27,22 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
     }
 
     /**
+     * Creates a new independent parameter from the provided access
+     * @param other the parameter
+     */
+    public ACAQMutableParameterAccess(ACAQParameterAccess other) {
+        this.parameterHolder = other.getParameterHolder();
+        this.holderName = other.getHolderName();
+        this.holderDescription = other.getHolderDescription();
+        this.key = other.getKey();
+        this.name = other.getName();
+        this.description = other.getDescription();
+        this.visibility = other.getVisibility();
+        this.fieldClass = other.getFieldClass();
+        this.value = other.get();
+    }
+
+    /**
      * Creates a new instance
      *
      * @param parameterHolder The object that holds the parameter

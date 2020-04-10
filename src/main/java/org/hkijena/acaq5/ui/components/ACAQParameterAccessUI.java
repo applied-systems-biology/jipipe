@@ -1,7 +1,9 @@
 package org.hkijena.acaq5.ui.components;
 
+import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
@@ -39,6 +41,7 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
         this.context = context;
         this.parameterHolder = parameterHolder;
         reloadForm();
+        this.parameterHolder.getEventBus().register(this);
     }
 
     /**
@@ -119,7 +122,7 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
                         parameterAccess.getVisibility() == ACAQParameterVisibility.Visible;
             });
 
-            boolean parameterHolderIsDynamic = parameterHolder instanceof ACAQDynamicParameterHolder && ((ACAQDynamicParameterHolder) parameterHolder).isAllowModification();
+            boolean parameterHolderIsDynamic = parameterHolder instanceof ACAQDynamicParameterHolder && ((ACAQDynamicParameterHolder) parameterHolder).isAllowUserModification();
 
             if (parameterIds.isEmpty() && !parameterHolderIsDynamic)
                 continue;
@@ -155,7 +158,7 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
                 JPanel labelPanel = new JPanel(new BorderLayout());
                 if (ui.isUILabelEnabled())
                     labelPanel.add(new JLabel(parameterAccess.getName()));
-                if (parameterHolder instanceof ACAQDynamicParameterHolder && ((ACAQDynamicParameterHolder) parameterHolder).isAllowModification()) {
+                if (parameterHolder instanceof ACAQDynamicParameterHolder && ((ACAQDynamicParameterHolder) parameterHolder).isAllowUserModification()) {
                     JButton removeButton = new JButton(UIUtils.getIconFromResources("close-tab.png"));
                     removeButton.setToolTipText("Remove this parameter");
                     UIUtils.makeBorderlessWithoutMargin(removeButton);
@@ -226,6 +229,15 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
             parameterAccess.setName(name);
             reloadForm();
         }
+    }
+
+    /**
+     * Triggered when the parameter structure was changed
+     * @param event generated event
+     */
+    @Subscribe
+    public void onParameterStructureChanged(ParameterStructureChangedEvent event) {
+        reloadForm();
     }
 
     /**

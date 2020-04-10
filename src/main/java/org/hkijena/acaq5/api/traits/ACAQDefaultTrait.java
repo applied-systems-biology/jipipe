@@ -18,4 +18,9 @@ public class ACAQDefaultTrait implements ACAQTrait {
     public ACAQTraitDeclaration getDeclaration() {
         return declaration;
     }
+
+    @Override
+    public String toString() {
+        return "" + getDeclaration();
+    }
 }

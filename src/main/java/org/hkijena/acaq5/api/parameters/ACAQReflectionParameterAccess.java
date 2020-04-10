@@ -120,6 +120,8 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
      */
     public static Map<String, ACAQParameterAccess> getReflectionParameters(ACAQParameterHolder parameterHolder) {
         Map<String, ACAQParameterAccess> result = new HashMap<>();
+        if(parameterHolder == null)
+            return result;
         for (Method method : parameterHolder.getClass().getMethods()) {
             ACAQParameter[] parameterAnnotations = method.getAnnotationsByType(ACAQParameter.class);
             if (parameterAnnotations.length > 0) {

@@ -50,4 +50,9 @@ public class ACAQTraitIconRef {
             return result;
         }
     }
+
+    @Override
+    public String toString() {
+        return "" + iconName;
+    }
 }

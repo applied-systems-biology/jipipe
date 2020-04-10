@@ -11,6 +11,7 @@ import org.hkijena.acaq5.api.traits.ACAQJsonTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.utils.StringUtils;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -64,6 +65,8 @@ public class ACAQNewTraitNode extends ACAQTraitNode implements ACAQCustomParamet
 
     @Override
     public Map<String, ACAQParameterAccess> getCustomParameters() {
+        if(getTraitDeclaration() == null)
+            return Collections.emptyMap();
         return ACAQParameterAccess.getParameters((ACAQParameterHolder) getTraitDeclaration());
     }
 
