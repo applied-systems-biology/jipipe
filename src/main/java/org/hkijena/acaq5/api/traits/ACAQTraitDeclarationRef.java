@@ -49,6 +49,14 @@ public class ACAQTraitDeclarationRef implements ACAQValidatable {
             report.reportIsInvalid("No annotation type is selected! Please select an annotation type.");
     }
 
+    @Override
+    public String toString() {
+        if (declaration != null)
+            return declaration.getId();
+        else
+            return "<Null>";
+    }
+
     /**
      * Serializes the reference as ID
      */
@@ -75,13 +83,5 @@ public class ACAQTraitDeclarationRef implements ACAQValidatable {
             }
             return result;
         }
-    }
-
-    @Override
-    public String toString() {
-        if(declaration != null)
-            return declaration.getId();
-        else
-            return "<Null>";
     }
 }

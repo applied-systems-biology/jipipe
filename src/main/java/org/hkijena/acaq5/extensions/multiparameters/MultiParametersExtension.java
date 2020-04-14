@@ -7,6 +7,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.events.AlgorithmRegisteredEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.api.parameters.ACAQParameterHolder;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQJsonTraitDeclaration;
@@ -39,7 +40,7 @@ public class MultiParametersExtension extends ACAQPrepackagedDefaultJavaExtensio
     @Override
     public void register() {
         // Register annotations for each available parameter
-        for(ACAQAlgorithmDeclaration declaration : ACAQAlgorithmRegistry.getInstance().getRegisteredAlgorithms().values()) {
+        for (ACAQAlgorithmDeclaration declaration : ACAQAlgorithmRegistry.getInstance().getRegisteredAlgorithms().values()) {
             registerParameterTraits(declaration);
         }
         ACAQAlgorithmRegistry.getInstance().getEventBus().register(this);
@@ -57,6 +58,7 @@ public class MultiParametersExtension extends ACAQPrepackagedDefaultJavaExtensio
 
     /**
      * Triggered when an algorithm is registered
+     *
      * @param event generated event
      */
     @Subscribe
@@ -65,15 +67,15 @@ public class MultiParametersExtension extends ACAQPrepackagedDefaultJavaExtensio
     }
 
     private void registerParameterTraits(ACAQAlgorithmDeclaration declaration) {
-        if(declaration.getCategory() == ACAQAlgorithmCategory.Internal)
+        if (declaration.getCategory() == ACAQAlgorithmCategory.Internal)
             return;
         ACAQAlgorithm instance = declaration.newInstance();
-        Map<String, ACAQParameterAccess> parameters = ACAQParameterAccess.getParameters(instance);
+        Map<String, ACAQParameterAccess> parameters = ACAQParameterHolder.getParameters(instance);
 
         for (ACAQParameterAccess parameterAccess : parameters.values()) {
-            if(!StringUtils.isNullOrEmpty(parameterAccess.getName())) {
+            if (!StringUtils.isNullOrEmpty(parameterAccess.getName())) {
                 String traitId = "parameter-" + StringUtils.jsonify(parameterAccess.getName());
-                if(!ACAQTraitRegistry.getInstance().hasTraitWithId(traitId)) {
+                if (!ACAQTraitRegistry.getInstance().hasTraitWithId(traitId)) {
                     ACAQJsonTraitDeclaration traitDeclaration = new ACAQJsonTraitDeclaration();
                     traitDeclaration.setId(traitId);
                     traitDeclaration.setName(parameterAccess.getName());

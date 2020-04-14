@@ -3,6 +3,7 @@ package org.hkijena.acaq5.api.parameters;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
+import org.scijava.Priority;
 
 import java.lang.annotation.Annotation;
 
@@ -19,6 +20,7 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
     private ACAQParameterVisibility visibility = ACAQParameterVisibility.TransitiveVisible;
     private Class<?> fieldClass;
     private Object value;
+    private double priority = Priority.NORMAL;
 
     /**
      * Creates a new instance
@@ -28,6 +30,7 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
 
     /**
      * Creates a new independent parameter from the provided access
+     *
      * @param other the parameter
      */
     public ACAQMutableParameterAccess(ACAQParameterAccess other) {
@@ -215,5 +218,14 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
      */
     public void setHolderName(String holderName) {
         this.holderName = holderName;
+    }
+
+    @Override
+    public double getPriority() {
+        return priority;
+    }
+
+    public void setPriority(double priority) {
+        this.priority = priority;
     }
 }

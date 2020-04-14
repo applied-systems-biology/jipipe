@@ -12,10 +12,7 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
-import org.hkijena.acaq5.api.parameters.ACAQCustomParameterHolder;
-import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterHolder;
-import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQReflectionParameterAccess;
+import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.*;
@@ -62,7 +59,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
         parameterAccessMap.putAll(ACAQReflectionParameterAccess.getReflectionParameters(this));
 
         for (ACAQAlgorithm algorithm : wrappedGraph.traverseAlgorithms()) {
-            for (Map.Entry<String, ACAQParameterAccess> entry : ACAQParameterAccess.getParameters(algorithm).entrySet()) {
+            for (Map.Entry<String, ACAQParameterAccess> entry : ACAQParameterHolder.getParameters(algorithm).entrySet()) {
 
                 ACAQParameterAccess parameterAccess = entry.getValue();
                 String newId = algorithm.getIdInGraph() + "/" + entry.getKey();
@@ -97,10 +94,10 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
         slotConfiguration.clearInputSlots();
         slotConfiguration.clearOutputSlots();
         for (AlgorithmInputSlot slot : getDeclaration().getInputSlots()) {
-            slotConfiguration.addSlot(slot.slotName(), new ACAQSlotDefinition(slot.value(), ACAQDataSlot.SlotType.Input, slot.slotName(), null));
+            slotConfiguration.addSlot(slot.slotName(), new ACAQSlotDefinition(slot.value(), ACAQDataSlot.SlotType.Input, slot.slotName(), null), false);
         }
         for (AlgorithmOutputSlot slot : getDeclaration().getOutputSlots()) {
-            slotConfiguration.addSlot(slot.slotName(), new ACAQSlotDefinition(slot.value(), ACAQDataSlot.SlotType.Output, slot.slotName(), null));
+            slotConfiguration.addSlot(slot.slotName(), new ACAQSlotDefinition(slot.value(), ACAQDataSlot.SlotType.Output, slot.slotName(), null), false);
         }
         slotConfiguration.setInputSealed(true);
         slotConfiguration.setOutputSealed(true);

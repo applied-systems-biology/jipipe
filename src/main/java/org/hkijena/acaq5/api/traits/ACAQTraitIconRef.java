@@ -25,6 +25,11 @@ public class ACAQTraitIconRef {
         this.iconName = iconName;
     }
 
+    @Override
+    public String toString() {
+        return "" + iconName;
+    }
+
     /**
      * Serializes {@link ACAQTraitIconRef}
      */
@@ -49,10 +54,5 @@ public class ACAQTraitIconRef {
             }
             return result;
         }
-    }
-
-    @Override
-    public String toString() {
-        return "" + iconName;
     }
 }

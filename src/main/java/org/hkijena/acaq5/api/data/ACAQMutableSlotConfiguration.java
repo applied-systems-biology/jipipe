@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.events.SlotAddedEvent;
 import org.hkijena.acaq5.api.events.SlotOrderChangedEvent;
 import org.hkijena.acaq5.api.events.SlotRemovedEvent;
@@ -56,35 +57,38 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
      *
      * @param name       Unique slot name
      * @param definition Defines the slot
+     * @param user       if the change was triggered by a user. If false, checks for slot sealing, types, etc. do not apply
      */
-    public void addSlot(String name, ACAQSlotDefinition definition) {
+    public void addSlot(String name, ACAQSlotDefinition definition, boolean user) {
         if (!Objects.equals(name, definition.getName())) {
             definition = definition.renamedCopy(name);
         }
-        if (definition.getSlotType() == ACAQDataSlot.SlotType.Input &&
-                !allowedInputSlotTypes.contains(definition.getDataClass()))
-            throw new RuntimeException("Slot type is not accepted by this configuration!");
-        if (definition.getSlotType() == ACAQDataSlot.SlotType.Input && !allowInputSlots)
-            throw new RuntimeException("Slot configuration does not allow input slots");
-        if (definition.getSlotType() == ACAQDataSlot.SlotType.Input && inputSlotsSealed)
-            throw new RuntimeException("Slot configuration is sealed!");
-        if (definition.getSlotType() == ACAQDataSlot.SlotType.Input &&
-                inputSlotOrder.size() >= maxInputSlots)
-            throw new RuntimeException("Slot already reached the limit of input slots!");
-        if (definition.getSlotType() == ACAQDataSlot.SlotType.Output &&
-                !allowedOutputSlotTypes.contains(definition.getDataClass()))
-            throw new RuntimeException("Slot type is not accepted by this configuration!");
-        if (definition.getSlotType() == ACAQDataSlot.SlotType.Output && !allowOutputSlots)
-            throw new RuntimeException("Slot configuration does not allow output slots");
-        if (definition.getSlotType() == ACAQDataSlot.SlotType.Output && outputSlotsSealed)
-            throw new RuntimeException("Slot configuration is sealed!");
-        if (definition.getSlotType() == ACAQDataSlot.SlotType.Output &&
-                outputSlotOrder.size() >= maxOutputSlots)
-            throw new RuntimeException("Slot already reached the limit of output slots!");
-        if (definition.getSlotType() == ACAQDataSlot.SlotType.Output &&
-                !allowInheritedOutputSlots && definition.getInheritedSlot() != null &&
-                !definition.getInheritedSlot().isEmpty())
-            throw new IllegalArgumentException("Slot configuration does not allow slot inheritance!");
+        if (user) {
+            if (definition.getSlotType() == ACAQDataSlot.SlotType.Input &&
+                    !allowedInputSlotTypes.contains(definition.getDataClass()))
+                throw new RuntimeException("Slot type is not accepted by this configuration!");
+            if (definition.getSlotType() == ACAQDataSlot.SlotType.Input && !allowInputSlots)
+                throw new RuntimeException("Slot configuration does not allow input slots");
+            if (definition.getSlotType() == ACAQDataSlot.SlotType.Input && inputSlotsSealed)
+                throw new RuntimeException("Slot configuration is sealed!");
+            if (definition.getSlotType() == ACAQDataSlot.SlotType.Input &&
+                    inputSlotOrder.size() >= maxInputSlots)
+                throw new RuntimeException("Slot already reached the limit of input slots!");
+            if (definition.getSlotType() == ACAQDataSlot.SlotType.Output &&
+                    !allowedOutputSlotTypes.contains(definition.getDataClass()))
+                throw new RuntimeException("Slot type is not accepted by this configuration!");
+            if (definition.getSlotType() == ACAQDataSlot.SlotType.Output && !allowOutputSlots)
+                throw new RuntimeException("Slot configuration does not allow output slots");
+            if (definition.getSlotType() == ACAQDataSlot.SlotType.Output && outputSlotsSealed)
+                throw new RuntimeException("Slot configuration is sealed!");
+            if (definition.getSlotType() == ACAQDataSlot.SlotType.Output &&
+                    outputSlotOrder.size() >= maxOutputSlots)
+                throw new RuntimeException("Slot already reached the limit of output slots!");
+            if (definition.getSlotType() == ACAQDataSlot.SlotType.Output &&
+                    !allowInheritedOutputSlots && definition.getInheritedSlot() != null &&
+                    !definition.getInheritedSlot().isEmpty())
+                throw new IllegalArgumentException("Slot configuration does not allow slot inheritance!");
+        }
         if (hasSlot(name))
             throw new RuntimeException("Slot already exists!");
 
@@ -102,21 +106,24 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
      * Removes the slot with given name
      *
      * @param name Slot name
+     * @param user if the change was triggered by a user. If false, checks for slot modification, counts, etc. do not apply.
      */
-    public void removeSlot(String name) {
+    public void removeSlot(String name, boolean user) {
         ACAQSlotDefinition slot = slots.getOrDefault(name, null);
         if (slot != null) {
-            switch (slot.getSlotType()) {
-                case Input:
-                    if (!canModifyInputSlots())
-                        throw new RuntimeException("Input slots can not be modified!");
-                    break;
-                case Output:
-                    if (!canModifyOutputSlots())
-                        throw new RuntimeException("Output slots can not be modified!");
-                    break;
-                default:
-                    throw new RuntimeException("Unknown slot type!");
+            if (user) {
+                switch (slot.getSlotType()) {
+                    case Input:
+                        if (!canModifyInputSlots())
+                            throw new RuntimeException("Input slots can not be modified!");
+                        break;
+                    case Output:
+                        if (!canModifyOutputSlots())
+                            throw new RuntimeException("Output slots can not be modified!");
+                        break;
+                    default:
+                        throw new RuntimeException("Unknown slot type!");
+                }
             }
 
             slots.remove(name);
@@ -192,7 +199,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
             if (!slots.containsKey(kv.getKey())) {
                 try {
                     ACAQSlotDefinition slotDefinition = objectReader.readValue(kv.getValue());
-                    addSlot(kv.getKey(), slotDefinition);
+                    addSlot(kv.getKey(), slotDefinition, false);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -316,6 +323,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
     public void setAllowedInputSlotTypes(Set<Class<? extends ACAQData>> allowedInputSlotTypes) {
         this.allowedInputSlotTypes = allowedInputSlotTypes;
+        getEventBus().post(new ParameterChangedEvent(this, "allowed-input-slot-types"));
     }
 
     /**
@@ -327,6 +335,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
     public void setAllowedOutputSlotTypes(Set<Class<? extends ACAQData>> allowedOutputSlotTypes) {
         this.allowedOutputSlotTypes = allowedOutputSlotTypes;
+        getEventBus().post(new ParameterChangedEvent(this, "allowed-output-slot-types"));
     }
 
     /**
@@ -336,6 +345,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
      */
     public void setInputSealed(boolean b) {
         this.inputSlotsSealed = b;
+        getEventBus().post(new ParameterChangedEvent(this, "input-sealed"));
     }
 
     /**
@@ -345,6 +355,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
      */
     public void setOutputSealed(boolean b) {
         this.outputSlotsSealed = b;
+        getEventBus().post(new ParameterChangedEvent(this, "output-sealed"));
     }
 
     /**
@@ -377,6 +388,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
      */
     public void setMaxInputSlots(int maxInputSlots) {
         this.maxInputSlots = maxInputSlots;
+        getEventBus().post(new ParameterChangedEvent(this, "max-input-slots"));
     }
 
     /**
@@ -393,6 +405,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
      */
     public void setMaxOutputSlots(int maxOutputSlots) {
         this.maxOutputSlots = maxOutputSlots;
+        getEventBus().post(new ParameterChangedEvent(this, "max-output-slots"));
     }
 
     /**
@@ -417,7 +430,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
             throw new UnsupportedOperationException("Cannot modify input slots!");
         for (Map.Entry<String, ACAQSlotDefinition> entry : ImmutableList.copyOf(slots.entrySet())) {
             if (entry.getValue().getSlotType() == ACAQDataSlot.SlotType.Input) {
-                removeSlot(entry.getKey());
+                removeSlot(entry.getKey(), false);
             }
         }
     }
@@ -430,7 +443,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
             throw new UnsupportedOperationException("Cannot modify output slots!");
         for (Map.Entry<String, ACAQSlotDefinition> entry : ImmutableList.copyOf(slots.entrySet())) {
             if (entry.getValue().getSlotType() == ACAQDataSlot.SlotType.Output) {
-                removeSlot(entry.getKey());
+                removeSlot(entry.getKey(), false);
             }
         }
     }
@@ -449,6 +462,15 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
      */
     public void setAllowInheritedOutputSlots(boolean allowInheritedOutputSlots) {
         this.allowInheritedOutputSlots = allowInheritedOutputSlots;
+    }
+
+    /**
+     * Returns a collection of all unhidden slot data types
+     *
+     * @return the collection
+     */
+    public static Set<Class<? extends ACAQData>> getUnhiddenRegisteredDataTypes() {
+        return new HashSet<>(ACAQDatatypeRegistry.getInstance().getUnhiddenRegisteredDataTypes().values());
     }
 
     /**
@@ -476,7 +498,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
          * @return The builder
          */
         public Builder addInputSlot(String name, Class<? extends ACAQData> klass) {
-            object.addSlot(name, new ACAQSlotDefinition(klass, ACAQDataSlot.SlotType.Input, name, null));
+            object.addSlot(name, new ACAQSlotDefinition(klass, ACAQDataSlot.SlotType.Input, name, null), false);
             return this;
         }
 
@@ -489,7 +511,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
          * @return The builder
          */
         public Builder addOutputSlot(String name, String inheritedSlot, Class<? extends ACAQData> klass) {
-            object.addSlot(name, new ACAQSlotDefinition(klass, ACAQDataSlot.SlotType.Output, name, null));
+            object.addSlot(name, new ACAQSlotDefinition(klass, ACAQDataSlot.SlotType.Output, name, null), false);
             return this;
         }
 
@@ -500,7 +522,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
          * @return The builder
          */
         public Builder addSlot(ACAQSlotDefinition definition) {
-            object.addSlot(definition.getName(), definition);
+            object.addSlot(definition.getName(), definition, false);
             return this;
         }
 

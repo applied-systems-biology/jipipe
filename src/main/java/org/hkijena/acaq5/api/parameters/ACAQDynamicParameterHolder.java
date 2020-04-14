@@ -68,6 +68,7 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
     /**
      * Adds a new parameter.
      * The parameterHolder attribute is changed
+     *
      * @param parameterAccess the parameter
      * @return the parameter access
      */
@@ -76,7 +77,7 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
             throw new IllegalArgumentException("Parameter with key " + parameterAccess.getKey() + " already exists!");
         parameterAccess.setParameterHolder(this);
         parameters.put(parameterAccess.getKey(), parameterAccess);
-        if(!delayEvents)
+        if (!delayEvents)
             getEventBus().post(new ParameterStructureChangedEvent(this));
         return parameterAccess;
     }
@@ -99,7 +100,7 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
      */
     public void clear() {
         parameters.clear();
-        if(!delayEvents)
+        if (!delayEvents)
             getEventBus().post(new ParameterStructureChangedEvent(this));
     }
 
@@ -110,7 +111,7 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
      */
     public void removeParameter(String key) {
         parameters.remove(key);
-        if(!delayEvents)
+        if (!delayEvents)
             getEventBus().post(new ParameterStructureChangedEvent(this));
     }
 
@@ -220,6 +221,7 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
 
     /**
      * Returns true if there is a parameter with given key
+     *
      * @param key the parameter key
      * @return if there is a parameter with given key
      */
@@ -229,6 +231,7 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
 
     /**
      * Returns the parameter with key
+     *
      * @param key the parameter key
      * @return the parameter access
      */
@@ -241,7 +244,7 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
      * Use this method for many changes at once
      */
     public void beginModificationBlock() {
-        if(delayEvents)
+        if (delayEvents)
             throw new UnsupportedOperationException("Modification block already started!");
         delayEvents = true;
     }
@@ -251,7 +254,7 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
      * Triggers a {@link ParameterStructureChangedEvent}
      */
     public void endModificationBlock() {
-        if(!delayEvents)
+        if (!delayEvents)
             throw new UnsupportedOperationException("No modification block!");
         delayEvents = false;
         eventBus.post(new ParameterStructureChangedEvent(this));

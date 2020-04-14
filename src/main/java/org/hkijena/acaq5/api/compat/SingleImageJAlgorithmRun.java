@@ -118,7 +118,7 @@ public class SingleImageJAlgorithmRun implements ACAQValidatable {
      */
     public void fromJson(JsonNode jsonNode) {
         if (jsonNode.has("parameters")) {
-            Map<String, ACAQParameterAccess> parameters = ACAQParameterAccess.getParameters(algorithm);
+            Map<String, ACAQParameterAccess> parameters = ACAQParameterHolder.getParameters(algorithm);
             for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.get("parameters").fields())) {
                 ACAQParameterAccess access = parameters.getOrDefault(entry.getKey(), null);
                 try {
@@ -135,7 +135,7 @@ public class SingleImageJAlgorithmRun implements ACAQValidatable {
                 slotConfiguration.addSlot(entry.getKey(), new ACAQSlotDefinition(declaration.getDataClass(),
                         ACAQDataSlot.SlotType.Input,
                         entry.getKey(),
-                        null));
+                        null), false);
             }
         }
         if (jsonNode.has("add-output")) {
@@ -145,7 +145,7 @@ public class SingleImageJAlgorithmRun implements ACAQValidatable {
                 slotConfiguration.addSlot(entry.getKey(), new ACAQSlotDefinition(declaration.getDataClass(),
                         ACAQDataSlot.SlotType.Output,
                         entry.getKey(),
-                        null));
+                        null), false);
             }
         }
         if (jsonNode.has("input")) {
@@ -243,10 +243,10 @@ public class SingleImageJAlgorithmRun implements ACAQValidatable {
 
         private void serializeParameters(SingleImageJAlgorithmRun run, ACAQParameterHolder comparison, JsonGenerator jsonGenerator) throws IOException {
 
-            Map<String, ACAQParameterAccess> comparisonParameters = ACAQParameterAccess.getParameters(comparison);
+            Map<String, ACAQParameterAccess> comparisonParameters = ACAQParameterHolder.getParameters(comparison);
             Map<String, Object> serializedParameters = new HashMap<>();
 
-            for (Map.Entry<String, ACAQParameterAccess> entry : ACAQParameterAccess.getParameters(run.getAlgorithm()).entrySet()) {
+            for (Map.Entry<String, ACAQParameterAccess> entry : ACAQParameterHolder.getParameters(run.getAlgorithm()).entrySet()) {
                 ACAQParameterAccess originalAccess = comparisonParameters.getOrDefault(entry.getKey(), null);
                 Object originalValue = originalAccess != null ? originalAccess.get() : null;
                 Object value = entry.getValue().get();

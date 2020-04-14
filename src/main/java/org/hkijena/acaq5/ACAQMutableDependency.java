@@ -29,6 +29,7 @@ public class ACAQMutableDependency implements ACAQDependency {
 
     /**
      * Copies the dependency
+     *
      * @param other the original
      */
     public ACAQMutableDependency(ACAQDependency other) {

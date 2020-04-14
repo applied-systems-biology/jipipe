@@ -102,7 +102,7 @@ public class ACAQAlgorithmFinderSlotUI extends JPanel {
 
     private void deleteSlot() {
         ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) inputSlot.getAlgorithm().getSlotConfiguration();
-        slotConfiguration.removeSlot(inputSlot.getName());
+        slotConfiguration.removeSlot(inputSlot.getName(), true);
     }
 
     private void connectToNewInstance() {

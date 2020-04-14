@@ -31,8 +31,10 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * An algorithm is is a set of input and output data slots, and a run() function
@@ -184,9 +186,9 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
     /**
      * Runs the workload
      *
-     * @param subProgress allows algorithms to report sub-progress
+     * @param subProgress       allows algorithms to report sub-progress
      * @param algorithmProgress call to provide sub-progress
-     * @param isCancelled returns if cancellation was requested
+     * @param isCancelled       returns if cancellation was requested
      */
     public abstract void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled);
 
@@ -254,6 +256,10 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
         return slotConfiguration;
     }
 
+    public void setSlotConfiguration(ACAQSlotConfiguration slotConfiguration) {
+        this.slotConfiguration = slotConfiguration;
+    }
+
     /**
      * Gets all slot instances
      *
@@ -300,6 +306,19 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
     }
 
     /**
+     * Triggered when a parameter is changed within the slot configuration.
+     * Triggers a {@link AlgorithmSlotsChangedEvent}
+     *
+     * @param event generated event
+     */
+    @Subscribe
+    public void onSlotConfigurationParameterChanged(ParameterChangedEvent event) {
+        if (event.getParameterHolder() == slotConfiguration) {
+            getEventBus().post(new AlgorithmSlotsChangedEvent(this));
+        }
+    }
+
+    /**
      * Should be triggered when a slot is added to the slot configuration
      *
      * @param event The event
@@ -309,9 +328,9 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
         ACAQSlotDefinition definition = slotConfiguration.getSlots().get(event.getSlotName());
         ACAQDataSlot slot = new ACAQDataSlot(definition, this);
         slots.put(definition.getName(), slot);
-        if(slot.isInput())
+        if (slot.isInput())
             inputSlots.add(slot);
-        if(slot.isOutput())
+        if (slot.isOutput())
             outputSlots.add(slot);
         eventBus.post(new AlgorithmSlotsChangedEvent(this));
         updateSlotInheritance();
@@ -432,15 +451,31 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
         }
 
         // Deserialize algorithm-specific parameters
-        for (Map.Entry<String, ACAQParameterAccess> kv : ACAQParameterAccess.getParameters(this).entrySet()) {
-            if (node.has(kv.getKey())) {
-                Object v;
-                try {
-                    v = JsonUtils.getObjectMapper().readerFor(kv.getValue().getFieldClass()).readValue(node.get(kv.getKey()));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+        AtomicBoolean changedStructure = new AtomicBoolean();
+        changedStructure.set(true);
+        getEventBus().register(new Object() {
+            @Subscribe
+            public void onParametersChanged(ParameterStructureChangedEvent event) {
+                changedStructure.set(true);
+            }
+        });
+        Set<String> loadedParameters = new HashSet<>();
+        while (changedStructure.get()) {
+            changedStructure.set(false);
+            for (Map.Entry<String, ACAQParameterAccess> kv : ACAQParameterHolder.getParameters(this)
+                    .entrySet().stream().sorted((e0, e1) -> ACAQParameterAccess.comparePriority(e0.getValue(), e1.getValue())).collect(Collectors.toList())) {
+                if (loadedParameters.contains(kv.getKey()))
+                    continue;
+                loadedParameters.add(kv.getKey());
+                if (node.has(kv.getKey())) {
+                    Object v;
+                    try {
+                        v = JsonUtils.getObjectMapper().readerFor(kv.getValue().getFieldClass()).readValue(node.get(kv.getKey()));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    kv.getValue().set(v);
                 }
-                kv.getValue().set(v);
             }
         }
     }
@@ -471,6 +506,10 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
      */
     public ACAQTraitConfiguration getTraitConfiguration() {
         return traitConfiguration;
+    }
+
+    public void setTraitConfiguration(ACAQTraitConfiguration traitConfiguration) {
+        this.traitConfiguration = traitConfiguration;
     }
 
     /**
@@ -857,7 +896,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
             jsonGenerator.writeEndObject();
             jsonGenerator.writeStringField("acaq:algorithm-type", algorithm.getDeclaration().getId());
             jsonGenerator.writeStringField("acaq:algorithm-compartment", algorithm.getCompartment());
-            for (Map.Entry<String, ACAQParameterAccess> kv : ACAQParameterAccess.getParameters(algorithm).entrySet()) {
+            for (Map.Entry<String, ACAQParameterAccess> kv : ACAQParameterHolder.getParameters(algorithm).entrySet()) {
                 jsonGenerator.writeObjectField(kv.getKey(), kv.getValue().get());
             }
             if (algorithm.getTraitConfiguration() instanceof ACAQMutableTraitConfiguration) {

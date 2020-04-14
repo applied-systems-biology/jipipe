@@ -1,5 +1,7 @@
 package org.hkijena.acaq5.api.parameters;
 
+import org.scijava.Priority;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -26,4 +28,12 @@ public @interface ACAQParameter {
      * @return Parameter visibility
      */
     ACAQParameterVisibility visibility() default ACAQParameterVisibility.TransitiveVisible;
+
+    /**
+     * Sets the priority for (de)serializing this parameter.
+     * Please use the priority constants provided by {@link Priority}
+     *
+     * @return the priority
+     */
+    double priority() default Priority.NORMAL;
 }

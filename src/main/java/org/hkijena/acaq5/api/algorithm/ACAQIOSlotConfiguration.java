@@ -16,39 +16,39 @@ public class ACAQIOSlotConfiguration extends ACAQMutableSlotConfiguration {
     }
 
     @Override
-    public void addSlot(String name, ACAQSlotDefinition definition) {
+    public void addSlot(String name, ACAQSlotDefinition definition, boolean user) {
         if (definition.getSlotType() == ACAQDataSlot.SlotType.Output) {
             if (!name.startsWith("Output "))
                 name = "Output " + name;
             String inputName = name.substring("Output ".length());
             if (!getSlots().containsKey(inputName)) {
-                addSlot(inputName, new ACAQSlotDefinition(definition.getDataClass(), ACAQDataSlot.SlotType.Input, inputName, null));
+                addSlot(inputName, new ACAQSlotDefinition(definition.getDataClass(), ACAQDataSlot.SlotType.Input, inputName, null), false);
                 return;
             }
         }
-        super.addSlot(name, definition);
+        super.addSlot(name, definition, user);
         if (definition.getSlotType() == ACAQDataSlot.SlotType.Input) {
             String outputName = "Output " + name;
             if (!getSlots().containsKey(outputName)) {
-                addSlot(outputName, new ACAQSlotDefinition(definition.getDataClass(), ACAQDataSlot.SlotType.Output, outputName, null));
+                addSlot(outputName, new ACAQSlotDefinition(definition.getDataClass(), ACAQDataSlot.SlotType.Output, outputName, null), false);
             }
         }
     }
 
     @Override
-    public void removeSlot(String name) {
+    public void removeSlot(String name, boolean user) {
         ACAQSlotDefinition slot = getSlots().get(name);
-        super.removeSlot(name);
+        super.removeSlot(name, user);
 
         if (slot.getSlotType() == ACAQDataSlot.SlotType.Input) {
             String outputName = "Output " + name;
             if (hasSlot(outputName)) {
-                super.removeSlot(outputName);
+                super.removeSlot(outputName, user);
             }
         } else if (slot.getSlotType() == ACAQDataSlot.SlotType.Output) {
             String inputName = name.substring("Output ".length());
             if (hasSlot(inputName)) {
-                super.removeSlot(inputName);
+                super.removeSlot(inputName, user);
             }
         }
     }

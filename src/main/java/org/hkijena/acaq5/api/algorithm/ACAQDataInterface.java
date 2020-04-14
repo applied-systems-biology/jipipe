@@ -21,20 +21,30 @@ public class ACAQDataInterface {
     /**
      * Creates a new interface
      *
-     * @param algorithm             The algorithm
-     * @param referenceInputSlot    The reference input slot
-     * @param referenceInputSlotRow The reference input slot row
+     * @param algorithm The algorithm
      */
-    public ACAQDataInterface(ACAQAlgorithm algorithm, ACAQDataSlot referenceInputSlot, int referenceInputSlotRow) {
-        this.algorithm = algorithm;
-        this.inputSlotRows = new HashMap<>();
-        initialize(referenceInputSlot, referenceInputSlotRow);
+    public ACAQDataInterface(ACAQAlgorithm algorithm) {
+        this(algorithm, algorithm.getInputSlots());
     }
 
-    private void initialize(ACAQDataSlot referenceInputSlot, int referenceInputSlotRow) {
+    /**
+     * Creates a new interface
+     *
+     * @param algorithm  The algorithm
+     * @param inputSlots Input slots that are considered during the calculation. The first one is used as reference
+     */
+    public ACAQDataInterface(ACAQAlgorithm algorithm, List<ACAQDataSlot> inputSlots) {
+        this.algorithm = algorithm;
+        this.inputSlotRows = new HashMap<>();
+        initialize(inputSlots);
+    }
+
+    private void initialize(List<ACAQDataSlot> inputSlots) {
+        ACAQDataSlot referenceInputSlot = inputSlots.get(0);
+        int referenceInputSlotRow = 0;
         inputSlotRows.put(referenceInputSlot, referenceInputSlotRow);
         annotations = referenceInputSlot.getAnnotations(referenceInputSlotRow);
-        for (ACAQDataSlot inputSlot : algorithm.getInputSlots()) {
+        for (ACAQDataSlot inputSlot : inputSlots) {
             if (inputSlot != referenceInputSlot) {
                 int row = inputSlot.findRowWithTraits(annotations);
                 if (row == -1)

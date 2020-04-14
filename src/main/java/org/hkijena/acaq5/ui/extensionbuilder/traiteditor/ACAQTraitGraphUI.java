@@ -88,7 +88,7 @@ public class ACAQTraitGraphUI extends ACAQAlgorithmGraphEditorUI {
             ACAQTraitNode node = getTraitGraph().getNodeFor(declaration);
             if (node != null) {
                 ((ACAQMutableSlotConfiguration) node.getSlotConfiguration()).addSlot("Input 1",
-                        new ACAQSlotDefinition(ACAQTraitNodeInheritanceData.class, ACAQDataSlot.SlotType.Input, "Input 1", null));
+                        new ACAQSlotDefinition(ACAQTraitNodeInheritanceData.class, ACAQDataSlot.SlotType.Input, "Input 1", null), false);
             }
         }
     }

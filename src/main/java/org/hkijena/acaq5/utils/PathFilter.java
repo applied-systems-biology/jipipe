@@ -8,6 +8,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
@@ -87,6 +88,20 @@ public class PathFilter implements Predicate<Path>, ACAQValidatable {
         if (mode == Mode.Glob && globPathMatcher == null) {
             report.reportIsInvalid("The glob file filter '" + filterString + "' is invalid! Please change it to a valid filter string.");
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PathFilter that = (PathFilter) o;
+        return mode == that.mode &&
+                Objects.equals(filterString, that.filterString);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mode, filterString);
     }
 
     /**

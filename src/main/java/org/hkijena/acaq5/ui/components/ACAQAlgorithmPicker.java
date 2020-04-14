@@ -3,7 +3,6 @@ package org.hkijena.acaq5.ui.components;
 import com.google.common.eventbus.EventBus;
 import com.google.common.primitives.Ints;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -30,7 +29,7 @@ public class ACAQAlgorithmPicker extends JPanel {
     private Set<ACAQAlgorithmDeclaration> selectedDeclarations = new HashSet<>();
 
     /**
-     * @param mode            the mode
+     * @param mode                  the mode
      * @param availableDeclarations list of available trait types
      */
     public ACAQAlgorithmPicker(Mode mode, Set<ACAQAlgorithmDeclaration> availableDeclarations) {
@@ -180,8 +179,8 @@ public class ACAQAlgorithmPicker extends JPanel {
     /**
      * Shows a dialog to pick traits
      *
-     * @param parent          parent component
-     * @param mode            mode
+     * @param parent              parent component
+     * @param mode                mode
      * @param availableAlgorithms list of available traits
      * @return picked traits
      */

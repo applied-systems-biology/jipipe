@@ -16,6 +16,7 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
     private String key;
     private Method getter;
     private Method setter;
+    private double priority;
     private ACAQDocumentation documentation;
     private ACAQParameterHolder parameterHolder;
     private String holderName;
@@ -112,6 +113,11 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
         this.holderDescription = holderDescription;
     }
 
+    @Override
+    public double getPriority() {
+        return priority;
+    }
+
     /**
      * Extracts parameters from an object
      *
@@ -120,7 +126,7 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
      */
     public static Map<String, ACAQParameterAccess> getReflectionParameters(ACAQParameterHolder parameterHolder) {
         Map<String, ACAQParameterAccess> result = new HashMap<>();
-        if(parameterHolder == null)
+        if (parameterHolder == null)
             return result;
         for (Method method : parameterHolder.getClass().getMethods()) {
             ACAQParameter[] parameterAnnotations = method.getAnnotationsByType(ACAQParameter.class);
@@ -131,6 +137,7 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
                     access = (ACAQReflectionParameterAccess) result.get(parameterAnnotation.value());
                 access.parameterHolder = parameterHolder;
                 access.visibility = access.visibility.intersectWith(parameterAnnotation.visibility());
+                access.priority = parameterAnnotation.priority();
                 if (method.getParameters().length == 1) {
                     // Is a setter
                     access.setter = method;
@@ -164,7 +171,7 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
                         subAlgorithmDescription = documentations[0].description();
                     }
 
-                    for (Map.Entry<String, ACAQParameterAccess> kv : ACAQParameterAccess.getParameters(subAlgorithm).entrySet()) {
+                    for (Map.Entry<String, ACAQParameterAccess> kv : ACAQParameterHolder.getParameters(subAlgorithm).entrySet()) {
                         ACAQParameterAccess subParameter = kv.getValue();
                         if (subParameter.getParameterHolder() == subAlgorithm) {
                             if (subParameter instanceof ACAQMutableParameterAccess) {

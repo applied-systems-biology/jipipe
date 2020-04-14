@@ -1,8 +1,8 @@
 package org.hkijena.acaq5.api.parameters;
 
+import org.scijava.Priority;
+
 import java.lang.annotation.Annotation;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Interface around accessing a parameter
@@ -106,24 +106,21 @@ public interface ACAQParameterAccess {
     void setHolderDescription(String description);
 
     /**
-     * Finds all parameters of the provided object
-     * This includes dynamic parameters
+     * Returns the priority for (de)serializing this parameter.
+     * Please use the priority constants provided by {@link Priority}
      *
-     * @param parameterHolder Parameterized object
-     * @return All parameters
+     * @return the priority
      */
-    static Map<String, ACAQParameterAccess> getParameters(ACAQParameterHolder parameterHolder) {
-        Map<String, ACAQParameterAccess> result = new HashMap<>();
-        if (parameterHolder instanceof ACAQCustomParameterHolder) {
-            for (Map.Entry<String, ACAQParameterAccess> entry : ((ACAQCustomParameterHolder) parameterHolder).getCustomParameters().entrySet()) {
-                result.put(entry.getKey(), entry.getValue());
-            }
-        } else {
-            for (Map.Entry<String, ACAQParameterAccess> entry : ACAQReflectionParameterAccess.getReflectionParameters(parameterHolder).entrySet()) {
-                result.put(entry.getKey(), entry.getValue());
-            }
-        }
+    double getPriority();
 
-        return result;
+    /**
+     * Compares the priority
+     *
+     * @param lhs access
+     * @param rhs access
+     * @return the order
+     */
+    static int comparePriority(ACAQParameterAccess lhs, ACAQParameterAccess rhs) {
+        return -Double.compare(lhs.getPriority(), rhs.getPriority());
     }
 }

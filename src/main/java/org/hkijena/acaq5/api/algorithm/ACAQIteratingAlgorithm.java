@@ -71,7 +71,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
             if (isCancelled.get())
                 return;
             algorithmProgress.accept(subProgress.resolve("Data row " + (row + 1) + " / " + referenceSlot.getRowCount()));
-            ACAQDataInterface dataInterface = new ACAQDataInterface(this, referenceSlot, row);
+            ACAQDataInterface dataInterface = new ACAQDataInterface(this, getInputSlots());
             runIteration(dataInterface, subProgress, algorithmProgress, isCancelled);
         }
     }

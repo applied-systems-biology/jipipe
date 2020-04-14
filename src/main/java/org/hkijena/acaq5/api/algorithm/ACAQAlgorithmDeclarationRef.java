@@ -9,9 +9,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
-import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
 
 import java.io.IOException;
 
@@ -51,6 +48,14 @@ public class ACAQAlgorithmDeclarationRef implements ACAQValidatable {
             report.reportIsInvalid("No annotation type is selected! Please select an annotation type.");
     }
 
+    @Override
+    public String toString() {
+        if (declaration != null)
+            return declaration.getId();
+        else
+            return "<Null>";
+    }
+
     /**
      * Serializes the reference as ID
      */
@@ -77,13 +82,5 @@ public class ACAQAlgorithmDeclarationRef implements ACAQValidatable {
             }
             return result;
         }
-    }
-
-    @Override
-    public String toString() {
-        if(declaration != null)
-            return declaration.getId();
-        else
-            return "<Null>";
     }
 }

@@ -84,7 +84,7 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
                 slotConfiguration.addSlot(targetSlotName, new ACAQSlotDefinition(slotClass,
                         ACAQDataSlot.SlotType.Input,
                         targetSlotName,
-                        null));
+                        null), false);
                 ACAQDataSlot target = node.getInputSlot(targetSlotName);
                 connect(source, target);
             }

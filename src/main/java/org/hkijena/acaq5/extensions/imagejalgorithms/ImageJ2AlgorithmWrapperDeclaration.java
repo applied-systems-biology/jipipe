@@ -76,7 +76,7 @@ public class ImageJ2AlgorithmWrapperDeclaration implements ACAQAlgorithmDeclarat
             if (Dataset.class.isAssignableFrom(moduleItem.getType()) || ImagePlus.class.isAssignableFrom(moduleItem.getType())) {
                 String name = findInputSlotName(moduleItem);
                 inputMap.put(name, moduleItem.getName());
-                slotConfiguration.addSlot(name, new ACAQSlotDefinition(ImagePlusData.class, ACAQDataSlot.SlotType.Input, null));
+                slotConfiguration.addSlot(name, new ACAQSlotDefinition(ImagePlusData.class, ACAQDataSlot.SlotType.Input, null), false);
                 inputSlots.add(new DefaultAlgorithmInputSlot(ImagePlusData.class, name, false));
             }
         }
@@ -84,7 +84,7 @@ public class ImageJ2AlgorithmWrapperDeclaration implements ACAQAlgorithmDeclarat
             if (Dataset.class.isAssignableFrom(moduleItem.getType()) || ImagePlus.class.isAssignableFrom(moduleItem.getType())) {
                 String name = findOutputSlotName(moduleItem);
                 outputMap.put(name, moduleItem.getName());
-                slotConfiguration.addSlot(name, new ACAQSlotDefinition(ImagePlusData.class, ACAQDataSlot.SlotType.Output, null));
+                slotConfiguration.addSlot(name, new ACAQSlotDefinition(ImagePlusData.class, ACAQDataSlot.SlotType.Output, null), false);
                 outputSlots.add(new DefaultAlgorithmOutputSlot(ImagePlusData.class, name, null, false));
             }
         }

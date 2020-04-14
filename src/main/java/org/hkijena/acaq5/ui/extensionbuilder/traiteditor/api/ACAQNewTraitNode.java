@@ -65,9 +65,9 @@ public class ACAQNewTraitNode extends ACAQTraitNode implements ACAQCustomParamet
 
     @Override
     public Map<String, ACAQParameterAccess> getCustomParameters() {
-        if(getTraitDeclaration() == null)
+        if (getTraitDeclaration() == null)
             return Collections.emptyMap();
-        return ACAQParameterAccess.getParameters((ACAQParameterHolder) getTraitDeclaration());
+        return ACAQParameterHolder.getParameters((ACAQParameterHolder) getTraitDeclaration());
     }
 
     /**

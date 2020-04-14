@@ -227,7 +227,7 @@ public class RunSingleAlgorithmDialog extends JDialog {
                 JButton removeButton = new JButton(UIUtils.getIconFromResources("close-tab.png"));
                 UIUtils.makeBorderlessWithoutMargin(removeButton);
                 removeButton.setToolTipText("Remove input slot");
-                removeButton.addActionListener(e -> slotConfiguration.removeSlot(entry.getKey()));
+                removeButton.addActionListener(e -> slotConfiguration.removeSlot(entry.getKey(), true));
                 panel.add(removeButton, BorderLayout.WEST);
                 panel.add(new JLabel(entry.getKey(),
                         ACAQUIDatatypeRegistry.getInstance().getIconFor(entry.getValue().getAdapter().getACAQDatatype()),
@@ -267,7 +267,7 @@ public class RunSingleAlgorithmDialog extends JDialog {
                 JButton removeButton = new JButton(UIUtils.getIconFromResources("close-tab.png"));
                 UIUtils.makeBorderlessWithoutMargin(removeButton);
                 removeButton.setToolTipText("Remove output slot");
-                removeButton.addActionListener(e -> slotConfiguration.removeSlot(outputSlot.getName()));
+                removeButton.addActionListener(e -> slotConfiguration.removeSlot(outputSlot.getName(), true));
                 panel.add(removeButton, BorderLayout.WEST);
                 panel.add(new JLabel(outputSlot.getName(),
                         ACAQUIDatatypeRegistry.getInstance().getIconFor(outputSlot.getAcceptedDataType()),

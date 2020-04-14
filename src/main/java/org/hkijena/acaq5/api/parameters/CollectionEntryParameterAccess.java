@@ -1,5 +1,7 @@
 package org.hkijena.acaq5.api.parameters;
 
+import org.scijava.Priority;
+
 import java.lang.annotation.Annotation;
 import java.util.List;
 
@@ -92,5 +94,10 @@ public class CollectionEntryParameterAccess<T> implements ACAQParameterAccess {
     @Override
     public void setHolderDescription(String description) {
 
+    }
+
+    @Override
+    public double getPriority() {
+        return Priority.NORMAL;
     }
 }

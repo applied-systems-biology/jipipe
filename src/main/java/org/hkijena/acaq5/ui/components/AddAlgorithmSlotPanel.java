@@ -183,7 +183,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
         }
 
         slotDefinition.setInheritanceConversions(inheritanceConversions);
-        slotConfiguration.addSlot(slotName, slotDefinition);
+        slotConfiguration.addSlot(slotName, slotDefinition, true);
 
         if (dialog != null)
             dialog.setVisible(false);

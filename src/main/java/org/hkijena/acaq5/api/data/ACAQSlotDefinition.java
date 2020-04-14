@@ -93,6 +93,16 @@ public class ACAQSlotDefinition implements ACAQParameterHolder {
     }
 
     /**
+     * Creates a new instance. The name is set to null.
+     *
+     * @param dataClass slot data class
+     * @param slotType  slot type
+     */
+    public ACAQSlotDefinition(Class<? extends ACAQData> dataClass, ACAQDataSlot.SlotType slotType) {
+        this(dataClass, slotType, null);
+    }
+
+    /**
      * @param newName new name
      * @return Slot definition copy with new name
      */

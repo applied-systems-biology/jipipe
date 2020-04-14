@@ -82,7 +82,7 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
      */
     public void reloadForm() {
         clear();
-        Map<String, ACAQParameterAccess> parameters = ACAQParameterAccess.getParameters(getParameterHolder());
+        Map<String, ACAQParameterAccess> parameters = ACAQParameterHolder.getParameters(getParameterHolder());
         boolean hasElements = false;
 
         Map<ACAQParameterHolder, List<String>> groupedByHolder = parameters.keySet().stream().collect(Collectors.groupingBy(key -> parameters.get(key).getParameterHolder()));
@@ -233,6 +233,7 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
 
     /**
      * Triggered when the parameter structure was changed
+     *
      * @param event generated event
      */
     @Subscribe

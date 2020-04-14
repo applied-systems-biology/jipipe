@@ -2,7 +2,6 @@ package org.hkijena.acaq5.extensions.multiparameters.algorithms;
 
 import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQDataSlotTraitConfiguration;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extensions.multiparameters.datatypes.ParametersData;
@@ -45,7 +44,7 @@ public class MultiParameterAlgorithmDeclaration implements ACAQAlgorithmDeclarat
 
     @Override
     public ACAQAlgorithm clone(ACAQAlgorithm algorithm) {
-        return new MultiParameterAlgorithm((MultiParameterAlgorithm)algorithm);
+        return new MultiParameterAlgorithm((MultiParameterAlgorithm) algorithm);
     }
 
     @Override

@@ -155,7 +155,7 @@ public abstract class ACAQDataSlotUI extends JPanel {
 
     private void deleteSlot() {
         ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) slot.getAlgorithm().getSlotConfiguration();
-        slotConfiguration.removeSlot(slot.getName());
+        slotConfiguration.removeSlot(slot.getName(), true);
     }
 
     private void findAlgorithm(ACAQDataSlot slot) {
