@@ -91,6 +91,11 @@ public class PathFilter implements Predicate<Path>, ACAQValidatable {
     }
 
     @Override
+    public String toString() {
+        return filterString;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
