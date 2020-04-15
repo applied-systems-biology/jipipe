@@ -7,7 +7,7 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.PathCollection;
-import org.hkijena.acaq5.extensions.filesystem.api.dataypes.ACAQFileData;
+import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FileData;
 import org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors.FilePathParameterSettings;
 import org.hkijena.acaq5.ui.components.FileSelection;
 
@@ -20,9 +20,9 @@ import java.util.function.Supplier;
  * Provides an input file
  */
 @ACAQDocumentation(name = "File list")
-@AlgorithmOutputSlot(value = ACAQFileData.class, slotName = "Filenames", autoCreate = true)
+@AlgorithmOutputSlot(value = FileData.class, slotName = "Filenames", autoCreate = true)
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
-public class ACAQFileListDataSource extends ACAQAlgorithm {
+public class FileListDataSource extends ACAQAlgorithm {
 
     private PathCollection fileNames = new PathCollection();
     private Path currentWorkingDirectory;
@@ -32,7 +32,7 @@ public class ACAQFileListDataSource extends ACAQAlgorithm {
      *
      * @param declaration The algorithm declaration
      */
-    public ACAQFileListDataSource(ACAQAlgorithmDeclaration declaration) {
+    public FileListDataSource(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
     }
 
@@ -41,7 +41,7 @@ public class ACAQFileListDataSource extends ACAQAlgorithm {
      *
      * @param other The original
      */
-    public ACAQFileListDataSource(ACAQFileListDataSource other) {
+    public FileListDataSource(FileListDataSource other) {
         super(other);
         this.fileNames.addAll(other.fileNames);
         this.currentWorkingDirectory = other.currentWorkingDirectory;
@@ -50,7 +50,7 @@ public class ACAQFileListDataSource extends ACAQAlgorithm {
     @Override
     public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         for (Path path : fileNames) {
-            getFirstOutputSlot().addData(new ACAQFileData(path));
+            getFirstOutputSlot().addData(new FileData(path));
         }
     }
 

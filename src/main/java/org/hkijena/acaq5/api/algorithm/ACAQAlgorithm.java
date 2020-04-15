@@ -462,8 +462,9 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
         Set<String> loadedParameters = new HashSet<>();
         while (changedStructure.get()) {
             changedStructure.set(false);
-            for (Map.Entry<String, ACAQParameterAccess> kv : ACAQParameterHolder.getParameters(this)
-                    .entrySet().stream().sorted((e0, e1) -> ACAQParameterAccess.comparePriority(e0.getValue(), e1.getValue())).collect(Collectors.toList())) {
+            List<Map.Entry<String, ACAQParameterAccess>> prioritizedParameters = ACAQParameterHolder.getParameters(this)
+                    .entrySet().stream().sorted((e0, e1) -> ACAQParameterAccess.comparePriority(e0.getValue(), e1.getValue())).collect(Collectors.toList());
+            for (Map.Entry<String, ACAQParameterAccess> kv : prioritizedParameters) {
                 if (loadedParameters.contains(kv.getKey()))
                     continue;
                 loadedParameters.add(kv.getKey());

@@ -51,6 +51,9 @@ public class ACAQParameterCollectionVisibilitiesParameterEditorUI extends ACAQPa
     public void reload() {
         formPanel.clear();
         ACAQParameterCollectionVisibilities visibilities = getParameterAccess().get();
+        if (visibilities == null) {
+            visibilities = new ACAQParameterCollectionVisibilities();
+        }
         Map<String, ACAQParameterAccess> parameters = visibilities.getAvailableParameters();
         Map<Object, List<String>> groupedByHolder = parameters.keySet().stream().collect(Collectors.groupingBy(key -> parameters.get(key).getParameterHolder()));
 
@@ -89,8 +92,9 @@ public class ACAQParameterCollectionVisibilitiesParameterEditorUI extends ACAQPa
                 exportParameterToggle.setToolTipText("If enabled, the parameter can be changed by the user.");
                 exportParameterToggle.setSelected(visibilities.isVisible(key));
                 exportParameterToggle.setIcon(exportParameterToggle.isSelected() ? UIUtils.getIconFromResources("eye.png") : UIUtils.getIconFromResources("eye-slash.png"));
+                ACAQParameterCollectionVisibilities finalVisibilities = visibilities;
                 exportParameterToggle.addActionListener(e -> {
-                    visibilities.setVisibility(key, exportParameterToggle.isSelected());
+                    finalVisibilities.setVisibility(key, exportParameterToggle.isSelected());
                     exportParameterToggle.setIcon(exportParameterToggle.isSelected() ? UIUtils.getIconFromResources("eye.png") : UIUtils.getIconFromResources("eye-slash.png"));
                 });
                 labelPanel.add(exportParameterToggle, BorderLayout.WEST);

@@ -65,6 +65,9 @@ public class PathCollectionParameterEditorUI extends ACAQParameterEditorUI {
 
     private void removeSelectedEntries() {
         PathCollection parameter = getParameterAccess().get();
+        if (parameter == null) {
+            parameter = new PathCollection();
+        }
         int[] indicies = listPanel.getSelectedIndices();
         Arrays.sort(indicies);
 
@@ -88,6 +91,10 @@ public class PathCollectionParameterEditorUI extends ACAQParameterEditorUI {
                 break;
         }
         PathCollection parameter = getParameterAccess().get();
+        if (parameter == null) {
+            parameter = new PathCollection();
+            getParameterAccess().set(parameter);
+        }
         if (ioMode == FileSelection.IOMode.Open) {
             if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 for (File selectedFile : fileChooser.getSelectedFiles()) {
@@ -116,6 +123,10 @@ public class PathCollectionParameterEditorUI extends ACAQParameterEditorUI {
     public void reload() {
         DefaultListModel<String> listModel = new DefaultListModel<>();
         PathCollection parameter = getParameterAccess().get();
+        if (parameter == null) {
+            parameter = new PathCollection();
+            getParameterAccess().set(parameter);
+        }
         for (Path path : parameter) {
             listModel.addElement(path.toString());
         }

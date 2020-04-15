@@ -6,7 +6,7 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extensions.filesystem.api.dataypes.ACAQFolderData;
+import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FolderData;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -19,18 +19,18 @@ import java.util.function.Supplier;
 @ACAQOrganization(menuPath = "Navigate")
 
 // Algorithm flow
-@AlgorithmInputSlot(value = ACAQFolderData.class, slotName = "Folders", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQFolderData.class, slotName = "Subfolders", autoCreate = true)
+@AlgorithmInputSlot(value = FolderData.class, slotName = "Folders", autoCreate = true)
+@AlgorithmOutputSlot(value = FolderData.class, slotName = "Subfolders", autoCreate = true)
 
 // Traits
-public class ACAQSubFolder extends ACAQIteratingAlgorithm {
+public class NavigateSubFolder extends ACAQIteratingAlgorithm {
 
     private String subFolder;
 
     /**
      * @param declaration Algorithm declaration
      */
-    public ACAQSubFolder(ACAQAlgorithmDeclaration declaration) {
+    public NavigateSubFolder(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
     }
 
@@ -39,15 +39,15 @@ public class ACAQSubFolder extends ACAQIteratingAlgorithm {
      *
      * @param other The original
      */
-    public ACAQSubFolder(ACAQSubFolder other) {
+    public NavigateSubFolder(NavigateSubFolder other) {
         super(other);
         this.subFolder = other.subFolder;
     }
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ACAQFolderData inputFolder = dataInterface.getInputData("Folders");
-        dataInterface.addOutputData("Subfolders", new ACAQFolderData(inputFolder.getFolderPath().resolve(subFolder)));
+        FolderData inputFolder = dataInterface.getInputData("Folders");
+        dataInterface.addOutputData("Subfolders", new FolderData(inputFolder.getFolderPath().resolve(subFolder)));
     }
 
     @Override

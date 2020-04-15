@@ -9,7 +9,7 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
-import org.hkijena.acaq5.extensions.filesystem.api.dataypes.ACAQFileData;
+import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FileData;
 
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
@@ -31,7 +31,7 @@ public class ImagePlusFromFile extends ACAQIteratingAlgorithm {
      */
     public ImagePlusFromFile(ACAQAlgorithmDeclaration declaration, Class<? extends ACAQData> dataClass) {
         super(declaration,
-                ACAQMutableSlotConfiguration.builder().addInputSlot("Files", ACAQFileData.class)
+                ACAQMutableSlotConfiguration.builder().addInputSlot("Files", FileData.class)
                         .addOutputSlot("Image", "", dataClass)
                         .sealOutput()
                         .sealInput()
@@ -57,7 +57,7 @@ public class ImagePlusFromFile extends ACAQIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ACAQFileData fileData = dataInterface.getInputData(getFirstInputSlot());
+        FileData fileData = dataInterface.getInputData(getFirstInputSlot());
         dataInterface.addOutputData(getFirstOutputSlot(), readImageFrom(fileData.getFilePath()));
     }
 

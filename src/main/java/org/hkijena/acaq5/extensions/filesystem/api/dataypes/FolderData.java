@@ -11,24 +11,26 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 /**
- * Data containing a file
+ * Data that stores a folder
  */
-@ACAQDocumentation(name = "File")
-public class ACAQFileData implements ACAQData {
+@ACAQDocumentation(name = "Folder")
+public class FolderData implements ACAQData {
 
-    private Path filePath;
+    private Path folderPath;
 
     /**
-     * Initializes file data from a file
+     * Instantiates the data from a folder path
      *
-     * @param filePath File path
+     * @param folderPath Folder path
      */
-    public ACAQFileData(Path filePath) {
-        this.filePath = filePath;
+    public FolderData(Path folderPath) {
+        this.folderPath = folderPath;
     }
 
-    private ACAQFileData() {
-
+    /**
+     * Creates a new instance
+     */
+    private FolderData() {
     }
 
     @Override
@@ -43,13 +45,13 @@ public class ACAQFileData implements ACAQData {
 
     @Override
     public ACAQData duplicate() {
-        return new ACAQFileData(filePath);
+        return new FolderData(folderPath);
     }
 
     /**
-     * Returns the data type name stored into the JSON
+     * Gets the data type name
      *
-     * @return data type id
+     * @return Data type name
      */
     @JsonGetter("acaq:data-type")
     private String getDataTypeName() {
@@ -57,20 +59,20 @@ public class ACAQFileData implements ACAQData {
     }
 
     /**
-     * @return The file path
+     * @return The folder path
      */
-    @JsonGetter("file-path")
-    public Path getFilePath() {
-        return filePath;
+    @JsonGetter("folder-path")
+    public Path getFolderPath() {
+        return folderPath;
     }
 
     /**
-     * Sets the file
+     * Sets the folder path
      *
-     * @param path The file path
+     * @param path Folder path
      */
-    @JsonSetter("file-path")
-    private void setFilePath(Path path) {
-        this.filePath = path;
+    @JsonSetter("folder-path")
+    private void setFolderPath(Path path) {
+        this.folderPath = path;
     }
 }

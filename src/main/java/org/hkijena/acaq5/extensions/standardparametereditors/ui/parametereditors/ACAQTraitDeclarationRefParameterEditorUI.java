@@ -66,6 +66,9 @@ public class ACAQTraitDeclarationRefParameterEditorUI extends ACAQParameterEdito
     @Override
     public void reload() {
         ACAQTraitDeclarationRef declarationRef = getParameterAccess().get();
+        if (declarationRef == null) {
+            declarationRef = new ACAQTraitDeclarationRef();
+        }
         ACAQTraitDeclaration declaration = declarationRef.getDeclaration();
         if (declaration != null) {
             currentlyDisplayed.setText(declaration.getName());

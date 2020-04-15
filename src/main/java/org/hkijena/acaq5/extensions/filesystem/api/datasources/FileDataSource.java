@@ -6,7 +6,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extensions.filesystem.api.dataypes.ACAQFileData;
+import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FileData;
 import org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors.FilePathParameterSettings;
 import org.hkijena.acaq5.ui.components.FileSelection;
 
@@ -19,9 +19,9 @@ import java.util.function.Supplier;
  * Provides an input file
  */
 @ACAQDocumentation(name = "File")
-@AlgorithmOutputSlot(value = ACAQFileData.class, slotName = "Filename", autoCreate = true)
+@AlgorithmOutputSlot(value = FileData.class, slotName = "Filename", autoCreate = true)
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
-public class ACAQFileDataSource extends ACAQAlgorithm {
+public class FileDataSource extends ACAQAlgorithm {
 
     private Path currentWorkingDirectory;
     private Path fileName;
@@ -31,7 +31,7 @@ public class ACAQFileDataSource extends ACAQAlgorithm {
      *
      * @param declaration The algorithm declaration
      */
-    public ACAQFileDataSource(ACAQAlgorithmDeclaration declaration) {
+    public FileDataSource(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
     }
 
@@ -40,7 +40,7 @@ public class ACAQFileDataSource extends ACAQAlgorithm {
      *
      * @param other The original
      */
-    public ACAQFileDataSource(ACAQFileDataSource other) {
+    public FileDataSource(FileDataSource other) {
         super(other);
         this.fileName = other.fileName;
         this.currentWorkingDirectory = other.currentWorkingDirectory;
@@ -48,7 +48,7 @@ public class ACAQFileDataSource extends ACAQAlgorithm {
 
     @Override
     public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        getFirstOutputSlot().addData(new ACAQFileData(fileName));
+        getFirstOutputSlot().addData(new FileData(fileName));
     }
 
     /**

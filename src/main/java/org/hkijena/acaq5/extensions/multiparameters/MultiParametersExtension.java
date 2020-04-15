@@ -14,6 +14,7 @@ import org.hkijena.acaq5.api.traits.ACAQJsonTraitDeclaration;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.multiparameters.algorithms.MultiParameterAlgorithmDeclaration;
 import org.hkijena.acaq5.extensions.multiparameters.datasources.ParametersDataDefinition;
+import org.hkijena.acaq5.extensions.multiparameters.datasources.ParametersDataTableDefinition;
 import org.hkijena.acaq5.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.StringUtils;
@@ -53,6 +54,7 @@ public class MultiParametersExtension extends ACAQPrepackagedDefaultJavaExtensio
 
         // Register algorithms
         registerAlgorithm("parameters-define", ParametersDataDefinition.class);
+        registerAlgorithm("parameters-define-table", ParametersDataTableDefinition.class);
         registerAlgorithm(new MultiParameterAlgorithmDeclaration());
     }
 

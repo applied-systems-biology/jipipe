@@ -6,7 +6,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extensions.filesystem.api.dataypes.ACAQFolderData;
+import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FolderData;
 import org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors.FilePathParameterSettings;
 import org.hkijena.acaq5.ui.components.FileSelection;
 
@@ -19,9 +19,9 @@ import java.util.function.Supplier;
  * Provides an input folder
  */
 @ACAQDocumentation(name = "Folder")
-@AlgorithmOutputSlot(value = ACAQFolderData.class, slotName = "Folder path", autoCreate = true)
+@AlgorithmOutputSlot(value = FolderData.class, slotName = "Folder path", autoCreate = true)
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
-public class ACAQFolderDataSource extends ACAQAlgorithm {
+public class FolderDataSource extends ACAQAlgorithm {
 
     private Path folderPath;
     private Path currentWorkingDirectory;
@@ -31,7 +31,7 @@ public class ACAQFolderDataSource extends ACAQAlgorithm {
      *
      * @param declaration Algorithm declaration
      */
-    public ACAQFolderDataSource(ACAQAlgorithmDeclaration declaration) {
+    public FolderDataSource(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
     }
 
@@ -40,7 +40,7 @@ public class ACAQFolderDataSource extends ACAQAlgorithm {
      *
      * @param other The original
      */
-    public ACAQFolderDataSource(ACAQFolderDataSource other) {
+    public FolderDataSource(FolderDataSource other) {
         super(other);
         this.folderPath = other.folderPath;
         this.currentWorkingDirectory = other.currentWorkingDirectory;
@@ -48,7 +48,7 @@ public class ACAQFolderDataSource extends ACAQAlgorithm {
 
     @Override
     public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        getFirstOutputSlot().addData(new ACAQFolderData(folderPath));
+        getFirstOutputSlot().addData(new FolderData(folderPath));
     }
 
     /**

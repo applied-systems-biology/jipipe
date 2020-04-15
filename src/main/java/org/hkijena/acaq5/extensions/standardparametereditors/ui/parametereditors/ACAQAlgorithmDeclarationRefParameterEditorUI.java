@@ -64,6 +64,9 @@ public class ACAQAlgorithmDeclarationRefParameterEditorUI extends ACAQParameterE
     @Override
     public void reload() {
         ACAQAlgorithmDeclarationRef declarationRef = getParameterAccess().get();
+        if (declarationRef == null) {
+            declarationRef = new ACAQAlgorithmDeclarationRef();
+        }
         ACAQAlgorithmDeclaration declaration = declarationRef.getDeclaration();
         if (declaration != null) {
             currentlyDisplayed.setText(declaration.getName());

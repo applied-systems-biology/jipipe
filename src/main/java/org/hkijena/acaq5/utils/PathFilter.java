@@ -92,7 +92,7 @@ public class PathFilter implements Predicate<Path>, ACAQValidatable {
 
     @Override
     public String toString() {
-        return filterString;
+        return mode + "(\"" + Objects.toString(filterString, "").replace("\\", "\\\\").replace("\"", "\\\"") + "\")";
     }
 
     @Override

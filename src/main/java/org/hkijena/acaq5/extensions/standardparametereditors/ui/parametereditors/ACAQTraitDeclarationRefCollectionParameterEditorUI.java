@@ -66,6 +66,9 @@ public class ACAQTraitDeclarationRefCollectionParameterEditorUI extends ACAQPara
     @Override
     public void reload() {
         ACAQTraitDeclarationRefCollection declarationRefs = getParameterAccess().get();
+        if (declarationRefs == null) {
+            declarationRefs = new ACAQTraitDeclarationRefCollection();
+        }
         currentlyDisplayed.removeAll();
         if (declarationRefs.isEmpty()) {
             currentlyDisplayed.add(new JLabel("None selected"));

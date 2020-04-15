@@ -7,7 +7,7 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.PathCollection;
-import org.hkijena.acaq5.extensions.filesystem.api.dataypes.ACAQFolderData;
+import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FolderData;
 import org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors.FilePathParameterSettings;
 import org.hkijena.acaq5.ui.components.FileSelection;
 
@@ -20,9 +20,9 @@ import java.util.function.Supplier;
  * Provides an input folder
  */
 @ACAQDocumentation(name = "Folder list")
-@AlgorithmOutputSlot(value = ACAQFolderData.class, slotName = "Folder paths", autoCreate = true)
+@AlgorithmOutputSlot(value = FolderData.class, slotName = "Folder paths", autoCreate = true)
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
-public class ACAQFolderListDataSource extends ACAQAlgorithm {
+public class FolderListDataSource extends ACAQAlgorithm {
 
     private PathCollection folderPaths = new PathCollection();
     private Path currentWorkingDirectory;
@@ -32,7 +32,7 @@ public class ACAQFolderListDataSource extends ACAQAlgorithm {
      *
      * @param declaration The algorithm declaration
      */
-    public ACAQFolderListDataSource(ACAQAlgorithmDeclaration declaration) {
+    public FolderListDataSource(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
     }
 
@@ -41,7 +41,7 @@ public class ACAQFolderListDataSource extends ACAQAlgorithm {
      *
      * @param other The original
      */
-    public ACAQFolderListDataSource(ACAQFolderListDataSource other) {
+    public FolderListDataSource(FolderListDataSource other) {
         super(other);
         this.folderPaths.addAll(other.folderPaths);
         this.currentWorkingDirectory = other.currentWorkingDirectory;
@@ -50,7 +50,7 @@ public class ACAQFolderListDataSource extends ACAQAlgorithm {
     @Override
     public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         for (Path folderPath : folderPaths) {
-            getFirstOutputSlot().addData(new ACAQFolderData(folderPath));
+            getFirstOutputSlot().addData(new FolderData(folderPath));
         }
     }
 

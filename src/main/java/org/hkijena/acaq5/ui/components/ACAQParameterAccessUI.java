@@ -15,10 +15,8 @@ import org.scijava.Contextual;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -89,7 +87,7 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
 
         // First display all parameters of the current holder
         if (groupedByHolder.containsKey(parameterHolder)) {
-            for (String key : groupedByHolder.get(parameterHolder).stream().sorted().collect(Collectors.toList())) {
+            for (String key : getParameterKeysSortedByParameterName(parameters, groupedByHolder.get(parameterHolder))) {
                 ACAQParameterAccess parameterAccess = parameters.get(key);
                 if (parameterAccess.getVisibility() == ACAQParameterVisibility.Hidden)
                     continue;
@@ -115,7 +113,7 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
             if (parameterHolder == this.parameterHolder)
                 continue;
 
-            List<String> parameterIds = groupedByHolder.get(parameterHolder).stream().sorted().collect(Collectors.toList());
+            List<String> parameterIds = getParameterKeysSortedByParameterName(parameters, groupedByHolder.get(parameterHolder));
             parameterIds.removeIf(key -> {
                 ACAQParameterAccess parameterAccess = parameters.get(key);
                 return parameterAccess.getVisibility() == ACAQParameterVisibility.Hidden ||
@@ -262,5 +260,9 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
     @Override
     public Context context() {
         return context;
+    }
+
+    private static List<String> getParameterKeysSortedByParameterName(Map<String, ACAQParameterAccess> parameters, Collection<String> keys) {
+        return keys.stream().sorted(Comparator.comparing(k0 -> parameters.get(k0).getName())).collect(Collectors.toList());
     }
 }

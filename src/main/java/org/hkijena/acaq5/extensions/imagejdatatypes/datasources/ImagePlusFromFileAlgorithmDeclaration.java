@@ -5,7 +5,7 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.traits.ACAQDataSlotTraitConfiguration;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
-import org.hkijena.acaq5.extensions.filesystem.api.dataypes.ACAQFileData;
+import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FileData;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,7 +30,7 @@ public class ImagePlusFromFileAlgorithmDeclaration implements ACAQAlgorithmDecla
     public ImagePlusFromFileAlgorithmDeclaration(String dataClassId, Class<? extends ACAQData> dataClass) {
         this.dataClassId = dataClassId;
         this.dataClass = dataClass;
-        inputSlots.add(new DefaultAlgorithmInputSlot(ACAQFileData.class, "Input", false));
+        inputSlots.add(new DefaultAlgorithmInputSlot(FileData.class, "Input", false));
         outputSlots.add(new DefaultAlgorithmOutputSlot(dataClass, "Image", "", false));
     }
 

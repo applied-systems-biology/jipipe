@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 /**
  * Generates {@link org.hkijena.acaq5.extensions.multiparameters.datatypes.ParametersData} objects
  */
-@ACAQDocumentation(name = "Define parameter", description = "Defines algorithm parameters that can be consumed by a multi-parameter algorithm")
+@ACAQDocumentation(name = "Define parameter", description = "Defines an algorithm parameter that can be consumed by a multi-parameter algorithm")
 @AlgorithmOutputSlot(value = ParametersData.class, slotName = "Parameters", autoCreate = true)
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
 public class ParametersDataDefinition extends ACAQAlgorithm {

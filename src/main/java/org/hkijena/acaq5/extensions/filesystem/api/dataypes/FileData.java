@@ -11,26 +11,24 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 /**
- * Data that stores a folder
+ * Data containing a file
  */
-@ACAQDocumentation(name = "Folder")
-public class ACAQFolderData implements ACAQData {
+@ACAQDocumentation(name = "File")
+public class FileData implements ACAQData {
 
-    private Path folderPath;
+    private Path filePath;
 
     /**
-     * Instantiates the data from a folder path
+     * Initializes file data from a file
      *
-     * @param folderPath Folder path
+     * @param filePath File path
      */
-    public ACAQFolderData(Path folderPath) {
-        this.folderPath = folderPath;
+    public FileData(Path filePath) {
+        this.filePath = filePath;
     }
 
-    /**
-     * Creates a new instance
-     */
-    private ACAQFolderData() {
+    private FileData() {
+
     }
 
     @Override
@@ -45,13 +43,13 @@ public class ACAQFolderData implements ACAQData {
 
     @Override
     public ACAQData duplicate() {
-        return new ACAQFolderData(folderPath);
+        return new FileData(filePath);
     }
 
     /**
-     * Gets the data type name
+     * Returns the data type name stored into the JSON
      *
-     * @return Data type name
+     * @return data type id
      */
     @JsonGetter("acaq:data-type")
     private String getDataTypeName() {
@@ -59,20 +57,20 @@ public class ACAQFolderData implements ACAQData {
     }
 
     /**
-     * @return The folder path
+     * @return The file path
      */
-    @JsonGetter("folder-path")
-    public Path getFolderPath() {
-        return folderPath;
+    @JsonGetter("file-path")
+    public Path getFilePath() {
+        return filePath;
     }
 
     /**
-     * Sets the folder path
+     * Sets the file
      *
-     * @param path Folder path
+     * @param path The file path
      */
-    @JsonSetter("folder-path")
-    private void setFolderPath(Path path) {
-        this.folderPath = path;
+    @JsonSetter("file-path")
+    private void setFilePath(Path path) {
+        this.filePath = path;
     }
 }

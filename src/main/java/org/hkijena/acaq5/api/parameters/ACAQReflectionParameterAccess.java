@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.api.parameters;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.scijava.Priority;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -137,7 +138,8 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
                     access = (ACAQReflectionParameterAccess) result.get(parameterAnnotation.value());
                 access.parameterHolder = parameterHolder;
                 access.visibility = access.visibility.intersectWith(parameterAnnotation.visibility());
-                access.priority = parameterAnnotation.priority();
+                if (parameterAnnotation.priority() != Priority.NORMAL)
+                    access.priority = parameterAnnotation.priority();
                 if (method.getParameters().length == 1) {
                     // Is a setter
                     access.setter = method;

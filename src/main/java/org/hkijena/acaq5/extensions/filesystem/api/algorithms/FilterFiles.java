@@ -8,7 +8,7 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extensions.filesystem.api.dataypes.ACAQFolderData;
+import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FileData;
 import org.hkijena.acaq5.utils.PathFilter;
 import org.hkijena.acaq5.utils.PathFilterCollection;
 
@@ -16,27 +16,28 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
- * Algorithm that filters folders
+ * Filters input files
  */
-@ACAQDocumentation(name = "Filter folders", description = "Filters the input folders by their name")
+@ACAQDocumentation(name = "Filter files", description = "Filters the input files by their name")
 @AlgorithmMetadata(category = ACAQAlgorithmCategory.FileSystem)
 @ACAQOrganization(menuPath = "Filter")
 
 // Algorithm flow
-@AlgorithmInputSlot(value = ACAQFolderData.class, slotName = "Folders", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQFolderData.class, slotName = "Filtered folders", autoCreate = true)
+@AlgorithmInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
+@AlgorithmOutputSlot(value = FileData.class, slotName = "Filtered files", autoCreate = true)
 
 // Traits
-public class ACAQFilterFolders extends ACAQIteratingAlgorithm {
+public class FilterFiles extends ACAQIteratingAlgorithm {
 
+    //    private PathFilter filter = new PathFilter();
     private PathFilterCollection filters = new PathFilterCollection();
 
     /**
-     * Initializes the algorithm
+     * Instantiates the algorithm
      *
      * @param declaration Algorithm declaration
      */
-    public ACAQFilterFolders(ACAQAlgorithmDeclaration declaration) {
+    public FilterFiles(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
         filters.addNewInstance();
     }
@@ -46,7 +47,7 @@ public class ACAQFilterFolders extends ACAQIteratingAlgorithm {
      *
      * @param other The original
      */
-    public ACAQFilterFolders(ACAQFilterFolders other) {
+    public FilterFiles(FilterFiles other) {
         super(other);
         this.filters.clear();
         for (PathFilter filter : other.filters) {
@@ -56,11 +57,11 @@ public class ACAQFilterFolders extends ACAQIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ACAQFolderData inputData = dataInterface.getInputData("Folders");
+        FileData inputData = dataInterface.getInputData("Files");
         ACAQDataSlot firstOutputSlot = getFirstOutputSlot();
         if (!filters.isEmpty()) {
             for (PathFilter filter : filters) {
-                if (filter.test(inputData.getFolderPath())) {
+                if (filter.test(inputData.getFilePath())) {
                     dataInterface.addOutputData(firstOutputSlot, inputData);
                     break;
                 }
@@ -76,6 +77,27 @@ public class ACAQFilterFolders extends ACAQIteratingAlgorithm {
             report.forCategory("Filter").forCategory("Item " + (i + 1)).report(filters.get(i));
         }
     }
+
+//    /**
+//     * @return The filter
+//     */
+//    @ACAQParameter("filter")
+//    @ACAQDocumentation(name = "Filter")
+//    public PathFilter getFilter() {
+//        return null;
+//    }
+//
+//    /**
+//     * Sets the filter.
+//     * Cannot be null.
+//     *
+//     * @param filter The filter
+//     */
+//    @ACAQParameter("filter")
+//    public void setFilter(PathFilter filter) {
+//        this.filters.add(filter);
+//        getEventBus().post(new ParameterChangedEvent(this, "filter"));
+//    }
 
     @ACAQParameter("filters")
     @ACAQDocumentation(name = "Filters")

@@ -4,14 +4,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.filesystem.api.algorithms.*;
-import org.hkijena.acaq5.extensions.filesystem.api.annotation.ACAQFileAnnotationGenerator;
-import org.hkijena.acaq5.extensions.filesystem.api.annotation.ACAQFolderAnnotationGenerator;
-import org.hkijena.acaq5.extensions.filesystem.api.datasources.ACAQFileDataSource;
-import org.hkijena.acaq5.extensions.filesystem.api.datasources.ACAQFileListDataSource;
-import org.hkijena.acaq5.extensions.filesystem.api.datasources.ACAQFolderDataSource;
-import org.hkijena.acaq5.extensions.filesystem.api.datasources.ACAQFolderListDataSource;
-import org.hkijena.acaq5.extensions.filesystem.api.dataypes.ACAQFileData;
-import org.hkijena.acaq5.extensions.filesystem.api.dataypes.ACAQFolderData;
+import org.hkijena.acaq5.extensions.filesystem.api.annotation.FileAnnotationGenerator;
+import org.hkijena.acaq5.extensions.filesystem.api.annotation.FolderAnnotationGenerator;
+import org.hkijena.acaq5.extensions.filesystem.api.datasources.FileDataSource;
+import org.hkijena.acaq5.extensions.filesystem.api.datasources.FileListDataSource;
+import org.hkijena.acaq5.extensions.filesystem.api.datasources.FolderDataSource;
+import org.hkijena.acaq5.extensions.filesystem.api.datasources.FolderListDataSource;
+import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FileData;
+import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FolderData;
 import org.hkijena.acaq5.extensions.filesystem.ui.resultanalysis.FilesystemDataSlotCellUI;
 import org.hkijena.acaq5.extensions.filesystem.ui.resultanalysis.FilesystemDataSlotRowUI;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.registries.GraphWrapperAlgorithmRegistrationTask;
@@ -50,24 +50,24 @@ public class FilesystemExtension extends ACAQPrepackagedDefaultJavaExtension {
 
     @Override
     public void register() {
-        registerDatatype("file", ACAQFileData.class, ResourceUtils.getPluginResource("icons/data-types/file.png"),
+        registerDatatype("file", FileData.class, ResourceUtils.getPluginResource("icons/data-types/file.png"),
                 FilesystemDataSlotRowUI.class, new FilesystemDataSlotCellUI());
-        registerDatatype("folder", ACAQFolderData.class, ResourceUtils.getPluginResource("icons/data-types/folder.png"),
+        registerDatatype("folder", FolderData.class, ResourceUtils.getPluginResource("icons/data-types/folder.png"),
                 FilesystemDataSlotRowUI.class, new FilesystemDataSlotCellUI());
 
-        registerAlgorithm("import-file", ACAQFileDataSource.class);
-        registerAlgorithm("import-file-list", ACAQFileListDataSource.class);
-        registerAlgorithm("import-folder", ACAQFolderDataSource.class);
-        registerAlgorithm("import-folder-list", ACAQFolderListDataSource.class);
+        registerAlgorithm("import-file", FileDataSource.class);
+        registerAlgorithm("import-file-list", FileListDataSource.class);
+        registerAlgorithm("import-folder", FolderDataSource.class);
+        registerAlgorithm("import-folder-list", FolderListDataSource.class);
 
-        registerAlgorithm("file-filter", ACAQFilterFiles.class);
-        registerAlgorithm("folder-filter", ACAQFilterFolders.class);
-        registerAlgorithm("folder-list-files", ACAQListFiles.class);
-        registerAlgorithm("folder-list-subfolders", ACAQListSubfolders.class);
-        registerAlgorithm("folder-navigate-subfolders", ACAQSubFolder.class);
+        registerAlgorithm("file-filter", FilterFiles.class);
+        registerAlgorithm("folder-filter", FilterFolders.class);
+        registerAlgorithm("folder-list-files", ListFiles.class);
+        registerAlgorithm("folder-list-subfolders", ListSubfolders.class);
+        registerAlgorithm("folder-navigate-subfolders", NavigateSubFolder.class);
 
-        registerAlgorithm("folder-annotate-by-name", ACAQFolderAnnotationGenerator.class);
-        registerAlgorithm("file-annotate-by-name", ACAQFileAnnotationGenerator.class);
+        registerAlgorithm("folder-annotate-by-name", FolderAnnotationGenerator.class);
+        registerAlgorithm("file-annotate-by-name", FileAnnotationGenerator.class);
 
         registerAlgorithmResources();
     }

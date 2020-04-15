@@ -13,7 +13,7 @@ import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extensions.filesystem.api.dataypes.ACAQFileData;
+import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FileData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleMaskData;
@@ -26,7 +26,7 @@ import java.util.function.Supplier;
  * BioFormats importer wrapper
  */
 @ACAQDocumentation(name = "Bioformats importer", description = "Imports images via the Bioformats plugin")
-@AlgorithmInputSlot(value = ACAQFileData.class, slotName = "Files", autoCreate = true)
+@AlgorithmInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
 @AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
 @AlgorithmOutputSlot(value = ImagePlus2DGreyscaleData.class)
 @AlgorithmOutputSlot(value = ImagePlus2DGreyscaleMaskData.class)
@@ -77,7 +77,7 @@ public class BioformatsImporter extends ACAQIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ACAQFileData inputFile = dataInterface.getInputData(getFirstInputSlot());
+        FileData inputFile = dataInterface.getInputData(getFirstInputSlot());
         ImporterOptions options;
         try {
             options = new ImporterOptions();
