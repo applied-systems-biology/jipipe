@@ -97,6 +97,8 @@ public class ACAQDataSlotTraitUI extends JPanel {
      */
     @Subscribe
     public void onSlotsTraitsChanged(SlotAnnotationsChanged event) {
+        if (slot.getAlgorithm().getGraph() != null && slot.getAlgorithm().getGraph().isUpdatingSlotTraits())
+            return;
         reloadButtons();
     }
 

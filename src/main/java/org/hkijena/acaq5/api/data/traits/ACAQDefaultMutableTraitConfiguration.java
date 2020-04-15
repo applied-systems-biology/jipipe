@@ -89,6 +89,7 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
     }
 
     private void applyTransfer() {
+//        System.out.println("APPLY_TRANSFER");
         if (transferAllToAll) {
             for (ACAQDataSlot sourceSlot : algorithm.getInputSlots()) {
                 for (ACAQDataSlot targetSlot : algorithm.getOutputSlots()) {
@@ -282,6 +283,16 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
      */
     public void setMutableGlobalTraitModificationTasks(ACAQDataSlotTraitConfiguration globalTraitModificationTasks) {
         this.globalTraitModificationTasks = globalTraitModificationTasks;
+        postChangedEvent();
+    }
+
+    /**
+     * Removes all configuration
+     */
+    public void clear() {
+        slotTraitModificationTasks.clear();
+        transferTasks.clear();
+        globalTraitModificationTasks.clear();
         postChangedEvent();
     }
 

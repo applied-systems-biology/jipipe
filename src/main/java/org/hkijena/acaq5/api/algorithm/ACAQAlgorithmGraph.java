@@ -46,6 +46,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     private BiMap<String, ACAQAlgorithm> algorithms = HashBiMap.create();
     private Map<ACAQAlgorithm, String> compartments = new HashMap<>();
     private EventBus eventBus = new EventBus();
+    private boolean isUpdatingSlotTraits = false;
 
     /**
      * Creates a new algorithm graph
@@ -496,30 +497,46 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * Those traits are different from data traits.
      */
     public void updateDataSlotTraits() {
-        Set<ACAQAlgorithm> executedAlgorithms = new HashSet<>();
-        for (ACAQDataSlot slot : traverse()) {
-            if (slot.isInput()) {
-                slot.clearSlotAnnotations();
+        isUpdatingSlotTraits = true;
+        List<ACAQAlgorithm> algorithmList = traverseAlgorithms();
+        for (ACAQAlgorithm algorithm : algorithmList) {
+            for (ACAQDataSlot inputSlot : algorithm.getInputSlots()) {
+                inputSlot.getAlgorithm().getTraitConfiguration().apply();
             }
-        }
-        for (ACAQDataSlot slot : traverse()) {
-            if (slot.isInput()) {
-                // Execute trait configuration
-                if (!executedAlgorithms.contains(slot.getAlgorithm())) {
-                    slot.getAlgorithm().getTraitConfiguration().apply();
-                    executedAlgorithms.add(slot.getAlgorithm());
-                }
-            } else {
-                // Transfer traits from output to input
-                for (ACAQDataSlot targetSlot : getTargetSlots(slot)) {
+            for (ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
+                for (ACAQDataSlot targetSlot : getTargetSlots(outputSlot)) {
                     targetSlot.clearSlotAnnotations();
-                    for (ACAQTraitDeclaration slotAnnotation : slot.getSlotAnnotations()) {
-//                        System.out.println("GRAPHTRANSFER " + slotAnnotation.getName() + " FROM " + slot.getNameWithAlgorithmName() + " TO " + targetSlot.getNameWithAlgorithmName());
+                    for (ACAQTraitDeclaration slotAnnotation : outputSlot.getSlotAnnotations()) {
+//                        System.out.println("GRAPHTRANSFER " + slotAnnotation.getName() + " FROM " + outputSlot.getNameWithAlgorithmName() + " TO " + targetSlot.getNameWithAlgorithmName());
                         targetSlot.addSlotAnnotation(slotAnnotation);
                     }
                 }
             }
         }
+
+//        for (ACAQDataSlot slot : traverse()) {
+//            if (slot.isInput()) {
+//                // Execute trait configuration
+//                if (!executedAlgorithms.contains(slot.getAlgorithm())) {
+//                    slot.getAlgorithm().getTraitConfiguration().apply();
+//                    executedAlgorithms.add(slot.getAlgorithm());
+//                }
+//            } else {
+//                // Transfer traits from output to input
+//                for (ACAQDataSlot targetSlot : getTargetSlots(slot)) {
+//                    targetSlot.clearSlotAnnotations();
+//                    for (ACAQTraitDeclaration slotAnnotation : slot.getSlotAnnotations()) {
+//                        System.out.println("GRAPHTRANSFER " + slotAnnotation.getName() + " FROM " + slot.getNameWithAlgorithmName() + " TO " + targetSlot.getNameWithAlgorithmName());
+//                        targetSlot.addSlotAnnotation(slotAnnotation);
+//                    }
+//                }
+//            }
+//        }
+        isUpdatingSlotTraits = false;
+        for (ACAQDataSlot dataSlot : graph.vertexSet()) {
+            dataSlot.getEventBus().post(new SlotAnnotationsChanged(dataSlot));
+        }
+
     }
 
     /**
@@ -863,6 +880,10 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
                 result.add(algorithm);
         }
         return result;
+    }
+
+    public boolean isUpdatingSlotTraits() {
+        return isUpdatingSlotTraits;
     }
 
     /**

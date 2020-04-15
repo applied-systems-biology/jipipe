@@ -84,6 +84,8 @@ public class ACAQTraitConfigurationUI extends JPanel {
      */
     @Subscribe
     public void onTraitsChanged(SlotAnnotationsChanged event) {
+        if (slot.getAlgorithm().getGraph() != null && slot.getAlgorithm().getGraph().isUpdatingSlotTraits())
+            return;
         isLoading = true;
         reloadTraitList();
         isLoading = false;
