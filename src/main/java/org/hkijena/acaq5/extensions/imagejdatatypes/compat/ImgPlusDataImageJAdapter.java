@@ -72,7 +72,7 @@ public class ImgPlusDataImageJAdapter implements ImageJDatatypeAdapter {
 
     @Override
     public Object convertACAQToImageJ(ACAQData acaqData, boolean activate, boolean noWindow, String windowName) {
-        ImagePlus img = ((ImagePlusData) acaqData).getImage();
+        ImagePlus img = ((ImagePlusData) acaqData).getImage().duplicate();
         if (activate) {
             if (!noWindow) {
                 img.show();

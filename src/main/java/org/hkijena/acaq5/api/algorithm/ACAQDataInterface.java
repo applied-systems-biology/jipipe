@@ -21,27 +21,18 @@ public class ACAQDataInterface {
     /**
      * Creates a new interface
      *
-     * @param algorithm The algorithm
-     */
-    public ACAQDataInterface(ACAQAlgorithm algorithm) {
-        this(algorithm, algorithm.getInputSlots());
-    }
-
-    /**
-     * Creates a new interface
-     *
      * @param algorithm  The algorithm
      * @param inputSlots Input slots that are considered during the calculation. The first one is used as reference
+     * @param row        the row this data interface is generated for
      */
-    public ACAQDataInterface(ACAQAlgorithm algorithm, List<ACAQDataSlot> inputSlots) {
+    public ACAQDataInterface(ACAQAlgorithm algorithm, List<ACAQDataSlot> inputSlots, int row) {
         this.algorithm = algorithm;
         this.inputSlotRows = new HashMap<>();
-        initialize(inputSlots);
+        initialize(inputSlots, row);
     }
 
-    private void initialize(List<ACAQDataSlot> inputSlots) {
+    private void initialize(List<ACAQDataSlot> inputSlots, int referenceInputSlotRow) {
         ACAQDataSlot referenceInputSlot = inputSlots.get(0);
-        int referenceInputSlotRow = 0;
         inputSlotRows.put(referenceInputSlot, referenceInputSlotRow);
         annotations = referenceInputSlot.getAnnotations(referenceInputSlotRow);
         for (ACAQDataSlot inputSlot : inputSlots) {
