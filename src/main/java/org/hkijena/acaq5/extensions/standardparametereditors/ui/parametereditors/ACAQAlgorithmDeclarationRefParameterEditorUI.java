@@ -46,7 +46,7 @@ public class ACAQAlgorithmDeclarationRefParameterEditorUI extends ACAQParameterE
 
         JButton selectButton = new JButton(UIUtils.getIconFromResources("edit.png"));
         UIUtils.makeFlat(selectButton);
-        selectButton.setToolTipText("Select annotation");
+        selectButton.setToolTipText("Select algorithm type");
         selectButton.addActionListener(e -> pickTrait());
         add(selectButton, BorderLayout.EAST);
 
@@ -56,7 +56,7 @@ public class ACAQAlgorithmDeclarationRefParameterEditorUI extends ACAQParameterE
 
     private void initializePickerDialog() {
         pickerDialog = new JDialog();
-        pickerDialog.setTitle("Select annotation");
+        pickerDialog.setTitle("Select algorithm type");
         pickerDialog.setContentPane(picker);
         pickerDialog.setModal(false);
     }
