@@ -197,7 +197,7 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
             if (batchMode) {
                 adapter.convertACAQToImageJ(data, true, true, inputSlot.getName());
             } else {
-                adapter.convertACAQToImageJ(data, false, false, inputSlot.getName());
+                adapter.convertACAQToImageJ(data, true, false, inputSlot.getName());
             }
         }
     }
