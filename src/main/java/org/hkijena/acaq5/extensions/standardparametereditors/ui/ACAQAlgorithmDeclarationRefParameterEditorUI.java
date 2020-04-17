@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors;
+package org.hkijena.acaq5.extensions.standardparametereditors.ui;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;

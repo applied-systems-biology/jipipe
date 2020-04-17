@@ -6,7 +6,7 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterHolder;
-import org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors.StringParameterSettings;
+import org.hkijena.acaq5.extensions.standardparametereditors.ui.StringParameterSettings;
 
 /**
  * JSON-serializable project metadata

@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors;
+package org.hkijena.acaq5.extensions.standardparametereditors.ui;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

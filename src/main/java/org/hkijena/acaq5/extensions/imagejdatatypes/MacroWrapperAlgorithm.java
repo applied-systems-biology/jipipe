@@ -51,6 +51,8 @@ import java.util.function.Supplier;
 public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
     public static Class<?>[] ALLOWED_PARAMETER_CLASSES = new Class[]{
             String.class,
+            Byte.class,
+            Short.class,
             Integer.class,
             Double.class,
             Float.class,

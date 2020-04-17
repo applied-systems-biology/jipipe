@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors;
+package org.hkijena.acaq5.extensions.standardparametereditors.ui;
 
 import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;

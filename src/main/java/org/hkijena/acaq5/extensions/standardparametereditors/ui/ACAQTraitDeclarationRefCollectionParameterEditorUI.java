@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.standardparametereditors.ui.parametereditors;
+package org.hkijena.acaq5.extensions.standardparametereditors.ui;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
@@ -6,6 +6,7 @@ import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
+import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefCollection;
 import org.hkijena.acaq5.ui.components.ACAQTraitPicker;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
@@ -15,24 +16,23 @@ import org.scijava.Context;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Parameter for {@link ACAQTraitDeclarationRef}
+ * Editor for {@link ACAQTraitDeclarationRefCollection}
  */
-public class ACAQTraitDeclarationRefParameterEditorUI extends ACAQParameterEditorUI {
+public class ACAQTraitDeclarationRefCollectionParameterEditorUI extends ACAQParameterEditorUI {
 
     private ACAQTraitPicker picker;
-    private JButton currentlyDisplayed;
+    private JPanel currentlyDisplayed;
     private JDialog pickerDialog;
 
     /**
      * @param context         SciJava context
      * @param parameterAccess the parameter
      */
-    public ACAQTraitDeclarationRefParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
+    public ACAQTraitDeclarationRefCollectionParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
         super(context, parameterAccess);
         initialize();
         reload();
@@ -41,9 +41,9 @@ public class ACAQTraitDeclarationRefParameterEditorUI extends ACAQParameterEdito
     private void initialize() {
         setLayout(new BorderLayout());
 
-        currentlyDisplayed = new JButton();
-        currentlyDisplayed.addActionListener(e -> pickTrait());
-        UIUtils.makeFlat(currentlyDisplayed);
+        currentlyDisplayed = new JPanel();
+        currentlyDisplayed.setLayout(new BoxLayout(currentlyDisplayed, BoxLayout.X_AXIS));
+        currentlyDisplayed.setBorder(BorderFactory.createEtchedBorder());
         add(currentlyDisplayed, BorderLayout.CENTER);
 
         JButton selectButton = new JButton(UIUtils.getIconFromResources("edit.png"));
@@ -65,22 +65,29 @@ public class ACAQTraitDeclarationRefParameterEditorUI extends ACAQParameterEdito
 
     @Override
     public void reload() {
-        ACAQTraitDeclarationRef declarationRef = getParameterAccess().get();
-        if (declarationRef == null) {
-            declarationRef = new ACAQTraitDeclarationRef();
+        ACAQTraitDeclarationRefCollection declarationRefs = getParameterAccess().get();
+        if (declarationRefs == null) {
+            declarationRefs = new ACAQTraitDeclarationRefCollection();
         }
-        ACAQTraitDeclaration declaration = declarationRef.getDeclaration();
-        if (declaration != null) {
-            currentlyDisplayed.setText(declaration.getName());
-            currentlyDisplayed.setToolTipText(TooltipUtils.getTraitTooltip(declaration));
-            currentlyDisplayed.addActionListener(e -> pickTrait());
-            currentlyDisplayed.setIcon(ACAQUITraitRegistry.getInstance().getIconFor(declaration));
-            picker.setSelectedTraits(Collections.singleton(declaration));
+        currentlyDisplayed.removeAll();
+        if (declarationRefs.isEmpty()) {
+            currentlyDisplayed.add(new JLabel("None selected"));
+        } else if (declarationRefs.size() == 1) {
+            ACAQTraitDeclaration declaration = declarationRefs.get(0).getDeclaration();
+            JLabel label = new JLabel(declaration.getName(), ACAQUITraitRegistry.getInstance().getIconFor(declaration), JLabel.LEFT);
+            label.setToolTipText(TooltipUtils.getTraitTooltip(declaration));
+            currentlyDisplayed.add(label);
         } else {
-            currentlyDisplayed.setText("None selected");
-            currentlyDisplayed.setIcon(UIUtils.getIconFromResources("error.png"));
-            picker.setSelectedTraits(Collections.emptySet());
+            for (ACAQTraitDeclarationRef declarationRef : declarationRefs) {
+                ACAQTraitDeclaration declaration = declarationRef.getDeclaration();
+                JLabel label = new JLabel();
+                label.setIcon(ACAQUITraitRegistry.getInstance().getIconFor(declaration));
+                label.setToolTipText(TooltipUtils.getTraitTooltip(declaration));
+                currentlyDisplayed.add(label);
+            }
         }
+        currentlyDisplayed.revalidate();
+        currentlyDisplayed.repaint();
     }
 
     private void initializePicker() {
@@ -101,7 +108,7 @@ public class ACAQTraitDeclarationRefParameterEditorUI extends ACAQParameterEdito
             }
         }
 
-        picker = new ACAQTraitPicker(ACAQTraitPicker.Mode.Single, availableTraits);
+        picker = new ACAQTraitPicker(ACAQTraitPicker.Mode.Multiple, availableTraits);
         picker.getEventBus().register(this);
     }
 
@@ -118,11 +125,15 @@ public class ACAQTraitDeclarationRefParameterEditorUI extends ACAQParameterEdito
      * @param event Generated event
      */
     @Subscribe
-    public void onTraitSelected(ACAQTraitPicker.TraitSelectedEvent event) {
+    public void onTraitSelected(ACAQTraitPicker.SelectedTraitsChangedEvent event) {
         if (pickerDialog.isVisible()) {
-            ACAQTraitDeclarationRef declarationRef = getParameterAccess().get();
-            declarationRef.setDeclaration(event.getTraitDeclaration());
-            getParameterAccess().set(declarationRef);
+            ACAQTraitDeclarationRefCollection refs = getParameterAccess().get();
+            refs.clear();
+            for (ACAQTraitDeclaration selectedTrait : event.getTraitPicker().getSelectedTraits()) {
+                refs.add(new ACAQTraitDeclarationRef(selectedTrait));
+            }
+
+            getParameterAccess().set(refs);
             reload();
         }
     }
@@ -131,4 +142,5 @@ public class ACAQTraitDeclarationRefParameterEditorUI extends ACAQParameterEdito
     public boolean isUILabelEnabled() {
         return true;
     }
+
 }
