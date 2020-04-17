@@ -100,7 +100,7 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPan
         ACAQValidityReport report = new ACAQValidityReport();
         algorithm.reportValidity(report);
         if (!report.isValid()) {
-            UIUtils.openValidityReportDialog(this, report);
+            UIUtils.openValidityReportDialog(this, report, false);
             return;
         }
 

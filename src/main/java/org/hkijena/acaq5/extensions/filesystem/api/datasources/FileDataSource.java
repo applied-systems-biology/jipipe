@@ -7,7 +7,7 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FileData;
-import org.hkijena.acaq5.extensions.standardparametereditors.ui.FilePathParameterSettings;
+import org.hkijena.acaq5.extensions.standardparametereditors.editors.FilePathParameterSettings;
 import org.hkijena.acaq5.ui.components.FileSelection;
 
 import java.nio.file.Files;

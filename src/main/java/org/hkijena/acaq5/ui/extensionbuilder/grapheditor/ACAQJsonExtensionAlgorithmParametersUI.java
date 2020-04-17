@@ -2,8 +2,8 @@ package org.hkijena.acaq5.ui.extensionbuilder.grapheditor;
 
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
-import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
+import org.hkijena.acaq5.ui.parameters.ACAQParameterAccessUI;
 
 /**
  * UI for an algorithm in a {@link org.hkijena.acaq5.ACAQJsonExtension}

@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.standardparametereditors.ui;
+package org.hkijena.acaq5.extensions.standardparametereditors.editors;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
@@ -7,7 +7,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclarationRef;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.ui.components.ACAQAlgorithmPicker;
-import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
+import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Context;

@@ -2,8 +2,8 @@ package org.hkijena.acaq5.ui.settings;
 
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
-import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
+import org.hkijena.acaq5.ui.parameters.ACAQParameterAccessUI;
 
 import java.awt.*;
 

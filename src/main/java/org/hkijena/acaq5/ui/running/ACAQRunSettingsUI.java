@@ -6,12 +6,12 @@ import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
-import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.components.ACAQValidityReportUI;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.acaq5.ui.events.RunUIWorkerInterruptedEvent;
+import org.hkijena.acaq5.ui.parameters.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultUI;
 import org.hkijena.acaq5.utils.UIUtils;
 

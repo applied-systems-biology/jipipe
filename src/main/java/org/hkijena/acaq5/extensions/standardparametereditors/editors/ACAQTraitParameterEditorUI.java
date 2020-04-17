@@ -1,56 +1,94 @@
-package org.hkijena.acaq5.extensions.standardparametereditors.ui;
+package org.hkijena.acaq5.extensions.standardparametereditors.editors;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
+import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.ui.components.ACAQTraitPicker;
-import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
+import org.hkijena.acaq5.ui.components.DocumentChangeListener;
+import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
+import org.jdesktop.swingx.JXTextField;
 import org.scijava.Context;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Parameter for {@link ACAQTraitDeclarationRef}
+ * Parameter editor for {@link ACAQTrait}
  */
-public class ACAQTraitDeclarationRefParameterEditorUI extends ACAQParameterEditorUI {
+public class ACAQTraitParameterEditorUI extends ACAQParameterEditorUI {
 
     private ACAQTraitPicker picker;
+    private JXTextField currentValue;
     private JButton currentlyDisplayed;
     private JDialog pickerDialog;
+    private boolean skipNextReload = false;
+    private boolean isReloading = false;
 
     /**
      * @param context         SciJava context
      * @param parameterAccess the parameter
      */
-    public ACAQTraitDeclarationRefParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
+    public ACAQTraitParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
         super(context, parameterAccess);
         initialize();
         reload();
     }
 
     private void initialize() {
-        setLayout(new BorderLayout());
+        setLayout(new GridBagLayout());
+
+        currentValue = new JXTextField();
+        currentValue.setPrompt("Value");
+        currentValue.getDocument().addDocumentListener(new DocumentChangeListener() {
+            @Override
+            public void changed(DocumentEvent documentEvent) {
+                onCurrentValueChanged(currentValue.getText());
+            }
+        });
+        add(currentValue, new GridBagConstraints() {
+            {
+                gridx = 0;
+                gridy = 0;
+                gridwidth = 1;
+                anchor = GridBagConstraints.WEST;
+                fill = GridBagConstraints.HORIZONTAL;
+                weightx = 1;
+                insets = UIUtils.UI_PADDING;
+            }
+        });
 
         currentlyDisplayed = new JButton();
+        UIUtils.makeFlatH25(currentlyDisplayed);
         currentlyDisplayed.addActionListener(e -> pickTrait());
-        UIUtils.makeFlat(currentlyDisplayed);
-        add(currentlyDisplayed, BorderLayout.CENTER);
+        add(currentlyDisplayed, new GridBagConstraints() {
+            {
+                anchor = GridBagConstraints.PAGE_START;
+                gridx = 1;
+                gridy = 0;
+            }
+        });
 
         JButton selectButton = new JButton(UIUtils.getIconFromResources("edit.png"));
-        UIUtils.makeFlat(selectButton);
+        UIUtils.makeFlat25x25(selectButton);
         selectButton.setToolTipText("Select annotation");
         selectButton.addActionListener(e -> pickTrait());
-        add(selectButton, BorderLayout.EAST);
+        add(selectButton, new GridBagConstraints() {
+            {
+                anchor = GridBagConstraints.PAGE_START;
+                gridx = 2;
+                gridy = 0;
+            }
+        });
 
         initializePicker();
         initializePickerDialog();
@@ -65,22 +103,35 @@ public class ACAQTraitDeclarationRefParameterEditorUI extends ACAQParameterEdito
 
     @Override
     public void reload() {
-        ACAQTraitDeclarationRef declarationRef = getParameterAccess().get();
-        if (declarationRef == null) {
-            declarationRef = new ACAQTraitDeclarationRef();
+        if (skipNextReload) {
+            skipNextReload = false;
+            return;
         }
-        ACAQTraitDeclaration declaration = declarationRef.getDeclaration();
-        if (declaration != null) {
+        isReloading = true;
+        ACAQTrait trait = getParameterAccess().get();
+        if (trait != null) {
+            ACAQTraitDeclaration declaration = trait.getDeclaration();
             currentlyDisplayed.setText(declaration.getName());
             currentlyDisplayed.setToolTipText(TooltipUtils.getTraitTooltip(declaration));
             currentlyDisplayed.addActionListener(e -> pickTrait());
             currentlyDisplayed.setIcon(ACAQUITraitRegistry.getInstance().getIconFor(declaration));
             picker.setSelectedTraits(Collections.singleton(declaration));
+
+            if (trait instanceof ACAQDiscriminator) {
+                currentValue.setText(((ACAQDiscriminator) trait).getValue());
+                currentValue.setEnabled(true);
+            } else {
+                currentValue.setText("<No value>");
+                currentValue.setEnabled(false);
+            }
         } else {
             currentlyDisplayed.setText("None selected");
             currentlyDisplayed.setIcon(UIUtils.getIconFromResources("error.png"));
+            currentValue.setText("<No value>");
+            currentValue.setEnabled(false);
             picker.setSelectedTraits(Collections.emptySet());
         }
+        isReloading = false;
     }
 
     private void initializePicker() {
@@ -120,10 +171,21 @@ public class ACAQTraitDeclarationRefParameterEditorUI extends ACAQParameterEdito
     @Subscribe
     public void onTraitSelected(ACAQTraitPicker.TraitSelectedEvent event) {
         if (pickerDialog.isVisible()) {
-            ACAQTraitDeclarationRef declarationRef = getParameterAccess().get();
-            declarationRef.setDeclaration(event.getTraitDeclaration());
-            getParameterAccess().set(declarationRef);
+            ACAQTraitDeclaration declaration = event.getTraitDeclaration();
+            getParameterAccess().set(declaration.newInstance());
             reload();
+        }
+    }
+
+    private void onCurrentValueChanged(String text) {
+        if (!isReloading) {
+            ACAQTrait trait = getParameterAccess().get();
+            if (trait instanceof ACAQDiscriminator) {
+                if (text != null && !text.isEmpty() && !text.equals(((ACAQDiscriminator) trait).getValue())) {
+                    skipNextReload = true;
+                    getParameterAccess().set(trait.getDeclaration().newInstance(text));
+                }
+            }
         }
     }
 

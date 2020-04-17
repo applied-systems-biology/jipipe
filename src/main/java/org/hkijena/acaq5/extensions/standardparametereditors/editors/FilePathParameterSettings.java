@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.standardparametereditors.ui;
+package org.hkijena.acaq5.extensions.standardparametereditors.editors;
 
 import org.hkijena.acaq5.ui.components.FileSelection;
 

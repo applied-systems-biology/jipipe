@@ -9,8 +9,8 @@ import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro.Grap
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWindow;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
-import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
+import org.hkijena.acaq5.ui.parameters.ACAQParameterAccessUI;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -131,7 +131,7 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQProjectWorkbenchPanel
         ACAQValidityReport report = new ACAQValidityReport();
         algorithmDeclaration.reportValidity(report);
         if (!report.isValid()) {
-            UIUtils.openValidityReportDialog(this, report);
+            UIUtils.openValidityReportDialog(this, report, false);
         }
         return report.isValid();
     }

@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.ui.grapheditor.settings;
+package org.hkijena.acaq5.ui.parameters;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
@@ -48,7 +48,7 @@ public abstract class ACAQParameterEditorUI extends JPanel implements Contextual
     }
 
     /**
-     * If true, the {@link org.hkijena.acaq5.ui.components.ACAQParameterAccessUI} will display a label with the parameter
+     * If true, the {@link ACAQParameterAccessUI} will display a label with the parameter
      * name next to this UI.
      *
      * @return if label should be shown

@@ -12,10 +12,10 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
-import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.components.FormPanel;
+import org.hkijena.acaq5.ui.parameters.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.ui.registries.ACAQUIImageJDatatypeAdapterRegistry;
 import org.hkijena.acaq5.utils.JsonUtils;
@@ -315,7 +315,7 @@ public class RunSingleAlgorithmDialog extends JDialog {
         ACAQValidityReport report = new ACAQValidityReport();
         runSettings.reportValidity(report);
         if (!report.isValid()) {
-            UIUtils.openValidityReportDialog(this, report);
+            UIUtils.openValidityReportDialog(this, report, false);
             return;
         }
         canceled = false;

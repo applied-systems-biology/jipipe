@@ -22,7 +22,7 @@ import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
-import org.hkijena.acaq5.extensions.standardparametereditors.ui.StringParameterSettings;
+import org.hkijena.acaq5.extensions.standardparametereditors.editors.StringParameterSettings;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 

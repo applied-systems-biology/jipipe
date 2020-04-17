@@ -6,12 +6,12 @@ import org.hkijena.acaq5.api.testbench.ACAQTestbench;
 import org.hkijena.acaq5.api.testbench.ACAQTestbenchSnapshot;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
-import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.ConfirmingButton;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.acaq5.ui.events.RunUIWorkerInterruptedEvent;
+import org.hkijena.acaq5.ui.parameters.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultUI;
 import org.hkijena.acaq5.ui.running.ACAQRunnerQueue;
 import org.hkijena.acaq5.utils.TooltipUtils;
@@ -151,7 +151,7 @@ public class ACAQTestBenchUI extends ACAQProjectWorkbenchPanel {
         ACAQValidityReport report = new ACAQValidityReport();
         testbench.reportValidity(report);
         if (!report.isValid()) {
-            UIUtils.openValidityReportDialog(this, report);
+            UIUtils.openValidityReportDialog(this, report, false);
             return;
         }
 

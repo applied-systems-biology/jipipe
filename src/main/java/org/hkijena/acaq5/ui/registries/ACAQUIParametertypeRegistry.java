@@ -1,14 +1,15 @@
 package org.hkijena.acaq5.ui.registries;
 
 import org.hkijena.acaq5.ACAQDefaultRegistry;
+import org.hkijena.acaq5.api.ACAQDefaultDocumentation;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
+import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
+import org.hkijena.acaq5.ui.parameters.ACAQParameterGeneratorUI;
 import org.scijava.Context;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Registry for parameter types
@@ -17,6 +18,9 @@ public class ACAQUIParametertypeRegistry {
 
     private Map<Class<?>, ACAQDocumentation> parameterDocumentations = new HashMap<>();
     private Map<Class<?>, Class<? extends ACAQParameterEditorUI>> parameterTypes = new HashMap<>();
+
+    private Map<Class<?>, Set<Class<? extends ACAQParameterGeneratorUI>>> parameterGenerators = new HashMap<>();
+    private Map<Class<? extends ACAQParameterGeneratorUI>, ACAQDocumentation> parameterGeneratorDocumentations = new HashMap<>();
 
     /**
      * New instance
@@ -91,6 +95,44 @@ public class ACAQUIParametertypeRegistry {
      */
     public boolean hasEditorFor(Class<?> parameterType) {
         return parameterTypes.containsKey(parameterType);
+    }
+
+    /**
+     * Registers a UI that can generate parameters
+     *
+     * @param parameterClass Parameter class
+     * @param uiClass        The generator UI class
+     * @param name           Generator name
+     * @param description    Description for the generator
+     */
+    public void registerGenerator(Class<?> parameterClass, Class<? extends ACAQParameterGeneratorUI> uiClass, String name, String description) {
+        Set<Class<? extends ACAQParameterGeneratorUI>> generators = parameterGenerators.getOrDefault(parameterClass, null);
+        if (generators == null) {
+            generators = new HashSet<>();
+            parameterGenerators.put(parameterClass, generators);
+        }
+        generators.add(uiClass);
+        parameterGeneratorDocumentations.put(uiClass, new ACAQDefaultDocumentation(name, description));
+    }
+
+    /**
+     * Returns all generators for the parameter class
+     *
+     * @param parameterClass the parameter class
+     * @return Set of generators
+     */
+    public Set<Class<? extends ACAQParameterGeneratorUI>> getGeneratorsFor(Class<?> parameterClass) {
+        return parameterGenerators.getOrDefault(parameterClass, Collections.emptySet());
+    }
+
+    /**
+     * Returns documentation for the generator
+     *
+     * @param generatorClass the generator
+     * @return documentation
+     */
+    public ACAQDocumentation getGeneratorDocumentationFor(Class<? extends ACAQParameterGeneratorUI> generatorClass) {
+        return parameterGeneratorDocumentations.get(generatorClass);
     }
 
     public static ACAQUIParametertypeRegistry getInstance() {

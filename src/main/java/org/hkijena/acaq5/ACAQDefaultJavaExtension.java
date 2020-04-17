@@ -15,7 +15,8 @@ import org.hkijena.acaq5.api.traits.ACAQJavaTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.ui.compat.ImageJDatatypeImporterUI;
-import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
+import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
+import org.hkijena.acaq5.ui.parameters.ACAQParameterGeneratorUI;
 import org.hkijena.acaq5.ui.plotbuilder.ACAQPlot;
 import org.hkijena.acaq5.ui.plotbuilder.ACAQPlotSettingsUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIParametertypeRegistry;
@@ -212,6 +213,19 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
         ACAQUIParametertypeRegistry parametertypeRegistry = registry.getUIParametertypeRegistry();
         parametertypeRegistry.registerParameterEditor(parameterClass, uiClass);
         parametertypeRegistry.registerDocumentation(parameterClass, new ACAQDefaultDocumentation(name, description));
+    }
+
+    /**
+     * Registers a UI that can generate parameters
+     *
+     * @param parameterClass Parameter class
+     * @param uiClass        The generator UI class
+     * @param name           Generator name
+     * @param description    Description for the generator
+     */
+    public void registerParameterGenerator(Class<?> parameterClass, Class<? extends ACAQParameterGeneratorUI> uiClass, String name, String description) {
+        ACAQUIParametertypeRegistry parametertypeRegistry = registry.getUIParametertypeRegistry();
+        parametertypeRegistry.registerGenerator(parameterClass, uiClass, name, description);
     }
 
     /**

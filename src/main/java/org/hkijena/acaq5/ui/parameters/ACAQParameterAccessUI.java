@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.ui.components;
+package org.hkijena.acaq5.ui.parameters;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQDefaultRegistry;
@@ -7,7 +7,8 @@ import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
-import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
+import org.hkijena.acaq5.ui.components.FormPanel;
+import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.registries.ACAQUIParametertypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Context;

@@ -1,11 +1,11 @@
-package org.hkijena.acaq5.extensions.standardparametereditors.ui;
+package org.hkijena.acaq5.extensions.standardparametereditors.editors;
 
 import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollectionVisibilities;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
 import org.hkijena.acaq5.ui.components.FormPanel;
-import org.hkijena.acaq5.ui.grapheditor.settings.ACAQParameterEditorUI;
+import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Context;
 

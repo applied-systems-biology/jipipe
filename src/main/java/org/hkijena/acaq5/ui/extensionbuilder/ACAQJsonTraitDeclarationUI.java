@@ -3,7 +3,7 @@ package org.hkijena.acaq5.ui.extensionbuilder;
 import org.hkijena.acaq5.api.traits.ACAQJsonTraitDeclaration;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
-import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
+import org.hkijena.acaq5.ui.parameters.ACAQParameterAccessUI;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 

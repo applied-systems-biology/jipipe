@@ -85,7 +85,7 @@ public class ACAQMultiAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPane
             algorithm.reportValidity(report.forCategory(algorithm.getName()));
         }
         if (!report.isValid()) {
-            UIUtils.openValidityReportDialog(this, report);
+            UIUtils.openValidityReportDialog(this, report, false);
             return;
         }
 

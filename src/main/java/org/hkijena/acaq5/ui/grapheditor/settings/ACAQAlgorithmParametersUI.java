@@ -2,8 +2,8 @@ package org.hkijena.acaq5.ui.grapheditor.settings;
 
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
-import org.hkijena.acaq5.ui.components.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
+import org.hkijena.acaq5.ui.parameters.ACAQParameterAccessUI;
 
 /**
  * Panel that shows the parameters of an algorithm

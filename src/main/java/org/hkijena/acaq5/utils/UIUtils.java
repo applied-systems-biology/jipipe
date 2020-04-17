@@ -282,14 +282,15 @@ public class UIUtils {
      *
      * @param parent the parent component
      * @param report the report
+     * @param modal  make the dialog modal
      */
-    public static void openValidityReportDialog(Component parent, ACAQValidityReport report) {
+    public static void openValidityReportDialog(Component parent, ACAQValidityReport report, boolean modal) {
         ACAQValidityReportUI ui = new ACAQValidityReportUI(true);
         ui.setReport(report);
         JDialog dialog = new JDialog();
         dialog.setTitle("Error");
         dialog.setContentPane(ui);
-        dialog.setModal(false);
+        dialog.setModal(modal);
         dialog.pack();
         dialog.setSize(new Dimension(500, 400));
         dialog.setLocationRelativeTo(parent);
