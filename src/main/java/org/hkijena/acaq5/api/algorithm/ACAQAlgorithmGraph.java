@@ -624,7 +624,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
             ACAQAlgorithm targetAlgorithm = algorithms.get(StringUtils.jsonify(edgeNode.get("target-algorithm").asText()));
             ACAQDataSlot source = sourceAlgorithm.getSlots().get(StringUtils.makeFilesystemCompatible(edgeNode.get("source-slot").asText()));
             ACAQDataSlot target = targetAlgorithm.getSlots().get(StringUtils.makeFilesystemCompatible(edgeNode.get("target-slot").asText()));
-            if(target.isInput() && graph.inDegreeOf(target) > 0) {
+            if(!graph.containsEdge(source, target) && graph.inDegreeOf(target) > 0) {
                 System.err.println("Detected invalid edge from " + source.getAlgorithm().getIdInGraph() + "/" + source.getName() + " -> "
                         + target.getAlgorithm().getIdInGraph() + "/" + target.getName() + "! Input slot already has a source. Skipping this instruction.");
                 continue;
