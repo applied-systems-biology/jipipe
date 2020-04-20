@@ -13,6 +13,7 @@ import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.AlgorithmGraphConnectedEvent;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.ui.components.PickAlgorithmDialog;
+import org.hkijena.acaq5.ui.events.AlgorithmEvent;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.acaq5.ui.events.DefaultUIActionRequestedEvent;
 import org.hkijena.acaq5.ui.settings.ACAQApplicationSettings;
@@ -85,6 +86,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             if (ui != null) {
                 ui.trySetLocationInGrid(mouseLocation.x, mouseLocation.y);
                 repaint();
+                getEventBus().post(new AlgorithmEvent(ui));
             }
         }
     }
@@ -133,13 +135,13 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
      */
     private void addNewNodes() {
         int newlyPlacedAlgorithms = 0;
+        ACAQAlgorithmUI ui = null;
         for (ACAQAlgorithm algorithm : algorithmGraph.traverseAlgorithms()) {
             if (!algorithm.isVisibleIn(compartment))
                 continue;
             if (nodeUIs.containsKey(algorithm))
                 continue;
 
-            ACAQAlgorithmUI ui;
             switch (currentViewMode) {
                 case Horizontal:
                     ui = new ACAQHorizontalAlgorithmUI(this, algorithm);
@@ -171,6 +173,9 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
         if (newlyPlacedAlgorithms == nodeUIs.size()) {
             autoLayoutAll();
+        }
+        if(ui != null) {
+            getEventBus().post(new AlgorithmEvent(ui));
         }
     }
 

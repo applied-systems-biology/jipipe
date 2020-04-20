@@ -5,8 +5,7 @@ import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
 /**
  * Generated when an algorithm is selected
  */
-public class AlgorithmSelectedEvent {
-    private ACAQAlgorithmUI ui;
+public class AlgorithmSelectedEvent extends AlgorithmEvent {
     private boolean addToSelection;
 
     /**
@@ -14,12 +13,8 @@ public class AlgorithmSelectedEvent {
      * @param addToSelection if the algorithm should be added to the selection
      */
     public AlgorithmSelectedEvent(ACAQAlgorithmUI ui, boolean addToSelection) {
-        this.ui = ui;
+        super(ui);
         this.addToSelection = addToSelection;
-    }
-
-    public ACAQAlgorithmUI getUi() {
-        return ui;
     }
 
     public boolean isAddToSelection() {

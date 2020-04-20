@@ -7,6 +7,7 @@ import org.hkijena.acaq5.api.events.AlgorithmRegisteredEvent;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
+import org.hkijena.acaq5.ui.events.AlgorithmEvent;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -205,6 +206,24 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
         } else {
             clearSelection();
         }
+    }
+
+    /**
+     * Triggered when something interesting happens in the graph and the UI should scroll to it
+     * @param event generated event
+     */
+    @Subscribe
+    public void onAlgorithmEvent(AlgorithmEvent event) {
+        scrollToAlgorithm(event.getUi());
+    }
+
+    /**
+     * Scrolls to the specified algorithm UI
+     * @param ui the algorithm
+     */
+    public void scrollToAlgorithm(ACAQAlgorithmUI ui) {
+        scrollPane.getHorizontalScrollBar().setValue(Math.max(scrollPane.getHorizontalScrollBar().getValue(), ui.getX()));
+        scrollPane.getVerticalScrollBar().setValue(Math.max(scrollPane.getVerticalScrollBar().getValue(), ui.getY()));
     }
 
     /**
