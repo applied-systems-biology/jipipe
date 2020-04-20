@@ -10,6 +10,7 @@ public class AlgorithmEvent {
 
     /**
      * Creates a new event
+     *
      * @param ui the algorithm
      */
     public AlgorithmEvent(ACAQAlgorithmUI ui) {

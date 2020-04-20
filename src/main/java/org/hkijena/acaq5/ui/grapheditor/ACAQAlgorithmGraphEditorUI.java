@@ -1,12 +1,15 @@
 package org.hkijena.acaq5.ui.grapheditor;
 
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.AlgorithmRegisteredEvent;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
+import org.hkijena.acaq5.ui.components.ColorIcon;
+import org.hkijena.acaq5.ui.components.SearchComboBox;
 import org.hkijena.acaq5.ui.events.AlgorithmEvent;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -18,8 +21,10 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * A panel around {@link ACAQAlgorithmGraphCanvasUI} that comes with scrolling/panning, properties panel,
@@ -41,6 +46,8 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
 
 
     private Set<ACAQAlgorithmUI> selection = new HashSet<>();
+    private Set<ACAQAlgorithmDeclaration> addableAlgorithms = new HashSet<>();
+    private SearchComboBox<Object> navigator = new SearchComboBox<>();
 
     /**
      * @param workbenchUI    the workbench
@@ -54,6 +61,7 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
         initialize();
         reloadMenuBar();
         ACAQAlgorithmRegistry.getInstance().getEventBus().register(this);
+        algorithmGraph.getEventBus().register(this);
     }
 
     private void initialize() {
@@ -85,7 +93,22 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
         add(splitPane, BorderLayout.CENTER);
 
         add(menuBar, BorderLayout.NORTH);
-        algorithmGraph.getEventBus().register(this);
+        navigator.setModel(new DefaultComboBoxModel<>());
+        navigator.setRenderer(new NavigationRenderer());
+        navigator.addItemListener(e -> navigatorNavigate());
+        navigator.setFilterFunction(ACAQAlgorithmGraphEditorUI::filterNavigationEntry);
+    }
+
+    private void navigatorNavigate() {
+        if (navigator.getSelectedItem() instanceof ACAQAlgorithmUI) {
+            selectOnly((ACAQAlgorithmUI) navigator.getSelectedItem());
+            navigator.setSelectedItem(null);
+        } else if (navigator.getSelectedItem() instanceof ACAQAlgorithmDeclaration) {
+            ACAQAlgorithmDeclaration declaration = (ACAQAlgorithmDeclaration) navigator.getSelectedItem();
+            algorithmGraph.insertNode(declaration.newInstance(), compartment);
+            navigator.setSelectedItem(null);
+        }
+
     }
 
     public Set<ACAQAlgorithmUI> getSelection() {
@@ -105,6 +128,13 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
      */
     protected void initializeCommonActions() {
         menuBar.add(Box.createHorizontalGlue());
+
+        menuBar.add(navigator);
+        JButton clearNavigator = new JButton(UIUtils.getIconFromResources("clear.png"));
+        UIUtils.makeFlat25x25(clearNavigator);
+        clearNavigator.addActionListener(e -> navigator.clearSearch());
+        menuBar.add(clearNavigator);
+        menuBar.add(Box.createHorizontalStrut(8));
 
         ButtonGroup viewModeGroup = new ButtonGroup();
 
@@ -210,20 +240,32 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
 
     /**
      * Triggered when something interesting happens in the graph and the UI should scroll to it
+     *
      * @param event generated event
      */
     @Subscribe
     public void onAlgorithmEvent(AlgorithmEvent event) {
-        scrollToAlgorithm(event.getUi());
+        if (event.getUi() != null) {
+            scrollToAlgorithm(event.getUi());
+        }
     }
 
     /**
      * Scrolls to the specified algorithm UI
+     *
      * @param ui the algorithm
      */
     public void scrollToAlgorithm(ACAQAlgorithmUI ui) {
-        scrollPane.getHorizontalScrollBar().setValue(Math.max(scrollPane.getHorizontalScrollBar().getValue(), ui.getX()));
-        scrollPane.getVerticalScrollBar().setValue(Math.max(scrollPane.getVerticalScrollBar().getValue(), ui.getY()));
+        int minViewX = scrollPane.getHorizontalScrollBar().getValue();
+        int maxViewX = minViewX + scrollPane.getHorizontalScrollBar().getVisibleAmount();
+        int minViewY = scrollPane.getVerticalScrollBar().getValue();
+        int maxViewY = minViewY + scrollPane.getVerticalScrollBar().getVisibleAmount();
+        if (ui.getX() < minViewX || ui.getX() > maxViewX) {
+            scrollPane.getHorizontalScrollBar().setValue(ui.getX());
+        }
+        if (ui.getY() < minViewY || ui.getY() > maxViewY) {
+            scrollPane.getVerticalScrollBar().setValue(ui.getY());
+        }
     }
 
     /**
@@ -254,6 +296,7 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
             clearSelection();
             addToSelection(ui);
         }
+        scrollToAlgorithm(ui);
     }
 
     /**
@@ -309,6 +352,7 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
         if (selection.stream().anyMatch(ui -> !algorithmGraph.getAlgorithmNodes().containsValue(ui.getAlgorithm()))) {
             clearSelection();
         }
+        updateNavigation();
     }
 
     @Override
@@ -379,5 +423,76 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
 
     protected JMenuBar getMenuBar() {
         return menuBar;
+    }
+
+    public Set<ACAQAlgorithmDeclaration> getAddableAlgorithms() {
+        return addableAlgorithms;
+    }
+
+    public void setAddableAlgorithms(Set<ACAQAlgorithmDeclaration> addableAlgorithms) {
+        this.addableAlgorithms = addableAlgorithms;
+        updateNavigation();
+    }
+
+    /**
+     * Updates the navigation list
+     */
+    public void updateNavigation() {
+        DefaultComboBoxModel<Object> model = (DefaultComboBoxModel<Object>) navigator.getModel();
+        model.removeAllElements();
+        for (ACAQAlgorithmUI ui : graphUI.getNodeUIs().values().stream().sorted(Comparator.comparing(ui -> ui.getAlgorithm().getName())).collect(Collectors.toList())) {
+            model.addElement(ui);
+        }
+        for (ACAQAlgorithmDeclaration declaration : addableAlgorithms.stream()
+                .sorted(Comparator.comparing(ACAQAlgorithmDeclaration::getName)).collect(Collectors.toList())) {
+            model.addElement(declaration);
+        }
+    }
+
+    private static boolean filterNavigationEntry(Object entry, String searchString) {
+        if (entry instanceof ACAQAlgorithmDeclaration) {
+            return ((ACAQAlgorithmDeclaration) entry).getName().toLowerCase().contains(searchString.toLowerCase());
+        } else if (entry instanceof ACAQAlgorithmUI) {
+            return ((ACAQAlgorithmUI) entry).getAlgorithm().getName().toLowerCase().contains(searchString.toLowerCase());
+        }
+        return false;
+    }
+
+    /**
+     * Renders items in the navigator
+     */
+    public static class NavigationRenderer extends JLabel implements ListCellRenderer<Object> {
+
+        /**
+         * Creates a new instance
+         */
+        public NavigationRenderer() {
+            setOpaque(true);
+            setFont(getFont().deriveFont(Font.PLAIN));
+            setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        }
+
+        @Override
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+
+            if (value instanceof ACAQAlgorithmDeclaration) {
+                ACAQAlgorithmDeclaration declaration = (ACAQAlgorithmDeclaration) value;
+                setIcon(new ColorIcon(16, 16, Color.WHITE, UIUtils.getFillColorFor(declaration)));
+                setText("<html>Create new <strong>" + declaration.getName() + "</strong></html>");
+            } else if (value instanceof ACAQAlgorithmUI) {
+                ACAQAlgorithmUI ui = (ACAQAlgorithmUI) value;
+                setIcon(UIUtils.getIconFromColor(UIUtils.getFillColorFor(ui.getAlgorithm().getDeclaration())));
+                setText("<html>Navigate to <strong>" + ui.getAlgorithm().getName() + "</strong></html>");
+            } else {
+                setText("<Null>");
+            }
+
+            if (isSelected) {
+                setBackground(new Color(184, 207, 229));
+            } else {
+                setBackground(new Color(255, 255, 255));
+            }
+            return this;
+        }
     }
 }

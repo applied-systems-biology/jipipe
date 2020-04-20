@@ -22,8 +22,8 @@ public class ColorIcon implements Icon {
     private int imageWidth;
     private int imageHeight;
 
-    private Color color;
-    private Color border;
+    private Color fillColor;
+    private Color borderColor;
     private Insets insets;
 
     /**
@@ -44,29 +44,41 @@ public class ColorIcon implements Icon {
     }
 
     /**
-     * @param width  icon width
-     * @param height icon height
-     * @param c      icon color
+     * Creates an icon with black borders
+     *
+     * @param imageWidth  icon width
+     * @param imageHeight icon height
+     * @param fillColor   fill color
      */
-    public ColorIcon(int width, int height, Color c) {
+    public ColorIcon(int imageWidth, int imageHeight, Color fillColor) {
+        this(imageWidth, imageHeight, fillColor, Color.BLACK);
+    }
+
+    /**
+     * @param width       icon width
+     * @param height      icon height
+     * @param fillColor   fill color
+     * @param borderColor border color
+     */
+    public ColorIcon(int width, int height, Color fillColor, Color borderColor) {
         imageWidth = width;
         imageHeight = height;
 
-        color = c;
-        border = Color.black;
+        this.fillColor = fillColor;
+        this.borderColor = borderColor;
         insets = new Insets(1, 1, 1, 1);
     }
 
-    public Color getColor() {
-        return color;
+    public Color getFillColor() {
+        return fillColor;
     }
 
-    public void setColor(Color c) {
-        color = c;
+    public void setFillColor(Color c) {
+        fillColor = c;
     }
 
     public void setBorderColor(Color c) {
-        border = c;
+        borderColor = c;
     }
 
     public int getIconWidth() {
@@ -78,7 +90,7 @@ public class ColorIcon implements Icon {
     }
 
     public void paintIcon(Component c, Graphics g, int x, int y) {
-        g.setColor(border);
+        g.setColor(borderColor);
         g.drawRect(x, y, imageWidth - 1, imageHeight - 2);
 
         x += insets.left;
@@ -87,7 +99,7 @@ public class ColorIcon implements Icon {
         int w = imageWidth - insets.left - insets.right;
         int h = imageHeight - insets.top - insets.bottom - 1;
 
-        g.setColor(color);
+        g.setColor(fillColor);
         g.fillRect(x, y, w, h);
     }
 }

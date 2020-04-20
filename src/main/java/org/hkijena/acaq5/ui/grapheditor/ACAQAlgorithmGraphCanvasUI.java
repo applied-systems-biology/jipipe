@@ -2,6 +2,7 @@ package org.hkijena.acaq5.ui.grapheditor;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -174,7 +175,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         if (newlyPlacedAlgorithms == nodeUIs.size()) {
             autoLayoutAll();
         }
-        if(ui != null) {
+        if (ui != null) {
             getEventBus().post(new AlgorithmEvent(ui));
         }
     }
@@ -812,6 +813,10 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             removeAllNodes();
             addNewNodes();
         }
+    }
+
+    public BiMap<ACAQAlgorithm, ACAQAlgorithmUI> getNodeUIs() {
+        return ImmutableBiMap.copyOf(nodeUIs);
     }
 
     /**
