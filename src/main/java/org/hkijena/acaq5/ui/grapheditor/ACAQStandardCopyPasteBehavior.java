@@ -3,9 +3,7 @@ package org.hkijena.acaq5.ui.grapheditor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableSet;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
-import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.awt.*;
@@ -13,7 +11,6 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -33,19 +30,7 @@ public class ACAQStandardCopyPasteBehavior implements ACAQAlgorithmGraphCopyPast
 
     @Override
     public void copy(Set<ACAQAlgorithm> algorithms) {
-        ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
-        for (ACAQAlgorithm algorithm : algorithms) {
-            if (algorithm.getCategory() == ACAQAlgorithmCategory.Internal)
-                continue;
-            graph.insertNode(algorithm.getIdInGraph(), algorithm.duplicate(), ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
-        }
-        for (Map.Entry<ACAQDataSlot, ACAQDataSlot> edge : editorUI.getAlgorithmGraph().getSlotEdges()) {
-            ACAQDataSlot source = edge.getKey();
-            ACAQDataSlot target = edge.getValue();
-            if (algorithms.contains(source.getAlgorithm()) && algorithms.contains(target.getAlgorithm())) {
-                graph.connect(graph.getEquivalentSlot(source), graph.getEquivalentSlot(target));
-            }
-        }
+        ACAQAlgorithmGraph graph = ACAQAlgorithmGraph.getIsolatedGraph(editorUI.getAlgorithmGraph(), algorithms, true);
         try {
             String json = JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(graph);
             StringSelection selection = new StringSelection(json);

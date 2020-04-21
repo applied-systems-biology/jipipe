@@ -43,6 +43,8 @@ public abstract class ACAQAlgorithmUI extends JPanel {
 
     private boolean selected;
     private JPopupMenu contextMenu = new JPopupMenu();
+    private JMenuItem cutContextMenuButton;
+    private JMenuItem copyContextMenuButton;
 
     /**
      * Creates a new UI
@@ -59,10 +61,22 @@ public abstract class ACAQAlgorithmUI extends JPanel {
         this.algorithm.getTraitConfiguration().getEventBus().register(this);
         this.fillColor = UIUtils.getFillColorFor(algorithm.getDeclaration());
         this.borderColor = UIUtils.getBorderColorFor(algorithm.getDeclaration());
+        updateContextMenu();
     }
 
     public JPopupMenu getContextMenu() {
         return contextMenu;
+    }
+
+    /**
+     * Changes properties of the context menu.
+     * You should not add new items, unless you always replace them
+     */
+    public void updateContextMenu() {
+        if (cutContextMenuButton == null || copyContextMenuButton == null)
+            return;
+        cutContextMenuButton.setEnabled(algorithm.canUserDelete() && graphUI.getCopyPasteBehavior() != null);
+        copyContextMenuButton.setEnabled(algorithm.canUserDelete() && graphUI.getCopyPasteBehavior() != null);
     }
 
     /**
@@ -77,17 +91,15 @@ public abstract class ACAQAlgorithmUI extends JPanel {
         addToSelectionButton.addActionListener(e -> eventBus.post(new AlgorithmSelectedEvent(this, true)));
         contextMenu.add(addToSelectionButton);
 
-        if (graphUI.getCopyPasteBehavior() != null) {
-            contextMenu.addSeparator();
+        contextMenu.addSeparator();
 
-            JMenuItem cutButton = new JMenuItem("Cut", UIUtils.getIconFromResources("cut.png"));
-            cutButton.addActionListener(e -> graphUI.getCopyPasteBehavior().cut(Collections.singleton(getAlgorithm())));
-            contextMenu.add(cutButton);
+        cutContextMenuButton = new JMenuItem("Cut", UIUtils.getIconFromResources("cut.png"));
+        cutContextMenuButton.addActionListener(e -> graphUI.getCopyPasteBehavior().cut(Collections.singleton(getAlgorithm())));
+        contextMenu.add(cutContextMenuButton);
 
-            JMenuItem copyButton = new JMenuItem("Copy", UIUtils.getIconFromResources("copy.png"));
-            copyButton.addActionListener(e -> graphUI.getCopyPasteBehavior().copy(Collections.singleton(getAlgorithm())));
-            contextMenu.add(copyButton);
-        }
+        copyContextMenuButton = new JMenuItem("Copy", UIUtils.getIconFromResources("copy.png"));
+        copyContextMenuButton.addActionListener(e -> graphUI.getCopyPasteBehavior().copy(Collections.singleton(getAlgorithm())));
+        contextMenu.add(copyContextMenuButton);
 
         contextMenu.addSeparator();
 

@@ -8,6 +8,7 @@ import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
+import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQSlotEditorUI;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterAccessUI;
 import org.hkijena.acaq5.utils.TooltipUtils;
@@ -17,20 +18,24 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collections;
 
 /**
  * UI for a single {@link ACAQProjectCompartment}
  */
 public class ACAQSingleCompartmentSelectionPanelUI extends ACAQProjectWorkbenchPanel {
     private ACAQProjectCompartment compartment;
+    private ACAQAlgorithmGraphCanvasUI canvas;
 
     /**
      * @param workbenchUI the workbench
      * @param compartment the compartment
+     * @param canvas      the graph canvas
      */
-    public ACAQSingleCompartmentSelectionPanelUI(ACAQProjectWorkbench workbenchUI, ACAQProjectCompartment compartment) {
+    public ACAQSingleCompartmentSelectionPanelUI(ACAQProjectWorkbench workbenchUI, ACAQProjectCompartment compartment, ACAQAlgorithmGraphCanvasUI canvas) {
         super(workbenchUI);
         this.compartment = compartment;
+        this.canvas = canvas;
         initialize();
     }
 
@@ -72,6 +77,18 @@ public class ACAQSingleCompartmentSelectionPanelUI extends ACAQProjectWorkbenchP
         toolBar.add(nameLabel);
 
         toolBar.add(Box.createHorizontalGlue());
+
+        if (canvas.getCopyPasteBehavior() != null) {
+            JButton cutButton = new JButton(UIUtils.getIconFromResources("cut.png"));
+            cutButton.setToolTipText("Cut");
+            cutButton.addActionListener(e -> canvas.getCopyPasteBehavior().cut(Collections.singleton(compartment)));
+            toolBar.add(cutButton);
+
+            JButton copyButton = new JButton(UIUtils.getIconFromResources("copy.png"));
+            copyButton.setToolTipText("Copy");
+            copyButton.addActionListener(e -> canvas.getCopyPasteBehavior().copy(Collections.singleton(compartment)));
+            toolBar.add(copyButton);
+        }
 
         JButton openButton = new JButton("Open in editor", UIUtils.getIconFromResources("edit.png"));
         openButton.addActionListener(e -> openInEditor());

@@ -63,15 +63,16 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
         this.compartment = compartment;
         initialize();
         reloadMenuBar();
-        reloadContextMenu();
+        updateContextMenu();
         ACAQAlgorithmRegistry.getInstance().getEventBus().register(this);
         algorithmGraph.getEventBus().register(this);
     }
 
     /**
-     * Reloads the context menu
+     * Changes properties of the context menu.
+     * You should not add new items, unless you always replace them
      */
-    public void reloadContextMenu() {
+    public void updateContextMenu() {
         cutContextMenuItem.setEnabled(graphUI.getCopyPasteBehavior() != null && !selection.isEmpty());
         copyContextMenuItem.setEnabled(graphUI.getCopyPasteBehavior() != null && !selection.isEmpty());
         pasteContextMenuItem.setEnabled(graphUI.getCopyPasteBehavior() != null);
@@ -364,7 +365,7 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
      * Called when the selection was changed and the UI should react
      */
     protected void updateSelection() {
-        reloadContextMenu();
+        updateContextMenu();
     }
 
     /**

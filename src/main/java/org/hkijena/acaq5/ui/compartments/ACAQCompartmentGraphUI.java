@@ -36,6 +36,10 @@ public class ACAQCompartmentGraphUI extends ACAQAlgorithmGraphEditorUI {
         documentationPanel = new MarkdownReader(false);
         documentationPanel.setDocument(MarkdownDocument.fromPluginResource("documentation/compartment-graph.md"));
         setPropertyPanel(documentationPanel);
+
+        // Copy & paste behavior
+        getGraphUI().setCopyPasteBehavior(new ACAQCompartmentGraphCopyPasteBehavior(this));
+        updateContextMenu();
     }
 
     @Override
@@ -52,10 +56,10 @@ public class ACAQCompartmentGraphUI extends ACAQAlgorithmGraphEditorUI {
             setPropertyPanel(documentationPanel);
         } else if (getSelection().size() == 1) {
             setPropertyPanel(new ACAQSingleCompartmentSelectionPanelUI((ACAQProjectWorkbench) getWorkbench(),
-                    (ACAQProjectCompartment) getSelection().iterator().next().getAlgorithm()));
+                    (ACAQProjectCompartment) getSelection().iterator().next().getAlgorithm(), getGraphUI()));
         } else {
             setPropertyPanel(new ACAQMultiCompartmentSelectionPanelUI((ACAQProjectWorkbench) getWorkbench(),
-                    getSelection().stream().map(ui -> (ACAQProjectCompartment) ui.getAlgorithm()).collect(Collectors.toSet())));
+                    getSelection().stream().map(ui -> (ACAQProjectCompartment) ui.getAlgorithm()).collect(Collectors.toSet()), getGraphUI()));
         }
     }
 

@@ -12,6 +12,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.*;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
@@ -125,7 +126,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * @return True if the user can delete the algorithm
      */
     public boolean canUserDelete(ACAQAlgorithm algorithm) {
-        return algorithm.getCategory() != ACAQAlgorithmCategory.Internal;
+        return algorithm.getCategory() != ACAQAlgorithmCategory.Internal || algorithm instanceof ACAQProjectCompartment;
     }
 
     /**
@@ -235,7 +236,6 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
             return false;
         return true;
     }
-
 
     /**
      * Connects an output slot to an input slot.
@@ -899,6 +899,32 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
     public boolean isUpdatingSlotTraits() {
         return isUpdatingSlotTraits;
+    }
+
+    /**
+     * Copies the algorithms and edges between them into a new graph.
+     * Edges outside of the set are ignored.
+     *
+     * @param sourceGraph    the graph that contains the algorithms
+     * @param algorithms     the algorithms
+     * @param ignoreInternal if true, internal nodes are ignored
+     * @return The isolated graph
+     */
+    public static ACAQAlgorithmGraph getIsolatedGraph(ACAQAlgorithmGraph sourceGraph, Set<ACAQAlgorithm> algorithms, boolean ignoreInternal) {
+        ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
+        for (ACAQAlgorithm algorithm : algorithms) {
+            if (ignoreInternal && algorithm.getCategory() == ACAQAlgorithmCategory.Internal)
+                continue;
+            graph.insertNode(algorithm.getIdInGraph(), algorithm.duplicate(), ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
+        }
+        for (Map.Entry<ACAQDataSlot, ACAQDataSlot> edge : sourceGraph.getSlotEdges()) {
+            ACAQDataSlot source = edge.getKey();
+            ACAQDataSlot target = edge.getValue();
+            if (algorithms.contains(source.getAlgorithm()) && algorithms.contains(target.getAlgorithm())) {
+                graph.connect(graph.getEquivalentSlot(source), graph.getEquivalentSlot(target));
+            }
+        }
+        return graph;
     }
 
     /**

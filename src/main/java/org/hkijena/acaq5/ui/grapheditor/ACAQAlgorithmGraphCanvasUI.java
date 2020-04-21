@@ -82,6 +82,15 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         contextMenu.add(moveHereItem);
     }
 
+    /**
+     * Updates the context menus of all node UIs
+     */
+    public void updateContextMenus() {
+        for (ACAQAlgorithmUI ui : nodeUIs.values()) {
+            ui.updateContextMenu();
+        }
+    }
+
     private void moveNodeHere() {
         Point mouseLocation = MouseInfo.getPointerInfo().getLocation();
         SwingUtilities.convertPointFromScreen(mouseLocation, this);
@@ -829,6 +838,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
     public void setCopyPasteBehavior(ACAQAlgorithmGraphCopyPasteBehavior copyPasteBehavior) {
         this.copyPasteBehavior = copyPasteBehavior;
+        updateContextMenus();
     }
 
     public ACAQAlgorithmGraphDragAndDropBehavior getDragAndDropBehavior() {

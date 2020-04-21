@@ -32,7 +32,7 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQAlgorithmGraphEditorU
         // Set D&D and Copy&Paste behavior
         getGraphUI().setDragAndDropBehavior(new ACAQStandardDragAndDropBehavior());
         getGraphUI().setCopyPasteBehavior(new ACAQStandardCopyPasteBehavior(this));
-        reloadContextMenu();
+        updateContextMenu();
     }
 
     /**

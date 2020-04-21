@@ -875,6 +875,15 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
     }
 
     /**
+     * Returns true if a user can delete this algorithm
+     *
+     * @return if a user can delete this algorithm
+     */
+    public boolean canUserDelete() {
+        return graph.canUserDelete(this);
+    }
+
+    /**
      * Utility function to create an algorithm instance from its id
      *
      * @param id  Algorithm ID
