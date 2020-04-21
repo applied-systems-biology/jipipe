@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.api;
+package org.hkijena.acaq5.api.algorithm;
 
 import org.jgrapht.graph.DefaultEdge;
 

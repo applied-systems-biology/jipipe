@@ -10,7 +10,6 @@ import com.google.common.collect.*;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQDependency;
-import org.hkijena.acaq5.api.ACAQAlgorithmGraphEdge;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
@@ -837,12 +836,21 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     /**
      * Returns the algorithm that has the same ID as the foreign algorithm in the foreign graph.
      *
-     * @param foreign      An algorithm
-     * @param foreignGraph Graph that contains the foreign algorithm
+     * @param foreign An algorithm
      * @return Equivalent algorithm within this graph
      */
-    public ACAQAlgorithm getEquivalentOf(ACAQAlgorithm foreign, ACAQAlgorithmGraph foreignGraph) {
-        return getAlgorithmNodes().get(foreignGraph.getIdOf(foreign));
+    public ACAQAlgorithm getEquivalentAlgorithm(ACAQAlgorithm foreign) {
+        return getAlgorithmNodes().get(foreign.getIdInGraph());
+    }
+
+    /**
+     * Returns the slot with the same name within the algorithm with the same ID.
+     *
+     * @param foreign A data slot
+     * @return slot with the same name within the algorithm with the same ID
+     */
+    public ACAQDataSlot getEquivalentSlot(ACAQDataSlot foreign) {
+        return getAlgorithmNodes().get(foreign.getAlgorithm().getIdInGraph()).getSlots().get(foreign.getName());
     }
 
     /**

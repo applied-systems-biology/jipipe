@@ -6,9 +6,9 @@ import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.api.ACAQAlgorithmGraphEdge;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraphEdge;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.AlgorithmGraphConnectedEvent;
@@ -27,6 +27,7 @@ import org.jgrapht.traverse.TopologicalOrderIterator;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.dnd.DropTarget;
 import java.awt.event.*;
 import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
@@ -47,6 +48,8 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     private String compartment;
     private JPopupMenu contextMenu;
     private ViewMode currentViewMode = ACAQApplicationSettings.getInstance().getViewMode();
+    private ACAQAlgorithmGraphDragAndDropBehavior dragAndDropBehavior;
+    private ACAQAlgorithmGraphCopyPasteBehavior copyPasteBehavior;
 
     /**
      * Creates a new UI
@@ -72,6 +75,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
     private void initializeContextMenu() {
         contextMenu = new JPopupMenu();
+
         JMenuItem moveHereItem = new JMenuItem("Move node here ...", UIUtils.getIconFromResources("move.png"));
         moveHereItem.setToolTipText("Move a specified node to the mouse position");
         moveHereItem.addActionListener(e -> moveNodeHere());
@@ -817,6 +821,28 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
     public BiMap<ACAQAlgorithm, ACAQAlgorithmUI> getNodeUIs() {
         return ImmutableBiMap.copyOf(nodeUIs);
+    }
+
+    public ACAQAlgorithmGraphCopyPasteBehavior getCopyPasteBehavior() {
+        return copyPasteBehavior;
+    }
+
+    public void setCopyPasteBehavior(ACAQAlgorithmGraphCopyPasteBehavior copyPasteBehavior) {
+        this.copyPasteBehavior = copyPasteBehavior;
+    }
+
+    public ACAQAlgorithmGraphDragAndDropBehavior getDragAndDropBehavior() {
+        return dragAndDropBehavior;
+    }
+
+    public void setDragAndDropBehavior(ACAQAlgorithmGraphDragAndDropBehavior dragAndDropBehavior) {
+        this.dragAndDropBehavior = dragAndDropBehavior;
+        dragAndDropBehavior.setCanvas(this);
+        new DropTarget(this, dragAndDropBehavior);
+    }
+
+    public JPopupMenu getContextMenu() {
+        return contextMenu;
     }
 
     /**

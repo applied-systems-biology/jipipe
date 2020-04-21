@@ -11,6 +11,8 @@ import org.jdesktop.swingx.JXTextField;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -38,6 +40,10 @@ public class ACAQAlgorithmPicker extends JPanel {
         this.availableDeclarations.addAll(availableDeclarations.stream().sorted(Comparator.comparing(ACAQAlgorithmDeclaration::getName)).collect(Collectors.toList()));
         initialize();
         refreshTraitList();
+    }
+
+    public JList<ACAQAlgorithmDeclaration> getDeclarationList() {
+        return declarationList;
     }
 
     private void initialize() {
@@ -208,8 +214,19 @@ public class ACAQAlgorithmPicker extends JPanel {
 
         panel.add(buttonPanel, BorderLayout.SOUTH);
 
+        picker.declarationList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    if (picker.declarationList.getSelectedValue() != null) {
+                        dialog.setVisible(false);
+                    }
+                }
+            }
+        });
+
         dialog.setContentPane(panel);
-        dialog.setTitle("Pick annotation");
+        dialog.setTitle("Pick algorithm");
         dialog.setModal(true);
         dialog.pack();
         dialog.setSize(new Dimension(500, 600));

@@ -9,28 +9,33 @@ import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
+import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
+import org.hkijena.acaq5.ui.parameters.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.settings.ACAQGraphWrapperAlgorithmExporter;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Collections;
 
 /**
  * UI for a single {@link ACAQAlgorithm}
  */
 public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPanel {
     private ACAQAlgorithmGraph graph;
+    private ACAQAlgorithmGraphCanvasUI canvas;
     private ACAQAlgorithm algorithm;
 
     /**
      * @param workbenchUI the workbench UI
-     * @param graph       the graph
+     * @param canvas      the graph
      * @param algorithm   the algorithm
      */
-    public ACAQSingleAlgorithmSelectionPanelUI(ACAQProjectWorkbench workbenchUI, ACAQAlgorithmGraph graph, ACAQAlgorithm algorithm) {
+    public ACAQSingleAlgorithmSelectionPanelUI(ACAQProjectWorkbench workbenchUI, ACAQAlgorithmGraphCanvasUI canvas, ACAQAlgorithm algorithm) {
         super(workbenchUI);
-        this.graph = graph;
+        this.graph = canvas.getAlgorithmGraph();
+        this.canvas = canvas;
         this.algorithm = algorithm;
         initialize();
     }
@@ -39,10 +44,11 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPan
         setLayout(new BorderLayout());
         DocumentTabPane tabbedPane = new DocumentTabPane();
 
-        ACAQAlgorithmParametersUI parametersUI = new ACAQAlgorithmParametersUI(getProjectWorkbench(),
+        ACAQParameterAccessUI parametersUI = new ACAQParameterAccessUI(getProjectWorkbench(),
                 algorithm,
                 MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md"),
-                true, true);
+                true,
+                true);
         tabbedPane.addTab("Parameters", UIUtils.getIconFromResources("cog.png"),
                 parametersUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,
@@ -80,6 +86,20 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPan
         toolBar.add(nameLabel);
 
         toolBar.add(Box.createHorizontalGlue());
+
+        if (canvas.getCopyPasteBehavior() != null) {
+            JButton cutButton = new JButton(UIUtils.getIconFromResources("cut.png"));
+            cutButton.setToolTipText("Cut");
+            cutButton.setEnabled(algorithm.getCategory() != ACAQAlgorithmCategory.Internal);
+            cutButton.addActionListener(e -> canvas.getCopyPasteBehavior().cut(Collections.singleton(algorithm)));
+            toolBar.add(cutButton);
+
+            JButton copyButton = new JButton(UIUtils.getIconFromResources("copy.png"));
+            copyButton.setToolTipText("Copy");
+            copyButton.setEnabled(algorithm.getCategory() != ACAQAlgorithmCategory.Internal);
+            copyButton.addActionListener(e -> canvas.getCopyPasteBehavior().copy(Collections.singleton(algorithm)));
+            toolBar.add(copyButton);
+        }
 
         JButton exportButton = new JButton(UIUtils.getIconFromResources("export.png"));
         exportButton.setToolTipText("Export algorithm");

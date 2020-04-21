@@ -82,7 +82,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
     private void initializeSlots() {
         graphSlots.clear();
         for (Map.Entry<ACAQDataSlot, String> entry : ((GraphWrapperAlgorithmDeclaration) getDeclaration()).getExportedSlotNames().entrySet()) {
-            ACAQAlgorithm localAlgorithm = wrappedGraph.getEquivalentOf(entry.getKey().getAlgorithm(), entry.getKey().getAlgorithm().getGraph());
+            ACAQAlgorithm localAlgorithm = wrappedGraph.getEquivalentAlgorithm(entry.getKey().getAlgorithm());
             ACAQDataSlot localSlot = localAlgorithm.getSlots().get(entry.getKey().getName());
             graphSlots.put(entry.getValue(), localSlot);
         }

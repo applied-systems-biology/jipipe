@@ -39,6 +39,11 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
         documentationPanel = new MarkdownReader(false);
         documentationPanel.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md"));
         setPropertyPanel(documentationPanel);
+
+        // Set D&D and Copy&Paste behavior
+        getGraphUI().setDragAndDropBehavior(new ACAQStandardDragAndDropBehavior());
+        getGraphUI().setCopyPasteBehavior(new ACAQStandardCopyPasteBehavior(this));
+        reloadContextMenu();
     }
 
 
@@ -53,13 +58,14 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
 
     @Override
     protected void updateSelection() {
+        super.updateSelection();
         if (getSelection().isEmpty()) {
             setPropertyPanel(documentationPanel);
         } else if (getSelection().size() == 1) {
             ACAQAlgorithmUI ui = getSelection().iterator().next();
-            setPropertyPanel(new ACAQSingleAlgorithmSelectionPanelUI((ACAQProjectWorkbench) getWorkbench(), getAlgorithmGraph(), ui.getAlgorithm()));
+            setPropertyPanel(new ACAQSingleAlgorithmSelectionPanelUI((ACAQProjectWorkbench) getWorkbench(), getGraphUI(), ui.getAlgorithm()));
         } else {
-            setPropertyPanel(new ACAQMultiAlgorithmSelectionPanelUI((ACAQProjectWorkbench) getWorkbench(), getAlgorithmGraph(),
+            setPropertyPanel(new ACAQMultiAlgorithmSelectionPanelUI((ACAQProjectWorkbench) getWorkbench(), getGraphUI(),
                     getSelection().stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet())));
         }
     }

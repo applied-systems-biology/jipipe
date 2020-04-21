@@ -1,35 +1,41 @@
 package org.hkijena.acaq5.ui.extensionbuilder.grapheditor;
 
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
+import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQSlotEditorUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQTraitEditorUI;
+import org.hkijena.acaq5.ui.parameters.ACAQParameterAccessUI;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Collections;
 
 /**
  * Shown when one algorithm is selected
  */
 public class ACAQJsonExtensionSingleAlgorithmSelectionPanelUI extends ACAQJsonExtensionWorkbenchPanel {
     private ACAQAlgorithmGraph graph;
+    private ACAQAlgorithmGraphCanvasUI canvas;
     private ACAQAlgorithm algorithm;
 
     /**
      * @param workbenchUI The workbench UI
-     * @param graph       The algorithm graph
+     * @param canvas      The algorithm graph
      * @param algorithm   The algorithm
      */
-    public ACAQJsonExtensionSingleAlgorithmSelectionPanelUI(ACAQJsonExtensionWorkbench workbenchUI, ACAQAlgorithmGraph graph, ACAQAlgorithm algorithm) {
+    public ACAQJsonExtensionSingleAlgorithmSelectionPanelUI(ACAQJsonExtensionWorkbench workbenchUI, ACAQAlgorithmGraphCanvasUI canvas, ACAQAlgorithm algorithm) {
         super(workbenchUI);
-        this.graph = graph;
+        this.graph = canvas.getAlgorithmGraph();
+        this.canvas = canvas;
         this.algorithm = algorithm;
         initialize();
     }
@@ -38,10 +44,11 @@ public class ACAQJsonExtensionSingleAlgorithmSelectionPanelUI extends ACAQJsonEx
         setLayout(new BorderLayout());
         DocumentTabPane tabbedPane = new DocumentTabPane();
 
-        ACAQJsonExtensionAlgorithmParametersUI parametersUI = new ACAQJsonExtensionAlgorithmParametersUI(getExtensionWorkbenchUI(),
+        ACAQParameterAccessUI parametersUI = new ACAQParameterAccessUI(getExtensionWorkbenchUI(),
                 algorithm,
                 MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md"),
-                true, true);
+                true,
+                true);
         tabbedPane.addTab("Parameters", UIUtils.getIconFromResources("cog.png"),
                 parametersUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,
@@ -71,6 +78,20 @@ public class ACAQJsonExtensionSingleAlgorithmSelectionPanelUI extends ACAQJsonEx
         toolBar.add(nameLabel);
 
         toolBar.add(Box.createHorizontalGlue());
+
+        if (canvas.getCopyPasteBehavior() != null) {
+            JButton cutButton = new JButton(UIUtils.getIconFromResources("cut.png"));
+            cutButton.setToolTipText("Cut");
+            cutButton.setEnabled(algorithm.getCategory() != ACAQAlgorithmCategory.Internal);
+            cutButton.addActionListener(e -> canvas.getCopyPasteBehavior().cut(Collections.singleton(algorithm)));
+            toolBar.add(cutButton);
+
+            JButton copyButton = new JButton(UIUtils.getIconFromResources("copy.png"));
+            copyButton.setToolTipText("Copy");
+            copyButton.setEnabled(algorithm.getCategory() != ACAQAlgorithmCategory.Internal);
+            copyButton.addActionListener(e -> canvas.getCopyPasteBehavior().copy(Collections.singleton(algorithm)));
+            toolBar.add(copyButton);
+        }
 
         JButton deleteButton = new JButton(UIUtils.getIconFromResources("delete.png"));
         deleteButton.setToolTipText("Delete algorithm");

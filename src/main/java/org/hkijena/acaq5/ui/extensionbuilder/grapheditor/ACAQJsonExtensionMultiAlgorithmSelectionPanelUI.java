@@ -6,6 +6,7 @@ import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
+import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -20,16 +21,18 @@ import java.util.stream.Collectors;
  */
 public class ACAQJsonExtensionMultiAlgorithmSelectionPanelUI extends ACAQJsonExtensionWorkbenchPanel {
     private ACAQAlgorithmGraph graph;
+    private ACAQAlgorithmGraphCanvasUI canvas;
     private Set<ACAQAlgorithm> algorithms;
 
     /**
      * @param workbenchUI Workbench UI
-     * @param graph       The graph
+     * @param canvas      The graph
      * @param algorithms  Selected algorithms
      */
-    public ACAQJsonExtensionMultiAlgorithmSelectionPanelUI(ACAQJsonExtensionWorkbench workbenchUI, ACAQAlgorithmGraph graph, Set<ACAQAlgorithm> algorithms) {
+    public ACAQJsonExtensionMultiAlgorithmSelectionPanelUI(ACAQJsonExtensionWorkbench workbenchUI, ACAQAlgorithmGraphCanvasUI canvas, Set<ACAQAlgorithm> algorithms) {
         super(workbenchUI);
-        this.graph = graph;
+        this.graph = canvas.getAlgorithmGraph();
+        this.canvas = canvas;
         this.algorithms = algorithms;
         initialize();
     }
@@ -57,6 +60,19 @@ public class ACAQJsonExtensionMultiAlgorithmSelectionPanelUI extends ACAQJsonExt
         toolBar.add(nameLabel);
 
         toolBar.add(Box.createHorizontalGlue());
+
+        if (canvas.getCopyPasteBehavior() != null) {
+            JButton cutButton = new JButton(UIUtils.getIconFromResources("cut.png"));
+            cutButton.setToolTipText("Cut");
+            cutButton.setEnabled(algorithms.stream().allMatch(algorithm -> graph.canUserDelete(algorithm)));
+            cutButton.addActionListener(e -> canvas.getCopyPasteBehavior().cut(algorithms));
+            toolBar.add(cutButton);
+
+            JButton copyButton = new JButton(UIUtils.getIconFromResources("copy.png"));
+            copyButton.setToolTipText("Copy");
+            copyButton.addActionListener(e -> canvas.getCopyPasteBehavior().copy(algorithms));
+            toolBar.add(copyButton);
+        }
 
         JButton deleteButton = new JButton(UIUtils.getIconFromResources("delete.png"));
         deleteButton.setToolTipText("Delete algorithms");

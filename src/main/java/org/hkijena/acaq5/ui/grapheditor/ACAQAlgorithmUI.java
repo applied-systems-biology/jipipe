@@ -16,6 +16,7 @@ import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Collections;
 
 /**
  * UI around an {@link ACAQAlgorithm} instance
@@ -75,6 +76,18 @@ public abstract class ACAQAlgorithmUI extends JPanel {
         JMenuItem addToSelectionButton = new JMenuItem("Add to selection", UIUtils.getIconFromResources("select.png"));
         addToSelectionButton.addActionListener(e -> eventBus.post(new AlgorithmSelectedEvent(this, true)));
         contextMenu.add(addToSelectionButton);
+
+        if (graphUI.getCopyPasteBehavior() != null) {
+            contextMenu.addSeparator();
+
+            JMenuItem cutButton = new JMenuItem("Cut", UIUtils.getIconFromResources("cut.png"));
+            cutButton.addActionListener(e -> graphUI.getCopyPasteBehavior().cut(Collections.singleton(getAlgorithm())));
+            contextMenu.add(cutButton);
+
+            JMenuItem copyButton = new JMenuItem("Copy", UIUtils.getIconFromResources("copy.png"));
+            copyButton.addActionListener(e -> graphUI.getCopyPasteBehavior().copy(Collections.singleton(getAlgorithm())));
+            contextMenu.add(copyButton);
+        }
 
         contextMenu.addSeparator();
 

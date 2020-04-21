@@ -9,7 +9,9 @@ import org.hkijena.acaq5.extensions.filesystem.api.datasources.FolderListDataSou
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
-import java.awt.dnd.*;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,13 +21,9 @@ import java.util.stream.Collectors;
 /**
  * Installs Drag&Drop features that create filesystem nodes
  */
-public class ACAQAlgorithmGraphUIDragAndDrop implements DropTargetListener {
+public class ACAQStandardDragAndDropBehavior implements ACAQAlgorithmGraphDragAndDropBehavior {
 
-    private ACAQAlgorithmGraphCanvasUI canvasUI;
-
-    private ACAQAlgorithmGraphUIDragAndDrop(ACAQAlgorithmGraphCanvasUI canvasUI) {
-        this.canvasUI = canvasUI;
-    }
+    private ACAQAlgorithmGraphCanvasUI canvas;
 
     @Override
     public void dragEnter(DropTargetDragEvent dtde) {
@@ -71,8 +69,8 @@ public class ACAQAlgorithmGraphUIDragAndDrop implements DropTargetListener {
     }
 
     private void processDrop(List<File> files) {
-        String compartment = canvasUI.getCompartment();
-        ACAQAlgorithmGraph graph = canvasUI.getAlgorithmGraph();
+        String compartment = canvas.getCompartment();
+        ACAQAlgorithmGraph graph = canvas.getAlgorithmGraph();
         if (files.size() == 1) {
             File selected = files.get(0);
             if (selected.isDirectory()) {
@@ -105,12 +103,13 @@ public class ACAQAlgorithmGraphUIDragAndDrop implements DropTargetListener {
         }
     }
 
-    /**
-     * Installs the drag&drop into the specified {@link ACAQAlgorithmGraphCanvasUI}
-     *
-     * @param canvasUI The target
-     */
-    public static void install(ACAQAlgorithmGraphCanvasUI canvasUI) {
-        new DropTarget(canvasUI, new ACAQAlgorithmGraphUIDragAndDrop(canvasUI));
+    @Override
+    public ACAQAlgorithmGraphCanvasUI getCanvas() {
+        return canvas;
+    }
+
+    @Override
+    public void setCanvas(ACAQAlgorithmGraphCanvasUI canvas) {
+        this.canvas = canvas;
     }
 }

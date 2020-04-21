@@ -5,9 +5,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCompartmentUI;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphEditorUI;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
+import org.hkijena.acaq5.ui.grapheditor.*;
 
 import java.util.stream.Collectors;
 
@@ -30,6 +28,11 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQAlgorithmGraphEditorU
         documentationPanel = new MarkdownReader(false);
         documentationPanel.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md"));
         setPropertyPanel(documentationPanel);
+
+        // Set D&D and Copy&Paste behavior
+        getGraphUI().setDragAndDropBehavior(new ACAQStandardDragAndDropBehavior());
+        getGraphUI().setCopyPasteBehavior(new ACAQStandardCopyPasteBehavior(this));
+        reloadContextMenu();
     }
 
     /**
@@ -47,13 +50,14 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQAlgorithmGraphEditorU
 
     @Override
     protected void updateSelection() {
+        super.updateSelection();
         if (getSelection().isEmpty()) {
             setPropertyPanel(documentationPanel);
         } else if (getSelection().size() == 1) {
             setPropertyPanel(new ACAQJsonExtensionSingleAlgorithmSelectionPanelUI((ACAQJsonExtensionWorkbench) getWorkbench(),
-                    getAlgorithmGraph(), getSelection().iterator().next().getAlgorithm()));
+                    getGraphUI(), getSelection().iterator().next().getAlgorithm()));
         } else {
-            setPropertyPanel(new ACAQJsonExtensionMultiAlgorithmSelectionPanelUI((ACAQJsonExtensionWorkbench) getWorkbench(), getAlgorithmGraph(),
+            setPropertyPanel(new ACAQJsonExtensionMultiAlgorithmSelectionPanelUI((ACAQJsonExtensionWorkbench) getWorkbench(), getGraphUI(),
                     getSelection().stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet())));
         }
     }

@@ -48,6 +48,9 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
     private Set<ACAQAlgorithmUI> selection = new HashSet<>();
     private Set<ACAQAlgorithmDeclaration> addableAlgorithms = new HashSet<>();
     private SearchComboBox<Object> navigator = new SearchComboBox<>();
+    private JMenuItem cutContextMenuItem;
+    private JMenuItem copyContextMenuItem;
+    private JMenuItem pasteContextMenuItem;
 
     /**
      * @param workbenchUI    the workbench
@@ -60,8 +63,22 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
         this.compartment = compartment;
         initialize();
         reloadMenuBar();
+        reloadContextMenu();
         ACAQAlgorithmRegistry.getInstance().getEventBus().register(this);
         algorithmGraph.getEventBus().register(this);
+    }
+
+    /**
+     * Reloads the context menu
+     */
+    public void reloadContextMenu() {
+        cutContextMenuItem.setEnabled(graphUI.getCopyPasteBehavior() != null && !selection.isEmpty());
+        copyContextMenuItem.setEnabled(graphUI.getCopyPasteBehavior() != null && !selection.isEmpty());
+        pasteContextMenuItem.setEnabled(graphUI.getCopyPasteBehavior() != null);
+    }
+
+    public ACAQAlgorithmGraphCanvasUI getGraphUI() {
+        return graphUI;
     }
 
     private void initialize() {
@@ -81,7 +98,6 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
         graphUI.getEventBus().register(this);
         graphUI.addMouseListener(this);
         graphUI.addMouseMotionListener(this);
-        ACAQAlgorithmGraphUIDragAndDrop.install(graphUI);
         scrollPane = new JScrollPane(graphUI);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -97,6 +113,26 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
         navigator.setRenderer(new NavigationRenderer());
         navigator.addItemListener(e -> navigatorNavigate());
         navigator.setFilterFunction(ACAQAlgorithmGraphEditorUI::filterNavigationEntry);
+
+        initializeContextMenu();
+    }
+
+    private void initializeContextMenu() {
+        graphUI.getContextMenu().addSeparator();
+
+        cutContextMenuItem = new JMenuItem("Cut", UIUtils.getIconFromResources("cut.png"));
+        cutContextMenuItem.addActionListener(e -> graphUI.getCopyPasteBehavior()
+                .cut(selection.stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet())));
+        graphUI.getContextMenu().add(cutContextMenuItem);
+
+        copyContextMenuItem = new JMenuItem("Copy", UIUtils.getIconFromResources("copy.png"));
+        copyContextMenuItem.addActionListener(e -> graphUI.getCopyPasteBehavior()
+                .copy(selection.stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet())));
+        graphUI.getContextMenu().add(copyContextMenuItem);
+
+        pasteContextMenuItem = new JMenuItem("Paste", UIUtils.getIconFromResources("paste.png"));
+        pasteContextMenuItem.addActionListener(e -> graphUI.getCopyPasteBehavior().paste());
+        graphUI.getContextMenu().add(pasteContextMenuItem);
     }
 
     private void navigatorNavigate() {
@@ -328,7 +364,7 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
      * Called when the selection was changed and the UI should react
      */
     protected void updateSelection() {
-
+        reloadContextMenu();
     }
 
     /**

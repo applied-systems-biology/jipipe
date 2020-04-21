@@ -865,6 +865,16 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
     }
 
     /**
+     * Copies the algorithm.
+     * Produces a deep copy
+     *
+     * @return the copy
+     */
+    public ACAQAlgorithm duplicate() {
+        return getDeclaration().clone(this);
+    }
+
+    /**
      * Utility function to create an algorithm instance from its id
      *
      * @param id  Algorithm ID

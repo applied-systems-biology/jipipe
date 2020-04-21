@@ -5,12 +5,12 @@ import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
-import org.hkijena.acaq5.ui.extensionbuilder.grapheditor.ACAQJsonExtensionAlgorithmParametersUI;
 import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api.ACAQExistingTraitNode;
 import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api.ACAQNewTraitNode;
 import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api.ACAQTraitGraph;
 import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api.ACAQTraitNode;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQSlotEditorUI;
+import org.hkijena.acaq5.ui.parameters.ACAQParameterAccessUI;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -40,10 +40,11 @@ public class ACAQSingleTraitSelectionPanelUI extends ACAQJsonExtensionWorkbenchP
         setLayout(new BorderLayout());
         DocumentTabPane tabbedPane = new DocumentTabPane();
 
-        ACAQJsonExtensionAlgorithmParametersUI parametersUI = new ACAQJsonExtensionAlgorithmParametersUI(getExtensionWorkbenchUI(),
+        ACAQParameterAccessUI parametersUI = new ACAQParameterAccessUI(getExtensionWorkbenchUI(),
                 node,
                 MarkdownDocument.fromPluginResource("documentation/trait-graph.md"),
-                true, true);
+                true,
+                true);
         tabbedPane.addTab("Parameters", UIUtils.getIconFromResources("cog.png"),
                 parametersUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,

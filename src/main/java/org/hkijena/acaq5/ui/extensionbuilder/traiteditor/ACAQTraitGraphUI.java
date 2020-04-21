@@ -107,6 +107,7 @@ public class ACAQTraitGraphUI extends ACAQAlgorithmGraphEditorUI {
 
     @Override
     protected void updateSelection() {
+        super.updateSelection();
         if (getSelection().isEmpty()) {
             setPropertyPanel(documentationPanel);
         } else if (getSelection().size() == 1) {
