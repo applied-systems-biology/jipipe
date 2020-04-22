@@ -141,7 +141,6 @@
     <orderEntry type="library" name="Maven: net.imagej:imagej-legacy:0.35.0" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:ij1-patcher:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: net.imglib2:imglib2-roi:0.8.1" level="project" />
-    <orderEntry type="library" name="Maven: net.sf.trove4j:trove4j:3.0.3" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:scijava-search:0.6.0" level="project" />
     <orderEntry type="library" name="Maven: org.ocpsoft.prettytime:prettytime:4.0.1.Final" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:scijava-table:0.4.0" level="project" />
@@ -253,5 +252,6 @@
     <orderEntry type="library" name="Maven: org.scijava:batch-processor:0.4.1" level="project" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.6" level="project" />
     <orderEntry type="library" name="Maven: org.reflections:reflections:0.9.12" level="project" />
+    <orderEntry type="library" name="Maven: net.sf.trove4j:trove4j:3.0.3" level="project" />
   </component>
 </module>

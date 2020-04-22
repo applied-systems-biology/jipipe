@@ -483,6 +483,8 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
                 RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHints(rh);
 
+        NonCollidingRectangularLineDrawer drawer = new NonCollidingRectangularLineDrawer();
+
         // Draw the edges to outside compartments
         // The edges should be at the center input point of the node
         // They are not covered by the other method below
@@ -517,7 +519,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
                         targetPoint.y = 0;
                     }
                 }
-                drawEdge(g, sourcePoint, ui.getBounds(), targetPoint);
+                drawEdge(g, sourcePoint, ui.getBounds(), targetPoint, drawer);
             }
         }
 
@@ -550,107 +552,69 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             PointRange.tighten(sourcePoint, targetPoint);
 
             // Draw arrow
-            drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center);
+            drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, drawer);
         }
 
         g.setStroke(new BasicStroke(1));
     }
 
-    private void drawEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint) {
-        Path2D.Float path = new Path2D.Float();
-        path.moveTo(sourcePoint.x, sourcePoint.y);
+    private void drawEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, NonCollidingRectangularLineDrawer drawer) {
+        int buffer;
+        int sourceA;
+        int targetA;
+        int sourceB;
+        int targetB;
+        int componentStartB;
+        int componentEndB;
 
         if (currentViewMode == ViewMode.Horizontal) {
-//            float dx = targetPoint.x - sourcePoint.x;
-//            path.curveTo(sourcePoint.x + 0.5f * dx, sourcePoint.y,
-//                    sourcePoint.x + 0.5f * dx, targetPoint.y,
-//                    targetPoint.x, targetPoint.y);
-            int x = sourcePoint.x;
-            int y = sourcePoint.y;
-            int buffer = ACAQAlgorithmUI.SLOT_UI_WIDTH;
-
-            // Target point is behind the source. We have to navigate around it
-            if (x > targetPoint.x) {
-                // Go right
-                x += buffer;
-                path.lineTo(x, y);
-
-                // Go above or below
-                if (targetPoint.y <= y) {
-                    y = Math.max(0, sourceBounds.y - buffer);
-                } else {
-                    y = sourceBounds.y + sourceBounds.height + buffer;
-                }
-
-                path.lineTo(x, y);
-
-                // Go to target x
-                x = Math.max(0, targetPoint.x - buffer);
-                path.lineTo(x, y);
-            } else if (y != targetPoint.y) {
-                // Go right
-                int dx = targetPoint.x - x;
-                x = Math.min(x + buffer, x + dx / 2);
-                path.lineTo(x, y);
-            }
-
-            // Target point Y is shifted
-            if (y != targetPoint.y) {
-                y = targetPoint.y;
-                path.lineTo(x, y);
-            }
-
-            // Go to end point
-            x = targetPoint.x;
-            y = targetPoint.y;
-            path.lineTo(x, y);
+            buffer = ACAQAlgorithmUI.SLOT_UI_WIDTH;
+            sourceA = sourcePoint.x;
+            targetA = targetPoint.x;
+            sourceB = sourcePoint.y;
+            targetB = targetPoint.y;
+            componentStartB = sourceBounds.y;
+            componentEndB = sourceBounds.y + sourceBounds.height;
         } else {
-//            float dy = targetPoint.y - sourcePoint.y;
-//            path.curveTo(sourcePoint.x, sourcePoint.y + 0.5f * dy,
-//                    targetPoint.x, sourcePoint.y + 0.5f * dy,
-//                    targetPoint.x, targetPoint.y);
-            int x = sourcePoint.x;
-            int y = sourcePoint.y;
-            int buffer = ACAQAlgorithmUI.SLOT_UI_HEIGHT / 2;
-
-            // Target point is above the source. We have to navigate around it
-            if (y > targetPoint.y) {
-                // Go below
-                y += buffer;
-                path.lineTo(x, y);
-
-                // Go left or right
-                if (targetPoint.x <= x) {
-                    x = Math.max(0, sourceBounds.x - buffer);
-                } else {
-                    x = sourceBounds.x + sourceBounds.width + buffer;
-                }
-
-                path.lineTo(x, y);
-
-                // Go to target height
-                y = Math.max(0, targetPoint.y - buffer);
-                path.lineTo(x, y);
-            } else if (x != targetPoint.x) {
-                // Go below
-                int dy = targetPoint.y - y;
-                y = Math.min(y + buffer, y + dy / 2);
-                path.lineTo(x, y);
-            }
-
-            // Target point X is shifted
-            if (x != targetPoint.x) {
-                x = targetPoint.x;
-                path.lineTo(x, y);
-            }
-
-            // Go to end point
-            x = targetPoint.x;
-            y = targetPoint.y;
-            path.lineTo(x, y);
+            buffer = ACAQAlgorithmUI.SLOT_UI_HEIGHT / 2;
+            sourceA = sourcePoint.y;
+            targetA = targetPoint.y;
+            sourceB = sourcePoint.x;
+            targetB = targetPoint.x;
+            componentStartB = sourceBounds.x;
+            componentEndB = sourceBounds.x + sourceBounds.width;
         }
 
-        g.draw(path);
+        drawer.start(sourceA, sourceB);
+
+        // Target point is above the source. We have to navigate around it
+        if (sourceA > targetA) {
+            // Add some space in major direction
+            drawer.addToMajor(buffer, false);
+
+            // Go left or right
+            if (targetB <= drawer.getLastSegment().b1) {
+                drawer.moveToMinor(Math.max(0, componentStartB - buffer), true);
+            } else {
+                drawer.moveToMinor(componentEndB + buffer, true);
+            }
+
+            // Go to target height
+            drawer.moveToMajor(Math.max(0, targetA - buffer), false);
+        } else if (sourceB != targetB) {
+            // Add some space in major direction
+            int dA = targetA - sourceA;
+            drawer.moveToMajor(Math.min(sourceA + buffer, sourceA + dA / 2), false);
+        }
+
+        // Target point X is shifted
+        if (drawer.getLastSegment().b1 != targetB) {
+            drawer.moveToMinor(targetB, true);
+        }
+
+        // Go to end point
+        drawer.moveToMajor(targetA, false);
+        drawer.drawCurrentSegment(g, currentViewMode);
     }
 
     /**
@@ -956,6 +920,168 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
         public SugiyamaVertex() {
             this.virtual = true;
+        }
+    }
+
+    /**
+     * Encapsulates drawing rectangular lines
+     */
+    private static class NonCollidingRectangularLineDrawer {
+
+        private final List<RectangularLine> currentSegments = new ArrayList<>();
+        private final PriorityQueue<RectangularLine> majorCollisionLines = new PriorityQueue<>(Comparator.comparing(RectangularLine::getA1));
+        private final PriorityQueue<RectangularLine> minorCollisionLines = new PriorityQueue<>(Comparator.comparing(RectangularLine::getB1));
+        private int lineSpacer = 4;
+
+        public void start(int a0, int b) {
+            currentSegments.clear();
+            currentSegments.add(new RectangularLine(0, a0, 0, b));
+        }
+
+        private void addSpacer(RectangularLine lastSegment, RectangularLine newSegment) {
+            if (lastSegment.a1 == newSegment.a1) {
+                lastSegment.a1 += lineSpacer;
+                newSegment.a1 += lineSpacer;
+                newSegment.a0 += lineSpacer;
+            }
+            if (lastSegment.b1 == newSegment.b1) {
+                lastSegment.b1 += lineSpacer;
+                newSegment.b1 += lineSpacer;
+            }
+        }
+
+        public void moveToMajor(int a1, boolean withCollision) {
+            RectangularLine lastSegment = getLastSegment();
+            RectangularLine newSegment = new RectangularLine(lastSegment.a1, a1, lastSegment.b1, lastSegment.b1);
+            if (withCollision) {
+                for (RectangularLine collisionLine : majorCollisionLines) {
+                    int intersection = collisionLine.intersect(newSegment);
+                    if (intersection > lineSpacer) {
+                        addSpacer(lastSegment, newSegment);
+                    }
+                }
+            }
+            currentSegments.add(newSegment);
+        }
+
+        public void moveToMinor(int b, boolean withCollision) {
+            RectangularLine lastSegment = getLastSegment();
+            RectangularLine newSegment = new RectangularLine(lastSegment.a1, lastSegment.a1, lastSegment.b1, b);
+            if (withCollision) {
+                if (minorCollisionLines.size() > 2) {
+                    System.out.println();
+                }
+                for (RectangularLine collisionLine : minorCollisionLines) {
+                    int intersection = collisionLine.intersect(newSegment);
+                    if (intersection > lineSpacer) {
+                        addSpacer(lastSegment, newSegment);
+                    }
+                }
+            }
+            currentSegments.add(newSegment);
+        }
+
+        public RectangularLine getLastSegment() {
+            return currentSegments.get(currentSegments.size() - 1);
+        }
+
+        public RectangularLine getFirstSegment() {
+            return currentSegments.get(0);
+        }
+
+        public void addToMajor(int addA1, boolean withCollision) {
+            moveToMajor(getLastSegment().a1 + addA1, withCollision);
+        }
+
+        public void addToMinor(int addB, boolean withCollision) {
+            moveToMinor(getLastSegment().b1 + addB, withCollision);
+        }
+
+        public void drawCurrentSegment(Graphics2D graphics2D, ViewMode viewMode) {
+            Path2D.Float path = new Path2D.Float();
+            if (viewMode == ViewMode.Horizontal) {
+                // A = X, B = Y
+                path.moveTo(getFirstSegment().a1, getFirstSegment().b1);
+                for (int i = 1; i < currentSegments.size(); ++i) {
+                    RectangularLine currentSegment = currentSegments.get(i);
+                    minorCollisionLines.add(currentSegment);
+                    majorCollisionLines.add(currentSegment);
+                    path.lineTo(currentSegment.a1, currentSegment.b1);
+                }
+            } else if (viewMode == ViewMode.Vertical) {
+                // A = Y, B = X
+                path.moveTo(getFirstSegment().b1, getFirstSegment().a1);
+                for (int i = 1; i < currentSegments.size(); ++i) {
+                    RectangularLine currentSegment = currentSegments.get(i);
+                    minorCollisionLines.add(currentSegment);
+                    majorCollisionLines.add(currentSegment);
+                    path.lineTo(currentSegment.b1, currentSegment.a1);
+                }
+            }
+            graphics2D.draw(path);
+        }
+    }
+
+    /**
+     * Contains coordinates of a line that is rectangular
+     * This abstracts away x and y for horizontal and vertical implementations
+     */
+    private static class RectangularLine {
+        public int a0;
+        public int a1;
+        public int b0;
+        public int b1;
+
+        /**
+         * @param a0 the first major coordinate (equivalent to x0 in horizontal)
+         * @param a1 the second major coordinate (equivalent to x1 in horizontal).
+         * @param b0 the first minor coordinate (equivalent to y0 in horizontal)
+         * @param b1 the second minor coordinate (equivalent to y1 in horizontal)
+         */
+        public RectangularLine(int a0, int a1, int b0, int b1) {
+            this.a0 = a0;
+            this.a1 = a1;
+            this.b0 = b0;
+            this.b1 = b1;
+        }
+
+        public int getA1() {
+            return a1;
+        }
+
+        public int getB1() {
+            return b1;
+        }
+
+        public int getSmallerMajor() {
+            return Math.min(a0, a1);
+        }
+
+        public int getLargerMajor() {
+            return Math.max(a0, a1);
+        }
+
+        public int getSmallerMinor() {
+            return Math.min(b0, b1);
+        }
+
+        public int getLargerMinor() {
+            return Math.max(b0, b1);
+        }
+
+        /**
+         * Returns true if this line intersects with the other line
+         *
+         * @param other the other line
+         * @return how many pixels intersect. Can be negative
+         */
+        public int intersect(RectangularLine other) {
+            if (other.b1 == b1) {
+                return Math.min(other.getLargerMajor(), getLargerMajor()) - Math.max(other.getSmallerMajor(), getSmallerMajor());
+            } else if (other.a1 == a1) {
+                return Math.min(other.getLargerMinor(), getLargerMinor()) - Math.max(other.getSmallerMinor(), getSmallerMinor());
+            }
+            return 0;
         }
     }
 }
