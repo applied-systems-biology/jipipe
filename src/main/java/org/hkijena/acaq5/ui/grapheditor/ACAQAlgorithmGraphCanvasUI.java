@@ -517,7 +517,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
                         targetPoint.y = 0;
                     }
                 }
-                drawEdge(g, sourcePoint, targetPoint);
+                drawEdge(g, sourcePoint, ui.getBounds(), targetPoint);
             }
         }
 
@@ -550,26 +550,104 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             PointRange.tighten(sourcePoint, targetPoint);
 
             // Draw arrow
-            drawEdge(g, sourcePoint.center, targetPoint.center);
+            drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center);
         }
 
         g.setStroke(new BasicStroke(1));
     }
 
-    private void drawEdge(Graphics2D g, Point sourcePoint, Point targetPoint) {
+    private void drawEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint) {
         Path2D.Float path = new Path2D.Float();
         path.moveTo(sourcePoint.x, sourcePoint.y);
 
         if (currentViewMode == ViewMode.Horizontal) {
-            float dx = targetPoint.x - sourcePoint.x;
-            path.curveTo(sourcePoint.x + 0.5f * dx, sourcePoint.y,
-                    sourcePoint.x + 0.5f * dx, targetPoint.y,
-                    targetPoint.x, targetPoint.y);
+//            float dx = targetPoint.x - sourcePoint.x;
+//            path.curveTo(sourcePoint.x + 0.5f * dx, sourcePoint.y,
+//                    sourcePoint.x + 0.5f * dx, targetPoint.y,
+//                    targetPoint.x, targetPoint.y);
+            int x = sourcePoint.x;
+            int y = sourcePoint.y;
+            int buffer = ACAQAlgorithmUI.SLOT_UI_WIDTH;
+
+            // Target point is behind the source. We have to navigate around it
+            if (x > targetPoint.x) {
+                // Go right
+                x += buffer;
+                path.lineTo(x, y);
+
+                // Go above or below
+                if (targetPoint.y <= y) {
+                    y = Math.max(0, sourceBounds.y - buffer);
+                } else {
+                    y = sourceBounds.y + sourceBounds.height + buffer;
+                }
+
+                path.lineTo(x, y);
+
+                // Go to target x
+                x = Math.max(0, targetPoint.x - buffer);
+                path.lineTo(x, y);
+            } else if (y != targetPoint.y) {
+                // Go right
+                int dx = targetPoint.x - x;
+                x = Math.min(x + buffer, x + dx / 2);
+                path.lineTo(x, y);
+            }
+
+            // Target point Y is shifted
+            if (y != targetPoint.y) {
+                y = targetPoint.y;
+                path.lineTo(x, y);
+            }
+
+            // Go to end point
+            x = targetPoint.x;
+            y = targetPoint.y;
+            path.lineTo(x, y);
         } else {
-            float dy = targetPoint.y - sourcePoint.y;
-            path.curveTo(sourcePoint.x, sourcePoint.y + 0.5f * dy,
-                    targetPoint.x, sourcePoint.y + 0.5f * dy,
-                    targetPoint.x, targetPoint.y);
+//            float dy = targetPoint.y - sourcePoint.y;
+//            path.curveTo(sourcePoint.x, sourcePoint.y + 0.5f * dy,
+//                    targetPoint.x, sourcePoint.y + 0.5f * dy,
+//                    targetPoint.x, targetPoint.y);
+            int x = sourcePoint.x;
+            int y = sourcePoint.y;
+            int buffer = ACAQAlgorithmUI.SLOT_UI_HEIGHT / 2;
+
+            // Target point is above the source. We have to navigate around it
+            if (y > targetPoint.y) {
+                // Go below
+                y += buffer;
+                path.lineTo(x, y);
+
+                // Go left or right
+                if (targetPoint.x <= x) {
+                    x = Math.max(0, sourceBounds.x - buffer);
+                } else {
+                    x = sourceBounds.x + sourceBounds.width + buffer;
+                }
+
+                path.lineTo(x, y);
+
+                // Go to target height
+                y = Math.max(0, targetPoint.y - buffer);
+                path.lineTo(x, y);
+            } else if (x != targetPoint.x) {
+                // Go below
+                int dy = targetPoint.y - y;
+                y = Math.min(y + buffer, y + dy / 2);
+                path.lineTo(x, y);
+            }
+
+            // Target point X is shifted
+            if (x != targetPoint.x) {
+                x = targetPoint.x;
+                path.lineTo(x, y);
+            }
+
+            // Go to end point
+            x = targetPoint.x;
+            y = targetPoint.y;
+            path.lineTo(x, y);
         }
 
         g.draw(path);
