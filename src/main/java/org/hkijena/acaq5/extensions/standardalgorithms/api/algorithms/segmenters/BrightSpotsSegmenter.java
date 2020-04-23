@@ -67,7 +67,7 @@ public class BrightSpotsSegmenter extends ACAQIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ImagePlus img = ((ImagePlus2DGreyscaleData) dataInterface.getInputData(getFirstInputSlot())).getImage();
+        ImagePlus img = dataInterface.getInputData(getFirstInputSlot(), ImagePlus2DGreyscaleData.class).getImage();
 
         ImagePlus result = img.duplicate();
 
@@ -85,7 +85,7 @@ public class BrightSpotsSegmenter extends ACAQIteratingAlgorithm {
         autoThresholdSegmenter.clearSlotData();
         autoThresholdSegmenter.getFirstOutputSlot().addData(new ImagePlus2DGreyscaleData(result));
         autoThresholdSegmenter.run(subProgress.resolve("Auto-thresholding"), algorithmProgress, isCancelled);
-        result = ((ImagePlusData) autoThresholdSegmenter.getFirstOutputSlot().getData(0)).getImage();
+        result = autoThresholdSegmenter.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
 
         // Apply morphologial operations
         Binary binaryFilter = new Binary();
@@ -111,7 +111,7 @@ public class BrightSpotsSegmenter extends ACAQIteratingAlgorithm {
             autoThresholdSegmenter.clearSlotData();
             autoThresholdSegmenter.getFirstInputSlot().addData(new ImagePlus2DGreyscaleData(result));
             autoThresholdSegmenter.run(subProgress.resolve("Auto-thresholding (2)"), algorithmProgress, isCancelled);
-            result = ((ImagePlusData) autoThresholdSegmenter.getFirstOutputSlot().getData(0)).getImage();
+            result = autoThresholdSegmenter.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
         }
 
         dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlus2DGreyscaleMaskData(result));

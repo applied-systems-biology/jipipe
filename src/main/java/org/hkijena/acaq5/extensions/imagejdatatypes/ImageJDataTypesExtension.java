@@ -19,6 +19,9 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datasources.ResultsTableFrom
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColor8UData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.color.ImagePlus2DColor8UData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.color.ImagePlus2DColorData;
@@ -39,6 +42,7 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d5.color.ImagePlus
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d5.color.ImagePlus5DColorData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d5.color.ImagePlus5DColorRGBData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d5.greyscale.*;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.*;
 import org.hkijena.acaq5.extensions.imagejdatatypes.resultanalysis.ImageDataSlotRowUI;
 import org.hkijena.acaq5.extensions.imagejdatatypes.resultanalysis.ROIDataSlotRowUI;
 import org.hkijena.acaq5.extensions.imagejdatatypes.resultanalysis.ResultsTableDataSlotRowUI;
@@ -80,6 +84,14 @@ public class ImageJDataTypesExtension extends ACAQPrepackagedDefaultJavaExtensio
     public void register() {
         // Register data types
         registerImageDataType("imagej-imgplus", ImagePlusData.class, "icons/data-types/imgplus.png");
+        registerImageDataType("imagej-imgplus-greyscale", ImagePlusGreyscaleData.class, "icons/data-types/imgplus-greyscale.png");
+        registerImageDataType("imagej-imgplus-greyscale-8u", ImagePlusGreyscale8UData.class, "icons/data-types/imgplus-greyscale-8u.png");
+        registerImageDataType("imagej-imgplus-greyscale-16u", ImagePlusGreyscale16UData.class, "icons/data-types/imgplus-greyscale-16u.png");
+        registerImageDataType("imagej-imgplus-greyscale-32f", ImagePlusGreyscale32FData.class, "icons/data-types/imgplus-greyscale-32f.png");
+        registerImageDataType("imagej-imgplus-greyscale-mask", ImagePlusGreyscaleMaskData.class, "icons/data-types/imgplus-greyscale-mask.png");
+        registerImageDataType("imagej-imgplus-color", ImagePlusColorData.class, "icons/data-types/imgplus-color.png");
+        registerImageDataType("imagej-imgplus-color-rgb", ImagePlusColorRGBData.class, "icons/data-types/imgplus-color-rgb.png");
+        registerImageDataType("imagej-imgplus-color-8u", ImagePlusColor8UData.class, "icons/data-types/imgplus-color-8u.png");
         registerImageDataType("imagej-imgplus-2d", ImagePlus2DData.class, "icons/data-types/imgplus-2d.png");
         registerImageDataType("imagej-imgplus-2d-greyscale", ImagePlus2DGreyscaleData.class, "icons/data-types/imgplus-2d-greyscale.png");
         registerImageDataType("imagej-imgplus-2d-greyscale-8u", ImagePlus2DGreyscale8UData.class, "icons/data-types/imgplus-2d-greyscale-8u.png");
@@ -154,7 +166,7 @@ public class ImageJDataTypesExtension extends ACAQPrepackagedDefaultJavaExtensio
             List<Class<? extends ACAQData>> typesHere = entry.getValue();
 
             for (Map.Entry<Integer, List<Class<? extends ACAQData>>> otherEntry : groupedByDimensionality.entrySet()) {
-                if (otherEntry.getKey() >= dimensionalityHere) {
+                if (otherEntry.getKey() >= dimensionalityHere || otherEntry.getKey() == -1) {
                     for (Class<? extends ACAQData> inputClass : typesHere) {
                         for (Class<? extends ACAQData> outputClass : otherEntry.getValue()) {
                             if (!ACAQDatatypeRegistry.isTriviallyConvertible(inputClass, outputClass)) {

@@ -74,7 +74,7 @@ public class StringUtils {
      * @return the HTML
      */
     public static String createRightIconTextHTMLTableElement(String text, URL iconURL) {
-        return "<table><tr><td>" + HtmlEscapers.htmlEscaper().escape(text) + "</td><td><img src=\"" + iconURL + "\" /></td><td></tr></table>";
+        return "<table><tr><td>" + HtmlEscapers.htmlEscaper().escape(text) + "</td><td><img src=\"" + iconURL + "\" /></td></tr></table>";
     }
 
     /**
@@ -95,10 +95,24 @@ public class StringUtils {
      * @param wrapColumn after how many columns to break words
      * @return the wrapped text
      */
-    public static String wordWrappedInHTML(String text, int wrapColumn) {
+    public static String wordWrappedHTML(String text, int wrapColumn) {
         if (text == null)
             text = "";
-        return "<html>" + WordUtils.wrap(HtmlEscapers.htmlEscaper().escape(text), wrapColumn).replace("\n", "<br/>") + "</html>";
+        return "<html>" + wordWrappedHTML(text, wrapColumn) + "</html>";
+    }
+
+    /**
+     * Create word wrapping in HTML.
+     * Has HTML root element.
+     *
+     * @param text       the wrapped text. It is automatically escaped
+     * @param wrapColumn after how many columns to break words
+     * @return the wrapped text
+     */
+    public static String wordWrappedHTMLElement(String text, int wrapColumn) {
+        if (text == null)
+            text = "";
+        return WordUtils.wrap(HtmlEscapers.htmlEscaper().escape(text), wrapColumn).replace("\n", "<br/>");
     }
 
     /**

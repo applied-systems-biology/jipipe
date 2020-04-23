@@ -48,7 +48,7 @@ public class ListSubfolders extends ACAQIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        FolderData inputFolder = dataInterface.getInputData("Folders");
+        FolderData inputFolder = dataInterface.getInputData("Folders", FolderData.class);
         try {
             for (Path path : Files.list(inputFolder.getFolderPath()).filter(Files::isDirectory).collect(Collectors.toList())) {
                 dataInterface.addOutputData("Subfolders", new FolderData(path));

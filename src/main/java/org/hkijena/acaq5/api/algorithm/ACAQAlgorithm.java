@@ -80,7 +80,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
                 if (slot.autoCreate()) {
                     if (!slot.inheritedSlot().isEmpty())
                         builder.allowOutputSlotInheritance(true);
-                    builder.addOutputSlot(slot.slotName(), slot.inheritedSlot(), slot.value());
+                    builder.addOutputSlot(slot.slotName(), slot.value(), slot.inheritedSlot());
                 }
             }
 

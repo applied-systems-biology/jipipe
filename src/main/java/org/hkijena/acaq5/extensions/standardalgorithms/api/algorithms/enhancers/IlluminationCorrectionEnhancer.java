@@ -56,7 +56,7 @@ public class IlluminationCorrectionEnhancer extends ACAQIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ImagePlus2DGreyscaleData inputData = dataInterface.getInputData(getFirstInputSlot());
+        ImagePlus2DGreyscaleData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlus2DGreyscaleData.class);
         ImagePlus img = inputData.getImage().duplicate();
 
         // Convert image to 32 bit

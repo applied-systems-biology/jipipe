@@ -49,7 +49,7 @@ public class ListFiles extends ACAQIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        FolderData inputFolder = dataInterface.getInputData("Folders");
+        FolderData inputFolder = dataInterface.getInputData("Folders", FolderData.class);
         try {
             for (Path file : Files.list(inputFolder.getFolderPath()).filter(Files::isRegularFile).collect(Collectors.toList())) {
                 dataInterface.addOutputData("Files", new FileData(file));

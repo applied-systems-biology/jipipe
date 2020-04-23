@@ -57,7 +57,7 @@ public class FilterFiles extends ACAQIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        FileData inputData = dataInterface.getInputData("Files");
+        FileData inputData = dataInterface.getInputData("Files", FileData.class);
         ACAQDataSlot firstOutputSlot = getFirstOutputSlot();
         if (!filters.isEmpty()) {
             for (PathFilter filter : filters) {

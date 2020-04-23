@@ -9,6 +9,7 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.traits.GoodForTrait;
 import org.hkijena.acaq5.api.data.traits.RemovesTrait;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
@@ -86,10 +87,10 @@ public class InternalGradientSegmenter extends ACAQIteratingAlgorithm {
 
         // Apply CLAHE enhancer
         claheImageEnhancer.clearSlotData();
-        claheImageEnhancer.getFirstInputSlot().addData(dataInterface.getInputData(getFirstInputSlot()));
+        claheImageEnhancer.getFirstInputSlot().addData(dataInterface.getInputData(getFirstInputSlot(), ACAQData.class));
         claheImageEnhancer.run(subProgress.resolve("CLAHE Enhancer (1/2)"), algorithmProgress, isCancelled);
 
-        ImagePlus img = ((ImagePlusData) claheImageEnhancer.getFirstOutputSlot().getData(0)).getImage().duplicate();
+        ImagePlus img = claheImageEnhancer.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage().duplicate();
         (new GaussianBlur()).blurGaussian(img.getProcessor(), gaussSigma);
         ImageJUtils.runOnImage(img, "8-bit");
         applyInternalGradient(img);
@@ -97,13 +98,13 @@ public class InternalGradientSegmenter extends ACAQIteratingAlgorithm {
         claheImageEnhancer.clearSlotData();
         claheImageEnhancer.getFirstInputSlot().addData(new ImagePlus2DGreyscaleData(img));
         claheImageEnhancer.run(subProgress.resolve("CLAHE Enhancer (2/2)"), algorithmProgress, isCancelled);
-        img = ((ImagePlusData) claheImageEnhancer.getFirstOutputSlot().getData(0)).getImage();
+        img = claheImageEnhancer.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
 
         // Convert image to mask and threshold with given auto threshold method
         autoThresholdSegmenter.clearSlotData();
         autoThresholdSegmenter.getFirstInputSlot().addData(new ImagePlus2DGreyscaleData(img));
         autoThresholdSegmenter.run(subProgress.resolve("Auto-thresholding"), algorithmProgress, isCancelled);
-        img = ((ImagePlusData) autoThresholdSegmenter.getFirstOutputSlot().getData(0)).getImage();
+        img = autoThresholdSegmenter.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
 
         // Apply set of rank filters
         Binary binaryFilter = new Binary();

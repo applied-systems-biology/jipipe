@@ -59,7 +59,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
      * @param definition Defines the slot
      * @param user       if the change was triggered by a user. If false, checks for slot sealing, types, etc. do not apply
      */
-    public void addSlot(String name, ACAQSlotDefinition definition, boolean user) {
+    public ACAQSlotDefinition addSlot(String name, ACAQSlotDefinition definition, boolean user) {
         if (!Objects.equals(name, definition.getName())) {
             definition = definition.renamedCopy(name);
         }
@@ -100,6 +100,8 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
         else
             throw new IllegalArgumentException("Unknown slot type!");
         getEventBus().post(new SlotAddedEvent(this, name));
+
+        return definition;
     }
 
     /**
@@ -506,12 +508,36 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
          * Adds an output slot
          *
          * @param name          Unique slot name
-         * @param inheritedSlot From which slot the data type is inherited. Slot name of an input or '*' to select the first available slot. Can be null or empty.
          * @param klass         Slot data class
+         * @param inheritedSlot From which slot the data type is inherited. Slot name of an input or '*' to select the first available slot. Can be null or empty.
          * @return The builder
          */
-        public Builder addOutputSlot(String name, String inheritedSlot, Class<? extends ACAQData> klass) {
-            object.addSlot(name, new ACAQSlotDefinition(klass, ACAQDataSlot.SlotType.Output, name, null), false);
+        public Builder addOutputSlot(String name, Class<? extends ACAQData> klass, String inheritedSlot) {
+            object.addSlot(name, new ACAQSlotDefinition(klass, ACAQDataSlot.SlotType.Output, name, inheritedSlot), false);
+            if (inheritedSlot != null && !inheritedSlot.isEmpty()) {
+                object.setAllowInheritedOutputSlots(true);
+            }
+            return this;
+        }
+
+        /**
+         * Adds an output slot
+         *
+         * @param name                   Unique slot name
+         * @param klass                  Slot data class
+         * @param inheritedSlot          From which slot the data type is inherited. Slot name of an input or '*' to select the first available slot. Can be null or empty.
+         * @param inheritanceConversions Instructions on how to convert inherited slot types.
+         * @return The builder
+         */
+        public Builder addOutputSlot(String name, Class<? extends ACAQData> klass, String inheritedSlot, Map<Class<? extends ACAQData>, Class<? extends ACAQData>> inheritanceConversions) {
+            ACAQSlotDefinition slotDefinition = object.addSlot(name, new ACAQSlotDefinition(klass, ACAQDataSlot.SlotType.Output, name, inheritedSlot), false);
+            for (Map.Entry<Class<? extends ACAQData>, Class<? extends ACAQData>> entry : inheritanceConversions.entrySet()) {
+                slotDefinition.getInheritanceConversions().put(ACAQDataDeclaration.getInstance(entry.getKey()),
+                        ACAQDataDeclaration.getInstance(entry.getValue()));
+            }
+            if (inheritedSlot != null && !inheritedSlot.isEmpty()) {
+                object.setAllowInheritedOutputSlots(true);
+            }
             return this;
         }
 

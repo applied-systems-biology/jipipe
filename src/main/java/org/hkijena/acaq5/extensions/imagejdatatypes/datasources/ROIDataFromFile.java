@@ -39,7 +39,7 @@ public class ROIDataFromFile extends ACAQIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        FileData fileData = dataInterface.getInputData(getFirstInputSlot());
+        FileData fileData = dataInterface.getInputData(getFirstInputSlot(), FileData.class);
         List<Roi> rois = ROIData.loadRoiListFromFile(fileData.getFilePath());
         dataInterface.addOutputData(getFirstOutputSlot(), new ROIData(rois));
     }

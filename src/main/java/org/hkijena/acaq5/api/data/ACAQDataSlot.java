@@ -86,12 +86,13 @@ public class ACAQDataSlot implements TableModel {
     /**
      * Gets the data stored in a specific row
      *
-     * @param row The row
-     * @param <T> Data type
+     * @param <T>       Data type
+     * @param row       The row
+     * @param dataClass the class to return
      * @return Data at row
      */
-    public <T> T getData(int row) {
-        return (T) data.get(row);
+    public <T extends ACAQData> T getData(int row, Class<T> dataClass) {
+        return (T) ACAQDatatypeRegistry.getInstance().convert(data.get(row), dataClass);
     }
 
     /**
@@ -396,7 +397,7 @@ public class ACAQDataSlot implements TableModel {
      */
     public void copyFrom(ACAQDataSlot sourceSlot) {
         for (int row = 0; row < sourceSlot.getRowCount(); ++row) {
-            addData(sourceSlot.getData(row), sourceSlot.getAnnotations(row));
+            addData(sourceSlot.getData(row, ACAQData.class), sourceSlot.getAnnotations(row));
         }
     }
 

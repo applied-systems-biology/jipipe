@@ -24,7 +24,7 @@ public class MultiParameterAlgorithmSlotConfiguration extends ACAQMutableSlotCon
     }
 
     @Override
-    public void addSlot(String name, ACAQSlotDefinition definition, boolean user) {
+    public ACAQSlotDefinition addSlot(String name, ACAQSlotDefinition definition, boolean user) {
         if (definition.getDataClass() != ParametersData.class) {
             if (!isLoading) {
                 // Add slots to the wrapped algorithm
@@ -33,7 +33,7 @@ public class MultiParameterAlgorithmSlotConfiguration extends ACAQMutableSlotCon
             }
             name = "Data " + name;
         }
-        super.addSlot(name, definition, user);
+        return super.addSlot(name, definition, user);
     }
 
     private void updateConfiguration() {

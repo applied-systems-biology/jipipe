@@ -194,7 +194,7 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
             initiallyOpenedImages.add(WindowManager.getImage(i + 1));
         }
         for (ACAQDataSlot inputSlot : getInputSlots()) {
-            ACAQData data = dataInterface.getInputData(inputSlot);
+            ACAQData data = dataInterface.getInputData(inputSlot, ACAQData.class);
             ImageJDatatypeAdapter adapter = ACAQImageJAdapterRegistry.getInstance().getAdapterForACAQData(data);
             if (batchMode) {
                 adapter.convertACAQToImageJ(data, true, true, inputSlot.getName());

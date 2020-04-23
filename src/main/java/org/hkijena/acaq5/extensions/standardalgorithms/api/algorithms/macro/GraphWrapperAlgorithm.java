@@ -200,7 +200,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
                 ACAQDataSlot sourceSlot = entry.getValue();
                 ACAQDataSlot targetSlot = getOutputSlot(entry.getKey());
                 for (int row = 0; row < sourceSlot.getRowCount(); ++row) {
-                    targetSlot.addData(sourceSlot.getData(row), sourceSlot.getAnnotations(row));
+                    targetSlot.addData(sourceSlot.getData(row, ACAQData.class), sourceSlot.getAnnotations(row));
                 }
             }
         }
@@ -212,7 +212,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
                 ACAQDataSlot targetSlot = entry.getValue();
                 ACAQDataSlot sourceSlot = getInputSlot(entry.getKey());
                 for (int row = 0; row < sourceSlot.getRowCount(); ++row) {
-                    targetSlot.addData(sourceSlot.getData(row), sourceSlot.getAnnotations(row));
+                    targetSlot.addData(sourceSlot.getData(row, ACAQData.class), sourceSlot.getAnnotations(row));
                 }
             }
         }

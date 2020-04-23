@@ -60,7 +60,7 @@ public class MaskToParticleConverter extends ACAQIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ImagePlus2DGreyscaleMaskData inputData = dataInterface.getInputData(getFirstInputSlot());
+        ImagePlus2DGreyscaleMaskData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlus2DGreyscaleMaskData.class);
 
         ResultsTable resultsTable = new ResultsTable();
         RoiManager manager = new RoiManager(true);

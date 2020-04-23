@@ -4,8 +4,10 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.plugin.PlugIn;
+import ij.process.ImageProcessor;
 
 import java.util.Arrays;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -14,6 +16,23 @@ import java.util.stream.Collectors;
 public class ImageJUtils {
     private ImageJUtils() {
 
+    }
+
+    /**
+     * Runs the function for each slice
+     *
+     * @param img      the image
+     * @param function the function
+     */
+    public static void forEachSlice(ImagePlus img, Consumer<ImageProcessor> function) {
+        if (img.isStack()) {
+            for (int i = 0; i < img.getStack().size(); ++i) {
+                ImageProcessor ip = img.getStack().getProcessor(i + 1);
+                function.accept(ip);
+            }
+        } else {
+            function.accept(img.getProcessor());
+        }
     }
 
     /**

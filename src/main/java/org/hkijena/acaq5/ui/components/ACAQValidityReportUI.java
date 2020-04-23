@@ -122,7 +122,7 @@ public class ACAQValidityReportUI extends JPanel {
 
                 model.addRow(new Object[]{
                         StringUtils.createIconTextHTMLTable(key.replace("/", " ⏵ "), ResourceUtils.getPluginResource("icons/error.png")),
-                        StringUtils.wordWrappedInHTML(messages.getOrDefault(key, ""), 50)
+                        StringUtils.wordWrappedHTML(messages.getOrDefault(key, ""), 50)
                 });
             }
             table.setModel(model);

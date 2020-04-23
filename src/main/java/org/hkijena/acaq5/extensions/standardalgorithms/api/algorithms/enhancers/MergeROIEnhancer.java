@@ -33,7 +33,7 @@ public class MergeROIEnhancer extends ACAQIteratingAlgorithm {
      */
     public MergeROIEnhancer(ACAQAlgorithmDeclaration declaration) {
         super(declaration, ACAQMutableSlotConfiguration.builder().restrictInputTo(ROIData.class)
-                .addOutputSlot("ROI", "", ROIData.class)
+                .addOutputSlot("ROI", ROIData.class, "")
                 .sealOutput().build(), null);
     }
 
@@ -50,7 +50,7 @@ public class MergeROIEnhancer extends ACAQIteratingAlgorithm {
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         List<Roi> inputROI = new ArrayList<>();
         for (ACAQDataSlot slot : getInputSlots()) {
-            ROIData data = dataInterface.getInputData(slot);
+            ROIData data = dataInterface.getInputData(slot, ROIData.class);
             inputROI.addAll(data.getROI());
         }
 

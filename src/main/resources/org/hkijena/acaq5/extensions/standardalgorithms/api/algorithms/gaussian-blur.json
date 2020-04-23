@@ -1,7 +1,7 @@
 {
   "id" : "gaussian-blur",
   "metadata" : {
-    "name" : "Gaussian blur",
+    "name" : "Gaussian blur (deprecated)",
     "description" : "Applies gaussian blur to the input image",
     "authors" : "",
     "website" : "",

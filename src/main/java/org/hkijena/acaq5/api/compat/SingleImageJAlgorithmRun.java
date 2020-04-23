@@ -94,7 +94,7 @@ public class SingleImageJAlgorithmRun implements ACAQValidatable {
         for (ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
             ImageJDatatypeAdapter adapter = ACAQImageJAdapterRegistry.getInstance().getAdapterForACAQData(outputSlot.getAcceptedDataType());
             for (int i = 0; i < outputSlot.getRowCount(); ++i) {
-                ACAQData data = outputSlot.getData(i);
+                ACAQData data = outputSlot.getData(i, ACAQData.class);
                 adapter.convertACAQToImageJ(data, true, false, outputSlot.getName());
             }
         }

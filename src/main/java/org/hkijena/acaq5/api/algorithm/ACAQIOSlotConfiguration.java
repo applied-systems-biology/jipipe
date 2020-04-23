@@ -16,23 +16,23 @@ public class ACAQIOSlotConfiguration extends ACAQMutableSlotConfiguration {
     }
 
     @Override
-    public void addSlot(String name, ACAQSlotDefinition definition, boolean user) {
+    public ACAQSlotDefinition addSlot(String name, ACAQSlotDefinition definition, boolean user) {
         if (definition.getSlotType() == ACAQDataSlot.SlotType.Output) {
             if (!name.startsWith("Output "))
                 name = "Output " + name;
             String inputName = name.substring("Output ".length());
             if (!getSlots().containsKey(inputName)) {
-                addSlot(inputName, new ACAQSlotDefinition(definition.getDataClass(), ACAQDataSlot.SlotType.Input, inputName, null), false);
-                return;
+                return addSlot(inputName, new ACAQSlotDefinition(definition.getDataClass(), ACAQDataSlot.SlotType.Input, inputName, null), false);
             }
         }
-        super.addSlot(name, definition, user);
+        ACAQSlotDefinition result = super.addSlot(name, definition, user);
         if (definition.getSlotType() == ACAQDataSlot.SlotType.Input) {
             String outputName = "Output " + name;
             if (!getSlots().containsKey(outputName)) {
-                addSlot(outputName, new ACAQSlotDefinition(definition.getDataClass(), ACAQDataSlot.SlotType.Output, outputName, null), false);
+                return addSlot(outputName, new ACAQSlotDefinition(definition.getDataClass(), ACAQDataSlot.SlotType.Output, outputName, null), false);
             }
         }
+        return result;
     }
 
     @Override

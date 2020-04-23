@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.imagejalgorithms;
+package org.hkijena.acaq5.extensions.imagejalgorithms.ij2;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;

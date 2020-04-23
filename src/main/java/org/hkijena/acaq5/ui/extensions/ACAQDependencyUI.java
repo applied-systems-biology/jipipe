@@ -99,7 +99,7 @@ public class ACAQDependencyUI extends JPanel {
                     StringUtils.createIconTextHTMLTable(declaration.getName(), ACAQUITraitRegistry.getInstance().getIconURLFor(declaration)),
                     declaration.isDiscriminator() ? "Valued" : "Boolean",
                     declaration.getId(),
-                    StringUtils.wordWrappedInHTML(declaration.getDescription(), 50)
+                    StringUtils.wordWrappedHTML(declaration.getDescription(), 50)
             });
         }
         insertTable(formPanel, model, "Annotation types", UIUtils.getIconFromResources("label.png"));
@@ -121,7 +121,7 @@ public class ACAQDependencyUI extends JPanel {
             model.addRow(new Object[]{
                     StringUtils.createIconTextHTMLTable(declaration.getName(), ACAQUIDatatypeRegistry.getInstance().getIconURLFor(declaration)),
                     declaration.getId(),
-                    StringUtils.wordWrappedInHTML(declaration.getDescription(), 50),
+                    StringUtils.wordWrappedHTML(declaration.getDescription(), 50),
                     supportsImageJEntry
             });
         }
@@ -150,7 +150,7 @@ public class ACAQDependencyUI extends JPanel {
             model.addRow(new Object[]{
                     declaration.getName(),
                     declaration.getId(),
-                    StringUtils.wordWrappedInHTML(declaration.getDescription(), 50),
+                    StringUtils.wordWrappedHTML(declaration.getDescription(), 50),
                     TooltipUtils.getSlotTable(declaration.getInputSlots().stream().map(ACAQSlotDefinition::new).collect(Collectors.toList())),
                     TooltipUtils.getSlotTable(declaration.getOutputSlots().stream().map(ACAQSlotDefinition::new).collect(Collectors.toList())),
                     TooltipUtils.getTraitTable(declaration.getPreferredTraits()),

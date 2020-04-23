@@ -74,7 +74,7 @@ public class MultiParameterAlgorithm extends ACAQAlgorithm {
         for (int row = 0; row < parameterSlot.getRowCount(); ++row) {
             if (isCancelled.get())
                 return;
-            ParametersData parametersData = parameterSlot.getData(row);
+            ParametersData parametersData = parameterSlot.getData(row, ParametersData.class);
             for (Map.Entry<String, Object> entry : parametersData.getParameterData().entrySet()) {
                 ACAQParameterAccess parameterAccess = parameters.getOrDefault(entry.getKey(), null);
                 if (parameterAccess == null) {
@@ -98,7 +98,7 @@ public class MultiParameterAlgorithm extends ACAQAlgorithm {
             if (isCancelled.get())
                 return;
             ACAQRunnerSubStatus parameterProgress = subProgress.resolve("Parameter set " + (row + 1) + " / " + parameterSlot.getRowCount());
-            ParametersData parametersData = parameterSlot.getData(row);
+            ParametersData parametersData = parameterSlot.getData(row, ParametersData.class);
 
             passParameters(parametersData, parameters);
             passInputData();
@@ -124,7 +124,7 @@ public class MultiParameterAlgorithm extends ACAQAlgorithm {
         for (ACAQDataSlot wrappedOutputSlot : algorithmInstance.getOutputSlots()) {
             ACAQDataSlot outputSlot = getOutputSlot("Data " + wrappedOutputSlot.getName());
             for (int row = 0; row < wrappedOutputSlot.getRowCount(); ++row) {
-                ACAQData data = wrappedOutputSlot.getData(row);
+                ACAQData data = wrappedOutputSlot.getData(row, ACAQData.class);
                 List<ACAQTrait> traits = wrappedOutputSlot.getAnnotations(row);
                 for (Map.Entry<String, ACAQTraitDeclaration> entry : newParameters.entrySet()) {
                     traits.add(entry.getValue().newInstance("" + parameters.get(entry.getKey()).get()));

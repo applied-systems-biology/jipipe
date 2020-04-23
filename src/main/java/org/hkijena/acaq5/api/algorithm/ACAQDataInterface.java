@@ -48,27 +48,29 @@ public class ACAQDataInterface {
     /**
      * Gets stored data from an input slot
      *
-     * @param slotName The slot name
-     * @param <T>      Data type
+     * @param <T>       Data type
+     * @param slotName  The slot name
+     * @param dataClass The data type that should be returned
      * @return Input data with provided name
      */
-    public <T extends ACAQData> T getInputData(String slotName) {
-        return getInputData(algorithm.getInputSlot(slotName));
+    public <T extends ACAQData> T getInputData(String slotName, Class<T> dataClass) {
+        return getInputData(algorithm.getInputSlot(slotName), dataClass);
     }
 
     /**
      * Gets stored data from an input slot
      *
-     * @param slot The slot
-     * @param <T>  Data type
+     * @param <T>       Data type
+     * @param slot      The slot
+     * @param dataClass The data type that should be returned
      * @return Input data with provided name
      */
-    public <T extends ACAQData> T getInputData(ACAQDataSlot slot) {
+    public <T extends ACAQData> T getInputData(ACAQDataSlot slot, Class<T> dataClass) {
         if (slot.getAlgorithm() != algorithm)
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isInput())
             throw new IllegalArgumentException("Slot is not an input slot!");
-        return (T) slot.getData(inputSlotRows.get(slot));
+        return (T) slot.getData(inputSlotRows.get(slot), dataClass);
     }
 
     /**

@@ -80,7 +80,7 @@ public class ACAQTraitNode extends ACAQAlgorithm {
         return ACAQMutableSlotConfiguration.builder()
                 .restrictInputTo(ACAQTraitNodeInheritanceData.class, ACAQDiscriminatorNodeInheritanceData.class)
                 .restrictOutputTo(ACAQTraitNodeInheritanceData.class, ACAQDiscriminatorNodeInheritanceData.class)
-                .addOutputSlot("This", "", ACAQTraitNodeInheritanceData.class)
+                .addOutputSlot("This", ACAQTraitNodeInheritanceData.class, "")
                 .sealOutput()
                 .build();
     }

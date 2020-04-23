@@ -58,7 +58,7 @@ public class WatershedMaskEnhancer extends ACAQIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ImagePlus2DGreyscaleMaskData inputData = dataInterface.getInputData(getFirstInputSlot());
+        ImagePlus2DGreyscaleMaskData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlus2DGreyscaleMaskData.class);
         ImagePlus img = inputData.getImage();
 
         EDM watershed = new EDM();

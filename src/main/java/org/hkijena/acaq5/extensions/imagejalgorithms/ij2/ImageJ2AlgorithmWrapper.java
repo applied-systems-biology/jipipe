@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.imagejalgorithms;
+package org.hkijena.acaq5.extensions.imagejalgorithms.ij2;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -95,11 +95,11 @@ public class ImageJ2AlgorithmWrapper extends ACAQIteratingAlgorithm {
         for (ACAQDataSlot inputSlot : getInputSlots()) {
             ModuleItem<?> moduleItem = module.getInfo().getInput(declaration.getInputMap().get(inputSlot.getName()));
             if (ImagePlus.class.isAssignableFrom(moduleItem.getType())) {
-                ImagePlusData data = dataInterface.getInputData(inputSlot);
+                ImagePlusData data = dataInterface.getInputData(inputSlot, ImagePlusData.class);
                 ImagePlus img = data.getImage().duplicate();
                 module.setInput(declaration.getInputMap().get(inputSlot.getName()), img);
             } else if (Dataset.class.isAssignableFrom(moduleItem.getType())) {
-                ImagePlusData data = dataInterface.getInputData(inputSlot);
+                ImagePlusData data = dataInterface.getInputData(inputSlot, ImagePlusData.class);
                 ImagePlus img = data.getImage();
                 ConvertService convertService = ((ImageJ2AlgorithmWrapperDeclaration) getDeclaration()).getContext().getService(ConvertService.class);
                 Dataset dataset = convertService.convert(img, Dataset.class);

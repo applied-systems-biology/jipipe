@@ -77,7 +77,7 @@ public class BioformatsImporter extends ACAQIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        FileData inputFile = dataInterface.getInputData(getFirstInputSlot());
+        FileData inputFile = dataInterface.getInputData(getFirstInputSlot(), FileData.class);
         ImporterOptions options;
         try {
             options = new ImporterOptions();
@@ -124,6 +124,7 @@ public class BioformatsImporter extends ACAQIteratingAlgorithm {
 
         for (int i = 0; i < Math.min(getOutputSlots().size(), images.length); ++i) {
             ACAQDataSlot slot = getOutputSlots().get(i);
+            images[i].getProcessor().setLut(null);
             dataInterface.addOutputData(slot, ACAQData.createInstance(slot.getAcceptedDataType(), images[i]));
         }
     }

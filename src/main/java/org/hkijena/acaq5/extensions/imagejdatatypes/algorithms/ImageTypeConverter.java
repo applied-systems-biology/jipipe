@@ -48,7 +48,7 @@ public class ImageTypeConverter extends ACAQAlgorithm {
         ACAQDataSlot inputSlot = getFirstInputSlot();
         ACAQDataSlot outputSlot = getFirstOutputSlot();
         for (int i = 0; i < inputSlot.getRowCount(); ++i) {
-            ImagePlusData data = inputSlot.getData(i);
+            ImagePlusData data = inputSlot.getData(i, ImagePlusData.class);
             ACAQData converted = ACAQData.createInstance(outputSlot.getAcceptedDataType(), data.getImage());
             outputSlot.addData(converted, outputSlot.getAnnotations(i));
         }

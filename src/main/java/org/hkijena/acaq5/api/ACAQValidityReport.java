@@ -120,6 +120,32 @@ public class ACAQValidityReport {
     }
 
     /**
+     * Reports as invalid if the value is not within the limits
+     *
+     * @param value      the value
+     * @param min        interval start
+     * @param max        interval end
+     * @param includeMin if the interval start is included
+     * @param includeMax if the interval end is included
+     */
+    public void checkIfWithin(double value, double min, double max, boolean includeMin, boolean includeMax) {
+        if ((includeMin && value < min) || (!includeMin && value <= min) || (includeMax && value > max) || (!includeMax && value >= max)) {
+            reportIsInvalid("Invalid value! Please provide a value within " + (includeMin ? "[" : "(") + min + " and " + (includeMax ? "]" : ")") + max);
+        }
+    }
+
+    /**
+     * Reports as invalid if the value is null
+     *
+     * @param value the value
+     */
+    public void checkNonNull(Object value) {
+        if (value == null) {
+            reportIsInvalid("No value provided! Please provide a valid value.");
+        }
+    }
+
+    /**
      * The response type
      */
     public enum Response {

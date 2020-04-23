@@ -7,8 +7,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
@@ -29,13 +27,6 @@ public class SearchComboBox<T> extends JComboBox<T> {
     public SearchComboBox() {
         setEditable(true);
         setEditor(new Editor());
-        getEditor().getEditorComponent().addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                if (isDisplayable())
-                    SearchComboBox.this.showPopup();
-            }
-        });
         JXTextField textField = (JXTextField) getEditor().getEditorComponent();
         textField.getDocument().addDocumentListener(new DocumentChangeListener() {
             @Override

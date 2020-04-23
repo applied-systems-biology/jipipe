@@ -1,9 +1,10 @@
-package org.hkijena.acaq5.extensions.imagejalgorithms;
+package org.hkijena.acaq5.extensions.imagejalgorithms.ij2;
 
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistrationTask;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExtension;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
 /**

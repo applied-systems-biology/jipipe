@@ -52,7 +52,7 @@ public class FolderAnnotationGenerator extends ACAQIteratingAlgorithm {
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         if (generatedAnnotation.getDeclaration() != null) {
-            FolderData inputData = dataInterface.getInputData(getFirstInputSlot());
+            FolderData inputData = dataInterface.getInputData(getFirstInputSlot(), FolderData.class);
             String discriminator = inputData.getFolderPath().getFileName().toString();
             dataInterface.addAnnotation(generatedAnnotation.getDeclaration().newInstance(discriminator));
             dataInterface.addOutputData(getFirstOutputSlot(), inputData);

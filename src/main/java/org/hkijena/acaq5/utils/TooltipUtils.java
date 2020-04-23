@@ -148,7 +148,7 @@ public class TooltipUtils {
         // Write description
         String description = declaration.getDescription();
         if (description != null && !description.isEmpty())
-            builder.append(description).append("</br>");
+            builder.append(StringUtils.wordWrappedHTMLElement(description, 50)).append("</br>");
 
         Set<ACAQTraitDeclaration> preferredTraits = declaration.getPreferredTraits();
         Set<ACAQTraitDeclaration> unwantedTraits = declaration.getUnwantedTraits();

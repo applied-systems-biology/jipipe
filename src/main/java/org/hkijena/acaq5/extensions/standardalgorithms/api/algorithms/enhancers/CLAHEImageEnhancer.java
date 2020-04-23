@@ -63,7 +63,7 @@ public class CLAHEImageEnhancer extends ACAQIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ImagePlus2DGreyscaleData inputData = dataInterface.getInputData(getFirstInputSlot());
+        ImagePlus2DGreyscaleData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlus2DGreyscaleData.class);
         ImagePlus result = inputData.getImage().duplicate();
         Flat clahe = fastMode ? Flat.getFastInstance() : Flat.getInstance();
         clahe.run(result, blocks, bins, maxSlope, null, true);

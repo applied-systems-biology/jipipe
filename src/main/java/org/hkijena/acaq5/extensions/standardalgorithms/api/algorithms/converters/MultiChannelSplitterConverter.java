@@ -53,7 +53,7 @@ public class MultiChannelSplitterConverter extends ACAQIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot());
+        ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusData.class);
         ImagePlus[] outputImages = ChannelSplitter.split(inputData.getImage());
         int i = 0;
         for (ACAQDataSlot slot : getOutputSlots()) {

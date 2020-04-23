@@ -32,7 +32,7 @@ public class ImagePlusFromFile extends ACAQIteratingAlgorithm {
     public ImagePlusFromFile(ACAQAlgorithmDeclaration declaration, Class<? extends ACAQData> dataClass) {
         super(declaration,
                 ACAQMutableSlotConfiguration.builder().addInputSlot("Files", FileData.class)
-                        .addOutputSlot("Image", "", dataClass)
+                        .addOutputSlot("Image", dataClass, "")
                         .sealOutput()
                         .sealInput()
                         .build());
@@ -57,7 +57,7 @@ public class ImagePlusFromFile extends ACAQIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        FileData fileData = dataInterface.getInputData(getFirstInputSlot());
+        FileData fileData = dataInterface.getInputData(getFirstInputSlot(), FileData.class);
         dataInterface.addOutputData(getFirstOutputSlot(), readImageFrom(fileData.getFilePath()));
     }
 
@@ -69,7 +69,9 @@ public class ImagePlusFromFile extends ACAQIteratingAlgorithm {
      */
     protected ACAQData readImageFrom(Path fileName) {
         try {
-            return dataClass.getConstructor(ImagePlus.class).newInstance(IJ.openImage(fileName.toString()));
+            ImagePlus imagePlus = IJ.openImage(fileName.toString());
+            imagePlus.getProcessor().setLut(null);
+            return dataClass.getConstructor(ImagePlus.class).newInstance(imagePlus);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }

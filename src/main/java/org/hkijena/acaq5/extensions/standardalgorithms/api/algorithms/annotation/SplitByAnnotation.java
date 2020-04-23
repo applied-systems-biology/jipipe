@@ -7,6 +7,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
+import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
@@ -70,7 +71,7 @@ public class SplitByAnnotation extends ACAQAlgorithm {
                 targetSlot = getLastOutputSlot();
             }
 
-            targetSlot.addData(inputSlot.getData(row), inputSlot.getAnnotations(row));
+            targetSlot.addData(inputSlot.getData(row, ACAQData.class), inputSlot.getAnnotations(row));
         }
     }
 

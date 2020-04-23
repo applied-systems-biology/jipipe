@@ -89,7 +89,7 @@ public class HessianSegmenter extends ACAQIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ImagePlus2DGreyscaleData inputImage = dataInterface.getInputData(getFirstInputSlot());
+        ImagePlus2DGreyscaleData inputImage = dataInterface.getInputData(getFirstInputSlot(), ImagePlus2DGreyscaleData.class);
         ImagePlus img = inputImage.getImage();
 
         // Apply hessian
@@ -102,7 +102,7 @@ public class HessianSegmenter extends ACAQIteratingAlgorithm {
         autoThresholdSegmenter.clearSlotData();
         autoThresholdSegmenter.getFirstInputSlot().addData(new ImagePlus2DGreyscaleData(result));
         autoThresholdSegmenter.run(subProgress.resolve("Auto-thresholding"), algorithmProgress, isCancelled);
-        result = ((ImagePlusData) autoThresholdSegmenter.getFirstOutputSlot().getData(0)).getImage();
+        result = autoThresholdSegmenter.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
 
         // Despeckle x2
         applyDespeckle(result, 2);
