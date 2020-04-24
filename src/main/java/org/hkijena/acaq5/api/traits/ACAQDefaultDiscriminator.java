@@ -40,6 +40,22 @@ public class ACAQDefaultDiscriminator extends ACAQDefaultTrait implements ACAQDi
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if(!(o instanceof ACAQTrait))
+            return false;
+        if (getDeclaration() != ((ACAQTrait) o).getDeclaration())
+            return false;
+        ACAQDiscriminator that = (ACAQDiscriminator) o;
+        return Objects.equals(value, that.getValue());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
+    }
+
+    @Override
     public int compareTo(ACAQDiscriminator o) {
         return Objects.compare(getValue(), o.getValue(), String::compareTo);
     }
