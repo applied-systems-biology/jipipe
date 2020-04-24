@@ -22,7 +22,7 @@ import java.util.function.Supplier;
  */
 // Algorithm metadata
 @ACAQDocumentation(name = "Split multichannel image (deprecated)")
-@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Processor, menuPath = "Color")
+@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Processor, menuPath = "Colors")
 
 //Algorithm data flow
 @AlgorithmInputSlot(ImagePlus2DColorData.class)
