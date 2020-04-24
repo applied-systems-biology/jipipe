@@ -45,7 +45,7 @@
                 "Enhancer"
             ],
             "enum": [
-              "Converter", "Enhancer", "Segmentation", "Quantifier", "DataSource", "FileSystem", "Annotation", "Miscellaneous"
+              "Converter", "Processor", "Quantifier", "DataSource", "FileSystem", "Annotation", "Miscellaneous"
             ]
         },
         "parameter-visibilities": {
