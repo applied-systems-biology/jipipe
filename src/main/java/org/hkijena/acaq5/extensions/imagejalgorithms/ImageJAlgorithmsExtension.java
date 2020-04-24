@@ -155,85 +155,109 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
 
     private static Map<Class<? extends ACAQData>, Class<? extends ACAQData>> get3DConversion() {
         Map<Class<? extends ACAQData>, Class<? extends ACAQData>> result = new HashMap<>();
+
         result.put(ImagePlusData.class, ImagePlus3DData.class);
         result.put(ImagePlusGreyscaleData.class, ImagePlus3DGreyscaleData.class);
         result.put(ImagePlusGreyscale8UData.class, ImagePlus3DGreyscale8UData.class);
+        result.put(ImagePlusGreyscaleMaskData.class, ImagePlus3DGreyscaleMaskData.class);
         result.put(ImagePlusGreyscale16UData.class, ImagePlus3DGreyscale16UData.class);
         result.put(ImagePlusGreyscale32FData.class, ImagePlus3DGreyscale32FData.class);
         result.put(ImagePlusColorData.class, ImagePlus3DColorData.class);
         result.put(ImagePlusColor8UData.class, ImagePlus3DColor8UData.class);
         result.put(ImagePlusColorRGBData.class, ImagePlus3DColorRGBData.class);
+
         result.put(ImagePlus2DData.class, ImagePlus3DData.class);
         result.put(ImagePlus2DGreyscaleData.class, ImagePlus3DGreyscaleData.class);
         result.put(ImagePlus2DGreyscale8UData.class, ImagePlus3DGreyscale8UData.class);
+        result.put(ImagePlus2DGreyscaleMaskData.class, ImagePlus3DGreyscaleMaskData.class);
         result.put(ImagePlus2DGreyscale16UData.class, ImagePlus3DGreyscale16UData.class);
         result.put(ImagePlus2DGreyscale32FData.class, ImagePlus3DGreyscale32FData.class);
         result.put(ImagePlus2DColorData.class, ImagePlus3DColorData.class);
         result.put(ImagePlus2DColor8UData.class, ImagePlus3DColor8UData.class);
         result.put(ImagePlus2DColorRGBData.class, ImagePlus3DColorRGBData.class);
+
         result.put(ImagePlus4DData.class, ImagePlus3DData.class);
         result.put(ImagePlus4DGreyscaleData.class, ImagePlus3DGreyscaleData.class);
         result.put(ImagePlus4DGreyscale8UData.class, ImagePlus3DGreyscale8UData.class);
+        result.put(ImagePlus4DGreyscaleMaskData.class, ImagePlus3DGreyscaleMaskData.class);
         result.put(ImagePlus4DGreyscale16UData.class, ImagePlus3DGreyscale16UData.class);
         result.put(ImagePlus4DGreyscale32FData.class, ImagePlus3DGreyscale32FData.class);
         result.put(ImagePlus4DColorData.class, ImagePlus3DColorData.class);
         result.put(ImagePlus4DColor8UData.class, ImagePlus3DColor8UData.class);
         result.put(ImagePlus4DColorRGBData.class, ImagePlus3DColorRGBData.class);
+
         result.put(ImagePlus5DData.class, ImagePlus3DData.class);
         result.put(ImagePlus5DGreyscaleData.class, ImagePlus3DGreyscaleData.class);
         result.put(ImagePlus5DGreyscale8UData.class, ImagePlus3DGreyscale8UData.class);
+        result.put(ImagePlus5DGreyscaleMaskData.class, ImagePlus3DGreyscaleMaskData.class);
         result.put(ImagePlus5DGreyscale16UData.class, ImagePlus3DGreyscale16UData.class);
         result.put(ImagePlus5DGreyscale32FData.class, ImagePlus3DGreyscale32FData.class);
         result.put(ImagePlus5DColorData.class, ImagePlus3DColorData.class);
         result.put(ImagePlus5DColor8UData.class, ImagePlus3DColor8UData.class);
         result.put(ImagePlus5DColorRGBData.class, ImagePlus3DColorRGBData.class);
+
         return result;
     }
 
     private static Map<Class<? extends ACAQData>, Class<? extends ACAQData>> get2DConversion() {
         Map<Class<? extends ACAQData>, Class<? extends ACAQData>> result = new HashMap<>();
+
         result.put(ImagePlusData.class, ImagePlus2DData.class);
         result.put(ImagePlusGreyscaleData.class, ImagePlus2DGreyscaleData.class);
         result.put(ImagePlusGreyscale8UData.class, ImagePlus2DGreyscale8UData.class);
+        result.put(ImagePlusGreyscaleMaskData.class, ImagePlus2DGreyscaleMaskData.class);
         result.put(ImagePlusGreyscale16UData.class, ImagePlus2DGreyscale16UData.class);
         result.put(ImagePlusGreyscale32FData.class, ImagePlus2DGreyscale32FData.class);
         result.put(ImagePlusColorData.class, ImagePlus2DColorData.class);
         result.put(ImagePlusColor8UData.class, ImagePlus2DColor8UData.class);
         result.put(ImagePlusColorRGBData.class, ImagePlus2DColorRGBData.class);
+
         result.put(ImagePlus3DData.class, ImagePlus2DData.class);
         result.put(ImagePlus3DGreyscaleData.class, ImagePlus2DGreyscaleData.class);
         result.put(ImagePlus3DGreyscale8UData.class, ImagePlus2DGreyscale8UData.class);
+        result.put(ImagePlus3DGreyscaleMaskData.class, ImagePlus2DGreyscaleMaskData.class);
         result.put(ImagePlus3DGreyscale16UData.class, ImagePlus2DGreyscale16UData.class);
         result.put(ImagePlus3DGreyscale32FData.class, ImagePlus2DGreyscale32FData.class);
         result.put(ImagePlus3DColorData.class, ImagePlus2DColorData.class);
         result.put(ImagePlus3DColor8UData.class, ImagePlus2DColor8UData.class);
         result.put(ImagePlus3DColorRGBData.class, ImagePlus2DColorRGBData.class);
+
         result.put(ImagePlus4DData.class, ImagePlus2DData.class);
         result.put(ImagePlus4DGreyscaleData.class, ImagePlus2DGreyscaleData.class);
         result.put(ImagePlus4DGreyscale8UData.class, ImagePlus2DGreyscale8UData.class);
+        result.put(ImagePlus4DGreyscaleMaskData.class, ImagePlus2DGreyscaleMaskData.class);
         result.put(ImagePlus4DGreyscale16UData.class, ImagePlus2DGreyscale16UData.class);
         result.put(ImagePlus4DGreyscale32FData.class, ImagePlus2DGreyscale32FData.class);
         result.put(ImagePlus4DColorData.class, ImagePlus2DColorData.class);
         result.put(ImagePlus4DColor8UData.class, ImagePlus2DColor8UData.class);
         result.put(ImagePlus4DColorRGBData.class, ImagePlus2DColorRGBData.class);
+
         result.put(ImagePlus5DData.class, ImagePlus2DData.class);
         result.put(ImagePlus5DGreyscaleData.class, ImagePlus2DGreyscaleData.class);
         result.put(ImagePlus5DGreyscale8UData.class, ImagePlus2DGreyscale8UData.class);
+        result.put(ImagePlus5DGreyscaleMaskData.class, ImagePlus2DGreyscaleMaskData.class);
         result.put(ImagePlus5DGreyscale16UData.class, ImagePlus2DGreyscale16UData.class);
         result.put(ImagePlus5DGreyscale32FData.class, ImagePlus2DGreyscale32FData.class);
         result.put(ImagePlus5DColorData.class, ImagePlus2DColorData.class);
         result.put(ImagePlus5DColor8UData.class, ImagePlus2DColor8UData.class);
         result.put(ImagePlus5DColorRGBData.class, ImagePlus2DColorRGBData.class);
+
         return result;
     }
 
     private static Map<Class<? extends ACAQData>, Class<? extends ACAQData>> getMaskQualifierMap() {
         Map<Class<? extends ACAQData>, Class<? extends ACAQData>> result = new HashMap<>();
+
         result.put(ImagePlusData.class, ImagePlusGreyscaleMaskData.class);
         result.put(ImagePlusGreyscaleData.class, ImagePlusGreyscaleMaskData.class);
         result.put(ImagePlusGreyscale8UData.class, ImagePlusGreyscaleMaskData.class);
         result.put(ImagePlusGreyscale16UData.class, ImagePlusGreyscaleMaskData.class);
         result.put(ImagePlusGreyscale32FData.class, ImagePlusGreyscaleMaskData.class);
+        result.put(ImagePlusColorData.class, ImagePlusGreyscaleMaskData.class);
+        result.put(ImagePlusColor8UData.class, ImagePlusGreyscaleMaskData.class);
+        result.put(ImagePlusColorRGBData.class, ImagePlusGreyscaleMaskData.class);
+
+        result.put(ImagePlus2DData.class, ImagePlus2DGreyscaleMaskData.class);
         result.put(ImagePlus2DGreyscaleData.class, ImagePlus2DGreyscaleMaskData.class);
         result.put(ImagePlus2DGreyscale8UData.class, ImagePlus2DGreyscaleMaskData.class);
         result.put(ImagePlus2DGreyscale16UData.class, ImagePlus2DGreyscaleMaskData.class);
@@ -241,6 +265,7 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         result.put(ImagePlus2DColorData.class, ImagePlus2DGreyscaleMaskData.class);
         result.put(ImagePlus2DColor8UData.class, ImagePlus2DGreyscaleMaskData.class);
         result.put(ImagePlus2DColorRGBData.class, ImagePlus2DGreyscaleMaskData.class);
+
         result.put(ImagePlus3DData.class, ImagePlus3DGreyscaleMaskData.class);
         result.put(ImagePlus3DGreyscaleData.class, ImagePlus3DGreyscaleMaskData.class);
         result.put(ImagePlus3DGreyscale8UData.class, ImagePlus3DGreyscaleMaskData.class);
@@ -249,6 +274,7 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         result.put(ImagePlus3DColorData.class, ImagePlus3DGreyscaleMaskData.class);
         result.put(ImagePlus3DColor8UData.class, ImagePlus3DGreyscaleMaskData.class);
         result.put(ImagePlus3DColorRGBData.class, ImagePlus3DGreyscaleMaskData.class);
+
         result.put(ImagePlus4DData.class, ImagePlus4DGreyscaleMaskData.class);
         result.put(ImagePlus4DGreyscaleData.class, ImagePlus4DGreyscaleMaskData.class);
         result.put(ImagePlus4DGreyscale8UData.class, ImagePlus4DGreyscaleMaskData.class);
@@ -257,6 +283,7 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         result.put(ImagePlus4DColorData.class, ImagePlus4DGreyscaleMaskData.class);
         result.put(ImagePlus4DColor8UData.class, ImagePlus4DGreyscaleMaskData.class);
         result.put(ImagePlus4DColorRGBData.class, ImagePlus4DGreyscaleMaskData.class);
+
         result.put(ImagePlus5DData.class, ImagePlus5DGreyscaleMaskData.class);
         result.put(ImagePlus5DGreyscaleData.class, ImagePlus5DGreyscaleMaskData.class);
         result.put(ImagePlus5DGreyscale8UData.class, ImagePlus5DGreyscaleMaskData.class);
@@ -265,31 +292,38 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         result.put(ImagePlus5DColorData.class, ImagePlus5DGreyscaleMaskData.class);
         result.put(ImagePlus5DColor8UData.class, ImagePlus5DGreyscaleMaskData.class);
         result.put(ImagePlus5DColorRGBData.class, ImagePlus5DGreyscaleMaskData.class);
+
         return result;
     }
 
     private static Map<Class<? extends ACAQData>, Class<? extends ACAQData>> getToGrayscaleConversion() {
         Map<Class<? extends ACAQData>, Class<? extends ACAQData>> result = new HashMap<>();
+
         result.put(ImagePlusData.class, ImagePlusGreyscaleData.class);
         result.put(ImagePlusColorData.class, ImagePlusGreyscaleData.class);
         result.put(ImagePlusColor8UData.class, ImagePlusGreyscaleData.class);
         result.put(ImagePlusColorRGBData.class, ImagePlusGreyscaleData.class);
+
         result.put(ImagePlus2DData.class, ImagePlus2DGreyscaleData.class);
         result.put(ImagePlus2DColorData.class, ImagePlus2DGreyscaleData.class);
         result.put(ImagePlus2DColor8UData.class, ImagePlus2DGreyscaleData.class);
         result.put(ImagePlus2DColorRGBData.class, ImagePlus2DGreyscaleData.class);
+
         result.put(ImagePlus3DData.class, ImagePlus3DGreyscaleData.class);
         result.put(ImagePlus3DColorData.class, ImagePlus3DGreyscaleData.class);
         result.put(ImagePlus3DColor8UData.class, ImagePlus3DGreyscaleData.class);
         result.put(ImagePlus3DColorRGBData.class, ImagePlus3DGreyscaleData.class);
+
         result.put(ImagePlus4DData.class, ImagePlus4DGreyscaleData.class);
         result.put(ImagePlus4DColorData.class, ImagePlus4DGreyscaleData.class);
         result.put(ImagePlus4DColor8UData.class, ImagePlus4DGreyscaleData.class);
         result.put(ImagePlus4DColorRGBData.class, ImagePlus4DGreyscaleData.class);
+
         result.put(ImagePlus5DData.class, ImagePlus5DGreyscaleData.class);
         result.put(ImagePlus5DColorData.class, ImagePlus5DGreyscaleData.class);
         result.put(ImagePlus5DColor8UData.class, ImagePlus5DGreyscaleData.class);
         result.put(ImagePlus5DColorRGBData.class, ImagePlus5DGreyscaleData.class);
+
         return result;
     }
 }
