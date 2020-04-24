@@ -66,7 +66,7 @@ public class AutoThreshold2DAlgorithm extends ImageJ1Algorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusData.class);
+        ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class);
         ImagePlus img = inputData.getImage().duplicate();
         AutoThresholder autoThresholder = new AutoThresholder();
         ImageJUtils.forEachSlice(img, ip -> {
@@ -75,7 +75,7 @@ public class AutoThreshold2DAlgorithm extends ImageJ1Algorithm {
             int threshold = autoThresholder.getThreshold(method, ip.getHistogram());
             ip.threshold(threshold);
         });
-        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
+        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img));
     }
 
     @ACAQParameter("method")

@@ -34,8 +34,8 @@ public class MorphologyFillHoles2DAlgorithm extends ImageJ1Algorithm {
      * @param declaration the declaration
      */
     public MorphologyFillHoles2DAlgorithm(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusData.class)
-                .addOutputSlot("Output", ImagePlusData.class, "Input")
+        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscaleMaskData.class)
+                .addOutputSlot("Output", ImagePlusGreyscaleMaskData.class, "Input")
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());
@@ -52,7 +52,7 @@ public class MorphologyFillHoles2DAlgorithm extends ImageJ1Algorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusData.class);
+        ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class);
         ImagePlus img = inputData.getImage().duplicate();
         ImageJUtils.forEachSlice(img, ip -> {
             int fg = Prefs.blackBackground ? 255 : 0;
@@ -60,7 +60,7 @@ public class MorphologyFillHoles2DAlgorithm extends ImageJ1Algorithm {
             int background = 255 - foreground;
             fill(ip, foreground, background);
         });
-        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
+        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img));
     }
 
     /**

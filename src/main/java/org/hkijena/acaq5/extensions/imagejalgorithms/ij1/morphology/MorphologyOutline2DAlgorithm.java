@@ -32,8 +32,8 @@ public class MorphologyOutline2DAlgorithm extends ImageJ1Algorithm {
      * @param declaration the declaration
      */
     public MorphologyOutline2DAlgorithm(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusData.class)
-                .addOutputSlot("Output", ImagePlusData.class, "Input")
+        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscaleMaskData.class)
+                .addOutputSlot("Output", ImagePlusGreyscaleMaskData.class, "Input")
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());
@@ -50,10 +50,10 @@ public class MorphologyOutline2DAlgorithm extends ImageJ1Algorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusData.class);
+        ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class);
         ImagePlus img = inputData.getImage().duplicate();
         ImageJUtils.forEachSlice(img, ip -> ((ByteProcessor) ip).outline());
-        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
+        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img));
     }
 
 

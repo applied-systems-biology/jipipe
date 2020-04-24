@@ -25,7 +25,7 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ACAQOrganization(menuPath = "Blur", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input")
-@AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Output")
+@AlgorithmOutputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Output")
 public class MedianBlurGreyscale8U2DAlgorithm extends ImageJ1Algorithm {
 
 
@@ -35,8 +35,8 @@ public class MedianBlurGreyscale8U2DAlgorithm extends ImageJ1Algorithm {
      * @param declaration the declaration
      */
     public MedianBlurGreyscale8U2DAlgorithm(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusData.class)
-                .addOutputSlot("Output", ImagePlusData.class, "Input", REMOVE_MASK_QUALIFIER)
+        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale8UData.class)
+                .addOutputSlot("Output", ImagePlusGreyscale8UData.class, "Input", REMOVE_MASK_QUALIFIER)
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());
@@ -56,7 +56,7 @@ public class MedianBlurGreyscale8U2DAlgorithm extends ImageJ1Algorithm {
         ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class);
         ImagePlus img = inputData.getImage().duplicate();
         ImageJUtils.forEachSlice(img, ImageProcessor::medianFilter);
-        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
+        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale8UData(img));
     }
 
 

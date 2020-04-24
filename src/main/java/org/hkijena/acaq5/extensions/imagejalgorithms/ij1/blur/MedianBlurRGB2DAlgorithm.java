@@ -25,7 +25,7 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ACAQOrganization(menuPath = "Blur", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlusColorRGBData.class, slotName = "Input")
-@AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Output")
+@AlgorithmOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output")
 public class MedianBlurRGB2DAlgorithm extends ImageJ1Algorithm {
 
 
@@ -35,8 +35,8 @@ public class MedianBlurRGB2DAlgorithm extends ImageJ1Algorithm {
      * @param declaration the declaration
      */
     public MedianBlurRGB2DAlgorithm(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusData.class)
-                .addOutputSlot("Output", ImagePlusData.class, "Input", REMOVE_MASK_QUALIFIER)
+        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusColorRGBData.class)
+                .addOutputSlot("Output", ImagePlusColorRGBData.class, "Input", REMOVE_MASK_QUALIFIER)
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());
@@ -56,7 +56,7 @@ public class MedianBlurRGB2DAlgorithm extends ImageJ1Algorithm {
         ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusColorRGBData.class);
         ImagePlus img = inputData.getImage().duplicate();
         ImageJUtils.forEachSlice(img, ImageProcessor::medianFilter);
-        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
+        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusColorRGBData(img));
     }
 
 
