@@ -12,10 +12,7 @@ import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.edge.SobelEdgeDetectorA
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.math.ApplyDistanceTransform2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.math.ApplyMath2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.math.ApplyTransform2DAlgorithm;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.morphology.Morphology2DAlgorithm;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.morphology.MorphologyFillHoles2DAlgorithm;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.morphology.MorphologyOutline2DAlgorithm;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.morphology.MorphologySkeletonize2DAlgorithm;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.morphology.*;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.noise.AddNoise2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.sharpen.LaplacianSharpen2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.threshold.AutoThreshold2DAlgorithm;
@@ -106,7 +103,7 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerAlgorithm("ij1-morph-fillholes2d", MorphologyFillHoles2DAlgorithm.class);
         registerAlgorithm("ij1-morph-outline2d", MorphologyOutline2DAlgorithm.class);
         registerAlgorithm("ij1-morph-skeletonize2d", MorphologySkeletonize2DAlgorithm.class);
-        registerAlgorithm("ij1-morph-dtwatershed2d", MorphologySkeletonize2DAlgorithm.class);
+        registerAlgorithm("ij1-morph-dtwatershed2d", MorphologyDistanceTransformWatershed2DAlgorithm.class);
         registerAlgorithm("ij1-noise-addnormalnoise2d", AddNoise2DAlgorithm.class);
         registerAlgorithm("ij1-sharpen-laplacian2d", LaplacianSharpen2DAlgorithm.class);
         registerAlgorithm("ij1-threshold-manual2d-8u", ManualThreshold8U2DAlgorithm.class);
