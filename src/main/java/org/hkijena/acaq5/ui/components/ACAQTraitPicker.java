@@ -109,6 +109,8 @@ public class ACAQTraitPicker extends JPanel {
      * Refreshes the list
      */
     public void refreshTraitList() {
+        if(reloading)
+            return;
         reloading = true;
         DefaultListModel<ACAQTraitDeclaration> model = (DefaultListModel<ACAQTraitDeclaration>) traitList.getModel();
         hiddenTraits.clear();
@@ -249,8 +251,14 @@ public class ACAQTraitPicker extends JPanel {
         }
     }
 
+    /**
+     * Renders an item
+     */
     public static class Renderer extends JCheckBox implements ListCellRenderer<ACAQTraitDeclaration> {
 
+        /**
+         * Creates a new renderer
+         */
         public Renderer() {
             setOpaque(true);
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
@@ -323,6 +331,9 @@ public class ACAQTraitPicker extends JPanel {
         }
     }
 
+    /**
+     * Describes how data is selected
+     */
     public static class SingleSelectionModel extends DefaultListSelectionModel {
         @Override
         public void setSelectionInterval(int startIndex, int endIndex) {
@@ -347,6 +358,9 @@ public class ACAQTraitPicker extends JPanel {
         }
     }
 
+    /**
+     * Describes how data is selected
+     */
     public static class MultiSelectionModel extends DefaultListSelectionModel {
         @Override
         public void setSelectionInterval(int startIndex, int endIndex) {

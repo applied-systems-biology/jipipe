@@ -27,6 +27,7 @@ public class ACAQTraitDeclarationRefParameterEditorUI extends ACAQParameterEdito
     private ACAQTraitPicker picker;
     private JButton currentlyDisplayed;
     private JDialog pickerDialog;
+    private boolean isReloading = false;
 
     /**
      * @param context         SciJava context
@@ -65,6 +66,9 @@ public class ACAQTraitDeclarationRefParameterEditorUI extends ACAQParameterEdito
 
     @Override
     public void reload() {
+        if(isReloading)
+            return;
+        isReloading = true;
         ACAQTraitDeclarationRef declarationRef = getParameterAccess().get();
         if (declarationRef == null) {
             declarationRef = new ACAQTraitDeclarationRef();
@@ -73,14 +77,16 @@ public class ACAQTraitDeclarationRefParameterEditorUI extends ACAQParameterEdito
         if (declaration != null) {
             currentlyDisplayed.setText(declaration.getName());
             currentlyDisplayed.setToolTipText(TooltipUtils.getTraitTooltip(declaration));
-            currentlyDisplayed.addActionListener(e -> pickTrait());
             currentlyDisplayed.setIcon(ACAQUITraitRegistry.getInstance().getIconFor(declaration));
-            picker.setSelectedTraits(Collections.singleton(declaration));
+            if(!pickerDialog.isVisible())
+                picker.setSelectedTraits(Collections.singleton(declaration));
         } else {
             currentlyDisplayed.setText("None selected");
             currentlyDisplayed.setIcon(UIUtils.getIconFromResources("error.png"));
-            picker.setSelectedTraits(Collections.emptySet());
+            if(!pickerDialog.isVisible())
+                picker.setSelectedTraits(Collections.emptySet());
         }
+        isReloading = false;
     }
 
     private void initializePicker() {
@@ -118,10 +124,10 @@ public class ACAQTraitDeclarationRefParameterEditorUI extends ACAQParameterEdito
      * @param event Generated event
      */
     @Subscribe
-    public void onTraitSelected(ACAQTraitPicker.TraitSelectedEvent event) {
+    public void onTraitSelected(ACAQTraitPicker.SelectedTraitsChangedEvent event) {
         if (pickerDialog.isVisible()) {
             ACAQTraitDeclarationRef declarationRef = getParameterAccess().get();
-            declarationRef.setDeclaration(event.getTraitDeclaration());
+            declarationRef.setDeclaration(picker.getSelectedTraits().isEmpty() ? null : picker.getSelectedTraits().iterator().next());
             getParameterAccess().set(declarationRef);
             reload();
         }
