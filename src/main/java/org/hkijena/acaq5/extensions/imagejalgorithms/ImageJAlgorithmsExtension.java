@@ -6,7 +6,7 @@ import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.blur.BoxFilter2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.blur.GaussianBlur2DAlgorithm;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.blur.MedianBlur2DAlgorithm;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.blur.MedianBlurGreyscale8U2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.color.InvertColorsAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.edge.SobelEdgeDetectorAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.math.ApplyDistanceTransform2DAlgorithm;
@@ -93,7 +93,7 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
     public void register() {
         registerAlgorithm("ij1-blur-gaussian2d", GaussianBlur2DAlgorithm.class);
         registerAlgorithm("ij1-blur-box2d", BoxFilter2DAlgorithm.class);
-        registerAlgorithm("ij1-blur-median2d", MedianBlur2DAlgorithm.class);
+        registerAlgorithm("ij1-blur-median2d-8u", MedianBlurGreyscale8U2DAlgorithm.class);
         registerAlgorithm("ij1-color-invert", InvertColorsAlgorithm.class);
         registerAlgorithm("ij1-edge-sobel", SobelEdgeDetectorAlgorithm.class);
         registerAlgorithm("ij1-math-math2d", ApplyMath2DAlgorithm.class);

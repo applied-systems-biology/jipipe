@@ -10,6 +10,7 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.acaq5.utils.ImageJUtils;
 
 import java.util.function.Consumer;
@@ -20,12 +21,12 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@ACAQDocumentation(name = "Median blur 2D", description = "Applies a 3x3 median filter. " +
+@ACAQDocumentation(name = "Median blur 2D (8-bit greyscale)", description = "Applies a 3x3 median filter to 8-bit greyscale images. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ACAQOrganization(menuPath = "Blur", algorithmCategory = ACAQAlgorithmCategory.Processor)
-@AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Input")
+@AlgorithmInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input")
 @AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Output")
-public class MedianBlur2DAlgorithm extends ImageJ1Algorithm {
+public class MedianBlurGreyscale8U2DAlgorithm extends ImageJ1Algorithm {
 
 
     /**
@@ -33,7 +34,7 @@ public class MedianBlur2DAlgorithm extends ImageJ1Algorithm {
      *
      * @param declaration the declaration
      */
-    public MedianBlur2DAlgorithm(ACAQAlgorithmDeclaration declaration) {
+    public MedianBlurGreyscale8U2DAlgorithm(ACAQAlgorithmDeclaration declaration) {
         super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusData.class)
                 .addOutputSlot("Output", ImagePlusData.class, "Input", REMOVE_MASK_QUALIFIER)
                 .allowOutputSlotInheritance(true)
@@ -46,13 +47,13 @@ public class MedianBlur2DAlgorithm extends ImageJ1Algorithm {
      *
      * @param other the other
      */
-    public MedianBlur2DAlgorithm(MedianBlur2DAlgorithm other) {
+    public MedianBlurGreyscale8U2DAlgorithm(MedianBlurGreyscale8U2DAlgorithm other) {
         super(other);
     }
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusData.class);
+        ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class);
         ImagePlus img = inputData.getImage().duplicate();
         ImageJUtils.forEachSlice(img, ImageProcessor::medianFilter);
         dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
