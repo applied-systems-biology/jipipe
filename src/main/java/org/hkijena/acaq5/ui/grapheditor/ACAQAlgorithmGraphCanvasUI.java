@@ -519,7 +519,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
                         targetPoint.y = 0;
                     }
                 }
-                drawEdge(g, sourcePoint, ui.getBounds(), targetPoint, drawer);
+                drawOutsideEdge(g, sourcePoint, targetPoint, drawer);
             }
         }
 
@@ -573,6 +573,26 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             }
         }
         return null;
+    }
+
+    private void drawOutsideEdge(Graphics2D g, Point sourcePoint, Point targetPoint, NonCollidingRectangularLineDrawer drawer) {
+        int sourceA;
+        int targetA;
+        int sourceB;
+
+        if (currentViewMode == ViewMode.Horizontal) {
+            sourceA = sourcePoint.x;
+            targetA = targetPoint.x;
+            sourceB = sourcePoint.y;
+        } else {
+            sourceA = sourcePoint.y;
+            targetA = targetPoint.y;
+            sourceB = sourcePoint.x;
+        }
+
+        drawer.start(sourceA, sourceB);
+        drawer.moveToMajor(targetA, false);
+        drawer.drawCurrentSegment(g, currentViewMode);
     }
 
     private void drawEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, NonCollidingRectangularLineDrawer drawer) {
