@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * Generates annotations from filenames
  */
 @ACAQDocumentation(name = "Files to annotations", description = "Creates an annotation for each file based on its file name")
-@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.FileSystem)
+@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Annotation, menuPath = "Generate")
 
 // Algorithm flow
 @AlgorithmInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)

@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * Algorithm that generates annotations from folder names
  */
 @ACAQDocumentation(name = "Folders to annotations", description = "Creates an annotation for each folder based on its name")
-@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Annotation)
+@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Annotation, menuPath = "Generate")
 
 // Algorithm flow
 @AlgorithmInputSlot(value = FolderData.class, slotName = "Folders", autoCreate = true)
