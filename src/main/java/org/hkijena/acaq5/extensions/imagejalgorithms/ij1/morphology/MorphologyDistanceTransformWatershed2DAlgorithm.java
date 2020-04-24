@@ -6,10 +6,7 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.ACAQDataInterface;
-import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
+import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.traits.BadForTrait;
 import org.hkijena.acaq5.api.data.traits.GoodForTrait;
@@ -29,7 +26,7 @@ import java.util.function.Supplier;
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ACAQOrganization(menuPath = "Morphology", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input")
-@AlgorithmInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
+@AlgorithmOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
 @GoodForTrait("bioobject-morphology-round")
 @GoodForTrait("bioobject-preparations-labeling")
 @BadForTrait("bioobject-preparations-labeling-unlabeled")
