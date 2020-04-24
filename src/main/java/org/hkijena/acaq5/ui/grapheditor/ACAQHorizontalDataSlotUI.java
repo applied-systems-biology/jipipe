@@ -33,9 +33,8 @@ public class ACAQHorizontalDataSlotUI extends ACAQDataSlotUI {
      * @param slot        The slot instance
      */
     public ACAQHorizontalDataSlotUI(ACAQAlgorithmUI algorithmUI, ACAQAlgorithmGraph graph, String compartment, ACAQDataSlot slot) {
-        super(algorithmUI, graph, compartment, slot, ACAQAlgorithmGraphCanvasUI.ViewMode.Horizontal);
+        super(algorithmUI, compartment, slot);
         initialize();
-        reloadPopupMenu();
         reloadButtonStatus();
     }
 
@@ -61,7 +60,7 @@ public class ACAQHorizontalDataSlotUI extends ACAQDataSlotUI {
 
         this.assignButton = new JButton(UIUtils.getIconFromResources("chevron-right.png"));
         assignButton.setPreferredSize(new Dimension(25, SLOT_UI_HEIGHT));
-        this.assignButtonMenu = UIUtils.addPopupMenuToComponent(assignButton);
+        this.assignButtonMenu = UIUtils.addReloadablePopupMenuToComponent(assignButton, new JPopupMenu(), this::reloadPopupMenu);
         UIUtils.makeFlat(assignButton);
 
         if (getSlot().getAlgorithm() instanceof ACAQCompartmentOutput) {

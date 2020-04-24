@@ -32,9 +32,8 @@ public class ACAQVerticalDataSlotUI extends ACAQDataSlotUI {
      * @param slot        The slot instance
      */
     public ACAQVerticalDataSlotUI(ACAQAlgorithmUI algorithmUI, ACAQAlgorithmGraph graph, String compartment, ACAQDataSlot slot) {
-        super(algorithmUI, graph, compartment, slot, ACAQAlgorithmGraphCanvasUI.ViewMode.Vertical);
+        super(algorithmUI, compartment, slot);
         initialize();
-        reloadPopupMenu();
         reloadButtonStatus();
     }
 
@@ -60,7 +59,7 @@ public class ACAQVerticalDataSlotUI extends ACAQDataSlotUI {
 
         this.assignButton = new JButton(UIUtils.getIconFromResources("chevron-bottom.png"));
         assignButton.setPreferredSize(new Dimension(25, 25));
-        this.assignButtonMenu = UIUtils.addPopupMenuToComponent(assignButton);
+        this.assignButtonMenu = UIUtils.addReloadablePopupMenuToComponent(assignButton, new JPopupMenu(), this::reloadPopupMenu);
         UIUtils.makeFlat(assignButton);
 
         if (getSlot().getAlgorithm() instanceof ACAQCompartmentOutput) {

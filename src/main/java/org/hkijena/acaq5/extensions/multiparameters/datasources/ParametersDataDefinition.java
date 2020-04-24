@@ -75,7 +75,7 @@ public class ParametersDataDefinition extends ACAQAlgorithm {
 
     @ACAQParameter("algorithm-type")
     public void setAlgorithmDeclaration(ACAQAlgorithmDeclarationRef algorithmDeclaration) {
-        if (algorithmDeclaration.getDeclaration() == null) {
+        if (algorithmDeclaration == null || algorithmDeclaration.getDeclaration() == null) {
             algorithmInstance = null;
         } else {
             algorithmInstance = algorithmDeclaration.getDeclaration().newInstance();

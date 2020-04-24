@@ -322,16 +322,15 @@ public abstract class ACAQAlgorithmUI extends JPanel {
         updateBorder();
     }
 
+    /**
+     * Updates the border around the component depending on if its selected
+     */
     protected void updateBorder() {
         if (selected) {
             setBorder(BorderFactory.createLineBorder(borderColor, 2));
         } else {
             setBorder(BorderFactory.createLineBorder(borderColor));
         }
-    }
-
-    public ACAQAlgorithmGraphCanvasUI.ViewMode getViewMode() {
-        return viewMode;
     }
 
     /**

@@ -558,6 +558,23 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         g.setStroke(new BasicStroke(1));
     }
 
+    /**
+     * Returns the UI location of a data slot that is located in the graph
+     *
+     * @param slot the data slot
+     * @return the center slot location. Null if the algorithm has no UI or the returned location is null
+     */
+    public Point getSlotLocation(ACAQDataSlot slot) {
+        ACAQAlgorithmUI algorithmUI = nodeUIs.getOrDefault(slot.getAlgorithm(), null);
+        if (algorithmUI != null) {
+            PointRange location = algorithmUI.getSlotLocation(slot);
+            if (location != null) {
+                return new Point(algorithmUI.getX() + location.center.x, algorithmUI.getY() + location.center.y);
+            }
+        }
+        return null;
+    }
+
     private void drawEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, NonCollidingRectangularLineDrawer drawer) {
         int buffer;
         int sourceA;

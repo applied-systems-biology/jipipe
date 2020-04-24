@@ -16,8 +16,11 @@ import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.util.Set;
+import java.awt.*;
+import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * UI around an {@link ACAQDataSlot}
@@ -25,29 +28,47 @@ import java.util.function.Consumer;
 public abstract class ACAQDataSlotUI extends JPanel {
     protected JPopupMenu assignButtonMenu;
     private ACAQAlgorithmUI algorithmUI;
-    private ACAQAlgorithmGraph graph;
     private String compartment;
     private ACAQDataSlot slot;
-    private ACAQAlgorithmGraphCanvasUI.ViewMode viewMode;
 
     /**
      * Creates a new UI
      *
      * @param algorithmUI The parent algorithm UI
-     * @param graph       The graph
      * @param compartment The compartment ID
      * @param slot        The slot instance
-     * @param viewMode    The directionality of this slot UI
      */
-    public ACAQDataSlotUI(ACAQAlgorithmUI algorithmUI, ACAQAlgorithmGraph graph, String compartment, ACAQDataSlot slot, ACAQAlgorithmGraphCanvasUI.ViewMode viewMode) {
+    public ACAQDataSlotUI(ACAQAlgorithmUI algorithmUI, String compartment, ACAQDataSlot slot) {
         this.algorithmUI = algorithmUI;
-        this.graph = graph;
         this.compartment = compartment;
         this.slot = slot;
-        this.viewMode = viewMode;
 
-        graph.getEventBus().register(this);
+        getGraph().getEventBus().register(this);
         slot.getDefinition().getEventBus().register(this);
+    }
+
+    public ACAQAlgorithmGraph getGraph() {
+        return getGraphUI().getAlgorithmGraph();
+    }
+
+    public ACAQAlgorithmGraphCanvasUI getGraphUI() {
+        return algorithmUI.getGraphUI();
+    }
+
+    private List<ACAQDataSlot> sortSlotsByDistance(Set<ACAQDataSlot> unsorted) {
+        Point thisLocation = getGraphUI().getSlotLocation(slot);
+        if (thisLocation == null)
+            return new ArrayList<>(unsorted);
+        Map<ACAQDataSlot, Double> distances = new HashMap<>();
+        for (ACAQDataSlot dataSlot : unsorted) {
+            Point location = getGraphUI().getSlotLocation(dataSlot);
+            if (location != null) {
+                distances.put(dataSlot, Math.pow(location.x - thisLocation.x, 2) + Math.pow(location.y - thisLocation.y, 2));
+            } else {
+                distances.put(dataSlot, Double.POSITIVE_INFINITY);
+            }
+        }
+        return unsorted.stream().sorted(Comparator.comparing(distances::get)).collect(Collectors.toList());
     }
 
     /**
@@ -57,10 +78,10 @@ public abstract class ACAQDataSlotUI extends JPanel {
         assignButtonMenu.removeAll();
 
         if (slot.isInput()) {
-            if (graph.getSourceSlot(slot) == null) {
-                Set<ACAQDataSlot> availableSources = graph.getAvailableSources(slot, true);
+            if (getGraph().getSourceSlot(slot) == null) {
+                Set<ACAQDataSlot> availableSources = getGraph().getAvailableSources(slot, true);
                 availableSources.removeIf(slot -> !slot.getAlgorithm().isVisibleIn(compartment));
-                for (ACAQDataSlot source : availableSources) {
+                for (ACAQDataSlot source : sortSlotsByDistance(availableSources)) {
                     if (!source.getAlgorithm().isVisibleIn(compartment))
                         continue;
                     JMenuItem connectButton = new JMenuItem(source.getNameWithAlgorithmName(),
@@ -90,12 +111,12 @@ public abstract class ACAQDataSlotUI extends JPanel {
             relabelButton.addActionListener(e -> relabelSlot());
             assignButtonMenu.add(relabelButton);
         } else if (slot.isOutput()) {
-            Set<ACAQDataSlot> targetSlots = graph.getTargetSlots(slot);
+            Set<ACAQDataSlot> targetSlots = getGraph().getTargetSlots(slot);
             if (!targetSlots.isEmpty()) {
 
                 boolean allowDisconnect = false;
                 for (ACAQDataSlot targetSlot : targetSlots) {
-                    if (graph.canUserDisconnect(slot, targetSlot)) {
+                    if (getGraph().canUserDisconnect(slot, targetSlot)) {
                         allowDisconnect = true;
                         break;
                     }
@@ -109,7 +130,7 @@ public abstract class ACAQDataSlotUI extends JPanel {
                     assignButtonMenu.addSeparator();
                 }
             }
-            Set<ACAQDataSlot> availableTargets = graph.getAvailableTargets(slot, true);
+            Set<ACAQDataSlot> availableTargets = getGraph().getAvailableTargets(slot, true);
             availableTargets.removeIf(slot -> !slot.getAlgorithm().isVisibleIn(compartment));
 
             JMenuItem findAlgorithmButton = new JMenuItem("Find matching algorithm ...", UIUtils.getIconFromResources("search.png"));
@@ -119,7 +140,7 @@ public abstract class ACAQDataSlotUI extends JPanel {
             if (!availableTargets.isEmpty())
                 assignButtonMenu.addSeparator();
 
-            for (ACAQDataSlot target : availableTargets) {
+            for (ACAQDataSlot target : sortSlotsByDistance(availableTargets)) {
                 JMenuItem connectButton = new JMenuItem(target.getNameWithAlgorithmName(),
                         ACAQUIDatatypeRegistry.getInstance().getIconFor(target.getAcceptedDataType()));
                 connectButton.addActionListener(e -> connectSlot(slot, target));
@@ -159,7 +180,7 @@ public abstract class ACAQDataSlotUI extends JPanel {
     }
 
     private void findAlgorithm(ACAQDataSlot slot) {
-        ACAQAlgorithmFinderUI algorithmFinderUI = new ACAQAlgorithmFinderUI(slot, graph, compartment);
+        ACAQAlgorithmFinderUI algorithmFinderUI = new ACAQAlgorithmFinderUI(slot, getGraph(), compartment);
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Find matching algorithm");
         UIUtils.addEscapeListener(dialog);
         dialog.setModal(true);
@@ -179,23 +200,19 @@ public abstract class ACAQDataSlotUI extends JPanel {
         dialog.setVisible(true);
     }
 
-    public ACAQAlgorithmGraph getGraph() {
-        return graph;
-    }
-
     /**
      * Is called when the button's visual feedback should be updated
      */
     protected abstract void reloadButtonStatus();
 
     private void connectSlot(ACAQDataSlot source, ACAQDataSlot target) {
-        if (graph.canConnect(source, target, true)) {
-            graph.connect(source, target);
+        if (getGraph().canConnect(source, target, true)) {
+            getGraph().connect(source, target);
         }
     }
 
     private void disconnectSlot() {
-        graph.disconnectAll(slot, true);
+        getGraph().disconnectAll(slot, true);
     }
 
     /**
@@ -204,9 +221,9 @@ public abstract class ACAQDataSlotUI extends JPanel {
     protected abstract void reloadName();
 
     protected Class<? extends ACAQData> getSlotDataType() {
-        if (graph != null) {
-            if (graph.containsNode(slot)) {
-                ACAQDataSlot sourceSlot = graph.getSourceSlot(slot);
+        if (getGraph() != null) {
+            if (getGraph().containsNode(slot)) {
+                ACAQDataSlot sourceSlot = getGraph().getSourceSlot(slot);
                 if (sourceSlot != null)
                     return sourceSlot.getAcceptedDataType();
             }
@@ -252,7 +269,7 @@ public abstract class ACAQDataSlotUI extends JPanel {
      */
     @Subscribe
     public void onAlgorithmGraphChanged(AlgorithmGraphChangedEvent event) {
-        if (graph.containsNode(slot)) {
+        if (getGraph().containsNode(slot)) {
             reloadPopupMenu();
             reloadButtonStatus();
         }
@@ -278,15 +295,4 @@ public abstract class ACAQDataSlotUI extends JPanel {
         return compartment;
     }
 
-    public ACAQAlgorithmGraphCanvasUI.ViewMode getViewMode() {
-        return viewMode;
-    }
-
-    protected JPopupMenu getAssignButtonMenu() {
-        return assignButtonMenu;
-    }
-
-    protected void setAssignButtonMenu(JPopupMenu assignButtonMenu) {
-        this.assignButtonMenu = assignButtonMenu;
-    }
 }
