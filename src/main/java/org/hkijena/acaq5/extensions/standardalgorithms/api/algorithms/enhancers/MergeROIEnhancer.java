@@ -18,9 +18,8 @@ import java.util.function.Supplier;
 /**
  * Appends the ROI into one list
  */
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
-@ACAQOrganization(menuPath = "Merge")
-@ACAQDocumentation(name = "Merge ROI", description = "Appends the ROI into one list")
+@ACAQOrganization(menuPath = "Merge", algorithmCategory = ACAQAlgorithmCategory.Processor)
+@ACAQDocumentation(name = "Merge ROI (deprecated)", description = "Appends the ROI into one list")
 
 // Data flow
 @AlgorithmInputSlot(ROIData.class)

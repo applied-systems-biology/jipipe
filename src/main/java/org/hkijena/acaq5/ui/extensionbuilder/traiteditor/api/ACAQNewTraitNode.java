@@ -2,7 +2,11 @@ package org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQDocumentation;
-import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.ACAQOrganization;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
+import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQCustomParameterHolder;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
@@ -22,7 +26,7 @@ import java.util.Map;
 @AlgorithmOutputSlot(ACAQTraitNodeInheritanceData.class)
 @AlgorithmInputSlot(ACAQDiscriminatorNodeInheritanceData.class)
 @AlgorithmOutputSlot(ACAQDiscriminatorNodeInheritanceData.class)
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Annotation)
+@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Annotation)
 public class ACAQNewTraitNode extends ACAQTraitNode implements ACAQCustomParameterHolder {
 
     /**

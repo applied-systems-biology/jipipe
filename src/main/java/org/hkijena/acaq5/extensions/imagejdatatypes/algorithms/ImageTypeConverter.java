@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.extensions.imagejdatatypes.algorithms;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
@@ -22,7 +23,7 @@ import java.util.function.Supplier;
 @AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Input")
 @AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Output")
 @ACAQDocumentation(name = "Convert ImageJ image", description = "Converts an ImageJ image into another ImageJ image data type")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Converter)
+@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Converter)
 public class ImageTypeConverter extends ACAQAlgorithm {
 
     /**

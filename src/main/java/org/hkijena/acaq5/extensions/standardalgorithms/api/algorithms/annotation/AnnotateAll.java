@@ -1,9 +1,13 @@
 package org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.annotation;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.api.algorithm.ACAQIOSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
@@ -19,7 +23,7 @@ import java.util.function.Supplier;
  * Algorithm that annotates all data with the same annotation
  */
 @ACAQDocumentation(name = "Annotate data", description = "Annotates each data with the specified annotation")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Annotation)
+@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Annotation)
 
 // Traits
 public class AnnotateAll extends ACAQAlgorithm {

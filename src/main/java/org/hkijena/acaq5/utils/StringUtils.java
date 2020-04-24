@@ -98,7 +98,7 @@ public class StringUtils {
     public static String wordWrappedHTML(String text, int wrapColumn) {
         if (text == null)
             text = "";
-        return "<html>" + wordWrappedHTML(text, wrapColumn) + "</html>";
+        return "<html>" + wordWrappedHTMLElement(text, wrapColumn) + "</html>";
     }
 
     /**

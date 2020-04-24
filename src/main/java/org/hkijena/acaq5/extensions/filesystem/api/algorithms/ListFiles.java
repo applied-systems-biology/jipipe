@@ -19,8 +19,7 @@ import java.util.stream.Collectors;
  * Algorithm that lists files in each folder
  */
 @ACAQDocumentation(name = "List files", description = "Lists all files in the input folder")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.FileSystem)
-@ACAQOrganization(menuPath = "List")
+@ACAQOrganization(menuPath = "List", algorithmCategory = ACAQAlgorithmCategory.FileSystem)
 
 // Algorithm flow
 @AlgorithmInputSlot(value = FolderData.class, slotName = "Folders", autoCreate = true)

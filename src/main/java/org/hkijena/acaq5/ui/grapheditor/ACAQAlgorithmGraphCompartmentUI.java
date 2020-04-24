@@ -94,15 +94,10 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
         initializeMenuForCategory(addAnnotationMenu, ACAQAlgorithmCategory.Annotation, algorithmGraph, compartment, addedAlgorithms);
         menuBar.add(addAnnotationMenu);
 
-        JMenu addEnhancerMenu = new JMenu("Enhance");
+        JMenu addEnhancerMenu = new JMenu("Process");
         addEnhancerMenu.setIcon(UIUtils.getIconFromResources("magic.png"));
-        initializeMenuForCategory(addEnhancerMenu, ACAQAlgorithmCategory.Enhancer, algorithmGraph, compartment, addedAlgorithms);
+        initializeMenuForCategory(addEnhancerMenu, ACAQAlgorithmCategory.Processor, algorithmGraph, compartment, addedAlgorithms);
         menuBar.add(addEnhancerMenu);
-
-        JMenu addSegmenterMenu = new JMenu("Segment");
-        addSegmenterMenu.setIcon(UIUtils.getIconFromResources("segment.png"));
-        initializeMenuForCategory(addSegmenterMenu, ACAQAlgorithmCategory.Segmentation, algorithmGraph, compartment, addedAlgorithms);
-        menuBar.add(addSegmenterMenu);
 
         JMenu addConverterMenu = new JMenu("Convert");
         addConverterMenu.setIcon(UIUtils.getIconFromResources("convert.png"));

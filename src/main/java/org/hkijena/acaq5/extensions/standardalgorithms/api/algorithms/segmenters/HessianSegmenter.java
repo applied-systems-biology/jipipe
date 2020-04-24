@@ -8,6 +8,7 @@ import imagescience.image.Aspects;
 import imagescience.image.FloatImage;
 import imagescience.image.Image;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
@@ -27,7 +28,7 @@ import java.util.function.Supplier;
  * Segments using a Hessian
  */
 @ACAQDocumentation(name = "Hessian segmenter")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmentation)
+@ACAQOrganization(menuPath = "Threshold", algorithmCategory = ACAQAlgorithmCategory.Processor)
 
 // Algorithm flow
 @AlgorithmInputSlot(value = ImagePlus2DGreyscaleData.class, slotName = "Image", autoCreate = true)

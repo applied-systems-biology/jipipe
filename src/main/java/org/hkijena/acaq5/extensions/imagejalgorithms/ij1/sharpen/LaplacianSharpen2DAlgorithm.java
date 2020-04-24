@@ -6,7 +6,10 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.api.algorithm.ACAQDataInterface;
+import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -22,14 +25,13 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
  */
 @ACAQDocumentation(name = "Laplacian sharpening 2D (3x3)", description = "Applies a 3x3 sharpening filter. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@ACAQOrganization(menuPath = "Sharpen")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
+@ACAQOrganization(menuPath = "Sharpen", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Input")
 @AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Output")
 public class LaplacianSharpen2DAlgorithm extends ImageJ1Algorithm {
 
     /**
-     * Instantiates a new Gaussian blur algorithm.
+     * Instantiates a new algorithm.
      *
      * @param declaration the declaration
      */
@@ -42,7 +44,7 @@ public class LaplacianSharpen2DAlgorithm extends ImageJ1Algorithm {
     }
 
     /**
-     * Instantiates a new Gaussian blur algorithm.
+     * Instantiates a new algorithm.
      *
      * @param other the other
      */

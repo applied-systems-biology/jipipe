@@ -1,12 +1,12 @@
 package org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.annotation;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 // Algorithm metadata
 @ACAQDocumentation(name = "Split by annotation", description = "Splits the input data by a specified annotation. " +
         "Output slots should correspond to the annotation values. The last slot is reserved for cases where the annotation could not be found.")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Annotation)
+@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Annotation)
 
 // Algorithm traits
 public class SplitByAnnotation extends ACAQAlgorithm {

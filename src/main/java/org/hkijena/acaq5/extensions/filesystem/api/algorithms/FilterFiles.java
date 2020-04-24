@@ -19,8 +19,7 @@ import java.util.function.Supplier;
  * Filters input files
  */
 @ACAQDocumentation(name = "Filter files", description = "Filters the input files by their name")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.FileSystem)
-@ACAQOrganization(menuPath = "Filter")
+@ACAQOrganization(menuPath = "Filter", algorithmCategory = ACAQAlgorithmCategory.FileSystem)
 
 // Algorithm flow
 @AlgorithmInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)

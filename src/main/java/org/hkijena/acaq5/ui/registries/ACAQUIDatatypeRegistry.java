@@ -123,10 +123,8 @@ public class ACAQUIDatatypeRegistry {
                 return ResourceUtils.getPluginResource("icons/tree.png");
             case Annotation:
                 return ResourceUtils.getPluginResource("icons/label.png");
-            case Enhancer:
+            case Processor:
                 return ResourceUtils.getPluginResource("icons/magic.png");
-            case Segmentation:
-                return ResourceUtils.getPluginResource("icons/binary.png");
             case Converter:
                 return ResourceUtils.getPluginResource("icons/convert.png");
             case Quantifier:

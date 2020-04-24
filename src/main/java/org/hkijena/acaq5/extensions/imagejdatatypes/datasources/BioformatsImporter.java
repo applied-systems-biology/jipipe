@@ -4,6 +4,7 @@ import ij.ImagePlus;
 import loci.formats.FormatException;
 import loci.plugins.in.*;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
@@ -30,7 +31,7 @@ import java.util.function.Supplier;
 @AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
 @AlgorithmOutputSlot(value = ImagePlus2DGreyscaleData.class)
 @AlgorithmOutputSlot(value = ImagePlus2DGreyscaleMaskData.class)
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
+@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.DataSource)
 public class BioformatsImporter extends ACAQIteratingAlgorithm {
 
     private ColorMode colorMode = ColorMode.Default;

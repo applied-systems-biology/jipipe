@@ -1,9 +1,13 @@
 package org.hkijena.acaq5.extensions.filesystem.api.datasources;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FolderData;
@@ -20,7 +24,7 @@ import java.util.function.Supplier;
  */
 @ACAQDocumentation(name = "Folder")
 @AlgorithmOutputSlot(value = FolderData.class, slotName = "Folder path", autoCreate = true)
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
+@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.DataSource)
 public class FolderDataSource extends ACAQAlgorithm {
 
     private Path folderPath;

@@ -1,5 +1,7 @@
 package org.hkijena.acaq5.api;
 
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -16,4 +18,13 @@ public @interface ACAQOrganization {
      * @return The menu path
      */
     String menuPath() default "";
+
+    /**
+     * Assigns a category to an algorithm.
+     * This is only valid for algorithm classes that use {@link org.hkijena.acaq5.api.algorithm.ACAQJavaAlgorithmDeclaration} or any
+     * other {@link org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration} that listens for algorithm categories.
+     *
+     * @return the algorithm category
+     */
+    ACAQAlgorithmCategory algorithmCategory() default ACAQAlgorithmCategory.Internal;
 }

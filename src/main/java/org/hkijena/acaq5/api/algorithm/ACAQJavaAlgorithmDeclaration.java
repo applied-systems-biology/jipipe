@@ -131,9 +131,9 @@ public class ACAQJavaAlgorithmDeclaration extends ACAQMutableAlgorithmDeclaratio
      * @return The category
      */
     public static ACAQAlgorithmCategory getCategoryOf(Class<? extends ACAQAlgorithm> klass) {
-        AlgorithmMetadata[] annotations = klass.getAnnotationsByType(AlgorithmMetadata.class);
+        ACAQOrganization[] annotations = klass.getAnnotationsByType(ACAQOrganization.class);
         if (annotations.length > 0) {
-            return annotations[0].category();
+            return annotations[0].algorithmCategory();
         } else {
             return ACAQAlgorithmCategory.Internal;
         }

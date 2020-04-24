@@ -3,9 +3,13 @@ package org.hkijena.acaq5.extensions.imagejalgorithms.ij1.threshold;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.api.algorithm.ACAQDataInterface;
+import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
@@ -22,20 +26,21 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
 /**
  * Wrapper around {@link ImageProcessor}
  */
-@ACAQDocumentation(name = "Manual threshold (8-bit)", description = "Thresholds the image with a manual threshold.")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmentation)
+@ACAQDocumentation(name = "Manual threshold 2D (8-bit)", description = "Thresholds the image with a manual threshold. " +
+        "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+@ACAQOrganization(menuPath = "Threshold", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input")
 @AlgorithmInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
-public class ManualThreshold8UAlgorithm extends ImageJ1Algorithm {
+public class ManualThreshold8U2DAlgorithm extends ImageJ1Algorithm {
 
     private int threshold = 0;
 
     /**
-     * Instantiates a new Gaussian blur algorithm.
+     * Instantiates a new algorithm.
      *
      * @param declaration the declaration
      */
-    public ManualThreshold8UAlgorithm(ACAQAlgorithmDeclaration declaration) {
+    public ManualThreshold8U2DAlgorithm(ACAQAlgorithmDeclaration declaration) {
         super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale8UData.class)
                 .addOutputSlot("Output", ImagePlusGreyscaleMaskData.class, "Input", ADD_MASK_QUALIFIER)
                 .allowOutputSlotInheritance(true)
@@ -44,11 +49,11 @@ public class ManualThreshold8UAlgorithm extends ImageJ1Algorithm {
     }
 
     /**
-     * Instantiates a new Gaussian blur algorithm.
+     * Instantiates a new algorithm.
      *
      * @param other the other
      */
-    public ManualThreshold8UAlgorithm(ManualThreshold8UAlgorithm other) {
+    public ManualThreshold8U2DAlgorithm(ManualThreshold8U2DAlgorithm other) {
         super(other);
         this.threshold = other.threshold;
     }

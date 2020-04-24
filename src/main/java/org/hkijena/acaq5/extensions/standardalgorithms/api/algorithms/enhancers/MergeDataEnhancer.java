@@ -7,7 +7,6 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.AlgorithmMetadata;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 
@@ -18,8 +17,7 @@ import java.util.function.Supplier;
  * Merges the input slot tables into one data slot
  */
 @ACAQDocumentation(name = "Merge slots", description = "Merges the input slot tables into one data slot")
-@ACAQOrganization(menuPath = "Merge")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
+@ACAQOrganization(menuPath = "Merge", algorithmCategory = ACAQAlgorithmCategory.Processor)
 public class MergeDataEnhancer extends ACAQAlgorithm {
 
     /**

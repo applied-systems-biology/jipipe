@@ -15,8 +15,7 @@ import java.util.function.Supplier;
  * Applies subfolder navigation to each input folder
  */
 @ACAQDocumentation(name = "Subfolders", description = "Goes to the specified subfolder")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.FileSystem)
-@ACAQOrganization(menuPath = "Navigate")
+@ACAQOrganization(menuPath = "Navigate", algorithmCategory = ACAQAlgorithmCategory.FileSystem)
 
 // Algorithm flow
 @AlgorithmInputSlot(value = FolderData.class, slotName = "Folders", autoCreate = true)

@@ -6,6 +6,7 @@ import ij.WindowManager;
 import ij.measure.ResultsTable;
 import ij.plugin.filter.Analyzer;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
@@ -24,7 +25,7 @@ import java.util.function.Supplier;
  * Segments using a Hough circle transform
  */
 @ACAQDocumentation(name = "Hough segmentation")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmentation)
+@ACAQOrganization(menuPath = "Threshold", algorithmCategory = ACAQAlgorithmCategory.Processor)
 
 // Algorithm flow
 @AlgorithmInputSlot(value = ImagePlus2DGreyscaleData.class, slotName = "Image", autoCreate = true)

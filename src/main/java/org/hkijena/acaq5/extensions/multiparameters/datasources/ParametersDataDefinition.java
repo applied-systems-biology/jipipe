@@ -2,6 +2,7 @@ package org.hkijena.acaq5.extensions.multiparameters.datasources;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
@@ -18,7 +19,7 @@ import java.util.function.Supplier;
  */
 @ACAQDocumentation(name = "Define parameter", description = "Defines an algorithm parameter that can be consumed by a multi-parameter algorithm")
 @AlgorithmOutputSlot(value = ParametersData.class, slotName = "Parameters", autoCreate = true)
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
+@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.DataSource)
 public class ParametersDataDefinition extends ACAQAlgorithm {
 
     private ACAQAlgorithm algorithmInstance;

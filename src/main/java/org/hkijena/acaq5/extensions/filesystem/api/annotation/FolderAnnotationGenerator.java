@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.extensions.filesystem.api.annotation;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
@@ -17,7 +18,7 @@ import java.util.function.Supplier;
  * Algorithm that generates annotations from folder names
  */
 @ACAQDocumentation(name = "Folders to annotations", description = "Creates an annotation for each folder based on its name")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Annotation)
+@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Annotation)
 
 // Algorithm flow
 @AlgorithmInputSlot(value = FolderData.class, slotName = "Folders", autoCreate = true)

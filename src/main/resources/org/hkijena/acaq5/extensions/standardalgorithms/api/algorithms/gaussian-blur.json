@@ -8,7 +8,7 @@
     "license" : "",
     "citation" : ""
   },
-  "category" : "Enhancer",
+  "category" : "Processor",
   "parameter-visibilities" : {
     "visible-keys" : [ "default-gaussian-blur/macro-parameters/Sigma" ]
   },

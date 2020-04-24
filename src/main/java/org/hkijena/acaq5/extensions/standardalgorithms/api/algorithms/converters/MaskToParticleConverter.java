@@ -4,6 +4,7 @@ import ij.measure.ResultsTable;
 import ij.plugin.filter.ParticleAnalyzer;
 import ij.plugin.frame.RoiManager;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
@@ -21,8 +22,8 @@ import java.util.function.Supplier;
  * Converts a mask to ROI and ROI measurements
  */
 // Algorithm metadata
-@ACAQDocumentation(name = "Convert mask to particles")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Converter)
+@ACAQDocumentation(name = "Convert mask to particles (deprecated)")
+@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Quantifier)
 
 // Algorithm data flow
 @AlgorithmInputSlot(value = ImagePlus2DGreyscaleMaskData.class, slotName = "Mask", autoCreate = true)

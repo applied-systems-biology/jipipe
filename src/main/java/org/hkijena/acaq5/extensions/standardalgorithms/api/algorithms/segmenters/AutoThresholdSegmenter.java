@@ -5,6 +5,7 @@ import ij.Prefs;
 import ij.plugin.Thresholder;
 import ij.process.AutoThresholder;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
@@ -24,8 +25,8 @@ import java.util.function.Supplier;
 /**
  * Segmenter node that thresholds via an auto threshold
  */
-@ACAQDocumentation(name = "Auto threshold segmentation")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmentation)
+@ACAQDocumentation(name = "Auto threshold segmentation (deprecated)")
+@ACAQOrganization(menuPath = "Threshold", algorithmCategory = ACAQAlgorithmCategory.Processor)
 
 // Algorithm flow
 @AlgorithmInputSlot(value = ImagePlus2DGreyscaleData.class, slotName = "Image", autoCreate = true)

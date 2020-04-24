@@ -18,8 +18,7 @@ import java.util.stream.Collectors;
  * Algorithms that lists the sub folders for each input folder
  */
 @ACAQDocumentation(name = "List subfolders", description = "Lists all subfolders")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.FileSystem)
-@ACAQOrganization(menuPath = "List")
+@ACAQOrganization(menuPath = "List", algorithmCategory = ACAQAlgorithmCategory.FileSystem)
 
 // Algorithm flow
 @AlgorithmInputSlot(value = FolderData.class, slotName = "Folders", autoCreate = true)

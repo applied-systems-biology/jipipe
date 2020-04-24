@@ -3,9 +3,13 @@ package org.hkijena.acaq5.extensions.imagejdatatypes.datasources;
 import ij.IJ;
 import ij.ImagePlus;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.api.algorithm.ACAQDataInterface;
+import org.hkijena.acaq5.api.algorithm.ACAQIteratingAlgorithm;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
@@ -20,7 +24,7 @@ import java.util.function.Supplier;
  * Loads an image data from a file via IJ.openFile()
  */
 @ACAQDocumentation(name = "Import 2D image")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
+@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.DataSource)
 public class ImagePlusFromFile extends ACAQIteratingAlgorithm {
 
     private Class<? extends ACAQData> dataClass;

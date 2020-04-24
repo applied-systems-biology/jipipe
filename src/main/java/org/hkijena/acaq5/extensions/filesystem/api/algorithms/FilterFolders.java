@@ -19,8 +19,7 @@ import java.util.function.Supplier;
  * Algorithm that filters folders
  */
 @ACAQDocumentation(name = "Filter folders", description = "Filters the input folders by their name")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.FileSystem)
-@ACAQOrganization(menuPath = "Filter")
+@ACAQOrganization(menuPath = "Filter", algorithmCategory = ACAQAlgorithmCategory.FileSystem)
 
 // Algorithm flow
 @AlgorithmInputSlot(value = FolderData.class, slotName = "Folders", autoCreate = true)

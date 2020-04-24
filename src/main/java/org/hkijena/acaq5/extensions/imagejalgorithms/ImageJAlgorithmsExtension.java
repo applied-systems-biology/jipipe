@@ -9,6 +9,7 @@ import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.blur.GaussianBlur2DAlgo
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.blur.MedianBlur2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.color.InvertColorsAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.edge.SobelEdgeDetectorAlgorithm;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.math.ApplyDistanceTransform2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.math.ApplyMath2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.math.ApplyTransform2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.morphology.Morphology2DAlgorithm;
@@ -17,8 +18,9 @@ import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.morphology.MorphologyOu
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.morphology.MorphologySkeletonize2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.noise.AddNoise2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.sharpen.LaplacianSharpen2DAlgorithm;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.threshold.ManualThreshold16UAlgorithm;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.threshold.ManualThreshold8UAlgorithm;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.threshold.AutoThreshold2DAlgorithm;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.threshold.ManualThreshold16U2DAlgorithm;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.threshold.ManualThreshold8U2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColor8UData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
@@ -99,14 +101,17 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerAlgorithm("ij1-edge-sobel", SobelEdgeDetectorAlgorithm.class);
         registerAlgorithm("ij1-math-math2d", ApplyMath2DAlgorithm.class);
         registerAlgorithm("ij1-math-transform2d", ApplyTransform2DAlgorithm.class);
+        registerAlgorithm("ij1-math-edt2d", ApplyDistanceTransform2DAlgorithm.class);
         registerAlgorithm("ij1-morph-operation2d", Morphology2DAlgorithm.class);
         registerAlgorithm("ij1-morph-fillholes2d", MorphologyFillHoles2DAlgorithm.class);
         registerAlgorithm("ij1-morph-outline2d", MorphologyOutline2DAlgorithm.class);
         registerAlgorithm("ij1-morph-skeletonize2d", MorphologySkeletonize2DAlgorithm.class);
+        registerAlgorithm("ij1-morph-dtwatershed2d", MorphologySkeletonize2DAlgorithm.class);
         registerAlgorithm("ij1-noise-addnormalnoise2d", AddNoise2DAlgorithm.class);
         registerAlgorithm("ij1-sharpen-laplacian2d", LaplacianSharpen2DAlgorithm.class);
-        registerAlgorithm("ij1-threshold-manual2d-8u", ManualThreshold8UAlgorithm.class);
-        registerAlgorithm("ij1-threshold-manual2d-16u", ManualThreshold16UAlgorithm.class);
+        registerAlgorithm("ij1-threshold-manual2d-8u", ManualThreshold8U2DAlgorithm.class);
+        registerAlgorithm("ij1-threshold-manual2d-16u", ManualThreshold16U2DAlgorithm.class);
+        registerAlgorithm("ij1-threshold-auto2d", AutoThreshold2DAlgorithm.class);
 //        for (CommandInfo command : commandService.getCommands()) {
 //            if (ImageJ2AlgorithmWrapper.isCompatible(command, getContext())) {
 //                try {

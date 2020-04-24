@@ -6,6 +6,7 @@ import ij.plugin.filter.Binary;
 import ij.plugin.filter.GaussianBlur;
 import ij.plugin.filter.RankFilters;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
@@ -28,7 +29,7 @@ import java.util.function.Supplier;
  * Internal gradient segmenter
  */
 @ACAQDocumentation(name = "Internal gradient segmentation")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Segmentation)
+@ACAQOrganization(menuPath = "Threshold", algorithmCategory = ACAQAlgorithmCategory.Processor)
 
 // Algorithm flow
 @AlgorithmInputSlot(value = ImagePlus2DGreyscaleData.class, slotName = "Image", autoCreate = true)

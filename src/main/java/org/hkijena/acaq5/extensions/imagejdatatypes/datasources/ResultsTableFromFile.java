@@ -2,6 +2,7 @@ package org.hkijena.acaq5.extensions.imagejdatatypes.datasources;
 
 import ij.measure.ResultsTable;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
@@ -18,7 +19,7 @@ import java.util.function.Supplier;
 @ACAQDocumentation(name = "Results table from file")
 @AlgorithmInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
 @AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Results table", autoCreate = true)
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
+@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.DataSource)
 public class ResultsTableFromFile extends ACAQIteratingAlgorithm {
 
     /**

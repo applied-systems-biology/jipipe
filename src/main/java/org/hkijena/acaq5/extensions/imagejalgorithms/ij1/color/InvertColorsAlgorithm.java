@@ -6,7 +6,10 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.api.algorithm.ACAQDataInterface;
+import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -19,14 +22,13 @@ import java.util.function.Supplier;
  * Wrapper around {@link ij.process.ImageProcessor}
  */
 @ACAQDocumentation(name = "Invert colors", description = "Inverts the colors of an image")
-@ACAQOrganization(menuPath = "Colors")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
+@ACAQOrganization(menuPath = "Colors", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Input")
 @AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Output")
 public class InvertColorsAlgorithm extends ImageJ1Algorithm {
 
     /**
-     * Instantiates a new Gaussian blur algorithm.
+     * Instantiates a new algorithm.
      *
      * @param declaration the declaration
      */
@@ -39,7 +41,7 @@ public class InvertColorsAlgorithm extends ImageJ1Algorithm {
     }
 
     /**
-     * Instantiates a new Gaussian blur algorithm.
+     * Instantiates a new algorithm.
      *
      * @param other the other
      */

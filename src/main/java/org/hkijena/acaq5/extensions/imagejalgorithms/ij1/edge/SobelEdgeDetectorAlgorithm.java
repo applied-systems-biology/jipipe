@@ -6,7 +6,10 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.api.algorithm.ACAQDataInterface;
+import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -22,14 +25,13 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
  */
 @ACAQDocumentation(name = "Sobel edge detector 2D", description = "Applies a Sobel edge detector. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@ACAQOrganization(menuPath = "Edges")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
+@ACAQOrganization(menuPath = "Edges", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Input")
 @AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Output")
 public class SobelEdgeDetectorAlgorithm extends ImageJ1Algorithm {
 
     /**
-     * Instantiates a new Gaussian blur algorithm.
+     * Instantiates a new algorithm.
      *
      * @param declaration the declaration
      */
@@ -42,7 +44,7 @@ public class SobelEdgeDetectorAlgorithm extends ImageJ1Algorithm {
     }
 
     /**
-     * Instantiates a new Gaussian blur algorithm.
+     * Instantiates a new algorithm.
      *
      * @param other the other
      */

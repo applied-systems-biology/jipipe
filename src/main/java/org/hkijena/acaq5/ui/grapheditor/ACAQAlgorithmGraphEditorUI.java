@@ -12,6 +12,7 @@ import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.SearchComboBox;
 import org.hkijena.acaq5.ui.events.AlgorithmEvent;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
+import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.imageio.ImageIO;
@@ -487,12 +488,19 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
     }
 
     private static boolean filterNavigationEntry(Object entry, String searchString) {
-        if (entry instanceof ACAQAlgorithmDeclaration) {
-            return ((ACAQAlgorithmDeclaration) entry).getName().toLowerCase().contains(searchString.toLowerCase());
-        } else if (entry instanceof ACAQAlgorithmUI) {
-            return ((ACAQAlgorithmUI) entry).getAlgorithm().getName().toLowerCase().contains(searchString.toLowerCase());
+        String haystack = "";
+        ACAQAlgorithmDeclaration algorithmDeclaration = null;
+        if (entry instanceof ACAQAlgorithmUI) {
+            haystack += ((ACAQAlgorithmUI) entry).getAlgorithm().getName();
+            algorithmDeclaration = ((ACAQAlgorithmUI) entry).getAlgorithm().getDeclaration();
+        } else if (entry instanceof ACAQAlgorithmDeclaration) {
+            algorithmDeclaration = (ACAQAlgorithmDeclaration) entry;
         }
-        return false;
+        if (algorithmDeclaration != null) {
+            haystack += algorithmDeclaration.getName() + algorithmDeclaration.getDescription()
+                    + algorithmDeclaration.getMenuPath();
+        }
+        return haystack.toLowerCase().contains(searchString.toLowerCase());
     }
 
     /**
@@ -514,12 +522,23 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
 
             if (value instanceof ACAQAlgorithmDeclaration) {
                 ACAQAlgorithmDeclaration declaration = (ACAQAlgorithmDeclaration) value;
-                setIcon(new ColorIcon(16, 16, Color.WHITE, UIUtils.getFillColorFor(declaration)));
-                setText("<html>Create new <strong>" + declaration.getName() + "</strong></html>");
+                String menuPath = declaration.getCategory().toString();
+                if (!StringUtils.isNullOrEmpty(declaration.getMenuPath())) {
+                    menuPath += " &gt; " + String.join(" &gt; ", declaration.getMenuPath().split("\n"));
+                }
+
+                setIcon(new ColorIcon(16, 32, Color.WHITE, UIUtils.getFillColorFor(declaration)));
+                setText("<html>Create new <strong>" + declaration.getName() + "</strong><br/><span style=\"color: gray;\">" + menuPath + "</span></html>");
             } else if (value instanceof ACAQAlgorithmUI) {
                 ACAQAlgorithmUI ui = (ACAQAlgorithmUI) value;
-                setIcon(UIUtils.getIconFromColor(UIUtils.getFillColorFor(ui.getAlgorithm().getDeclaration())));
-                setText("<html>Navigate to <strong>" + ui.getAlgorithm().getName() + "</strong></html>");
+                ACAQAlgorithmDeclaration declaration = ui.getAlgorithm().getDeclaration();
+                String menuPath = declaration.getCategory().toString();
+                if (!StringUtils.isNullOrEmpty(declaration.getMenuPath())) {
+                    menuPath += " &gt; " + String.join(" &gt; ", declaration.getMenuPath().split("\n"));
+                }
+                setIcon(new ColorIcon(16, 32, UIUtils.getFillColorFor(ui.getAlgorithm().getDeclaration()),
+                        UIUtils.getBorderColorFor(ui.getAlgorithm().getDeclaration())));
+                setText("<html>Navigate to <strong>" + ui.getAlgorithm().getName() + "</strong><br/><span style=\"color: gray;\">" + menuPath + "</span></html>");
             } else {
                 setText("<Null>");
             }

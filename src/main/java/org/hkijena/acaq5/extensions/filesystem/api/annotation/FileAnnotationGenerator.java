@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.extensions.filesystem.api.annotation;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
@@ -17,7 +18,7 @@ import java.util.function.Supplier;
  * Generates annotations from filenames
  */
 @ACAQDocumentation(name = "Files to annotations", description = "Creates an annotation for each file based on its file name")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Annotation)
+@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.FileSystem)
 
 // Algorithm flow
 @AlgorithmInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)

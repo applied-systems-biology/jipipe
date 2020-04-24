@@ -2,6 +2,7 @@ package org.hkijena.acaq5.extensions.imagejdatatypes.datasources;
 
 import ij.gui.Roi;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
@@ -18,7 +19,7 @@ import java.util.function.Supplier;
 @ACAQDocumentation(name = "ROI from file")
 @AlgorithmInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
 @AlgorithmOutputSlot(value = ROIData.class, slotName = "Mask", autoCreate = true)
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.DataSource)
+@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.DataSource)
 public class ROIDataFromFile extends ACAQIteratingAlgorithm {
 
     /**

@@ -8,6 +8,7 @@ import ij.macro.Interpreter;
 import ij.measure.ResultsTable;
 import ij.plugin.frame.RoiManager;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
@@ -40,7 +41,7 @@ import java.util.function.Supplier;
  * An algorithm that wraps around an ImageJ macro
  */
 @ACAQDocumentation(name = "ImageJ Macro", description = "Runs a custom ImageJ macro")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Miscellaneous)
+@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(ImagePlusData.class)
 @AlgorithmInputSlot(ROIData.class)
 @AlgorithmInputSlot(ResultsTableData.class)

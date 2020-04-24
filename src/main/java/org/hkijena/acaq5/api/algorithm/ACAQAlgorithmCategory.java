@@ -13,11 +13,7 @@ public enum ACAQAlgorithmCategory {
     /**
      * Algorithms that process one data type and produce the same
      */
-    Enhancer,
-    /**
-     * Algorithms that convert real-space data into binary-space data
-     */
-    Segmentation,
+    Processor,
     /**
      * Algorithms that produce tabular, relational, or any quantification result data
      */

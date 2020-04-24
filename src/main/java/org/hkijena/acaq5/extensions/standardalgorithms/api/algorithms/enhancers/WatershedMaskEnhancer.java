@@ -4,6 +4,7 @@ import ij.ImagePlus;
 import ij.plugin.filter.Binary;
 import ij.plugin.filter.EDM;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
@@ -20,8 +21,8 @@ import java.util.function.Supplier;
 /**
  * Applies distance transform watershed
  */
-@ACAQDocumentation(name = "Watershed enhancer")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
+@ACAQDocumentation(name = "Distance transform watershed (deprecated)")
+@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Processor, menuPath = "Morphology")
 
 // Algorithm flow
 @AlgorithmInputSlot(value = ImagePlus2DGreyscaleMaskData.class, slotName = "Input image", autoCreate = true)

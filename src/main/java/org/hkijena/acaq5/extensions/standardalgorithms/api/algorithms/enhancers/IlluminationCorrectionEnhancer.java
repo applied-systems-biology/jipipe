@@ -3,6 +3,7 @@ package org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.enhancers
 import ij.ImagePlus;
 import ij.plugin.ImageCalculator;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
@@ -21,7 +22,7 @@ import java.util.function.Supplier;
  * Applies illumination correction
  */
 @ACAQDocumentation(name = "Illumination correction enhancer")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Enhancer)
+@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Processor)
 
 // Algorithm flow
 @AlgorithmInputSlot(value = ImagePlus2DGreyscaleData.class, slotName = "Input image", autoCreate = true)

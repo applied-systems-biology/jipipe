@@ -3,6 +3,7 @@ package org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.converter
 import ij.ImagePlus;
 import ij.plugin.ChannelSplitter;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
@@ -20,8 +21,8 @@ import java.util.function.Supplier;
  * Splits a color image's channels
  */
 // Algorithm metadata
-@ACAQDocumentation(name = "Split multichannel image")
-@AlgorithmMetadata(category = ACAQAlgorithmCategory.Converter)
+@ACAQDocumentation(name = "Split multichannel image (deprecated)")
+@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Processor, menuPath = "Color")
 
 //Algorithm data flow
 @AlgorithmInputSlot(ImagePlus2DColorData.class)
