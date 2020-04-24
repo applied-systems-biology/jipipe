@@ -1,5 +1,7 @@
 package org.hkijena.acaq5.api.traits;
 
+import java.util.Objects;
+
 /**
  * Standard implementation of {@link ACAQDiscriminator}
  */
@@ -35,5 +37,10 @@ public class ACAQDefaultDiscriminator extends ACAQDefaultTrait implements ACAQDi
     @Override
     public String toString() {
         return getDeclaration() + "=" + value;
+    }
+
+    @Override
+    public int compareTo(ACAQDiscriminator o) {
+        return Objects.compare(getValue(), o.getValue(), String::compareTo);
     }
 }

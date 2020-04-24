@@ -35,6 +35,17 @@ public class ACAQTraitDeclarationRef implements ACAQValidatable {
 
     }
 
+    /**
+     * Creates a copy
+     *
+     * @param other the other
+     */
+    public ACAQTraitDeclarationRef(ACAQTraitDeclarationRef other) {
+        if (other != null) {
+            this.declaration = other.declaration;
+        }
+    }
+
     public ACAQTraitDeclaration getDeclaration() {
         return declaration;
     }

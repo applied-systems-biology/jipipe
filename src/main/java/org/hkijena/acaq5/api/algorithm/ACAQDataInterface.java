@@ -5,6 +5,7 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +71,7 @@ public class ACAQDataInterface {
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isInput())
             throw new IllegalArgumentException("Slot is not an input slot!");
-        return (T) slot.getData(inputSlotRows.get(slot), dataClass);
+        return slot.getData(inputSlotRows.get(slot), dataClass);
     }
 
     /**
@@ -88,8 +89,8 @@ public class ACAQDataInterface {
      *
      * @param trait added annotation
      */
-    public void addAnnotation(ACAQTrait trait) {
-        removeAnnotation(trait.getDeclaration());
+    public void addGlobalAnnotation(ACAQTrait trait) {
+        removeGlobalAnnotation(trait.getDeclaration());
         annotations.add(trait);
     }
 
@@ -99,7 +100,7 @@ public class ACAQDataInterface {
      *
      * @param declaration removed annotation
      */
-    public void removeAnnotation(ACAQTraitDeclaration declaration) {
+    public void removeGlobalAnnotation(ACAQTraitDeclaration declaration) {
         annotations.removeIf(a -> a.getDeclaration() == declaration);
     }
 
@@ -129,6 +130,18 @@ public class ACAQDataInterface {
      * Writes output data into the provided slot
      * Please note that annotations should be set up till this point
      *
+     * @param slotName              Slot name
+     * @param data                  Added data
+     * @param additionalAnnotations Annotations that are added additionally to the global ones
+     */
+    public void addOutputData(String slotName, ACAQData data, List<ACAQTrait> additionalAnnotations) {
+        addOutputData(algorithm.getOutputSlot(slotName), data, additionalAnnotations);
+    }
+
+    /**
+     * Writes output data into the provided slot
+     * Please note that annotations that are added to all traits should be set up till this point
+     *
      * @param slot Slot instance
      * @param data Added data
      */
@@ -138,5 +151,23 @@ public class ACAQDataInterface {
         if (!slot.isOutput())
             throw new IllegalArgumentException("Slot is not an output slot!");
         slot.addData(data, annotations);
+    }
+
+    /**
+     * Writes output data into the provided slot
+     * Please note that annotations that are added to all traits should be set up till this point
+     *
+     * @param slot                  Slot instance
+     * @param data                  Added data
+     * @param additionalAnnotations Annotations that are added additionally to the global ones
+     */
+    public void addOutputData(ACAQDataSlot slot, ACAQData data, List<ACAQTrait> additionalAnnotations) {
+        if (slot.getAlgorithm() != algorithm)
+            throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
+        if (!slot.isOutput())
+            throw new IllegalArgumentException("Slot is not an output slot!");
+        List<ACAQTrait> finalAnnotations = new ArrayList<>(annotations);
+        finalAnnotations.addAll(additionalAnnotations);
+        slot.addData(data, finalAnnotations);
     }
 }

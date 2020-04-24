@@ -55,7 +55,7 @@ public class FileAnnotationGenerator extends ACAQIteratingAlgorithm {
         if (generatedAnnotation.getDeclaration() != null) {
             FileData inputData = dataInterface.getInputData(getFirstInputSlot(), FileData.class);
             String discriminator = inputData.getFilePath().getFileName().toString();
-            dataInterface.addAnnotation(generatedAnnotation.getDeclaration().newInstance(discriminator));
+            dataInterface.addGlobalAnnotation(generatedAnnotation.getDeclaration().newInstance(discriminator));
             dataInterface.addOutputData(getFirstOutputSlot(), inputData);
         }
     }

@@ -7,10 +7,7 @@ import org.hkijena.acaq5.api.ACAQHidden;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -44,7 +41,7 @@ public class ACAQJavaTraitDeclaration extends ACAQMutableTraitDeclaration {
         Set<Class<? extends ACAQTrait>> inheritedTraitClasses = getInheritedTraitClasses(klass);
         inheritedTraitClasses.remove(ACAQTrait.class);
         inheritedTraitClasses.remove(ACAQDiscriminator.class);
-        setInherited(inheritedTraitClasses.stream().map(idMap::get).collect(Collectors.toSet()));
+        setInherited(inheritedTraitClasses.stream().map(idMap::get).filter(Objects::nonNull).collect(Collectors.toSet()));
     }
 
     @Override

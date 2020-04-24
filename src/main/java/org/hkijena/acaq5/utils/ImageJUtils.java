@@ -7,6 +7,7 @@ import ij.plugin.PlugIn;
 import ij.process.ImageProcessor;
 
 import java.util.Arrays;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,23 @@ public class ImageJUtils {
             }
         } else {
             function.accept(img.getProcessor());
+        }
+    }
+
+    /**
+     * Runs the function for each slice
+     *
+     * @param img      the image
+     * @param function the function
+     */
+    public static void forEachIndexedSlice(ImagePlus img, BiConsumer<ImageProcessor, Integer> function) {
+        if (img.isStack()) {
+            for (int i = 0; i < img.getStack().size(); ++i) {
+                ImageProcessor ip = img.getStack().getProcessor(i + 1);
+                function.accept(ip, i);
+            }
+        } else {
+            function.accept(img.getProcessor(), 0);
         }
     }
 

@@ -219,6 +219,36 @@ public class ACAQDataSlot implements TableModel {
     }
 
     /**
+     * Finds rows that match the given traits
+     *
+     * @param traits A valid annotation list with size equals to getRowCount()
+     * @return list of rows
+     */
+    public List<Integer> findRowsWithTraits(List<ACAQTrait> traits) {
+        ACAQTraitDeclaration[] declarationMap = new ACAQTraitDeclaration[traits.size()];
+        for (int i = 0; i < traits.size(); ++i) {
+            int declarationIndex = annotationColumns.indexOf(traits.get(i).getDeclaration());
+            if (declarationIndex == -1)
+                return new ArrayList<>();
+            declarationMap[i] = annotationColumns.get(declarationIndex);
+        }
+        List<Integer> result = new ArrayList<>();
+        for (int row = 0; row < data.size(); ++row) {
+            boolean equal = true;
+            for (int i = 0; i < traits.size(); ++i) {
+                ACAQTraitDeclaration declaration = declarationMap[i];
+                ACAQTrait rowTrait = annotations.get(declaration).get(row);
+                if (!ACAQTrait.equals(traits.get(i), rowTrait)) {
+                    equal = false;
+                }
+            }
+            if (equal)
+                result.add(row);
+        }
+        return result;
+    }
+
+    /**
      * Returns true if all rows are unique according to their traits
      *
      * @return if all rows are unique according to their traits

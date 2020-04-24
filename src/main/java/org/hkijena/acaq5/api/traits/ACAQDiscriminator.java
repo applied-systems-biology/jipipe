@@ -16,7 +16,7 @@ import java.io.IOException;
 @ACAQHidden
 @ACAQDocumentation(name = "Valued annotation", description = "An annotation with a string value")
 @JsonSerialize(using = ACAQDiscriminator.Serializer.class)
-public interface ACAQDiscriminator extends ACAQTrait {
+public interface ACAQDiscriminator extends ACAQTrait, Comparable<ACAQDiscriminator> {
     /**
      * @return The string value. Can be null.
      */
