@@ -1005,9 +1005,6 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             RectangularLine lastSegment = getLastSegment();
             RectangularLine newSegment = new RectangularLine(lastSegment.a1, lastSegment.a1, lastSegment.b1, b);
             if (withCollision) {
-                if (minorCollisionLines.size() > 2) {
-                    System.out.println();
-                }
                 for (RectangularLine collisionLine : minorCollisionLines) {
                     int intersection = collisionLine.intersect(newSegment);
                     if (intersection > lineSpacer) {

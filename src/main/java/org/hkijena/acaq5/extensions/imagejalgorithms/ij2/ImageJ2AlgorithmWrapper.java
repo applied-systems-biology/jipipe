@@ -148,8 +148,6 @@ public class ImageJ2AlgorithmWrapper extends ACAQIteratingAlgorithm {
      * @return if the command is compatible
      */
     public static boolean isCompatible(CommandInfo commandInfo, Context context) {
-        if (commandInfo.toString().toLowerCase().contains("gauss"))
-            System.out.println();
         try {
             if (commandInfo.getMenuPath() == null || commandInfo.getMenuPath().isEmpty())
                 return false;
