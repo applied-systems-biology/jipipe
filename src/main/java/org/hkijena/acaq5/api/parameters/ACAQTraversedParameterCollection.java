@@ -136,7 +136,7 @@ public class ACAQTraversedParameterCollection implements ACAQParameterCollection
             if (ignoreCustomParameters)
                 return;
             for (Map.Entry<String, ACAQParameterAccess> entry : ((ACAQCustomParameterCollection) source).getParameters().entrySet()) {
-                addParameter(entry.getValue(), hierarchy);
+                addParameter(entry.getKey(), entry.getValue(), hierarchy);
             }
         } else {
             if (ignoreReflectionParameters)
@@ -147,12 +147,12 @@ public class ACAQTraversedParameterCollection implements ACAQParameterCollection
         source.getEventBus().register(this);
     }
 
-    private void addParameter(ACAQParameterAccess parameterAccess, List<ACAQParameterCollection> hierarchy) {
+    private void addParameter(String initialKey, ACAQParameterAccess parameterAccess, List<ACAQParameterCollection> hierarchy) {
         List<String> keys = new ArrayList<>();
         for (ACAQParameterCollection collection : hierarchy) {
             keys.add(sourceKeys.getOrDefault(collection, ""));
         }
-        keys.add(parameterAccess.getKey());
+        keys.add(initialKey);
         String key = String.join("/", keys);
         parameters.put(key, parameterAccess);
         parametersByPriority.add(parameterAccess);
@@ -198,7 +198,7 @@ public class ACAQTraversedParameterCollection implements ACAQParameterCollection
                 parameterAccess.setVisibility(pair.getVisibility());
                 parameterAccess.setPriority(pair.getPriority());
 
-                addParameter(parameterAccess, hierarchy);
+                addParameter(entry.getKey(), parameterAccess, hierarchy);
             }
         }
 
@@ -208,7 +208,7 @@ public class ACAQTraversedParameterCollection implements ACAQParameterCollection
             if (pair.getFieldClass() != null && ACAQParameterCollection.class.isAssignableFrom(pair.getFieldClass())) {
                 try {
                     ACAQParameterCollection subParameters = (ACAQParameterCollection) pair.getter.invoke(source);
-                    if(subParameters == null)
+                    if (subParameters == null)
                         continue;
                     setSourceDocumentation(subParameters, pair.getDocumentation());
                     setSourceKey(subParameters, entry.getKey());
@@ -325,7 +325,7 @@ public class ACAQTraversedParameterCollection implements ACAQParameterCollection
 
         public ACAQParameterVisibility getVisibility() {
             ACAQParameter getterAnnotation = getter.getAnnotation(ACAQParameter.class);
-            if(setter == null)
+            if (setter == null)
                 return getterAnnotation.visibility();
             ACAQParameter setterAnnotation = setter.getAnnotation(ACAQParameter.class);
             return getterAnnotation.visibility().intersectWith(setterAnnotation.visibility());
@@ -333,7 +333,7 @@ public class ACAQTraversedParameterCollection implements ACAQParameterCollection
 
         public double getPriority() {
             ACAQParameter getterAnnotation = getter.getAnnotation(ACAQParameter.class);
-            if(setter == null)
+            if (setter == null)
                 return getterAnnotation.priority();
             ACAQParameter setterAnnotation = setter.getAnnotation(ACAQParameter.class);
             return getterAnnotation.priority() != Priority.NORMAL ? getterAnnotation.priority() : setterAnnotation.priority();
@@ -343,7 +343,7 @@ public class ACAQTraversedParameterCollection implements ACAQParameterCollection
             ACAQDocumentation[] documentations = getter.getAnnotationsByType(ACAQDocumentation.class);
             if (documentations.length > 0)
                 return documentations[0];
-            if(setter == null)
+            if (setter == null)
                 return null;
             documentations = setter.getAnnotationsByType(ACAQDocumentation.class);
             return documentations.length > 0 ? documentations[0] : null;

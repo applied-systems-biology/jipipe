@@ -67,7 +67,7 @@ public class MultiParameterAlgorithm extends ACAQAlgorithm {
         // Backup default parameters
         Map<String, Object> defaultParameterSnapshot = getDefaultParameterSnapshot();
         ACAQDataSlot parameterSlot = getInputSlot("Parameters");
-        Map<String, ACAQParameterAccess> parameters = (new ACAQTraversedParameterCollection(algorithmInstance)).getParameters();
+        Map<String, ACAQParameterAccess> parameters = ACAQTraversedParameterCollection.getParameters(algorithmInstance);
         Map<String, ACAQTraitDeclaration> changedParameterTraits = new HashMap<>();
 
         for (int row = 0; row < parameterSlot.getRowCount(); ++row) {
