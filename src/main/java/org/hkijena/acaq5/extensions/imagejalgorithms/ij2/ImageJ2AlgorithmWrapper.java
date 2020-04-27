@@ -13,7 +13,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQDataInterface;
 import org.hkijena.acaq5.api.algorithm.ACAQIteratingAlgorithm;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
-import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
+import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.ui.registries.ACAQUIParametertypeRegistry;
 import org.hkijena.acaq5.utils.StringUtils;
@@ -134,7 +134,7 @@ public class ImageJ2AlgorithmWrapper extends ACAQIteratingAlgorithm {
 
     }
 
-    @ACAQSubParameters("module-parameters")
+    @ACAQParameter("module-parameters")
     @ACAQDocumentation(name = "ImageJ parameters", description = "Parameters associated to the internal ImageJ algorithm")
     public ACAQDynamicParameterCollection getModuleParameters() {
         return moduleParameters;

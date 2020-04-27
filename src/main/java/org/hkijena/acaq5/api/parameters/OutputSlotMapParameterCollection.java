@@ -24,7 +24,7 @@ public class OutputSlotMapParameterCollection extends SlotMapParameterCollection
     public void updateSlots() {
         if (getAlgorithm() != null) {
             Set<String> toRemove = new HashSet<>();
-            for (String slotName : getCustomParameters().keySet()) {
+            for (String slotName : getParameters().keySet()) {
                 if (!getAlgorithm().hasOutputSlot(slotName)) {
                     toRemove.add(slotName);
                 }

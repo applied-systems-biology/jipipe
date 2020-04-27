@@ -7,7 +7,6 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQProjectMetadata;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
 
 import java.nio.file.Path;
 
@@ -40,7 +39,7 @@ public class ACAQMutableDependency implements ACAQDependency {
 
     @Override
     @JsonGetter("metadata")
-    @ACAQSubParameters("metadata")
+    @ACAQParameter("metadata")
     @ACAQDocumentation(name = "Metadata")
     public ACAQProjectMetadata getMetadata() {
         return metadata;

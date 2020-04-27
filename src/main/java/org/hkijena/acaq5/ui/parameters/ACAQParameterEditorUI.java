@@ -26,7 +26,7 @@ public abstract class ACAQParameterEditorUI extends JPanel implements Contextual
     public ACAQParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
         this.context = context;
         this.parameterAccess = parameterAccess;
-        parameterAccess.getParameterHolder().getEventBus().register(this);
+        parameterAccess.getSource().getEventBus().register(this);
     }
 
     /**
@@ -35,7 +35,7 @@ public abstract class ACAQParameterEditorUI extends JPanel implements Contextual
      * @return object that holds the parameter
      */
     public ACAQParameterCollection getParameterHolder() {
-        return parameterAccess.getParameterHolder();
+        return parameterAccess.getSource();
     }
 
     /**
@@ -67,7 +67,7 @@ public abstract class ACAQParameterEditorUI extends JPanel implements Contextual
      */
     @Subscribe
     public void onParameterChanged(ParameterChangedEvent event) {
-        if (Objects.equals(event.getKey(), parameterAccess.getSlotName())) {
+        if (Objects.equals(event.getKey(), parameterAccess.getKey())) {
             reload();
         }
     }

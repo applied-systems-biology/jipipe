@@ -12,5 +12,5 @@ public interface ACAQCustomParameterCollection extends ACAQParameterCollection {
      *
      * @return Map from parameter ID to its access. The ID is not necessarily equal to {@link ACAQParameterAccess}.getKey()
      */
-    Map<String, ACAQParameterAccess> getCustomParameters();
+    Map<String, ACAQParameterAccess> getParameters();
 }

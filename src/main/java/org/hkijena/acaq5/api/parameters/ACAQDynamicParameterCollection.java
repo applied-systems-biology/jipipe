@@ -7,13 +7,10 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
-import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
 
 /**
@@ -22,7 +19,7 @@ import java.util.*;
 public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollection {
 
     private EventBus eventBus = new EventBus();
-    private BiMap<String, ACAQMutableParameterAccess> parameters = HashBiMap.create();
+    private BiMap<String, ACAQMutableParameterAccess> dynamicParameters = HashBiMap.create();
     private Set<Class<?>> allowedTypes = new HashSet<>();
     private String name;
     private String description;
@@ -43,26 +40,26 @@ public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollec
      */
     public ACAQDynamicParameterCollection(ACAQDynamicParameterCollection other) {
         this.allowedTypes.addAll(other.allowedTypes);
-        for (Map.Entry<String, ACAQMutableParameterAccess> entry : other.parameters.entrySet()) {
+        for (Map.Entry<String, ACAQMutableParameterAccess> entry : other.dynamicParameters.entrySet()) {
             ACAQMutableParameterAccess parameterAccess = new ACAQMutableParameterAccess(entry.getValue());
             parameterAccess.setParameterHolder(this);
-            parameters.put(entry.getKey(), parameterAccess);
+            dynamicParameters.put(entry.getKey(), parameterAccess);
         }
     }
 
     @Override
-    public Map<String, ACAQParameterAccess> getCustomParameters() {
-        return Collections.unmodifiableMap(parameters);
+    public Map<String, ACAQParameterAccess> getParameters() {
+        return Collections.unmodifiableMap(dynamicParameters);
     }
 
     @JsonGetter("parameters")
-    private Map<String, ACAQMutableParameterAccess> getParameters() {
-        return Collections.unmodifiableMap(parameters);
+    private Map<String, ACAQMutableParameterAccess> getDynamicParameters() {
+        return Collections.unmodifiableMap(dynamicParameters);
     }
 
     @JsonSetter("parameters")
-    private void setParameters(Map<String, ACAQMutableParameterAccess> parameters) {
-        this.parameters.putAll(parameters);
+    private void setDynamicParameters(Map<String, ACAQMutableParameterAccess> dynamicParameters) {
+        this.dynamicParameters.putAll(dynamicParameters);
     }
 
     /**
@@ -73,10 +70,10 @@ public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollec
      * @return the parameter access
      */
     public ACAQMutableParameterAccess addParameter(ACAQMutableParameterAccess parameterAccess) {
-        if (parameters.containsKey(parameterAccess.getSlotName()))
-            throw new IllegalArgumentException("Parameter with key " + parameterAccess.getSlotName() + " already exists!");
+        if (dynamicParameters.containsKey(parameterAccess.getKey()))
+            throw new IllegalArgumentException("Parameter with key " + parameterAccess.getKey() + " already exists!");
         parameterAccess.setParameterHolder(this);
-        parameters.put(parameterAccess.getSlotName(), parameterAccess);
+        dynamicParameters.put(parameterAccess.getKey(), parameterAccess);
         if (!delayEvents)
             getEventBus().post(new ParameterStructureChangedEvent(this));
         return parameterAccess;
@@ -99,7 +96,7 @@ public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollec
      * Removes all parameters
      */
     public void clear() {
-        parameters.clear();
+        dynamicParameters.clear();
         if (!delayEvents)
             getEventBus().post(new ParameterStructureChangedEvent(this));
     }
@@ -110,7 +107,7 @@ public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollec
      * @param key The parameter key
      */
     public void removeParameter(String key) {
-        parameters.remove(key);
+        dynamicParameters.remove(key);
         if (!delayEvents)
             getEventBus().post(new ParameterStructureChangedEvent(this));
     }
@@ -122,7 +119,7 @@ public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollec
      * @return The parameter access
      */
     public ACAQMutableParameterAccess getParameter(String key) {
-        return parameters.get(key);
+        return dynamicParameters.get(key);
     }
 
     /**
@@ -184,14 +181,14 @@ public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollec
      * @param node JSON data
      */
     public void fromJson(JsonNode node) {
-        parameters.clear();
+        dynamicParameters.clear();
         JsonNode parametersNode = node.get("parameters");
         for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(parametersNode.fields())) {
             try {
                 ACAQMutableParameterAccess parameterAccess = JsonUtils.getObjectMapper().readerFor(ACAQMutableParameterAccess.class).readValue(entry.getValue());
                 parameterAccess.setKey(entry.getKey());
                 parameterAccess.setParameterHolder(this);
-                parameters.put(entry.getKey(), parameterAccess);
+                dynamicParameters.put(entry.getKey(), parameterAccess);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -226,7 +223,7 @@ public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollec
      * @return if there is a parameter with given key
      */
     public boolean containsKey(String key) {
-        return parameters.containsKey(key);
+        return dynamicParameters.containsKey(key);
     }
 
     /**
@@ -236,7 +233,7 @@ public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollec
      * @return the parameter access
      */
     public ACAQParameterAccess get(String key) {
-        return parameters.get(key);
+        return dynamicParameters.get(key);
     }
 
     /**
@@ -270,47 +267,10 @@ public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollec
         target.setAllowedTypes(getAllowedTypes());
         target.beginModificationBlock();
         target.clear();
-        for (Map.Entry<String, ACAQMutableParameterAccess> entry : parameters.entrySet()) {
+        for (Map.Entry<String, ACAQMutableParameterAccess> entry : dynamicParameters.entrySet()) {
             target.addParameter(new ACAQMutableParameterAccess(entry.getValue()));
         }
         target.endModificationBlock();
     }
 
-    /**
-     * Finds all dynamic parameter holders in the parameter holder
-     * Does not find child parameter holders.
-     *
-     * @param parameterHolder The parameter holder
-     * @return Map from string to parameter holder
-     */
-    public static Map<String, ACAQDynamicParameterCollection> findDynamicParameterHolders(Object parameterHolder) {
-        Map<String, ACAQDynamicParameterCollection> result = new HashMap<>();
-        for (Method method : parameterHolder.getClass().getMethods()) {
-            ACAQSubParameters[] subAlgorithms = method.getAnnotationsByType(ACAQSubParameters.class);
-
-            String subAlgorithmName = null;
-            String subAlgorithmDescription = null;
-
-            ACAQDocumentation[] documentations = method.getAnnotationsByType(ACAQDocumentation.class);
-            if (documentations.length > 0) {
-                subAlgorithmName = documentations[0].name();
-                subAlgorithmDescription = documentations[0].description();
-            }
-
-            if (subAlgorithms.length > 0) {
-                try {
-                    ACAQSubParameters subAlgorithmAnnotation = subAlgorithms[0];
-                    Object subAlgorithm = method.invoke(parameterHolder);
-                    if (subAlgorithm instanceof ACAQDynamicParameterCollection) {
-                        ((ACAQDynamicParameterCollection) subAlgorithm).name = subAlgorithmName;
-                        ((ACAQDynamicParameterCollection) subAlgorithm).description = subAlgorithmDescription;
-                        result.put(subAlgorithmAnnotation.value(), (ACAQDynamicParameterCollection) subAlgorithm);
-                    }
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        return result;
-    }
 }

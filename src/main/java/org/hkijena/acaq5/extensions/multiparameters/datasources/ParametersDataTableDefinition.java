@@ -75,7 +75,7 @@ public class ParametersDataTableDefinition extends ACAQAlgorithm {
                 }
 
                 ACAQAlgorithm algorithm = targetAlgorithm.getDeclaration().newInstance();
-                Map<String, ACAQParameterAccess> parameters = ACAQParameterCollection.getParameters(algorithm);
+                Map<String, ACAQParameterAccess> parameters = (new ACAQTraversedParameterCollection(algorithm)).getParameters();
                 for (Map.Entry<String, Object> entry : data.getParameterData().entrySet()) {
                     parameters.get(entry.getKey()).set(entry.getValue());
                 }
@@ -104,7 +104,7 @@ public class ParametersDataTableDefinition extends ACAQAlgorithm {
             return;
         parameterTable.setRowGenerator(() -> {
             ACAQAlgorithm instance = targetAlgorithm.getDeclaration().newInstance();
-            Map<String, ACAQParameterAccess> parameters = ACAQParameterCollection.getParameters(instance);
+            Map<String, ACAQParameterAccess> parameters = (new ACAQTraversedParameterCollection(instance)).getParameters();
             List<Object> row = new ArrayList<>();
             for (int col = 0; col < parameterTable.getColumnCount(); ++col) {
                 String key = parameterTable.getColumn(col).getKey();
@@ -130,7 +130,7 @@ public class ParametersDataTableDefinition extends ACAQAlgorithm {
         this.parameterTable = new ParameterTable();
         if (targetAlgorithm != null && targetAlgorithm.getDeclaration() != null) {
             ACAQAlgorithm instance = targetAlgorithm.getDeclaration().newInstance();
-            Map<String, ACAQParameterAccess> parameters = ACAQParameterCollection.getParameters(instance);
+            Map<String, ACAQParameterAccess> parameters = (new ACAQTraversedParameterCollection(instance)).getParameters();
             for (Map.Entry<String, ACAQParameterAccess> entry : parameters.entrySet()) {
                 ACAQParameterAccess access = entry.getValue();
                 if (!access.getVisibility().isVisibleIn(ACAQParameterVisibility.TransitiveVisible))

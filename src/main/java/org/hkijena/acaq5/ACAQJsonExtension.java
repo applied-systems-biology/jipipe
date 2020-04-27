@@ -13,7 +13,6 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.events.ExtensionContentAddedEvent;
 import org.hkijena.acaq5.api.events.ExtensionContentRemovedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQJsonTraitRegistrationTask;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
@@ -56,7 +55,7 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
 
     @Override
     @JsonGetter("metadata")
-    @ACAQSubParameters("metadata")
+    @ACAQParameter("metadata")
     @ACAQDocumentation(name = "Metadata", description = "Additional extension metadata")
     public ACAQProjectMetadata getMetadata() {
         return metadata;

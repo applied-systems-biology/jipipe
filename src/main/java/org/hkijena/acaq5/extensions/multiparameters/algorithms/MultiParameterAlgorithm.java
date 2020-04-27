@@ -15,8 +15,7 @@ import org.hkijena.acaq5.api.data.traits.ACAQTraitTransferTask;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
-import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
+import org.hkijena.acaq5.api.parameters.ACAQTraversedParameterCollection;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
@@ -68,7 +67,7 @@ public class MultiParameterAlgorithm extends ACAQAlgorithm {
         // Backup default parameters
         Map<String, Object> defaultParameterSnapshot = getDefaultParameterSnapshot();
         ACAQDataSlot parameterSlot = getInputSlot("Parameters");
-        Map<String, ACAQParameterAccess> parameters = ACAQParameterCollection.getParameters(algorithmInstance);
+        Map<String, ACAQParameterAccess> parameters = (new ACAQTraversedParameterCollection(algorithmInstance)).getParameters();
         Map<String, ACAQTraitDeclaration> changedParameterTraits = new HashMap<>();
 
         for (int row = 0; row < parameterSlot.getRowCount(); ++row) {
@@ -114,7 +113,8 @@ public class MultiParameterAlgorithm extends ACAQAlgorithm {
 
     private Map<String, Object> getDefaultParameterSnapshot() {
         Map<String, Object> result = new HashMap<>();
-        for (Map.Entry<String, ACAQParameterAccess> entry : ACAQParameterCollection.getParameters(algorithmInstance).entrySet()) {
+        ACAQTraversedParameterCollection collection = new ACAQTraversedParameterCollection(algorithmInstance);
+        for (Map.Entry<String, ACAQParameterAccess> entry : collection.getParameters().entrySet()) {
             result.put(entry.getKey(), entry.getValue().get());
         }
         return result;
@@ -202,7 +202,7 @@ public class MultiParameterAlgorithm extends ACAQAlgorithm {
         updateAlgorithmInstance();
     }
 
-    @ACAQSubParameters("algorithm-parameters")
+    @ACAQParameter("algorithm-parameters")
     public ACAQAlgorithm getAlgorithmInstance() {
         return algorithmInstance;
     }

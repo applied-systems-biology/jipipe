@@ -21,7 +21,6 @@ import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
 import org.hkijena.acaq5.api.registries.ACAQImageJAdapterRegistry;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIData;
@@ -99,7 +98,7 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
 
         StringBuilder finalCode = new StringBuilder();
         // Inject parameters
-        for (Map.Entry<String, ACAQParameterAccess> entry : macroParameters.getCustomParameters().entrySet()) {
+        for (Map.Entry<String, ACAQParameterAccess> entry : macroParameters.getParameters().entrySet()) {
             if (!MacroUtils.isValidVariableName(entry.getKey()))
                 throw new IllegalArgumentException("Invalid variable name " + entry.getKey());
             finalCode.append("var ").append(entry.getKey()).append(" = ");
@@ -231,7 +230,7 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
         if (resultsTableOutputSlotCount > 1) {
             report.reportIsInvalid("Too many results table outputs! Please make sure to only have at most one results table data output.");
         }
-        for (String key : macroParameters.getCustomParameters().keySet()) {
+        for (String key : macroParameters.getParameters().keySet()) {
             if (!MacroUtils.isValidVariableName(key)) {
                 report.forCategory("Macro Parameters").forCategory(key).reportIsInvalid("'" + key + "' is an invalid ImageJ macro variable name! Please ensure that macro variables are compatible with the ImageJ macro language.");
             }
@@ -277,8 +276,8 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
         this.strictMode = strictMode;
     }
 
-    @ACAQSubParameters("macro-parameters")
-    @ACAQDocumentation(name = "Macro parameters", description = "Parameters that are passed as variables to the macro")
+    @ACAQParameter("macro-parameters")
+    @ACAQDocumentation(name = "Macro parameters", description = "The parameter are passed as variables to the macro.")
     public ACAQDynamicParameterCollection getMacroParameters() {
         return macroParameters;
     }

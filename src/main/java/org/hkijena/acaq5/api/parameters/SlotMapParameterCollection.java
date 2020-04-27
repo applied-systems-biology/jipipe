@@ -42,7 +42,7 @@ public class SlotMapParameterCollection extends ACAQDynamicParameterCollection {
     public void updateSlots() {
         if (algorithm != null) {
             Set<String> toRemove = new HashSet<>();
-            for (String slotName : getCustomParameters().keySet()) {
+            for (String slotName : getParameters().keySet()) {
                 if (!algorithm.getSlots().containsKey(slotName)) {
                     toRemove.add(slotName);
                 }

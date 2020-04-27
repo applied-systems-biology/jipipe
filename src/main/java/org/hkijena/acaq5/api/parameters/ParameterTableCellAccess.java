@@ -28,8 +28,8 @@ public class ParameterTableCellAccess implements ACAQParameterAccess {
     }
 
     @Override
-    public String getSlotName() {
-        return parent.getSlotName() + "/" + row + "," + column;
+    public String getKey() {
+        return parent.getKey() + "/" + row + "," + column;
     }
 
     @Override
@@ -69,28 +69,8 @@ public class ParameterTableCellAccess implements ACAQParameterAccess {
     }
 
     @Override
-    public ACAQParameterCollection getParameterHolder() {
-        return parent.getParameterHolder();
-    }
-
-    @Override
-    public String getHolderName() {
-        return null;
-    }
-
-    @Override
-    public void setHolderName(String name) {
-
-    }
-
-    @Override
-    public String getHolderDescription() {
-        return null;
-    }
-
-    @Override
-    public void setHolderDescription(String description) {
-
+    public ACAQParameterCollection getSource() {
+        return parent.getSource();
     }
 
     @Override

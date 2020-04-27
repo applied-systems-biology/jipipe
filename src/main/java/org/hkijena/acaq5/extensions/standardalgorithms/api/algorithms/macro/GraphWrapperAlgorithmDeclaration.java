@@ -254,7 +254,7 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     }
 
     @JsonGetter("metadata")
-    @ACAQSubParameters("metadata")
+    @ACAQParameter("metadata")
     @ACAQDocumentation(name = "Algorithm metadata", description = "General metadata")
     public ACAQProjectMetadata getMetadata() {
         return metadata;
@@ -338,12 +338,8 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     public Map<String, ACAQParameterAccess> getAvailableParameters() {
         Map<String, ACAQParameterAccess> parameterAccessMap = new HashMap<>();
         for (ACAQAlgorithm algorithm : graph.traverseAlgorithms()) {
-            for (Map.Entry<String, ACAQParameterAccess> entry : ACAQParameterCollection.getParameters(algorithm).entrySet()) {
+            for (Map.Entry<String, ACAQParameterAccess> entry : ACAQTraversedParameterCollection.getParameters(algorithm).entrySet()) {
                 String newId = algorithm.getIdInGraph() + "/" + entry.getKey();
-                ACAQParameterAccess parameterAccess = entry.getValue();
-                if (parameterAccess.getParameterHolder() instanceof ACAQAlgorithm && StringUtils.isNullOrEmpty(parameterAccess.getHolderName())) {
-                    parameterAccess.setHolderName(((ACAQAlgorithm) parameterAccess.getParameterHolder()).getName());
-                }
                 parameterAccessMap.put(newId, entry.getValue());
             }
         }

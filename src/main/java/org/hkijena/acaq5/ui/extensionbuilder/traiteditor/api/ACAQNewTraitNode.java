@@ -11,6 +11,7 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQCustomParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
+import org.hkijena.acaq5.api.parameters.ACAQTraversedParameterCollection;
 import org.hkijena.acaq5.api.traits.ACAQJsonTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.utils.StringUtils;
@@ -68,10 +69,10 @@ public class ACAQNewTraitNode extends ACAQTraitNode implements ACAQCustomParamet
     }
 
     @Override
-    public Map<String, ACAQParameterAccess> getCustomParameters() {
+    public Map<String, ACAQParameterAccess> getParameters() {
         if (getTraitDeclaration() == null)
             return Collections.emptyMap();
-        return ACAQParameterCollection.getParameters((ACAQParameterCollection) getTraitDeclaration());
+        return ACAQTraversedParameterCollection.getParameters((ACAQParameterCollection) getTraitDeclaration());
     }
 
     /**

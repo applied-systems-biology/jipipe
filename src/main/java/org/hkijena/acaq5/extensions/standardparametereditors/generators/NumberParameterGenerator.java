@@ -2,7 +2,10 @@ package org.hkijena.acaq5.extensions.standardparametereditors.generators;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.parameters.*;
+import org.hkijena.acaq5.api.parameters.ACAQCustomParameterCollection;
+import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
+import org.hkijena.acaq5.api.parameters.ACAQMutableParameterAccess;
+import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterGeneratorUI;
 import org.scijava.Context;
@@ -174,8 +177,8 @@ public class NumberParameterGenerator<T extends Number & Comparable<T>> extends 
     }
 
     @Override
-    public Map<String, ACAQParameterAccess> getCustomParameters() {
-        return ACAQParameterCollection.getParameters(parameters);
+    public Map<String, ACAQParameterAccess> getParameters() {
+        return parameters.getParameters();
     }
 
     @Override

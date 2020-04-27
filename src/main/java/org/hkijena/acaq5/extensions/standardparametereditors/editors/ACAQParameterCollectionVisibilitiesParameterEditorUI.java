@@ -55,7 +55,7 @@ public class ACAQParameterCollectionVisibilitiesParameterEditorUI extends ACAQPa
             visibilities = new ACAQParameterCollectionVisibilities();
         }
         Map<String, ACAQParameterAccess> parameters = visibilities.getAvailableParameters();
-        Map<Object, List<String>> groupedByHolder = parameters.keySet().stream().collect(Collectors.groupingBy(key -> parameters.get(key).getParameterHolder()));
+        Map<Object, List<String>> groupedByHolder = parameters.keySet().stream().collect(Collectors.groupingBy(key -> parameters.get(key).getSource()));
 
         for (Object parameterHolder : groupedByHolder.keySet()) {
 
@@ -69,19 +69,10 @@ public class ACAQParameterCollectionVisibilitiesParameterEditorUI extends ACAQPa
             if (parameterIds.isEmpty())
                 continue;
 
-            boolean foundHolderName = false;
-
-            FormPanel.GroupHeaderPanel groupHeaderPanel = formPanel.addGroupHeader("", null);
-            JLabel holderNameLabel = groupHeaderPanel.getTitleLabel();
+            formPanel.addGroupHeader("", null);
 
             for (String key : parameterIds) {
                 ACAQParameterAccess parameterAccess = parameters.get(key);
-
-                if (!foundHolderName) {
-                    holderNameLabel.setText(parameterAccess.getHolderName());
-                    holderNameLabel.setIcon(UIUtils.getIconFromResources("cog.png"));
-                    foundHolderName = true;
-                }
 
                 ACAQParameterEditorUI ui = ACAQDefaultRegistry.getInstance()
                         .getUIParametertypeRegistry().createEditorFor(getContext(), parameterAccess);

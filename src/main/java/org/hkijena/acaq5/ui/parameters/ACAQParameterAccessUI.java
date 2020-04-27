@@ -82,112 +82,70 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
      */
     public void reloadForm() {
         clear();
-        Map<String, ACAQParameterAccess> parameters = ACAQParameterCollection.getParameters(getParameterHolder());
-        boolean hasElements = false;
+        ACAQTraversedParameterCollection parameterCollection = new ACAQTraversedParameterCollection(getParameterHolder());
 
-        Map<ACAQParameterCollection, List<String>> groupedByHolder = parameters.keySet().stream().collect(Collectors.groupingBy(key -> parameters.get(key).getParameterHolder()));
-
-        // First display all parameters of the current holder
-        if (groupedByHolder.containsKey(parameterHolder)) {
-            for (String key : getParameterKeysSortedByParameterName(parameters, groupedByHolder.get(parameterHolder))) {
-                ACAQParameterAccess parameterAccess = parameters.get(key);
-                if (parameterAccess.getVisibility() == ACAQParameterVisibility.Hidden)
-                    continue;
-
-                ACAQParameterEditorUI ui = ACAQDefaultRegistry.getInstance()
-                        .getUIParametertypeRegistry().createEditorFor(getContext(), parameterAccess);
-                if (ui.isUILabelEnabled())
-                    addToForm(ui, new JLabel(parameterAccess.getName()), generateParameterDocumentation(parameterAccess));
-                else
-                    addToForm(ui, generateParameterDocumentation(parameterAccess));
-                hasElements = true;
-            }
+        Map<ACAQParameterCollection, List<ACAQParameterAccess>> groupedBySource = parameterCollection.getGroupedBySource();
+        if (groupedBySource.containsKey(parameterHolder)) {
+            addToForm(parameterCollection, parameterHolder, groupedBySource.get(parameterHolder));
         }
 
-        // Add missing dynamic parameter holders
-        for (ACAQDynamicParameterCollection holder : ACAQDynamicParameterCollection.findDynamicParameterHolders(parameterHolder).values()) {
-            if (!groupedByHolder.containsKey(holder))
-                groupedByHolder.put(holder, new ArrayList<>());
-        }
-
-        // Display parameters of all other holders
-        for (ACAQParameterCollection parameterHolder : groupedByHolder.keySet()) {
-            if (parameterHolder == this.parameterHolder)
+        for (ACAQParameterCollection collection : groupedBySource.keySet().stream().sorted(
+                Comparator.nullsFirst(Comparator.comparing(parameterCollection::getSourceDocumentationName)))
+                .collect(Collectors.toList())) {
+            if (collection == parameterHolder)
                 continue;
-
-            List<String> parameterIds = getParameterKeysSortedByParameterName(parameters, groupedByHolder.get(parameterHolder));
-            parameterIds.removeIf(key -> {
-                ACAQParameterAccess parameterAccess = parameters.get(key);
-                return parameterAccess.getVisibility() == ACAQParameterVisibility.Hidden ||
-                        parameterAccess.getVisibility() == ACAQParameterVisibility.Visible;
-            });
-
-            boolean parameterHolderIsDynamic = parameterHolder instanceof ACAQDynamicParameterCollection && ((ACAQDynamicParameterCollection) parameterHolder).isAllowUserModification();
-
-            if (parameterIds.isEmpty() && !parameterHolderIsDynamic)
-                continue;
-
-            boolean foundHolderName = false;
-            boolean foundHolderDescription = false;
-            GroupHeaderPanel groupHeaderPanel = addGroupHeader("", null);
-            groupHeaderPanel.getDescriptionArea().setVisible(false);
-            JLabel holderNameLabel = groupHeaderPanel.getTitleLabel();
-
-            if (parameterHolderIsDynamic) {
-                holderNameLabel.setText(((ACAQDynamicParameterCollection) parameterHolder).getName());
-                holderNameLabel.setToolTipText(((ACAQDynamicParameterCollection) parameterHolder).getDescription());
-                holderNameLabel.setIcon(UIUtils.getIconFromResources("cog.png"));
-                foundHolderName = true;
-                JButton addButton = new JButton(UIUtils.getIconFromResources("add.png"));
-                initializeAddDynamicParameterButton(addButton, (ACAQDynamicParameterCollection) parameterHolder);
-                addButton.setToolTipText("Add new parameter");
-                UIUtils.makeFlat25x25(addButton);
-                groupHeaderPanel.addColumn(addButton);
-            }
-
-            for (String key : parameterIds) {
-                ACAQParameterAccess parameterAccess = parameters.get(key);
-
-                if (!foundHolderName && !StringUtils.isNullOrEmpty(parameterAccess.getHolderName())) {
-                    holderNameLabel.setText(parameterAccess.getHolderName());
-                    holderNameLabel.setIcon(UIUtils.getIconFromResources("cog.png"));
-                    foundHolderName = true;
-                }
-                if (!foundHolderDescription && !StringUtils.isNullOrEmpty(parameterAccess.getHolderDescription())) {
-                    groupHeaderPanel.getDescriptionArea().setText(parameterAccess.getHolderDescription());
-                    groupHeaderPanel.getDescriptionArea().setVisible(true);
-                    foundHolderDescription = true;
-                }
-
-                ACAQParameterEditorUI ui = ACAQDefaultRegistry.getInstance()
-                        .getUIParametertypeRegistry().createEditorFor(getContext(), parameterAccess);
-
-                JPanel labelPanel = new JPanel(new BorderLayout());
-                if (ui.isUILabelEnabled())
-                    labelPanel.add(new JLabel(parameterAccess.getName()));
-                if (parameterHolder instanceof ACAQDynamicParameterCollection && ((ACAQDynamicParameterCollection) parameterHolder).isAllowUserModification()) {
-                    JButton removeButton = new JButton(UIUtils.getIconFromResources("close-tab.png"));
-                    removeButton.setToolTipText("Remove this parameter");
-                    UIUtils.makeBorderlessWithoutMargin(removeButton);
-                    removeButton.addActionListener(e -> removeDynamicParameter(parameterAccess.getSlotName(), (ACAQDynamicParameterCollection) parameterHolder));
-                    labelPanel.add(removeButton, BorderLayout.WEST);
-                }
-
-                if (ui.isUILabelEnabled() || parameterHolder instanceof ACAQDynamicParameterCollection)
-                    addToForm(ui, labelPanel, generateParameterDocumentation(parameterAccess));
-                else
-                    addToForm(ui, generateParameterDocumentation(parameterAccess));
-
-                hasElements = true;
-            }
-        }
-
-        if (!hasElements) {
-            addToForm(new JLabel("There are no parameters",
-                            UIUtils.getIconFromResources("info.png"), JLabel.LEFT),
-                    null);
+            addToForm(parameterCollection, collection, groupedBySource.get(collection));
         }
         addVerticalGlue();
+    }
+
+    private void addToForm(ACAQTraversedParameterCollection parameterCollection, ACAQParameterCollection parameterHolder, List<ACAQParameterAccess> parameterAccesses) {
+        boolean isModifiable = parameterHolder instanceof ACAQDynamicParameterCollection && ((ACAQDynamicParameterCollection) parameterHolder).isAllowUserModification();
+
+        if (!isModifiable && parameterAccesses.isEmpty())
+            return;
+
+        GroupHeaderPanel groupHeaderPanel = addGroupHeader(parameterCollection.getSourceDocumentationName(parameterHolder),
+                UIUtils.getIconFromResources("cog.png"));
+        ACAQDocumentation documentation = parameterCollection.getSourceDocumentation(parameterHolder);
+        if (documentation != null && !StringUtils.isNullOrEmpty(documentation.description())) {
+            groupHeaderPanel.getDescriptionArea().setVisible(true);
+            groupHeaderPanel.getDescriptionArea().setText(documentation.description());
+        }
+
+        if (isModifiable) {
+            JButton addButton = new JButton(UIUtils.getIconFromResources("add.png"));
+            initializeAddDynamicParameterButton(addButton, (ACAQDynamicParameterCollection) parameterHolder);
+            addButton.setToolTipText("Add new parameter");
+            UIUtils.makeFlat25x25(addButton);
+            groupHeaderPanel.addColumn(addButton);
+        }
+
+        List<ACAQParameterEditorUI> uiList = new ArrayList<>();
+        for (ACAQParameterAccess parameterAccess : parameterAccesses) {
+            ACAQParameterEditorUI ui = ACAQDefaultRegistry.getInstance()
+                    .getUIParametertypeRegistry().createEditorFor(getContext(), parameterAccess);
+            uiList.add(ui);
+        }
+        for (ACAQParameterEditorUI ui : uiList.stream().sorted(Comparator.comparing((ACAQParameterEditorUI u) -> !u.isUILabelEnabled())
+                .thenComparing(u -> u.getParameterAccess().getName())).collect(Collectors.toList())) {
+            ACAQParameterAccess parameterAccess = ui.getParameterAccess();
+            JPanel labelPanel = new JPanel(new BorderLayout());
+            if (ui.isUILabelEnabled())
+                labelPanel.add(new JLabel(parameterAccess.getName()));
+            if (isModifiable) {
+                JButton removeButton = new JButton(UIUtils.getIconFromResources("close-tab.png"));
+                removeButton.setToolTipText("Remove this parameter");
+                UIUtils.makeBorderlessWithoutMargin(removeButton);
+                removeButton.addActionListener(e -> removeDynamicParameter(parameterAccess.getKey(), (ACAQDynamicParameterCollection) parameterHolder));
+                labelPanel.add(removeButton, BorderLayout.WEST);
+            }
+
+            if (ui.isUILabelEnabled() || parameterHolder instanceof ACAQDynamicParameterCollection)
+                addToForm(ui, labelPanel, generateParameterDocumentation(parameterAccess));
+            else
+                addToForm(ui, generateParameterDocumentation(parameterAccess));
+        }
     }
 
     private MarkdownDocument generateParameterDocumentation(ACAQParameterAccess access) {
@@ -230,7 +188,7 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
 
     private void addDynamicParameter(ACAQDynamicParameterCollection parameterHolder, Class<?> fieldType) {
         String name = UIUtils.getUniqueStringByDialog(this, "Please set the parameter name: ", fieldType.getSimpleName(),
-                s -> parameterHolder.getCustomParameters().values().stream().anyMatch(p -> Objects.equals(p.getName(), s)));
+                s -> parameterHolder.getParameters().values().stream().anyMatch(p -> Objects.equals(p.getName(), s)));
         if (name != null) {
             ACAQMutableParameterAccess parameterAccess = parameterHolder.addParameter(name, fieldType);
             parameterAccess.setName(name);

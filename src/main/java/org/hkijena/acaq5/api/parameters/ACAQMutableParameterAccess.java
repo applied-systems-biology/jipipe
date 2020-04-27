@@ -2,14 +2,23 @@ package org.hkijena.acaq5.api.parameters;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
+import org.hkijena.acaq5.utils.JsonUtils;
 import org.scijava.Priority;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 
 /**
  * A mutable implementation of {@link ACAQParameterAccess}
  */
+@JsonDeserialize(using = ACAQMutableParameterAccess.Deserializer.class)
 public class ACAQMutableParameterAccess implements ACAQParameterAccess {
     private ACAQParameterCollection parameterHolder;
     private String holderName;
@@ -34,10 +43,8 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
      * @param other the parameter
      */
     public ACAQMutableParameterAccess(ACAQParameterAccess other) {
-        this.parameterHolder = other.getParameterHolder();
-        this.holderName = other.getHolderName();
-        this.holderDescription = other.getHolderDescription();
-        this.key = other.getSlotName();
+        this.parameterHolder = other.getSource();
+        this.key = other.getKey();
         this.name = other.getName();
         this.description = other.getDescription();
         this.visibility = other.getVisibility();
@@ -73,10 +80,11 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
         this.visibility = other.visibility;
         this.fieldClass = other.fieldClass;
         this.value = other.value;
+        this.priority = other.priority;
     }
 
     @Override
-    public String getSlotName() {
+    public String getKey() {
         return key;
     }
 
@@ -173,12 +181,12 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
 
         // Trigger change in parent parameter holder
         if (parameterHolder != null)
-            parameterHolder.getEventBus().post(new ParameterChangedEvent(this, getSlotName()));
+            parameterHolder.getEventBus().post(new ParameterChangedEvent(this, getKey()));
         return true;
     }
 
     @Override
-    public ACAQParameterCollection getParameterHolder() {
+    public ACAQParameterCollection getSource() {
         return parameterHolder;
     }
 
@@ -193,39 +201,28 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
 
 
     @Override
-    public String getHolderDescription() {
-        return holderDescription;
-    }
-
-    /**
-     * Sets a description that describes the parameter holder
-     *
-     * @param holderDescription Parameter holder description
-     */
-    public void setHolderDescription(String holderDescription) {
-        this.holderDescription = holderDescription;
-    }
-
-    @Override
-    public String getHolderName() {
-        return holderName;
-    }
-
-    /**
-     * Sets a name for the parameter holder
-     *
-     * @param holderName Parameter holder name
-     */
-    public void setHolderName(String holderName) {
-        this.holderName = holderName;
-    }
-
-    @Override
     public double getPriority() {
         return priority;
     }
 
     public void setPriority(double priority) {
         this.priority = priority;
+    }
+
+    /**
+     * Deserializes {@link ACAQMutableParameterAccess}
+     */
+    public static class Deserializer extends JsonDeserializer<ACAQMutableParameterAccess> {
+        @Override
+        public ACAQMutableParameterAccess deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+            JsonNode jsonNode = p.readValueAsTree();
+            ACAQMutableParameterAccess result = new ACAQMutableParameterAccess();
+            result.setName(jsonNode.get("name").textValue());
+            result.setDescription(jsonNode.get("description").textValue());
+            result.setVisibility(JsonUtils.getObjectMapper().readerFor(ACAQParameterVisibility.class).readValue(jsonNode.get("visibility")));
+            result.setFieldClass(JsonUtils.getObjectMapper().readerFor(Class.class).readValue(jsonNode.get("field-class")));
+            result.set(JsonUtils.getObjectMapper().readerFor(result.getFieldClass()).readValue(jsonNode.get("value")));
+            return result;
+        }
     }
 }

@@ -274,6 +274,7 @@ public class FormPanel extends JPanel {
             descriptionArea = UIUtils.makeReadonlyTextArea("");
             descriptionArea.setOpaque(false);
             descriptionArea.setBorder(null);
+            descriptionArea.setVisible(false);
             add(descriptionArea, new GridBagConstraints() {
                 {
                     gridx = 0;

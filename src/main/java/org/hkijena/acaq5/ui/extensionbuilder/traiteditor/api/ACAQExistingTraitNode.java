@@ -42,7 +42,7 @@ public class ACAQExistingTraitNode extends ACAQTraitNode implements ACAQCustomPa
     }
 
     @Override
-    public Map<String, ACAQParameterAccess> getCustomParameters() {
+    public Map<String, ACAQParameterAccess> getParameters() {
         return Collections.emptyMap();
     }
 }

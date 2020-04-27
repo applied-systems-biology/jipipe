@@ -14,7 +14,6 @@ import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
 import org.hkijena.acaq5.api.parameters.OutputSlotMapParameterCollection;
 import org.hkijena.acaq5.api.parameters.StringFilter;
 import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
@@ -78,7 +77,7 @@ public class SplitByAnnotation extends ACAQAlgorithm {
             }
 
             for (ACAQDataSlot slot : getOutputSlots().stream().sorted(Comparator.comparing(ACAQDataSlot::getName)).collect(Collectors.toList())) {
-                StringFilter filter = targetSlots.getCustomParameters().get(slot.getName()).get();
+                StringFilter filter = targetSlots.getParameters().get(slot.getName()).get();
                 if (filter.test(matchingValue)) {
                     slot.addData(inputSlot.getData(row, ACAQData.class), inputSlot.getAnnotations(row));
                     if (!enableFallthrough)
@@ -113,7 +112,7 @@ public class SplitByAnnotation extends ACAQAlgorithm {
         getEventBus().post(new ParameterChangedEvent(this, "annotation-type"));
     }
 
-    @ACAQSubParameters("target-slots")
+    @ACAQParameter("target-slots")
     @ACAQDocumentation(name = "Target slots", description = "Annotation values that match the filter on the right-hand side are redirected to the data slot on the left-hand side. " +
             "Non-value annotations are converted into 'true' and 'false'. Use the the RegEx filter '.*' to filter remaining inputs. Filter order is alphabetically.")
     public OutputSlotMapParameterCollection getTargetSlots() {
@@ -139,5 +138,6 @@ public class SplitByAnnotation extends ACAQAlgorithm {
     @ACAQParameter("enable-fallthrough")
     public void setEnableFallthrough(boolean enableFallthrough) {
         this.enableFallthrough = enableFallthrough;
+        getEventBus().post(new ParameterChangedEvent(this, "enable-fallthrough"));
     }
 }

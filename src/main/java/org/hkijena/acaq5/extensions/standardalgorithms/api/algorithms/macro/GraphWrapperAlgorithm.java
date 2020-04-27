@@ -12,8 +12,10 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
-import org.hkijena.acaq5.api.parameters.*;
-import org.hkijena.acaq5.utils.StringUtils;
+import org.hkijena.acaq5.api.parameters.ACAQCustomParameterCollection;
+import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
+import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.api.parameters.ACAQTraversedParameterCollection;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -56,10 +58,13 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
 
     private void initializeParameters() {
         GraphWrapperAlgorithmDeclaration declaration = (GraphWrapperAlgorithmDeclaration) getDeclaration();
-        parameterAccessMap.putAll(ACAQReflectionParameterAccess.getReflectionParameters(this));
+        ACAQTraversedParameterCollection parameterCollection = new ACAQTraversedParameterCollection();
+        parameterCollection.setForceReflection(true);
+        parameterCollection.add(this, Collections.emptyList());
+        parameterAccessMap.putAll(parameterCollection.getParameters());
 
         for (ACAQAlgorithm algorithm : wrappedGraph.traverseAlgorithms()) {
-            for (Map.Entry<String, ACAQParameterAccess> entry : ACAQParameterCollection.getParameters(algorithm).entrySet()) {
+            for (Map.Entry<String, ACAQParameterAccess> entry : ACAQTraversedParameterCollection.getParameters(algorithm).entrySet()) {
 
                 ACAQParameterAccess parameterAccess = entry.getValue();
                 String newId = algorithm.getIdInGraph() + "/" + entry.getKey();
@@ -67,11 +72,8 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
                 if (!declaration.getParameterCollectionVisibilities().isVisible(newId)) {
                     continue;
                 }
-                if (parameterAccess.getParameterHolder() instanceof ACAQDynamicParameterCollection) {
-                    ((ACAQDynamicParameterCollection) parameterAccess.getParameterHolder()).setAllowUserModification(false);
-                }
-                if (parameterAccess.getParameterHolder() instanceof ACAQAlgorithm && StringUtils.isNullOrEmpty(parameterAccess.getHolderName())) {
-                    parameterAccess.setHolderName(((ACAQAlgorithm) parameterAccess.getParameterHolder()).getName());
+                if (parameterAccess.getSource() instanceof ACAQDynamicParameterCollection) {
+                    ((ACAQDynamicParameterCollection) parameterAccess.getSource()).setAllowUserModification(false);
                 }
 
                 parameterAccessMap.put(newId, entry.getValue());
@@ -230,7 +232,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
     }
 
     @Override
-    public Map<String, ACAQParameterAccess> getCustomParameters() {
+    public Map<String, ACAQParameterAccess> getParameters() {
         return parameterAccessMap;
     }
 
