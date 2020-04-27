@@ -57,6 +57,7 @@ public class SplitByAnnotation extends ACAQAlgorithm {
      */
     public SplitByAnnotation(SplitByAnnotation other) {
         super(other);
+        this.enableFallthrough = other.enableFallthrough;
         this.annotationType = other.annotationType;
         this.targetSlots = new OutputSlotMapParameterCollection(String.class, this);
         other.targetSlots.copyTo(this.targetSlots);
