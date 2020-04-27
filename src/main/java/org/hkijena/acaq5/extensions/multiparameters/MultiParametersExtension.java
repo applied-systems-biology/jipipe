@@ -7,7 +7,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.events.AlgorithmRegisteredEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQParameterHolder;
+import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQJsonTraitDeclaration;
@@ -72,7 +72,7 @@ public class MultiParametersExtension extends ACAQPrepackagedDefaultJavaExtensio
         if (declaration.getCategory() == ACAQAlgorithmCategory.Internal)
             return;
         ACAQAlgorithm instance = declaration.newInstance();
-        Map<String, ACAQParameterAccess> parameters = ACAQParameterHolder.getParameters(instance);
+        Map<String, ACAQParameterAccess> parameters = ACAQParameterCollection.getParameters(instance);
 
         for (ACAQParameterAccess parameterAccess : parameters.values()) {
             if (!StringUtils.isNullOrEmpty(parameterAccess.getName())) {

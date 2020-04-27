@@ -13,7 +13,7 @@ import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.parameters.ACAQParameterHolder;
+import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 
 import java.io.IOException;
@@ -28,7 +28,7 @@ import java.util.Set;
  */
 @JsonSerialize(using = ACAQSlotDefinition.Serializer.class)
 @JsonDeserialize(using = ACAQSlotDefinition.Deserializer.class)
-public class ACAQSlotDefinition implements ACAQParameterHolder {
+public class ACAQSlotDefinition implements ACAQParameterCollection {
     private EventBus eventBus = new EventBus();
     private Class<? extends ACAQData> dataClass;
     private ACAQDataSlot.SlotType slotType;

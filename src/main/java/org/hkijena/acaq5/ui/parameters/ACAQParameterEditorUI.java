@@ -3,7 +3,7 @@ package org.hkijena.acaq5.ui.parameters;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQParameterHolder;
+import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.scijava.Context;
 import org.scijava.Contextual;
 
@@ -34,7 +34,7 @@ public abstract class ACAQParameterEditorUI extends JPanel implements Contextual
      *
      * @return object that holds the parameter
      */
-    public ACAQParameterHolder getParameterHolder() {
+    public ACAQParameterCollection getParameterHolder() {
         return parameterAccess.getParameterHolder();
     }
 
@@ -67,7 +67,7 @@ public abstract class ACAQParameterEditorUI extends JPanel implements Contextual
      */
     @Subscribe
     public void onParameterChanged(ParameterChangedEvent event) {
-        if (Objects.equals(event.getKey(), parameterAccess.getKey())) {
+        if (Objects.equals(event.getKey(), parameterAccess.getSlotName())) {
             reload();
         }
     }

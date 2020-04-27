@@ -8,9 +8,9 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.api.parameters.PathFilter;
+import org.hkijena.acaq5.api.parameters.PathFilterCollection;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FolderData;
-import org.hkijena.acaq5.utils.PathFilter;
-import org.hkijena.acaq5.utils.PathFilterCollection;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;

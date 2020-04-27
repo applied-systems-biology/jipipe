@@ -19,7 +19,7 @@ import java.util.*;
 /**
  * Holds a user-definable set of parameters
  */
-public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
+public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollection {
 
     private EventBus eventBus = new EventBus();
     private BiMap<String, ACAQMutableParameterAccess> parameters = HashBiMap.create();
@@ -32,7 +32,7 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
     /**
      * @param allowedTypes The parameter types that can be added
      */
-    public ACAQDynamicParameterHolder(Class<?>... allowedTypes) {
+    public ACAQDynamicParameterCollection(Class<?>... allowedTypes) {
         this.allowedTypes.addAll(Arrays.asList(allowedTypes));
     }
 
@@ -41,7 +41,7 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
      *
      * @param other The original
      */
-    public ACAQDynamicParameterHolder(ACAQDynamicParameterHolder other) {
+    public ACAQDynamicParameterCollection(ACAQDynamicParameterCollection other) {
         this.allowedTypes.addAll(other.allowedTypes);
         for (Map.Entry<String, ACAQMutableParameterAccess> entry : other.parameters.entrySet()) {
             ACAQMutableParameterAccess parameterAccess = new ACAQMutableParameterAccess(entry.getValue());
@@ -73,10 +73,10 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
      * @return the parameter access
      */
     public ACAQMutableParameterAccess addParameter(ACAQMutableParameterAccess parameterAccess) {
-        if (parameters.containsKey(parameterAccess.getKey()))
-            throw new IllegalArgumentException("Parameter with key " + parameterAccess.getKey() + " already exists!");
+        if (parameters.containsKey(parameterAccess.getSlotName()))
+            throw new IllegalArgumentException("Parameter with key " + parameterAccess.getSlotName() + " already exists!");
         parameterAccess.setParameterHolder(this);
-        parameters.put(parameterAccess.getKey(), parameterAccess);
+        parameters.put(parameterAccess.getSlotName(), parameterAccess);
         if (!delayEvents)
             getEventBus().post(new ParameterStructureChangedEvent(this));
         return parameterAccess;
@@ -261,14 +261,30 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
     }
 
     /**
+     * Copies the parameter configuration into the target
+     *
+     * @param target the target configuration
+     */
+    public void copyTo(ACAQDynamicParameterCollection target) {
+        target.setAllowUserModification(isAllowUserModification());
+        target.setAllowedTypes(getAllowedTypes());
+        target.beginModificationBlock();
+        target.clear();
+        for (Map.Entry<String, ACAQMutableParameterAccess> entry : parameters.entrySet()) {
+            target.addParameter(new ACAQMutableParameterAccess(entry.getValue()));
+        }
+        target.endModificationBlock();
+    }
+
+    /**
      * Finds all dynamic parameter holders in the parameter holder
      * Does not find child parameter holders.
      *
      * @param parameterHolder The parameter holder
      * @return Map from string to parameter holder
      */
-    public static Map<String, ACAQDynamicParameterHolder> findDynamicParameterHolders(Object parameterHolder) {
-        Map<String, ACAQDynamicParameterHolder> result = new HashMap<>();
+    public static Map<String, ACAQDynamicParameterCollection> findDynamicParameterHolders(Object parameterHolder) {
+        Map<String, ACAQDynamicParameterCollection> result = new HashMap<>();
         for (Method method : parameterHolder.getClass().getMethods()) {
             ACAQSubParameters[] subAlgorithms = method.getAnnotationsByType(ACAQSubParameters.class);
 
@@ -285,10 +301,10 @@ public class ACAQDynamicParameterHolder implements ACAQCustomParameterHolder {
                 try {
                     ACAQSubParameters subAlgorithmAnnotation = subAlgorithms[0];
                     Object subAlgorithm = method.invoke(parameterHolder);
-                    if (subAlgorithm instanceof ACAQDynamicParameterHolder) {
-                        ((ACAQDynamicParameterHolder) subAlgorithm).name = subAlgorithmName;
-                        ((ACAQDynamicParameterHolder) subAlgorithm).description = subAlgorithmDescription;
-                        result.put(subAlgorithmAnnotation.value(), (ACAQDynamicParameterHolder) subAlgorithm);
+                    if (subAlgorithm instanceof ACAQDynamicParameterCollection) {
+                        ((ACAQDynamicParameterCollection) subAlgorithm).name = subAlgorithmName;
+                        ((ACAQDynamicParameterCollection) subAlgorithm).description = subAlgorithmDescription;
+                        result.put(subAlgorithmAnnotation.value(), (ACAQDynamicParameterCollection) subAlgorithm);
                     }
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     throw new RuntimeException(e);

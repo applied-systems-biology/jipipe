@@ -66,7 +66,7 @@ public class ACAQTraitDeclarationRefParameterEditorUI extends ACAQParameterEdito
 
     @Override
     public void reload() {
-        if(isReloading)
+        if (isReloading)
             return;
         isReloading = true;
         ACAQTraitDeclarationRef declarationRef = getParameterAccess().get();
@@ -78,12 +78,12 @@ public class ACAQTraitDeclarationRefParameterEditorUI extends ACAQParameterEdito
             currentlyDisplayed.setText(declaration.getName());
             currentlyDisplayed.setToolTipText(TooltipUtils.getTraitTooltip(declaration));
             currentlyDisplayed.setIcon(ACAQUITraitRegistry.getInstance().getIconFor(declaration));
-            if(!pickerDialog.isVisible())
+            if (!pickerDialog.isVisible())
                 picker.setSelectedTraits(Collections.singleton(declaration));
         } else {
             currentlyDisplayed.setText("None selected");
             currentlyDisplayed.setIcon(UIUtils.getIconFromResources("error.png"));
-            if(!pickerDialog.isVisible())
+            if (!pickerDialog.isVisible())
                 picker.setSelectedTraits(Collections.emptySet());
         }
         isReloading = false;

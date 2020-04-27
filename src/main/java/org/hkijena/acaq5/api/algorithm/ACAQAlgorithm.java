@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
  * It is part of the {@link ACAQAlgorithmGraph}
  */
 @JsonSerialize(using = ACAQAlgorithm.Serializer.class)
-public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHolder {
+public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterCollection {
     private ACAQAlgorithmDeclaration declaration;
     private ACAQSlotConfiguration slotConfiguration;
     private ACAQTraitConfiguration traitConfiguration;
@@ -442,8 +442,8 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
         }
 
         // Deserialize dynamic parameters
-        Map<String, ACAQDynamicParameterHolder> dynamicParameterHolders = ACAQDynamicParameterHolder.findDynamicParameterHolders(this);
-        for (Map.Entry<String, ACAQDynamicParameterHolder> entry : dynamicParameterHolders.entrySet()) {
+        Map<String, ACAQDynamicParameterCollection> dynamicParameterHolders = ACAQDynamicParameterCollection.findDynamicParameterHolders(this);
+        for (Map.Entry<String, ACAQDynamicParameterCollection> entry : dynamicParameterHolders.entrySet()) {
             JsonNode entryNode = node.path("acaq:dynamic-parameters").path(entry.getKey());
             if (!entryNode.isMissingNode()) {
                 entry.getValue().fromJson(entryNode);
@@ -462,7 +462,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
         Set<String> loadedParameters = new HashSet<>();
         while (changedStructure.get()) {
             changedStructure.set(false);
-            List<Map.Entry<String, ACAQParameterAccess>> prioritizedParameters = ACAQParameterHolder.getParameters(this)
+            List<Map.Entry<String, ACAQParameterAccess>> prioritizedParameters = ACAQParameterCollection.getParameters(this)
                     .entrySet().stream().sorted((e0, e1) -> ACAQParameterAccess.comparePriority(e0.getValue(), e1.getValue())).collect(Collectors.toList());
             for (Map.Entry<String, ACAQParameterAccess> kv : prioritizedParameters) {
                 if (loadedParameters.contains(kv.getKey()))
@@ -884,6 +884,30 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
     }
 
     /**
+     * Returns true if the algorithm contains an input slot with given name.
+     * Returns false if there is an output slot with given name
+     *
+     * @param slotName the slot name
+     * @return if the algorithm contains an input slot with given name.
+     */
+    public boolean hasInputSlot(String slotName) {
+        ACAQDataSlot existing = getSlots().getOrDefault(slotName, null);
+        return existing != null && existing.isInput();
+    }
+
+    /**
+     * Returns true if the algorithm contains an output slot with given name.
+     * Returns false if there is an input slot with given name
+     *
+     * @param slotName the slot name
+     * @return if the algorithm contains an output slot with given name.
+     */
+    public boolean hasOutputSlot(String slotName) {
+        ACAQDataSlot existing = getSlots().getOrDefault(slotName, null);
+        return existing != null && existing.isOutput();
+    }
+
+    /**
      * Utility function to create an algorithm instance from its id
      *
      * @param id  Algorithm ID
@@ -916,7 +940,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
             jsonGenerator.writeEndObject();
             jsonGenerator.writeStringField("acaq:algorithm-type", algorithm.getDeclaration().getId());
             jsonGenerator.writeStringField("acaq:algorithm-compartment", algorithm.getCompartment());
-            for (Map.Entry<String, ACAQParameterAccess> kv : ACAQParameterHolder.getParameters(algorithm).entrySet()) {
+            for (Map.Entry<String, ACAQParameterAccess> kv : ACAQParameterCollection.getParameters(algorithm).entrySet()) {
                 jsonGenerator.writeObjectField(kv.getKey(), kv.getValue().get());
             }
             if (algorithm.getTraitConfiguration() instanceof ACAQMutableTraitConfiguration) {
@@ -926,8 +950,8 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterHol
             // Save dynamic parameter storage
             jsonGenerator.writeFieldName("acaq:dynamic-parameters");
             jsonGenerator.writeStartObject();
-            Map<String, ACAQDynamicParameterHolder> dynamicParameterHolders = ACAQDynamicParameterHolder.findDynamicParameterHolders(algorithm);
-            for (Map.Entry<String, ACAQDynamicParameterHolder> entry : dynamicParameterHolders.entrySet()) {
+            Map<String, ACAQDynamicParameterCollection> dynamicParameterHolders = ACAQDynamicParameterCollection.findDynamicParameterHolders(algorithm);
+            for (Map.Entry<String, ACAQDynamicParameterCollection> entry : dynamicParameterHolders.entrySet()) {
                 jsonGenerator.writeObjectField(entry.getKey(), entry.getValue());
             }
             jsonGenerator.writeEndObject();

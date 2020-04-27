@@ -42,7 +42,7 @@ public class ACAQDefaultDiscriminator extends ACAQDefaultTrait implements ACAQDi
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if(!(o instanceof ACAQTrait))
+        if (!(o instanceof ACAQTrait))
             return false;
         if (getDeclaration() != ((ACAQTrait) o).getDeclaration())
             return false;

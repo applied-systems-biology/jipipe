@@ -1,7 +1,6 @@
-package org.hkijena.acaq5.utils;
+package org.hkijena.acaq5.api.parameters;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.hkijena.acaq5.api.parameters.CollectionParameter;
 
 /**
  * A collection of multiple {@link PathFilter}

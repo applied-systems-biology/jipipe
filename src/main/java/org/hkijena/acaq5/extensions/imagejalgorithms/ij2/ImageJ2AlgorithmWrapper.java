@@ -12,7 +12,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQDataInterface;
 import org.hkijena.acaq5.api.algorithm.ACAQIteratingAlgorithm;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterHolder;
+import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.ui.registries.ACAQUIParametertypeRegistry;
@@ -37,7 +37,7 @@ import java.util.function.Supplier;
  */
 public class ImageJ2AlgorithmWrapper extends ACAQIteratingAlgorithm {
 
-    private ACAQDynamicParameterHolder moduleParameters = new ACAQDynamicParameterHolder();
+    private ACAQDynamicParameterCollection moduleParameters = new ACAQDynamicParameterCollection();
     private BiMap<String, String> parameterMap = HashBiMap.create();
 
     /**
@@ -57,7 +57,7 @@ public class ImageJ2AlgorithmWrapper extends ACAQIteratingAlgorithm {
      */
     public ImageJ2AlgorithmWrapper(ImageJ2AlgorithmWrapper other) {
         super(other);
-        this.moduleParameters = new ACAQDynamicParameterHolder(other.moduleParameters);
+        this.moduleParameters = new ACAQDynamicParameterCollection(other.moduleParameters);
     }
 
     private void initializeParameters(ImageJ2AlgorithmWrapperDeclaration declaration) {
@@ -136,7 +136,7 @@ public class ImageJ2AlgorithmWrapper extends ACAQIteratingAlgorithm {
 
     @ACAQSubParameters("module-parameters")
     @ACAQDocumentation(name = "ImageJ parameters", description = "Parameters associated to the internal ImageJ algorithm")
-    public ACAQDynamicParameterHolder getModuleParameters() {
+    public ACAQDynamicParameterCollection getModuleParameters() {
         return moduleParameters;
     }
 

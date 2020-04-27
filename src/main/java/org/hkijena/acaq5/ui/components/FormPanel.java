@@ -1,5 +1,7 @@
 package org.hkijena.acaq5.ui.components;
 
+import org.hkijena.acaq5.utils.UIUtils;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -235,6 +237,7 @@ public class FormPanel extends JPanel {
      */
     public static class GroupHeaderPanel extends JPanel {
         private final JLabel titleLabel;
+        private JTextArea descriptionArea;
         private int columnCount = 0;
 
         /**
@@ -267,6 +270,20 @@ public class FormPanel extends JPanel {
                 }
             });
             ++columnCount;
+
+            descriptionArea = UIUtils.makeReadonlyTextArea("");
+            descriptionArea.setOpaque(false);
+            descriptionArea.setBorder(null);
+            add(descriptionArea, new GridBagConstraints() {
+                {
+                    gridx = 0;
+                    gridy = 1;
+                    gridwidth = 2;
+                    fill = GridBagConstraints.HORIZONTAL;
+                    anchor = GridBagConstraints.WEST;
+                    insets = UI_PADDING;
+                }
+            });
         }
 
         public JLabel getTitleLabel() {
@@ -288,6 +305,10 @@ public class FormPanel extends JPanel {
                 }
             });
             ++columnCount;
+        }
+
+        public JTextArea getDescriptionArea() {
+            return descriptionArea;
         }
     }
 }

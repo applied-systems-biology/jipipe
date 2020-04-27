@@ -1,21 +1,21 @@
 package org.hkijena.acaq5.api.events;
 
-import org.hkijena.acaq5.api.parameters.ACAQParameterHolder;
+import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 
 /**
- * Triggered by an {@link ACAQParameterHolder} if the list of available parameters is changed
+ * Triggered by an {@link ACAQParameterCollection} if the list of available parameters is changed
  */
 public class ParameterStructureChangedEvent {
-    private ACAQParameterHolder parameterHolder;
+    private ACAQParameterCollection parameterHolder;
 
     /**
      * @param parameterHolder event source
      */
-    public ParameterStructureChangedEvent(ACAQParameterHolder parameterHolder) {
+    public ParameterStructureChangedEvent(ACAQParameterCollection parameterHolder) {
         this.parameterHolder = parameterHolder;
     }
 
-    public ACAQParameterHolder getParameterHolder() {
+    public ACAQParameterCollection getParameterHolder() {
         return parameterHolder;
     }
 }

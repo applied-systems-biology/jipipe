@@ -11,30 +11,28 @@ public class ACAQTraitMerger {
 
     /**
      * Merges a trait into the merger
+     *
      * @param trait the trait
      */
     public void add(ACAQTrait trait) {
-        if(trait == null)
+        if (trait == null)
             return;
-        if(addedTraits.contains(trait))
+        if (addedTraits.contains(trait))
             return;
         ACAQTrait existing = data.getOrDefault(trait.getDeclaration(), null);
-        if(existing != null) {
-            if(trait instanceof ACAQDiscriminator) {
+        if (existing != null) {
+            if (trait instanceof ACAQDiscriminator) {
                 String value = ((ACAQDiscriminator) existing).getValue();
-                if(value == null) {
+                if (value == null) {
                     value = ((ACAQDiscriminator) trait).getValue();
-                }
-                else {
+                } else {
                     value = value + "; " + ((ACAQDiscriminator) trait).getValue();
                 }
                 existing = trait.getDeclaration().newInstance(value);
-            }
-            else {
+            } else {
                 existing = trait;
             }
-        }
-        else {
+        } else {
             existing = trait;
         }
         addedTraits.add(trait);
@@ -43,6 +41,7 @@ public class ACAQTraitMerger {
 
     /**
      * Removes a trait type from the merger
+     *
      * @param declaration the type
      */
     public void removeAnnotationType(ACAQTraitDeclaration declaration) {
@@ -59,6 +58,7 @@ public class ACAQTraitMerger {
 
     /**
      * Adds multiple annotations
+     *
      * @param annotations list of annotations
      */
     public void addAll(Collection<ACAQTrait> annotations) {

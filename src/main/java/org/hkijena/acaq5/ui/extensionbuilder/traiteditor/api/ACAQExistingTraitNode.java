@@ -5,7 +5,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.api.parameters.ACAQCustomParameterHolder;
+import org.hkijena.acaq5.api.parameters.ACAQCustomParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 
 import java.util.Collections;
@@ -19,7 +19,7 @@ import java.util.Map;
 @AlgorithmOutputSlot(ACAQTraitNodeInheritanceData.class)
 @AlgorithmInputSlot(ACAQDiscriminatorNodeInheritanceData.class)
 @AlgorithmOutputSlot(ACAQDiscriminatorNodeInheritanceData.class)
-public class ACAQExistingTraitNode extends ACAQTraitNode implements ACAQCustomParameterHolder {
+public class ACAQExistingTraitNode extends ACAQTraitNode implements ACAQCustomParameterCollection {
 
     /**
      * Creates a new instance

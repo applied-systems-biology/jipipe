@@ -2,10 +2,7 @@ package org.hkijena.acaq5.extensions.standardparametereditors;
 
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclarationRef;
-import org.hkijena.acaq5.api.parameters.ACAQParameterCollectionVisibilities;
-import org.hkijena.acaq5.api.parameters.CollectionParameter;
-import org.hkijena.acaq5.api.parameters.ParameterTable;
-import org.hkijena.acaq5.api.parameters.PathCollection;
+import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefCollection;
@@ -13,7 +10,6 @@ import org.hkijena.acaq5.api.traits.ACAQTraitIconRef;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.standardparametereditors.editors.*;
 import org.hkijena.acaq5.extensions.standardparametereditors.generators.*;
-import org.hkijena.acaq5.utils.PathFilter;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
@@ -76,6 +72,7 @@ public class StandardParameterEditorsExtension extends ACAQPrepackagedDefaultJav
         // Register custom ACAQ5 parameters
         registerParameterType(PathCollection.class, PathCollectionParameterEditorUI.class, "Path collection", "A list of multiple filesystem paths");
         registerParameterType(PathFilter.class, PathFilterParameterEditorUI.class, "Path filter", "A filter for filenames or folder names");
+        registerParameterType(StringFilter.class, StringFilterParameterEditorUI.class, "String filter", "A filter for strings");
         registerParameterType(ACAQTraitDeclarationRef.class, ACAQTraitDeclarationRefParameterEditorUI.class, "Annotation type", "An ACAQ5 annotation type");
         registerParameterType(ACAQTraitDeclarationRefCollection.class, ACAQTraitDeclarationRefCollectionParameterEditorUI.class, "Annotation type collection", "A list of ACAQ5 annotation types");
         registerParameterType(ACAQTrait.class, ACAQTraitParameterEditorUI.class, "Annotation", "An ACAQ5 annotation");

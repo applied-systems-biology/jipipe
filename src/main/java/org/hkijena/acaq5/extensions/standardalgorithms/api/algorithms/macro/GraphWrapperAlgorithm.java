@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 /**
  * An algorithm that wraps another algorithm graph
  */
-public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomParameterHolder {
+public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomParameterCollection {
 
     private ACAQAlgorithmGraph wrappedGraph;
     private Map<String, ACAQDataSlot> graphSlots = new HashMap<>();
@@ -59,7 +59,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
         parameterAccessMap.putAll(ACAQReflectionParameterAccess.getReflectionParameters(this));
 
         for (ACAQAlgorithm algorithm : wrappedGraph.traverseAlgorithms()) {
-            for (Map.Entry<String, ACAQParameterAccess> entry : ACAQParameterHolder.getParameters(algorithm).entrySet()) {
+            for (Map.Entry<String, ACAQParameterAccess> entry : ACAQParameterCollection.getParameters(algorithm).entrySet()) {
 
                 ACAQParameterAccess parameterAccess = entry.getValue();
                 String newId = algorithm.getIdInGraph() + "/" + entry.getKey();
@@ -67,8 +67,8 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
                 if (!declaration.getParameterCollectionVisibilities().isVisible(newId)) {
                     continue;
                 }
-                if (parameterAccess.getParameterHolder() instanceof ACAQDynamicParameterHolder) {
-                    ((ACAQDynamicParameterHolder) parameterAccess.getParameterHolder()).setAllowUserModification(false);
+                if (parameterAccess.getParameterHolder() instanceof ACAQDynamicParameterCollection) {
+                    ((ACAQDynamicParameterCollection) parameterAccess.getParameterHolder()).setAllowUserModification(false);
                 }
                 if (parameterAccess.getParameterHolder() instanceof ACAQAlgorithm && StringUtils.isNullOrEmpty(parameterAccess.getHolderName())) {
                     parameterAccess.setHolderName(((ACAQAlgorithm) parameterAccess.getParameterHolder()).getName());

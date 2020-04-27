@@ -11,7 +11,7 @@ import java.lang.annotation.Annotation;
  * A mutable implementation of {@link ACAQParameterAccess}
  */
 public class ACAQMutableParameterAccess implements ACAQParameterAccess {
-    private ACAQParameterHolder parameterHolder;
+    private ACAQParameterCollection parameterHolder;
     private String holderName;
     private String holderDescription;
     private String key;
@@ -37,7 +37,7 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
         this.parameterHolder = other.getParameterHolder();
         this.holderName = other.getHolderName();
         this.holderDescription = other.getHolderDescription();
-        this.key = other.getKey();
+        this.key = other.getSlotName();
         this.name = other.getName();
         this.description = other.getDescription();
         this.visibility = other.getVisibility();
@@ -52,7 +52,7 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
      * @param key             Unique parameter key
      * @param fieldClass      Parameter field type
      */
-    public ACAQMutableParameterAccess(ACAQParameterHolder parameterHolder, String key, Class<?> fieldClass) {
+    public ACAQMutableParameterAccess(ACAQParameterCollection parameterHolder, String key, Class<?> fieldClass) {
         this.parameterHolder = parameterHolder;
         this.key = key;
         this.fieldClass = fieldClass;
@@ -76,7 +76,7 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
     }
 
     @Override
-    public String getKey() {
+    public String getSlotName() {
         return key;
     }
 
@@ -173,12 +173,12 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
 
         // Trigger change in parent parameter holder
         if (parameterHolder != null)
-            parameterHolder.getEventBus().post(new ParameterChangedEvent(this, getKey()));
+            parameterHolder.getEventBus().post(new ParameterChangedEvent(this, getSlotName()));
         return true;
     }
 
     @Override
-    public ACAQParameterHolder getParameterHolder() {
+    public ACAQParameterCollection getParameterHolder() {
         return parameterHolder;
     }
 
@@ -187,7 +187,7 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
      *
      * @param parameterHolder The object that holds the parameter
      */
-    public void setParameterHolder(ACAQParameterHolder parameterHolder) {
+    public void setParameterHolder(ACAQParameterCollection parameterHolder) {
         this.parameterHolder = parameterHolder;
     }
 

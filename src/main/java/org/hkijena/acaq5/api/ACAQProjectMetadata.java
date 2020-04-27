@@ -5,13 +5,13 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.parameters.ACAQParameterHolder;
+import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.extensions.standardparametereditors.editors.StringParameterSettings;
 
 /**
  * JSON-serializable project metadata
  */
-public class ACAQProjectMetadata implements ACAQParameterHolder {
+public class ACAQProjectMetadata implements ACAQParameterCollection {
     private EventBus eventBus = new EventBus();
     private String name = "New project";
     private String description = "An ACAQ5 project";

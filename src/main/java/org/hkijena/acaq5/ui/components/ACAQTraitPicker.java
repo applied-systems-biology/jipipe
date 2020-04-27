@@ -109,7 +109,7 @@ public class ACAQTraitPicker extends JPanel {
      * Refreshes the list
      */
     public void refreshTraitList() {
-        if(reloading)
+        if (reloading)
             return;
         reloading = true;
         DefaultListModel<ACAQTraitDeclaration> model = (DefaultListModel<ACAQTraitDeclaration>) traitList.getModel();

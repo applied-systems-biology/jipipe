@@ -6,7 +6,7 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.ACAQProjectMetadata;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.parameters.ACAQParameterHolder;
+import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 
 import java.nio.file.Path;
 import java.util.HashSet;
@@ -16,7 +16,7 @@ import java.util.Set;
  * Encapsulates a dependency such as an extension or JSON extension
  */
 @JsonDeserialize(as = ACAQMutableDependency.class)
-public interface ACAQDependency extends ACAQParameterHolder, ACAQValidatable {
+public interface ACAQDependency extends ACAQParameterCollection, ACAQValidatable {
     /**
      * @return The dependency metadata
      */

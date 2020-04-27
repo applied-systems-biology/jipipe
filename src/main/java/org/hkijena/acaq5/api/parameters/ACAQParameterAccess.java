@@ -14,7 +14,7 @@ public interface ACAQParameterAccess {
      *
      * @return Unique parameter key
      */
-    String getKey();
+    String getSlotName();
 
     /**
      * Returns the parameter name that is displayed to the user
@@ -75,7 +75,7 @@ public interface ACAQParameterAccess {
      *
      * @return the object that holds the parameter
      */
-    ACAQParameterHolder getParameterHolder();
+    ACAQParameterCollection getParameterHolder();
 
     /**
      * A name for the parameter holder

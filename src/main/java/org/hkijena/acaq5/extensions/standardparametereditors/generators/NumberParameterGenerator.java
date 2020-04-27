@@ -17,11 +17,11 @@ import java.util.Map;
  * This cannot be used directly in {@link org.hkijena.acaq5.ui.registries.ACAQUIParametertypeRegistry}, as the constructor does
  * not match. You have to inherit from this type and define the number type.
  */
-public class NumberParameterGenerator<T extends Number & Comparable<T>> extends ACAQParameterGeneratorUI implements ACAQCustomParameterHolder {
+public class NumberParameterGenerator<T extends Number & Comparable<T>> extends ACAQParameterGeneratorUI implements ACAQCustomParameterCollection {
 
     private EventBus eventBus = new EventBus();
     private Class<? extends Number> numberClass;
-    private ACAQDynamicParameterHolder parameters = new ACAQDynamicParameterHolder();
+    private ACAQDynamicParameterCollection parameters = new ACAQDynamicParameterCollection();
 
     /**
      * Creates a new instance
@@ -175,7 +175,7 @@ public class NumberParameterGenerator<T extends Number & Comparable<T>> extends 
 
     @Override
     public Map<String, ACAQParameterAccess> getCustomParameters() {
-        return ACAQParameterHolder.getParameters(parameters);
+        return ACAQParameterCollection.getParameters(parameters);
     }
 
     @Override

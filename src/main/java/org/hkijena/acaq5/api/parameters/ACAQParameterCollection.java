@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Interfaced for a parameterized object
  */
-public interface ACAQParameterHolder {
+public interface ACAQParameterCollection {
     /**
      * Gets the event bus that posts events about the parameters
      *
@@ -23,10 +23,10 @@ public interface ACAQParameterHolder {
      * @param parameterHolder Parameterized object
      * @return All parameters
      */
-    static Map<String, ACAQParameterAccess> getParameters(ACAQParameterHolder parameterHolder) {
+    static Map<String, ACAQParameterAccess> getParameters(ACAQParameterCollection parameterHolder) {
         Map<String, ACAQParameterAccess> result = new HashMap<>();
-        if (parameterHolder instanceof ACAQCustomParameterHolder) {
-            for (Map.Entry<String, ACAQParameterAccess> entry : ((ACAQCustomParameterHolder) parameterHolder).getCustomParameters().entrySet()) {
+        if (parameterHolder instanceof ACAQCustomParameterCollection) {
+            for (Map.Entry<String, ACAQParameterAccess> entry : ((ACAQCustomParameterCollection) parameterHolder).getCustomParameters().entrySet()) {
                 result.put(entry.getKey(), entry.getValue());
             }
         } else {

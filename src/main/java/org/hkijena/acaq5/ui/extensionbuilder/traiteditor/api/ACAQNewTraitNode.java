@@ -8,9 +8,9 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
-import org.hkijena.acaq5.api.parameters.ACAQCustomParameterHolder;
+import org.hkijena.acaq5.api.parameters.ACAQCustomParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQParameterHolder;
+import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.api.traits.ACAQJsonTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.utils.StringUtils;
@@ -27,7 +27,7 @@ import java.util.Map;
 @AlgorithmInputSlot(ACAQDiscriminatorNodeInheritanceData.class)
 @AlgorithmOutputSlot(ACAQDiscriminatorNodeInheritanceData.class)
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Annotation)
-public class ACAQNewTraitNode extends ACAQTraitNode implements ACAQCustomParameterHolder {
+public class ACAQNewTraitNode extends ACAQTraitNode implements ACAQCustomParameterCollection {
 
     /**
      * Creates new instance
@@ -71,7 +71,7 @@ public class ACAQNewTraitNode extends ACAQTraitNode implements ACAQCustomParamet
     public Map<String, ACAQParameterAccess> getCustomParameters() {
         if (getTraitDeclaration() == null)
             return Collections.emptyMap();
-        return ACAQParameterHolder.getParameters((ACAQParameterHolder) getTraitDeclaration());
+        return ACAQParameterCollection.getParameters((ACAQParameterCollection) getTraitDeclaration());
     }
 
     /**

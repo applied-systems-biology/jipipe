@@ -10,6 +10,7 @@ import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.registries.ACAQUIParametertypeRegistry;
+import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.Contextual;
@@ -21,11 +22,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * UI around a {@link ACAQParameterHolder}
+ * UI around a {@link ACAQParameterCollection}
  */
 public class ACAQParameterAccessUI extends FormPanel implements Contextual {
     private Context context;
-    private ACAQParameterHolder parameterHolder;
+    private ACAQParameterCollection parameterHolder;
 
     /**
      * @param context            SciJava context
@@ -35,7 +36,7 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
      * @param withDocumentation  If documentation is shown
      * @param withScrolling      Allows disabling the scroll view
      */
-    public ACAQParameterAccessUI(Context context, ACAQParameterHolder parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation, boolean withScrolling) {
+    public ACAQParameterAccessUI(Context context, ACAQParameterCollection parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation, boolean withScrolling) {
         super(documentation, documentationBelow, withDocumentation, withScrolling);
         this.context = context;
         this.parameterHolder = parameterHolder;
@@ -50,7 +51,7 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
      * @param documentationBelow If true, show documentation below
      * @param withDocumentation  If documentation is shown
      */
-    public ACAQParameterAccessUI(Context context, ACAQParameterHolder parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
+    public ACAQParameterAccessUI(Context context, ACAQParameterCollection parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
         this(context, parameterHolder, documentation, documentationBelow, withDocumentation, true);
     }
 
@@ -61,7 +62,7 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
      * @param documentationBelow If true, show documentation below
      * @param withDocumentation  If documentation is shown
      */
-    public ACAQParameterAccessUI(ACAQProjectWorkbench workbenchUI, ACAQParameterHolder parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
+    public ACAQParameterAccessUI(ACAQProjectWorkbench workbenchUI, ACAQParameterCollection parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
         this(workbenchUI.getContext(), parameterHolder, documentation, documentationBelow, withDocumentation, true);
     }
 
@@ -72,7 +73,7 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
      * @param documentationBelow If true, show documentation below
      * @param withDocumentation  If documentation is shown
      */
-    public ACAQParameterAccessUI(ACAQJsonExtensionWorkbench workbenchUI, ACAQParameterHolder parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
+    public ACAQParameterAccessUI(ACAQJsonExtensionWorkbench workbenchUI, ACAQParameterCollection parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
         this(workbenchUI.getContext(), parameterHolder, documentation, documentationBelow, withDocumentation, true);
     }
 
@@ -81,10 +82,10 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
      */
     public void reloadForm() {
         clear();
-        Map<String, ACAQParameterAccess> parameters = ACAQParameterHolder.getParameters(getParameterHolder());
+        Map<String, ACAQParameterAccess> parameters = ACAQParameterCollection.getParameters(getParameterHolder());
         boolean hasElements = false;
 
-        Map<ACAQParameterHolder, List<String>> groupedByHolder = parameters.keySet().stream().collect(Collectors.groupingBy(key -> parameters.get(key).getParameterHolder()));
+        Map<ACAQParameterCollection, List<String>> groupedByHolder = parameters.keySet().stream().collect(Collectors.groupingBy(key -> parameters.get(key).getParameterHolder()));
 
         // First display all parameters of the current holder
         if (groupedByHolder.containsKey(parameterHolder)) {
@@ -104,13 +105,13 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
         }
 
         // Add missing dynamic parameter holders
-        for (ACAQDynamicParameterHolder holder : ACAQDynamicParameterHolder.findDynamicParameterHolders(parameterHolder).values()) {
+        for (ACAQDynamicParameterCollection holder : ACAQDynamicParameterCollection.findDynamicParameterHolders(parameterHolder).values()) {
             if (!groupedByHolder.containsKey(holder))
                 groupedByHolder.put(holder, new ArrayList<>());
         }
 
         // Display parameters of all other holders
-        for (ACAQParameterHolder parameterHolder : groupedByHolder.keySet()) {
+        for (ACAQParameterCollection parameterHolder : groupedByHolder.keySet()) {
             if (parameterHolder == this.parameterHolder)
                 continue;
 
@@ -121,22 +122,24 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
                         parameterAccess.getVisibility() == ACAQParameterVisibility.Visible;
             });
 
-            boolean parameterHolderIsDynamic = parameterHolder instanceof ACAQDynamicParameterHolder && ((ACAQDynamicParameterHolder) parameterHolder).isAllowUserModification();
+            boolean parameterHolderIsDynamic = parameterHolder instanceof ACAQDynamicParameterCollection && ((ACAQDynamicParameterCollection) parameterHolder).isAllowUserModification();
 
             if (parameterIds.isEmpty() && !parameterHolderIsDynamic)
                 continue;
 
             boolean foundHolderName = false;
+            boolean foundHolderDescription = false;
             GroupHeaderPanel groupHeaderPanel = addGroupHeader("", null);
+            groupHeaderPanel.getDescriptionArea().setVisible(false);
             JLabel holderNameLabel = groupHeaderPanel.getTitleLabel();
 
             if (parameterHolderIsDynamic) {
-                holderNameLabel.setText(((ACAQDynamicParameterHolder) parameterHolder).getName());
-                holderNameLabel.setToolTipText(((ACAQDynamicParameterHolder) parameterHolder).getDescription());
+                holderNameLabel.setText(((ACAQDynamicParameterCollection) parameterHolder).getName());
+                holderNameLabel.setToolTipText(((ACAQDynamicParameterCollection) parameterHolder).getDescription());
                 holderNameLabel.setIcon(UIUtils.getIconFromResources("cog.png"));
                 foundHolderName = true;
                 JButton addButton = new JButton(UIUtils.getIconFromResources("add.png"));
-                initializeAddDynamicParameterButton(addButton, (ACAQDynamicParameterHolder) parameterHolder);
+                initializeAddDynamicParameterButton(addButton, (ACAQDynamicParameterCollection) parameterHolder);
                 addButton.setToolTipText("Add new parameter");
                 UIUtils.makeFlat25x25(addButton);
                 groupHeaderPanel.addColumn(addButton);
@@ -145,10 +148,15 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
             for (String key : parameterIds) {
                 ACAQParameterAccess parameterAccess = parameters.get(key);
 
-                if (!foundHolderName) {
+                if (!foundHolderName && !StringUtils.isNullOrEmpty(parameterAccess.getHolderName())) {
                     holderNameLabel.setText(parameterAccess.getHolderName());
                     holderNameLabel.setIcon(UIUtils.getIconFromResources("cog.png"));
                     foundHolderName = true;
+                }
+                if (!foundHolderDescription && !StringUtils.isNullOrEmpty(parameterAccess.getHolderDescription())) {
+                    groupHeaderPanel.getDescriptionArea().setText(parameterAccess.getHolderDescription());
+                    groupHeaderPanel.getDescriptionArea().setVisible(true);
+                    foundHolderDescription = true;
                 }
 
                 ACAQParameterEditorUI ui = ACAQDefaultRegistry.getInstance()
@@ -157,15 +165,15 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
                 JPanel labelPanel = new JPanel(new BorderLayout());
                 if (ui.isUILabelEnabled())
                     labelPanel.add(new JLabel(parameterAccess.getName()));
-                if (parameterHolder instanceof ACAQDynamicParameterHolder && ((ACAQDynamicParameterHolder) parameterHolder).isAllowUserModification()) {
+                if (parameterHolder instanceof ACAQDynamicParameterCollection && ((ACAQDynamicParameterCollection) parameterHolder).isAllowUserModification()) {
                     JButton removeButton = new JButton(UIUtils.getIconFromResources("close-tab.png"));
                     removeButton.setToolTipText("Remove this parameter");
                     UIUtils.makeBorderlessWithoutMargin(removeButton);
-                    removeButton.addActionListener(e -> removeDynamicParameter(parameterAccess.getKey(), (ACAQDynamicParameterHolder) parameterHolder));
+                    removeButton.addActionListener(e -> removeDynamicParameter(parameterAccess.getSlotName(), (ACAQDynamicParameterCollection) parameterHolder));
                     labelPanel.add(removeButton, BorderLayout.WEST);
                 }
 
-                if (ui.isUILabelEnabled() || parameterHolder instanceof ACAQDynamicParameterHolder)
+                if (ui.isUILabelEnabled() || parameterHolder instanceof ACAQDynamicParameterCollection)
                     addToForm(ui, labelPanel, generateParameterDocumentation(parameterAccess));
                 else
                     addToForm(ui, generateParameterDocumentation(parameterAccess));
@@ -193,7 +201,7 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
         return new MarkdownDocument(markdownString.toString());
     }
 
-    private void removeDynamicParameter(String key, ACAQDynamicParameterHolder parameterHolder) {
+    private void removeDynamicParameter(String key, ACAQDynamicParameterCollection parameterHolder) {
         ACAQMutableParameterAccess parameter = parameterHolder.getParameter(key);
         if (JOptionPane.showConfirmDialog(this, "Do you really want to remove the parameter '" + parameter.getName() + "'?",
                 "Remove parameter", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
@@ -202,7 +210,7 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
         }
     }
 
-    private void initializeAddDynamicParameterButton(JButton addButton, ACAQDynamicParameterHolder parameterHolder) {
+    private void initializeAddDynamicParameterButton(JButton addButton, ACAQDynamicParameterCollection parameterHolder) {
         JPopupMenu menu = UIUtils.addPopupMenuToComponent(addButton);
         for (Class<?> allowedType : parameterHolder.getAllowedTypes()) {
             ACAQDocumentation documentation = ACAQUIParametertypeRegistry.getInstance().getDocumentationFor(allowedType);
@@ -220,7 +228,7 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
         }
     }
 
-    private void addDynamicParameter(ACAQDynamicParameterHolder parameterHolder, Class<?> fieldType) {
+    private void addDynamicParameter(ACAQDynamicParameterCollection parameterHolder, Class<?> fieldType) {
         String name = UIUtils.getUniqueStringByDialog(this, "Please set the parameter name: ", fieldType.getSimpleName(),
                 s -> parameterHolder.getCustomParameters().values().stream().anyMatch(p -> Objects.equals(p.getName(), s)));
         if (name != null) {
@@ -243,7 +251,7 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
     /**
      * @return The parameterized object
      */
-    public ACAQParameterHolder getParameterHolder() {
+    public ACAQParameterCollection getParameterHolder() {
         return parameterHolder;
     }
 

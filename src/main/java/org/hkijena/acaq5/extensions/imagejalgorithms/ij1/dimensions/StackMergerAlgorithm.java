@@ -63,7 +63,7 @@ public class StackMergerAlgorithm extends ACAQAlgorithm {
     @Override
     public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         Set<ACAQTraitDeclaration> currentReferenceAnnotations;
-        if(!overrideReferenceAnnotations) {
+        if (!overrideReferenceAnnotations) {
             // Try to figure out annotations
             ACAQTraitMerger mergedAnnotations = new ACAQTraitMerger();
             for (int row = 0; row < getFirstInputSlot().getRowCount(); ++row) {
@@ -73,8 +73,7 @@ public class StackMergerAlgorithm extends ACAQAlgorithm {
                 mergedAnnotations.removeAnnotationType(counterAnnotation.getDeclaration());
             }
             currentReferenceAnnotations = mergedAnnotations.getAnnotationTypes();
-        }
-        else {
+        } else {
             currentReferenceAnnotations = referenceAnnotations.stream()
                     .map(ACAQTraitDeclarationRef::getDeclaration).collect(Collectors.toSet());
         }
@@ -89,7 +88,7 @@ public class StackMergerAlgorithm extends ACAQAlgorithm {
             }
             List<ImagePlus2DData> slices = new ArrayList<>();
             for (int row = 0; row < getFirstInputSlot().getRowCount(); ++row) {
-               slices.add(getFirstInputSlot().getData(row, ImagePlus2DData.class));
+                slices.add(getFirstInputSlot().getData(row, ImagePlus2DData.class));
             }
             if (counterAnnotation != null && counterAnnotation.getDeclaration() != null) {
                 Map<ImagePlus2DData, ACAQTrait> counterAssignment = new HashMap<>();

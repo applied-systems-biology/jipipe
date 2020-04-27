@@ -31,7 +31,7 @@ public class CollectionEntryParameterAccess<T> implements ACAQParameterAccess {
     }
 
     @Override
-    public String getKey() {
+    public String getSlotName() {
         return "" + index;
     }
 
@@ -72,7 +72,7 @@ public class CollectionEntryParameterAccess<T> implements ACAQParameterAccess {
     }
 
     @Override
-    public ACAQParameterHolder getParameterHolder() {
+    public ACAQParameterCollection getParameterHolder() {
         return parent.getParameterHolder();
     }
 

@@ -18,7 +18,7 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.traits.ConfigTraits;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
-import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterHolder;
+import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
@@ -63,7 +63,7 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
     private MacroCode code = new MacroCode();
     private boolean strictMode = true;
     private boolean batchMode = false;
-    private ACAQDynamicParameterHolder macroParameters = new ACAQDynamicParameterHolder(ALLOWED_PARAMETER_CLASSES);
+    private ACAQDynamicParameterCollection macroParameters = new ACAQDynamicParameterCollection(ALLOWED_PARAMETER_CLASSES);
 
     private List<ImagePlus> initiallyOpenedImages = new ArrayList<>();
     private List<Window> initiallyOpenedWindows = new ArrayList<>();
@@ -88,7 +88,7 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
     public MacroWrapperAlgorithm(MacroWrapperAlgorithm other) {
         super(other);
         this.code = new MacroCode(other.code);
-        this.macroParameters = new ACAQDynamicParameterHolder(other.macroParameters);
+        this.macroParameters = new ACAQDynamicParameterCollection(other.macroParameters);
         this.macroParameters.getEventBus().register(this);
     }
 
@@ -279,7 +279,7 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
 
     @ACAQSubParameters("macro-parameters")
     @ACAQDocumentation(name = "Macro parameters", description = "Parameters that are passed as variables to the macro")
-    public ACAQDynamicParameterHolder getMacroParameters() {
+    public ACAQDynamicParameterCollection getMacroParameters() {
         return macroParameters;
     }
 

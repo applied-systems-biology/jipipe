@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.annotation;
 
+import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
@@ -11,33 +12,42 @@ import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
+import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
+import org.hkijena.acaq5.api.parameters.OutputSlotMapParameterCollection;
+import org.hkijena.acaq5.api.parameters.StringFilter;
 import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Algorithm that splits the input data by a specified annotation
  */
 // Algorithm metadata
-@ACAQDocumentation(name = "Split by annotation", description = "Splits the input data by a specified annotation. " +
-        "Output slots should correspond to the annotation values. The last slot is reserved for cases where the annotation could not be found.")
+@ACAQDocumentation(name = "Split & filter by annotation", description = "Splits the input data by a specified annotation or filters data based on the annotation value.")
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Annotation)
 
 // Algorithm traits
 public class SplitByAnnotation extends ACAQAlgorithm {
 
     private ACAQTraitDeclarationRef annotationType = new ACAQTraitDeclarationRef();
+    private OutputSlotMapParameterCollection targetSlots;
+    private boolean enableFallthrough = false;
 
     /**
      * @param declaration algorithm declaration
      */
     public SplitByAnnotation(ACAQAlgorithmDeclaration declaration) {
         super(declaration, ACAQMutableSlotConfiguration.builder().restrictInputSlotCount(1).build());
+        this.targetSlots = new OutputSlotMapParameterCollection(StringFilter.class, this);
+        this.targetSlots.getEventBus().register(this);
     }
 
     /**
@@ -48,6 +58,9 @@ public class SplitByAnnotation extends ACAQAlgorithm {
     public SplitByAnnotation(SplitByAnnotation other) {
         super(other);
         this.annotationType = other.annotationType;
+        this.targetSlots = new OutputSlotMapParameterCollection(String.class, this);
+        other.targetSlots.copyTo(this.targetSlots);
+        this.targetSlots.getEventBus().register(this);
     }
 
     @Override
@@ -56,35 +69,31 @@ public class SplitByAnnotation extends ACAQAlgorithm {
         for (int row = 0; row < inputSlot.getRowCount(); ++row) {
             List<ACAQTrait> annotations = inputSlot.getAnnotations(row);
             ACAQTrait matching = annotations.stream().filter(a -> a.getDeclaration() == annotationType.getDeclaration()).findFirst().orElse(null);
-
-            // Find a matching target slot
-            ACAQDataSlot targetSlot;
-            if (matching != null) {
-                if (matching instanceof ACAQDiscriminator) {
-                    targetSlot = getSlots().getOrDefault(((ACAQDiscriminator) matching).getValue(), null);
-                    if (targetSlot == null || targetSlot.isInput())
-                        targetSlot = getLastOutputSlot();
-                } else {
-                    targetSlot = getFirstOutputSlot();
-                }
+            String matchingValue;
+            if (annotationType.getDeclaration().isDiscriminator()) {
+                matchingValue = matching instanceof ACAQDiscriminator ? "" + ((ACAQDiscriminator) matching).getValue() : "";
             } else {
-                targetSlot = getLastOutputSlot();
+                matchingValue = matching != null ? "true" : "false";
             }
 
-            targetSlot.addData(inputSlot.getData(row, ACAQData.class), inputSlot.getAnnotations(row));
+            for (ACAQDataSlot slot : getOutputSlots().stream().sorted(Comparator.comparing(ACAQDataSlot::getName)).collect(Collectors.toList())) {
+                StringFilter filter = targetSlots.getCustomParameters().get(slot.getName()).get();
+                if (filter.test(matchingValue)) {
+                    slot.addData(inputSlot.getData(row, ACAQData.class), inputSlot.getAnnotations(row));
+                    if (!enableFallthrough)
+                        break;
+                }
+            }
         }
     }
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        if (annotationType.getDeclaration() == null) {
-            report.forCategory("Removed annotation").reportIsInvalid("No annotation provided! Please setup an annotation that is removed from the data.");
+        if (annotationType == null || annotationType.getDeclaration() == null) {
+            report.forCategory("Annotation").reportIsInvalid("No annotation provided! Please setup an annotation that is removed from the data.");
         } else {
-            if (getOutputSlots().size() < 2) {
-                if (annotationType.getDeclaration().isDiscriminator())
-                    report.forCategory("Output slots").reportIsInvalid("Invalid slot configuration. Please create a slot for data that has the annotation, and a second one for unannotated data.");
-                else
-                    report.forCategory("Output slots").reportIsInvalid("Invalid slot configuration. Please create a slot for each value to extract, and a second one for non-matching data.");
+            if (getOutputSlots().isEmpty()) {
+                report.forCategory("Output").reportIsInvalid("No output slots defined! Please add at least one output slot.");
             }
         }
     }
@@ -92,6 +101,8 @@ public class SplitByAnnotation extends ACAQAlgorithm {
     @ACAQDocumentation(name = "Annotation", description = "Data is split by this annotation")
     @ACAQParameter("annotation-type")
     public ACAQTraitDeclarationRef getAnnotationType() {
+        if (annotationType == null)
+            annotationType = new ACAQTraitDeclarationRef();
         return annotationType;
     }
 
@@ -99,5 +110,33 @@ public class SplitByAnnotation extends ACAQAlgorithm {
     public void setAnnotationType(ACAQTraitDeclarationRef annotationType) {
         this.annotationType = annotationType;
         getEventBus().post(new ParameterChangedEvent(this, "annotation-type"));
+    }
+
+    @ACAQSubParameters("target-slots")
+    @ACAQDocumentation(name = "Target slots", description = "Annotation values that match the filter on the right-hand side are redirected to the data slot on the left-hand side. " +
+            "Non-value annotations are converted into 'true' and 'false'. Use the the RegEx filter '.*' to filter remaining inputs. Filter order is alphabetically.")
+    public OutputSlotMapParameterCollection getTargetSlots() {
+        return targetSlots;
+    }
+
+    /**
+     * Triggered when the parameter structure is changed
+     *
+     * @param event generated event
+     */
+    @Subscribe
+    public void onParameterStructureChanged(ParameterStructureChangedEvent event) {
+        getEventBus().post(event);
+    }
+
+    @ACAQDocumentation(name = "Continue after filter matches", description = "Continue with other filters if a matching filter was found")
+    @ACAQParameter("enable-fallthrough")
+    public boolean isEnableFallthrough() {
+        return enableFallthrough;
+    }
+
+    @ACAQParameter("enable-fallthrough")
+    public void setEnableFallthrough(boolean enableFallthrough) {
+        this.enableFallthrough = enableFallthrough;
     }
 }

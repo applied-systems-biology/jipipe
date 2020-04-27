@@ -1,29 +1,25 @@
-package org.hkijena.acaq5.utils;
+package org.hkijena.acaq5.api.parameters;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.PathMatcher;
 import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
  * A filter for path filenames that can handle multiple filter modes
  */
-public class PathFilter implements Predicate<Path>, ACAQValidatable {
+public class StringFilter implements Predicate<String>, ACAQValidatable {
 
     private Mode mode = Mode.Contains;
     private String filterString;
-    private PathMatcher globPathMatcher;
 
     /**
      * Initializes a new filter. Defaults to no filter string and Mode.Contains
      */
-    public PathFilter() {
+    public StringFilter() {
 
     }
 
@@ -32,10 +28,9 @@ public class PathFilter implements Predicate<Path>, ACAQValidatable {
      *
      * @param other the original
      */
-    public PathFilter(PathFilter other) {
+    public StringFilter(StringFilter other) {
         this.mode = other.mode;
         this.filterString = other.filterString;
-        this.globPathMatcher = other.globPathMatcher;
     }
 
     @JsonGetter
@@ -46,8 +41,6 @@ public class PathFilter implements Predicate<Path>, ACAQValidatable {
     @JsonSetter
     public void setMode(Mode mode) {
         this.mode = mode;
-        if (mode == Mode.Glob)
-            setFilterString(filterString);
     }
 
     @JsonGetter
@@ -58,26 +51,15 @@ public class PathFilter implements Predicate<Path>, ACAQValidatable {
     @JsonSetter
     public void setFilterString(String filterString) {
         this.filterString = filterString;
-        if (mode == Mode.Glob && filterString != null && !filterString.isEmpty()) {
-            try {
-                globPathMatcher = FileSystems.getDefault().getPathMatcher("glob:" + filterString);
-            } catch (Exception e) {
-                globPathMatcher = null;
-            }
-        } else {
-            globPathMatcher = null;
-        }
     }
 
     @Override
-    public boolean test(Path path) {
+    public boolean test(String path) {
         switch (mode) {
             case Contains:
-                return path.getFileName().toString().contains(filterString);
-            case Glob:
-                return globPathMatcher.matches(path.getFileName());
+                return ("" + path).contains(filterString);
             case Regex:
-                return path.getFileName().toString().matches(filterString);
+                return ("" + path).matches(filterString);
             default:
                 throw new RuntimeException("Unknown mode!");
         }
@@ -85,9 +67,6 @@ public class PathFilter implements Predicate<Path>, ACAQValidatable {
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        if (mode == Mode.Glob && globPathMatcher == null) {
-            report.reportIsInvalid("The glob file filter '" + filterString + "' is invalid! Please change it to a valid filter string.");
-        }
     }
 
     @Override
@@ -99,7 +78,7 @@ public class PathFilter implements Predicate<Path>, ACAQValidatable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PathFilter that = (PathFilter) o;
+        StringFilter that = (StringFilter) o;
         return mode == that.mode &&
                 Objects.equals(filterString, that.filterString);
     }
@@ -117,10 +96,6 @@ public class PathFilter implements Predicate<Path>, ACAQValidatable {
          * Checks via String.contains
          */
         Contains,
-        /**
-         * Checks via a Glob matcher
-         */
-        Glob,
         /**
          * Checks via a regular expression
          */

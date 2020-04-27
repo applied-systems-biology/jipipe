@@ -15,7 +15,7 @@ import org.hkijena.acaq5.api.data.traits.ACAQTraitTransferTask;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQParameterHolder;
+import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQSubParameters;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
@@ -68,7 +68,7 @@ public class MultiParameterAlgorithm extends ACAQAlgorithm {
         // Backup default parameters
         Map<String, Object> defaultParameterSnapshot = getDefaultParameterSnapshot();
         ACAQDataSlot parameterSlot = getInputSlot("Parameters");
-        Map<String, ACAQParameterAccess> parameters = ACAQParameterHolder.getParameters(algorithmInstance);
+        Map<String, ACAQParameterAccess> parameters = ACAQParameterCollection.getParameters(algorithmInstance);
         Map<String, ACAQTraitDeclaration> changedParameterTraits = new HashMap<>();
 
         for (int row = 0; row < parameterSlot.getRowCount(); ++row) {
@@ -114,7 +114,7 @@ public class MultiParameterAlgorithm extends ACAQAlgorithm {
 
     private Map<String, Object> getDefaultParameterSnapshot() {
         Map<String, Object> result = new HashMap<>();
-        for (Map.Entry<String, ACAQParameterAccess> entry : ACAQParameterHolder.getParameters(algorithmInstance).entrySet()) {
+        for (Map.Entry<String, ACAQParameterAccess> entry : ACAQParameterCollection.getParameters(algorithmInstance).entrySet()) {
             result.put(entry.getKey(), entry.getValue().get());
         }
         return result;

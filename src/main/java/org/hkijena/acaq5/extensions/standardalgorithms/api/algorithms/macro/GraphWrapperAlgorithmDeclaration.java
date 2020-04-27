@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 /**
  * Declaration of a {@link GraphWrapperAlgorithm}
  */
-public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQValidatable, ACAQParameterHolder {
+public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQValidatable, ACAQParameterCollection {
 
     private EventBus eventBus = new EventBus();
     private String id;
@@ -338,7 +338,7 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     public Map<String, ACAQParameterAccess> getAvailableParameters() {
         Map<String, ACAQParameterAccess> parameterAccessMap = new HashMap<>();
         for (ACAQAlgorithm algorithm : graph.traverseAlgorithms()) {
-            for (Map.Entry<String, ACAQParameterAccess> entry : ACAQParameterHolder.getParameters(algorithm).entrySet()) {
+            for (Map.Entry<String, ACAQParameterAccess> entry : ACAQParameterCollection.getParameters(algorithm).entrySet()) {
                 String newId = algorithm.getIdInGraph() + "/" + entry.getKey();
                 ACAQParameterAccess parameterAccess = entry.getValue();
                 if (parameterAccess.getParameterHolder() instanceof ACAQAlgorithm && StringUtils.isNullOrEmpty(parameterAccess.getHolderName())) {

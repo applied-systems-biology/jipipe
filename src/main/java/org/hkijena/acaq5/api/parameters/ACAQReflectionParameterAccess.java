@@ -19,13 +19,13 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
     private Method setter;
     private double priority;
     private ACAQDocumentation documentation;
-    private ACAQParameterHolder parameterHolder;
+    private ACAQParameterCollection parameterHolder;
     private String holderName;
     private String holderDescription;
     private ACAQParameterVisibility visibility = ACAQParameterVisibility.TransitiveVisible;
 
     @Override
-    public String getKey() {
+    public String getSlotName() {
         return key;
     }
 
@@ -87,7 +87,7 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
     }
 
     @Override
-    public ACAQParameterHolder getParameterHolder() {
+    public ACAQParameterCollection getParameterHolder() {
         return parameterHolder;
     }
 
@@ -125,7 +125,7 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
      * @param parameterHolder Object that holds the parameter
      * @return Map from parameter key to parameter. The key is not necessarily ParameterHolder.getKey()
      */
-    public static Map<String, ACAQParameterAccess> getReflectionParameters(ACAQParameterHolder parameterHolder) {
+    public static Map<String, ACAQParameterAccess> getReflectionParameters(ACAQParameterCollection parameterHolder) {
         Map<String, ACAQParameterAccess> result = new HashMap<>();
         if (parameterHolder == null)
             return result;
@@ -163,7 +163,7 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
             if (subAlgorithms.length > 0) {
                 try {
                     ACAQSubParameters subAlgorithmAnnotation = subAlgorithms[0];
-                    ACAQParameterHolder subAlgorithm = (ACAQParameterHolder) method.invoke(parameterHolder);
+                    ACAQParameterCollection subAlgorithm = (ACAQParameterCollection) method.invoke(parameterHolder);
                     String subAlgorithmName = null;
                     String subAlgorithmDescription = null;
 
@@ -173,7 +173,7 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
                         subAlgorithmDescription = documentations[0].description();
                     }
 
-                    for (Map.Entry<String, ACAQParameterAccess> kv : ACAQParameterHolder.getParameters(subAlgorithm).entrySet()) {
+                    for (Map.Entry<String, ACAQParameterAccess> kv : ACAQParameterCollection.getParameters(subAlgorithm).entrySet()) {
                         ACAQParameterAccess subParameter = kv.getValue();
                         if (subParameter.getParameterHolder() == subAlgorithm) {
                             if (subParameter instanceof ACAQMutableParameterAccess) {

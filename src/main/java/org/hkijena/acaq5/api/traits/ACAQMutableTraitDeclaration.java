@@ -6,7 +6,7 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.parameters.ACAQParameterHolder;
+import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.extensions.standardparametereditors.editors.StringParameterSettings;
 
 import java.util.HashSet;
@@ -15,7 +15,7 @@ import java.util.Set;
 /**
  * A mutable implementation of {@link ACAQTraitDeclaration}
  */
-public abstract class ACAQMutableTraitDeclaration implements ACAQTraitDeclaration, ACAQParameterHolder {
+public abstract class ACAQMutableTraitDeclaration implements ACAQTraitDeclaration, ACAQParameterCollection {
     private EventBus eventBus = new EventBus();
     private String id;
     private Class<? extends ACAQTrait> traitClass;

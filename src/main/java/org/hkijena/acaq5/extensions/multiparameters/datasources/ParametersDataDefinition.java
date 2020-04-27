@@ -46,7 +46,7 @@ public class ParametersDataDefinition extends ACAQAlgorithm {
     @Override
     public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ParametersData result = new ParametersData();
-        for (Map.Entry<String, ACAQParameterAccess> entry : ACAQParameterHolder.getParameters(algorithmInstance).entrySet()) {
+        for (Map.Entry<String, ACAQParameterAccess> entry : ACAQParameterCollection.getParameters(algorithmInstance).entrySet()) {
             if (entry.getValue().getVisibility().isVisibleIn(ACAQParameterVisibility.TransitiveVisible)) {
                 result.getParameterData().put(entry.getKey(), entry.getValue().get());
             }
@@ -85,7 +85,7 @@ public class ParametersDataDefinition extends ACAQAlgorithm {
 
     @ACAQSubParameters("algorithm-parameters")
     @ACAQDocumentation(name = "Algorithm parameters", description = "Contains the parameters of the selected algorithm")
-    public ACAQParameterHolder getAlgorithmParameters() {
+    public ACAQParameterCollection getAlgorithmParameters() {
         return algorithmInstance;
     }
 

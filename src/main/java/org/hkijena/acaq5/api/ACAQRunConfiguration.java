@@ -1,13 +1,13 @@
 package org.hkijena.acaq5.api;
 
-import org.hkijena.acaq5.api.parameters.ACAQParameterHolder;
+import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 
 import java.nio.file.Path;
 
 /**
  * Configures an {@link ACAQRun}
  */
-public interface ACAQRunConfiguration extends ACAQParameterHolder {
+public interface ACAQRunConfiguration extends ACAQParameterCollection {
     /**
      * Returns the output path where results are stored
      *
