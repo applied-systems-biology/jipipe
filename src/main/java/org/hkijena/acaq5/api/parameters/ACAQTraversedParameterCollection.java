@@ -208,6 +208,8 @@ public class ACAQTraversedParameterCollection implements ACAQParameterCollection
             if (pair.getFieldClass() != null && ACAQParameterCollection.class.isAssignableFrom(pair.getFieldClass())) {
                 try {
                     ACAQParameterCollection subParameters = (ACAQParameterCollection) pair.getter.invoke(source);
+                    if(subParameters == null)
+                        continue;
                     setSourceDocumentation(subParameters, pair.getDocumentation());
                     setSourceKey(subParameters, entry.getKey());
                     List<ACAQParameterCollection> subParameterHierarchy = new ArrayList<>(hierarchy);
@@ -323,12 +325,16 @@ public class ACAQTraversedParameterCollection implements ACAQParameterCollection
 
         public ACAQParameterVisibility getVisibility() {
             ACAQParameter getterAnnotation = getter.getAnnotation(ACAQParameter.class);
+            if(setter == null)
+                return getterAnnotation.visibility();
             ACAQParameter setterAnnotation = setter.getAnnotation(ACAQParameter.class);
             return getterAnnotation.visibility().intersectWith(setterAnnotation.visibility());
         }
 
         public double getPriority() {
             ACAQParameter getterAnnotation = getter.getAnnotation(ACAQParameter.class);
+            if(setter == null)
+                return getterAnnotation.priority();
             ACAQParameter setterAnnotation = setter.getAnnotation(ACAQParameter.class);
             return getterAnnotation.priority() != Priority.NORMAL ? getterAnnotation.priority() : setterAnnotation.priority();
         }
@@ -337,6 +343,8 @@ public class ACAQTraversedParameterCollection implements ACAQParameterCollection
             ACAQDocumentation[] documentations = getter.getAnnotationsByType(ACAQDocumentation.class);
             if (documentations.length > 0)
                 return documentations[0];
+            if(setter == null)
+                return null;
             documentations = setter.getAnnotationsByType(ACAQDocumentation.class);
             return documentations.length > 0 ? documentations[0] : null;
         }
