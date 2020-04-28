@@ -92,7 +92,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         if (algorithms.containsKey(key))
             throw new UserFriendlyRuntimeException("Already contains algorithm with name " + key,
                     "Could not add an algorithm node into the graph!",
-                    "There already exists an algorithm with the same identifier.",
+                    "Algorithm graph", "There already exists an algorithm with the same identifier.",
                     "If you are loading from a JSON project or plugin, check if the file is valid. Contact " +
                             "the ACAQ or plugin developers for further assistance.");
         algorithm.setCompartment(compartment);
@@ -261,7 +261,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         if (!canConnect(source, target, false))
             throw new UserFriendlyRuntimeException("Cannot connect data slots: " + source.getNameWithAlgorithmName() + " ==> " + target.getNameWithAlgorithmName(),
                     "Cannot create a connection between '" + source.getNameWithAlgorithmName() + "' and '" + target.getNameWithAlgorithmName() + "'!",
-                    "The connection is invalid, such as one that causes cycles in the graph, or a connection where a slot receives multiple inputs",
+                    "Algorithm graph", "The connection is invalid, such as one that causes cycles in the graph, or a connection where a slot receives multiple inputs",
                     "Check if your pipeline contains complicated sections prone to cycles. Reorganize the graph by dragging the nodes around.");
         graph.addEdge(source, target, new ACAQAlgorithmGraphEdge(userCanDisconnect));
         getEventBus().post(new AlgorithmGraphChangedEvent(this));
@@ -340,7 +340,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
                 return null;
             if (edges.size() > 1)
                 throw new UserFriendlyRuntimeException("Graph is illegal!", "The algorithm graph is invalid!",
-                        "There is at least one input slot with multiple inputs.",
+                        "Algorithm graph", "There is at least one input slot with multiple inputs.",
                         "Open the project or JSON extension file and look for a section 'edges'. Ensure that each slot is only at most once on the right-hand side of ':'. " +
                                 "You can also contact the ACAQ5 developers - after checking if you use the newest version - , as this should done automatically for you.");
             return graph.getEdgeSource(edges.iterator().next());
@@ -373,9 +373,10 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      *
      * @param target An input slot
      * @param user   If true, only connections that can be created by a user are shown
+     * @param fast If true, use canConnectFast instead of canConnect
      * @return Set of potential sources
      */
-    public Set<ACAQDataSlot> getAvailableSources(ACAQDataSlot target, boolean user) {
+    public Set<ACAQDataSlot> getAvailableSources(ACAQDataSlot target, boolean user, boolean fast) {
         if (getSourceSlot(target) != null)
             return Collections.emptySet();
         Set<ACAQDataSlot> result = new HashSet<>();
@@ -388,7 +389,9 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
                 continue;
             if (graph.containsEdge(source, target))
                 continue;
-            if (!canConnectFast(source, target, user))
+            if (fast && !canConnectFast(source, target, user))
+                continue;
+            if(!fast && !canConnect(source, target, user))
                 continue;
             result.add(source);
         }
@@ -443,9 +446,10 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      *
      * @param source An output slot
      * @param user   Indicates that a user issues the connection
+     * @param fast If true, use canConnectFast instead of canConnect
      * @return A list of all available input slots
      */
-    public Set<ACAQDataSlot> getAvailableTargets(ACAQDataSlot source, boolean user) {
+    public Set<ACAQDataSlot> getAvailableTargets(ACAQDataSlot source, boolean user, boolean fast) {
         if (source.isInput())
             return Collections.emptySet();
         Set<ACAQDataSlot> result = new HashSet<>();
@@ -460,7 +464,9 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
                 continue;
             if (getSourceSlot(target) != null)
                 continue;
-            if (!canConnectFast(source, target, user))
+            if (fast && !canConnectFast(source, target, user))
+                continue;
+            if (!fast && !canConnect(source, target, user))
                 continue;
             result.add(target);
         }

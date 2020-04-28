@@ -190,7 +190,7 @@ public class ACAQTraversedParameterCollection implements ACAQParameterCollection
                 if (pair.getter == null || pair.setter == null)
                     throw new UserFriendlyRuntimeException("Invalid parameter definition: Getter or setter could not be found for key '" + entry.getKey() + "' in " + source,
                             "Unable to load parameter!",
-                            "There is an error in the algorithm's code.",
+                            "Parameters", "There is an error in the algorithm's code.",
                             "Please contact the authors of the algorithm.");
 
                 ACAQReflectionParameterAccess parameterAccess = new ACAQReflectionParameterAccess();

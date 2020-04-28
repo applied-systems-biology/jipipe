@@ -78,7 +78,7 @@ public class ACAQJavaAlgorithmDeclaration extends ACAQMutableAlgorithmDeclaratio
             return ConstructorUtils.getMatchingAccessibleConstructor(getAlgorithmClass(), algorithm.getClass()).newInstance(algorithm);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new UserFriendlyRuntimeException(e, "Unable to copy algorithm '" + algorithm.getName() + "'!",
-                    "There is a programming error in the algorithm's code.",
+                    "Undefined", "There is a programming error in the algorithm's code.",
                     "Please contact the developer of the plugin that created the algorithm.");
         }
     }
@@ -94,7 +94,7 @@ public class ACAQJavaAlgorithmDeclaration extends ACAQMutableAlgorithmDeclaratio
             return getAlgorithmClass().getConstructor(ACAQAlgorithmDeclaration.class).newInstance(this);
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             throw new UserFriendlyRuntimeException(e, "Unable to create an algorithm instance!",
-                    "There is a programming error in an algorithm's code.",
+                    "Undefined", "There is a programming error in an algorithm's code.",
                     "Please contact the developer of the plugin that created the algorithm.");
         }
     }

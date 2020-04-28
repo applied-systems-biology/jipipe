@@ -87,7 +87,7 @@ public class ACAQExportedCompartment {
         if (project.getCompartments().containsKey(compartmentName))
             throw new UserFriendlyRuntimeException("Compartment " + compartmentName + " already exists!",
                     "Compartment " + compartmentName + " already exists!",
-                    "There is already a graph compartment with that name.",
+                    "Exported compartment " + compartmentName, "There is already a graph compartment with that name.",
                     "Please choose another unique name.");
         ACAQProjectCompartment compartment = project.addCompartment(compartmentName);
         compartmentName = compartment.getProjectCompartmentId();

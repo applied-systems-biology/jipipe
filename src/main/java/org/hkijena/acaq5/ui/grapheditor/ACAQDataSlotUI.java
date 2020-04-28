@@ -79,7 +79,7 @@ public abstract class ACAQDataSlotUI extends JPanel {
 
         if (slot.isInput()) {
             if (getGraph().getSourceSlot(slot) == null) {
-                Set<ACAQDataSlot> availableSources = getGraph().getAvailableSources(slot, true);
+                Set<ACAQDataSlot> availableSources = getGraph().getAvailableSources(slot, true, false);
                 availableSources.removeIf(slot -> !slot.getAlgorithm().isVisibleIn(compartment));
                 for (ACAQDataSlot source : sortSlotsByDistance(availableSources)) {
                     if (!source.getAlgorithm().isVisibleIn(compartment))
@@ -130,7 +130,7 @@ public abstract class ACAQDataSlotUI extends JPanel {
                     assignButtonMenu.addSeparator();
                 }
             }
-            Set<ACAQDataSlot> availableTargets = getGraph().getAvailableTargets(slot, true);
+            Set<ACAQDataSlot> availableTargets = getGraph().getAvailableTargets(slot, true, true);
             availableTargets.removeIf(slot -> !slot.getAlgorithm().isVisibleIn(compartment));
 
             JMenuItem findAlgorithmButton = new JMenuItem("Find matching algorithm ...", UIUtils.getIconFromResources("search.png"));
@@ -208,6 +208,10 @@ public abstract class ACAQDataSlotUI extends JPanel {
     private void connectSlot(ACAQDataSlot source, ACAQDataSlot target) {
         if (getGraph().canConnect(source, target, true)) {
             getGraph().connect(source, target);
+        }
+        else {
+            JOptionPane.showMessageDialog(this, "The data slots could not be connected. Is this connection causing loops?",
+                    "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

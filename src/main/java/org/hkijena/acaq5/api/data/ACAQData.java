@@ -134,7 +134,7 @@ public interface ACAQData {
         try {
             return ConstructorUtils.invokeConstructor(klass, constructorParameters);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
-            throw new UserFriendlyRuntimeException(e, "Cannot create annotation instance!", "There is an error in the code that provides the annotation type.",
+            throw new UserFriendlyRuntimeException(e, "Cannot create annotation instance!", "Undefined", "There is an error in the code that provides the annotation type.",
                     "Please contact the author of the plugin that provides the annotation type " + klass);
         }
     }

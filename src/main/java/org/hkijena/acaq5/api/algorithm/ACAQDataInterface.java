@@ -43,7 +43,7 @@ public class ACAQDataInterface {
                 if (row == -1)
                     throw new UserFriendlyRuntimeException("Could not find matching input slot for provided annotations!",
                             "Unable to group input data!",
-                            "The algorithm '" + algorithm.getName() + "' has multiple input data slots. Tho process it, ACAQ must find input data " +
+                            "Algorithm " + algorithm.getName(), "The algorithm '" + algorithm.getName() + "' has multiple input data slots. Tho process it, ACAQ must find input data " +
                                     "that belongs to the same data set. It uses annotations for this purpose. If you have duplicate annotations, or missing columns, then " +
                                     "ACAQ is not able to find matching data.",
                             "Run the testbench on each input data set and check that annotation columns with unique values are created. You can have " +

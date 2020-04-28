@@ -330,7 +330,7 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
             return JsonUtils.getObjectMapper().readerFor(ACAQJsonExtension.class).readValue(jsonData);
         } catch (IOException e) {
             throw new UserFriendlyRuntimeException(e, "Could not load JSON plugin.",
-                    "The plugin file was corrupted, so ACAQ5 does not know how to load some essential information. Or you are using an older ACAQ5 version.",
+                    "ACAQ JSON extension loader", "The plugin file was corrupted, so ACAQ5 does not know how to load some essential information. Or you are using an older ACAQ5 version.",
                     "Try to update ACAQ5. If this does not work, contact the plugin's author.");
         }
     }

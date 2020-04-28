@@ -73,7 +73,7 @@ public class ACAQRunAlgorithmCommand extends DynamicCommand implements Initializ
                 settings.fromJson(JsonUtils.getObjectMapper().readValue(algorithmParameters, JsonNode.class));
             } catch (IOException e) {
                 throw new UserFriendlyRuntimeException(e, "Unable to load parameters from JSON!",
-                        "Either the data is not valid JSON, does not fit to the selected algorithm, or was corrupted.",
+                        "Run ACAQ5 algorithm", "Either the data is not valid JSON, does not fit to the selected algorithm, or was corrupted.",
                         "Please check if the text parameter is valid JSON. You can use a JSON online validator to validate the format. " +
                                 "Also please check if the parameters really fit to the selected algorithm.");
             }

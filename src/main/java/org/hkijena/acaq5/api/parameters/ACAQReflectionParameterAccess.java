@@ -75,7 +75,7 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
             return (T) getter.invoke(source);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new UserFriendlyRuntimeException(e, "Unable to get parameter data!",
-                    "There is an error in the algorithm's code.",
+                    "Parameter " + getName(), "There is an error in the algorithm's code.",
                     "Please contact the authors of the algorithm.");
         }
     }
@@ -91,7 +91,7 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
             }
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new UserFriendlyRuntimeException(e, "Unable to set parameter data!",
-                    "There is an error in the algorithm's code.",
+                    "Parameter " + getName(), "There is an error in the algorithm's code.",
                     "Please contact the authors of the algorithm.");
         }
     }

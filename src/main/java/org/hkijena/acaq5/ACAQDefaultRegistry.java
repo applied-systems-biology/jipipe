@@ -92,7 +92,7 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
                 eventBus.post(new ExtensionRegisteredEvent(this, extension));
             } catch (InstantiableException e) {
                 throw new UserFriendlyRuntimeException(e, "A plugin could be be registered.",
-                        "There is an error in the plugin's code that prevents it from being loaded.",
+                        "ACAQ plugin registry", "There is an error in the plugin's code that prevents it from being loaded.",
                         "Please contact the plugin author for further help.");
             }
         }
@@ -227,7 +227,7 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
                 instance.discover();
             } catch (InstantiableException e) {
                 throw new UserFriendlyRuntimeException(e, "Could not create essential ACAQ5 data structures.",
-                        "There seems to be an issue either with ACAQ5 or your ImageJ installation.",
+                        "ACAQ plugin registry", "There seems to be an issue either with ACAQ5 or your ImageJ installation.",
                         "Try to install ACAQ5 into a new ImageJ distribution and one-by-one install additional plugins. " +
                                 "Contact the ACAQ5 or plugin author if you cannot resolve the issue.");
             }

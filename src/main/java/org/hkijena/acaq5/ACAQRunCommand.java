@@ -46,7 +46,7 @@ public class ACAQRunCommand implements Command {
 
         } catch (IOException e) {
             throw new UserFriendlyRuntimeException(e, "Could not load project from '" + parameterFile.toString() + "'!",
-                    "Either the provided parameter file does not exist or is inaccesible, or it was corrupted.",
+                    "Run ACAQ5 project", "Either the provided parameter file does not exist or is inaccesible, or it was corrupted.",
                     "Try to load the parameter file in the ACAQ5 GUI.");
         }
 

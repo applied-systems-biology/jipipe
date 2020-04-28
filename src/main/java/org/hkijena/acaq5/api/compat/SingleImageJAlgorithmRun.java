@@ -126,7 +126,7 @@ public class SingleImageJAlgorithmRun implements ACAQValidatable {
                 try {
                     access.set(JsonUtils.getObjectMapper().readerFor(access.getFieldClass()).readValue(entry.getValue()));
                 } catch (IOException e) {
-                    throw new UserFriendlyRuntimeException(e, "Unable to load parameters!", "The JSON data is invalid or incomplete.",
+                    throw new UserFriendlyRuntimeException(e, "Unable to load parameters!", "ACAQ single-algorithm run", "The JSON data is invalid or incomplete.",
                             "Use the GUI to create a valid parameter set.");
                 }
             }

@@ -273,7 +273,7 @@ public class ACAQExportedDataTable implements TableModel {
             return JsonUtils.getObjectMapper().readerFor(ACAQExportedDataTable.class).readValue(fileName.toFile());
         } catch (IOException e) {
             throw new UserFriendlyRuntimeException(e, "Unable to load data table from '" + fileName + "'!",
-                    "Either the file is inaccessible, or corrupt.",
+                    "Load ACAQ5 results", "Either the file is inaccessible, or corrupt.",
                     "Check if the file is readable and contains valid JSON data.");
         }
     }

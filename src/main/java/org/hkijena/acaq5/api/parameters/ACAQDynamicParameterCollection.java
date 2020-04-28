@@ -191,7 +191,7 @@ public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollec
                 parameterAccess.setParameterHolder(this);
                 dynamicParameters.put(entry.getKey(), parameterAccess);
             } catch (IOException e) {
-                throw new UserFriendlyRuntimeException(e, "Unable to read parameter from JSON!", "There is essential information missing in the JSON data.",
+                throw new UserFriendlyRuntimeException(e, "Unable to read parameter from JSON!", "User-modifiable parameters", "There is essential information missing in the JSON data.",
                         "Please check if the JSON data is valid.");
             }
         }
