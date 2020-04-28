@@ -88,7 +88,8 @@ public class PathFilter implements Predicate<Path>, ACAQValidatable {
         if (mode == Mode.Glob && globPathMatcher == null) {
             report.reportIsInvalid("Invalid filter string!",
                     "The glob file filter '" + filterString + "' is invalid!",
-                    "Please change it to a valid filter string.");
+                    "Please change it to a valid filter string.",
+                    this);
         }
     }
 

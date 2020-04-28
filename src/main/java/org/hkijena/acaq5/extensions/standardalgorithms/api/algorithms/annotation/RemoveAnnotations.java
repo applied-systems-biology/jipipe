@@ -63,7 +63,8 @@ public class RemoveAnnotations extends ACAQAlgorithm {
         if (annotationType.getDeclaration() == null) {
             report.forCategory("Removed annotation").reportIsInvalid("No annotation provided!",
                     "You have to determine which annotation type should be removed.",
-                    "Please setup an annotation that is removed from the data.");
+                    "Please setup an annotation that is removed from the data.",
+                    this);
         }
     }
 

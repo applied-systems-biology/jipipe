@@ -1,17 +1,12 @@
 package org.hkijena.acaq5.ui.components;
 
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.utils.ResourceUtils;
-import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
-import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.util.Map;
 
 /**
  * UI for an {@link ACAQValidityReport}
@@ -19,8 +14,7 @@ import java.util.Map;
 public class ACAQValidityReportUI extends JPanel {
     private JSplitPane splitPane;
     private ACAQValidityReport report;
-    private JXTable table;
-    private JPanel tablePanel;
+    private UserFriendlyErrorUI errorUI;
     private boolean withHelp;
     private JPanel everythingValidPanel;
     private MarkdownDocument helpDocument;
@@ -47,12 +41,12 @@ public class ACAQValidityReportUI extends JPanel {
         switchToEverythingValid();
     }
 
-    private void switchToTable() {
+    private void switchToErrors() {
         if (withHelp) {
-            splitPane.setLeftComponent(tablePanel);
+            splitPane.setLeftComponent(errorUI);
         } else {
             removeAll();
-            add(tablePanel, BorderLayout.CENTER);
+            add(errorUI, BorderLayout.CENTER);
             revalidate();
             repaint();
         }
@@ -73,17 +67,7 @@ public class ACAQValidityReportUI extends JPanel {
         setLayout(new BorderLayout());
 
         // Create table panel
-        tablePanel = new JPanel(new BorderLayout());
-        table = new JXTable() {
-            @Override
-            public boolean isCellEditable(int i, int i1) {
-                return false;
-            }
-        };
-        JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.getViewport().setBackground(Color.WHITE);
-        tablePanel.add(scrollPane, BorderLayout.CENTER);
-        tablePanel.add(table.getTableHeader(), BorderLayout.NORTH);
+        errorUI = new UserFriendlyErrorUI(null, true);
 
         // Create alternative panel
         everythingValidPanel = new JPanel(new BorderLayout());
@@ -114,22 +98,10 @@ public class ACAQValidityReportUI extends JPanel {
         if (report == null || report.isValid()) {
             switchToEverythingValid();
         } else {
-            DefaultTableModel model = new DefaultTableModel();
-            model.addColumn("Location");
-            model.addColumn("Message");
-            Map<String, ACAQValidityReport.Message> messages = report.getMessages();
-            for (String key : report.getInvalidResponses()) {
-
-                model.addRow(new Object[]{
-                        StringUtils.createIconTextHTMLTable(key.replace("/", " ⏵ "), ResourceUtils.getPluginResource("icons/error.png")),
-                        StringUtils.wordWrappedHTML("" + messages.getOrDefault(key, null), 50)
-                });
-            }
-            table.setModel(model);
-            table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-            UIUtils.fitRowHeights(table);
-            table.packAll();
-            switchToTable();
+            errorUI.clear();
+            errorUI.displayErrors(report);
+            errorUI.addVerticalGlue();
+            switchToErrors();
         }
     }
 

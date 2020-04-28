@@ -51,7 +51,10 @@ public class SingleImageJAlgorithmRun implements ACAQValidatable {
     @Override
     public void reportValidity(ACAQValidityReport report) {
         if (algorithm == null) {
-            report.reportIsInvalid("No algorithm was provided!", "This is an programming error.", "Please contact the ACAQ5 author.");
+            report.reportIsInvalid("No algorithm was provided!",
+                    "This is an programming error.",
+                    "Please contact the ACAQ5 author.",
+                    this);
         }
     }
 

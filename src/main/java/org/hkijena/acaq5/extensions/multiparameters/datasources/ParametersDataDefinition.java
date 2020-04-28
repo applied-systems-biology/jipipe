@@ -58,7 +58,8 @@ public class ParametersDataDefinition extends ACAQAlgorithm {
         if (algorithmInstance == null) {
             report.reportIsInvalid("No algorithm selected!",
                     "Parameters are defined based on an algorithm.",
-                    "Please select an algorithm.");
+                    "Please select an algorithm.",
+                    this);
         } else {
             report.report(algorithmInstance);
         }

@@ -208,8 +208,7 @@ public abstract class ACAQDataSlotUI extends JPanel {
     private void connectSlot(ACAQDataSlot source, ACAQDataSlot target) {
         if (getGraph().canConnect(source, target, true)) {
             getGraph().connect(source, target);
-        }
-        else {
+        } else {
             JOptionPane.showMessageDialog(this, "The data slots could not be connected. Is this connection causing loops?",
                     "Error", JOptionPane.ERROR_MESSAGE);
         }

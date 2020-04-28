@@ -481,7 +481,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterCol
                         v = JsonUtils.getObjectMapper().readerFor(parameterAccess.getFieldClass()).readValue(node.get(key));
                     } catch (IOException e) {
                         throw new UserFriendlyRuntimeException(e, "Could not load parameter '" + key + "'!",
-                                "Algorithm " + getName(), "Either the data was corrupted, or your ACAQ5 or plugin version is too new or too old.",
+                                "Algorithm '" + getName() + "'", "Either the data was corrupted, or your ACAQ5 or plugin version is too new or too old.",
                                 "Check the 'dependencies' section of the project file and compare the plugin versions. Try " +
                                         "to update ACAQ5. Compare the project file with a valid one. Contact the ACAQ5 or plugin " +
                                         "authors if you cannot resolve the issue by yourself.");

@@ -12,6 +12,9 @@
 
 package org.hkijena.acaq5.api;
 
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 import java.util.*;
 
 /**
@@ -38,6 +41,7 @@ public class ACAQValidityReport {
 
     /**
      * Gets the response keys that are invalid
+     *
      * @return the response keys
      */
     public List<String> getInvalidResponses() {
@@ -126,38 +130,46 @@ public class ACAQValidityReport {
     /**
      * Reports that this report is invalid
      *
-     * @param what explanation what happened
-     * @param why explanation why it happened
-     * @param how explanation how to solve the issue
+     * @param what   explanation what happened
+     * @param why    explanation why it happened
+     * @param how    explanation how to solve the issue
+     * @param source the source that triggers the check. passed to details
      */
-    public void reportIsInvalid(String what, String why, String how) {
-        report(false, new Message(what, why, how));
+    public void reportIsInvalid(String what, String why, String how, Object source) {
+        report(false, new Message(what,
+                why,
+                how,
+                source != null ? ReflectionToStringBuilder.toString(source, ToStringStyle.MULTI_LINE_STYLE) : null));
     }
 
     /**
      * Reports as invalid if the value is not within the limits
      *
+     * @param source     the source that triggers the check. passed to details
      * @param value      the value
      * @param min        interval start
      * @param max        interval end
      * @param includeMin if the interval start is included
      * @param includeMax if the interval end is included
      */
-    public void checkIfWithin(double value, double min, double max, boolean includeMin, boolean includeMax) {
+    public void checkIfWithin(Object source, double value, double min, double max, boolean includeMin, boolean includeMax) {
         if ((includeMin && value < min) || (!includeMin && value <= min) || (includeMax && value > max) || (!includeMax && value >= max)) {
             reportIsInvalid("Invalid value!", "Numeric values must be within an allowed range.",
-                    "Please provide a value within " + (includeMin ? "[" : "(") + min + " and " + (includeMax ? "]" : ")") + max);
+                    "Please provide a value within " + (includeMin ? "[" : "(") + min + " and " + (includeMax ? "]" : ")") + max,
+                    this);
         }
     }
 
     /**
      * Reports as invalid if the value is null
      *
-     * @param value the value
+     * @param value  the value
+     * @param source the source that triggers the check. passed to details
      */
-    public void checkNonNull(Object value) {
+    public void checkNonNull(Object value, Object source) {
         if (value == null) {
-            reportIsInvalid("No value provided!", "Dependent methods require that a value is set.", "Please provide a valid value.");
+            reportIsInvalid("No value provided!", "Dependent methods require that a value is set.", "Please provide a valid value.",
+                    this);
         }
     }
 
@@ -176,16 +188,19 @@ public class ACAQValidityReport {
         private String userWhat;
         private String userWhy;
         private String userHow;
+        private String details;
 
         /**
          * @param userWhat explanation what happened
-         * @param userWhy explanation why it happened
-         * @param userHow explanation how to solve the issue
+         * @param userWhy  explanation why it happened
+         * @param userHow  explanation how to solve the issue
+         * @param details  optional details
          */
-        public Message(String userWhat, String userWhy, String userHow) {
+        public Message(String userWhat, String userWhy, String userHow, String details) {
             this.userWhat = userWhat;
             this.userWhy = userWhy;
             this.userHow = userHow;
+            this.details = details;
         }
 
         public String getUserWhat() {
@@ -203,6 +218,10 @@ public class ACAQValidityReport {
         @Override
         public String toString() {
             return userWhat + " " + userWhy + " " + userHow;
+        }
+
+        public String getDetails() {
+            return details;
         }
     }
 }

@@ -159,7 +159,7 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
                 };
                 this.slotTraitModificationTasks = objectMapper.readerFor(typeRef).readValue(modificationNode.get("per-slot"));
             } catch (IOException e) {
-                throw new UserFriendlyRuntimeException(e, "Unable to read annotation configuration from JSON!", "Algorithm " + algorithm.getName(),
+                throw new UserFriendlyRuntimeException(e, "Unable to read annotation configuration from JSON!", "Algorithm '" + algorithm.getName() + "'",
                         "There is essential information missing in the JSON data.",
                         "Please check if the JSON data is valid.");
             }
@@ -168,7 +168,7 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
                 };
                 this.globalTraitModificationTasks = objectMapper.readerFor(typeRef).readValue(modificationNode.get("global"));
             } catch (IOException e) {
-                throw new UserFriendlyRuntimeException(e, "Unable to read annotation configuration from JSON!", "Algorithm " + algorithm.getName(),
+                throw new UserFriendlyRuntimeException(e, "Unable to read annotation configuration from JSON!", "Algorithm '" + algorithm.getName() + "'",
                         "There is essential information missing in the JSON data.",
                         "Please check if the JSON data is valid.");
             }
@@ -182,7 +182,7 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
                 };
                 this.transferTasks = objectMapper.readerFor(typeRef).readValue(transferNode.get("transfers"));
             } catch (IOException e) {
-                throw new UserFriendlyRuntimeException(e, "Unable to read annotation configuration from JSON!", "Algorithm " + algorithm.getName(),
+                throw new UserFriendlyRuntimeException(e, "Unable to read annotation configuration from JSON!", "Algorithm '" + algorithm.getName() + "'",
                         "There is essential information missing in the JSON data.",
                         "Please check if the JSON data is valid.");
             }

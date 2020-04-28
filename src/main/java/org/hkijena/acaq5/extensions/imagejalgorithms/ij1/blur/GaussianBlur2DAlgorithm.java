@@ -72,7 +72,7 @@ public class GaussianBlur2DAlgorithm extends ImageJ1Algorithm {
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        report.forCategory("Sigma (X)").checkIfWithin(sigmaX, 0, Double.POSITIVE_INFINITY, false, true);
+        report.forCategory("Sigma (X)").checkIfWithin(this, sigmaX, 0, Double.POSITIVE_INFINITY, false, true);
     }
 
     @ACAQDocumentation(name = "Sigma (X)", description = "Standard deviation of the Gaussian (pixels) in X direction. ")

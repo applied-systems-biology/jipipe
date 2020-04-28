@@ -63,7 +63,7 @@ public class AddNoise2DAlgorithm extends ImageJ1Algorithm {
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        report.forCategory("Sigma").checkIfWithin(sigma, 0, Double.POSITIVE_INFINITY, false, true);
+        report.forCategory("Sigma").checkIfWithin(this, sigma, 0, Double.POSITIVE_INFINITY, false, true);
     }
 
     @ACAQDocumentation(name = "Sigma", description = "Standard deviation of the noise (pixels). ")

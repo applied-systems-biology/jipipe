@@ -18,6 +18,8 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.ui.components.ACAQValidityReportUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
+import org.hkijena.acaq5.ui.components.MarkdownDocument;
+import org.hkijena.acaq5.ui.components.UserFriendlyErrorUI;
 import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api.ACAQExistingTraitNode;
 import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api.ACAQNewTraitNode;
 
@@ -25,11 +27,10 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -294,14 +295,12 @@ public class UIUtils {
      * @param exception the exception
      */
     public static void openErrorDialog(Component parent, Exception exception) {
-        StringWriter writer = new StringWriter();
-        exception.printStackTrace(new PrintWriter(writer));
-        JTextArea errorArea = new JTextArea(writer.toString());
-        errorArea.setEditable(false);
-
         JDialog dialog = new JDialog();
         dialog.setTitle("Error");
-        dialog.setContentPane(errorArea);
+        UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(null, true);
+        errorUI.displayErrors(exception);
+        errorUI.addVerticalGlue();
+        dialog.setContentPane(errorUI);
         dialog.setModal(false);
         dialog.pack();
         dialog.setSize(new Dimension(500, 400));
@@ -431,6 +430,57 @@ public class UIUtils {
         textArea.setWrapStyleWord(true);
         textArea.setText(text);
         return textArea;
+    }
+
+    /**
+     * Creates a readonly text field
+     *
+     * @param value text
+     * @return textfield
+     */
+    public static JTextField makeReadonlyBorderlessTextField(String value) {
+        JTextField textField = new JTextField();
+        textField.setText(value);
+        textField.setBorder(null);
+        textField.setOpaque(false);
+        textField.setEditable(false);
+        return textField;
+    }
+
+    /**
+     * Creates a readonly text area
+     *
+     * @param text text
+     * @return text area
+     */
+    public static JTextArea makeReadonlyBorderlessTextArea(String text) {
+        JTextArea textArea = new JTextArea();
+        textArea.setBorder(null);
+        textArea.setOpaque(false);
+        textArea.setEditable(false);
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+        textArea.setText(text);
+        return textArea;
+    }
+
+    /**
+     * Creates a {@link JTextPane} that displays Markdown content
+     *
+     * @param document the markdown document
+     * @param css      style sheets
+     * @return text pane
+     */
+    public static JTextPane makeMarkdownReader(MarkdownDocument document, String[] css) {
+        JTextPane content = new JTextPane();
+        HTMLEditorKit kit = new HTMLEditorKit();
+        for (String rule : css) {
+            kit.getStyleSheet().addRule(rule);
+        }
+        content.setEditorKit(kit);
+        content.setContentType("text/html");
+        content.setText(document.getRenderedHTML());
+        return content;
     }
 
     /**

@@ -164,7 +164,16 @@ public class ACAQRun implements ACAQRunnable {
                 // Ensure the algorithm has run
                 if (!executedAlgorithms.contains(slot.getAlgorithm()) && algorithmLimits.contains(slot.getAlgorithm())) {
                     onProgress.accept(new ACAQRunnerStatus(i, algorithmGraph.getSlotCount(), statusMessage));
-                    slot.getAlgorithm().run(new ACAQRunnerSubStatus(), algorithmProgress, isCancelled);
+                    try {
+                        slot.getAlgorithm().run(new ACAQRunnerSubStatus(), algorithmProgress, isCancelled);
+                    } catch (Exception e) {
+                        throw new UserFriendlyRuntimeException("Algorithm " + slot.getAlgorithm() + " raised an exception!",
+                                e,
+                                "An error occurred during processing",
+                                "On running the algorithm '" + slot.getAlgorithm().getName() + "', within compartment '" + getProject().getCompartments().get(slot.getAlgorithm().getCompartment()).getName() + "'",
+                                "Please refer to the other error messages.",
+                                "Please follow the instructions for the other error messages.");
+                    }
                     executedAlgorithms.add(slot.getAlgorithm());
                 }
 

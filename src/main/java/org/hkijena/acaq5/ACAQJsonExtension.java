@@ -259,21 +259,25 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
         if (StringUtils.isNullOrEmpty(getDependencyId())) {
             report.forCategory("ID").reportIsInvalid("The ID is empty!",
                     "A JSON extension must be identified with a unique ID to allow ACAQ5 to find dependencies.",
-                    " Please provide a valid ID.");
+                    " Please provide a valid ID.",
+                    this);
         } else if (!getDependencyId().contains(":")) {
             report.forCategory("ID").reportIsInvalid("Malformed ID!",
                     "The ID should contain some information about the plugin author (organization, ...) to prevent future collisions.",
-                    "The ID must have following structure: <Organization>:<Name> e.g. org.hkijena.acaq5:my-plugin");
+                    "The ID must have following structure: <Organization>:<Name> e.g. org.hkijena.acaq5:my-plugin",
+                    this);
         }
         if (StringUtils.isNullOrEmpty(getDependencyVersion())) {
             report.forCategory("Version").reportIsInvalid("The version is empty!",
                     "This allows users of your extension to better get help if issues arise.",
-                    "Please provide a valid version number. It has usually following format x.y.z.w");
+                    "Please provide a valid version number. It has usually following format x.y.z.w",
+                    this);
         }
         if (StringUtils.isNullOrEmpty(getMetadata().getName()) || "New project".equals(getMetadata().getName())) {
             report.forCategory("Name").reportIsInvalid("Invalid name!",
                     "Your plugin should have a short and meaningful name.",
-                    "Please provide a meaningful name for your plugin.");
+                    "Please provide a meaningful name for your plugin.",
+                    this);
         }
         for (ACAQJsonTraitDeclaration declaration : traitDeclarations) {
             report.forCategory("Annotations").forCategory(declaration.getName()).report(declaration);
@@ -285,7 +289,8 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
                         report.forCategory("Annotations").forCategory(declaration.getName()).reportIsInvalid("Inconsistent inheritance!",
                                 "Valued annotations cannot inherit from non-valued ones and vice-versa.",
                                 "Please ensure to make the" +
-                                " 'Contains value' setting consistent to the inherited annotations.");
+                                        " 'Contains value' setting consistent to the inherited annotations.",
+                                this);
                     }
                 } else {
                     ACAQJsonTraitDeclaration inherited = traitDeclarations.stream().filter(d -> Objects.equals(d.getId(), id)).findFirst().orElse(null);
@@ -293,7 +298,8 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
                         report.forCategory("Annotations").forCategory(declaration.getName()).reportIsInvalid("Inconsistent inheritance!",
                                 "Valued annotations cannot inherit from non-valued ones and vice-versa.",
                                 "Please ensure to make the" +
-                                        " 'Contains value' setting consistent to the inherited annotations.");
+                                        " 'Contains value' setting consistent to the inherited annotations.",
+                                this);
                     }
                 }
             }
@@ -301,7 +307,8 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
         if (traitDeclarations.size() != traitDeclarations.stream().map(ACAQMutableTraitDeclaration::getId).collect(Collectors.toSet()).size()) {
             report.forCategory("Annotations").reportIsInvalid("Duplicate IDs found!",
                     "Annotation IDs must be unique.",
-                    "Please make sure that IDs are unique.");
+                    "Please make sure that IDs are unique.",
+                    this);
         }
         for (GraphWrapperAlgorithmDeclaration declaration : algorithmDeclarations) {
             report.forCategory("Algorithms").forCategory(declaration.getName()).report(declaration);
@@ -309,7 +316,8 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
         if (algorithmDeclarations.size() != algorithmDeclarations.stream().map(GraphWrapperAlgorithmDeclaration::getId).collect(Collectors.toSet()).size()) {
             report.forCategory("Algorithms").reportIsInvalid("Duplicate IDs found!",
                     "Algorithm IDs must be unique",
-                    "Please make sure that IDs are unique.");
+                    "Please make sure that IDs are unique.",
+                    this);
         }
     }
 

@@ -66,12 +66,14 @@ public class AnnotateAll extends ACAQAlgorithm {
         if (annotation == null) {
             report.forCategory("Annotation").reportIsInvalid("No annotation provided!",
                     "You have to define which annotation should be added to the data.",
-                    "Please setup an annotation that is added to the data.");
+                    "Please setup an annotation that is added to the data.",
+                    this);
         } else if (annotation instanceof ACAQDiscriminator) {
             if (((ACAQDiscriminator) annotation).getValue() == null)
                 report.forCategory("Annotation").reportIsInvalid("No annotation value provided!",
                         "Valued annotations carry a text value.",
-                        "Please add a meaningful value that separates your data from other data.");
+                        "Please add a meaningful value that separates your data from other data.",
+                        this);
         }
     }
 

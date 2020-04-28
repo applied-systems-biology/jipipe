@@ -88,12 +88,14 @@ public class NumberParameterGenerator<T extends Number & Comparable<T>> extends 
         if (getCurrentMin().compareTo(getCurrentMax()) > 0) {
             report.reportIsInvalid("Invalid minimum and maximum values!",
                     "The minimum value must be less or equal to the maximum value.",
-                    "Please ensure that the minimum value is less or equal to the maximum value.");
+                    "Please ensure that the minimum value is less or equal to the maximum value.",
+                    this);
         }
         if (isZero(getCurrentStepSize()) || isNegative(getCurrentStepSize())) {
             report.reportIsInvalid("Invalid step size!",
                     "The step size cannot be zero or negative.",
-                    "Please ensure that the step size is greater than zero.");
+                    "Please ensure that the step size is greater than zero.",
+                    this);
         }
     }
 

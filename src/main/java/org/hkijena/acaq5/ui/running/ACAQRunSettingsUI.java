@@ -9,6 +9,7 @@ import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.ACAQValidityReportUI;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
+import org.hkijena.acaq5.ui.components.UserFriendlyErrorUI;
 import org.hkijena.acaq5.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.acaq5.ui.events.RunUIWorkerInterruptedEvent;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterAccessUI;
@@ -19,8 +20,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
 /**
  * Settings UI for {@link org.hkijena.acaq5.api.ACAQRunConfiguration}
@@ -161,11 +160,11 @@ public class ACAQRunSettingsUI extends ACAQProjectWorkbenchPanel {
 
     private void openError(Exception exception) {
         removeAll();
-        StringWriter writer = new StringWriter();
-        exception.printStackTrace(new PrintWriter(writer));
-        JTextArea errorPanel = new JTextArea(writer.toString());
-        errorPanel.setEditable(false);
-        add(new JScrollPane(errorPanel), BorderLayout.CENTER);
+        UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(MarkdownDocument.fromPluginResource("documentation/run-error.md"),
+                true);
+        errorUI.displayErrors(exception);
+        errorUI.addVerticalGlue();
+        add(errorUI, BorderLayout.CENTER);
         revalidate();
     }
 

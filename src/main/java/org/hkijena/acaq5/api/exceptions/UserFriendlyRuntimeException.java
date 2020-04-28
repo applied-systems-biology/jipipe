@@ -12,12 +12,12 @@ public class UserFriendlyRuntimeException extends RuntimeException {
 
 
     /**
-     * @param message  the developer message
-     * @param cause    the underlying exception
-     * @param userWhat the message for the user
+     * @param message   the developer message
+     * @param cause     the underlying exception
+     * @param userWhat  the message for the user
      * @param userWhere location of the exception
-     * @param userWhy  explanation why it happened
-     * @param userHow  explanation how to resolve the issue
+     * @param userWhy   explanation why it happened
+     * @param userHow   explanation how to resolve the issue
      */
     public UserFriendlyRuntimeException(String message, Throwable cause, String userWhat, String userWhere, String userWhy, String userHow) {
         super(message, cause);
@@ -28,11 +28,11 @@ public class UserFriendlyRuntimeException extends RuntimeException {
     }
 
     /**
-     * @param message  the developer message
-     * @param userWhat the message for the user
+     * @param message   the developer message
+     * @param userWhat  the message for the user
      * @param userWhere location of the exception
-     * @param userWhy  explanation why it happened
-     * @param userHow  explanation how to resolve the issue
+     * @param userWhy   explanation why it happened
+     * @param userHow   explanation how to resolve the issue
      */
     public UserFriendlyRuntimeException(String message, String userWhat, String userWhere, String userWhy, String userHow) {
         super(message);
@@ -43,11 +43,11 @@ public class UserFriendlyRuntimeException extends RuntimeException {
     }
 
     /**
-     * @param cause    the underlying exception
-     * @param userWhat the message for the user
+     * @param cause     the underlying exception
+     * @param userWhat  the message for the user
      * @param userWhere location of the exception
-     * @param userWhy  explanation why it happened
-     * @param userHow  explanation how to resolve the issue
+     * @param userWhy   explanation why it happened
+     * @param userHow   explanation how to resolve the issue
      */
     public UserFriendlyRuntimeException(Throwable cause, String userWhat, String userWhere, String userWhy, String userHow) {
         super(cause);

@@ -66,7 +66,7 @@ public class ManualThreshold16U2DAlgorithm extends ImageJ1Algorithm {
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        report.forCategory("Threshold").checkIfWithin(threshold, 0, 2 * Short.MAX_VALUE, true, true);
+        report.forCategory("Threshold").checkIfWithin(this, threshold, 0, 2 * Short.MAX_VALUE, true, true);
     }
 
     @ACAQDocumentation(name = "Threshold", description = "All pixel values less or equal to this are set to zero. The value interval is [0, " + 2 * Short.MAX_VALUE + "]")

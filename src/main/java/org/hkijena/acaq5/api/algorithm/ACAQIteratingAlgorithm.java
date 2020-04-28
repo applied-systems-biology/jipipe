@@ -61,8 +61,8 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
         for (int i = 1; i < inputSlots.size(); ++i) {
             if (rows != inputSlots.get(i).getRowCount())
                 throw new UserFriendlyRuntimeException("Input slots have a different row count!", "Unable to group input data together",
-                        "Algorithm " + getName(), "The algorithm  has multiple input slots. ACAQ needs to group the input data together for the algorithm to work. " +
-                                "But, the input slots have different row counts, so this cannot be safely done without leaving some data out.",
+                        "Algorithm '" + getName() + "'", "The algorithm  has multiple input slots. ACAQ needs to group the input data together for the algorithm to work. " +
+                        "But, the input slots have different row counts, so this cannot be safely done without leaving some data out.",
                         "Run the testbench on input algorithms and check why they create different amounts of data. Ensure that their output has the same row number, " +
                                 "and can be grouped together by the annotation columns.");
         }

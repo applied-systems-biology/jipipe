@@ -101,11 +101,13 @@ public class FileListDataSource extends ACAQAlgorithm {
             if (fileName == null) {
                 report.reportIsInvalid("Invalid file path!",
                         "An input file does not exist!",
-                        "Please provide a valid input file.");
+                        "Please provide a valid input file.",
+                        this);
             } else if (!Files.isRegularFile(fileName)) {
                 report.reportIsInvalid("Invalid file path!",
                         "Input file '" + fileName + "' does not exist!",
-                        "Please provide a valid input file.");
+                        "Please provide a valid input file.",
+                        this);
             }
         }
     }

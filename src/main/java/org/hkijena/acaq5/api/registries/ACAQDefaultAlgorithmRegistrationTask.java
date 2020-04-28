@@ -107,25 +107,29 @@ public abstract class ACAQDefaultAlgorithmRegistrationTask implements ACAQAlgori
             if (!ACAQAlgorithmRegistry.getInstance().hasAlgorithmWithId(id))
                 report.forCategory("Dependency Algorithms").reportIsInvalid("A dependency is missing!",
                         "Dependency algorithm '" + id + "' is missing!",
-                        "Please make sure to install dependency plugins.");
+                        "Please make sure to install dependency plugins.",
+                        this);
         }
         for (String id : dependencyTraitIds) {
             if (!ACAQTraitRegistry.getInstance().hasTraitWithId(id))
                 report.forCategory("Dependency Annotations").reportIsInvalid("A dependency is missing!",
                         "Dependency annotation '" + id + "' is missing!",
-                        "Please make sure to install dependency plugins.");
+                        "Please make sure to install dependency plugins.",
+                        this);
         }
         for (String id : dependencyDatatypeIds) {
             if (!ACAQDatatypeRegistry.getInstance().hasDatatypeWithId(id))
                 report.forCategory("Dependency Data types").reportIsInvalid("A dependency is missing!",
                         "Dependency data type '" + id + "' is missing!",
-                        "Please make sure to install dependency plugins.");
+                        "Please make sure to install dependency plugins.",
+                        this);
         }
         for (Class<? extends ACAQData> dataClass : dependencyDatatypeClasses) {
             if (!ACAQDatatypeRegistry.getInstance().hasDataType(dataClass))
                 report.forCategory("Dependency Data types").reportIsInvalid("A dependency is missing!",
                         "Dependency data type '" + dataClass.getCanonicalName() + "' is missing!",
-                        "Please make sure to install dependency plugins.");
+                        "Please make sure to install dependency plugins.",
+                        this);
         }
     }
 }

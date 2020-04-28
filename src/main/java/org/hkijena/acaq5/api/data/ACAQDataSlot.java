@@ -363,7 +363,7 @@ public class ACAQDataSlot implements TableModel {
                         Files.createDirectories(path);
                     } catch (IOException e) {
                         throw new UserFriendlyRuntimeException(e, "Unable to create directory '" + path + "'!",
-                                "Data slot " + getNameWithAlgorithmName(), "The path might be invalid, or you might not have the permissions to write in a parent folder.",
+                                "Data slot '" + getNameWithAlgorithmName() + "'", "The path might be invalid, or you might not have the permissions to write in a parent folder.",
                                 "Check if the path is valid, and you have write-access.");
                     }
                 }
@@ -378,7 +378,7 @@ public class ACAQDataSlot implements TableModel {
                 dataTable.saveAsCSV(storagePath.resolve("data-table.csv"));
             } catch (IOException e) {
                 throw new UserFriendlyRuntimeException(e, "Unable to save data table!",
-                        "Data slot " + getNameWithAlgorithmName(), "ACAQ tried to write files into '" + storagePath + "'.",
+                        "Data slot '" + getNameWithAlgorithmName() + "'", "ACAQ tried to write files into '" + storagePath + "'.",
                         "Check if you have permissions to write into the path, and if there is enough disk space.");
             }
         }

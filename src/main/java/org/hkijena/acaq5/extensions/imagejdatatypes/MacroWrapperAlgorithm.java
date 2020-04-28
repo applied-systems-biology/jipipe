@@ -213,38 +213,45 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
         if (batchMode && imageInputSlotCount != 1) {
             report.reportIsInvalid("Invalid input count!",
                     "Only exactly one input image is allowed!",
-                    "This requirement is caused by the batch mode setting.");
+                    "This requirement is caused by the batch mode setting.",
+                    this);
         }
         if (batchMode && imageOutputSlotCount != 1) {
             report.reportIsInvalid("Invalid input count!",
                     "Only exactly one output image is allowed!",
-                    "This requirement is caused by the batch mode setting.");
+                    "This requirement is caused by the batch mode setting.",
+                    this);
         }
         if (roiInputSlotCount > 1) {
             report.reportIsInvalid("Too many ROI inputs!",
                     "ImageJ1 has no concept of multiple ROI Managers.",
-                    "Please make sure to only have at most one ROI data input.");
+                    "Please make sure to only have at most one ROI data input.",
+                    this);
         }
         if (roiOutputSlotCount > 1) {
             report.reportIsInvalid("Too many ROI outputs!",
                     "ImageJ1 has no concept of multiple ROI Managers.",
-                    "Please make sure to only have at most one ROI data output.");
+                    "Please make sure to only have at most one ROI data output.",
+                    this);
         }
         if (resultsTableInputSlotCount > 1) {
             report.reportIsInvalid("Too many results table inputs!",
                     "ImageJ1 has no concept of multiple result tables.",
-                    "Please make sure to only have at most one results table data input.");
+                    "Please make sure to only have at most one results table data input.",
+                    this);
         }
         if (resultsTableOutputSlotCount > 1) {
             report.reportIsInvalid("Too many results table outputs!",
                     "ImageJ1 has no concept of multiple result tables.",
-                    "Please make sure to only have at most one results table data output.");
+                    "Please make sure to only have at most one results table data output.",
+                    this);
         }
         for (String key : macroParameters.getParameters().keySet()) {
             if (!MacroUtils.isValidVariableName(key)) {
                 report.forCategory("Macro Parameters").forCategory(key).reportIsInvalid("Invalid name!",
                         "'" + key + "' is an invalid ImageJ macro variable name!",
-                        "Please ensure that macro variables are compatible with the ImageJ macro language.");
+                        "Please ensure that macro variables are compatible with the ImageJ macro language.",
+                        this);
             }
         }
 
@@ -254,7 +261,8 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
                     if (!code.getCode().contains("\"" + inputSlot.getName() + "\"")) {
                         report.reportIsInvalid("Strict mode: Unused input image",
                                 "Input image '" + inputSlot.getName() + "' is not used!",
-                                "You can use selectWindow(\"" + inputSlot.getName() + "\"); to process the image. Disable strict mode to stop this message.");
+                                "You can use selectWindow(\"" + inputSlot.getName() + "\"); to process the image. Disable strict mode to stop this message.",
+                                this);
                     }
                 }
             }
@@ -263,7 +271,8 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
                     if (!code.getCode().contains("\"" + outputSlot.getName() + "\"")) {
                         report.reportIsInvalid("Strict mode: Unused output image",
                                 "Output image '" + outputSlot.getName() + "' is not used!",
-                                "You should rename an output image via rename(\"" + outputSlot.getName() + "\"); to allow ACAQ5 to find it. Disable strict mode to stop this message.");
+                                "You should rename an output image via rename(\"" + outputSlot.getName() + "\"); to allow ACAQ5 to find it. Disable strict mode to stop this message.",
+                                this);
                     }
                 }
             }

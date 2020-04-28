@@ -80,9 +80,9 @@ public class StackSplitterAlgorithm extends ImageJ1Algorithm {
     public void reportValidity(ACAQValidityReport report) {
         if (annotateSlices) {
             if (annotationType != null) {
-                report.forCategory("Generated annotation").checkNonNull(annotationType.getDeclaration());
+                report.forCategory("Generated annotation").checkNonNull(annotationType.getDeclaration(), this);
             } else {
-                report.forCategory("Generated annotation").checkNonNull(annotationType);
+                report.forCategory("Generated annotation").checkNonNull(annotationType, this);
             }
         }
     }

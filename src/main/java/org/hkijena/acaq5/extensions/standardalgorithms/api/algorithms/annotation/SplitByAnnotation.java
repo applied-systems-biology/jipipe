@@ -90,12 +90,14 @@ public class SplitByAnnotation extends ACAQAlgorithm {
         if (annotationType == null || annotationType.getDeclaration() == null) {
             report.forCategory("Annotation").reportIsInvalid("No annotation provided!",
                     "You have to determine by which annotation type the data should be split.",
-                    "Please provide an annotation type.");
+                    "Please provide an annotation type.",
+                    this);
         } else {
             if (getOutputSlots().isEmpty()) {
                 report.forCategory("Output").reportIsInvalid("No output slots defined!",
                         "The split/filtered data is put into the output slot(s).",
-                        "Please add at least one output slot.");
+                        "Please add at least one output slot.",
+                        this);
             }
         }
     }

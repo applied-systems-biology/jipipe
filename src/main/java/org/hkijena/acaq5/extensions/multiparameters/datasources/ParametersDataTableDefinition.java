@@ -67,7 +67,8 @@ public class ParametersDataTableDefinition extends ACAQAlgorithm {
         if (targetAlgorithm == null || targetAlgorithm.getDeclaration() == null) {
             report.reportIsInvalid("No algorithm selected!",
                     "Parameters are defined based on an algorithm.",
-                    "Please select an algorithm.");
+                    "Please select an algorithm.",
+                    this);
         } else {
             for (int row = 0; row < parameterTable.getRowCount(); ++row) {
                 ParametersData data = new ParametersData();

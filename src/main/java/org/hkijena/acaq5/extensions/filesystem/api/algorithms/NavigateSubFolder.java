@@ -54,7 +54,8 @@ public class NavigateSubFolder extends ACAQIteratingAlgorithm {
         if (subFolder == null || subFolder.isEmpty())
             report.forCategory("Subfolder name").reportIsInvalid("Invalid subfolder name!",
                     "The subfolder name is empty!",
-                    "Please enter a name.");
+                    "Please enter a name.",
+                    this);
     }
 
     /**

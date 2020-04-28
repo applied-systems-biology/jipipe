@@ -45,7 +45,10 @@ public class ACAQAlgorithmDeclarationRef implements ACAQValidatable {
     @Override
     public void reportValidity(ACAQValidityReport report) {
         if (declaration == null)
-            report.reportIsInvalid("No algorithm type is selected!", "You have to select an algorithm type.", "Please select an algorithm type.");
+            report.reportIsInvalid("No algorithm type is selected!",
+                    "You have to select an algorithm type.",
+                    "Please select an algorithm type.",
+                    this);
     }
 
     @Override

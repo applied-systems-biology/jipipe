@@ -60,12 +60,14 @@ public class ImageTypeConverter extends ACAQAlgorithm {
         if (getInputSlots().isEmpty()) {
             report.reportIsInvalid("No input slot!",
                     "Please add an input slot that provides the data that should be converted.",
-                    "Please provide an input image slot.");
+                    "Please provide an input image slot.",
+                    this);
         }
         if (getOutputSlots().isEmpty()) {
             report.reportIsInvalid("No output slot!",
                     "The converted image is stored into the output slot.",
-                    "Please provide an output image slot.");
+                    "Please provide an output image slot.",
+                    this);
         }
         if (!getInputSlots().isEmpty() && !getOutputSlots().isEmpty()) {
             int inputDimensionality = ImagePlusData.getDimensionalityOf((Class<? extends ImagePlusData>) getFirstInputSlot().getAcceptedDataType());
@@ -73,7 +75,8 @@ public class ImageTypeConverter extends ACAQAlgorithm {
             if (inputDimensionality != -1 && outputDimensionality != -1) {
                 if (outputDimensionality < inputDimensionality) {
                     report.reportIsInvalid("Invalid conversion", "Non-trivial conversion between image dimensions: From " + inputDimensionality + "D to "
-                            + outputDimensionality + "D!","Update the slots, so inter-dimensional conversion is trivial.");
+                                    + outputDimensionality + "D!", "Update the slots, so inter-dimensional conversion is trivial.",
+                            this);
                 }
             }
         }

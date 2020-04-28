@@ -44,7 +44,8 @@ public class ImageJ2AlgorithmWrapperRegistrationTask implements ACAQAlgorithmReg
         if (!ACAQDatatypeRegistry.getInstance().hasDataType(ImagePlusData.class)) {
             report.reportIsInvalid("Required data types are not registered!",
                     "Requires: " + ImagePlusData.class,
-                    "Please contact the authors of ACAQ5.");
+                    "Please contact the authors of ACAQ5.",
+                    this);
         }
     }
 }

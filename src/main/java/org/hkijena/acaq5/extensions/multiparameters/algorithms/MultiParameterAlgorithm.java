@@ -161,7 +161,8 @@ public class MultiParameterAlgorithm extends ACAQAlgorithm {
         if (algorithmInstance == null) {
             report.reportIsInvalid("No algorithm selected!",
                     "You have to select which algorithm should be executed.",
-                    "Please select an algorithm in the parameter panel.");
+                    "Please select an algorithm in the parameter panel.",
+                    this);
         }
     }
 

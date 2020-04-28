@@ -373,7 +373,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      *
      * @param target An input slot
      * @param user   If true, only connections that can be created by a user are shown
-     * @param fast If true, use canConnectFast instead of canConnect
+     * @param fast   If true, use canConnectFast instead of canConnect
      * @return Set of potential sources
      */
     public Set<ACAQDataSlot> getAvailableSources(ACAQDataSlot target, boolean user, boolean fast) {
@@ -391,7 +391,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
                 continue;
             if (fast && !canConnectFast(source, target, user))
                 continue;
-            if(!fast && !canConnect(source, target, user))
+            if (!fast && !canConnect(source, target, user))
                 continue;
             result.add(source);
         }
@@ -446,7 +446,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      *
      * @param source An output slot
      * @param user   Indicates that a user issues the connection
-     * @param fast If true, use canConnectFast instead of canConnect
+     * @param fast   If true, use canConnectFast instead of canConnect
      * @return A list of all available input slots
      */
     public Set<ACAQDataSlot> getAvailableTargets(ACAQDataSlot source, boolean user, boolean fast) {
@@ -790,7 +790,8 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
                     report.forCategory(slot.getAlgorithm().getCompartment()).forCategory(slot.getAlgorithm().getName())
                             .forCategory("Slot: " + slot.getName()).reportIsInvalid("An input slot has no incoming data!",
                             "Input slots must always be provided with input data.",
-                            "Please connect the slot to an output of another algorithm.");
+                            "Please connect the slot to an output of another algorithm.",
+                            this);
                 }
             }
         }

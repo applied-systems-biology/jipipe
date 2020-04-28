@@ -354,14 +354,21 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     @Override
     public void reportValidity(ACAQValidityReport report) {
         if (id == null || id.isEmpty()) {
-            report.reportIsInvalid("ID is null or empty!", "Algorithms must have a unique and non-empty ID.", "Please provide a valid algorithm ID.");
+            report.reportIsInvalid("ID is null or empty!",
+                    "Algorithms must have a unique and non-empty ID.",
+                    "Please provide a valid algorithm ID.",
+                    this);
         } else if (ACAQAlgorithmRegistry.getInstance().hasAlgorithmWithId(id) && ACAQAlgorithmRegistry.getInstance().getDeclarationById(id) != this) {
-            report.reportIsInvalid("The ID already exists!", "Algorithms must have a unique and non-empty ID.","Please provide a unique ID.");
+            report.reportIsInvalid("The ID already exists!",
+                    "Algorithms must have a unique and non-empty ID.",
+                    "Please provide a unique ID.",
+                    this);
         }
         if (category == ACAQAlgorithmCategory.Internal) {
             report.reportIsInvalid("The category cannot be 'Internal'!",
                     "This is reserved for algorithm nodes used by ACAQ to control program flow.",
-                    "Please choose another algorithm category.");
+                    "Please choose another algorithm category.",
+                    this);
         }
     }
 

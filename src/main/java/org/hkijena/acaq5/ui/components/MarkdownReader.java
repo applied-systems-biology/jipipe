@@ -39,16 +39,15 @@ import java.util.Arrays;
  */
 public class MarkdownReader extends JPanel {
 
-    static final MutableDataHolder OPTIONS = new MutableDataSet()
-            .set(Parser.EXTENSIONS, Arrays.asList(TablesExtension.create(), AutolinkExtension.create(), TocExtension.create()));
-    static final String[] CSS_RULES = {"body { font-family: \"Sans-serif\"; }",
+    public static final String[] CSS_RULES = {"body { font-family: \"Sans-serif\"; }",
             "pre { background-color: #f5f2f0; border: 3px #f5f2f0 solid; }",
             "code { background-color: #f5f2f0; }",
             "h2 { padding-top: 30px; }",
             "h3 { padding-top: 30px; }",
             "th { border-bottom: 1px solid #c8c8c8; }",
             ".toc-list { list-style: none; }"};
-
+    static final MutableDataHolder OPTIONS = new MutableDataSet()
+            .set(Parser.EXTENSIONS, Arrays.asList(TablesExtension.create(), AutolinkExtension.create(), TocExtension.create()));
     private JScrollPane scrollPane;
     private JTextPane content;
     private MarkdownDocument document;
@@ -235,5 +234,9 @@ public class MarkdownReader extends JPanel {
             content.setText(temporaryDocument.getRenderedHTML());
         }
         SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
+    }
+
+    public JTextPane getContent() {
+        return content;
     }
 }

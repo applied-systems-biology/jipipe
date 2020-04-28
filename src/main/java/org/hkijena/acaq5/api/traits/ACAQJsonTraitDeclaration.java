@@ -77,14 +77,17 @@ public class ACAQJsonTraitDeclaration extends ACAQMutableTraitDeclaration implem
         if (StringUtils.isNullOrEmpty(getName()))
             report.forCategory("Name").reportIsInvalid("The name is empty!",
                     "The name cannot be empty.",
-                    "Please provide a meaningful name.");
+                    "Please provide a meaningful name.",
+                    this);
         if (StringUtils.isNullOrEmpty(getId()))
             report.forCategory("ID").reportIsInvalid("The ID is empty!",
                     "The ID must be unique.",
-                    "Please provide a unique ID.");
+                    "Please provide a unique ID.",
+                    this);
         if (ACAQTraitRegistry.getInstance().hasTraitWithId(getId()) && isDiscriminator() != ACAQTraitRegistry.getInstance().getDeclarationById(getId()).isDiscriminator()) {
-            report.forCategory("Contains value").reportIsInvalid("Conflicting annotation type found!","There is already an existing annotation type with a different value behavior!",
-                    "Please make sure that same IDs have same behaviors.");
+            report.forCategory("Contains value").reportIsInvalid("Conflicting annotation type found!", "There is already an existing annotation type with a different value behavior!",
+                    "Please make sure that same IDs have same behaviors.",
+                    this);
         }
     }
 

@@ -56,7 +56,8 @@ public class JsonExtensionRegistrationTask implements ACAQValidatable {
                 report.reportIsInvalid("A dependency is missing!",
                         "Dependency '" + dependencyId + "' is missing!",
                         "Please ensure that the matching extension is installed. Otherwise you can try to open the extension" +
-                                " '" + filePath + "' in the extension builder and save it to update dependencies.");
+                                " '" + filePath + "' in the extension builder and save it to update dependencies.",
+                        this);
             }
         }
 

@@ -18,8 +18,6 @@ import org.hkijena.acaq5.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -124,13 +122,12 @@ public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
     private void openError(Exception exception) {
         removeAll();
 
-        StringWriter writer = new StringWriter();
-        exception.printStackTrace(new PrintWriter(writer));
-        JTextArea errorArea = new JTextArea(writer.toString());
-        errorArea.setEditable(false);
+        UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(null, true);
+        errorUI.displayErrors(exception);
+        errorUI.addVerticalGlue();
 
         JPanel errorPanel = new JPanel(new BorderLayout());
-        errorPanel.add(new JScrollPane(errorArea), BorderLayout.CENTER);
+        errorPanel.add(errorUI, BorderLayout.CENTER);
 
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);

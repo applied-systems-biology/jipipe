@@ -86,7 +86,7 @@ public class Morphology2DAlgorithm extends ImageJ1Algorithm {
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        report.forCategory("Iterations").checkIfWithin(iterations, 1, Integer.MAX_VALUE, true, true);
+        report.forCategory("Iterations").checkIfWithin(this, iterations, 1, Integer.MAX_VALUE, true, true);
     }
 
     @ACAQDocumentation(name = "Operation", description = "The morphological operation")
