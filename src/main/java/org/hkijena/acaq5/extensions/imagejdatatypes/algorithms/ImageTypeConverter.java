@@ -58,23 +58,30 @@ public class ImageTypeConverter extends ACAQAlgorithm {
     @Override
     public void reportValidity(ACAQValidityReport report) {
         if (getInputSlots().isEmpty()) {
-            report.reportIsInvalid("No input slot! Please provide an input image slot.");
+            report.reportIsInvalid("No input slot!",
+                    "Please add an input slot that provides the data that should be converted.",
+                    "Please provide an input image slot.");
         }
         if (getOutputSlots().isEmpty()) {
-            report.reportIsInvalid("No output slot! Please provide an output image slot.");
+            report.reportIsInvalid("No output slot!",
+                    "The converted image is stored into the output slot.",
+                    "Please provide an output image slot.");
         }
         if (!getInputSlots().isEmpty() && !getOutputSlots().isEmpty()) {
             int inputDimensionality = ImagePlusData.getDimensionalityOf((Class<? extends ImagePlusData>) getFirstInputSlot().getAcceptedDataType());
             int outputDimensionality = ImagePlusData.getDimensionalityOf((Class<? extends ImagePlusData>) getFirstOutputSlot().getAcceptedDataType());
             if (inputDimensionality != -1 && outputDimensionality != -1) {
                 if (outputDimensionality < inputDimensionality) {
-                    report.reportIsInvalid("Non-trivial conversion between image dimensions: From " + inputDimensionality + "D to "
-                            + outputDimensionality + "D! Please make sure to change the slots.");
+                    report.reportIsInvalid("Invalid conversion", "Non-trivial conversion between image dimensions: From " + inputDimensionality + "D to "
+                            + outputDimensionality + "D!","Update the slots, so inter-dimensional conversion is trivial.");
                 }
             }
         }
     }
 
+    /**
+     * @return The appropriate slot configuration for {@link ImageTypeConverter}
+     */
     public static ACAQSlotConfiguration createConfiguration() {
         ACAQMutableSlotConfiguration slotConfiguration = new ACAQMutableSlotConfiguration();
         slotConfiguration.setMaxInputSlots(1);

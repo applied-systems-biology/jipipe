@@ -788,7 +788,8 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
             if (slot.isInput()) {
                 if (graph.incomingEdgesOf(slot).isEmpty()) {
                     report.forCategory(slot.getAlgorithm().getCompartment()).forCategory(slot.getAlgorithm().getName())
-                            .forCategory("Slot: " + slot.getName()).reportIsInvalid("An input slot has no incoming data! " +
+                            .forCategory("Slot: " + slot.getName()).reportIsInvalid("An input slot has no incoming data!",
+                            "Input slots must always be provided with input data.",
                             "Please connect the slot to an output of another algorithm.");
                 }
             }

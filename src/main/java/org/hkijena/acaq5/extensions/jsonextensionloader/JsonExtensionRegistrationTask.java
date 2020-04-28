@@ -53,8 +53,10 @@ public class JsonExtensionRegistrationTask implements ACAQValidatable {
     public void reportValidity(ACAQValidityReport report) {
         for (String dependencyId : dependencyIds) {
             if (!registry.getRegisteredExtensionIds().contains(dependencyId)) {
-                report.reportIsInvalid("Dependency '" + dependencyId + "' is missing! Please ensure that the matching extension is installed. Otherwise you can try to open the extension" +
-                        " '" + filePath + "' in the extension builder and save it to update dependencies.");
+                report.reportIsInvalid("A dependency is missing!",
+                        "Dependency '" + dependencyId + "' is missing!",
+                        "Please ensure that the matching extension is installed. Otherwise you can try to open the extension" +
+                                " '" + filePath + "' in the extension builder and save it to update dependencies.");
             }
         }
 

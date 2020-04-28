@@ -159,7 +159,9 @@ public class MultiParameterAlgorithm extends ACAQAlgorithm {
     @Override
     public void reportValidity(ACAQValidityReport report) {
         if (algorithmInstance == null) {
-            report.reportIsInvalid("No algorithm selected! Please select an algorithm in the parameter panel.");
+            report.reportIsInvalid("No algorithm selected!",
+                    "You have to select which algorithm should be executed.",
+                    "Please select an algorithm in the parameter panel.");
         }
     }
 

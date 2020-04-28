@@ -91,7 +91,9 @@ public class FileDataSource extends ACAQAlgorithm {
     @Override
     public void reportValidity(ACAQValidityReport report) {
         if (fileName == null || !Files.isRegularFile(getAbsoluteFileName()))
-            report.reportIsInvalid("Input file does not exist! Please provide a valid input file.");
+            report.reportIsInvalid("Input file does not exist!",
+                    "The file '" + getAbsoluteFileName() + "' does not exist.",
+                    "Please provide a valid input file.");
     }
 
     @Override

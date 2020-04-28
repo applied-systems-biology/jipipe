@@ -105,19 +105,27 @@ public abstract class ACAQDefaultAlgorithmRegistrationTask implements ACAQAlgori
     public void reportValidity(ACAQValidityReport report) {
         for (String id : dependencyAlgorithmIds) {
             if (!ACAQAlgorithmRegistry.getInstance().hasAlgorithmWithId(id))
-                report.forCategory("Dependency Algorithms").reportIsInvalid("Dependency algorithm '" + id + "' is missing! Please make sure to install dependency plugins.");
+                report.forCategory("Dependency Algorithms").reportIsInvalid("A dependency is missing!",
+                        "Dependency algorithm '" + id + "' is missing!",
+                        "Please make sure to install dependency plugins.");
         }
         for (String id : dependencyTraitIds) {
             if (!ACAQTraitRegistry.getInstance().hasTraitWithId(id))
-                report.forCategory("Dependency Annotations").reportIsInvalid("Dependency annotation '" + id + "' is missing! Please make sure to install dependency plugins.");
+                report.forCategory("Dependency Annotations").reportIsInvalid("A dependency is missing!",
+                        "Dependency annotation '" + id + "' is missing!",
+                        "Please make sure to install dependency plugins.");
         }
         for (String id : dependencyDatatypeIds) {
             if (!ACAQDatatypeRegistry.getInstance().hasDatatypeWithId(id))
-                report.forCategory("Dependency Data types").reportIsInvalid("Dependency data type '" + id + "' is missing! Please make sure to install dependency plugins.");
+                report.forCategory("Dependency Data types").reportIsInvalid("A dependency is missing!",
+                        "Dependency data type '" + id + "' is missing!",
+                        "Please make sure to install dependency plugins.");
         }
         for (Class<? extends ACAQData> dataClass : dependencyDatatypeClasses) {
             if (!ACAQDatatypeRegistry.getInstance().hasDataType(dataClass))
-                report.forCategory("Dependency Data types").reportIsInvalid("Dependency data type '" + dataClass.getCanonicalName() + "' is missing! Please make sure to install dependency plugins.");
+                report.forCategory("Dependency Data types").reportIsInvalid("A dependency is missing!",
+                        "Dependency data type '" + dataClass.getCanonicalName() + "' is missing!",
+                        "Please make sure to install dependency plugins.");
         }
     }
 }

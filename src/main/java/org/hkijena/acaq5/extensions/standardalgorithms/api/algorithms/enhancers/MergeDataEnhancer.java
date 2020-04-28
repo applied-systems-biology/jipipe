@@ -49,13 +49,17 @@ public class MergeDataEnhancer extends ACAQAlgorithm {
     @Override
     public void reportValidity(ACAQValidityReport report) {
         if (getOutputSlots().isEmpty()) {
-            report.reportIsInvalid("No output slot! Please add an output slot that is compatible to the input data.");
+            report.reportIsInvalid("No output slot!",
+                    "The result is put into the output slot.",
+                    "Please add an output slot that is compatible to the input data.");
         } else {
             ACAQDataSlot outputSlot = getFirstOutputSlot();
             for (ACAQDataSlot inputSlot : getInputSlots()) {
                 if (!outputSlot.getAcceptedDataType().isAssignableFrom(inputSlot.getAcceptedDataType())) {
                     report.forCategory("Slots").forCategory(inputSlot.getName())
-                            .reportIsInvalid("Input slot is incompatible! Please add an output slot that is compatible to the input data.");
+                            .reportIsInvalid("Input slot is incompatible!",
+                                    "Output data must fit to the input data.",
+                                    "Please add an output slot that is compatible to the input data.");
                 }
             }
         }

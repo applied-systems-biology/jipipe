@@ -99,9 +99,13 @@ public class FolderListDataSource extends ACAQAlgorithm {
     public void reportValidity(ACAQValidityReport report) {
         for (Path folderPath : getAbsoluteFolderPaths()) {
             if (folderPath == null) {
-                report.reportIsInvalid("An input folder path does not exist! Please provide a valid path.");
+                report.reportIsInvalid("Invalid folder path!",
+                        "An input folder path does not exist!",
+                        "Please provide a valid path.");
             } else if (!Files.isDirectory(folderPath)) {
-                report.reportIsInvalid("Input folder '" + folderPath + "' does not exist! Please provide a valid path.");
+                report.reportIsInvalid("Invalid folder path!",
+                        "Input folder '" + folderPath + "' does not exist!",
+                        "Please provide a valid path.");
             }
         }
     }

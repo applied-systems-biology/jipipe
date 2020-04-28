@@ -88,10 +88,14 @@ public class SplitByAnnotation extends ACAQAlgorithm {
     @Override
     public void reportValidity(ACAQValidityReport report) {
         if (annotationType == null || annotationType.getDeclaration() == null) {
-            report.forCategory("Annotation").reportIsInvalid("No annotation provided! Please setup an annotation that is removed from the data.");
+            report.forCategory("Annotation").reportIsInvalid("No annotation provided!",
+                    "You have to determine by which annotation type the data should be split.",
+                    "Please provide an annotation type.");
         } else {
             if (getOutputSlots().isEmpty()) {
-                report.forCategory("Output").reportIsInvalid("No output slots defined! Please add at least one output slot.");
+                report.forCategory("Output").reportIsInvalid("No output slots defined!",
+                        "The split/filtered data is put into the output slot(s).",
+                        "Please add at least one output slot.");
             }
         }
     }

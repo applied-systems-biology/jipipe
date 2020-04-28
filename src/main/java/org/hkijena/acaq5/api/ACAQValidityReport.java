@@ -18,9 +18,9 @@ import java.util.*;
  * Report about the validity of an object
  */
 public class ACAQValidityReport {
-    private List<String> categories = new ArrayList<>();
+    private final List<String> categories = new ArrayList<>();
     private Map<String, Response> responses = new HashMap<>();
-    private Map<String, String> messages = new HashMap<>();
+    private Map<String, Message> messages = new HashMap<>();
 
     /**
      * Creates a new report instance
@@ -36,6 +36,10 @@ public class ACAQValidityReport {
         messages.clear();
     }
 
+    /**
+     * Gets the response keys that are invalid
+     * @return the response keys
+     */
     public List<String> getInvalidResponses() {
         List<String> result = new ArrayList<>();
         for (Map.Entry<String, Response> entry : responses.entrySet()) {
@@ -45,7 +49,7 @@ public class ACAQValidityReport {
         return result;
     }
 
-    public Map<String, String> getMessages() {
+    public Map<String, Message> getMessages() {
         return Collections.unmodifiableMap(messages);
     }
 
@@ -78,7 +82,7 @@ public class ACAQValidityReport {
      * @param response the response
      * @param message  the message
      */
-    public void report(Response response, String message) {
+    public void report(Response response, Message message) {
         String key = String.join("/", categories);
         responses.put(key, response);
         messages.put(key, message);
@@ -99,7 +103,7 @@ public class ACAQValidityReport {
      * @param valid   if the report is valid
      * @param message the message
      */
-    public void report(boolean valid, String message) {
+    public void report(boolean valid, Message message) {
         report(valid ? Response.Valid : Response.Invalid, message);
     }
 
@@ -107,7 +111,7 @@ public class ACAQValidityReport {
      * Report that is report is valid
      */
     public void reportIsValid() {
-        report(true, "");
+        report(true, null);
     }
 
     /**
@@ -115,8 +119,19 @@ public class ACAQValidityReport {
      *
      * @param message The message
      */
-    public void reportIsInvalid(String message) {
+    public void reportIsInvalid(Message message) {
         report(false, message);
+    }
+
+    /**
+     * Reports that this report is invalid
+     *
+     * @param what explanation what happened
+     * @param why explanation why it happened
+     * @param how explanation how to solve the issue
+     */
+    public void reportIsInvalid(String what, String why, String how) {
+        report(false, new Message(what, why, how));
     }
 
     /**
@@ -130,7 +145,8 @@ public class ACAQValidityReport {
      */
     public void checkIfWithin(double value, double min, double max, boolean includeMin, boolean includeMax) {
         if ((includeMin && value < min) || (!includeMin && value <= min) || (includeMax && value > max) || (!includeMax && value >= max)) {
-            reportIsInvalid("Invalid value! Please provide a value within " + (includeMin ? "[" : "(") + min + " and " + (includeMax ? "]" : ")") + max);
+            reportIsInvalid("Invalid value!", "Numeric values must be within an allowed range.",
+                    "Please provide a value within " + (includeMin ? "[" : "(") + min + " and " + (includeMax ? "]" : ")") + max);
         }
     }
 
@@ -141,7 +157,7 @@ public class ACAQValidityReport {
      */
     public void checkNonNull(Object value) {
         if (value == null) {
-            reportIsInvalid("No value provided! Please provide a valid value.");
+            reportIsInvalid("No value provided!", "Dependent methods require that a value is set.", "Please provide a valid value.");
         }
     }
 
@@ -151,5 +167,42 @@ public class ACAQValidityReport {
     public enum Response {
         Valid,
         Invalid
+    }
+
+    /**
+     * A validity report message
+     */
+    public static class Message {
+        private String userWhat;
+        private String userWhy;
+        private String userHow;
+
+        /**
+         * @param userWhat explanation what happened
+         * @param userWhy explanation why it happened
+         * @param userHow explanation how to solve the issue
+         */
+        public Message(String userWhat, String userWhy, String userHow) {
+            this.userWhat = userWhat;
+            this.userWhy = userWhy;
+            this.userHow = userHow;
+        }
+
+        public String getUserWhat() {
+            return userWhat;
+        }
+
+        public String getUserWhy() {
+            return userWhy;
+        }
+
+        public String getUserHow() {
+            return userHow;
+        }
+
+        @Override
+        public String toString() {
+            return userWhat + " " + userWhy + " " + userHow;
+        }
     }
 }

@@ -57,7 +57,7 @@ public class ACAQTraitDeclarationRef implements ACAQValidatable {
     @Override
     public void reportValidity(ACAQValidityReport report) {
         if (declaration == null)
-            report.reportIsInvalid("No annotation type is selected! Please select an annotation type.");
+            report.reportIsInvalid("No annotation type is selected!", "You have to select an annotation type." ,"Please select an annotation type.");
     }
 
     @Override

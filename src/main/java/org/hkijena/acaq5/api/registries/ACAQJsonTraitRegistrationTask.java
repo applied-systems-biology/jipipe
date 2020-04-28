@@ -51,7 +51,9 @@ public class ACAQJsonTraitRegistrationTask implements ACAQTraitRegistrationTask 
     public void reportValidity(ACAQValidityReport report) {
         for (String id : declaration.getInheritedIds()) {
             if (!ACAQTraitRegistry.getInstance().hasTraitWithId(id)) {
-                report.forCategory("Inherited Annotations").reportIsInvalid("Inherited annotation '" + id + "' is missing! Please check if required plugins are installed.");
+                report.forCategory("Inherited Annotations").reportIsInvalid("A dependency is missing!",
+                        "Inherited annotation '" + id + "' is missing!",
+                        "Please check if required plugins are installed.");
             }
         }
     }

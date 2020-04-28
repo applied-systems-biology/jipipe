@@ -117,12 +117,12 @@ public class ACAQValidityReportUI extends JPanel {
             DefaultTableModel model = new DefaultTableModel();
             model.addColumn("Location");
             model.addColumn("Message");
-            Map<String, String> messages = report.getMessages();
+            Map<String, ACAQValidityReport.Message> messages = report.getMessages();
             for (String key : report.getInvalidResponses()) {
 
                 model.addRow(new Object[]{
                         StringUtils.createIconTextHTMLTable(key.replace("/", " ⏵ "), ResourceUtils.getPluginResource("icons/error.png")),
-                        StringUtils.wordWrappedHTML(messages.getOrDefault(key, ""), 50)
+                        StringUtils.wordWrappedHTML("" + messages.getOrDefault(key, null), 50)
                 });
             }
             table.setModel(model);

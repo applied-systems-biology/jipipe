@@ -99,7 +99,9 @@ public class MergeChannelsAlgorithm extends ImageJ1Algorithm {
             report.forCategory("Channel colors").forCategory(entry.getKey()).checkNonNull(color);
             if (color != null) {
                 if (existing.contains(color))
-                    report.forCategory("Channel colors").forCategory(entry.getKey()).reportIsInvalid("Color '" + color + "' is already assigned! Please assign another color.");
+                    report.forCategory("Channel colors").forCategory(entry.getKey()).reportIsInvalid("Duplicate color assignment!",
+                            "Color '" + color + "' is already assigned.",
+                            "Please assign another color.");
                 existing.add(color);
             }
         }

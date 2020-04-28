@@ -211,26 +211,40 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
         long resultsTableInputSlotCount = getInputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ResultsTableData.class).count();
         long resultsTableOutputSlotCount = getOutputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ResultsTableData.class).count();
         if (batchMode && imageInputSlotCount != 1) {
-            report.reportIsInvalid("Only exactly one input image is allowed! This requirement is caused by the batch mode setting.");
+            report.reportIsInvalid("Invalid input count!",
+                    "Only exactly one input image is allowed!",
+                    "This requirement is caused by the batch mode setting.");
         }
         if (batchMode && imageOutputSlotCount != 1) {
-            report.reportIsInvalid("Only exactly one output image is allowed! This requirement is caused by the batch mode setting.");
+            report.reportIsInvalid("Invalid input count!",
+                    "Only exactly one output image is allowed!",
+                    "This requirement is caused by the batch mode setting.");
         }
         if (roiInputSlotCount > 1) {
-            report.reportIsInvalid("Too many ROI inputs! Please make sure to only have at most one ROI data input.");
+            report.reportIsInvalid("Too many ROI inputs!",
+                    "ImageJ1 has no concept of multiple ROI Managers.",
+                    "Please make sure to only have at most one ROI data input.");
         }
         if (roiOutputSlotCount > 1) {
-            report.reportIsInvalid("Too many ROI outputs! Please make sure to only have at most one ROI data output.");
+            report.reportIsInvalid("Too many ROI outputs!",
+                    "ImageJ1 has no concept of multiple ROI Managers.",
+                    "Please make sure to only have at most one ROI data output.");
         }
         if (resultsTableInputSlotCount > 1) {
-            report.reportIsInvalid("Too many results table inputs! Please make sure to only have at most one results table data input.");
+            report.reportIsInvalid("Too many results table inputs!",
+                    "ImageJ1 has no concept of multiple result tables.",
+                    "Please make sure to only have at most one results table data input.");
         }
         if (resultsTableOutputSlotCount > 1) {
-            report.reportIsInvalid("Too many results table outputs! Please make sure to only have at most one results table data output.");
+            report.reportIsInvalid("Too many results table outputs!",
+                    "ImageJ1 has no concept of multiple result tables.",
+                    "Please make sure to only have at most one results table data output.");
         }
         for (String key : macroParameters.getParameters().keySet()) {
             if (!MacroUtils.isValidVariableName(key)) {
-                report.forCategory("Macro Parameters").forCategory(key).reportIsInvalid("'" + key + "' is an invalid ImageJ macro variable name! Please ensure that macro variables are compatible with the ImageJ macro language.");
+                report.forCategory("Macro Parameters").forCategory(key).reportIsInvalid("Invalid name!",
+                        "'" + key + "' is an invalid ImageJ macro variable name!",
+                        "Please ensure that macro variables are compatible with the ImageJ macro language.");
             }
         }
 
@@ -238,14 +252,18 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
             for (ACAQDataSlot inputSlot : getInputSlots()) {
                 if (ImagePlusData.class.isAssignableFrom(inputSlot.getAcceptedDataType())) {
                     if (!code.getCode().contains("\"" + inputSlot.getName() + "\"")) {
-                        report.reportIsInvalid("Input image '" + inputSlot.getName() + "' is not used! You can use selectWindow(\"" + inputSlot.getName() + "\"); to process the image. Disable strict mode to stop this message.");
+                        report.reportIsInvalid("Strict mode: Unused input image",
+                                "Input image '" + inputSlot.getName() + "' is not used!",
+                                "You can use selectWindow(\"" + inputSlot.getName() + "\"); to process the image. Disable strict mode to stop this message.");
                     }
                 }
             }
             for (ACAQDataSlot outputSlot : getOutputSlots()) {
                 if (ImagePlusData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
                     if (!code.getCode().contains("\"" + outputSlot.getName() + "\"")) {
-                        report.reportIsInvalid("Output image '" + outputSlot.getName() + "' is not used! You should rename an output image via rename(\"" + outputSlot.getName() + "\"); to allow ACAQ5 to find it. Disable strict mode to stop this message.");
+                        report.reportIsInvalid("Strict mode: Unused output image",
+                                "Output image '" + outputSlot.getName() + "' is not used!",
+                                "You should rename an output image via rename(\"" + outputSlot.getName() + "\"); to allow ACAQ5 to find it. Disable strict mode to stop this message.");
                     }
                 }
             }

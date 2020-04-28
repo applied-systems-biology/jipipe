@@ -82,7 +82,7 @@ public class ACAQRunAlgorithmCommand extends DynamicCommand implements Initializ
             if (!report.isValid()) {
                 StringBuilder message = new StringBuilder();
                 message.append("The provided algorithm options are invalid:\n\n");
-                for (Map.Entry<String, String> entry : report.getMessages().entrySet()) {
+                for (Map.Entry<String, ACAQValidityReport.Message> entry : report.getMessages().entrySet()) {
                     message.append(entry.getKey()).append("\t").append(entry.getValue());
                 }
                 cancel(message.toString());

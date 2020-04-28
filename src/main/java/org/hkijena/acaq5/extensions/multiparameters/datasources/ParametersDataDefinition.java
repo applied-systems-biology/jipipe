@@ -56,7 +56,9 @@ public class ParametersDataDefinition extends ACAQAlgorithm {
     @Override
     public void reportValidity(ACAQValidityReport report) {
         if (algorithmInstance == null) {
-            report.reportIsInvalid("No algorithm selected! Please select an algorithm.");
+            report.reportIsInvalid("No algorithm selected!",
+                    "Parameters are defined based on an algorithm.",
+                    "Please select an algorithm.");
         } else {
             report.report(algorithmInstance);
         }

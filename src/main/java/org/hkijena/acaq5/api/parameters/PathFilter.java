@@ -86,7 +86,9 @@ public class PathFilter implements Predicate<Path>, ACAQValidatable {
     @Override
     public void reportValidity(ACAQValidityReport report) {
         if (mode == Mode.Glob && globPathMatcher == null) {
-            report.reportIsInvalid("The glob file filter '" + filterString + "' is invalid! Please change it to a valid filter string.");
+            report.reportIsInvalid("Invalid filter string!",
+                    "The glob file filter '" + filterString + "' is invalid!",
+                    "Please change it to a valid filter string.");
         }
     }
 
