@@ -10,6 +10,7 @@ import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.blur.GaussianBlur2DAlgo
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.blur.MedianBlurGreyscale8U2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.blur.MedianBlurRGB2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.color.InvertColorsAlgorithm;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.color.MergeChannelsAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions.StackMergerAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions.StackSplitterAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.edge.SobelEdgeDetectorAlgorithm;
@@ -83,6 +84,11 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
     public static final Map<Class<? extends ACAQData>, Class<? extends ACAQData>> TO_GRAYSCALE_CONVERSION = getToGrayscaleConversion();
 
     /**
+     * Conversion rules that convert color types into colored images
+     */
+    public static final Map<Class<? extends ACAQData>, Class<? extends ACAQData>> TO_COLOR_CONVERSION = getToColorConversion();
+
+    /**
      * Conversion rules convert higher-dimensional data to their 2D counterparts
      */
     public static final Map<Class<? extends ACAQData>, Class<? extends ACAQData>> TO_2D_CONVERSION = get2DConversion();
@@ -115,6 +121,7 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerAlgorithm("ij1-blur-median2d-8u", MedianBlurGreyscale8U2DAlgorithm.class);
         registerAlgorithm("ij1-blur-median2d-rgb", MedianBlurRGB2DAlgorithm.class);
         registerAlgorithm("ij1-color-invert", InvertColorsAlgorithm.class);
+        registerAlgorithm("ij1-color-merge-channels", MergeChannelsAlgorithm.class);
         registerAlgorithm("ij1-edge-sobel", SobelEdgeDetectorAlgorithm.class);
         registerAlgorithm("ij1-math-math2d", ApplyMath2DAlgorithm.class);
         registerAlgorithm("ij1-math-transform2d", ApplyTransform2DAlgorithm.class);
@@ -323,6 +330,47 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         result.put(ImagePlus5DColorData.class, ImagePlus5DGreyscaleData.class);
         result.put(ImagePlus5DColor8UData.class, ImagePlus5DGreyscaleData.class);
         result.put(ImagePlus5DColorRGBData.class, ImagePlus5DGreyscaleData.class);
+
+        return result;
+    }
+
+    private static Map<Class<? extends ACAQData>, Class<? extends ACAQData>> getToColorConversion() {
+        Map<Class<? extends ACAQData>, Class<? extends ACAQData>> result = new HashMap<>();
+
+        result.put(ImagePlusData.class, ImagePlusColorData.class);
+        result.put(ImagePlusGreyscaleData.class, ImagePlusColorData.class);
+        result.put(ImagePlusGreyscale8UData.class, ImagePlusColorData.class);
+        result.put(ImagePlusGreyscale16UData.class, ImagePlusColorData.class);
+        result.put(ImagePlusGreyscale32FData.class, ImagePlusColorData.class);
+        result.put(ImagePlusGreyscaleMaskData.class, ImagePlusColorData.class);
+
+        result.put(ImagePlus2DData.class, ImagePlus2DColorData.class);
+        result.put(ImagePlus2DGreyscaleData.class, ImagePlus2DColorData.class);
+        result.put(ImagePlus2DGreyscale8UData.class, ImagePlus2DColorData.class);
+        result.put(ImagePlus2DGreyscale16UData.class, ImagePlus2DColorData.class);
+        result.put(ImagePlus2DGreyscale32FData.class, ImagePlus2DColorData.class);
+        result.put(ImagePlus2DGreyscaleMaskData.class, ImagePlus2DColorData.class);
+
+        result.put(ImagePlus3DData.class, ImagePlus3DColorData.class);
+        result.put(ImagePlus3DGreyscaleData.class, ImagePlus3DColorData.class);
+        result.put(ImagePlus3DGreyscale8UData.class, ImagePlus3DColorData.class);
+        result.put(ImagePlus3DGreyscale16UData.class, ImagePlus3DColorData.class);
+        result.put(ImagePlus3DGreyscale32FData.class, ImagePlus3DColorData.class);
+        result.put(ImagePlus3DGreyscaleMaskData.class, ImagePlus3DColorData.class);
+
+        result.put(ImagePlus4DData.class, ImagePlus4DColorData.class);
+        result.put(ImagePlus4DGreyscaleData.class, ImagePlus4DColorData.class);
+        result.put(ImagePlus4DGreyscale8UData.class, ImagePlus4DColorData.class);
+        result.put(ImagePlus4DGreyscale16UData.class, ImagePlus4DColorData.class);
+        result.put(ImagePlus4DGreyscale32FData.class, ImagePlus4DColorData.class);
+        result.put(ImagePlus4DGreyscaleMaskData.class, ImagePlus4DColorData.class);
+
+        result.put(ImagePlus5DData.class, ImagePlus5DColorData.class);
+        result.put(ImagePlus5DGreyscaleData.class, ImagePlus5DColorData.class);
+        result.put(ImagePlus5DGreyscale8UData.class, ImagePlus5DColorData.class);
+        result.put(ImagePlus5DGreyscale16UData.class, ImagePlus5DColorData.class);
+        result.put(ImagePlus5DGreyscale32FData.class, ImagePlus5DColorData.class);
+        result.put(ImagePlus5DGreyscaleMaskData.class, ImagePlus5DColorData.class);
 
         return result;
     }

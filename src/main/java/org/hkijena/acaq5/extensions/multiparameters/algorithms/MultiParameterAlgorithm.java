@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.extensions.multiparameters.algorithms;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
@@ -238,15 +237,5 @@ public class MultiParameterAlgorithm extends ACAQAlgorithm {
             traitConfiguration.setTraitTransfersSealed(other.isTraitTransfersSealed());
             traitConfiguration.setTraitModificationsSealed(other.isTraitModificationsSealed());
         }
-    }
-
-    /**
-     * Triggered when the parameter structure of algorithm parameters is changed
-     *
-     * @param event generated event
-     */
-    @Subscribe
-    public void onParameterStructureChanged(ParameterStructureChangedEvent event) {
-        getEventBus().post(event);
     }
 }

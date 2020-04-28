@@ -3,9 +3,11 @@ package org.hkijena.acaq5.api.parameters;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
+import org.hkijena.acaq5.utils.ReflectionUtils;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Parameter that holds a value for each data slot
@@ -13,6 +15,7 @@ import java.util.Set;
 public class SlotMapParameterCollection extends ACAQDynamicParameterCollection {
     private ACAQAlgorithm algorithm;
     private Class<?> dataClass;
+    private Supplier<Object> newInstanceGenerator;
 
     /**
      * Creates a new instance
@@ -52,7 +55,11 @@ public class SlotMapParameterCollection extends ACAQDynamicParameterCollection {
             }
             for (String slotName : algorithm.getSlots().keySet()) {
                 if (!containsKey(slotName)) {
-                    addParameter(slotName, dataClass);
+                    ACAQMutableParameterAccess access = addParameter(slotName, dataClass);
+                    if (getNewInstanceGenerator() != null)
+                        access.set(getNewInstanceGenerator().get());
+                    else
+                        access.set(ReflectionUtils.newInstance(dataClass));
                 }
             }
         }
@@ -66,5 +73,13 @@ public class SlotMapParameterCollection extends ACAQDynamicParameterCollection {
     @Subscribe
     public void onSlotsUpdated(AlgorithmSlotsChangedEvent event) {
         updateSlots();
+    }
+
+    public Supplier<Object> getNewInstanceGenerator() {
+        return newInstanceGenerator;
+    }
+
+    public void setNewInstanceGenerator(Supplier<Object> newInstanceGenerator) {
+        this.newInstanceGenerator = newInstanceGenerator;
     }
 }

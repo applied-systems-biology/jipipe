@@ -12,6 +12,7 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.TraitConfigurationChangedEvent;
+import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.utils.JsonUtils;
 
@@ -158,14 +159,16 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
                 };
                 this.slotTraitModificationTasks = objectMapper.readerFor(typeRef).readValue(modificationNode.get("per-slot"));
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new UserFriendlyRuntimeException(e, "Unable to read annotation configuration from JSON!", "There is essential information missing in the JSON data.",
+                        "Please check if the JSON data is valid.");
             }
             try {
                 TypeReference<ACAQDataSlotTraitConfiguration> typeRef = new TypeReference<ACAQDataSlotTraitConfiguration>() {
                 };
                 this.globalTraitModificationTasks = objectMapper.readerFor(typeRef).readValue(modificationNode.get("global"));
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new UserFriendlyRuntimeException(e, "Unable to read annotation configuration from JSON!", "There is essential information missing in the JSON data.",
+                        "Please check if the JSON data is valid.");
             }
         }
 
@@ -177,7 +180,8 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
                 };
                 this.transferTasks = objectMapper.readerFor(typeRef).readValue(transferNode.get("transfers"));
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new UserFriendlyRuntimeException(e, "Unable to read annotation configuration from JSON!", "There is essential information missing in the JSON data.",
+                        "Please check if the JSON data is valid.");
             }
         }
     }

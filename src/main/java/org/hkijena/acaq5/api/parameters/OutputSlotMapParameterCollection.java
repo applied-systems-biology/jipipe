@@ -2,6 +2,7 @@ package org.hkijena.acaq5.api.parameters;
 
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.utils.ReflectionUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -34,7 +35,11 @@ public class OutputSlotMapParameterCollection extends SlotMapParameterCollection
             }
             for (ACAQDataSlot slot : getAlgorithm().getOutputSlots()) {
                 if (!containsKey(slot.getName())) {
-                    addParameter(slot.getName(), getDataClass());
+                    ACAQMutableParameterAccess access = addParameter(slot.getName(), getDataClass());
+                    if (getNewInstanceGenerator() != null)
+                        access.set(getNewInstanceGenerator().get());
+                    else
+                        access.set(ReflectionUtils.newInstance(getDataClass()));
                 }
             }
         }

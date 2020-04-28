@@ -4,6 +4,7 @@ import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQHidden;
 import org.hkijena.acaq5.api.ACAQOrganization;
+import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -133,7 +134,8 @@ public interface ACAQData {
         try {
             return ConstructorUtils.invokeConstructor(klass, constructorParameters);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
-            throw new RuntimeException(e);
+            throw new UserFriendlyRuntimeException(e, "Cannot create annotation instance!", "There is an error in the code that provides the annotation type.",
+                    "Please contact the author of the plugin that provides the annotation type " + klass);
         }
     }
 }

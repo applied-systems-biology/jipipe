@@ -8,6 +8,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
+import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.io.IOException;
@@ -190,7 +191,8 @@ public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollec
                 parameterAccess.setParameterHolder(this);
                 dynamicParameters.put(entry.getKey(), parameterAccess);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new UserFriendlyRuntimeException(e, "Unable to read parameter from JSON!", "There is essential information missing in the JSON data.",
+                        "Please check if the JSON data is valid.");
             }
         }
     }

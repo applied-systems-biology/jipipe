@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.annotation;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
@@ -12,7 +11,6 @@ import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
-import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.OutputSlotMapParameterCollection;
 import org.hkijena.acaq5.api.parameters.StringFilter;
@@ -117,16 +115,6 @@ public class SplitByAnnotation extends ACAQAlgorithm {
             "Non-value annotations are converted into 'true' and 'false'. Use the the RegEx filter '.*' to filter remaining inputs. Filter order is alphabetically.")
     public OutputSlotMapParameterCollection getTargetSlots() {
         return targetSlots;
-    }
-
-    /**
-     * Triggered when the parameter structure is changed
-     *
-     * @param event generated event
-     */
-    @Subscribe
-    public void onParameterStructureChanged(ParameterStructureChangedEvent event) {
-        getEventBus().post(event);
     }
 
     @ACAQDocumentation(name = "Continue after filter matches", description = "Continue with other filters if a matching filter was found")

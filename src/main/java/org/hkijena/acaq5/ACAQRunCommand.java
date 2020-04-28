@@ -4,6 +4,7 @@ import org.hkijena.acaq5.api.ACAQMutableRunConfiguration;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.ACAQRunnerStatus;
+import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.scijava.Context;
 import org.scijava.app.StatusService;
 import org.scijava.command.Command;
@@ -38,16 +39,21 @@ public class ACAQRunCommand implements Command {
     @Override
     public void run() {
         ACAQDefaultRegistry.instantiate(context);
+        ACAQProject project;
         try {
-            ACAQProject project = ACAQProject.loadProject(parameterFile.toPath());
+            project = ACAQProject.loadProject(parameterFile.toPath());
             project.setWorkDirectory(parameterFile.toPath().getParent());
-            ACAQMutableRunConfiguration configuration = new ACAQMutableRunConfiguration();
-            configuration.setOutputPath(outputDirectory.toPath());
-            ACAQRun run = new ACAQRun(project, configuration);
-            run.run(this::onProgress, () -> false);
+
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UserFriendlyRuntimeException(e, "Could not load project from '" + parameterFile.toString() + "'!",
+                    "Either the provided parameter file does not exist or is inaccesible, or it was corrupted.",
+                    "Try to load the parameter file in the ACAQ5 GUI.");
         }
+
+        ACAQMutableRunConfiguration configuration = new ACAQMutableRunConfiguration();
+        configuration.setOutputPath(outputDirectory.toPath());
+        ACAQRun run = new ACAQRun(project, configuration);
+        run.run(this::onProgress, () -> false);
     }
 
     private void onProgress(ACAQRunnerStatus runStatus) {

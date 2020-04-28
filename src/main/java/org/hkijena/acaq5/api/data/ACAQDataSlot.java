@@ -5,6 +5,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.data.traits.ACAQMutableTraitConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
 import org.hkijena.acaq5.api.events.SlotAnnotationsChanged;
+import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
@@ -361,7 +362,9 @@ public class ACAQDataSlot implements TableModel {
                     try {
                         Files.createDirectories(path);
                     } catch (IOException e) {
-                        throw new RuntimeException(e);
+                        throw new UserFriendlyRuntimeException(e, "Unable to create directory '" + path + "'!",
+                                "The path might be invalid, or you might not have the permissions to write in a parent folder.",
+                                "Check if the path is valid, and you have write-access.");
                     }
                 }
 
@@ -374,7 +377,9 @@ public class ACAQDataSlot implements TableModel {
                 dataTable.saveAsJson(storagePath.resolve("data-table.json"));
                 dataTable.saveAsCSV(storagePath.resolve("data-table.csv"));
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new UserFriendlyRuntimeException(e, "Unable to save data table!",
+                        "ACAQ tried to write files into '" + storagePath + "'.",
+                        "Check if you have permissions to write into the path, and if there is enough disk space.");
             }
         }
     }

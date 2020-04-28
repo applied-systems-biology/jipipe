@@ -1,9 +1,9 @@
 package org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d4.color;
 
 import ij.ImagePlus;
-import ij.process.ImageConverter;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 
 /**
  * RGB color 4D image
@@ -21,12 +21,6 @@ public class ImagePlus4DColorRGBData extends ImagePlus4DColorData {
      * @param image wrapped image
      */
     public ImagePlus4DColorRGBData(ImagePlus image) {
-        super(image);
-
-        // Apply conversion
-        if (image.getType() != ImagePlus.COLOR_RGB) {
-            ImageConverter ic = new ImageConverter(image);
-            ic.convertToRGB();
-        }
+        super(ImagePlusColorRGBData.convertIfNeeded(image));
     }
 }

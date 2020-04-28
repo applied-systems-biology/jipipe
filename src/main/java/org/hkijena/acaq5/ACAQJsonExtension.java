@@ -12,6 +12,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.events.ExtensionContentAddedEvent;
 import org.hkijena.acaq5.api.events.ExtensionContentRemovedEvent;
+import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQJsonTraitRegistrationTask;
@@ -328,7 +329,9 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
         try {
             return JsonUtils.getObjectMapper().readerFor(ACAQJsonExtension.class).readValue(jsonData);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UserFriendlyRuntimeException(e, "Could not load JSON plugin.",
+                    "The plugin file was corrupted, so ACAQ5 does not know how to load some essential information. Or you are using an older ACAQ5 version.",
+                    "Try to update ACAQ5. If this does not work, contact the plugin's author.");
         }
     }
 }

@@ -1,9 +1,9 @@
 package org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale;
 
 import ij.ImagePlus;
-import ij.process.ImageConverter;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 
 /**
  * 8-bit mask 2D image
@@ -21,12 +21,6 @@ public class ImagePlus2DGreyscaleMaskData extends ImagePlus2DGreyscale8UData {
      * @param image wrapped image
      */
     public ImagePlus2DGreyscaleMaskData(ImagePlus image) {
-        super(image);
-
-        // Apply conversion
-        if (image.getType() != ImagePlus.GRAY8) {
-            ImageConverter ic = new ImageConverter(image);
-            ic.convertToGray8();
-        }
+        super(ImagePlusGreyscale8UData.convertIfNeeded(image));
     }
 }

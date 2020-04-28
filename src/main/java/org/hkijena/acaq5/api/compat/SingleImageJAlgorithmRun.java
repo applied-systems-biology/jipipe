@@ -15,6 +15,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.data.*;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
+import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQTraversedParameterCollection;
@@ -125,7 +126,8 @@ public class SingleImageJAlgorithmRun implements ACAQValidatable {
                 try {
                     access.set(JsonUtils.getObjectMapper().readerFor(access.getFieldClass()).readValue(entry.getValue()));
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    throw new UserFriendlyRuntimeException(e, "Unable to load parameters!", "The JSON data is invalid or incomplete.",
+                            "Use the GUI to create a valid parameter set.");
                 }
             }
         }

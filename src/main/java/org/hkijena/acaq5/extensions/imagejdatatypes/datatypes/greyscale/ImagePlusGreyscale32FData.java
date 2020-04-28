@@ -24,12 +24,21 @@ public class ImagePlusGreyscale32FData extends ImagePlusGreyscaleData {
      * @param image wrapped image
      */
     public ImagePlusGreyscale32FData(ImagePlus image) {
-        super(image);
+        super(ImagePlusGreyscale32FData.convertIfNeeded(image));
+    }
 
-        // Apply conversion
+    /**
+     * Converts an {@link ImagePlus} to the color space of this data.
+     * Does not guarantee that the input image is copied.
+     *
+     * @param image the image
+     * @return converted image.
+     */
+    public static ImagePlus convertIfNeeded(ImagePlus image) {
         if (image.getType() != ImagePlus.GRAY32) {
             ImageConverter ic = new ImageConverter(image);
             ic.convertToGray32();
         }
+        return image;
     }
 }

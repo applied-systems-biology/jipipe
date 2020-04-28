@@ -8,6 +8,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.compat.SingleImageJAlgorithmRun;
+import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.ui.compat.RunSingleAlgorithmDialog;
 import org.hkijena.acaq5.utils.JsonUtils;
@@ -71,7 +72,10 @@ public class ACAQRunAlgorithmCommand extends DynamicCommand implements Initializ
             try {
                 settings.fromJson(JsonUtils.getObjectMapper().readValue(algorithmParameters, JsonNode.class));
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new UserFriendlyRuntimeException(e, "Unable to load parameters from JSON!",
+                        "Either the data is not valid JSON, does not fit to the selected algorithm, or was corrupted.",
+                        "Please check if the text parameter is valid JSON. You can use a JSON online validator to validate the format. " +
+                                "Also please check if the parameters really fit to the selected algorithm.");
             }
             ACAQValidityReport report = new ACAQValidityReport();
             settings.reportValidity(report);

@@ -25,13 +25,22 @@ public class ImagePlusColorData extends ImagePlusData {
      * @param image wrapped image
      */
     public ImagePlusColorData(ImagePlus image) {
-        super(image);
+        super(ImagePlusColorData.convertIfNeeded(image));
+    }
 
-        // Apply conversion
+    /**
+     * Converts an {@link ImagePlus} to the color space of this data.
+     * Does not guarantee that the input image is copied.
+     *
+     * @param image the image
+     * @return converted image.
+     */
+    public static ImagePlus convertIfNeeded(ImagePlus image) {
         if (image.getType() != ImagePlus.COLOR_256 && image.getType() != ImagePlus.COLOR_RGB) {
             System.out.println("[WARNING] Attempt to store non-color data into a color image. Converting to RGB.");
             ImageConverter ic = new ImageConverter(image);
             ic.convertToRGB();
         }
+        return image;
     }
 }

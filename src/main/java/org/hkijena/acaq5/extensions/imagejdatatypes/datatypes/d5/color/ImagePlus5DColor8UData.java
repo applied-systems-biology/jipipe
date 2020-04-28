@@ -1,9 +1,9 @@
 package org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d5.color;
 
 import ij.ImagePlus;
-import ij.process.ImageConverter;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColor8UData;
 
 /**
  * 8-bit color 5D image
@@ -21,13 +21,6 @@ public class ImagePlus5DColor8UData extends ImagePlus5DColorData {
      * @param image wrapped image
      */
     public ImagePlus5DColor8UData(ImagePlus image) {
-        super(image);
-
-        // Apply conversion
-        if (image.getType() != ImagePlus.COLOR_256) {
-            ImageConverter ic = new ImageConverter(image);
-            ic.convertToRGB();
-            ic.convertRGBtoIndexedColor(256);
-        }
+        super(ImagePlusColor8UData.convertIfNeeded(image));
     }
 }

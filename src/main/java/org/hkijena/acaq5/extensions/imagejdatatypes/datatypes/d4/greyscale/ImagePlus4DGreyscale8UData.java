@@ -1,9 +1,9 @@
 package org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d4.greyscale;
 
 import ij.ImagePlus;
-import ij.process.ImageConverter;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 
 /**
  * 8-bit greyscale 4D image
@@ -21,12 +21,6 @@ public class ImagePlus4DGreyscale8UData extends ImagePlus4DGreyscaleData {
      * @param image wrapped image
      */
     public ImagePlus4DGreyscale8UData(ImagePlus image) {
-        super(image);
-
-        // Apply conversion
-        if (image.getType() != ImagePlus.GRAY8) {
-            ImageConverter ic = new ImageConverter(image);
-            ic.convertToGray8();
-        }
+        super(ImagePlusGreyscale8UData.convertIfNeeded(image));
     }
 }

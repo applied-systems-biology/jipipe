@@ -1,10 +1,10 @@
 package org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d4.greyscale;
 
 import ij.ImagePlus;
-import ij.process.ImageConverter;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d4.ImagePlus4DData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 
 /**
  * Greyscale 4D image
@@ -22,15 +22,6 @@ public class ImagePlus4DGreyscaleData extends ImagePlus4DData {
      * @param image wrapped image
      */
     public ImagePlus4DGreyscaleData(ImagePlus image) {
-        super(image);
-
-        // Apply conversion
-        if (image.getType() != ImagePlus.GRAY8 &&
-                image.getType() != ImagePlus.GRAY16 &&
-                image.getType() != ImagePlus.GRAY32) {
-            System.out.println("[WARNING] Attempt to store non-grayscale data into a grayscale image. Converting to 32-bit floating point.");
-            ImageConverter ic = new ImageConverter(image);
-            ic.convertToGray32();
-        }
+        super(ImagePlusGreyscaleData.convertIfNeeded(image));
     }
 }

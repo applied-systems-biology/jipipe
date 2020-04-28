@@ -3,6 +3,7 @@ package org.hkijena.acaq5.api.data;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import ij.measure.ResultsTable;
+import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
@@ -271,7 +272,9 @@ public class ACAQExportedDataTable implements TableModel {
         try {
             return JsonUtils.getObjectMapper().readerFor(ACAQExportedDataTable.class).readValue(fileName.toFile());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UserFriendlyRuntimeException(e, "Unable to load data table from '" + fileName + "'!",
+                    "Either the file is inaccessible, or corrupt.",
+                    "Check if the file is readable and contains valid JSON data.");
         }
     }
 

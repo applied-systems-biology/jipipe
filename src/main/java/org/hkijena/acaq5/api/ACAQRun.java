@@ -3,6 +3,7 @@ package org.hkijena.acaq5.api;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.utils.GraphUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 
@@ -72,7 +73,9 @@ public class ACAQRun implements ACAQRunnable {
                 try {
                     Files.createDirectories(configuration.getOutputPath());
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    throw new UserFriendlyRuntimeException(e, "Could not create necessary directory '" + configuration.getOutputPath() + "'!",
+                            "Either the path is invalid, or you do not have permissions to create the directory",
+                            "Check if the path is valid and the parent directories are writeable by your current user");
                 }
             }
 
@@ -83,7 +86,9 @@ public class ACAQRun implements ACAQRunnable {
                     try {
                         Files.createDirectories(slot.getStoragePath());
                     } catch (IOException e) {
-                        throw new RuntimeException(e);
+                        throw new UserFriendlyRuntimeException(e, "Could not create necessary directory '" + slot.getStoragePath() + "'!",
+                                "Either the path is invalid, or you do not have permissions to create the directory",
+                                "Check if the path is valid and the parent directories are writeable by your current user");
                     }
                 }
             }
@@ -135,7 +140,10 @@ public class ACAQRun implements ACAQRunnable {
 
         for (int i = 0; i < traversedSlots.size(); ++i) {
             if (isCancelled.get())
-                throw new RuntimeException("Execution was cancelled");
+                throw new UserFriendlyRuntimeException("Execution was cancelled",
+                        "You cancelled the execution of the algorithm pipeline.",
+                        "You clicked 'Cancel'.",
+                        "Do not click 'Cancel' if you do not want to cancel the execution.");
             ACAQDataSlot slot = traversedSlots.get(i);
             onProgress.accept(new ACAQRunnerStatus(i, algorithmGraph.getSlotCount(), slot.getNameWithAlgorithmName()));
 
@@ -171,7 +179,9 @@ public class ACAQRun implements ACAQRunnable {
             if (configuration.getOutputPath() != null && configuration.isFlushingEnabled())
                 project.saveProject(configuration.getOutputPath().resolve("parameters.json"));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UserFriendlyRuntimeException(e, "Could not save project to '" + configuration.getOutputPath().resolve("parameters.json") + "'!",
+                    "Either the path is invalid, or you have no permission to write to the disk, or the disk space is full",
+                    "Check if you can write to the output directory.");
         }
     }
 

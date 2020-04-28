@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.extensions.multiparameters.datasources;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
@@ -87,15 +86,5 @@ public class ParametersDataDefinition extends ACAQAlgorithm {
     @ACAQDocumentation(name = "Algorithm parameters", description = "Contains the parameters of the selected algorithm")
     public ACAQParameterCollection getAlgorithmParameters() {
         return algorithmInstance;
-    }
-
-    /**
-     * Triggered when the parameter structure of algorithm parameters is changed
-     *
-     * @param event generated event
-     */
-    @Subscribe
-    public void onParameterStructureChanged(ParameterStructureChangedEvent event) {
-        getEventBus().post(event);
     }
 }

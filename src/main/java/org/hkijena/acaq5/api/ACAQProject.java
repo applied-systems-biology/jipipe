@@ -27,6 +27,7 @@ import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.CompartmentRemovedEvent;
 import org.hkijena.acaq5.api.events.WorkDirectoryChangedEvent;
+import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 
@@ -289,7 +290,11 @@ public class ACAQProject implements ACAQValidatable {
         try {
             return JsonUtils.getObjectMapper().readerFor(typeReference).readValue(node);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UserFriendlyRuntimeException(e, "Could not load dependencies from ACAQ5 project",
+                    "The JSON data that describes the project dependencies is missing essential information",
+                    "Open the file in a text editor and compare the dependencies with a valid project. You can also try " +
+                            "to delete the whole dependencies section - you just have to make sure that they are actually satisfied. " +
+                            "To do this, use the plugin manager in ACAQ5's GUI.");
         }
     }
 

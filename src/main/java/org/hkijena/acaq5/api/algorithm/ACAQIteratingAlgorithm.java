@@ -4,6 +4,7 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQTraitConfiguration;
+import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -59,7 +60,11 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
         int rows = inputSlots.get(0).getRowCount();
         for (int i = 1; i < inputSlots.size(); ++i) {
             if (rows != inputSlots.get(i).getRowCount())
-                throw new RuntimeException("Input slots have a different row count!");
+                throw new UserFriendlyRuntimeException("Input slots have a different row count!", "Unable to group input data together",
+                        "The algorithm '" + getName() + "' has multiple input slots. ACAQ needs to group the input data together for the algorithm to work. " +
+                                "But, the input slots have different row counts, so this cannot be safely done without leaving some data out.",
+                        "Run the testbench on input algorithms and check why they create different amounts of data. Ensure that their output has the same row number, " +
+                                "and can be grouped together by the annotation columns.");
         }
     }
 

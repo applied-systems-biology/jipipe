@@ -4,6 +4,7 @@ import com.google.common.eventbus.EventBus;
 import ij.IJ;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.events.ExtensionRegisteredEvent;
+import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.registries.*;
 import org.hkijena.acaq5.ui.registries.*;
 import org.scijava.Context;
@@ -90,7 +91,9 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
                 registeredExtensionIds.add(extension.getDependencyId());
                 eventBus.post(new ExtensionRegisteredEvent(this, extension));
             } catch (InstantiableException e) {
-                throw new RuntimeException(e);
+                throw new UserFriendlyRuntimeException(e, "A plugin could be be registered.",
+                        "There is an error in the plugin's code that prevents it from being loaded.",
+                        "Please contact the plugin author for further help.");
             }
         }
 
@@ -223,7 +226,10 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
                 instance.installEvents();
                 instance.discover();
             } catch (InstantiableException e) {
-                throw new RuntimeException(e);
+                throw new UserFriendlyRuntimeException(e, "Could not create essential ACAQ5 data structures.",
+                        "There seems to be an issue either with ACAQ5 or your ImageJ installation.",
+                        "Try to install ACAQ5 into a new ImageJ distribution and one-by-one install additional plugins. " +
+                                "Contact the ACAQ5 or plugin author if you cannot resolve the issue.");
             }
         }
     }

@@ -1,9 +1,9 @@
 package org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d3.greyscale;
 
 import ij.ImagePlus;
-import ij.process.ImageConverter;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 
 /**
  * 8-bit greyscale 3D image
@@ -21,12 +21,6 @@ public class ImagePlus3DGreyscale8UData extends ImagePlus3DGreyscaleData {
      * @param image wrapped image
      */
     public ImagePlus3DGreyscale8UData(ImagePlus image) {
-        super(image);
-
-        // Apply conversion
-        if (image.getType() != ImagePlus.GRAY8) {
-            ImageConverter ic = new ImageConverter(image);
-            ic.convertToGray8();
-        }
+        super(ImagePlusGreyscale8UData.convertIfNeeded(image));
     }
 }

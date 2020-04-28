@@ -13,6 +13,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.io.IOException;
@@ -84,7 +85,10 @@ public class ACAQExportedCompartment {
      */
     public void addTo(ACAQProject project, String compartmentName) {
         if (project.getCompartments().containsKey(compartmentName))
-            throw new RuntimeException("Compartment " + compartmentName + " already exists!");
+            throw new UserFriendlyRuntimeException("Compartment " + compartmentName + " already exists!",
+                    "Compartment " + compartmentName + " already exists!",
+                    "There is already a graph compartment with that name.",
+                    "Please choose another unique name.");
         ACAQProjectCompartment compartment = project.addCompartment(compartmentName);
         compartmentName = compartment.getProjectCompartmentId();
         ACAQCompartmentOutput projectOutputNode = compartment.getOutputNode();

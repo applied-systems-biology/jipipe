@@ -10,6 +10,7 @@ import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.data.traits.*;
+import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 
 import java.io.IOException;
@@ -76,7 +77,9 @@ public class ACAQJavaAlgorithmDeclaration extends ACAQMutableAlgorithmDeclaratio
         try {
             return ConstructorUtils.getMatchingAccessibleConstructor(getAlgorithmClass(), algorithm.getClass()).newInstance(algorithm);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
+            throw new UserFriendlyRuntimeException(e, "Unable to copy algorithm '" + algorithm.getName() + "'!",
+                    "There is a programming error in the algorithm's code.",
+                    "Please contact the developer of the plugin that created the algorithm.");
         }
     }
 
@@ -90,7 +93,9 @@ public class ACAQJavaAlgorithmDeclaration extends ACAQMutableAlgorithmDeclaratio
         try {
             return getAlgorithmClass().getConstructor(ACAQAlgorithmDeclaration.class).newInstance(this);
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            throw new RuntimeException(e);
+            throw new UserFriendlyRuntimeException(e, "Unable to create an algorithm instance!",
+                    "There is a programming error in an algorithm's code.",
+                    "Please contact the developer of the plugin that created the algorithm.");
         }
     }
 

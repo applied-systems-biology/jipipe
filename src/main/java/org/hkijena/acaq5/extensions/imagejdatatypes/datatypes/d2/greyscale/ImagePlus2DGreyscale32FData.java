@@ -1,9 +1,9 @@
 package org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale;
 
 import ij.ImagePlus;
-import ij.process.ImageConverter;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 
 /**
  * 32 bit float greyscale 2D image
@@ -21,12 +21,6 @@ public class ImagePlus2DGreyscale32FData extends ImagePlus2DGreyscaleData {
      * @param image wrapped image
      */
     public ImagePlus2DGreyscale32FData(ImagePlus image) {
-        super(image);
-
-        // Apply conversion
-        if (image.getType() != ImagePlus.GRAY32) {
-            ImageConverter ic = new ImageConverter(image);
-            ic.convertToGray32();
-        }
+        super(ImagePlusGreyscale32FData.convertIfNeeded(image));
     }
 }

@@ -1,5 +1,7 @@
 package org.hkijena.acaq5.utils;
 
+import java.lang.reflect.Field;
+
 /**
  * Utilities around reflection
  */
@@ -11,6 +13,7 @@ public class ReflectionUtils {
     /**
      * Creates a new class instance.
      * Can handle primitives
+     * Can handle enums
      *
      * @param klass instantiated class
      * @return instance
@@ -32,6 +35,12 @@ public class ReflectionUtils {
             return '\0';
         } else if (klass == short.class) {
             return (short) 0;
+        } else if (Enum.class.isAssignableFrom(klass)) {
+            try {
+                return getEnumValues(klass)[0];
+            } catch (IllegalAccessException | NoSuchFieldException e) {
+                throw new RuntimeException(e);
+            }
         } else {
             try {
                 return klass.newInstance();
@@ -39,5 +48,22 @@ public class ReflectionUtils {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    /**
+     * Gets all enum values via reflection
+     *
+     * @param <E>       the enum class
+     * @param enumClass the enum class
+     * @return all enum values
+     * @throws NoSuchFieldException   triggered by reflection
+     * @throws IllegalAccessException triggered by reflection
+     */
+    public static <E extends Enum> E[] getEnumValues(Class<?> enumClass)
+            throws NoSuchFieldException, IllegalAccessException {
+        Field f = enumClass.getDeclaredField("$VALUES");
+        f.setAccessible(true);
+        Object o = f.get(null);
+        return (E[]) o;
     }
 }

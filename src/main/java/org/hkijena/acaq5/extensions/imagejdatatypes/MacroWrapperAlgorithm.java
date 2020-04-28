@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.extensions.imagejdatatypes;
 
-import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
@@ -17,7 +16,6 @@ import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.traits.ConfigTraits;
-import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
@@ -280,16 +278,6 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
     @ACAQDocumentation(name = "Macro parameters", description = "The parameter are passed as variables to the macro.")
     public ACAQDynamicParameterCollection getMacroParameters() {
         return macroParameters;
-    }
-
-    /**
-     * Triggered when the parameter structure of macro parameters is changed
-     *
-     * @param event generated event
-     */
-    @Subscribe
-    public void onParameterStructureChanged(ParameterStructureChangedEvent event) {
-        getEventBus().post(event);
     }
 
 //    @ACAQDocumentation(name = "Batch mode", description = "If enabled, the macro might be able to run on servers.\n" +

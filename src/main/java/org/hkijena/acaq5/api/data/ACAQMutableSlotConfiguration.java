@@ -8,6 +8,7 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.events.SlotAddedEvent;
 import org.hkijena.acaq5.api.events.SlotOrderChangedEvent;
 import org.hkijena.acaq5.api.events.SlotRemovedEvent;
+import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.utils.JsonUtils;
 
@@ -66,31 +67,41 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
         if (user) {
             if (definition.getSlotType() == ACAQDataSlot.SlotType.Input &&
                     !allowedInputSlotTypes.contains(definition.getDataClass()))
-                throw new RuntimeException("Slot type is not accepted by this configuration!");
+                throw new UserFriendlyRuntimeException("Slot type is not accepted by this configuration!", "Unable to add slot!",
+                        "The algorithm is configured to not accept this type of slot.", "Contact the authors of the plugin that provides the algorithm.");
             if (definition.getSlotType() == ACAQDataSlot.SlotType.Input && !allowInputSlots)
-                throw new RuntimeException("Slot configuration does not allow input slots");
+                throw new UserFriendlyRuntimeException("Slot configuration does not allow input slots", "Unable to add slot!",
+                        "The algorithm is configured to not accept this type of slot.", "Contact the authors of the plugin that provides the algorithm.");
             if (definition.getSlotType() == ACAQDataSlot.SlotType.Input && inputSlotsSealed)
-                throw new RuntimeException("Slot configuration is sealed!");
+                throw new UserFriendlyRuntimeException("Slot configuration is sealed!", "Unable to add slot!",
+                        "The algorithm is configured to not accept any more slots of this type.", "Contact the authors of the plugin that provides the algorithm.");
             if (definition.getSlotType() == ACAQDataSlot.SlotType.Input &&
                     inputSlotOrder.size() >= maxInputSlots)
-                throw new RuntimeException("Slot already reached the limit of input slots!");
+                throw new UserFriendlyRuntimeException("Slot already reached the limit of input slots!", "Unable to add slot!",
+                        "The algorithm is configured to not accept any more slots of this type.", "Contact the authors of the plugin that provides the algorithm.");
             if (definition.getSlotType() == ACAQDataSlot.SlotType.Output &&
                     !allowedOutputSlotTypes.contains(definition.getDataClass()))
-                throw new RuntimeException("Slot type is not accepted by this configuration!");
+                throw new UserFriendlyRuntimeException("Slot type is not accepted by this configuration!", "Unable to add slot!",
+                        "The algorithm is configured to not accept this type of slot.", "Contact the authors of the plugin that provides the algorithm.");
             if (definition.getSlotType() == ACAQDataSlot.SlotType.Output && !allowOutputSlots)
-                throw new RuntimeException("Slot configuration does not allow output slots");
+                throw new UserFriendlyRuntimeException("Slot configuration does not allow output slots", "Unable to add slot!",
+                        "The algorithm is configured to not accept this type of slot.", "Contact the authors of the plugin that provides the algorithm.");
             if (definition.getSlotType() == ACAQDataSlot.SlotType.Output && outputSlotsSealed)
-                throw new RuntimeException("Slot configuration is sealed!");
+                throw new UserFriendlyRuntimeException("Slot configuration is sealed!", "Unable to add slot!",
+                        "The algorithm is configured to not accept any more slots of this type.", "Contact the authors of the plugin that provides the algorithm.");
             if (definition.getSlotType() == ACAQDataSlot.SlotType.Output &&
                     outputSlotOrder.size() >= maxOutputSlots)
-                throw new RuntimeException("Slot already reached the limit of output slots!");
+                throw new UserFriendlyRuntimeException("Slot already reached the limit of output slots!", "Unable to add slot!",
+                        "The algorithm is configured to not accept any more slots of this type.", "Contact the authors of the plugin that provides the algorithm.");
             if (definition.getSlotType() == ACAQDataSlot.SlotType.Output &&
                     !allowInheritedOutputSlots && definition.getInheritedSlot() != null &&
                     !definition.getInheritedSlot().isEmpty())
-                throw new IllegalArgumentException("Slot configuration does not allow slot inheritance!");
+                throw new UserFriendlyRuntimeException("Slot configuration does not allow slot inheritance!", "Unable to add slot!",
+                        "The algorithm is configured to not accept output slots with slot inheritance.", "Contact the authors of the plugin that provides the algorithm.");
         }
         if (hasSlot(name))
-            throw new RuntimeException("Slot already exists!");
+            throw new UserFriendlyRuntimeException("Slot already exists!", "Unable to add slot!",
+                    "There is already a slot with the same name.", "Slot names have to be unique across input and output slots. Please choose another name.");
 
         slots.put(name, definition);
         if (definition.getSlotType() == ACAQDataSlot.SlotType.Input)
@@ -117,11 +128,13 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
                 switch (slot.getSlotType()) {
                     case Input:
                         if (!canModifyInputSlots())
-                            throw new RuntimeException("Input slots can not be modified!");
+                            throw new UserFriendlyRuntimeException("Input slots can not be modified!", "Unable to remove slot!",
+                                    "The algorithm is configured, so input slots cannot be removed.", "Contact the authors of the plugin that provides the algorithm.");
                         break;
                     case Output:
                         if (!canModifyOutputSlots())
-                            throw new RuntimeException("Output slots can not be modified!");
+                            throw new UserFriendlyRuntimeException("Output slots can not be modified!", "Unable to remove slot!",
+                                    "The algorithm is configured, so output slots cannot be removed.", "Contact the authors of the plugin that provides the algorithm.");
                         break;
                     default:
                         throw new RuntimeException("Unknown slot type!");
@@ -203,14 +216,16 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
                     ACAQSlotDefinition slotDefinition = objectReader.readValue(kv.getValue());
                     addSlot(kv.getKey(), slotDefinition, false);
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    throw new UserFriendlyRuntimeException(e, "Unable to read slot from JSON!", "There is essential information missing in the JSON data.",
+                            "Please check if the JSON data is valid.");
                 }
             } else {
                 try {
                     ACAQSlotDefinition slotDefinition = objectReader.readValue(kv.getValue());
                     slots.get(kv.getKey()).setTo(slotDefinition);
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    throw new UserFriendlyRuntimeException(e, "Unable to read slot from JSON!", "There is essential information missing in the JSON data.",
+                            "Please check if the JSON data is valid.");
                 }
             }
         }
@@ -656,9 +671,31 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
          * @param types Allowed data types
          * @return The builder
          */
+        public final Builder restrictInputTo(Collection<Class<? extends ACAQData>> types) {
+            object.allowedInputSlotTypes = new HashSet<>(types);
+            return this;
+        }
+
+        /**
+         * Restricts the slot to specified data types
+         *
+         * @param types Allowed data types
+         * @return The builder
+         */
         @SafeVarargs
         public final Builder restrictOutputTo(Class<? extends ACAQData>... types) {
             object.allowedOutputSlotTypes = new HashSet<>(Arrays.asList(types));
+            return this;
+        }
+
+        /**
+         * Restricts the slot to specified data types
+         *
+         * @param types Allowed data types
+         * @return The builder
+         */
+        public final Builder restrictOutputTo(Collection<Class<? extends ACAQData>> types) {
+            object.allowedOutputSlotTypes = new HashSet<>(types);
             return this;
         }
 

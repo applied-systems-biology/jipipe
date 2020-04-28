@@ -24,13 +24,22 @@ public class ImagePlusColor8UData extends ImagePlusColorData {
      * @param image wrapped image
      */
     public ImagePlusColor8UData(ImagePlus image) {
-        super(image);
+        super(convertIfNeeded(image));
+    }
 
-        // Apply conversion
+    /**
+     * Converts an {@link ImagePlus} to the color space of this data.
+     * Does not guarantee that the input image is copied.
+     *
+     * @param image the image
+     * @return converted image.
+     */
+    public static ImagePlus convertIfNeeded(ImagePlus image) {
         if (image.getType() != ImagePlus.COLOR_256) {
             ImageConverter ic = new ImageConverter(image);
             ic.convertToRGB();
             ic.convertRGBtoIndexedColor(256);
         }
+        return image;
     }
 }

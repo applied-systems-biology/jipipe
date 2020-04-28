@@ -25,9 +25,17 @@ public class ImagePlusGreyscaleData extends ImagePlusData {
      * @param image wrapped image
      */
     public ImagePlusGreyscaleData(ImagePlus image) {
-        super(image);
+        super(ImagePlusGreyscaleData.convertIfNeeded(image));
+    }
 
-        // Apply conversion
+    /**
+     * Converts an {@link ImagePlus} to the color space of this data.
+     * Does not guarantee that the input image is copied.
+     *
+     * @param image the image
+     * @return converted image.
+     */
+    public static ImagePlus convertIfNeeded(ImagePlus image) {
         if (image.getType() != ImagePlus.GRAY8 &&
                 image.getType() != ImagePlus.GRAY16 &&
                 image.getType() != ImagePlus.GRAY32) {
@@ -35,5 +43,6 @@ public class ImagePlusGreyscaleData extends ImagePlusData {
             ImageConverter ic = new ImageConverter(image);
             ic.convertToGray32();
         }
+        return image;
     }
 }

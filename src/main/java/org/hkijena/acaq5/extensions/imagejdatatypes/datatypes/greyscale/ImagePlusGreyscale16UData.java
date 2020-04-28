@@ -24,12 +24,21 @@ public class ImagePlusGreyscale16UData extends ImagePlusGreyscaleData {
      * @param image wrapped image
      */
     public ImagePlusGreyscale16UData(ImagePlus image) {
-        super(image);
+        super(ImagePlusGreyscale16UData.convertIfNeeded(image));
+    }
 
-        // Apply conversion
+    /**
+     * Converts an {@link ImagePlus} to the color space of this data.
+     * Does not guarantee that the input image is copied.
+     *
+     * @param image the image
+     * @return converted image.
+     */
+    public static ImagePlus convertIfNeeded(ImagePlus image) {
         if (image.getType() != ImagePlus.GRAY16) {
             ImageConverter ic = new ImageConverter(image);
             ic.convertToGray16();
         }
+        return image;
     }
 }

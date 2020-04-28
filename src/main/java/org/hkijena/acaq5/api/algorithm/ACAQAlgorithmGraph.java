@@ -15,6 +15,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.*;
+import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
@@ -22,14 +23,11 @@ import org.hkijena.acaq5.utils.StringUtils;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.cycle.CycleDetector;
 import org.jgrapht.graph.DefaultDirectedGraph;
-import org.jgrapht.io.DOTExporter;
-import org.jgrapht.io.ExportException;
 import org.jgrapht.traverse.DepthFirstIterator;
 import org.jgrapht.traverse.GraphIterator;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -92,7 +90,11 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         if (compartment == null)
             throw new NullPointerException("Compartment should not be null!");
         if (algorithms.containsKey(key))
-            throw new RuntimeException("Already contains algorithm with name " + key);
+            throw new UserFriendlyRuntimeException("Already contains algorithm with name " + key,
+                    "Could not add an algorithm node into the graph!",
+                    "There already exists an algorithm with the same identifier.",
+                    "If you are loading from a JSON project or plugin, check if the file is valid. Contact " +
+                            "the ACAQ or plugin developers for further assistance.");
         algorithm.setCompartment(compartment);
         algorithm.setGraph(this);
         algorithms.put(key, algorithm);
@@ -257,7 +259,10 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      */
     public void connect(ACAQDataSlot source, ACAQDataSlot target, boolean userCanDisconnect) {
         if (!canConnect(source, target, false))
-            throw new RuntimeException("Cannot connect data slots: " + source.getNameWithAlgorithmName() + " ==> " + target.getNameWithAlgorithmName());
+            throw new UserFriendlyRuntimeException("Cannot connect data slots: " + source.getNameWithAlgorithmName() + " ==> " + target.getNameWithAlgorithmName(),
+                    "Cannot create a connection between '" + source.getNameWithAlgorithmName() + "' and '" + target.getNameWithAlgorithmName() + "'!",
+                    "The connection is invalid, such as one that causes cycles in the graph, or a connection where a slot receives multiple inputs",
+                    "Check if your pipeline contains complicated sections prone to cycles. Reorganize the graph by dragging the nodes around.");
         graph.addEdge(source, target, new ACAQAlgorithmGraphEdge(userCanDisconnect));
         getEventBus().post(new AlgorithmGraphChangedEvent(this));
         getEventBus().post(new AlgorithmGraphConnectedEvent(this, source, target));
@@ -334,7 +339,10 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
             if (edges.isEmpty())
                 return null;
             if (edges.size() > 1)
-                throw new RuntimeException("Graph is illegal!");
+                throw new UserFriendlyRuntimeException("Graph is illegal!", "The algorithm graph is invalid!",
+                        "There is at least one input slot with multiple inputs.",
+                        "Open the project or JSON extension file and look for a section 'edges'. Ensure that each slot is only at most once on the right-hand side of ':'. " +
+                                "You can also contact the ACAQ5 developers - after checking if you use the newest version - , as this should done automatically for you.");
             return graph.getEdgeSource(edges.iterator().next());
         }
         return null;
@@ -666,20 +674,6 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      */
     public int getSlotCount() {
         return graph.vertexSet().size();
-    }
-
-    /**
-     * Saves the graph as DOT file
-     *
-     * @param fileName Path where to save the file
-     */
-    public void exportDOT(Path fileName) {
-        DOTExporter<ACAQDataSlot, ACAQAlgorithmGraphEdge> exporter = new DOTExporter<>();
-        try {
-            exporter.exportGraph(graph, fileName.toFile());
-        } catch (ExportException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     /**

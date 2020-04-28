@@ -17,6 +17,7 @@ import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.data.*;
 import org.hkijena.acaq5.api.data.traits.*;
 import org.hkijena.acaq5.api.events.*;
+import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
@@ -479,7 +480,11 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterCol
                     try {
                         v = JsonUtils.getObjectMapper().readerFor(parameterAccess.getFieldClass()).readValue(node.get(key));
                     } catch (IOException e) {
-                        throw new RuntimeException(e);
+                        throw new UserFriendlyRuntimeException(e, "Could not load parameter '" + key + "'!",
+                                "Either the data was corrupted, or your ACAQ5 or plugin version is too new or too old.",
+                                "Check the 'dependencies' section of the project file and compare the plugin versions. Try " +
+                                        "to update ACAQ5. Compare the project file with a valid one. Contact the ACAQ5 or plugin " +
+                                        "authors if you cannot resolve the issue by yourself.");
                     }
                     parameterAccess.set(v);
                 }
@@ -859,6 +864,25 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterCol
         }
 
         return result;
+    }
+
+    /**
+     * Registers a sub-parameter instance to pass {@link ParameterStructureChangedEvent} via this algorithm's {@link EventBus}
+     *
+     * @param subParameter the sub-parameter
+     */
+    protected void registerSubParameter(ACAQParameterCollection subParameter) {
+        subParameter.getEventBus().register(this);
+    }
+
+    /**
+     * Triggered when the parameter structure of this algorithm was changed
+     *
+     * @param event generated event
+     */
+    @Subscribe
+    public void onParameterStructureChanged(ParameterStructureChangedEvent event) {
+        getEventBus().post(event);
     }
 
     /**

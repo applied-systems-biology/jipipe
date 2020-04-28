@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.api.parameters;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -73,7 +74,9 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
         try {
             return (T) getter.invoke(source);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
+            throw new UserFriendlyRuntimeException(e, "Unable to get parameter data!",
+                    "There is an error in the algorithm's code.",
+                    "Please contact the authors of the algorithm.");
         }
     }
 
@@ -87,7 +90,9 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
                 return true;
             }
         } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
+            throw new UserFriendlyRuntimeException(e, "Unable to set parameter data!",
+                    "There is an error in the algorithm's code.",
+                    "Please contact the authors of the algorithm.");
         }
     }
 
