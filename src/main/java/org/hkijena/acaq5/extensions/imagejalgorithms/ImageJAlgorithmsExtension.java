@@ -15,6 +15,7 @@ import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.color.InvertColorsAlgor
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.color.MergeChannelsAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions.StackMergerAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions.StackSplitterAlgorithm;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions.ZProjectorAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.edge.SobelEdgeDetectorAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.math.ApplyDistanceTransform2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.math.ApplyMath2DAlgorithm;
@@ -147,6 +148,7 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerAlgorithm("ij1-threshold-auto2d", AutoThreshold2DAlgorithm.class);
         registerAlgorithm("ij1-dimensions-stacksplitter", StackSplitterAlgorithm.class);
         registerAlgorithm("ij1-dimensions-stackmerger", StackMergerAlgorithm.class);
+        registerAlgorithm("ij1-dimensions-zproject", ZProjectorAlgorithm.class);
 //        for (CommandInfo command : commandService.getCommands()) {
 //            if (ImageJ2AlgorithmWrapper.isCompatible(command, getContext())) {
 //                try {

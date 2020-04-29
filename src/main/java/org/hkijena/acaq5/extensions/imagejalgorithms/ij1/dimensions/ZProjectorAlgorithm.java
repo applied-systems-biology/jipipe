@@ -86,7 +86,7 @@ public class ZProjectorAlgorithm extends ImageJ1Algorithm {
         report.forCategory("Stop slice").checkIfWithin(this, stopSlice, -1, Double.POSITIVE_INFINITY, true, true);
     }
 
-    @ACAQDocumentation(name = "Function", description = "The function that is applied to each stack of pixels.")
+    @ACAQDocumentation(name = "Method", description = "The function that is applied to each stack of pixels.")
     @ACAQParameter("method")
     public Method getMethod() {
         return method;
