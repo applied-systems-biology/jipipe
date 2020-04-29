@@ -5,6 +5,8 @@ import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.traits.ACAQJavaTraitDeclaration;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.binary.DistanceTransformWatershed2DAlgorithm;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.binary.Voronoi2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.blur.BoxFilter2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.blur.GaussianBlur2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.blur.MedianBlurGreyscale8U2DAlgorithm;
@@ -89,6 +91,12 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
     public static final Map<Class<? extends ACAQData>, Class<? extends ACAQData>> TO_COLOR_CONVERSION = getToColorConversion();
 
     /**
+     * Conversion rules convert higher-dimensional data to a lower-dimensional counterpart.
+     * 2D data remains 2D data.
+     */
+    public static final Map<Class<? extends ACAQData>, Class<? extends ACAQData>> DECREASE_DIMENSION_CONVERSION = getDecreaseDimensionConversion();
+
+    /**
      * Conversion rules convert higher-dimensional data to their 2D counterparts
      */
     public static final Map<Class<? extends ACAQData>, Class<? extends ACAQData>> TO_2D_CONVERSION = get2DConversion();
@@ -130,7 +138,8 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerAlgorithm("ij1-morph-fillholes2d", MorphologyFillHoles2DAlgorithm.class);
         registerAlgorithm("ij1-morph-outline2d", MorphologyOutline2DAlgorithm.class);
         registerAlgorithm("ij1-morph-skeletonize2d", MorphologySkeletonize2DAlgorithm.class);
-        registerAlgorithm("ij1-morph-dtwatershed2d", MorphologyDistanceTransformWatershed2DAlgorithm.class);
+        registerAlgorithm("ij1-binary-dtwatershed2d", DistanceTransformWatershed2DAlgorithm.class);
+        registerAlgorithm("ij1-binary-voronoi2d", Voronoi2DAlgorithm.class);
         registerAlgorithm("ij1-noise-addnormalnoise2d", AddNoise2DAlgorithm.class);
         registerAlgorithm("ij1-sharpen-laplacian2d", LaplacianSharpen2DAlgorithm.class);
         registerAlgorithm("ij1-threshold-manual2d-8u", ManualThreshold8U2DAlgorithm.class);
@@ -248,6 +257,42 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         result.put(ImagePlus5DColorData.class, ImagePlus2DColorData.class);
         result.put(ImagePlus5DColor8UData.class, ImagePlus2DColor8UData.class);
         result.put(ImagePlus5DColorRGBData.class, ImagePlus2DColorRGBData.class);
+
+        return result;
+    }
+
+    private static Map<Class<? extends ACAQData>, Class<? extends ACAQData>> getDecreaseDimensionConversion() {
+        Map<Class<? extends ACAQData>, Class<? extends ACAQData>> result = new HashMap<>();
+
+        result.put(ImagePlus3DData.class, ImagePlus2DData.class);
+        result.put(ImagePlus3DGreyscaleData.class, ImagePlus2DGreyscaleData.class);
+        result.put(ImagePlus3DGreyscale8UData.class, ImagePlus2DGreyscale8UData.class);
+        result.put(ImagePlus3DGreyscaleMaskData.class, ImagePlus2DGreyscaleMaskData.class);
+        result.put(ImagePlus3DGreyscale16UData.class, ImagePlus2DGreyscale16UData.class);
+        result.put(ImagePlus3DGreyscale32FData.class, ImagePlus2DGreyscale32FData.class);
+        result.put(ImagePlus3DColorData.class, ImagePlus2DColorData.class);
+        result.put(ImagePlus3DColor8UData.class, ImagePlus2DColor8UData.class);
+        result.put(ImagePlus3DColorRGBData.class, ImagePlus2DColorRGBData.class);
+
+        result.put(ImagePlus4DData.class, ImagePlus3DData.class);
+        result.put(ImagePlus4DGreyscaleData.class, ImagePlus3DGreyscaleData.class);
+        result.put(ImagePlus4DGreyscale8UData.class, ImagePlus3DGreyscale8UData.class);
+        result.put(ImagePlus4DGreyscaleMaskData.class, ImagePlus3DGreyscaleMaskData.class);
+        result.put(ImagePlus4DGreyscale16UData.class, ImagePlus3DGreyscale16UData.class);
+        result.put(ImagePlus4DGreyscale32FData.class, ImagePlus3DGreyscale32FData.class);
+        result.put(ImagePlus4DColorData.class, ImagePlus3DColorData.class);
+        result.put(ImagePlus4DColor8UData.class, ImagePlus3DColor8UData.class);
+        result.put(ImagePlus4DColorRGBData.class, ImagePlus3DColorRGBData.class);
+
+        result.put(ImagePlus5DData.class, ImagePlus4DData.class);
+        result.put(ImagePlus5DGreyscaleData.class, ImagePlus4DGreyscaleData.class);
+        result.put(ImagePlus5DGreyscale8UData.class, ImagePlus4DGreyscale8UData.class);
+        result.put(ImagePlus5DGreyscaleMaskData.class, ImagePlus4DGreyscaleMaskData.class);
+        result.put(ImagePlus5DGreyscale16UData.class, ImagePlus4DGreyscale16UData.class);
+        result.put(ImagePlus5DGreyscale32FData.class, ImagePlus4DGreyscale32FData.class);
+        result.put(ImagePlus5DColorData.class, ImagePlus4DColorData.class);
+        result.put(ImagePlus5DColor8UData.class, ImagePlus4DColor8UData.class);
+        result.put(ImagePlus5DColorRGBData.class, ImagePlus4DColorRGBData.class);
 
         return result;
     }

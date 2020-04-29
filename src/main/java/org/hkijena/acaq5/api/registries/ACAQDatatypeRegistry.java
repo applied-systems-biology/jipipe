@@ -11,6 +11,7 @@ import org.hkijena.acaq5.api.data.ACAQDataConverter;
 import org.hkijena.acaq5.api.data.ACAQDataDeclaration;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.DatatypeRegisteredEvent;
+import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 
 import java.util.*;
 
@@ -173,7 +174,17 @@ public class ACAQDatatypeRegistry {
      * @return The data class associated to the ID
      */
     public Class<? extends ACAQData> getById(String id) {
-        return registeredDataTypes.get(id);
+        Class<? extends ACAQData> klass = registeredDataTypes.getOrDefault(id, null);
+        if(klass == null) {
+            throw new UserFriendlyRuntimeException(new NullPointerException("Could not find data type with id '" + id + "' in " +
+                    String.join(", ", registeredDataTypes.keySet())),
+                    "Unable to find an data type!",
+                    "ACAQ5 plugin manager",
+                    "A project or extension requires an data type '" + id + "'. It could not be found.",
+                    "Check if ACAQ5 is up-to-date and the newest version of all plugins are installed. If you know that a data type was assigned a new ID, " +
+                            "search for '" + id + "' in the JSON file and replace it with the new identifier.");
+        }
+        return klass;
     }
 
     /**

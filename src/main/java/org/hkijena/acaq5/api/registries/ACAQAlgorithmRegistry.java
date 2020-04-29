@@ -13,6 +13,7 @@ import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.events.AlgorithmRegisteredEvent;
 import org.hkijena.acaq5.api.events.DatatypeRegisteredEvent;
 import org.hkijena.acaq5.api.events.TraitRegisteredEvent;
+import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -130,7 +131,17 @@ public class ACAQAlgorithmRegistry implements ACAQValidatable {
      * @return The declaration
      */
     public ACAQAlgorithmDeclaration getDeclarationById(String id) {
-        return registeredAlgorithms.get(id);
+        ACAQAlgorithmDeclaration declaration = registeredAlgorithms.getOrDefault(id, null);
+        if(declaration == null) {
+            throw new UserFriendlyRuntimeException(new NullPointerException("Could not find algorithm declaration with id '" + id + "' in " +
+                    String.join(", ", registeredAlgorithms.keySet())),
+                    "Unable to find an algorithm type!",
+                    "ACAQ5 plugin manager",
+                    "A project or extension requires an algorithm of type '" + id + "'. It could not be found.",
+                    "Check if ACAQ5 is up-to-date and the newest version of all plugins are installed. If you know that an algorithm was assigned a new ID, " +
+                            "search for '" + id + "' in the JSON file and replace it with the new identifier.");
+        }
+        return declaration;
     }
 
     /**

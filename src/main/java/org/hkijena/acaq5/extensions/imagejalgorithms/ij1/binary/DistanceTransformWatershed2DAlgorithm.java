@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.imagejalgorithms.ij1.math;
+package org.hkijena.acaq5.extensions.imagejalgorithms.ij1.binary;
 
 import ij.ImagePlus;
 import ij.plugin.filter.EDM;
@@ -8,9 +8,11 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.traits.BadForTrait;
+import org.hkijena.acaq5.api.data.traits.GoodForTrait;
+import org.hkijena.acaq5.api.data.traits.RemovesTrait;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.acaq5.utils.ImageJUtils;
 
@@ -20,21 +22,26 @@ import java.util.function.Supplier;
 /**
  * Wrapper around {@link EDM}
  */
-@ACAQDocumentation(name = "Euclidean distance transform", description = "Applies a euclidean distance transform on binary images." +
+@ACAQDocumentation(name = "Distance transform watershed", description = "Applies a euclidean distance transform on binary images. Then applies a watershed algorithm." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@ACAQOrganization(menuPath = "Math", algorithmCategory = ACAQAlgorithmCategory.Processor)
+@ACAQOrganization(menuPath = "Binary", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input")
-@AlgorithmOutputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Output")
-public class ApplyDistanceTransform2DAlgorithm extends ImageJ1Algorithm {
+@AlgorithmOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
+@GoodForTrait("bioobject-morphology-round")
+@GoodForTrait("bioobject-preparations-labeling")
+@BadForTrait("bioobject-preparations-labeling-unlabeled")
+@GoodForTrait("bioobject-count-cluster")
+@RemovesTrait("bioobject-count-cluster")
+public class DistanceTransformWatershed2DAlgorithm extends ImageJ1Algorithm {
 
     /**
      * Instantiates a new algorithm.
      *
      * @param declaration the declaration
      */
-    public ApplyDistanceTransform2DAlgorithm(ACAQAlgorithmDeclaration declaration) {
+    public DistanceTransformWatershed2DAlgorithm(ACAQAlgorithmDeclaration declaration) {
         super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscaleMaskData.class)
-                .addOutputSlot("Output", ImagePlusGreyscale8UData.class, "Input")
+                .addOutputSlot("Output", ImagePlusGreyscaleMaskData.class, "Input")
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());
@@ -45,7 +52,7 @@ public class ApplyDistanceTransform2DAlgorithm extends ImageJ1Algorithm {
      *
      * @param other the other
      */
-    public ApplyDistanceTransform2DAlgorithm(ApplyDistanceTransform2DAlgorithm other) {
+    public DistanceTransformWatershed2DAlgorithm(DistanceTransformWatershed2DAlgorithm other) {
         super(other);
     }
 
@@ -54,8 +61,8 @@ public class ApplyDistanceTransform2DAlgorithm extends ImageJ1Algorithm {
         ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class);
         ImagePlus img = inputData.getImage().duplicate();
         EDM edm = new EDM();
-        ImageJUtils.forEachSlice(img, edm::toEDM);
-        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale8UData(img));
+        ImageJUtils.forEachSlice(img, edm::toWatershed);
+        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img));
     }
 
 

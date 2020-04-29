@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.imagejalgorithms.ij1.morphology;
+package org.hkijena.acaq5.extensions.imagejalgorithms.ij1.binary;
 
 import ij.ImagePlus;
 import ij.plugin.filter.EDM;
@@ -8,11 +8,9 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.api.data.traits.BadForTrait;
-import org.hkijena.acaq5.api.data.traits.GoodForTrait;
-import org.hkijena.acaq5.api.data.traits.RemovesTrait;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.acaq5.utils.ImageJUtils;
 
@@ -20,26 +18,21 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
- * Wrapper around {@link ij.process.ImageProcessor}
+ * Wrapper around {@link EDM}
  */
-@ACAQDocumentation(name = "Distance transform watershed", description = "Applies a euclidean distance transform on binary images. Then applies a watershed algorithm." +
+@ACAQDocumentation(name = "Voronoi", description = "Splits the image by lines of points having equal distance to the borders of the two nearest particles." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@ACAQOrganization(menuPath = "Morphology", algorithmCategory = ACAQAlgorithmCategory.Processor)
+@ACAQOrganization(menuPath = "Binary", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input")
 @AlgorithmOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
-@GoodForTrait("bioobject-morphology-round")
-@GoodForTrait("bioobject-preparations-labeling")
-@BadForTrait("bioobject-preparations-labeling-unlabeled")
-@GoodForTrait("bioobject-count-cluster")
-@RemovesTrait("bioobject-count-cluster")
-public class MorphologyDistanceTransformWatershed2DAlgorithm extends ImageJ1Algorithm {
+public class Voronoi2DAlgorithm extends ImageJ1Algorithm {
 
     /**
      * Instantiates a new algorithm.
      *
      * @param declaration the declaration
      */
-    public MorphologyDistanceTransformWatershed2DAlgorithm(ACAQAlgorithmDeclaration declaration) {
+    public Voronoi2DAlgorithm(ACAQAlgorithmDeclaration declaration) {
         super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscaleMaskData.class)
                 .addOutputSlot("Output", ImagePlusGreyscaleMaskData.class, "Input")
                 .allowOutputSlotInheritance(true)
@@ -52,7 +45,7 @@ public class MorphologyDistanceTransformWatershed2DAlgorithm extends ImageJ1Algo
      *
      * @param other the other
      */
-    public MorphologyDistanceTransformWatershed2DAlgorithm(MorphologyDistanceTransformWatershed2DAlgorithm other) {
+    public Voronoi2DAlgorithm(Voronoi2DAlgorithm other) {
         super(other);
     }
 
@@ -61,8 +54,9 @@ public class MorphologyDistanceTransformWatershed2DAlgorithm extends ImageJ1Algo
         ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class);
         ImagePlus img = inputData.getImage().duplicate();
         EDM edm = new EDM();
-        ImageJUtils.forEachSlice(img, edm::toWatershed);
-        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img));
+        edm.setup("voronoi", img);
+        ImageJUtils.forEachSlice(img, edm::run);
+        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale8UData(img));
     }
 
 

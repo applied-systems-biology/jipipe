@@ -7,6 +7,7 @@ import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.events.TraitRegisteredEvent;
+import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.traits.ACAQJavaTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
@@ -71,7 +72,17 @@ public class ACAQTraitRegistry implements ACAQValidatable {
      * @return trait declaration by id
      */
     public ACAQTraitDeclaration getDeclarationById(String id) {
-        return Objects.requireNonNull(registeredTraits.get(id));
+        ACAQTraitDeclaration declaration = registeredTraits.getOrDefault(id, null);
+        if(declaration == null) {
+            throw new UserFriendlyRuntimeException(new NullPointerException("Could not find annotation type with id '" + id + "' in " +
+                    String.join(", ", registeredTraits.keySet())),
+                    "Unable to find an annotation type!",
+                    "ACAQ5 plugin manager",
+                    "A project or extension requires an annotation of type '" + id + "'. It could not be found.",
+                    "Check if ACAQ5 is up-to-date and the newest version of all plugins are installed. If you know that an annotation was assigned a new ID, " +
+                            "search for '" + id + "' in the JSON file and replace it with the new identifier.");
+        }
+        return declaration;
     }
 
     /**
