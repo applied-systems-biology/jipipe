@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 /**
  * Wrapper around {@link EDM}
  */
-@ACAQDocumentation(name = "Distance transform watershed", description = "Applies a euclidean distance transform on binary images. Then applies a watershed algorithm." +
+@ACAQDocumentation(name = "Distance transform watershed 2D", description = "Applies an euclidean distance transform on binary images. Then applies a watershed algorithm." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ACAQOrganization(menuPath = "Binary", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input")

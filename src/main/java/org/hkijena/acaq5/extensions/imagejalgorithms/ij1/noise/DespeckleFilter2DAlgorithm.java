@@ -1,7 +1,7 @@
-package org.hkijena.acaq5.extensions.imagejalgorithms.ij1.blur;
+package org.hkijena.acaq5.extensions.imagejalgorithms.ij1.noise;
 
 import ij.ImagePlus;
-import ij.process.ImageProcessor;
+import ij.plugin.filter.RankFilters;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
@@ -10,7 +10,6 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.acaq5.utils.ImageJUtils;
 
 import java.util.function.Consumer;
@@ -19,24 +18,24 @@ import java.util.function.Supplier;
 import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExtension.REMOVE_MASK_QUALIFIER;
 
 /**
- * Wrapper around {@link ij.process.ImageProcessor}
+ * Wrapper around {@link RankFilters}
  */
-@ACAQDocumentation(name = "Median blur 3x3 2D (8-bit greyscale)", description = "Applies a 3x3 median filter to 8-bit greyscale images. " +
+@ACAQDocumentation(name = "Despeckle 2D", description = "Applies a median filter with radius=1. " +
+        "If a multi-channel image is provided, the operation is applied to each channel. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@ACAQOrganization(menuPath = "Blur", algorithmCategory = ACAQAlgorithmCategory.Processor)
-@AlgorithmInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input")
-@AlgorithmOutputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Output")
-public class MedianBlurGreyscale8U2DAlgorithm extends ImageJ1Algorithm {
-
+@ACAQOrganization(menuPath = "Noise", algorithmCategory = ACAQAlgorithmCategory.Processor)
+@AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Input")
+@AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Output")
+public class DespeckleFilter2DAlgorithm extends ImageJ1Algorithm {
 
     /**
      * Instantiates a new algorithm.
      *
      * @param declaration the declaration
      */
-    public MedianBlurGreyscale8U2DAlgorithm(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale8UData.class)
-                .addOutputSlot("Output", ImagePlusGreyscale8UData.class, "Input", REMOVE_MASK_QUALIFIER)
+    public DespeckleFilter2DAlgorithm(ACAQAlgorithmDeclaration declaration) {
+        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusData.class)
+                .addOutputSlot("Output", ImagePlusData.class, "Input", REMOVE_MASK_QUALIFIER)
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());
@@ -47,16 +46,17 @@ public class MedianBlurGreyscale8U2DAlgorithm extends ImageJ1Algorithm {
      *
      * @param other the other
      */
-    public MedianBlurGreyscale8U2DAlgorithm(MedianBlurGreyscale8U2DAlgorithm other) {
+    public DespeckleFilter2DAlgorithm(DespeckleFilter2DAlgorithm other) {
         super(other);
     }
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class);
+        ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusData.class);
         ImagePlus img = inputData.getImage().duplicate();
-        ImageJUtils.forEachSlice(img, ImageProcessor::medianFilter);
-        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale8UData(img));
+        RankFilters rankFilters = new RankFilters();
+        ImageJUtils.forEachSlice(img, ip -> rankFilters.rank(ip, 1, RankFilters.MEDIAN));
+        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
     }
 
 

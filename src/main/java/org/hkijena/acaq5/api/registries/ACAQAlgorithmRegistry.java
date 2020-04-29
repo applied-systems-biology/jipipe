@@ -132,7 +132,7 @@ public class ACAQAlgorithmRegistry implements ACAQValidatable {
      */
     public ACAQAlgorithmDeclaration getDeclarationById(String id) {
         ACAQAlgorithmDeclaration declaration = registeredAlgorithms.getOrDefault(id, null);
-        if(declaration == null) {
+        if (declaration == null) {
             throw new UserFriendlyRuntimeException(new NullPointerException("Could not find algorithm declaration with id '" + id + "' in " +
                     String.join(", ", registeredAlgorithms.keySet())),
                     "Unable to find an algorithm type!",

@@ -1,8 +1,7 @@
 package org.hkijena.acaq5.extensions.imagejalgorithms.ij1.morphology;
 
 import ij.ImagePlus;
-import ij.Prefs;
-import ij.process.ByteProcessor;
+import ij.plugin.filter.RankFilters;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
@@ -21,24 +20,25 @@ import java.util.function.Supplier;
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@ACAQDocumentation(name = "Morphological operation", description = "Applies a morphological operation to binary images." +
+@ACAQDocumentation(name = "Morphological operation (greyscale)", description = "Applies a morphological operation to greyscale images. " +
+        "If a multi-channel image is provided, the operation is applied to each channel. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ACAQOrganization(menuPath = "Morphology", algorithmCategory = ACAQAlgorithmCategory.Processor)
-@AlgorithmInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input")
-@AlgorithmOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
-public class Morphology2DAlgorithm extends ImageJ1Algorithm {
+@AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Input")
+@AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Output")
+public class MorphologyGreyscale2DAlgorithm extends ImageJ1Algorithm {
 
     private Operation operation = Operation.Dilate;
-    private int iterations = 1;
+    private int radius = 1;
 
     /**
      * Instantiates a new algorithm.
      *
      * @param declaration the declaration
      */
-    public Morphology2DAlgorithm(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscaleMaskData.class)
-                .addOutputSlot("Output", ImagePlusGreyscaleMaskData.class, "Input")
+    public MorphologyGreyscale2DAlgorithm(ACAQAlgorithmDeclaration declaration) {
+        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusData.class)
+                .addOutputSlot("Output", ImagePlusData.class, "Input")
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());
@@ -49,34 +49,30 @@ public class Morphology2DAlgorithm extends ImageJ1Algorithm {
      *
      * @param other the other
      */
-    public Morphology2DAlgorithm(Morphology2DAlgorithm other) {
+    public MorphologyGreyscale2DAlgorithm(MorphologyGreyscale2DAlgorithm other) {
         super(other);
         this.operation = other.operation;
-        this.iterations = other.iterations;
+        this.radius = other.radius;
     }
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class);
         ImagePlus img = inputData.getImage().duplicate();
+        RankFilters rankFilters = new RankFilters();
         ImageJUtils.forEachSlice(img, ip -> {
-            int fg = Prefs.blackBackground ? 255 : 0;
-            int foreground = ip.isInvertedLut() ? 255 - fg : fg;
-            int background = 255 - foreground;
             switch (operation) {
                 case Dilate:
-                    ((ByteProcessor) ip).dilate(iterations, background);
+                    rankFilters.rank(ip, radius, RankFilters.MAX);
                     break;
                 case Erode:
-                    ((ByteProcessor) ip).erode(iterations, background);
+                    rankFilters.rank(ip, radius, RankFilters.MIN);
                     break;
                 case Open:
-                    ((ByteProcessor) ip).erode(iterations, background);
-                    ((ByteProcessor) ip).dilate(iterations, background);
+                    rankFilters.rank(ip, radius, RankFilters.OPEN);
                     break;
                 case Close:
-                    ((ByteProcessor) ip).dilate(iterations, background);
-                    ((ByteProcessor) ip).erode(iterations, background);
+                    rankFilters.rank(ip, radius, RankFilters.CLOSE);
                     break;
             }
         });
@@ -86,7 +82,7 @@ public class Morphology2DAlgorithm extends ImageJ1Algorithm {
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        report.forCategory("Iterations").checkIfWithin(this, iterations, 1, Integer.MAX_VALUE, true, true);
+        report.forCategory("Radius").checkIfWithin(this, radius, 0, Double.POSITIVE_INFINITY, false, true);
     }
 
     @ACAQDocumentation(name = "Operation", description = "The morphological operation")
@@ -100,15 +96,15 @@ public class Morphology2DAlgorithm extends ImageJ1Algorithm {
         this.operation = operation;
     }
 
-    @ACAQDocumentation(name = "Iterations", description = "How many times the operation is applied")
-    @ACAQParameter("iterations")
-    public int getIterations() {
-        return iterations;
+    @ACAQDocumentation(name = "Radius", description = "Radius of the filter kernel. See ImageJ>Process>Filters>Show Circular Masks for a reference.")
+    @ACAQParameter("radius")
+    public int getRadius() {
+        return radius;
     }
 
-    @ACAQParameter("iterations")
-    public void setIterations(int iterations) {
-        this.iterations = iterations;
+    @ACAQParameter("radius")
+    public void setRadius(int radius) {
+        this.radius = radius;
     }
 
     /**

@@ -20,7 +20,7 @@ import java.util.function.Supplier;
 /**
  * Wrapper around {@link EDM}
  */
-@ACAQDocumentation(name = "Voronoi", description = "Splits the image by lines of points having equal distance to the borders of the two nearest particles." +
+@ACAQDocumentation(name = "Voronoi 2D", description = "Splits the image by lines of points having equal distance to the borders of the two nearest particles." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ACAQOrganization(menuPath = "Binary", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input")

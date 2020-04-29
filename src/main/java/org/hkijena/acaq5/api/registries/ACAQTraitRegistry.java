@@ -73,7 +73,7 @@ public class ACAQTraitRegistry implements ACAQValidatable {
      */
     public ACAQTraitDeclaration getDeclarationById(String id) {
         ACAQTraitDeclaration declaration = registeredTraits.getOrDefault(id, null);
-        if(declaration == null) {
+        if (declaration == null) {
             throw new UserFriendlyRuntimeException(new NullPointerException("Could not find annotation type with id '" + id + "' in " +
                     String.join(", ", registeredTraits.keySet())),
                     "Unable to find an annotation type!",

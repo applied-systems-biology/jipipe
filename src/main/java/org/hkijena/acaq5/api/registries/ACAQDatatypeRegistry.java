@@ -175,7 +175,7 @@ public class ACAQDatatypeRegistry {
      */
     public Class<? extends ACAQData> getById(String id) {
         Class<? extends ACAQData> klass = registeredDataTypes.getOrDefault(id, null);
-        if(klass == null) {
+        if (klass == null) {
             throw new UserFriendlyRuntimeException(new NullPointerException("Could not find data type with id '" + id + "' in " +
                     String.join(", ", registeredDataTypes.keySet())),
                     "Unable to find an data type!",

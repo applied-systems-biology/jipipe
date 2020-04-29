@@ -16,7 +16,8 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExtension.*;
+import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExtension.DECREASE_DIMENSION_CONVERSION;
+import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExtension.REMOVE_MASK_QUALIFIER;
 
 /**
  * Wrapper around {@link ij.plugin.ZProjector}
@@ -67,12 +68,11 @@ public class ZProjectorAlgorithm extends ImageJ1Algorithm {
         ImagePlus img = inputData.getImage().duplicate();
 
         ImagePlus result;
-        if(img.getStackSize() > 1) {
+        if (img.getStackSize() > 1) {
             int start = startSlice >= 0 ? startSlice + 1 : 1;
             int end = stopSlice >= 0 ? Math.min(img.getStackSize(), stopSlice + 1) : img.getStackSize();
             result = ZProjector.run(img, method.toString() + (projectAllHyperstackTimePoints ? " all" : ""), start, end);
-        }
-        else {
+        } else {
             result = img;
         }
 
@@ -105,7 +105,7 @@ public class ZProjectorAlgorithm extends ImageJ1Algorithm {
 
     @ACAQParameter("start-slice")
     public boolean setStartSlice(int startSlice) {
-        if(startSlice < 0) {
+        if (startSlice < 0) {
             this.startSlice = 0;
             return false;
         }
@@ -121,7 +121,7 @@ public class ZProjectorAlgorithm extends ImageJ1Algorithm {
 
     @ACAQParameter("stop-slice")
     public boolean setStopSlice(int stopSlice) {
-        if(stopSlice < -1) {
+        if (stopSlice < -1) {
             this.startSlice = -1;
             return false;
         }
