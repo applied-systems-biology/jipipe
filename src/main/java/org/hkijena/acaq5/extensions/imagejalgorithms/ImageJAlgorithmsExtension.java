@@ -5,6 +5,7 @@ import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.traits.ACAQJavaTraitDeclaration;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.background.RollingBallBackgroundEstimator2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.binary.DistanceTransformWatershed2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.binary.UltimateErodedPoints2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.binary.Voronoi2DAlgorithm;
@@ -155,6 +156,7 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerAlgorithm("ij1-noise-addnormalnoise2d", AddNoise2DAlgorithm.class);
         registerAlgorithm("ij1-noise-despeckle2d", DespeckleFilter2DAlgorithm.class);
         registerAlgorithm("ij1-noise-removeoutliers2d", RemoveOutliersFilter2DAlgorithm.class);
+        registerAlgorithm("ij1-background-rollingball2d", RollingBallBackgroundEstimator2DAlgorithm.class);
         registerAlgorithm("ij1-sharpen-laplacian2d", LaplacianSharpen2DAlgorithm.class);
         registerAlgorithm("ij1-threshold-manual2d-8u", ManualThreshold8U2DAlgorithm.class);
         registerAlgorithm("ij1-threshold-manual2d-16u", ManualThreshold16U2DAlgorithm.class);

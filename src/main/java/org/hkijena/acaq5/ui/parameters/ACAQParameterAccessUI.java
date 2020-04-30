@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.ui.parameters;
 
 import com.google.common.eventbus.Subscribe;
+import com.google.common.html.HtmlEscapers;
 import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
@@ -10,6 +11,7 @@ import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.registries.ACAQUIParametertypeRegistry;
+import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Context;
@@ -132,7 +134,7 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
             ACAQParameterAccess parameterAccess = ui.getParameterAccess();
             JPanel labelPanel = new JPanel(new BorderLayout());
             if (ui.isUILabelEnabled())
-                labelPanel.add(new JLabel(parameterAccess.getName()));
+                labelPanel.add(new JLabel(parameterAccess.getName()), BorderLayout.CENTER);
             if (isModifiable) {
                 JButton removeButton = new JButton(UIUtils.getIconFromResources("close-tab.png"));
                 removeButton.setToolTipText("Remove this parameter");
@@ -151,6 +153,13 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
     private MarkdownDocument generateParameterDocumentation(ACAQParameterAccess access) {
         StringBuilder markdownString = new StringBuilder();
         markdownString.append("# Parameter '").append(access.getName()).append("'\n\n");
+        ACAQDocumentation documentation = ACAQUIParametertypeRegistry.getInstance().getDocumentationFor(access.getFieldClass());
+        if (documentation != null) {
+            markdownString.append("<table><tr>");
+            markdownString.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/data-types/data-type-parameters.png")).append("\" /></td>");
+            markdownString.append("<td><strong>").append(HtmlEscapers.htmlEscaper().escape(documentation.name())).append("</strong>: ");
+            markdownString.append(HtmlEscapers.htmlEscaper().escape(documentation.description())).append("</td></tr></table>\n\n");
+        }
         if (access.getDescription() != null && !access.getDescription().isEmpty()) {
             markdownString.append(access.getDescription());
         } else {

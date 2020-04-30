@@ -1,7 +1,5 @@
 package org.hkijena.acaq5.api.exceptions;
 
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.math.ImageCalculator2DAlgorithm;
-
 /**
  * A {@link RuntimeException} that contains more detailed information for users.
  * It answers in understandable terms: (1) What happened (2) Where it happened (3) Why it happened, and (4) What to do to resolve the issue

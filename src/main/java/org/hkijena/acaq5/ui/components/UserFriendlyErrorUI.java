@@ -3,7 +3,6 @@ package org.hkijena.acaq5.ui.components;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyException;
-import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
