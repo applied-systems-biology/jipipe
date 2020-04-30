@@ -2,6 +2,7 @@ package org.hkijena.acaq5.ui.components;
 
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.api.exceptions.UserFriendlyException;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.StringUtils;
@@ -27,7 +28,7 @@ public class UserFriendlyErrorUI extends FormPanel {
      * @param withScrolling if true, the content is wrapped in a scroll pane. Always true if a help document is provided
      */
     public UserFriendlyErrorUI(MarkdownDocument helpDocument, boolean withScrolling) {
-        super(helpDocument, false, helpDocument != null, withScrolling && helpDocument != null);
+        super(helpDocument, false, helpDocument != null, withScrolling || helpDocument != null);
     }
 
     /**
@@ -37,10 +38,10 @@ public class UserFriendlyErrorUI extends FormPanel {
      * @param e the exception
      */
     public void displayErrors(Exception e) {
-        if (e instanceof UserFriendlyRuntimeException) {
+        if (e instanceof UserFriendlyException) {
             StringWriter writer = new StringWriter();
             e.printStackTrace(new PrintWriter(writer));
-            UserFriendlyRuntimeException exception = (UserFriendlyRuntimeException) e;
+            UserFriendlyException exception = (UserFriendlyException) e;
             addEntry(new Entry(exception.getUserWhat(),
                     exception.getUserWhere(),
                     exception.getUserWhy(),

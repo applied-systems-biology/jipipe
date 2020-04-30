@@ -10,6 +10,7 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
+import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.InputSlotMapParameterCollection;
@@ -26,6 +27,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExtension.REMOVE_MASK_QUALIFIER;
+import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExtension.TO_GRAYSCALE32F_CONVERSION;
 
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
@@ -51,6 +53,7 @@ public class ImageCalculator2DAlgorithm extends ImageJ1Algorithm {
         super(declaration, ACAQMutableSlotConfiguration.builder()
                 .addInputSlot("Input 1", ImagePlusData.class)
                 .addInputSlot("Input 2", ImagePlusData.class)
+                .addOutputSlot("Output", ImagePlusData.class, "Input 1")
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());
@@ -107,7 +110,7 @@ public class ImageCalculator2DAlgorithm extends ImageJ1Algorithm {
         rightOperand = (ImagePlusData) ACAQDatatypeRegistry.getInstance().convert(rightOperand, leftOperand.getClass());
 
         ImageCalculator calculator = new ImageCalculator();
-        ImagePlus img = calculator.run(operation.getId() + " stack", leftOperand.getImage(), rightOperand.getImage());
+        ImagePlus img = calculator.run(operation.getId() + " stack create", leftOperand.getImage(), rightOperand.getImage());
         dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
     }
 
@@ -155,19 +158,16 @@ public class ImageCalculator2DAlgorithm extends ImageJ1Algorithm {
     @ACAQParameter("floating-point-output")
     public void setFloatingPointOutput(boolean floatingPointOutput) {
         this.floatingPointOutput = floatingPointOutput;
-        ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) getSlotConfiguration();
-        slotConfiguration.setOutputSealed(false);
-        slotConfiguration.removeSlot("Output", false);
+        ACAQSlotDefinition definition = getFirstOutputSlot().getDefinition();
         if (floatingPointOutput) {
-            ACAQSlotDefinition definition = new ACAQSlotDefinition(ImagePlusGreyscale32FData.class, ACAQDataSlot.SlotType.Output, "Input");
-            definition.setInheritanceConversionsFromRaw(ImageJAlgorithmsExtension.TO_GRAYSCALE32F_CONVERSION);
-            slotConfiguration.addSlot("Output", definition, false);
+            getFirstOutputSlot().setAcceptedDataType(ImagePlusGreyscale32FData.class);
+            definition.setInheritanceConversionsFromRaw(TO_GRAYSCALE32F_CONVERSION);
         } else {
-            ACAQSlotDefinition definition = new ACAQSlotDefinition(ImagePlusData.class, ACAQDataSlot.SlotType.Output, "Input");
+            getFirstOutputSlot().setAcceptedDataType(ImagePlusData.class);
             definition.setInheritanceConversionsFromRaw(REMOVE_MASK_QUALIFIER);
-            slotConfiguration.addSlot("Output", definition, false);
         }
-        slotConfiguration.setOutputSealed(true);
+        getEventBus().post(new AlgorithmSlotsChangedEvent(this));
+        updateSlotInheritance();
     }
 
     /**
