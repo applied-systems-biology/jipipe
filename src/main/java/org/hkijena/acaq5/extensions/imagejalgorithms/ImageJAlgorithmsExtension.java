@@ -90,6 +90,11 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
     public static final Map<Class<? extends ACAQData>, Class<? extends ACAQData>> TO_COLOR_CONVERSION = getToColorConversion();
 
     /**
+     * Conversion rules that convert color types into colored images
+     */
+    public static final Map<Class<? extends ACAQData>, Class<? extends ACAQData>> TO_GRAYSCALE32F_CONVERSION = getToGrayscale32FConversion();
+
+    /**
      * Conversion rules convert higher-dimensional data to a lower-dimensional counterpart.
      * 2D data remains 2D data.
      */
@@ -138,6 +143,7 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerAlgorithm("ij1-math-local-maximum2d", LocalMaximumFilter2DAlgorithm.class);
         registerAlgorithm("ij1-math-local-minimum2d", LocalMinimumFilter2DAlgorithm.class);
         registerAlgorithm("ij1-math-replace-nan-by-median2d", RemoveNaNFilter2DAlgorithm.class);
+        registerAlgorithm("ij1-math-imagecalculator2d", ImageCalculator2DAlgorithm.class);
         registerAlgorithm("ij1-morph-binary-operation2d", MorphologyBinary2DAlgorithm.class);
         registerAlgorithm("ij1-morph-greyscale-operation2d", MorphologyGreyscale2DAlgorithm.class);
         registerAlgorithm("ij1-morph-binary-fillholes2d", MorphologyFillHoles2DAlgorithm.class);
@@ -353,6 +359,57 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         result.put(ImagePlus5DColorData.class, ImagePlus5DGreyscaleMaskData.class);
         result.put(ImagePlus5DColor8UData.class, ImagePlus5DGreyscaleMaskData.class);
         result.put(ImagePlus5DColorRGBData.class, ImagePlus5DGreyscaleMaskData.class);
+
+        return result;
+    }
+
+    private static Map<Class<? extends ACAQData>, Class<? extends ACAQData>> getToGrayscale32FConversion() {
+        Map<Class<? extends ACAQData>, Class<? extends ACAQData>> result = new HashMap<>();
+
+        result.put(ImagePlusData.class, ImagePlusGreyscale32FData.class);
+        result.put(ImagePlusGreyscaleData.class, ImagePlusGreyscale32FData.class);
+        result.put(ImagePlusGreyscale8UData.class, ImagePlusGreyscale32FData.class);
+        result.put(ImagePlusGreyscaleMaskData.class, ImagePlusGreyscale32FData.class);
+        result.put(ImagePlusGreyscale16UData.class, ImagePlusGreyscale32FData.class);
+        result.put(ImagePlusColorData.class, ImagePlusGreyscale32FData.class);
+        result.put(ImagePlusColor8UData.class, ImagePlusGreyscale32FData.class);
+        result.put(ImagePlusColorRGBData.class, ImagePlusGreyscale32FData.class);
+
+        result.put(ImagePlus2DData.class, ImagePlus2DGreyscale32FData.class);
+        result.put(ImagePlus2DGreyscaleData.class, ImagePlus2DGreyscale32FData.class);
+        result.put(ImagePlus2DGreyscale8UData.class, ImagePlus2DGreyscale32FData.class);
+        result.put(ImagePlus2DGreyscaleMaskData.class, ImagePlus2DGreyscale32FData.class);
+        result.put(ImagePlus2DGreyscale16UData.class, ImagePlus2DGreyscale32FData.class);
+        result.put(ImagePlus2DColorData.class, ImagePlus2DGreyscale32FData.class);
+        result.put(ImagePlus2DColor8UData.class, ImagePlus2DGreyscale32FData.class);
+        result.put(ImagePlus2DColorRGBData.class, ImagePlus2DGreyscale32FData.class);
+
+        result.put(ImagePlus3DData.class, ImagePlus3DGreyscale32FData.class);
+        result.put(ImagePlus3DGreyscaleData.class, ImagePlus3DGreyscale32FData.class);
+        result.put(ImagePlus3DGreyscale8UData.class, ImagePlus3DGreyscale32FData.class);
+        result.put(ImagePlus3DGreyscaleMaskData.class, ImagePlus3DGreyscale32FData.class);
+        result.put(ImagePlus3DGreyscale16UData.class, ImagePlus3DGreyscale32FData.class);
+        result.put(ImagePlus3DColorData.class, ImagePlus3DGreyscale32FData.class);
+        result.put(ImagePlus3DColor8UData.class, ImagePlus3DGreyscale32FData.class);
+        result.put(ImagePlus3DColorRGBData.class, ImagePlus3DGreyscale32FData.class);
+
+        result.put(ImagePlus4DData.class, ImagePlus4DGreyscale32FData.class);
+        result.put(ImagePlus4DGreyscaleData.class, ImagePlus4DGreyscale32FData.class);
+        result.put(ImagePlus4DGreyscale8UData.class, ImagePlus4DGreyscale32FData.class);
+        result.put(ImagePlus4DGreyscaleMaskData.class, ImagePlus4DGreyscale32FData.class);
+        result.put(ImagePlus4DGreyscale16UData.class, ImagePlus4DGreyscale32FData.class);
+        result.put(ImagePlus4DColorData.class, ImagePlus4DGreyscale32FData.class);
+        result.put(ImagePlus4DColor8UData.class, ImagePlus4DGreyscale32FData.class);
+        result.put(ImagePlus4DColorRGBData.class, ImagePlus4DGreyscale32FData.class);
+
+        result.put(ImagePlus5DData.class, ImagePlus5DGreyscale32FData.class);
+        result.put(ImagePlus5DGreyscaleData.class, ImagePlus5DGreyscale32FData.class);
+        result.put(ImagePlus5DGreyscale8UData.class, ImagePlus5DGreyscale32FData.class);
+        result.put(ImagePlus5DGreyscaleMaskData.class, ImagePlus5DGreyscale32FData.class);
+        result.put(ImagePlus5DGreyscale16UData.class, ImagePlus5DGreyscale32FData.class);
+        result.put(ImagePlus5DColorData.class, ImagePlus5DGreyscale32FData.class);
+        result.put(ImagePlus5DColor8UData.class, ImagePlus5DGreyscale32FData.class);
+        result.put(ImagePlus5DColorRGBData.class, ImagePlus5DGreyscale32FData.class);
 
         return result;
     }
