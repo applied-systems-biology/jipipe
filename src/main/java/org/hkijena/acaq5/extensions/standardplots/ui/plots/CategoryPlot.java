@@ -13,6 +13,10 @@
 package org.hkijena.acaq5.extensions.standardplots.ui.plots;
 
 
+import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
+import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.ui.events.PlotChangedEvent;
 import org.hkijena.acaq5.ui.plotbuilder.*;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.category.CategoryDataset;
@@ -79,21 +83,29 @@ public abstract class CategoryPlot extends ACAQPlot {
         return createPlotFromDataset();
     }
 
+    @ACAQDocumentation(name = "Category axis label", description = "Label of the category axis")
+    @ACAQParameter("category-axis-label")
     public String getCategoryAxisLabel() {
         return categoryAxisLabel;
     }
 
+    @ACAQParameter("category-axis-label")
     public void setCategoryAxisLabel(String categoryAxisLabel) {
         this.categoryAxisLabel = categoryAxisLabel;
         getEventBus().post(new PlotChangedEvent(this));
+        getEventBus().post(new ParameterChangedEvent(this, "category-axis-label"));
     }
 
+    @ACAQDocumentation(name = "Value axis label", description = "Label of the value axis")
+    @ACAQParameter("value-axis-label")
     public String getValueAxisLabel() {
         return valueAxisLabel;
     }
 
+    @ACAQParameter("value-axis-label")
     public void setValueAxisLabel(String valueAxisLabel) {
         this.valueAxisLabel = valueAxisLabel;
         getEventBus().post(new PlotChangedEvent(this));
+        getEventBus().post(new ParameterChangedEvent(this, "value-axis-label"));
     }
 }

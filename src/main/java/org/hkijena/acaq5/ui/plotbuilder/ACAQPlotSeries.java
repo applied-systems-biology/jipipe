@@ -19,7 +19,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Contains data for a plot
+ * A whole data set for a plot.
+ * This is equivalent to a table.
  */
 public class ACAQPlotSeries {
     private Map<String, ACAQPlotSeriesColumn> columns = new HashMap<>();

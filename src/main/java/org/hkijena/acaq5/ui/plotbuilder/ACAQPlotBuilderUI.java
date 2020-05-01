@@ -18,6 +18,9 @@ import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.PlotReader;
+import org.hkijena.acaq5.ui.events.PlotChangedEvent;
+import org.hkijena.acaq5.ui.events.PlotSeriesListChangedEvent;
+import org.hkijena.acaq5.ui.parameters.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.registries.ACAQPlotBuilderRegistry;
 import org.hkijena.acaq5.ui.tableanalyzer.ACAQMergeTableColumnsDialogUI;
 import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableAnalyzerUI;
@@ -186,8 +189,12 @@ public class ACAQPlotBuilderUI extends ACAQProjectWorkbenchPanel {
         if (currentPlot != null) {
             // Update the settings
             plotSettingsPanel.removeAll();
-            plotSettingsPanel.add(ACAQDefaultRegistry.getInstance().
-                    getPlotBuilderRegistry().createSettingsUIFor(currentPlot), BorderLayout.NORTH);
+            ACAQParameterAccessUI plotParametersEditor = new ACAQParameterAccessUI(getProjectWorkbench(),
+                    currentPlot,
+                    null,
+                    false,
+                    false);
+            plotSettingsPanel.add(plotParametersEditor, BorderLayout.NORTH);
             plotSettingsPanel.revalidate();
             plotSettingsPanel.repaint();
 
@@ -219,7 +226,7 @@ public class ACAQPlotBuilderUI extends ACAQProjectWorkbenchPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void handlePlotChangedEvent(ACAQPlot.PlotChangedEvent event) {
+    public void handlePlotChangedEvent(PlotChangedEvent event) {
         if (toggleAutoUpdate.isSelected())
             updatePlot();
     }
@@ -230,7 +237,7 @@ public class ACAQPlotBuilderUI extends ACAQProjectWorkbenchPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void handlePlotChangedSeriesListEvent(ACAQPlot.PlotSeriesListChangedEvent event) {
+    public void handlePlotChangedSeriesListEvent(PlotSeriesListChangedEvent event) {
         updatePlotSettings();
     }
 

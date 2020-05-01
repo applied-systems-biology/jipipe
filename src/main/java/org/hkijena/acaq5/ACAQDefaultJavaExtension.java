@@ -18,7 +18,6 @@ import org.hkijena.acaq5.ui.compat.ImageJDatatypeImporterUI;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterGeneratorUI;
 import org.hkijena.acaq5.ui.plotbuilder.ACAQPlot;
-import org.hkijena.acaq5.ui.plotbuilder.ACAQPlotSettingsUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIParametertypeRegistry;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultDataSlotCellUI;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultDataSlotRowUI;
@@ -232,12 +231,11 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
      * Registers a new plot type
      *
      * @param plotClass           Plot class
-     * @param plotSettingsUIClass Settings UI class for the plot
      * @param name                Plot type name
      * @param icon                Plot type icon
      */
-    public void registerPlot(Class<? extends ACAQPlot> plotClass, Class<? extends ACAQPlotSettingsUI> plotSettingsUIClass, String name, ImageIcon icon) {
-        registry.getPlotBuilderRegistry().register(plotClass, plotSettingsUIClass, name, icon);
+    public void registerPlot(Class<? extends ACAQPlot> plotClass, String name, ImageIcon icon) {
+        registry.getPlotBuilderRegistry().register(plotClass, name, icon);
     }
 
     /**

@@ -14,6 +14,12 @@ package org.hkijena.acaq5.ui.plotbuilder;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
+import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
+import org.hkijena.acaq5.ui.events.PlotChangedEvent;
+import org.hkijena.acaq5.ui.events.PlotSeriesListChangedEvent;
 import org.jfree.chart.JFreeChart;
 
 import java.util.ArrayList;
@@ -23,7 +29,7 @@ import java.util.List;
 /**
  * A plot
  */
-public abstract class ACAQPlot {
+public abstract class ACAQPlot implements ACAQParameterCollection {
 
     protected List<ACAQPlotSeries> series = new ArrayList<>();
     private EventBus eventBus = new EventBus();
@@ -134,6 +140,7 @@ public abstract class ACAQPlot {
     /**
      * @return Event bus
      */
+    @Override
     public EventBus getEventBus() {
         return eventBus;
     }
@@ -141,6 +148,8 @@ public abstract class ACAQPlot {
     /**
      * @return The plot title
      */
+    @ACAQDocumentation(name = "Title", description = "The title of this plot.")
+    @ACAQParameter("title")
     public String getTitle() {
         return title;
     }
@@ -150,9 +159,11 @@ public abstract class ACAQPlot {
      *
      * @param title The title
      */
+    @ACAQParameter("title")
     public void setTitle(String title) {
         this.title = title;
         eventBus.post(new PlotChangedEvent(this));
+        eventBus.post(new ParameterChangedEvent(this, "title"));
     }
 
     /**
@@ -169,45 +180,4 @@ public abstract class ACAQPlot {
         return seriesDataList;
     }
 
-    /**
-     * Event when a plot is changed
-     */
-    public static class PlotChangedEvent {
-        private ACAQPlot plot;
-
-        /**
-         * @param plot Event source
-         */
-        public PlotChangedEvent(ACAQPlot plot) {
-            this.plot = plot;
-        }
-
-        /**
-         * @return The event source
-         */
-        public ACAQPlot getPlot() {
-            return plot;
-        }
-    }
-
-    /**
-     * Event when the series list is changed
-     */
-    public static class PlotSeriesListChangedEvent {
-        private ACAQPlot plot;
-
-        /**
-         * @param plot Event source
-         */
-        public PlotSeriesListChangedEvent(ACAQPlot plot) {
-            this.plot = plot;
-        }
-
-        /**
-         * @return Event source
-         */
-        public ACAQPlot getPlot() {
-            return plot;
-        }
-    }
 }

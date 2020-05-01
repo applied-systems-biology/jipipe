@@ -14,7 +14,6 @@ package org.hkijena.acaq5.ui.registries;
 
 import org.hkijena.acaq5.ui.plotbuilder.ACAQPlot;
 import org.hkijena.acaq5.ui.plotbuilder.ACAQPlotSeriesData;
-import org.hkijena.acaq5.ui.plotbuilder.ACAQPlotSettingsUI;
 
 import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
@@ -31,12 +30,11 @@ public class ACAQPlotBuilderRegistry {
      * Registers a plot type
      *
      * @param plotType     Plot instance
-     * @param settingsType Settings UI
      * @param name         Plot name
      * @param icon         Plot icon
      */
-    public void register(Class<? extends ACAQPlot> plotType, Class<? extends ACAQPlotSettingsUI> settingsType, String name, Icon icon) {
-        entries.put(plotType, new Entry(plotType, settingsType, name, icon));
+    public void register(Class<? extends ACAQPlot> plotType, String name, Icon icon) {
+        entries.put(plotType, new Entry(plotType, name, icon));
     }
 
     /**
@@ -81,37 +79,20 @@ public class ACAQPlotBuilderRegistry {
     }
 
     /**
-     * Creates settings UI for the plot
-     *
-     * @param plot The plot
-     * @return Plot settings UI
-     */
-    public ACAQPlotSettingsUI createSettingsUIFor(ACAQPlot plot) {
-        try {
-            return entries.get(plot.getClass()).getSettingsType().getConstructor(ACAQPlot.class).newInstance(plot);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
      * Registry entry
      */
     public static class Entry {
         private Class<? extends ACAQPlot> plotType;
-        private Class<? extends ACAQPlotSettingsUI> settingsType;
         private String name;
         private Icon icon;
 
         /**
          * @param plotType     Plot type
-         * @param settingsType Plot UI type
          * @param name         Plot name
          * @param icon         Plot icon
          */
-        public Entry(Class<? extends ACAQPlot> plotType, Class<? extends ACAQPlotSettingsUI> settingsType, String name, Icon icon) {
+        public Entry(Class<? extends ACAQPlot> plotType, String name, Icon icon) {
             this.plotType = plotType;
-            this.settingsType = settingsType;
             this.name = name;
             this.icon = icon;
         }
@@ -137,11 +118,5 @@ public class ACAQPlotBuilderRegistry {
             return icon;
         }
 
-        /**
-         * @return Plot type UI
-         */
-        public Class<? extends ACAQPlotSettingsUI> getSettingsType() {
-            return settingsType;
-        }
     }
 }

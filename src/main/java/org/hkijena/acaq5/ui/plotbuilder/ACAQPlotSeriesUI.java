@@ -14,6 +14,7 @@ package org.hkijena.acaq5.ui.plotbuilder;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
+import org.hkijena.acaq5.ui.events.PlotSeriesListChangedEvent;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -107,7 +108,7 @@ public class ACAQPlotSeriesUI extends JPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void handlePlotSeriesChangedEvent(ACAQPlot.PlotSeriesListChangedEvent event) {
+    public void handlePlotSeriesChangedEvent(PlotSeriesListChangedEvent event) {
         updateTitleBarButtons();
     }
 

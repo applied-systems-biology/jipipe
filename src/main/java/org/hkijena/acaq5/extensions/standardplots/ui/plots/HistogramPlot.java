@@ -13,6 +13,9 @@
 package org.hkijena.acaq5.extensions.standardplots.ui.plots;
 
 import com.google.common.primitives.Doubles;
+import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.ui.events.PlotChangedEvent;
 import org.hkijena.acaq5.ui.plotbuilder.*;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.jfree.chart.ChartFactory;
@@ -70,19 +73,25 @@ public class HistogramPlot extends ACAQPlot {
         return chart;
     }
 
+    @ACAQDocumentation(name = "X axis label", description = "Label of the X axis")
+    @ACAQParameter("x-axis-label")
     public String getxAxisLabel() {
         return xAxisLabel;
     }
 
+    @ACAQParameter("x-axis-label")
     public void setxAxisLabel(String xAxisLabel) {
         this.xAxisLabel = xAxisLabel;
         getEventBus().post(new PlotChangedEvent(this));
     }
 
+    @ACAQDocumentation(name = "Y axis label", description = "Label of the Y axis")
+    @ACAQParameter("y-axis-label")
     public String getyAxisLabel() {
         return yAxisLabel;
     }
 
+    @ACAQParameter("y-axis-label")
     public void setyAxisLabel(String yAxisLabel) {
         this.yAxisLabel = yAxisLabel;
         getEventBus().post(new PlotChangedEvent(this));
