@@ -7,7 +7,6 @@ import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
-import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQSlotEditorUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQTraitEditorUI;
@@ -46,7 +45,7 @@ public class ACAQJsonExtensionSingleAlgorithmSelectionPanelUI extends ACAQJsonEx
 
         ACAQParameterAccessUI parametersUI = new ACAQParameterAccessUI(getExtensionWorkbenchUI(),
                 algorithm,
-                MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md"),
+                TooltipUtils.getAlgorithmDocumentation(algorithm.getDeclaration()),
                 true,
                 true);
         tabbedPane.addTab("Parameters", UIUtils.getIconFromResources("cog.png"),

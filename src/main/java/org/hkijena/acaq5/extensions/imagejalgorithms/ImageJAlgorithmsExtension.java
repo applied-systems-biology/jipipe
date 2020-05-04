@@ -1,7 +1,6 @@
 package org.hkijena.acaq5.extensions.imagejalgorithms;
 
 import com.google.common.collect.ImmutableMap;
-import ij.plugin.GaussianBlur3D;
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.traits.ACAQJavaTraitDeclaration;

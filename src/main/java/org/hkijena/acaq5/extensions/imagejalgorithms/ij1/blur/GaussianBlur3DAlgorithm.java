@@ -3,8 +3,6 @@ package org.hkijena.acaq5.extensions.imagejalgorithms.ij1.blur;
 import ij.ImagePlus;
 import ij.plugin.GaussianBlur3D;
 import ij.plugin.filter.GaussianBlur;
-import ij.process.ByteProcessor;
-import ij.process.ColorProcessor;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
@@ -14,7 +12,6 @@ import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.acaq5.utils.ImageJUtils;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
