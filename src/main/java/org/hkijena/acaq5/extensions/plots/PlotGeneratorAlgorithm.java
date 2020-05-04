@@ -20,7 +20,6 @@ import org.hkijena.acaq5.extensions.plots.datatypes.PlotData;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotDataSeries;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotMetadata;
 import org.hkijena.acaq5.extensions.standardparametereditors.editors.ACAQDataParameterSettings;
-import org.hkijena.acaq5.ui.plotbuilder.ACAQPlot;
 import org.hkijena.acaq5.ui.registries.ACAQUIParametertypeRegistry;
 import org.scijava.Priority;
 

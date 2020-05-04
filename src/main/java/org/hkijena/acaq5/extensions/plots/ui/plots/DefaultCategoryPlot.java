@@ -13,8 +13,8 @@
 package org.hkijena.acaq5.extensions.plots.ui.plots;
 
 
-import org.hkijena.acaq5.ui.plotbuilder.ACAQPlotSeries;
-import org.hkijena.acaq5.ui.plotbuilder.ACAQPlotSeriesData;
+import org.hkijena.acaq5.ui.plotbuilder_old.ACAQPlotSeries;
+import org.hkijena.acaq5.ui.plotbuilder_old.ACAQPlotSeriesData;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 import java.util.List;

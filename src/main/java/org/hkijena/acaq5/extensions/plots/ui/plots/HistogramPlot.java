@@ -16,7 +16,7 @@ import com.google.common.primitives.Doubles;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.ui.events.PlotChangedEvent;
-import org.hkijena.acaq5.ui.plotbuilder.*;
+import org.hkijena.acaq5.ui.plotbuilder_old.*;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -51,7 +51,7 @@ public class HistogramPlot extends ACAQPlot {
         series.addParameter("Name", "Category");
         series.addParameter("Bins", 10);
         series.addColumn("Values", new ACAQNumericPlotSeriesColumn(getSeriesDataList(),
-                new ACAQPlotSeriesGenerator<>("Zero", x -> 0.0)));
+                new ACAQPlotSeriesGenerator("Zero", x -> 0.0)));
         return series;
     }
 

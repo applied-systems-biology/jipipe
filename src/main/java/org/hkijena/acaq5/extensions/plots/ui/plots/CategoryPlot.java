@@ -17,7 +17,7 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.ui.events.PlotChangedEvent;
-import org.hkijena.acaq5.ui.plotbuilder.*;
+import org.hkijena.acaq5.ui.plotbuilder_old.*;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.category.CategoryDataset;
 
@@ -54,12 +54,12 @@ public abstract class CategoryPlot extends ACAQPlot {
     protected ACAQPlotSeries createSeries() {
         ACAQPlotSeries series = new ACAQPlotSeries();
         series.addColumn("X", new ACAQStringPlotSeriesColumn(getSeriesDataList(),
-                new ACAQPlotSeriesGenerator<>("No category", x -> "No category"),
-                new ACAQPlotSeriesGenerator<>("Row number", x -> "x" + x)));
+                new ACAQPlotSeriesGenerator("No category", x -> "No category"),
+                new ACAQPlotSeriesGenerator("Row number", x -> "x" + x)));
         series.addColumn("Category", new ACAQStringPlotSeriesColumn(getSeriesDataList(),
-                new ACAQPlotSeriesGenerator<>("No category", x -> "No category")));
+                new ACAQPlotSeriesGenerator("No category", x -> "No category")));
         series.addColumn("Value", new ACAQNumericPlotSeriesColumn(getSeriesDataList(),
-                new ACAQPlotSeriesGenerator<>("Row index", x -> (double) x)));
+                new ACAQPlotSeriesGenerator("Row index", x -> (double) x)));
         return series;
     }
 

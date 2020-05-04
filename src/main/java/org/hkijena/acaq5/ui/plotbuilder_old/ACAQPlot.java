@@ -10,7 +10,7 @@
  * See the LICENSE file provided with this code for the full license.
  */
 
-package org.hkijena.acaq5.ui.plotbuilder;
+package org.hkijena.acaq5.ui.plotbuilder_old;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;

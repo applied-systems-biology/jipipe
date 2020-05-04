@@ -10,7 +10,7 @@
  * See the LICENSE file provided with this code for the full license.
  */
 
-package org.hkijena.acaq5.ui.plotbuilder;
+package org.hkijena.acaq5.ui.plotbuilder_old;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,14 +18,14 @@ import java.util.List;
 /**
  * A {@link ACAQPlotSeriesColumn} that contains only numbers
  */
-public class ACAQNumericPlotSeriesColumn extends ACAQPlotSeriesColumn<Double> {
+public class ACAQNumericPlotSeriesColumn extends ACAQPlotSeriesColumn {
     /**
      * @param seriesDataList       The series data list
      * @param defaultGenerator     Provides default values
      * @param additionalGenerators Additional generators
      */
     @SafeVarargs
-    public ACAQNumericPlotSeriesColumn(List<ACAQPlotSeriesData> seriesDataList, ACAQPlotSeriesGenerator<Double> defaultGenerator, ACAQPlotSeriesGenerator<Double>... additionalGenerators) {
+    public ACAQNumericPlotSeriesColumn(List<ACAQPlotSeriesData> seriesDataList, ACAQPlotSeriesGenerator defaultGenerator, ACAQPlotSeriesGenerator... additionalGenerators) {
         super(seriesDataList, defaultGenerator, additionalGenerators);
     }
 

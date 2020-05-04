@@ -19,6 +19,13 @@ public class PlotDataSeries extends ResultsTableData implements ACAQParameterCol
     private String name;
 
     /**
+     * Creates a new instance with a null table
+     */
+    public PlotDataSeries() {
+        super((ResultsTable) null);
+    }
+
+    /**
      * Creates a new instance from a {@link ResultsTable}
      * @param table the table
      */

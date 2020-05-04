@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.ui.events;
 
-import org.hkijena.acaq5.ui.plotbuilder.ACAQPlot;
+import org.hkijena.acaq5.ui.plotbuilder_old.ACAQPlot;
 
 /**
  * Event when a plot is changed

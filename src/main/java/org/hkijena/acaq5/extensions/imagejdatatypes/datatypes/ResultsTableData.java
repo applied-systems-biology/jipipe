@@ -61,6 +61,10 @@ public class ResultsTableData implements ACAQData {
         return table;
     }
 
+    public void setTable(ResultsTable table) {
+        this.table = table;
+    }
+
     /**
      * Adds the table to an existing table
      *

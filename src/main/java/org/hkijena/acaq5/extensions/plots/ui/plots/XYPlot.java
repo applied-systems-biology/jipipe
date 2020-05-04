@@ -16,7 +16,7 @@ package org.hkijena.acaq5.extensions.plots.ui.plots;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.ui.events.PlotChangedEvent;
-import org.hkijena.acaq5.ui.plotbuilder.*;
+import org.hkijena.acaq5.ui.plotbuilder_old.*;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.xy.XYSeries;
@@ -58,9 +58,9 @@ public abstract class XYPlot extends ACAQPlot {
         ACAQPlotSeries series = new ACAQPlotSeries();
         series.addParameter("Name", "Series");
         series.addColumn("X", new ACAQNumericPlotSeriesColumn(getSeriesDataList(),
-                new ACAQPlotSeriesGenerator<>("Row number", x -> (double) x)));
+                new ACAQPlotSeriesGenerator("Row number", x -> (double) x)));
         series.addColumn("Y", new ACAQNumericPlotSeriesColumn(getSeriesDataList(),
-                new ACAQPlotSeriesGenerator<>("Row number", x -> (double) x)));
+                new ACAQPlotSeriesGenerator("Row number", x -> (double) x)));
         return series;
     }
 

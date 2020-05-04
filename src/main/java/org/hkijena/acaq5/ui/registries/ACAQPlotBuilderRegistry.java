@@ -12,8 +12,8 @@
 
 package org.hkijena.acaq5.ui.registries;
 
-import org.hkijena.acaq5.ui.plotbuilder.ACAQPlot;
-import org.hkijena.acaq5.ui.plotbuilder.ACAQPlotSeriesData;
+import org.hkijena.acaq5.ui.plotbuilder_old.ACAQPlot;
+import org.hkijena.acaq5.ui.plotbuilder_old.ACAQPlotSeriesData;
 
 import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;

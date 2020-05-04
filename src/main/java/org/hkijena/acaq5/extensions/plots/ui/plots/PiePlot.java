@@ -13,7 +13,7 @@
 package org.hkijena.acaq5.extensions.plots.ui.plots;
 
 
-import org.hkijena.acaq5.ui.plotbuilder.*;
+import org.hkijena.acaq5.ui.plotbuilder_old.*;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.general.DefaultPieDataset;
 
@@ -49,9 +49,9 @@ public abstract class PiePlot extends ACAQPlot {
     protected ACAQPlotSeries createSeries() {
         ACAQPlotSeries series = new ACAQPlotSeries();
         series.addColumn("Category", new ACAQStringPlotSeriesColumn(getSeriesDataList(),
-                new ACAQPlotSeriesGenerator<>("No category", x -> "No category")));
+                new ACAQPlotSeriesGenerator("No category", x -> "No category")));
         series.addColumn("Amount", new ACAQNumericPlotSeriesColumn(getSeriesDataList(),
-                new ACAQPlotSeriesGenerator<>("Zero", x -> 0.0)));
+                new ACAQPlotSeriesGenerator("Zero", x -> 0.0)));
         return series;
     }
 

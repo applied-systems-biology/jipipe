@@ -2,20 +2,27 @@ package org.hkijena.acaq5.extensions.plots.datatypes;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import ij.measure.ResultsTable;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQHidden;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
+import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.*;
+import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.ui.events.PlotChangedEvent;
 import org.hkijena.acaq5.utils.JsonUtils;
@@ -27,10 +34,9 @@ import org.jfree.graphics2d.svg.SVGUtils;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
@@ -177,12 +183,103 @@ public abstract class PlotData implements ACAQData, ACAQParameterCollection, ACA
     }
 
     /**
+     * Loads data from a folder
+     * @param folder folder
+     * @return loaded data
+     */
+    public static PlotData fromFolder(Path folder) {
+        PlotData result;
+        try {
+            JsonNode node = JsonUtils.getObjectMapper().readValue(folder.resolve("plot-metadata.json").toFile(), JsonNode.class);
+            Class<? extends ACAQData> dataClass = ACAQDatatypeRegistry.getInstance().getById(node.get("plot-data-type").textValue());
+            result = (PlotData) ACAQData.createInstance(dataClass);
+
+            // Load metadata
+            result.fromJson(node);
+
+            // Load series
+            for (JsonNode element : ImmutableList.copyOf(node.get("plot-series").elements())) {
+                PlotDataSeries series = JsonUtils.getObjectMapper().readerFor(PlotDataSeries.class).readValue(element.get("metadata"));
+                Path fileName = folder.resolve(element.get("file-name").textValue());
+                ResultsTableData tableData = new ResultsTableData(fileName);
+                series.setTable(tableData.getTable());
+                result.getSeries().add(series);
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return result;
+    }
+
+    /**
+     * Loads metadata from JSON
+     * @param node JSON node
+     */
+    public void fromJson(JsonNode node) {
+        // Deserialize dynamic parameters
+        if (node.has("acaq:dynamic-parameters")) {
+            ACAQTraversedParameterCollection parameterCollection = new ACAQTraversedParameterCollection(this);
+            Set<ACAQParameterCollection> dynamicParameters = parameterCollection.getRegisteredSources().stream()
+                    .filter(src -> src instanceof ACAQDynamicParameterCollection).collect(Collectors.toSet());
+            for (ACAQParameterCollection dynamicParameter : dynamicParameters) {
+                String key = parameterCollection.getSourceKey(dynamicParameter);
+                JsonNode entryNode = node.path("acaq:dynamic-parameters").path(key);
+                if (!entryNode.isMissingNode()) {
+                    ((ACAQDynamicParameterCollection) dynamicParameter).fromJson(entryNode);
+                }
+            }
+
+        }
+
+        // Deserialize algorithm-specific parameters
+        AtomicBoolean changedStructure = new AtomicBoolean();
+        changedStructure.set(true);
+        getEventBus().register(new Object() {
+            @Subscribe
+            public void onParametersChanged(ParameterStructureChangedEvent event) {
+                changedStructure.set(true);
+            }
+        });
+        Set<String> loadedParameters = new HashSet<>();
+        while (changedStructure.get()) {
+            changedStructure.set(false);
+            ACAQTraversedParameterCollection parameterCollection = new ACAQTraversedParameterCollection(this);
+            for (ACAQParameterAccess parameterAccess : parameterCollection.getParametersByPriority()) {
+                String key = parameterCollection.getUniqueKey(parameterAccess);
+                if (loadedParameters.contains(key))
+                    continue;
+                loadedParameters.add(key);
+                if (node.has(key)) {
+                    Object v;
+                    try {
+                        v = JsonUtils.getObjectMapper().readerFor(parameterAccess.getFieldClass()).readValue(node.get(key));
+                    } catch (IOException e) {
+                        throw new UserFriendlyRuntimeException(e, "Could not load parameter '" + key + "'!",
+                                "Plot data", "Either the data was corrupted, or your ACAQ5 or plugin version is too new or too old.",
+                                "Check the 'dependencies' section of the project file and compare the plugin versions. Try " +
+                                        "to update ACAQ5. Compare the project file with a valid one. Contact the ACAQ5 or plugin " +
+                                        "authors if you cannot resolve the issue by yourself.");
+                    }
+                    parameterAccess.set(v);
+
+                    // Stop loading here to prevent already traversed parameters from being not loaded
+                    if(changedStructure.get())
+                        break;
+                }
+            }
+        }
+    }
+
+    /**
      * Serializes the metadata of {@link PlotData}
      */
     public static class Serializer extends JsonSerializer<PlotData> {
         @Override
         public void serialize(PlotData value, JsonGenerator gen, SerializerProvider serializers) throws IOException, JsonProcessingException {
             gen.writeStartObject();
+            gen.writeStringField("plot-data-type", ACAQDatatypeRegistry.getInstance().getIdOf(value.getClass()));
+
             // Write parameters
             ACAQTraversedParameterCollection parameterCollection = new ACAQTraversedParameterCollection(value);
             for (Map.Entry<String, ACAQParameterAccess> kv : parameterCollection.getParameters().entrySet()) {

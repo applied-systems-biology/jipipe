@@ -19,7 +19,7 @@ import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
-import org.hkijena.acaq5.ui.plotbuilder.ACAQPlotBuilderUI;
+import org.hkijena.acaq5.ui.plotbuilder_old.ACAQPlotBuilderUI;
 import org.hkijena.acaq5.ui.registries.ACAQTableAnalyzerUIOperationRegistry;
 import org.hkijena.acaq5.utils.BusyCursor;
 import org.hkijena.acaq5.utils.TableUtils;

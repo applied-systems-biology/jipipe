@@ -10,7 +10,7 @@
  * See the LICENSE file provided with this code for the full license.
  */
 
-package org.hkijena.acaq5.ui.plotbuilder;
+package org.hkijena.acaq5.ui.plotbuilder_old;
 
 import com.google.common.eventbus.EventBus;
 
@@ -24,7 +24,7 @@ import java.util.List;
  */
 public abstract class ACAQPlotSeriesColumn<T> {
     private List<ACAQPlotSeriesData> seriesDataList;
-    private List<ACAQPlotSeriesGenerator<T>> generators;
+    private List<ACAQPlotSeriesGenerator> generators;
     private int seriesDataIndex = -1;
     private EventBus eventBus = new EventBus();
 
@@ -34,7 +34,7 @@ public abstract class ACAQPlotSeriesColumn<T> {
      * @param additionalGenerators Additional generators
      */
     @SafeVarargs
-    public ACAQPlotSeriesColumn(List<ACAQPlotSeriesData> seriesDataList, ACAQPlotSeriesGenerator<T> defaultGenerator, ACAQPlotSeriesGenerator<T>... additionalGenerators) {
+    public ACAQPlotSeriesColumn(List<ACAQPlotSeriesData> seriesDataList, ACAQPlotSeriesGenerator defaultGenerator, ACAQPlotSeriesGenerator... additionalGenerators) {
         this.seriesDataList = seriesDataList;
         this.generators = new ArrayList<>();
         this.generators.add(defaultGenerator);
@@ -50,7 +50,7 @@ public abstract class ACAQPlotSeriesColumn<T> {
      */
     public List<T> getValues(int rowCount) {
         if (seriesDataIndex < 0) {
-            ACAQPlotSeriesGenerator<T> generator = generators.get(-seriesDataIndex - 1);
+            ACAQPlotSeriesGenerator generator = generators.get(-seriesDataIndex - 1);
             List<T> result = new ArrayList<>(rowCount);
             for (int row = 0; row < rowCount; ++row) {
                 result.add(generator.getGeneratorFunction().apply(row));
@@ -117,7 +117,7 @@ public abstract class ACAQPlotSeriesColumn<T> {
     /**
      * @return Available generators
      */
-    public List<ACAQPlotSeriesGenerator<T>> getGenerators() {
+    public List<ACAQPlotSeriesGenerator> getGenerators() {
         return Collections.unmodifiableList(generators);
     }
 

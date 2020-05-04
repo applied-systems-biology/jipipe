@@ -10,7 +10,7 @@
  * See the LICENSE file provided with this code for the full license.
  */
 
-package org.hkijena.acaq5.ui.plotbuilder;
+package org.hkijena.acaq5.ui.plotbuilder_old;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQDefaultRegistry;
@@ -247,7 +247,7 @@ public class ACAQPlotBuilderUI extends ACAQProjectWorkbenchPanel {
             tableModel.addColumn(data.getName());
         }
         Object[] rowBuffer = new Object[seriesDataList.size()];
-        final int rowNumber = seriesDataList.stream().max(Comparator.comparing(ACAQPlotSeriesData::getSize)).get().getSize();
+        final int rowNumber = seriesDataList.stream().max(Comparator.comparing(org.hkijena.acaq5.ui.plotbuilder_old.ACAQPlotSeriesData::getSize)).get().getSize();
 
         for (int i = 0; i < rowNumber; ++i) {
             for (int j = 0; j < seriesDataList.size(); ++j) {
