@@ -127,7 +127,7 @@ public class ACAQUIDatatypeRegistry {
                 return ResourceUtils.getPluginResource("icons/magic.png");
             case Converter:
                 return ResourceUtils.getPluginResource("icons/convert.png");
-            case Quantifier:
+            case Analysis:
                 return ResourceUtils.getPluginResource("icons/statistics.png");
             default:
                 return ResourceUtils.getPluginResource("icons/module.png");

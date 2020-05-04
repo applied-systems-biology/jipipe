@@ -10,30 +10,34 @@
  * See the LICENSE file provided with this code for the full license.
  */
 
-package org.hkijena.acaq5.extensions.standardplots.ui.plots;
+package org.hkijena.acaq5.extensions.plots.ui.plots;
 
 
 import org.hkijena.acaq5.ui.plotbuilder.ACAQPlotSeriesData;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
-import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.StandardBarPainter;
 
 import java.util.List;
 
 /**
- * A XY scatter plot
+ * A stacked bar category plot
  */
-public class ScatterXYPlot extends XYPlot {
+public class StackedBarCategoryPlot extends DefaultCategoryPlot {
     /**
      * @param seriesDataList the data
      */
-    public ScatterXYPlot(List<ACAQPlotSeriesData> seriesDataList) {
+    public StackedBarCategoryPlot(List<ACAQPlotSeriesData> seriesDataList) {
         super(seriesDataList);
-        setTitle("XY Scatter Plot");
+        setTitle("Bar plot");
     }
 
     @Override
-    protected JFreeChart createPlotFromDataset(XYSeriesCollection dataset) {
-        return ChartFactory.createScatterPlot(getTitle(), getxAxisLabel(), getyAxisLabel(), dataset);
+    protected JFreeChart createPlotFromDataset() {
+        JFreeChart chart = ChartFactory.createStackedBarChart(getTitle(), getCategoryAxisLabel(), getValueAxisLabel(), getDataset());
+        chart.setTitle(getTitle());
+        ((BarRenderer) chart.getCategoryPlot().getRenderer()).setBarPainter(new StandardBarPainter());
+        return chart;
     }
 }

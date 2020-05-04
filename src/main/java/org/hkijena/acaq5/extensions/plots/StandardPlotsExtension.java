@@ -1,9 +1,13 @@
-package org.hkijena.acaq5.extensions.standardplots;
+package org.hkijena.acaq5.extensions.plots;
 
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
-import org.hkijena.acaq5.extensions.standardplots.ui.plots.*;
+import org.hkijena.acaq5.extensions.plots.datatypes.HistogramPlotData;
+import org.hkijena.acaq5.extensions.plots.datatypes.PlotData;
+import org.hkijena.acaq5.extensions.plots.ui.plots.*;
+import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.UIUtils;
+import org.jfree.data.statistics.HistogramDataset;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -34,6 +38,19 @@ public class StandardPlotsExtension extends ACAQPrepackagedDefaultJavaExtension 
 
     @Override
     public void register() {
+
+        registerDatatype("plot",
+                PlotData.class,
+                ResourceUtils.getPluginResource("icons/data-types/data-type-plot.png"),
+                null,
+                null);
+        registerDatatype("plot-histogram",
+                HistogramPlotData.class,
+                ResourceUtils.getPluginResource("icons/data-types/data-type-plot.png"),
+                null,
+                null);
+        registerAlgorithm("plot-from-table", PlotGeneratorAlgorithm.class);
+
         registerPlot(DefaultBoxAndWhiskerBarCategoryPlot.class,
                 "Box Plot",
                 UIUtils.getIconFromResources("bar-chart.png"));

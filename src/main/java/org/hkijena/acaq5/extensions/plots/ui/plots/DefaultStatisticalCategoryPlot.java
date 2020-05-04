@@ -10,13 +10,13 @@
  * See the LICENSE file provided with this code for the full license.
  */
 
-package org.hkijena.acaq5.extensions.standardplots.ui.plots;
+package org.hkijena.acaq5.extensions.plots.ui.plots;
 
 
 import org.hkijena.acaq5.ui.plotbuilder.ACAQPlotSeries;
 import org.hkijena.acaq5.ui.plotbuilder.ACAQPlotSeriesData;
 import org.jfree.data.category.CategoryDataset;
-import org.jfree.data.statistics.DefaultBoxAndWhiskerCategoryDataset;
+import org.jfree.data.statistics.DefaultStatisticalCategoryDataset;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,22 +24,19 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Base class for box plots
+ * A statistical category plot.
+ * Has columns "X" (String), "Category" (String), "Value" (Numeric)
  */
-public abstract class DefaultBoxAndWhiskerCategoryPlot extends CategoryPlot {
-    private DefaultBoxAndWhiskerCategoryDataset dataset = new DefaultBoxAndWhiskerCategoryDataset();
+public abstract class DefaultStatisticalCategoryPlot extends CategoryPlot {
+
+    private DefaultStatisticalCategoryDataset dataset = new DefaultStatisticalCategoryDataset();
 
     /**
      * @param seriesDataList the data
      */
-    protected DefaultBoxAndWhiskerCategoryPlot(List<ACAQPlotSeriesData> seriesDataList) {
+    protected DefaultStatisticalCategoryPlot(List<ACAQPlotSeriesData> seriesDataList) {
         super(seriesDataList);
         addSeries();
-    }
-
-    @Override
-    public CategoryDataset getDataset() {
-        return dataset;
     }
 
     protected void updateDataset() {
@@ -67,8 +64,22 @@ public abstract class DefaultBoxAndWhiskerCategoryPlot extends CategoryPlot {
 
         for (Map.Entry<String, Map<String, List<Double>>> xentry : splitValues.entrySet()) {
             for (Map.Entry<String, List<Double>> categoryEntry : xentry.getValue().entrySet()) {
-                dataset.add(categoryEntry.getValue(), categoryEntry.getKey(), xentry.getKey());
+                double sum = 0;
+                double sumSq = 0;
+                for (double v : categoryEntry.getValue()) {
+                    sum += v;
+                    sumSq += v * v;
+                }
+
+                double mean = sum / categoryEntry.getValue().size();
+                double var = (sumSq / categoryEntry.getValue().size()) - mean * mean;
+                dataset.add(mean, Math.sqrt(var), xentry.getKey(), categoryEntry.getKey());
             }
         }
+    }
+
+    @Override
+    public CategoryDataset getDataset() {
+        return dataset;
     }
 }

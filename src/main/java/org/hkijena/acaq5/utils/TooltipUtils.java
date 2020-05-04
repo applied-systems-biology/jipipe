@@ -5,6 +5,7 @@ import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.api.data.ACAQDataDeclaration;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
@@ -458,5 +459,14 @@ public class TooltipUtils {
         }
         builder.append("</table></html>");
         return builder.toString();
+    }
+
+    /**
+     * Creates a tooltip for data
+     * @param declaration the data type
+     * @return the tooltip
+     */
+    public static String getDataTooltip(ACAQDataDeclaration declaration) {
+        return "<html><u><strong>" + declaration.getName() + "</strong></u><br/>" + HtmlEscapers.htmlEscaper().escape(declaration.getDescription()) + "</html>";
     }
 }

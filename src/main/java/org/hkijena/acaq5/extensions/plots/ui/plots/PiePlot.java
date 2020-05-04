@@ -10,7 +10,7 @@
  * See the LICENSE file provided with this code for the full license.
  */
 
-package org.hkijena.acaq5.extensions.standardplots.ui.plots;
+package org.hkijena.acaq5.extensions.plots.ui.plots;
 
 
 import org.hkijena.acaq5.ui.plotbuilder.*;

@@ -104,9 +104,9 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
         initializeMenuForCategory(addConverterMenu, ACAQAlgorithmCategory.Converter, algorithmGraph, compartment, addedAlgorithms);
         menuBar.add(addConverterMenu);
 
-        JMenu addQuantifierMenu = new JMenu("Quantify");
+        JMenu addQuantifierMenu = new JMenu("Analyze");
         addQuantifierMenu.setIcon(UIUtils.getIconFromResources("statistics.png"));
-        initializeMenuForCategory(addQuantifierMenu, ACAQAlgorithmCategory.Quantifier, algorithmGraph, compartment, addedAlgorithms);
+        initializeMenuForCategory(addQuantifierMenu, ACAQAlgorithmCategory.Analysis, algorithmGraph, compartment, addedAlgorithms);
         menuBar.add(addQuantifierMenu);
 
         JMenu addMiscMenu = new JMenu("Miscellaneous");

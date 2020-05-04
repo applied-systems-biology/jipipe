@@ -10,30 +10,30 @@
  * See the LICENSE file provided with this code for the full license.
  */
 
-package org.hkijena.acaq5.extensions.standardplots.ui.plots;
+package org.hkijena.acaq5.extensions.plots.ui.plots;
 
 
 import org.hkijena.acaq5.ui.plotbuilder.ACAQPlotSeriesData;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
-import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.data.xy.XYSeriesCollection;
 
 import java.util.List;
 
 /**
- * A 3D pie plot
+ * A XY scatter plot
  */
-public class Pie3DPlot extends PiePlot {
+public class ScatterXYPlot extends XYPlot {
     /**
      * @param seriesDataList the data
      */
-    public Pie3DPlot(List<ACAQPlotSeriesData> seriesDataList) {
+    public ScatterXYPlot(List<ACAQPlotSeriesData> seriesDataList) {
         super(seriesDataList);
-        setTitle("3D Pie plot");
+        setTitle("XY Scatter Plot");
     }
 
     @Override
-    protected JFreeChart createPlotFromDataset(DefaultPieDataset dataset) {
-        return ChartFactory.createPieChart3D(getTitle(), dataset, true, true, false);
+    protected JFreeChart createPlotFromDataset(XYSeriesCollection dataset) {
+        return ChartFactory.createScatterPlot(getTitle(), getxAxisLabel(), getyAxisLabel(), dataset);
     }
 }

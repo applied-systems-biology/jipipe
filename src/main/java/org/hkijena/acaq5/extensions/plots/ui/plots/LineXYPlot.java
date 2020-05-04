@@ -10,33 +10,30 @@
  * See the LICENSE file provided with this code for the full license.
  */
 
-package org.hkijena.acaq5.extensions.standardplots.ui.plots;
+package org.hkijena.acaq5.extensions.plots.ui.plots;
 
 
 import org.hkijena.acaq5.ui.plotbuilder.ACAQPlotSeriesData;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.renderer.category.BarRenderer;
-import org.jfree.chart.renderer.category.StandardBarPainter;
+import org.jfree.data.xy.XYSeriesCollection;
 
 import java.util.List;
 
 /**
- * A bar category plot
+ * An XY plot
  */
-public class BarCategoryPlot extends DefaultCategoryPlot {
+public class LineXYPlot extends XYPlot {
     /**
      * @param seriesDataList the data
      */
-    public BarCategoryPlot(List<ACAQPlotSeriesData> seriesDataList) {
+    public LineXYPlot(List<ACAQPlotSeriesData> seriesDataList) {
         super(seriesDataList);
-        setTitle("Bar plot");
+        setTitle("XY Line Plot");
     }
 
     @Override
-    protected JFreeChart createPlotFromDataset() {
-        JFreeChart chart = ChartFactory.createBarChart(getTitle(), getCategoryAxisLabel(), getValueAxisLabel(), getDataset());
-        ((BarRenderer) chart.getCategoryPlot().getRenderer()).setBarPainter(new StandardBarPainter());
-        return chart;
+    protected JFreeChart createPlotFromDataset(XYSeriesCollection dataset) {
+        return ChartFactory.createXYLineChart(getTitle(), getxAxisLabel(), getyAxisLabel(), dataset);
     }
 }

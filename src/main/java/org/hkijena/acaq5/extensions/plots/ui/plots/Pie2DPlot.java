@@ -10,33 +10,30 @@
  * See the LICENSE file provided with this code for the full license.
  */
 
-package org.hkijena.acaq5.extensions.standardplots.ui.plots;
+package org.hkijena.acaq5.extensions.plots.ui.plots;
 
 
 import org.hkijena.acaq5.ui.plotbuilder.ACAQPlotSeriesData;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.renderer.category.StatisticalLineAndShapeRenderer;
+import org.jfree.data.general.DefaultPieDataset;
 
 import java.util.List;
 
 /**
- * A line category plot
+ * A 2D pie plot
  */
-public class DefaultStatisticalLineCategoryPlot extends DefaultStatisticalCategoryPlot {
-
+public class Pie2DPlot extends PiePlot {
     /**
      * @param seriesDataList the data
      */
-    public DefaultStatisticalLineCategoryPlot(List<ACAQPlotSeriesData> seriesDataList) {
+    public Pie2DPlot(List<ACAQPlotSeriesData> seriesDataList) {
         super(seriesDataList);
-        setTitle("Line category plot");
+        setTitle("2D Pie plot");
     }
 
     @Override
-    protected JFreeChart createPlotFromDataset() {
-        JFreeChart chart = ChartFactory.createLineChart(getTitle(), getCategoryAxisLabel(), getValueAxisLabel(), getDataset());
-        chart.getCategoryPlot().setRenderer(new StatisticalLineAndShapeRenderer());
-        return chart;
+    protected JFreeChart createPlotFromDataset(DefaultPieDataset dataset) {
+        return ChartFactory.createPieChart(getTitle(), dataset, true, true, false);
     }
 }

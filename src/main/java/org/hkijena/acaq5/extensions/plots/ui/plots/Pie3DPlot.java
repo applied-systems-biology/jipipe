@@ -10,7 +10,7 @@
  * See the LICENSE file provided with this code for the full license.
  */
 
-package org.hkijena.acaq5.extensions.standardplots.ui.plots;
+package org.hkijena.acaq5.extensions.plots.ui.plots;
 
 
 import org.hkijena.acaq5.ui.plotbuilder.ACAQPlotSeriesData;
@@ -21,19 +21,19 @@ import org.jfree.data.general.DefaultPieDataset;
 import java.util.List;
 
 /**
- * A 2D pie plot
+ * A 3D pie plot
  */
-public class Pie2DPlot extends PiePlot {
+public class Pie3DPlot extends PiePlot {
     /**
      * @param seriesDataList the data
      */
-    public Pie2DPlot(List<ACAQPlotSeriesData> seriesDataList) {
+    public Pie3DPlot(List<ACAQPlotSeriesData> seriesDataList) {
         super(seriesDataList);
-        setTitle("2D Pie plot");
+        setTitle("3D Pie plot");
     }
 
     @Override
     protected JFreeChart createPlotFromDataset(DefaultPieDataset dataset) {
-        return ChartFactory.createPieChart(getTitle(), dataset, true, true, false);
+        return ChartFactory.createPieChart3D(getTitle(), dataset, true, true, false);
     }
 }

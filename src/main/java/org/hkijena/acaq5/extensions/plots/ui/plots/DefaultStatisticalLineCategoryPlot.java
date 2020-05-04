@@ -10,34 +10,33 @@
  * See the LICENSE file provided with this code for the full license.
  */
 
-package org.hkijena.acaq5.extensions.standardplots.ui.plots;
+package org.hkijena.acaq5.extensions.plots.ui.plots;
 
 
 import org.hkijena.acaq5.ui.plotbuilder.ACAQPlotSeriesData;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.renderer.category.BarRenderer;
-import org.jfree.chart.renderer.category.StandardBarPainter;
+import org.jfree.chart.renderer.category.StatisticalLineAndShapeRenderer;
 
 import java.util.List;
 
 /**
- * A stacked bar category plot
+ * A line category plot
  */
-public class StackedBarCategoryPlot extends DefaultCategoryPlot {
+public class DefaultStatisticalLineCategoryPlot extends DefaultStatisticalCategoryPlot {
+
     /**
      * @param seriesDataList the data
      */
-    public StackedBarCategoryPlot(List<ACAQPlotSeriesData> seriesDataList) {
+    public DefaultStatisticalLineCategoryPlot(List<ACAQPlotSeriesData> seriesDataList) {
         super(seriesDataList);
-        setTitle("Bar plot");
+        setTitle("Line category plot");
     }
 
     @Override
     protected JFreeChart createPlotFromDataset() {
-        JFreeChart chart = ChartFactory.createStackedBarChart(getTitle(), getCategoryAxisLabel(), getValueAxisLabel(), getDataset());
-        chart.setTitle(getTitle());
-        ((BarRenderer) chart.getCategoryPlot().getRenderer()).setBarPainter(new StandardBarPainter());
+        JFreeChart chart = ChartFactory.createLineChart(getTitle(), getCategoryAxisLabel(), getValueAxisLabel(), getDataset());
+        chart.getCategoryPlot().setRenderer(new StatisticalLineAndShapeRenderer());
         return chart;
     }
 }

@@ -35,6 +35,14 @@ public class ResultsTableData implements ACAQData {
         this.table = table;
     }
 
+    /**
+     * Creates a copy
+     * @param other the original
+     */
+    public ResultsTableData(ResultsTableData other) {
+        this.table = (ResultsTable) other.table.clone();
+    }
+
     @Override
     public void saveTo(Path storageFilePath, String name) {
         try {

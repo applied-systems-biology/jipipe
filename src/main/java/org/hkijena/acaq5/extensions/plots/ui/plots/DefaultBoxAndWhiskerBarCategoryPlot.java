@@ -10,36 +10,34 @@
  * See the LICENSE file provided with this code for the full license.
  */
 
-package org.hkijena.acaq5.extensions.standardplots.ui.plots;
+package org.hkijena.acaq5.extensions.plots.ui.plots;
 
 
 import org.hkijena.acaq5.ui.plotbuilder.ACAQPlotSeriesData;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.renderer.category.BarRenderer;
-import org.jfree.chart.renderer.category.StandardBarPainter;
-import org.jfree.chart.renderer.category.StatisticalBarRenderer;
+import org.jfree.data.statistics.BoxAndWhiskerCategoryDataset;
 
 import java.util.List;
 
 /**
- * Statistical bar plot
+ * A box plot
  */
-public class DefaultStatisticalBarCategoryPlot extends DefaultStatisticalCategoryPlot {
+public class DefaultBoxAndWhiskerBarCategoryPlot extends DefaultBoxAndWhiskerCategoryPlot {
 
     /**
      * @param seriesDataList the data
      */
-    public DefaultStatisticalBarCategoryPlot(List<ACAQPlotSeriesData> seriesDataList) {
+    public DefaultBoxAndWhiskerBarCategoryPlot(List<ACAQPlotSeriesData> seriesDataList) {
         super(seriesDataList);
-        setTitle("Bar plot");
+        setTitle("Box Plot");
     }
 
     @Override
     protected JFreeChart createPlotFromDataset() {
-        JFreeChart chart = ChartFactory.createBarChart(getTitle(), getCategoryAxisLabel(), getValueAxisLabel(), getDataset());
-        chart.getCategoryPlot().setRenderer(new StatisticalBarRenderer());
-        ((BarRenderer) chart.getCategoryPlot().getRenderer()).setBarPainter(new StandardBarPainter());
+        JFreeChart chart = ChartFactory.createBoxAndWhiskerChart(getTitle(), getCategoryAxisLabel(), getValueAxisLabel(), (BoxAndWhiskerCategoryDataset) getDataset(), true);
+        CustomBoxAndWhiskerRenderer renderer = new CustomBoxAndWhiskerRenderer();
+        chart.getCategoryPlot().setRenderer(renderer);
         return chart;
     }
 }

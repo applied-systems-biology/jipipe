@@ -10,30 +10,31 @@
  * See the LICENSE file provided with this code for the full license.
  */
 
-package org.hkijena.acaq5.extensions.standardplots.ui.plots;
+package org.hkijena.acaq5.extensions.plots.ui.plots;
 
 
 import org.hkijena.acaq5.ui.plotbuilder.ACAQPlotSeriesData;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
-import org.jfree.data.xy.XYSeriesCollection;
 
 import java.util.List;
 
 /**
- * An XY plot
+ * A line category plot
  */
-public class LineXYPlot extends XYPlot {
+public class LineCategoryPlot extends DefaultCategoryPlot {
     /**
      * @param seriesDataList the data
      */
-    public LineXYPlot(List<ACAQPlotSeriesData> seriesDataList) {
+    public LineCategoryPlot(List<ACAQPlotSeriesData> seriesDataList) {
         super(seriesDataList);
-        setTitle("XY Line Plot");
+        setTitle("Line category plot");
     }
 
     @Override
-    protected JFreeChart createPlotFromDataset(XYSeriesCollection dataset) {
-        return ChartFactory.createXYLineChart(getTitle(), getxAxisLabel(), getyAxisLabel(), dataset);
+    protected JFreeChart createPlotFromDataset() {
+        JFreeChart chart = ChartFactory.createLineChart(getTitle(), getCategoryAxisLabel(), getValueAxisLabel(), getDataset());
+        chart.setTitle(getTitle());
+        return chart;
     }
 }

@@ -23,7 +23,7 @@ import java.util.function.Supplier;
  */
 // Algorithm metadata
 @ACAQDocumentation(name = "Convert mask to particles (deprecated)")
-@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Quantifier)
+@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Analysis)
 
 // Algorithm data flow
 @AlgorithmInputSlot(value = ImagePlus2DGreyscaleMaskData.class, slotName = "Mask", autoCreate = true)
