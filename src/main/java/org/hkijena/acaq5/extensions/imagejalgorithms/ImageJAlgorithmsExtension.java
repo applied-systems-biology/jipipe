@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.extensions.imagejalgorithms;
 
 import com.google.common.collect.ImmutableMap;
+import ij.plugin.GaussianBlur3D;
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.traits.ACAQJavaTraitDeclaration;
@@ -130,37 +131,53 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
                 ResourceUtils.getPluginResource("icons/traits/search-location-blue.png"));
 
         registerAlgorithm("ij1-blur-gaussian2d", GaussianBlur2DAlgorithm.class);
+        registerAlgorithm("ij1-blur-gaussian3d", GaussianBlur3DAlgorithm.class);
         registerAlgorithm("ij1-blur-box2d", BoxFilter2DAlgorithm.class);
+        registerAlgorithm("ij1-blur-box3d", BoxFilter3DAlgorithm.class);
         registerAlgorithm("ij1-blur-median2d-8u", MedianBlurGreyscale8U2DAlgorithm.class);
         registerAlgorithm("ij1-blur-median2d-rgb", MedianBlurRGB2DAlgorithm.class);
         registerAlgorithm("ij1-blur-median2d", MedianBlurFilter2DAlgorithm.class);
+        registerAlgorithm("ij1-blur-median3d", MedianBlurFilter3DAlgorithm.class);
+
         registerAlgorithm("ij1-color-invert", InvertColorsAlgorithm.class);
         registerAlgorithm("ij1-color-merge-channels", MergeChannelsAlgorithm.class);
+
         registerAlgorithm("ij1-edge-sobel", SobelEdgeDetectorAlgorithm.class);
+
         registerAlgorithm("ij1-math-math2d", ApplyMath2DAlgorithm.class);
         registerAlgorithm("ij1-math-transform2d", ApplyTransform2DAlgorithm.class);
         registerAlgorithm("ij1-math-edt2d", ApplyDistanceTransform2DAlgorithm.class);
         registerAlgorithm("ij1-math-local-variance2d", LocalVarianceFilter2DAlgorithm.class);
         registerAlgorithm("ij1-math-local-maximum2d", LocalMaximumFilter2DAlgorithm.class);
         registerAlgorithm("ij1-math-local-minimum2d", LocalMinimumFilter2DAlgorithm.class);
+        registerAlgorithm("ij1-math-local-variance3d", LocalVarianceFilter2DAlgorithm.class);
+        registerAlgorithm("ij1-math-local-maximum3d", LocalMaximumFilter3DAlgorithm.class);
+        registerAlgorithm("ij1-math-local-minimum3d", LocalMinimumFilter3DAlgorithm.class);
         registerAlgorithm("ij1-math-replace-nan-by-median2d", RemoveNaNFilter2DAlgorithm.class);
         registerAlgorithm("ij1-math-imagecalculator2d", ImageCalculator2DAlgorithm.class);
+
         registerAlgorithm("ij1-morph-binary-operation2d", MorphologyBinary2DAlgorithm.class);
         registerAlgorithm("ij1-morph-greyscale-operation2d", MorphologyGreyscale2DAlgorithm.class);
         registerAlgorithm("ij1-morph-binary-fillholes2d", MorphologyFillHoles2DAlgorithm.class);
         registerAlgorithm("ij1-morph-binary-outline2d", MorphologyOutline2DAlgorithm.class);
         registerAlgorithm("ij1-morph-binary-skeletonize2d", MorphologySkeletonize2DAlgorithm.class);
+
         registerAlgorithm("ij1-binary-dtwatershed2d", DistanceTransformWatershed2DAlgorithm.class);
         registerAlgorithm("ij1-binary-voronoi2d", Voronoi2DAlgorithm.class);
         registerAlgorithm("ij1-binary-uep2d", UltimateErodedPoints2DAlgorithm.class);
+
         registerAlgorithm("ij1-noise-addnormalnoise2d", AddNoise2DAlgorithm.class);
         registerAlgorithm("ij1-noise-despeckle2d", DespeckleFilter2DAlgorithm.class);
         registerAlgorithm("ij1-noise-removeoutliers2d", RemoveOutliersFilter2DAlgorithm.class);
+
         registerAlgorithm("ij1-background-rollingball2d", RollingBallBackgroundEstimator2DAlgorithm.class);
+
         registerAlgorithm("ij1-sharpen-laplacian2d", LaplacianSharpen2DAlgorithm.class);
+
         registerAlgorithm("ij1-threshold-manual2d-8u", ManualThreshold8U2DAlgorithm.class);
         registerAlgorithm("ij1-threshold-manual2d-16u", ManualThreshold16U2DAlgorithm.class);
         registerAlgorithm("ij1-threshold-auto2d", AutoThreshold2DAlgorithm.class);
+
         registerAlgorithm("ij1-dimensions-stacksplitter", StackSplitterAlgorithm.class);
         registerAlgorithm("ij1-dimensions-stackmerger", StackMergerAlgorithm.class);
         registerAlgorithm("ij1-dimensions-zproject", ZProjectorAlgorithm.class);

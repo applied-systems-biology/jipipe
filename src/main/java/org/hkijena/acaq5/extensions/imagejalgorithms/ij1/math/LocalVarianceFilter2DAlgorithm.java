@@ -21,7 +21,7 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
 /**
  * Wrapper around {@link RankFilters}
  */
-@ACAQDocumentation(name = "Local variance 2D", description = "Filter that calculates the local variance around a pixel. " +
+@ACAQDocumentation(name = "Local variance 2D", description = "Calculates the local variance around each pixel. " +
         "If a multi-channel image is provided, the operation is applied to each channel. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ACAQOrganization(menuPath = "Math", algorithmCategory = ACAQAlgorithmCategory.Processor)

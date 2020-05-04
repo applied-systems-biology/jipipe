@@ -21,7 +21,7 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
 /**
  * Wrapper around {@link RankFilters}
  */
-@ACAQDocumentation(name = "Local minimum 2D", description = "Filter that calculates the local maximum around a pixel. This is also referred as greyscale dilation. " +
+@ACAQDocumentation(name = "Local maximum 2D", description = "Calculates the local maximum around each pixel. This is also referred as greyscale dilation. " +
         "If a multi-channel image is provided, the operation is applied to each channel. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ACAQOrganization(menuPath = "Math", algorithmCategory = ACAQAlgorithmCategory.Processor)

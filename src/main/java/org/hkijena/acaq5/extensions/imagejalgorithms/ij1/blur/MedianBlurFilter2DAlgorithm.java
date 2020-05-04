@@ -21,7 +21,7 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
 /**
  * Wrapper around {@link RankFilters}
  */
-@ACAQDocumentation(name = "Median Blur 2D", description = "Applies a median filter. " +
+@ACAQDocumentation(name = "Median blur 2D", description = "Applies a median filter. " +
         "If a multi-channel image is provided, the operation is applied to each channel. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ACAQOrganization(menuPath = "Blur", algorithmCategory = ACAQAlgorithmCategory.Processor)
