@@ -16,12 +16,16 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.components.ACAQValidityReportUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.UserFriendlyErrorUI;
+import org.hkijena.acaq5.ui.extension.MenuExtension;
+import org.hkijena.acaq5.ui.extension.MenuTarget;
 import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api.ACAQExistingTraitNode;
 import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api.ACAQNewTraitNode;
+import org.hkijena.acaq5.ui.registries.ACAQUIMenuServiceRegistry;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -581,4 +585,27 @@ public class UIUtils {
     }
 
 
+    /**
+     * Installs an extension menu
+     * @param workbench the workbench
+     * @param targetMenu the menu
+     * @param targetMenuType the menu type
+     * @param withSeparator if a separator should be prepended if items are installed
+     */
+    public static void installMenuExtension(ACAQWorkbench workbench, JMenu targetMenu, MenuTarget targetMenuType, boolean withSeparator) {
+        List<MenuExtension> extensions = ACAQUIMenuServiceRegistry.getInstance()
+                .getMenuExtensionsTargeting(targetMenuType, workbench);
+        if(!extensions.isEmpty()) {
+            if(withSeparator)
+                targetMenu.addSeparator();
+            for (Map.Entry<String, JMenu> entry : createMenuTree(targetMenu, extensions.stream()
+                    .map(MenuExtension::getMenuPath).collect(Collectors.toSet())).entrySet()) {
+                for (MenuExtension extension : extensions) {
+                    if(StringUtils.getCleanedMenuPath(entry.getKey()).equals(StringUtils.getCleanedMenuPath(extension.getMenuPath()))) {
+                        entry.getValue().add(extension);
+                    }
+                }
+            }
+        }
+    }
 }

@@ -78,6 +78,11 @@ public interface ACAQRegistry extends Service, ACAQValidatable {
     ACAQUIImageJDatatypeAdapterRegistry getUIImageJDatatypeAdapterRegistry();
 
     /**
+     * @return Registered menus
+     */
+    ACAQUIMenuServiceRegistry getUIMenuServiceRegistry();
+
+    /**
      * @return Registered extension IDs
      */
     Set<String> getRegisteredExtensionIds();

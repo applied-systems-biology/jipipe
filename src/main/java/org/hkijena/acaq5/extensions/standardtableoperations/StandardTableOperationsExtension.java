@@ -34,6 +34,9 @@ public class StandardTableOperationsExtension extends ACAQPrepackagedDefaultJava
 
     @Override
     public void register() {
+
+        registerMenuExtension(NewTableMenuExtension.class);
+
         // Register spreadsheet operations
         registerTableOperation(StatisticsCountVectorOperation.class,
                 null,

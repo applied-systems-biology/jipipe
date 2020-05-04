@@ -13,7 +13,7 @@
 package org.hkijena.acaq5.extensions.plots.ui.plots;
 
 
-import org.hkijena.acaq5.ui.plotbuilder_old.ACAQPlotSeriesData;
+import org.hkijena.acaq5.ui.plotbuilder_old.ACAQLegacyPlotSeriesData;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.statistics.BoxAndWhiskerCategoryDataset;
@@ -28,7 +28,7 @@ public class DefaultBoxAndWhiskerBarCategoryPlot extends DefaultBoxAndWhiskerCat
     /**
      * @param seriesDataList the data
      */
-    public DefaultBoxAndWhiskerBarCategoryPlot(List<ACAQPlotSeriesData> seriesDataList) {
+    public DefaultBoxAndWhiskerBarCategoryPlot(List<ACAQLegacyPlotSeriesData> seriesDataList) {
         super(seriesDataList);
         setTitle("Box Plot");
     }

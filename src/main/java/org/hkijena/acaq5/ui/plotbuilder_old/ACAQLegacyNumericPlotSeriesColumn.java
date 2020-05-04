@@ -16,16 +16,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A {@link ACAQPlotSeriesColumn} that contains only numbers
+ * A {@link ACAQLegacyPlotSeriesColumn} that contains only numbers
  */
-public class ACAQNumericPlotSeriesColumn extends ACAQPlotSeriesColumn {
+public class ACAQLegacyNumericPlotSeriesColumn extends ACAQLegacyPlotSeriesColumn {
     /**
      * @param seriesDataList       The series data list
      * @param defaultGenerator     Provides default values
      * @param additionalGenerators Additional generators
      */
     @SafeVarargs
-    public ACAQNumericPlotSeriesColumn(List<ACAQPlotSeriesData> seriesDataList, ACAQPlotSeriesGenerator defaultGenerator, ACAQPlotSeriesGenerator... additionalGenerators) {
+    public ACAQLegacyNumericPlotSeriesColumn(List<ACAQLegacyPlotSeriesData> seriesDataList, ACAQLegacyPlotSeriesGenerator defaultGenerator, ACAQLegacyPlotSeriesGenerator... additionalGenerators) {
         super(seriesDataList, defaultGenerator, additionalGenerators);
     }
 

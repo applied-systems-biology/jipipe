@@ -6,6 +6,7 @@ import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.events.ExtensionContentRemovedEvent;
 import org.hkijena.acaq5.ui.components.*;
+import org.hkijena.acaq5.ui.extension.MenuTarget;
 import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonExtensionContentListUI;
 import org.hkijena.acaq5.ui.extensionbuilder.grapheditor.ACAQJsonExtensionAlgorithmGraphUI;
 import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.ACAQTraitGraphUI;
@@ -121,6 +122,7 @@ public class ACAQJsonExtensionWorkbench extends JPanel implements ACAQWorkbench 
         newProjectButton.addActionListener(e -> window.newProject());
         projectMenu.add(newProjectButton);
 
+        UIUtils.installMenuExtension(this, projectMenu, MenuTarget.ExtensionBuilderMainMenu, true);
         projectMenu.addSeparator();
 
         // "Open project" entry
@@ -160,6 +162,12 @@ public class ACAQJsonExtensionWorkbench extends JPanel implements ACAQWorkbench 
         JMenuItem projectContentButton = new JMenuItem("Extension contents", UIUtils.getIconFromResources("module.png"));
         projectContentButton.addActionListener(e -> openExtensionContents());
         projectMenu.add(projectContentButton);
+
+        // Tools menu
+        JMenu toolsMenu = new JMenu("Tools");
+        UIUtils.installMenuExtension(this, toolsMenu, MenuTarget.ExtensionBuilderToolsMenu, false);
+        if(toolsMenu.getItemCount() > 0)
+            menu.add(toolsMenu);
 
         menu.add(Box.createHorizontalGlue());
 

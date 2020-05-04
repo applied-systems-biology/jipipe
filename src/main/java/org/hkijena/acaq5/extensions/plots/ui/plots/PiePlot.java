@@ -23,14 +23,14 @@ import java.util.List;
  * Base class for pie plots
  * Expects data "Category" (String) and "Amount" (Numeric)
  */
-public abstract class PiePlot extends ACAQPlot {
+public abstract class PiePlot extends ACAQLegacyPlot {
 
     private DefaultPieDataset dataset = new DefaultPieDataset();
 
     /**
      * @param seriesDataList the data
      */
-    public PiePlot(List<ACAQPlotSeriesData> seriesDataList) {
+    public PiePlot(List<ACAQLegacyPlotSeriesData> seriesDataList) {
         super(seriesDataList);
         addSeries();
     }
@@ -46,12 +46,12 @@ public abstract class PiePlot extends ACAQPlot {
     }
 
     @Override
-    protected ACAQPlotSeries createSeries() {
-        ACAQPlotSeries series = new ACAQPlotSeries();
-        series.addColumn("Category", new ACAQStringPlotSeriesColumn(getSeriesDataList(),
-                new ACAQPlotSeriesGenerator("No category", x -> "No category")));
-        series.addColumn("Amount", new ACAQNumericPlotSeriesColumn(getSeriesDataList(),
-                new ACAQPlotSeriesGenerator("Zero", x -> 0.0)));
+    protected ACAQLegacyPlotSeries createSeries() {
+        ACAQLegacyPlotSeries series = new ACAQLegacyPlotSeries();
+        series.addColumn("Category", new ACAQLegacyStringPlotSeriesColumn(getSeriesDataList(),
+                new ACAQLegacyPlotSeriesGenerator("No category", x -> "No category")));
+        series.addColumn("Amount", new ACAQLegacyNumericPlotSeriesColumn(getSeriesDataList(),
+                new ACAQLegacyPlotSeriesGenerator("Zero", x -> 0.0)));
         return series;
     }
 
@@ -64,10 +64,10 @@ public abstract class PiePlot extends ACAQPlot {
      */
     protected void updateDataset() {
         dataset.clear();
-        ACAQPlotSeries series = getSeries().get(0);
+        ACAQLegacyPlotSeries series = getSeries().get(0);
         int rowCount = series.getMaximumRequiredRowCount();
-        List<String> categories = ((ACAQStringPlotSeriesColumn) series.getColumns().get("Category")).getValues(rowCount);
-        List<Double> values = ((ACAQNumericPlotSeriesColumn) series.getColumns().get("Amount")).getValues(rowCount);
+        List<String> categories = ((ACAQLegacyStringPlotSeriesColumn) series.getColumns().get("Category")).getValues(rowCount);
+        List<Double> values = ((ACAQLegacyNumericPlotSeriesColumn) series.getColumns().get("Amount")).getValues(rowCount);
 
         for (int i = 0; i < categories.size(); ++i) {
             dataset.setValue(categories.get(i), 0);

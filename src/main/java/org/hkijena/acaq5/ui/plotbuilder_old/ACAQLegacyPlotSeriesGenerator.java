@@ -19,7 +19,7 @@ import java.util.function.Function;
  *
  * @param <T> Generated data type
  */
-public class ACAQPlotSeriesGenerator<T> {
+public class ACAQLegacyPlotSeriesGenerator<T> {
     private String name;
     private Function<Integer, T> generatorFunction;
 
@@ -27,7 +27,7 @@ public class ACAQPlotSeriesGenerator<T> {
      * @param name              Generator name
      * @param generatorFunction Function that generates data based on row index
      */
-    public ACAQPlotSeriesGenerator(String name, Function<Integer, T> generatorFunction) {
+    public ACAQLegacyPlotSeriesGenerator(String name, Function<Integer, T> generatorFunction) {
         this.name = name;
         this.generatorFunction = generatorFunction;
     }

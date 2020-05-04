@@ -13,7 +13,7 @@
 package org.hkijena.acaq5.extensions.plots.ui.plots;
 
 
-import org.hkijena.acaq5.ui.plotbuilder_old.ACAQPlotSeriesData;
+import org.hkijena.acaq5.ui.plotbuilder_old.ACAQLegacyPlotSeriesData;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.renderer.category.StatisticalLineAndShapeRenderer;
@@ -28,7 +28,7 @@ public class DefaultStatisticalLineCategoryPlot extends DefaultStatisticalCatego
     /**
      * @param seriesDataList the data
      */
-    public DefaultStatisticalLineCategoryPlot(List<ACAQPlotSeriesData> seriesDataList) {
+    public DefaultStatisticalLineCategoryPlot(List<ACAQLegacyPlotSeriesData> seriesDataList) {
         super(seriesDataList);
         setTitle("Line category plot");
     }

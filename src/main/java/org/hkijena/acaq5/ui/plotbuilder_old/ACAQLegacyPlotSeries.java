@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
  * A whole data set for a plot.
  * This is equivalent to a table.
  */
-public class ACAQPlotSeries {
-    private Map<String, ACAQPlotSeriesColumn> columns = new HashMap<>();
+public class ACAQLegacyPlotSeries {
+    private Map<String, ACAQLegacyPlotSeriesColumn> columns = new HashMap<>();
     private Map<String, Object> parameters = new HashMap<>();
     private Map<String, Class> parameterTypes = new HashMap<>();
     private EventBus eventBus = new EventBus();
@@ -32,7 +32,7 @@ public class ACAQPlotSeries {
     /**
      * Creates new instance
      */
-    public ACAQPlotSeries() {
+    public ACAQLegacyPlotSeries() {
 
     }
 
@@ -42,7 +42,7 @@ public class ACAQPlotSeries {
      * @param name   Name
      * @param column Column
      */
-    public void addColumn(String name, ACAQPlotSeriesColumn column) {
+    public void addColumn(String name, ACAQLegacyPlotSeriesColumn column) {
         columns.put(name, column);
         column.getEventBus().register(this);
     }
@@ -53,14 +53,14 @@ public class ACAQPlotSeries {
      * @param event Generated event
      */
     @Subscribe
-    public void handleColumnDataChangedEvent(ACAQPlotSeriesColumn.DataChangedEvent event) {
+    public void handleColumnDataChangedEvent(ACAQLegacyPlotSeriesColumn.DataChangedEvent event) {
         eventBus.post(new DataChangedEvent(this));
     }
 
     /**
      * @return Columns
      */
-    public Map<String, ACAQPlotSeriesColumn> getColumns() {
+    public Map<String, ACAQLegacyPlotSeriesColumn> getColumns() {
         return Collections.unmodifiableMap(columns);
     }
 
@@ -126,8 +126,8 @@ public class ACAQPlotSeries {
      * @param name Column name
      * @return Numeric column
      */
-    public ACAQNumericPlotSeriesColumn getAsNumericColumn(String name) {
-        return (ACAQNumericPlotSeriesColumn) columns.get(name);
+    public ACAQLegacyNumericPlotSeriesColumn getAsNumericColumn(String name) {
+        return (ACAQLegacyNumericPlotSeriesColumn) columns.get(name);
     }
 
     /**
@@ -136,8 +136,8 @@ public class ACAQPlotSeries {
      * @param name Column name
      * @return String column
      */
-    public ACAQStringPlotSeriesColumn getAsStringColumn(String name) {
-        return (ACAQStringPlotSeriesColumn) columns.get(name);
+    public ACAQLegacyStringPlotSeriesColumn getAsStringColumn(String name) {
+        return (ACAQLegacyStringPlotSeriesColumn) columns.get(name);
     }
 
     /**
@@ -145,7 +145,7 @@ public class ACAQPlotSeries {
      */
     public int getMaximumRequiredRowCount() {
         int count = 0;
-        for (ACAQPlotSeriesColumn column : columns.values()) {
+        for (ACAQLegacyPlotSeriesColumn column : columns.values()) {
             count = Math.max(count, column.getRequiredRowCount());
         }
         return count;
@@ -173,19 +173,19 @@ public class ACAQPlotSeries {
      * Event when data is changed
      */
     public static class DataChangedEvent {
-        private ACAQPlotSeries series;
+        private ACAQLegacyPlotSeries series;
 
         /**
          * @param series Event source
          */
-        public DataChangedEvent(ACAQPlotSeries series) {
+        public DataChangedEvent(ACAQLegacyPlotSeries series) {
             this.series = series;
         }
 
         /**
          * @return Event source
          */
-        public ACAQPlotSeries getSeries() {
+        public ACAQLegacyPlotSeries getSeries() {
             return series;
         }
     }

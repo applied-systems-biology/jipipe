@@ -12,8 +12,8 @@
 
 package org.hkijena.acaq5.ui.registries;
 
-import org.hkijena.acaq5.ui.plotbuilder_old.ACAQPlot;
-import org.hkijena.acaq5.ui.plotbuilder_old.ACAQPlotSeriesData;
+import org.hkijena.acaq5.ui.plotbuilder_old.ACAQLegacyPlot;
+import org.hkijena.acaq5.ui.plotbuilder_old.ACAQLegacyPlotSeriesData;
 
 import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
@@ -24,7 +24,7 @@ import java.util.*;
  */
 public class ACAQPlotBuilderRegistry {
 
-    private Map<Class<? extends ACAQPlot>, Entry> entries = new HashMap<>();
+    private Map<Class<? extends ACAQLegacyPlot>, Entry> entries = new HashMap<>();
 
     /**
      * Registers a plot type
@@ -33,7 +33,7 @@ public class ACAQPlotBuilderRegistry {
      * @param name         Plot name
      * @param icon         Plot icon
      */
-    public void register(Class<? extends ACAQPlot> plotType, String name, Icon icon) {
+    public void register(Class<? extends ACAQLegacyPlot> plotType, String name, Icon icon) {
         entries.put(plotType, new Entry(plotType, name, icon));
     }
 
@@ -48,7 +48,7 @@ public class ACAQPlotBuilderRegistry {
      * @param plot The plot
      * @return Name of the plot type
      */
-    public String getNameOf(ACAQPlot plot) {
+    public String getNameOf(ACAQLegacyPlot plot) {
         return entries.get(plot.getClass()).getName();
     }
 
@@ -56,7 +56,7 @@ public class ACAQPlotBuilderRegistry {
      * @param plot The plot
      * @return Icon for the plot
      */
-    public Icon getIconOf(ACAQPlot plot) {
+    public Icon getIconOf(ACAQLegacyPlot plot) {
         return entries.get(plot.getClass()).getIcon();
     }
 
@@ -66,8 +66,8 @@ public class ACAQPlotBuilderRegistry {
      * @param seriesDataList The data
      * @return List of plots
      */
-    public List<ACAQPlot> createAllPlots(List<ACAQPlotSeriesData> seriesDataList) {
-        List<ACAQPlot> plots = new ArrayList<>();
+    public List<ACAQLegacyPlot> createAllPlots(List<ACAQLegacyPlotSeriesData> seriesDataList) {
+        List<ACAQLegacyPlot> plots = new ArrayList<>();
         for (Entry entry : entries.values()) {
             try {
                 plots.add(entry.getPlotType().getConstructor(List.class).newInstance(seriesDataList));
@@ -82,7 +82,7 @@ public class ACAQPlotBuilderRegistry {
      * Registry entry
      */
     public static class Entry {
-        private Class<? extends ACAQPlot> plotType;
+        private Class<? extends ACAQLegacyPlot> plotType;
         private String name;
         private Icon icon;
 
@@ -91,7 +91,7 @@ public class ACAQPlotBuilderRegistry {
          * @param name         Plot name
          * @param icon         Plot icon
          */
-        public Entry(Class<? extends ACAQPlot> plotType, String name, Icon icon) {
+        public Entry(Class<? extends ACAQLegacyPlot> plotType, String name, Icon icon) {
             this.plotType = plotType;
             this.name = name;
             this.icon = icon;
@@ -100,7 +100,7 @@ public class ACAQPlotBuilderRegistry {
         /**
          * @return The plot type
          */
-        public Class<? extends ACAQPlot> getPlotType() {
+        public Class<? extends ACAQLegacyPlot> getPlotType() {
             return plotType;
         }
 

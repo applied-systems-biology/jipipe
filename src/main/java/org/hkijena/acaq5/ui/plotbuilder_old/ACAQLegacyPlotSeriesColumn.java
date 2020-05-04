@@ -22,9 +22,9 @@ import java.util.List;
 /**
  * @param <T> Stored data type
  */
-public abstract class ACAQPlotSeriesColumn<T> {
-    private List<ACAQPlotSeriesData> seriesDataList;
-    private List<ACAQPlotSeriesGenerator> generators;
+public abstract class ACAQLegacyPlotSeriesColumn<T> {
+    private List<ACAQLegacyPlotSeriesData> seriesDataList;
+    private List<ACAQLegacyPlotSeriesGenerator> generators;
     private int seriesDataIndex = -1;
     private EventBus eventBus = new EventBus();
 
@@ -34,7 +34,7 @@ public abstract class ACAQPlotSeriesColumn<T> {
      * @param additionalGenerators Additional generators
      */
     @SafeVarargs
-    public ACAQPlotSeriesColumn(List<ACAQPlotSeriesData> seriesDataList, ACAQPlotSeriesGenerator defaultGenerator, ACAQPlotSeriesGenerator... additionalGenerators) {
+    public ACAQLegacyPlotSeriesColumn(List<ACAQLegacyPlotSeriesData> seriesDataList, ACAQLegacyPlotSeriesGenerator defaultGenerator, ACAQLegacyPlotSeriesGenerator... additionalGenerators) {
         this.seriesDataList = seriesDataList;
         this.generators = new ArrayList<>();
         this.generators.add(defaultGenerator);
@@ -50,10 +50,10 @@ public abstract class ACAQPlotSeriesColumn<T> {
      */
     public List<T> getValues(int rowCount) {
         if (seriesDataIndex < 0) {
-            ACAQPlotSeriesGenerator generator = generators.get(-seriesDataIndex - 1);
+            ACAQLegacyPlotSeriesGenerator generator = generators.get(-seriesDataIndex - 1);
             List<T> result = new ArrayList<>(rowCount);
             for (int row = 0; row < rowCount; ++row) {
-                result.add(generator.getGeneratorFunction().apply(row));
+                result.add((T) generator.getGeneratorFunction().apply(row));
             }
             return result;
         } else {
@@ -69,7 +69,7 @@ public abstract class ACAQPlotSeriesColumn<T> {
     /**
      * @return The current series data
      */
-    public ACAQPlotSeriesData getSeriesData() {
+    public ACAQLegacyPlotSeriesData getSeriesData() {
         if (seriesDataIndex >= 0)
             return seriesDataList.get(seriesDataIndex);
         else
@@ -117,7 +117,7 @@ public abstract class ACAQPlotSeriesColumn<T> {
     /**
      * @return Available generators
      */
-    public List<ACAQPlotSeriesGenerator> getGenerators() {
+    public List<ACAQLegacyPlotSeriesGenerator> getGenerators() {
         return Collections.unmodifiableList(generators);
     }
 
@@ -125,19 +125,19 @@ public abstract class ACAQPlotSeriesColumn<T> {
      * Triggered when data is changed
      */
     public static class DataChangedEvent {
-        private ACAQPlotSeriesColumn seriesColumn;
+        private ACAQLegacyPlotSeriesColumn seriesColumn;
 
         /**
          * @param seriesColumn Event source
          */
-        public DataChangedEvent(ACAQPlotSeriesColumn seriesColumn) {
+        public DataChangedEvent(ACAQLegacyPlotSeriesColumn seriesColumn) {
             this.seriesColumn = seriesColumn;
         }
 
         /**
          * @return Event source
          */
-        public ACAQPlotSeriesColumn getSeriesColumn() {
+        public ACAQLegacyPlotSeriesColumn getSeriesColumn() {
             return seriesColumn;
         }
     }

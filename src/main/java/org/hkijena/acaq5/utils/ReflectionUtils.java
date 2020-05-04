@@ -1,6 +1,9 @@
 package org.hkijena.acaq5.utils;
 
+import org.apache.commons.lang.reflect.ConstructorUtils;
+
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Utilities around reflection
@@ -16,9 +19,10 @@ public class ReflectionUtils {
      * Can handle enums
      *
      * @param klass instantiated class
+     * @param args for primitives, ignored. For classes passed to the constructor
      * @return instance
      */
-    public static Object newInstance(Class<?> klass) {
+    public static Object newInstance(Class<?> klass, Object... args) {
         if (klass == int.class) {
             return 0;
         } else if (klass == long.class) {
@@ -43,8 +47,8 @@ public class ReflectionUtils {
             }
         } else {
             try {
-                return klass.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
+                return ConstructorUtils.invokeConstructor(klass, args);
+            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
         }

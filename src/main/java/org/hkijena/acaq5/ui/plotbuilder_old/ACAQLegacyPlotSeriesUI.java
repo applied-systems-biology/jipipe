@@ -23,12 +23,12 @@ import java.awt.*;
 import java.util.Map;
 
 /**
- * UI around an {@link ACAQPlotSeries}
+ * UI around an {@link ACAQLegacyPlotSeries}
  */
-public class ACAQPlotSeriesUI extends JPanel {
+public class ACAQLegacyPlotSeriesUI extends JPanel {
     private static final Color BORDER_COLOR = new Color(128, 128, 128);
-    private ACAQPlot plot;
-    private ACAQPlotSeries series;
+    private ACAQLegacyPlot plot;
+    private ACAQLegacyPlotSeries series;
     private JButton removeButton;
     private JButton enableToggleButton;
     private JButton moveUpButton;
@@ -38,7 +38,7 @@ public class ACAQPlotSeriesUI extends JPanel {
      * @param plot   The plot that contains the series
      * @param series The series
      */
-    public ACAQPlotSeriesUI(ACAQPlot plot, ACAQPlotSeries series) {
+    public ACAQLegacyPlotSeriesUI(ACAQLegacyPlot plot, ACAQLegacyPlotSeries series) {
         this.plot = plot;
         this.series = series;
         initialize();
@@ -175,7 +175,7 @@ public class ACAQPlotSeriesUI extends JPanel {
             });
             ++row;
         }
-        for (Map.Entry<String, ACAQPlotSeriesColumn> entry : series.getColumns().entrySet()) {
+        for (Map.Entry<String, ACAQLegacyPlotSeriesColumn> entry : series.getColumns().entrySet()) {
             JLabel label = new JLabel(entry.getKey());
             JComboBox<Integer> column = new JComboBox<>();
             column.setRenderer(new Renderer(entry.getValue(), plot));
@@ -192,9 +192,9 @@ public class ACAQPlotSeriesUI extends JPanel {
                     entry.getValue().setSeriesDataIndex((Integer) column.getSelectedItem());
             });
 
-            if (entry.getValue() instanceof ACAQStringPlotSeriesColumn) {
+            if (entry.getValue() instanceof ACAQLegacyStringPlotSeriesColumn) {
                 label.setIcon(UIUtils.getIconFromResources("text.png"));
-            } else if (entry.getValue() instanceof ACAQNumericPlotSeriesColumn) {
+            } else if (entry.getValue() instanceof ACAQLegacyNumericPlotSeriesColumn) {
                 label.setIcon(UIUtils.getIconFromResources("number.png"));
             }
 
@@ -239,12 +239,12 @@ public class ACAQPlotSeriesUI extends JPanel {
     }
 
     /**
-     * Renders the contents of a {@link ACAQPlotSeriesColumn}
+     * Renders the contents of a {@link ACAQLegacyPlotSeriesColumn}
      */
     public static class Renderer extends JLabel implements ListCellRenderer<Integer> {
 
-        private ACAQPlotSeriesColumn column;
-        private ACAQPlot plot;
+        private ACAQLegacyPlotSeriesColumn column;
+        private ACAQLegacyPlot plot;
 
         /**
          * Creates new renderer
@@ -252,7 +252,7 @@ public class ACAQPlotSeriesUI extends JPanel {
          * @param column The column
          * @param plot   The plot
          */
-        public Renderer(ACAQPlotSeriesColumn column, ACAQPlot plot) {
+        public Renderer(ACAQLegacyPlotSeriesColumn column, ACAQLegacyPlot plot) {
             this.column = column;
             this.plot = plot;
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
@@ -264,7 +264,7 @@ public class ACAQPlotSeriesUI extends JPanel {
                 setText(plot.getSeriesDataList().get(value).getName());
                 setIcon(UIUtils.getIconFromResources("select-column.png"));
             } else {
-                ACAQPlotSeriesGenerator generator = (ACAQPlotSeriesGenerator) column.getGenerators().get(-value - 1);
+                ACAQLegacyPlotSeriesGenerator generator = (ACAQLegacyPlotSeriesGenerator) column.getGenerators().get(-value - 1);
                 setText(generator.getName());
                 setIcon(UIUtils.getIconFromResources("cog.png"));
             }

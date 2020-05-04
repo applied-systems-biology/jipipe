@@ -18,14 +18,14 @@ import java.util.List;
 /**
  * Data of a plot series
  */
-public class ACAQPlotSeriesData {
+public class ACAQLegacyPlotSeriesData {
     private String name;
     private List<Object> data = new ArrayList<>();
 
     /**
      * @param name Data name
      */
-    public ACAQPlotSeriesData(String name) {
+    public ACAQLegacyPlotSeriesData(String name) {
         this.name = name;
     }
 

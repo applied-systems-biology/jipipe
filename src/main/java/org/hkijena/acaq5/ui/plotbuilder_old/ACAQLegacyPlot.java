@@ -29,11 +29,11 @@ import java.util.List;
 /**
  * A plot
  */
-public abstract class ACAQPlot implements ACAQParameterCollection {
+public abstract class ACAQLegacyPlot implements ACAQParameterCollection {
 
-    protected List<ACAQPlotSeries> series = new ArrayList<>();
+    protected List<ACAQLegacyPlotSeries> series = new ArrayList<>();
     private EventBus eventBus = new EventBus();
-    private List<ACAQPlotSeriesData> seriesDataList;
+    private List<ACAQLegacyPlotSeriesData> seriesDataList;
     private String title = "Plot";
 
     /**
@@ -41,7 +41,7 @@ public abstract class ACAQPlot implements ACAQParameterCollection {
      *
      * @param seriesDataList List of data series
      */
-    protected ACAQPlot(List<ACAQPlotSeriesData> seriesDataList) {
+    protected ACAQLegacyPlot(List<ACAQLegacyPlotSeriesData> seriesDataList) {
         this.seriesDataList = seriesDataList;
     }
 
@@ -64,7 +64,7 @@ public abstract class ACAQPlot implements ACAQParameterCollection {
      */
     public void addSeries() {
         if (canAddSeries()) {
-            ACAQPlotSeries s = createSeries();
+            ACAQLegacyPlotSeries s = createSeries();
             s.getEventBus().register(this);
             series.add(s);
             eventBus.post(new PlotSeriesListChangedEvent(this));
@@ -77,7 +77,7 @@ public abstract class ACAQPlot implements ACAQParameterCollection {
      *
      * @param series The removed series
      */
-    public void removeSeries(ACAQPlotSeries series) {
+    public void removeSeries(ACAQLegacyPlotSeries series) {
         if (canRemoveSeries()) {
             this.series.remove(series);
             eventBus.post(new PlotSeriesListChangedEvent(this));
@@ -91,7 +91,7 @@ public abstract class ACAQPlot implements ACAQParameterCollection {
      *
      * @param series The series
      */
-    public void moveSeriesUp(ACAQPlotSeries series) {
+    public void moveSeriesUp(ACAQLegacyPlotSeries series) {
         int index = this.series.indexOf(series);
         if (index > 0) {
             this.series.set(index, this.series.get(index - 1));
@@ -107,7 +107,7 @@ public abstract class ACAQPlot implements ACAQParameterCollection {
      *
      * @param series The series
      */
-    public void moveSeriesDown(ACAQPlotSeries series) {
+    public void moveSeriesDown(ACAQLegacyPlotSeries series) {
         int index = this.series.indexOf(series);
         if (index >= 0 && index < this.series.size() - 1) {
             this.series.set(index, this.series.get(index + 1));
@@ -123,14 +123,14 @@ public abstract class ACAQPlot implements ACAQParameterCollection {
      * @param event Generated event
      */
     @Subscribe
-    public void handleSeriesDataChangedEvent(ACAQPlotSeries.DataChangedEvent event) {
+    public void handleSeriesDataChangedEvent(ACAQLegacyPlotSeries.DataChangedEvent event) {
         eventBus.post(new PlotChangedEvent(this));
     }
 
     /**
      * @return Created series
      */
-    protected abstract ACAQPlotSeries createSeries();
+    protected abstract ACAQLegacyPlotSeries createSeries();
 
     /**
      * @return Plot UI instance
@@ -169,14 +169,14 @@ public abstract class ACAQPlot implements ACAQParameterCollection {
     /**
      * @return The currently loaded series
      */
-    public List<ACAQPlotSeries> getSeries() {
+    public List<ACAQLegacyPlotSeries> getSeries() {
         return Collections.unmodifiableList(series);
     }
 
     /**
      * @return The series data
      */
-    public List<ACAQPlotSeriesData> getSeriesDataList() {
+    public List<ACAQLegacyPlotSeriesData> getSeriesDataList() {
         return seriesDataList;
     }
 

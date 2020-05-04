@@ -15,9 +15,10 @@ import org.hkijena.acaq5.api.traits.ACAQJavaTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.ui.compat.ImageJDatatypeImporterUI;
+import org.hkijena.acaq5.ui.extension.MenuExtension;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterGeneratorUI;
-import org.hkijena.acaq5.ui.plotbuilder_old.ACAQPlot;
+import org.hkijena.acaq5.ui.plotbuilder_old.ACAQLegacyPlot;
 import org.hkijena.acaq5.ui.registries.ACAQUIParametertypeRegistry;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultDataSlotCellUI;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultDataSlotRowUI;
@@ -111,6 +112,14 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
     @Override
     public void setRegistry(ACAQDefaultRegistry registry) {
         this.registry = registry;
+    }
+
+    /**
+     * Registers a custom menu entry.
+     * @param klass The menu entry
+     */
+    public void registerMenuExtension(Class<? extends MenuExtension> klass) {
+        registry.getUIMenuServiceRegistry().register(klass);
     }
 
     /**
@@ -234,7 +243,7 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
      * @param name                Plot type name
      * @param icon                Plot type icon
      */
-    public void registerPlot(Class<? extends ACAQPlot> plotClass, String name, ImageIcon icon) {
+    public void registerPlot(Class<? extends ACAQLegacyPlot> plotClass, String name, ImageIcon icon) {
         registry.getPlotBuilderRegistry().register(plotClass, name, icon);
     }
 

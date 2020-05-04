@@ -39,22 +39,22 @@ import java.util.stream.Collectors;
 /**
  * UI around data that can be plotted
  */
-public class ACAQPlotBuilderUI extends ACAQProjectWorkbenchPanel {
+public class ACAQLegacyPlotBuilderUI extends ACAQProjectWorkbenchPanel {
 
     private JToolBar plotSeriesEditorToolBar;
     private JXPanel plotSeriesListPanel;
     private JPanel plotSettingsPanel;
-    private ACAQPlot currentPlot;
+    private ACAQLegacyPlot currentPlot;
 
     private JToggleButton toggleAutoUpdate;
     private PlotReader plotReader;
 
-    private List<ACAQPlotSeriesData> seriesDataList = new ArrayList<>();
+    private List<ACAQLegacyPlotSeriesData> seriesDataList = new ArrayList<>();
 
     /**
      * @param workbench The workbench
      */
-    public ACAQPlotBuilderUI(ACAQProjectWorkbench workbench) {
+    public ACAQLegacyPlotBuilderUI(ACAQProjectWorkbench workbench) {
         super(workbench);
         initialize();
         updatePlotSettings();
@@ -69,7 +69,7 @@ public class ACAQPlotBuilderUI extends ACAQProjectWorkbenchPanel {
      */
     public void importFromTable(DefaultTableModel model, String name) {
         for (int column = 0; column < model.getColumnCount(); ++column) {
-            ACAQPlotSeriesData data = new ACAQPlotSeriesData(name + "." + model.getColumnName(column));
+            ACAQLegacyPlotSeriesData data = new ACAQLegacyPlotSeriesData(name + "." + model.getColumnName(column));
             for (int i = 0; i < model.getRowCount(); ++i) {
                 data.getData().add(model.getValueAt(i, column));
             }
@@ -104,15 +104,15 @@ public class ACAQPlotBuilderUI extends ACAQProjectWorkbenchPanel {
 
         JToolBar toolBar = new JToolBar();
 
-        JComboBox<ACAQPlot> plotJComboBox = new JComboBox<>();
+        JComboBox<ACAQLegacyPlot> plotJComboBox = new JComboBox<>();
         plotJComboBox.setRenderer(new Renderer());
         ACAQPlotBuilderRegistry registry = ACAQDefaultRegistry.getInstance().getPlotBuilderRegistry();
-        for (ACAQPlot plot : registry.createAllPlots(seriesDataList).stream().sorted(Comparator.comparing(registry::getNameOf)).collect(Collectors.toList())) {
+        for (ACAQLegacyPlot plot : registry.createAllPlots(seriesDataList).stream().sorted(Comparator.comparing(registry::getNameOf)).collect(Collectors.toList())) {
             plot.getEventBus().register(this);
             plotJComboBox.addItem(plot);
         }
         plotJComboBox.addItemListener(e -> {
-            if (e.getItem() != null) setCurrentPlot((ACAQPlot) e.getItem());
+            if (e.getItem() != null) setCurrentPlot((ACAQLegacyPlot) e.getItem());
         });
         toolBar.add(plotJComboBox);
 
@@ -152,8 +152,8 @@ public class ACAQPlotBuilderUI extends ACAQProjectWorkbenchPanel {
 
         panel.add(tabbedPane, BorderLayout.CENTER);
 
-        if (plotJComboBox.getSelectedItem() instanceof ACAQPlot)
-            currentPlot = (ACAQPlot) plotJComboBox.getSelectedItem();
+        if (plotJComboBox.getSelectedItem() instanceof ACAQLegacyPlot)
+            currentPlot = (ACAQLegacyPlot) plotJComboBox.getSelectedItem();
 
         return panel;
     }
@@ -179,7 +179,7 @@ public class ACAQPlotBuilderUI extends ACAQProjectWorkbenchPanel {
             currentPlot.addSeries();
     }
 
-    private void setCurrentPlot(ACAQPlot plot) {
+    private void setCurrentPlot(ACAQLegacyPlot plot) {
         this.currentPlot = plot;
         updatePlotSettings();
         updatePlot();
@@ -201,8 +201,8 @@ public class ACAQPlotBuilderUI extends ACAQProjectWorkbenchPanel {
             // Update the series list
             plotSeriesEditorToolBar.setVisible(currentPlot.canAddSeries());
             plotSeriesListPanel.removeAll();
-            for (ACAQPlotSeries series : currentPlot.getSeries()) {
-                ACAQPlotSeriesUI ui = new ACAQPlotSeriesUI(currentPlot, series);
+            for (ACAQLegacyPlotSeries series : currentPlot.getSeries()) {
+                ACAQLegacyPlotSeriesUI ui = new ACAQLegacyPlotSeriesUI(currentPlot, series);
                 ui.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8),
                         BorderFactory.createLineBorder(Color.BLACK)));
                 plotSeriesListPanel.add(ui);
@@ -243,11 +243,11 @@ public class ACAQPlotBuilderUI extends ACAQProjectWorkbenchPanel {
 
     private void openTable() {
         DefaultTableModel tableModel = new DefaultTableModel();
-        for (ACAQPlotSeriesData data : seriesDataList) {
+        for (ACAQLegacyPlotSeriesData data : seriesDataList) {
             tableModel.addColumn(data.getName());
         }
         Object[] rowBuffer = new Object[seriesDataList.size()];
-        final int rowNumber = seriesDataList.stream().max(Comparator.comparing(org.hkijena.acaq5.ui.plotbuilder_old.ACAQPlotSeriesData::getSize)).get().getSize();
+        final int rowNumber = seriesDataList.stream().max(Comparator.comparing(ACAQLegacyPlotSeriesData::getSize)).get().getSize();
 
         for (int i = 0; i < rowNumber; ++i) {
             for (int j = 0; j < seriesDataList.size(); ++j) {
@@ -270,14 +270,14 @@ public class ACAQPlotBuilderUI extends ACAQProjectWorkbenchPanel {
     /**
      * Renders a plot
      */
-    private static class Renderer extends JLabel implements ListCellRenderer<ACAQPlot> {
+    private static class Renderer extends JLabel implements ListCellRenderer<ACAQLegacyPlot> {
 
         public Renderer() {
             setOpaque(false);
         }
 
         @Override
-        public Component getListCellRendererComponent(JList<? extends ACAQPlot> list, ACAQPlot value,
+        public Component getListCellRendererComponent(JList<? extends ACAQLegacyPlot> list, ACAQLegacyPlot value,
                                                       int index, boolean isSelected, boolean cellHasFocus) {
 
             if (value != null) {

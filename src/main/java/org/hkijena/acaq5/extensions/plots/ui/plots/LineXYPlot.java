@@ -13,7 +13,7 @@
 package org.hkijena.acaq5.extensions.plots.ui.plots;
 
 
-import org.hkijena.acaq5.ui.plotbuilder_old.ACAQPlotSeriesData;
+import org.hkijena.acaq5.ui.plotbuilder_old.ACAQLegacyPlotSeriesData;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -27,7 +27,7 @@ public class LineXYPlot extends XYPlot {
     /**
      * @param seriesDataList the data
      */
-    public LineXYPlot(List<ACAQPlotSeriesData> seriesDataList) {
+    public LineXYPlot(List<ACAQLegacyPlotSeriesData> seriesDataList) {
         super(seriesDataList);
         setTitle("XY Line Plot");
     }

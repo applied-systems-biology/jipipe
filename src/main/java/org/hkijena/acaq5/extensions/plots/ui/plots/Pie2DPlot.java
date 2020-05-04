@@ -13,7 +13,7 @@
 package org.hkijena.acaq5.extensions.plots.ui.plots;
 
 
-import org.hkijena.acaq5.ui.plotbuilder_old.ACAQPlotSeriesData;
+import org.hkijena.acaq5.ui.plotbuilder_old.ACAQLegacyPlotSeriesData;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.general.DefaultPieDataset;
@@ -27,7 +27,7 @@ public class Pie2DPlot extends PiePlot {
     /**
      * @param seriesDataList the data
      */
-    public Pie2DPlot(List<ACAQPlotSeriesData> seriesDataList) {
+    public Pie2DPlot(List<ACAQLegacyPlotSeriesData> seriesDataList) {
         super(seriesDataList);
         setTitle("2D Pie plot");
     }

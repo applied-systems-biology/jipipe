@@ -1,24 +1,24 @@
 package org.hkijena.acaq5.ui.events;
 
-import org.hkijena.acaq5.ui.plotbuilder_old.ACAQPlot;
+import org.hkijena.acaq5.ui.plotbuilder_old.ACAQLegacyPlot;
 
 /**
  * Event when a plot is changed
  */
 public class PlotChangedEvent {
-    private ACAQPlot plot;
+    private ACAQLegacyPlot plot;
 
     /**
      * @param plot Event source
      */
-    public PlotChangedEvent(ACAQPlot plot) {
+    public PlotChangedEvent(ACAQLegacyPlot plot) {
         this.plot = plot;
     }
 
     /**
      * @return The event source
      */
-    public ACAQPlot getPlot() {
+    public ACAQLegacyPlot getPlot() {
         return plot;
     }
 }

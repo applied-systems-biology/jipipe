@@ -39,6 +39,8 @@ public class StandardPlotsExtension extends ACAQPrepackagedDefaultJavaExtension 
     @Override
     public void register() {
 
+        registerMenuExtension(NewPlotMenuExtension.class);
+
         registerDatatype("plot",
                 PlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/data-type-plot.png"),

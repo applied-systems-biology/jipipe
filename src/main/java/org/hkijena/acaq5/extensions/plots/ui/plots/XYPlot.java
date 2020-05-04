@@ -29,7 +29,7 @@ import java.util.Set;
 /**
  * A XY point plot
  */
-public abstract class XYPlot extends ACAQPlot {
+public abstract class XYPlot extends ACAQLegacyPlot {
 
     private String xAxisLabel = "X";
     private String yAxisLabel = "Y";
@@ -38,7 +38,7 @@ public abstract class XYPlot extends ACAQPlot {
     /**
      * @param seriesDataList the data
      */
-    public XYPlot(List<ACAQPlotSeriesData> seriesDataList) {
+    public XYPlot(List<ACAQLegacyPlotSeriesData> seriesDataList) {
         super(seriesDataList);
         addSeries();
     }
@@ -54,13 +54,13 @@ public abstract class XYPlot extends ACAQPlot {
     }
 
     @Override
-    protected ACAQPlotSeries createSeries() {
-        ACAQPlotSeries series = new ACAQPlotSeries();
+    protected ACAQLegacyPlotSeries createSeries() {
+        ACAQLegacyPlotSeries series = new ACAQLegacyPlotSeries();
         series.addParameter("Name", "Series");
-        series.addColumn("X", new ACAQNumericPlotSeriesColumn(getSeriesDataList(),
-                new ACAQPlotSeriesGenerator("Row number", x -> (double) x)));
-        series.addColumn("Y", new ACAQNumericPlotSeriesColumn(getSeriesDataList(),
-                new ACAQPlotSeriesGenerator("Row number", x -> (double) x)));
+        series.addColumn("X", new ACAQLegacyNumericPlotSeriesColumn(getSeriesDataList(),
+                new ACAQLegacyPlotSeriesGenerator("Row number", x -> (double) x)));
+        series.addColumn("Y", new ACAQLegacyNumericPlotSeriesColumn(getSeriesDataList(),
+                new ACAQLegacyPlotSeriesGenerator("Row number", x -> (double) x)));
         return series;
     }
 
@@ -76,7 +76,7 @@ public abstract class XYPlot extends ACAQPlot {
     protected void updateDataset() {
         dataset.removeAllSeries();
         Set<String> existingSeries = new HashSet<>();
-        for (ACAQPlotSeries seriesEntry : series) {
+        for (ACAQLegacyPlotSeries seriesEntry : series) {
             if (!seriesEntry.isEnabled())
                 continue;
             String name = StringUtils.makeUniqueString(seriesEntry.getParameterValue("Name").toString(), " ", existingSeries);
@@ -84,8 +84,8 @@ public abstract class XYPlot extends ACAQPlot {
 
             int rowCount = seriesEntry.getMaximumRequiredRowCount();
 
-            List<Double> xValues = ((ACAQNumericPlotSeriesColumn) seriesEntry.getColumns().get("X")).getValues(rowCount);
-            List<Double> yValues = ((ACAQNumericPlotSeriesColumn) seriesEntry.getColumns().get("Y")).getValues(rowCount);
+            List<Double> xValues = ((ACAQLegacyNumericPlotSeriesColumn) seriesEntry.getColumns().get("X")).getValues(rowCount);
+            List<Double> yValues = ((ACAQLegacyNumericPlotSeriesColumn) seriesEntry.getColumns().get("Y")).getValues(rowCount);
             for (int i = 0; i < xValues.size(); ++i) {
                 chartSeries.add(xValues.get(i), yValues.get(i));
             }

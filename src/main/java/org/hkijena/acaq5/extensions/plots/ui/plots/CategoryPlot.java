@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * A plot with categorical data
  */
-public abstract class CategoryPlot extends ACAQPlot {
+public abstract class CategoryPlot extends ACAQLegacyPlot {
 
     private String categoryAxisLabel;
     private String valueAxisLabel;
@@ -34,7 +34,7 @@ public abstract class CategoryPlot extends ACAQPlot {
     /**
      * @param seriesDataList the data
      */
-    protected CategoryPlot(List<ACAQPlotSeriesData> seriesDataList) {
+    protected CategoryPlot(List<ACAQLegacyPlotSeriesData> seriesDataList) {
         super(seriesDataList);
         addSeries();
     }
@@ -51,15 +51,15 @@ public abstract class CategoryPlot extends ACAQPlot {
     }
 
     @Override
-    protected ACAQPlotSeries createSeries() {
-        ACAQPlotSeries series = new ACAQPlotSeries();
-        series.addColumn("X", new ACAQStringPlotSeriesColumn(getSeriesDataList(),
-                new ACAQPlotSeriesGenerator("No category", x -> "No category"),
-                new ACAQPlotSeriesGenerator("Row number", x -> "x" + x)));
-        series.addColumn("Category", new ACAQStringPlotSeriesColumn(getSeriesDataList(),
-                new ACAQPlotSeriesGenerator("No category", x -> "No category")));
-        series.addColumn("Value", new ACAQNumericPlotSeriesColumn(getSeriesDataList(),
-                new ACAQPlotSeriesGenerator("Row index", x -> (double) x)));
+    protected ACAQLegacyPlotSeries createSeries() {
+        ACAQLegacyPlotSeries series = new ACAQLegacyPlotSeries();
+        series.addColumn("X", new ACAQLegacyStringPlotSeriesColumn(getSeriesDataList(),
+                new ACAQLegacyPlotSeriesGenerator("No category", x -> "No category"),
+                new ACAQLegacyPlotSeriesGenerator("Row number", x -> "x" + x)));
+        series.addColumn("Category", new ACAQLegacyStringPlotSeriesColumn(getSeriesDataList(),
+                new ACAQLegacyPlotSeriesGenerator("No category", x -> "No category")));
+        series.addColumn("Value", new ACAQLegacyNumericPlotSeriesColumn(getSeriesDataList(),
+                new ACAQLegacyPlotSeriesGenerator("Row index", x -> (double) x)));
         return series;
     }
 

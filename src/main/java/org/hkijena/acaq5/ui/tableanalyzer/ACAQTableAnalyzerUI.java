@@ -19,7 +19,7 @@ import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
-import org.hkijena.acaq5.ui.plotbuilder_old.ACAQPlotBuilderUI;
+import org.hkijena.acaq5.ui.plotbuilder_old.ACAQLegacyPlotBuilderUI;
 import org.hkijena.acaq5.ui.registries.ACAQTableAnalyzerUIOperationRegistry;
 import org.hkijena.acaq5.utils.BusyCursor;
 import org.hkijena.acaq5.utils.TableUtils;
@@ -233,7 +233,7 @@ public class ACAQTableAnalyzerUI extends ACAQProjectWorkbenchPanel {
     }
 
     private void createNewPlot() {
-        ACAQPlotBuilderUI plotBuilderUI = new ACAQPlotBuilderUI(getProjectWorkbench());
+        ACAQLegacyPlotBuilderUI plotBuilderUI = new ACAQLegacyPlotBuilderUI(getProjectWorkbench());
         plotBuilderUI.importFromTable(tableModel, getProjectWorkbench().documentTabPane.findTabNameFor(this));
         getProjectWorkbench().getDocumentTabPane().addTab("Plot",
                 UIUtils.getIconFromResources("graph.png"),

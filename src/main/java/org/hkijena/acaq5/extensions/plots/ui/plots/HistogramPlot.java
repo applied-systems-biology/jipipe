@@ -31,7 +31,7 @@ import java.util.Set;
 /**
  * Plot that shows a histogram
  */
-public class HistogramPlot extends ACAQPlot {
+public class HistogramPlot extends ACAQLegacyPlot {
 
     private String xAxisLabel = "Bin";
     private String yAxisLabel = "Number";
@@ -39,19 +39,19 @@ public class HistogramPlot extends ACAQPlot {
     /**
      * @param seriesDataList the data
      */
-    public HistogramPlot(List<ACAQPlotSeriesData> seriesDataList) {
+    public HistogramPlot(List<ACAQLegacyPlotSeriesData> seriesDataList) {
         super(seriesDataList);
         setTitle("Histogram");
         addSeries();
     }
 
     @Override
-    protected ACAQPlotSeries createSeries() {
-        ACAQPlotSeries series = new ACAQPlotSeries();
+    protected ACAQLegacyPlotSeries createSeries() {
+        ACAQLegacyPlotSeries series = new ACAQLegacyPlotSeries();
         series.addParameter("Name", "Category");
         series.addParameter("Bins", 10);
-        series.addColumn("Values", new ACAQNumericPlotSeriesColumn(getSeriesDataList(),
-                new ACAQPlotSeriesGenerator("Zero", x -> 0.0)));
+        series.addColumn("Values", new ACAQLegacyNumericPlotSeriesColumn(getSeriesDataList(),
+                new ACAQLegacyPlotSeriesGenerator("Zero", x -> 0.0)));
         return series;
     }
 
@@ -59,7 +59,7 @@ public class HistogramPlot extends ACAQPlot {
     public JFreeChart createPlot() {
         HistogramDataset dataset = new HistogramDataset();
         Set<String> existingNames = new HashSet<>();
-        for (ACAQPlotSeries seriesEntry : series) {
+        for (ACAQLegacyPlotSeries seriesEntry : series) {
             if (!seriesEntry.isEnabled())
                 continue;
             int rowCount = Math.max(1, seriesEntry.getMaximumRequiredRowCount());

@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * Column of strings
  */
-public class ACAQStringPlotSeriesColumn extends ACAQPlotSeriesColumn {
+public class ACAQLegacyStringPlotSeriesColumn extends ACAQLegacyPlotSeriesColumn {
 
     /**
      * @param seriesDataList       Series data
@@ -26,7 +26,7 @@ public class ACAQStringPlotSeriesColumn extends ACAQPlotSeriesColumn {
      * @param additionalGenerators Additional generators
      */
     @SafeVarargs
-    public ACAQStringPlotSeriesColumn(List<ACAQPlotSeriesData> seriesDataList, ACAQPlotSeriesGenerator defaultGenerator, ACAQPlotSeriesGenerator... additionalGenerators) {
+    public ACAQLegacyStringPlotSeriesColumn(List<ACAQLegacyPlotSeriesData> seriesDataList, ACAQLegacyPlotSeriesGenerator defaultGenerator, ACAQLegacyPlotSeriesGenerator... additionalGenerators) {
         super(seriesDataList, defaultGenerator, additionalGenerators);
     }
 

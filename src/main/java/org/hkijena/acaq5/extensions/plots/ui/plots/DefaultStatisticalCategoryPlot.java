@@ -13,8 +13,8 @@
 package org.hkijena.acaq5.extensions.plots.ui.plots;
 
 
-import org.hkijena.acaq5.ui.plotbuilder_old.ACAQPlotSeries;
-import org.hkijena.acaq5.ui.plotbuilder_old.ACAQPlotSeriesData;
+import org.hkijena.acaq5.ui.plotbuilder_old.ACAQLegacyPlotSeries;
+import org.hkijena.acaq5.ui.plotbuilder_old.ACAQLegacyPlotSeriesData;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.statistics.DefaultStatisticalCategoryDataset;
 
@@ -34,14 +34,14 @@ public abstract class DefaultStatisticalCategoryPlot extends CategoryPlot {
     /**
      * @param seriesDataList the data
      */
-    protected DefaultStatisticalCategoryPlot(List<ACAQPlotSeriesData> seriesDataList) {
+    protected DefaultStatisticalCategoryPlot(List<ACAQLegacyPlotSeriesData> seriesDataList) {
         super(seriesDataList);
         addSeries();
     }
 
     protected void updateDataset() {
         dataset.clear();
-        ACAQPlotSeries series = getSeries().get(0);
+        ACAQLegacyPlotSeries series = getSeries().get(0);
         int rowCount = series.getAsNumericColumn("Value").getRequiredRowCount();
         List<String> xvalues = series.getAsStringColumn("X").getValues(rowCount);
         List<String> categories = series.getAsStringColumn("Category").getValues(rowCount);

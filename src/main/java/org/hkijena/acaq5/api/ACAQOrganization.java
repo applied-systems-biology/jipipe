@@ -1,6 +1,8 @@
 package org.hkijena.acaq5.api;
 
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.ui.extension.MenuExtension;
+import org.hkijena.acaq5.ui.extension.MenuTarget;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -27,4 +29,11 @@ public @interface ACAQOrganization {
      * @return the algorithm category
      */
     ACAQAlgorithmCategory algorithmCategory() default ACAQAlgorithmCategory.Internal;
+
+    /**
+     * Only used if attached to a {@link MenuExtension}.
+     * Determines in which main menu the item is placed
+     * @return menu target
+     */
+    MenuTarget menuExtensionTarget() default MenuTarget.None;
 }

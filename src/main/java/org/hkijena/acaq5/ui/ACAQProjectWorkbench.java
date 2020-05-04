@@ -11,6 +11,7 @@ import org.hkijena.acaq5.ui.compartments.ACAQCompartmentUI;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.RecentProjectsMenu;
 import org.hkijena.acaq5.ui.components.ReloadableValidityChecker;
+import org.hkijena.acaq5.ui.extension.MenuTarget;
 import org.hkijena.acaq5.ui.extensions.ACAQPluginManagerUIPanel;
 import org.hkijena.acaq5.ui.extensions.ACAQPluginValidityCheckerPanel;
 import org.hkijena.acaq5.ui.running.ACAQRunSettingsUI;
@@ -184,6 +185,7 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
         newProjectButton.addActionListener(e -> window.newProject());
         projectMenu.add(newProjectButton);
 
+        UIUtils.installMenuExtension(this, projectMenu, MenuTarget.ProjectMainMenu, true);
         projectMenu.addSeparator();
 
         // "Open project" entry
@@ -250,6 +252,8 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
         newCompartmentButton.addActionListener(e -> newCompartmentAfterCurrent());
         compartmentMenu.add(newCompartmentButton);
 
+        UIUtils.installMenuExtension(this, compartmentMenu, MenuTarget.ProjectCompartmentMenu, true);
+
         menu.add(compartmentMenu);
 
         // Plugins menu
@@ -271,7 +275,15 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
         managePluginsButton.addActionListener(e -> managePlugins());
         pluginsMenu.add(managePluginsButton);
 
+        UIUtils.installMenuExtension(this, compartmentMenu, MenuTarget.ProjectPluginsMenu, true);
+
         menu.add(pluginsMenu);
+
+        // Tools menu
+        JMenu toolsMenu = new JMenu("Tools");
+        UIUtils.installMenuExtension(this, toolsMenu, MenuTarget.ProjectToolsMenu, false);
+        if(toolsMenu.getItemCount() > 0)
+            menu.add(toolsMenu);
 
         menu.add(Box.createHorizontalGlue());
 
