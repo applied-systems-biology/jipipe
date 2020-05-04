@@ -10,6 +10,7 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.InputSlotMapParameterCollection;
@@ -139,6 +140,7 @@ public class ImageCalculator2DAlgorithm extends ImageJ1Algorithm {
     @ACAQParameter("operation")
     public void setOperation(Operation operation) {
         this.operation = operation;
+        getEventBus().post(new ParameterChangedEvent(this, "operation"));
     }
 
     @ACAQDocumentation(name = "Operands", description = "Determines which input image is which operand.")
@@ -156,6 +158,7 @@ public class ImageCalculator2DAlgorithm extends ImageJ1Algorithm {
     @ACAQParameter("floating-point-output")
     public void setFloatingPointOutput(boolean floatingPointOutput) {
         this.floatingPointOutput = floatingPointOutput;
+        getEventBus().post(new ParameterChangedEvent(this, "floating-point-output"));
         ACAQSlotDefinition definition = getFirstOutputSlot().getDefinition();
         if (floatingPointOutput) {
             getFirstOutputSlot().setAcceptedDataType(ImagePlusGreyscale32FData.class);

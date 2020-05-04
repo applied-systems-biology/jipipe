@@ -160,7 +160,7 @@ See the LICENSE file provided with this code for the full license.
         <dependency>
             <groupId>mpicbg</groupId>
             <artifactId>mpicbg</artifactId>
-            <version>20120621</version>
+            <version>1.3.0</version>
         </dependency>
         <dependency>
             <groupId>org.swinglabs.swingx</groupId>

@@ -12,6 +12,7 @@ import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.binary.Voronoi2DAlgorit
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.blur.*;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.color.InvertColorsAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.color.MergeChannelsAlgorithm;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.contrast.CLAHEContrastEnhancer;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions.StackMergerAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions.StackSplitterAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions.ZProjectorAlgorithm;
@@ -142,6 +143,8 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerAlgorithm("ij1-color-merge-channels", MergeChannelsAlgorithm.class);
 
         registerAlgorithm("ij1-edge-sobel", SobelEdgeDetectorAlgorithm.class);
+
+        registerAlgorithm("ij1-contrast-clahe", CLAHEContrastEnhancer.class);
 
         registerAlgorithm("ij1-math-math2d", ApplyMath2DAlgorithm.class);
         registerAlgorithm("ij1-math-transform2d", ApplyTransform2DAlgorithm.class);

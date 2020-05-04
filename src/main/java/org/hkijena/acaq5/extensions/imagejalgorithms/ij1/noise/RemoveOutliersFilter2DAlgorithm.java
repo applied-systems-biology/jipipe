@@ -8,6 +8,7 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -88,6 +89,7 @@ public class RemoveOutliersFilter2DAlgorithm extends ImageJ1Algorithm {
             return false;
         }
         this.radius = radius;
+        getEventBus().post(new ParameterChangedEvent(this, "radius"));
         return true;
     }
 
@@ -100,6 +102,7 @@ public class RemoveOutliersFilter2DAlgorithm extends ImageJ1Algorithm {
     @ACAQParameter("mode")
     public void setMode(Mode mode) {
         this.mode = mode;
+        getEventBus().post(new ParameterChangedEvent(this, "mode"));
     }
 
     @ACAQDocumentation(name = "Threshold", description = "Determines by how much a pixel has to deviate from the local median to be replaced by it.")
@@ -114,6 +117,7 @@ public class RemoveOutliersFilter2DAlgorithm extends ImageJ1Algorithm {
             return false;
         }
         this.threshold = threshold;
+        getEventBus().post(new ParameterChangedEvent(this, "threshold"));
         return true;
     }
 

@@ -104,5 +104,6 @@ public class AutoThreshold2DAlgorithm extends ImageJ1Algorithm {
     @ACAQParameter("dark-background")
     public void setDarkBackground(boolean darkBackground) {
         this.darkBackground = darkBackground;
+        getEventBus().post(new ParameterChangedEvent(this, "dark-background"));
     }
 }

@@ -10,6 +10,7 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -83,6 +84,7 @@ public class LocalMinimumFilter3DAlgorithm extends ImageJ1Algorithm {
     @ACAQParameter("radius-x")
     public void setRadiusX(float radiusX) {
         this.radiusX = radiusX;
+        getEventBus().post(new ParameterChangedEvent(this, "radius-x"));
     }
 
     @ACAQDocumentation(name = "Radius (Y)", description = "Filter radius (pixels) in Y direction." +
@@ -95,6 +97,7 @@ public class LocalMinimumFilter3DAlgorithm extends ImageJ1Algorithm {
     @ACAQParameter("radius-y")
     public void setRadiusY(float radiusY) {
         this.radiusY = radiusY;
+        getEventBus().post(new ParameterChangedEvent(this, "radius-y"));
     }
 
     @ACAQDocumentation(name = "Radius (Z)", description = "Filter radius (pixels) in Z direction." +
@@ -107,5 +110,6 @@ public class LocalMinimumFilter3DAlgorithm extends ImageJ1Algorithm {
     @ACAQParameter("radius-z")
     public void setRadiusZ(float radiusZ) {
         this.radiusZ = radiusZ;
+        getEventBus().post(new ParameterChangedEvent(this, "radius-z"));
     }
 }

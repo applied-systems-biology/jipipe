@@ -170,7 +170,7 @@
     <orderEntry type="library" name="Maven: sc.fiji:Image_5D:2.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.9" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-simple:1.7.9" level="project" />
-    <orderEntry type="library" name="Maven: mpicbg:mpicbg:20120621" level="project" />
+    <orderEntry type="library" name="Maven: mpicbg:mpicbg:1.3.0" level="project" />
     <orderEntry type="library" name="Maven: org.swinglabs.swingx:swingx-core:1.6.5-1" level="project" />
     <orderEntry type="library" name="Maven: org.swinglabs.swingx:swingx-autocomplete:1.6.5-1" level="project" />
     <orderEntry type="library" name="Maven: org.swinglabs.swingx:swingx-common:1.6.5-1" level="project" />

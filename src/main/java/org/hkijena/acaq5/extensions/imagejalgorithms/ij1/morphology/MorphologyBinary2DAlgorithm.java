@@ -9,6 +9,7 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -98,6 +99,7 @@ public class MorphologyBinary2DAlgorithm extends ImageJ1Algorithm {
     @ACAQParameter("operation")
     public void setOperation(Operation operation) {
         this.operation = operation;
+        getEventBus().post(new ParameterChangedEvent(this, "operation"));
     }
 
     @ACAQDocumentation(name = "Iterations", description = "How many times the operation is applied")
@@ -109,6 +111,7 @@ public class MorphologyBinary2DAlgorithm extends ImageJ1Algorithm {
     @ACAQParameter("iterations")
     public void setIterations(int iterations) {
         this.iterations = iterations;
+        getEventBus().post(new ParameterChangedEvent(this, "iterations"));
     }
 
     /**
