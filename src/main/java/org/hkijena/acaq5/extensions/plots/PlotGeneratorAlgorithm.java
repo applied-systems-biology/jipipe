@@ -106,7 +106,7 @@ public class PlotGeneratorAlgorithm extends ACAQAlgorithm {
 
             plot.getSeries().add(new PlotDataSeries(seriesTable));
 
-            getFirstOutputSlot().addData(plot);
+            getFirstOutputSlot().addData(plot, getFirstInputSlot().getAnnotations(row));
         }
     }
 
@@ -139,7 +139,6 @@ public class PlotGeneratorAlgorithm extends ACAQAlgorithm {
     }
 
     private void updateColumnAssignment() {
-        System.out.println("------_> Regenerate column assignment <<---");
         columnAssignments.beginModificationBlock();
         columnAssignments.clear();
         if(plotType.getDeclaration() != null) {

@@ -52,6 +52,7 @@ public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollec
      */
     public ACAQDynamicParameterCollection(ACAQDynamicParameterCollection other) {
         this.allowedTypes.addAll(other.allowedTypes);
+        this.allowUserModification = other.allowUserModification;
         for (Map.Entry<String, ACAQMutableParameterAccess> entry : other.dynamicParameters.entrySet()) {
             ACAQMutableParameterAccess parameterAccess = new ACAQMutableParameterAccess(entry.getValue());
             parameterAccess.setParameterHolder(this);
