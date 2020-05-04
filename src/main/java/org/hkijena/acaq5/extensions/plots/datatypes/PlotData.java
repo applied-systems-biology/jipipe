@@ -1,5 +1,12 @@
 package org.hkijena.acaq5.extensions.plots.datatypes;
 
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQHidden;
@@ -8,24 +15,29 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
+import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.ui.events.PlotChangedEvent;
+import org.hkijena.acaq5.utils.JsonUtils;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
+import org.jfree.graphics2d.svg.SVGUtils;
 
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Contains all necessary data to generate a plot
  */
 @ACAQDocumentation(name = "Plot", description = "A plot")
+@JsonSerialize(using = PlotData.Serializer.class)
 @ACAQHidden
 public abstract class PlotData implements ACAQData, ACAQParameterCollection, ACAQValidatable {
 
@@ -57,6 +69,22 @@ public abstract class PlotData implements ACAQData, ACAQParameterCollection, ACA
 
     @Override
     public void saveTo(Path storageFilePath, String name) {
+        // Export metadata
+        try {
+            JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(storageFilePath.resolve("plot-metadata.json").toFile(), this);
+        } catch (IOException e) {
+            throw new UserFriendlyRuntimeException(e, "Unable to export plot!",
+                    "Internal plot-export function",
+                    "A plot should be saved to '" + storageFilePath + "'. There was an error during this export.",
+                    "Please check if you can write to the output folder. Please check if the algorithm inputs are valid. " +
+                            "If you cannot solve the issue, please contact the plugin author.");
+        }
+
+        // Export series
+        for (int i = 0; i < series.size(); ++i) {
+            series.get(i).saveTo(storageFilePath, "series" + i);
+        }
+
         // Export plot
         try {
             JFreeChart chart = getChart();
@@ -71,6 +99,8 @@ public abstract class PlotData implements ACAQData, ACAQParameterCollection, ACA
             SVGGraphics2D g2 = new SVGGraphics2D(exportWidth, exportHeight);
             Rectangle r = new Rectangle(0, 0, exportWidth, exportHeight);
             chart.draw(g2, r);
+            SVGUtils.writeToSVG(storageFilePath.resolve(name + ".svg").toFile(), g2.getSVGElement());
+
         } catch (IOException e) {
             throw new UserFriendlyRuntimeException(e, "Unable to export plot!",
                     "Internal plot-export function",
@@ -144,5 +174,46 @@ public abstract class PlotData implements ACAQData, ACAQParameterCollection, ACA
 
     public List<PlotDataSeries> getSeries() {
         return series;
+    }
+
+    /**
+     * Serializes the metadata of {@link PlotData}
+     */
+    public static class Serializer extends JsonSerializer<PlotData> {
+        @Override
+        public void serialize(PlotData value, JsonGenerator gen, SerializerProvider serializers) throws IOException, JsonProcessingException {
+            gen.writeStartObject();
+            // Write parameters
+            ACAQTraversedParameterCollection parameterCollection = new ACAQTraversedParameterCollection(value);
+            for (Map.Entry<String, ACAQParameterAccess> kv : parameterCollection.getParameters().entrySet()) {
+                gen.writeObjectField(kv.getKey(), kv.getValue().get());
+            }
+
+            // Save dynamic parameter storage
+            Set<ACAQParameterCollection> dynamicParameters = parameterCollection.getRegisteredSources().stream()
+                    .filter(src -> src instanceof ACAQDynamicParameterCollection).collect(Collectors.toSet());
+            if (!dynamicParameters.isEmpty()) {
+                gen.writeFieldName("acaq:dynamic-parameters");
+                gen.writeStartObject();
+                for (ACAQParameterCollection dynamicParameter : dynamicParameters) {
+                    String key = parameterCollection.getSourceKey(dynamicParameter);
+                    gen.writeObjectField(key, dynamicParameter);
+                }
+                gen.writeEndObject();
+            }
+
+            // Write series mapping
+            gen.writeFieldName("plot-series");
+            gen.writeStartArray();
+            for(int i = 0; i < value.series.size(); ++i) {
+                gen.writeStartObject();
+                gen.writeStringField("file-name", "series" + i + ".csv");
+                gen.writeObjectField("metadata", value.series);
+                gen.writeEndObject();
+            }
+            gen.writeEndArray();
+
+            gen.writeEndObject();
+        }
     }
 }

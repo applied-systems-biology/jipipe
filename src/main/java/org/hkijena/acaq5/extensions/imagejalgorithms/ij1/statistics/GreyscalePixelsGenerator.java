@@ -1,0 +1,139 @@
+package org.hkijena.acaq5.extensions.imagejalgorithms.ij1.statistics;
+
+import gnu.trove.list.TDoubleList;
+import gnu.trove.list.array.TDoubleArrayList;
+import gnu.trove.map.TDoubleDoubleMap;
+import gnu.trove.map.hash.TDoubleDoubleHashMap;
+import ij.measure.ResultsTable;
+import ij.process.ColorProcessor;
+import ij.process.FloatProcessor;
+import ij.process.ImageProcessor;
+import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQOrganization;
+import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
+import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
+import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
+import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.acaq5.extensions.standardparametereditors.editors.ACAQTraitParameterSettings;
+import org.hkijena.acaq5.utils.ImageJUtils;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+/**
+ * Algorithm that generates {@link ResultsTableData} as histogram
+ */
+@ACAQDocumentation(name = "Get pixel values (Greyscale)", description = "Extracts the greyscale values of an image and puts them into a table.")
+@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Analysis, menuPath = "Statistics")
+@AlgorithmInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
+@AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+public class GreyscalePixelsGenerator extends ImageJ1Algorithm {
+
+    private boolean applyPerSlice = false;
+    private ACAQTraitDeclarationRef sliceAnnotation = new ACAQTraitDeclarationRef(ACAQTraitRegistry.getInstance().getDeclarationById("image-index"));
+
+    /**
+     * Creates a new instance
+     * @param declaration the algorithm declaration
+     */
+    public GreyscalePixelsGenerator(ACAQAlgorithmDeclaration declaration) {
+        super(declaration);
+    }
+
+    /**
+     * Creates a copy
+     * @param other the original
+     */
+    public GreyscalePixelsGenerator(GreyscalePixelsGenerator other) {
+        super(other);
+        this.applyPerSlice = other.applyPerSlice;
+        this.sliceAnnotation = new ACAQTraitDeclarationRef(other.sliceAnnotation);
+    }
+
+    @Override
+    protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress,
+                                Supplier<Boolean> isCancelled) {
+        if(applyPerSlice) {
+            ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusData.class);
+            ImageJUtils.forEachIndexedSlice(inputData.getImage(), (imp, index) -> {
+                TDoubleList pixels = new TDoubleArrayList(imp.getPixelCount());
+                getPixels(imp, pixels);
+                ResultsTableData resultsTable = toResultsTable(pixels);
+                if(sliceAnnotation != null && sliceAnnotation.getDeclaration() != null) {
+                    dataInterface.addOutputData(getFirstOutputSlot(), resultsTable,
+                            Collections.singletonList(sliceAnnotation.getDeclaration().newInstance("slice=" + index)));
+                }
+                else {
+                    dataInterface.addOutputData(getFirstOutputSlot(), resultsTable);
+                }
+            });
+        }
+        else {
+            ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusData.class);
+            final TDoubleList pixels = new TDoubleArrayList();
+            ImageJUtils.forEachSlice(inputData.getImage(), imp -> getPixels(imp, pixels));
+            ResultsTableData resultsTable = toResultsTable(pixels);
+            dataInterface.addOutputData(getFirstOutputSlot(), resultsTable);
+        }
+    }
+    
+    private ResultsTableData toResultsTable(TDoubleList pixels) {
+        ResultsTable resultsTable = new ResultsTable(pixels.size());
+        for (int i = 0; i < pixels.size(); ++i) {
+            resultsTable.setValue("value", i, pixels.get(i));
+        }
+        return new ResultsTableData(resultsTable);
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+
+    }
+
+    @ACAQDocumentation(name = "Apply per slice", description = "If higher dimensional data is provided, generate a table for each slice. If disabled, " +
+            "a table is generated for the whole image.")
+    @ACAQParameter("apply-per-slice")
+    public boolean isApplyPerSlice() {
+        return applyPerSlice;
+    }
+
+    @ACAQParameter("apply-per-slice")
+    public void setApplyPerSlice(boolean applyPerSlice) {
+        this.applyPerSlice = applyPerSlice;
+    }
+
+    private void getPixels(ImageProcessor processor, TDoubleList result) {
+        if(processor instanceof FloatProcessor) {
+            for(int i = 0; i < processor.getPixelCount(); ++i) {
+                result.add(processor.getf(i));
+            }
+        }
+        else {
+            for(int i = 0; i < processor.getPixelCount(); ++i) {
+                result.add(processor.get(i));
+            }
+        }
+    }
+
+    @ACAQDocumentation(name = "Apply per slice annotation", description = "Optional annotation type that generated for each slice output. " +
+            "It contains the string 'slice=[Number]'.")
+    @ACAQTraitParameterSettings(traitBaseClass = ACAQDiscriminator.class)
+    @ACAQParameter("slice-annotation")
+    public ACAQTraitDeclarationRef getSliceAnnotation() {
+        return sliceAnnotation;
+    }
+
+    @ACAQParameter("slice-annotation")
+    public void setSliceAnnotation(ACAQTraitDeclarationRef sliceAnnotation) {
+        this.sliceAnnotation = sliceAnnotation;
+    }
+}

@@ -52,6 +52,11 @@ public class StringFilterParameterEditorUI extends ACAQParameterEditorUI {
         ButtonGroup group = new ButtonGroup();
         addFilterModeSelection(filter,
                 group,
+                UIUtils.getIconFromResources("equals.png"),
+                StringFilter.Mode.Equals,
+                "String equals filter text");
+        addFilterModeSelection(filter,
+                group,
                 UIUtils.getIconFromResources("text2.png"),
                 StringFilter.Mode.Contains,
                 "String contains filter text");

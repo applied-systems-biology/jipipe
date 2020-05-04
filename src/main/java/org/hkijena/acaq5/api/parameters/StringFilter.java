@@ -13,7 +13,7 @@ import java.util.function.Predicate;
  */
 public class StringFilter implements Predicate<String>, ACAQValidatable {
 
-    private Mode mode = Mode.Contains;
+    private Mode mode = Mode.Equals;
     private String filterString;
 
     /**
@@ -21,6 +21,16 @@ public class StringFilter implements Predicate<String>, ACAQValidatable {
      */
     public StringFilter() {
 
+    }
+
+    /**
+     * Initializes a new filter
+     * @param mode filter mode
+     * @param filterString filter string
+     */
+    public StringFilter(Mode mode, String filterString) {
+        this.mode = mode;
+        this.filterString = filterString;
     }
 
     /**
@@ -56,6 +66,8 @@ public class StringFilter implements Predicate<String>, ACAQValidatable {
     @Override
     public boolean test(String path) {
         switch (mode) {
+            case Equals:
+                return ("" + path).equals(filterString);
             case Contains:
                 return ("" + path).contains(filterString);
             case Regex:
@@ -92,6 +104,10 @@ public class StringFilter implements Predicate<String>, ACAQValidatable {
      * Available filter modes
      */
     public enum Mode {
+        /**
+         * Checks if the string is the same
+         */
+        Equals,
         /**
          * Checks via String.contains
          */

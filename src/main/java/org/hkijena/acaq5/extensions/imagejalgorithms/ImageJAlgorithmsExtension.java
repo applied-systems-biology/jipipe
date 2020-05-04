@@ -23,6 +23,7 @@ import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.noise.AddNoise2DAlgorit
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.noise.DespeckleFilter2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.noise.RemoveOutliersFilter2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.sharpen.LaplacianSharpen2DAlgorithm;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.statistics.GreyscalePixelsGenerator;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.statistics.HistogramGenerator;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.threshold.AutoThreshold2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.threshold.ManualThreshold16U2DAlgorithm;
@@ -186,6 +187,7 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerAlgorithm("ij1-dimensions-zproject", ZProjectorAlgorithm.class);
 
         registerAlgorithm("ij1-analyze-statistics-histogram", HistogramGenerator.class);
+        registerAlgorithm("ij1-analyze-statistics-pixels-greyscale", GreyscalePixelsGenerator.class);
 //        for (CommandInfo command : commandService.getCommands()) {
 //            if (ImageJ2AlgorithmWrapper.isCompatible(command, getContext())) {
 //                try {

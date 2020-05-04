@@ -28,9 +28,20 @@ public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollec
     private boolean delayEvents = false;
 
     /**
+     * Creates a new instance with user modification enabled
      * @param allowedTypes The parameter types that can be added
      */
     public ACAQDynamicParameterCollection(Class<?>... allowedTypes) {
+        this.allowedTypes.addAll(Arrays.asList(allowedTypes));
+    }
+
+    /**
+     * Creates a new instance
+     * @param allowUserModification let user modify this collection
+     * @param allowedTypes The parameter types that can be added by the user (ignored if user cannot add)
+     */
+    public ACAQDynamicParameterCollection(boolean allowUserModification, Class<?>... allowedTypes) {
+        this.allowUserModification = allowUserModification;
         this.allowedTypes.addAll(Arrays.asList(allowedTypes));
     }
 

@@ -16,7 +16,8 @@ import java.util.Set;
 /**
  * Contains data to generate a histogram plot
  */
-@ACAQDocumentation(name = "Histogram plot", description = "Bar chart that displays the number of items for each bin.")
+@ACAQDocumentation(name = "Histogram plot", description = "Bar chart that displays the number of items for each bin. Please note that this plot requires " +
+        "raw values as input. A pre-defined histogram table should be rendered with an XY bar plot.")
 @PlotMetadata(columns = { @PlotColumn(name = "Value", dataType = Double.class) })
 public class HistogramPlotData extends PlotData {
 
@@ -28,6 +29,7 @@ public class HistogramPlotData extends PlotData {
      * Creates a new instance
      */
     public HistogramPlotData() {
+        setTitle("Histogram plot");
     }
 
     /**

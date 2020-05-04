@@ -487,6 +487,10 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterCol
                                         "authors if you cannot resolve the issue by yourself.");
                     }
                     parameterAccess.set(v);
+
+                    // Stop loading here to prevent already traversed parameters from being not loaded
+                    if(changedStructure.get())
+                        break;
                 }
             }
         }

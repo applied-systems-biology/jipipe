@@ -1,5 +1,7 @@
 package org.hkijena.acaq5.extensions.plots.datatypes;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.eventbus.EventBus;
 import ij.macro.Variable;
 import ij.measure.ResultsTable;
@@ -59,11 +61,13 @@ public class PlotDataSeries extends ResultsTableData implements ACAQParameterCol
 
     @ACAQDocumentation(name = "Name", description = "Name of this data series")
     @ACAQParameter("name")
+    @JsonGetter("name")
     public String getName() {
         return name;
     }
 
     @ACAQParameter("name")
+    @JsonSetter("name")
     public void setName(String name) {
         this.name = name;
     }
