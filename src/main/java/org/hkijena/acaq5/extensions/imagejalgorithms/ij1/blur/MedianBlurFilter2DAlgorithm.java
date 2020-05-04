@@ -8,6 +8,7 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -21,7 +22,7 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
 /**
  * Wrapper around {@link RankFilters}
  */
-@ACAQDocumentation(name = "Median Blur 2D", description = "Applies a median filter. " +
+@ACAQDocumentation(name = "Median blur 2D", description = "Applies a median filter. " +
         "If a multi-channel image is provided, the operation is applied to each channel. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ACAQOrganization(menuPath = "Blur", algorithmCategory = ACAQAlgorithmCategory.Processor)
@@ -81,6 +82,7 @@ public class MedianBlurFilter2DAlgorithm extends ImageJ1Algorithm {
             return false;
         }
         this.radius = radius;
+        getEventBus().post(new ParameterChangedEvent(this, "radius"));
         return true;
     }
 }

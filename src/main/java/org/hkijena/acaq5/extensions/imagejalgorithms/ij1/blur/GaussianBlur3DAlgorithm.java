@@ -1,9 +1,8 @@
 package org.hkijena.acaq5.extensions.imagejalgorithms.ij1.blur;
 
 import ij.ImagePlus;
+import ij.plugin.GaussianBlur3D;
 import ij.plugin.filter.GaussianBlur;
-import ij.process.ByteProcessor;
-import ij.process.ColorProcessor;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
@@ -14,7 +13,6 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.acaq5.utils.ImageJUtils;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -22,24 +20,25 @@ import java.util.function.Supplier;
 import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExtension.REMOVE_MASK_QUALIFIER;
 
 /**
- * Wrapper around {@link ij.plugin.filter.GaussianBlur}
+ * Wrapper around {@link GaussianBlur}
  */
-@ACAQDocumentation(name = "Gaussian blur 2D", description = "Applies convolution with a Gaussian function for smoothing. " +
-        "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+@ACAQDocumentation(name = "Gaussian blur 3D", description = "Applies convolution with a Gaussian function in 3D space for smoothing. " +
+        "If higher-dimensional data is provided, the filter is applied to each 3D slice.")
 @ACAQOrganization(menuPath = "Blur", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Input")
 @AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Output")
-public class GaussianBlur2DAlgorithm extends ImageJ1Algorithm {
+public class GaussianBlur3DAlgorithm extends ImageJ1Algorithm {
 
     private double sigmaX = 1;
     private double sigmaY = -1;
+    private double sigmaZ = -1;
 
     /**
      * Instantiates a new algorithm.
      *
      * @param declaration the declaration
      */
-    public GaussianBlur2DAlgorithm(ACAQAlgorithmDeclaration declaration) {
+    public GaussianBlur3DAlgorithm(ACAQAlgorithmDeclaration declaration) {
         super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusData.class)
                 .addOutputSlot("Output", ImagePlusData.class, "Input", REMOVE_MASK_QUALIFIER)
                 .allowOutputSlotInheritance(true)
@@ -52,21 +51,18 @@ public class GaussianBlur2DAlgorithm extends ImageJ1Algorithm {
      *
      * @param other the other
      */
-    public GaussianBlur2DAlgorithm(GaussianBlur2DAlgorithm other) {
+    public GaussianBlur3DAlgorithm(GaussianBlur3DAlgorithm other) {
         super(other);
         this.sigmaX = other.sigmaX;
         this.sigmaY = other.sigmaY;
+        this.sigmaZ = other.sigmaZ;
     }
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusData.class);
         ImagePlus img = inputData.getImage().duplicate();
-        GaussianBlur gaussianBlur = new GaussianBlur();
-        ImageJUtils.forEachSlice(img, ip -> {
-            double accuracy = (ip instanceof ByteProcessor || ip instanceof ColorProcessor) ? 0.002 : 0.0002;
-            gaussianBlur.blurGaussian(ip, sigmaX, sigmaY > 0 ? sigmaY : sigmaX, accuracy);
-        });
+        GaussianBlur3D.blur(img, sigmaX, sigmaY <= 0 ? sigmaX : sigmaY, sigmaZ <= 0 ? sigmaX : sigmaZ);
         dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
     }
 
@@ -99,5 +95,18 @@ public class GaussianBlur2DAlgorithm extends ImageJ1Algorithm {
     public void setSigmaY(double sigmaY) {
         this.sigmaY = sigmaY;
         getEventBus().post(new ParameterChangedEvent(this, "sigma-y"));
+    }
+
+    @ACAQDocumentation(name = "Sigma (Z)", description = "Standard deviation of the Gaussian (pixels) in Z direction." +
+            " If zero or less, sigma in X direction is automatically used instead.")
+    @ACAQParameter("sigma-z")
+    public double getSigmaZ() {
+        return sigmaZ;
+    }
+
+    @ACAQParameter("sigma-z")
+    public void setSigmaZ(double sigmaZ) {
+        this.sigmaZ = sigmaZ;
+        getEventBus().post(new ParameterChangedEvent(this, "sigma-z"));
     }
 }

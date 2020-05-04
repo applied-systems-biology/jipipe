@@ -5,6 +5,7 @@ import org.hkijena.acaq5.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.lang.ref.WeakReference;
 
 import static org.hkijena.acaq5.utils.UIUtils.UI_PADDING;
 
@@ -14,7 +15,6 @@ import static org.hkijena.acaq5.utils.UIUtils.UI_PADDING;
 public class FormPanel extends JPanel {
 
     private int numRows = 0;
-    private String currentGroup;
     private JPanel forms = new JPanel();
     private MarkdownReader parameterHelp;
 
@@ -56,6 +56,7 @@ public class FormPanel extends JPanel {
         }
     }
 
+
     /**
      * Creates a form panel with scrolling
      *
@@ -85,21 +86,32 @@ public class FormPanel extends JPanel {
         this(null, false);
     }
 
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+
+    }
+
     private void documentComponent(Component component, MarkdownDocument componentDocument) {
-        component.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                super.mouseEntered(e);
-                parameterHelp.setTemporaryDocument(componentDocument);
-            }
-        });
-        component.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                super.focusGained(e);
-                parameterHelp.setTemporaryDocument(componentDocument);
-            }
-        });
+
+        if (componentDocument != null) {
+            Toolkit.getDefaultToolkit().addAWTEventListener(new ComponentDocumentationHandler(this, component, componentDocument),
+                    AWTEvent.MOUSE_EVENT_MASK);
+            component.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    super.mouseEntered(e);
+                    parameterHelp.setTemporaryDocument(componentDocument);
+                }
+            });
+            component.addFocusListener(new FocusAdapter() {
+                @Override
+                public void focusGained(FocusEvent e) {
+                    super.focusGained(e);
+                    parameterHelp.setTemporaryDocument(componentDocument);
+                }
+            });
+        }
     }
 
     /**
@@ -310,6 +322,48 @@ public class FormPanel extends JPanel {
 
         public JTextArea getDescriptionArea() {
             return descriptionArea;
+        }
+    }
+
+    /**
+     * Mouse handler to target specific components
+     */
+    private static class ComponentDocumentationHandler implements AWTEventListener {
+
+        private final WeakReference<FormPanel> formPanel;
+        private final WeakReference<Component> target;
+        private final MarkdownDocument componentDocument;
+
+        private ComponentDocumentationHandler(FormPanel formPanel, Component component, MarkdownDocument componentDocument) {
+            this.formPanel = new WeakReference<>(formPanel);
+            this.target = new WeakReference<>(component);
+            this.componentDocument = componentDocument;
+        }
+
+        @Override
+        public void eventDispatched(AWTEvent event) {
+            Component component = target.get();
+            FormPanel panel = formPanel.get();
+            if (component == null || panel == null) {
+                Toolkit.getDefaultToolkit().removeAWTEventListener(this);
+                return;
+            }
+            if (!component.isDisplayable()) {
+                return;
+            }
+            if (event instanceof MouseEvent) {
+                MouseEvent mouseEvent = (MouseEvent) event;
+                if (((MouseEvent) event).getComponent() == component || SwingUtilities.isDescendingFrom(mouseEvent.getComponent(), component)) {
+                    Point componentLocation = component.getLocationOnScreen();
+                    boolean isInComponent = mouseEvent.getXOnScreen() >= componentLocation.x &&
+                            mouseEvent.getYOnScreen() >= componentLocation.y &&
+                            mouseEvent.getXOnScreen() < (component.getWidth() + componentLocation.x) &&
+                            mouseEvent.getYOnScreen() < (component.getHeight() + componentLocation.y);
+                    if (isInComponent && panel.parameterHelp.getTemporaryDocument() != componentDocument) {
+                        panel.parameterHelp.setTemporaryDocument(componentDocument);
+                    }
+                }
+            }
         }
     }
 }

@@ -43,7 +43,7 @@ public class SplitByAnnotation extends ACAQAlgorithm {
      */
     public SplitByAnnotation(ACAQAlgorithmDeclaration declaration) {
         super(declaration, ACAQMutableSlotConfiguration.builder().restrictInputSlotCount(1).build());
-        this.targetSlots = new OutputSlotMapParameterCollection(StringFilter.class, this);
+        this.targetSlots = new OutputSlotMapParameterCollection(StringFilter.class, this, null, true);
         this.targetSlots.getEventBus().register(this);
     }
 
@@ -56,7 +56,7 @@ public class SplitByAnnotation extends ACAQAlgorithm {
         super(other);
         this.enableFallthrough = other.enableFallthrough;
         this.annotationType = other.annotationType;
-        this.targetSlots = new OutputSlotMapParameterCollection(String.class, this);
+        this.targetSlots = new OutputSlotMapParameterCollection(String.class, this, null, false);
         other.targetSlots.copyTo(this.targetSlots);
         this.targetSlots.getEventBus().register(this);
     }

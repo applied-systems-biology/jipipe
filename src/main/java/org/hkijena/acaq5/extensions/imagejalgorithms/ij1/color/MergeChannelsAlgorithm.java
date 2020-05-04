@@ -47,8 +47,8 @@ public class MergeChannelsAlgorithm extends ImageJ1Algorithm {
                 .allowOutputSlotInheritance(true)
                 .sealOutput()
                 .build());
-        channelColorAssignment = new InputSlotMapParameterCollection(ChannelColor.class, this);
-        channelColorAssignment.setNewInstanceGenerator(this::getNewChannelColor);
+        channelColorAssignment = new InputSlotMapParameterCollection(ChannelColor.class, this, this::getNewChannelColor, false);
+        channelColorAssignment.updateSlots();
         registerSubParameter(channelColorAssignment);
     }
 
@@ -59,8 +59,7 @@ public class MergeChannelsAlgorithm extends ImageJ1Algorithm {
      */
     public MergeChannelsAlgorithm(MergeChannelsAlgorithm other) {
         super(other);
-        channelColorAssignment = new InputSlotMapParameterCollection(ChannelColor.class, this);
-        channelColorAssignment.setNewInstanceGenerator(this::getNewChannelColor);
+        channelColorAssignment = new InputSlotMapParameterCollection(ChannelColor.class, this, this::getNewChannelColor, false);
         other.channelColorAssignment.copyTo(channelColorAssignment);
         registerSubParameter(channelColorAssignment);
     }

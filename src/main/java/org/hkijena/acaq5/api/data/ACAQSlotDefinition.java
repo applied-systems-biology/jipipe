@@ -143,6 +143,13 @@ public class ACAQSlotDefinition implements ACAQParameterCollection {
         this.inheritanceConversions = inheritanceConversions;
     }
 
+    public void setInheritanceConversionsFromRaw(Map<Class<? extends ACAQData>, Class<? extends ACAQData>> inheritanceConversions) {
+        this.inheritanceConversions = new HashMap<>();
+        for (Map.Entry<Class<? extends ACAQData>, Class<? extends ACAQData>> entry : inheritanceConversions.entrySet()) {
+            this.inheritanceConversions.put(ACAQDataDeclaration.getInstance(entry.getKey()), ACAQDataDeclaration.getInstance(entry.getValue()));
+        }
+    }
+
     /**
      * @return A custom name that the UI is displaying instead of getName() if the return value is not null or empty
      */

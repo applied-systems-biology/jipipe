@@ -51,6 +51,7 @@ public class MarkdownReader extends JPanel {
     private JScrollPane scrollPane;
     private JTextPane content;
     private MarkdownDocument document;
+    private MarkdownDocument temporaryDocument;
 
     /**
      * @param withToolbar if a toolbar should be shown
@@ -219,6 +220,14 @@ public class MarkdownReader extends JPanel {
         SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
     }
 
+    public JTextPane getContent() {
+        return content;
+    }
+
+    public MarkdownDocument getTemporaryDocument() {
+        return temporaryDocument;
+    }
+
     /**
      * Sets the document to some temporary one without changing the reference to the main document
      *
@@ -234,9 +243,6 @@ public class MarkdownReader extends JPanel {
             content.setText(temporaryDocument.getRenderedHTML());
         }
         SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
-    }
-
-    public JTextPane getContent() {
-        return content;
+        this.temporaryDocument = temporaryDocument;
     }
 }

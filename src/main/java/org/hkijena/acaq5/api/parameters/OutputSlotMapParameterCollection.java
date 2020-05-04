@@ -6,6 +6,7 @@ import org.hkijena.acaq5.utils.ReflectionUtils;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Parameter that holds a value for each data slot
@@ -14,11 +15,13 @@ public class OutputSlotMapParameterCollection extends SlotMapParameterCollection
     /**
      * Creates a new instance
      *
-     * @param dataClass the data type of the parameter assigned to each slot
-     * @param algorithm the algorithm that contains the slots
+     * @param dataClass            the data type of the parameter assigned to each slot
+     * @param algorithm            the algorithm that contains the slots
+     * @param newInstanceGenerator optional method that generated new instances. Can be null
+     * @param initialize           If true, update the slots on creation
      */
-    public OutputSlotMapParameterCollection(Class<?> dataClass, ACAQAlgorithm algorithm) {
-        super(dataClass, algorithm);
+    public OutputSlotMapParameterCollection(Class<?> dataClass, ACAQAlgorithm algorithm, Supplier<Object> newInstanceGenerator, boolean initialize) {
+        super(dataClass, algorithm, newInstanceGenerator, initialize);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.enhancers;
+package org.hkijena.acaq5.extensions.imagejalgorithms.ij1.contrast;
 
 import ij.ImagePlus;
 import mpicbg.ij.clahe.Flat;
@@ -7,24 +7,29 @@ import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.traits.GoodForTrait;
 import org.hkijena.acaq5.api.data.traits.RemovesTrait;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleData;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExtension.REMOVE_MASK_QUALIFIER;
+
 /**
  * Applies CLAHE image enhancing
  */
-@ACAQDocumentation(name = "CLAHE enhancer (deprecated)")
+@ACAQDocumentation(name = "Enhance local contrast (CLAHE)", description = "Applies 'Contrast Limited Adaptive Histogram Equalization' (CLAHE) to enhance contrast. " +
+        "Composite color images are converted into their luminance.")
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Processor, menuPath = "Contrast")
 
 // Algorithm flow
-@AlgorithmInputSlot(value = ImagePlus2DGreyscaleData.class, slotName = "Input image", autoCreate = true)
-@AlgorithmOutputSlot(value = ImagePlus2DGreyscaleData.class, slotName = "Output image", autoCreate = true)
+@AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Input")
+@AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Output")
 
 // Trait matching
 @GoodForTrait("bioobject-preparations-labeling-uniform")
@@ -35,9 +40,9 @@ import java.util.function.Supplier;
 // Trait configuration
 @RemovesTrait("image-quality-brightness-low")
 @RemovesTrait("image-quality-brightness-nonuniform")
-public class CLAHEImageEnhancer extends ACAQIteratingAlgorithm {
+public class CLAHEContrastEnhancer extends ImageJ1Algorithm {
 
-    private int blocks = 127;
+    private int blockRadius = 127;
     private int bins = 256;
     private float maxSlope = 3.0f;
     private boolean fastMode = false;
@@ -45,8 +50,12 @@ public class CLAHEImageEnhancer extends ACAQIteratingAlgorithm {
     /**
      * @param declaration the declaration
      */
-    public CLAHEImageEnhancer(ACAQAlgorithmDeclaration declaration) {
-        super(declaration);
+    public CLAHEContrastEnhancer(ACAQAlgorithmDeclaration declaration) {
+        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusData.class)
+                .addOutputSlot("Output", ImagePlusData.class, "Input", REMOVE_MASK_QUALIFIER)
+                .allowOutputSlotInheritance(true)
+                .seal()
+                .build());
     }
 
     /**
@@ -54,9 +63,9 @@ public class CLAHEImageEnhancer extends ACAQIteratingAlgorithm {
      *
      * @param other the original
      */
-    public CLAHEImageEnhancer(CLAHEImageEnhancer other) {
+    public CLAHEContrastEnhancer(CLAHEContrastEnhancer other) {
         super(other);
-        this.blocks = other.blocks;
+        this.blockRadius = other.blockRadius;
         this.bins = other.bins;
         this.maxSlope = other.maxSlope;
         this.fastMode = other.fastMode;
@@ -64,23 +73,23 @@ public class CLAHEImageEnhancer extends ACAQIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ImagePlus2DGreyscaleData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlus2DGreyscaleData.class);
+        ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusData.class);
         ImagePlus result = inputData.getImage().duplicate();
         Flat clahe = fastMode ? Flat.getFastInstance() : Flat.getInstance();
-        clahe.run(result, blocks, bins, maxSlope, null, true);
-        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlus2DGreyscaleData(result));
+        clahe.run(result, blockRadius, bins, maxSlope, null, true);
+        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
     }
 
-    @ACAQParameter("blocks")
+    @ACAQParameter("block-radius")
     @ACAQDocumentation(name = "Blocks")
-    public int getBlocks() {
-        return blocks;
+    public int getBlockRadius() {
+        return blockRadius;
     }
 
-    @ACAQParameter("blocks")
-    public void setBlocks(int blocks) {
-        this.blocks = blocks;
-        getEventBus().post(new ParameterChangedEvent(this, "blocks"));
+    @ACAQParameter("block-radius")
+    public void setBlockRadius(int blockRadius) {
+        this.blockRadius = blockRadius;
+        getEventBus().post(new ParameterChangedEvent(this, "block-radius"));
     }
 
     @ACAQParameter("bins")

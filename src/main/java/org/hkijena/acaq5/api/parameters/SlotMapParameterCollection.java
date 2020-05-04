@@ -20,14 +20,18 @@ public class SlotMapParameterCollection extends ACAQDynamicParameterCollection {
     /**
      * Creates a new instance
      *
-     * @param dataClass the data type of the parameter assigned to each slot
-     * @param algorithm the algorithm that contains the slots
+     * @param dataClass            the data type of the parameter assigned to each slot
+     * @param algorithm            the algorithm that contains the slots
+     * @param newInstanceGenerator optional method that generated new instances. Can be null
+     * @param initialize           If true, update the slots on creation
      */
-    public SlotMapParameterCollection(Class<?> dataClass, ACAQAlgorithm algorithm) {
+    public SlotMapParameterCollection(Class<?> dataClass, ACAQAlgorithm algorithm, Supplier<Object> newInstanceGenerator, boolean initialize) {
         this.dataClass = dataClass;
         this.algorithm = algorithm;
+        this.newInstanceGenerator = newInstanceGenerator;
         this.setAllowUserModification(false);
-        updateSlots();
+        if (initialize)
+            updateSlots();
         this.algorithm.getEventBus().register(this);
     }
 

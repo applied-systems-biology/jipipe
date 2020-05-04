@@ -5,6 +5,7 @@ import ij.ImagePlus;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.api.exceptions.UserFriendlyNullPointerException;
 import org.hkijena.acaq5.utils.PathUtils;
 
 import java.nio.file.Path;
@@ -37,6 +38,14 @@ public class ImagePlusData implements ACAQData {
      * @param image wrapped image
      */
     public ImagePlusData(ImagePlus image) {
+        if (image == null) {
+            throw new UserFriendlyNullPointerException("ImagePlus cannot be null!", "No image provided!",
+                    "Internal ACAQ5 image type",
+                    "An algorithm tried to pass an empty ImageJ image back to ACAQ5. This is not allowed. " +
+                            "Either the algorithm inputs are wrong, or there is an error in the program code.",
+                    "Please check the inputs via the testbench to see if they are satisfying the algorithm's assumptions. " +
+                            "If you cannot solve the issue, please contact the plugin's author.");
+        }
         this.image = image;
     }
 

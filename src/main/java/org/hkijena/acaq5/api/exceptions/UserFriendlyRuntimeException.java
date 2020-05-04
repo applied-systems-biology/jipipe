@@ -4,7 +4,7 @@ package org.hkijena.acaq5.api.exceptions;
  * A {@link RuntimeException} that contains more detailed information for users.
  * It answers in understandable terms: (1) What happened (2) Where it happened (3) Why it happened, and (4) What to do to resolve the issue
  */
-public class UserFriendlyRuntimeException extends RuntimeException {
+public class UserFriendlyRuntimeException extends RuntimeException implements UserFriendlyException {
     private final String userWhat;
     private final String userWhere;
     private final String userWhy;

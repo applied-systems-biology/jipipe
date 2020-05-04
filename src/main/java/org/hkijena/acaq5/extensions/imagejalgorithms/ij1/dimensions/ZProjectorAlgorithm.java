@@ -9,6 +9,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -95,6 +96,7 @@ public class ZProjectorAlgorithm extends ImageJ1Algorithm {
     @ACAQParameter("method")
     public void setMethod(Method method) {
         this.method = method;
+        getEventBus().post(new ParameterChangedEvent(this, "method"));
     }
 
     @ACAQParameter("start-slice")
@@ -110,6 +112,7 @@ public class ZProjectorAlgorithm extends ImageJ1Algorithm {
             return false;
         }
         this.startSlice = startSlice;
+        getEventBus().post(new ParameterChangedEvent(this, "start-slice"));
         return true;
     }
 
@@ -126,6 +129,7 @@ public class ZProjectorAlgorithm extends ImageJ1Algorithm {
             return false;
         }
         this.stopSlice = stopSlice;
+        getEventBus().post(new ParameterChangedEvent(this, "stop-slice"));
         return true;
     }
 
@@ -138,6 +142,7 @@ public class ZProjectorAlgorithm extends ImageJ1Algorithm {
     @ACAQParameter("all-hyperstack-timepoints")
     public void setProjectAllHyperstackTimePoints(boolean projectAllHyperstackTimePoints) {
         this.projectAllHyperstackTimePoints = projectAllHyperstackTimePoints;
+        getEventBus().post(new ParameterChangedEvent(this, "all-hyperstack-timepoints"));
     }
 
     /**

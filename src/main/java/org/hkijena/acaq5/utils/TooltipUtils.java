@@ -1,11 +1,15 @@
 package org.hkijena.acaq5.utils;
 
+import com.google.common.html.HtmlEscapers;
+import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
+import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
+import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
 
@@ -102,6 +106,71 @@ public class TooltipUtils {
      */
     public static String getAlgorithmTooltip(ACAQAlgorithmDeclaration declaration) {
         return getAlgorithmTooltip(declaration, true);
+    }
+
+    public static MarkdownDocument getAlgorithmDocumentation(ACAQAlgorithmDeclaration declaration) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("# ").append(declaration.getName()).append("\n\n");
+        // Write algorithm slot info
+        builder.append("<table>");
+        {
+            List<AlgorithmInputSlot> inputSlots = declaration.getInputSlots();
+            List<AlgorithmOutputSlot> outputSlots = declaration.getOutputSlots();
+
+            int displayedSlots = Math.max(inputSlots.size(), outputSlots.size());
+            if (displayedSlots > 0) {
+                builder.append("<tr><td><i>Input</i></td><td><i>Output</i></td></tr>");
+                for (int i = 0; i < displayedSlots; ++i) {
+                    Class<? extends ACAQData> inputSlot = i < inputSlots.size() ? inputSlots.get(i).value() : null;
+                    Class<? extends ACAQData> outputSlot = i < outputSlots.size() ? outputSlots.get(i).value() : null;
+                    builder.append("<tr>");
+                    if (inputSlot != null) {
+                        builder.append("<td>");
+                        builder.append(StringUtils.createIconTextHTMLTableElement(ACAQData.getNameOf(inputSlot), ACAQUIDatatypeRegistry.getInstance().getIconURLFor(inputSlot)));
+                        builder.append("</td>");
+                    }
+                    if (outputSlot != null) {
+                        builder.append("<td>");
+                        builder.append(StringUtils.createRightIconTextHTMLTableElement(ACAQData.getNameOf(outputSlot), ACAQUIDatatypeRegistry.getInstance().getIconURLFor(outputSlot)));
+                        builder.append("</td>");
+                    }
+                    builder.append("</tr>");
+                }
+            }
+        }
+
+        // Write description
+        String description = declaration.getDescription();
+        if (description != null && !description.isEmpty())
+            builder.append(StringUtils.wordWrappedHTMLElement(description, 50)).append("</br>");
+
+        Set<ACAQTraitDeclaration> preferredTraits = declaration.getPreferredTraits();
+        Set<ACAQTraitDeclaration> unwantedTraits = declaration.getUnwantedTraits();
+        Set<ACAQTraitDeclaration> addedTraits = declaration.getSlotTraitConfiguration().getAddedTraits();
+        Set<ACAQTraitDeclaration> removedTraits = declaration.getSlotTraitConfiguration().getRemovedTraits();
+
+        if (!preferredTraits.isEmpty() || !unwantedTraits.isEmpty())
+            insertOpposingTraitTableContent(builder, preferredTraits, "Good for", unwantedTraits, "Bad for");
+        if (!addedTraits.isEmpty() || !removedTraits.isEmpty())
+            insertOpposingTraitTableContent(builder, addedTraits, "Adds", removedTraits, "Removes");
+
+        builder.append("</table>\n\n");
+
+        // Write author information
+        ACAQDependency source = ACAQAlgorithmRegistry.getInstance().getSourceOf(declaration.getId());
+        if (source != null) {
+            builder.append("## Developer information\n\n");
+            builder.append("<table>");
+            builder.append("<tr><td><strong>Plugin name</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(source.getMetadata().getName())).append("</td></tr>");
+            builder.append("<tr><td><strong>Plugin authors</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(source.getMetadata().getAuthors())).append("</td></tr>");
+            builder.append("<tr><td><strong>Plugin website</strong></td><td><a href=\"").append(source.getMetadata().getWebsite()).append("\">")
+                    .append(HtmlEscapers.htmlEscaper().escape(source.getMetadata().getWebsite())).append("</a></td></tr>");
+            builder.append("<tr><td><strong>Plugin citation</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(source.getMetadata().getCitation())).append("</td></tr>");
+            builder.append("<tr><td><strong>Plugin license</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(source.getMetadata().getLicense())).append("</td></tr>");
+            builder.append("</table>");
+        }
+
+        return new MarkdownDocument(builder.toString());
     }
 
     /**
