@@ -25,7 +25,8 @@ public class StringFilter implements Predicate<String>, ACAQValidatable {
 
     /**
      * Initializes a new filter
-     * @param mode filter mode
+     *
+     * @param mode         filter mode
      * @param filterString filter string
      */
     public StringFilter(Mode mode, String filterString) {

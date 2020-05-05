@@ -4,10 +4,12 @@ import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.plots.datatypes.HistogramPlotData;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotData;
+import org.hkijena.acaq5.extensions.plots.parameters.UIPlotDataSourceEnum;
+import org.hkijena.acaq5.extensions.plots.parameters.UIPlotDataSourceEnumParameterEditorUI;
 import org.hkijena.acaq5.extensions.plots.ui.plots.*;
+import org.hkijena.acaq5.extensions.plots.ui.resultanalysis.PlotDataSlotRowUI;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.UIUtils;
-import org.jfree.data.statistics.HistogramDataset;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -44,14 +46,17 @@ public class StandardPlotsExtension extends ACAQPrepackagedDefaultJavaExtension 
         registerDatatype("plot",
                 PlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/data-type-plot.png"),
-                null,
+                PlotDataSlotRowUI.class,
                 null);
+
+        registerAlgorithm("plot-from-table", PlotGeneratorAlgorithm.class);
+
+
         registerDatatype("plot-histogram",
                 HistogramPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/data-type-plot.png"),
                 null,
                 null);
-        registerAlgorithm("plot-from-table", PlotGeneratorAlgorithm.class);
 
         registerPlot(DefaultBoxAndWhiskerBarCategoryPlot.class,
                 "Box Plot",
@@ -86,6 +91,10 @@ public class StandardPlotsExtension extends ACAQPrepackagedDefaultJavaExtension 
         registerPlot(HistogramPlot.class,
                 "Histogram Plot",
                 UIUtils.getIconFromResources("bar-chart.png"));
+
+        // Register UI-specific parameters
+        registerParameterType(UIPlotDataSourceEnum.class, UIPlotDataSourceEnumParameterEditorUI.class,
+                "Data column", "A data column to be plot");
     }
 
 }

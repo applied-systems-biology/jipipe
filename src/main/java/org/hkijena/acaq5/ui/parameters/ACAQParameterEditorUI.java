@@ -48,7 +48,7 @@ public abstract class ACAQParameterEditorUI extends JPanel implements Contextual
     }
 
     /**
-     * If true, the {@link ACAQParameterAccessUI} will display a label with the parameter
+     * If true, the {@link ParameterPanel} will display a label with the parameter
      * name next to this UI.
      *
      * @return if label should be shown

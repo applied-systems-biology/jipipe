@@ -314,7 +314,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterCol
      */
     @Subscribe
     public void onSlotConfigurationParameterChanged(ParameterChangedEvent event) {
-        if (event.getParameterHolder() == slotConfiguration) {
+        if (event.getSource() == slotConfiguration) {
             getEventBus().post(new AlgorithmSlotsChangedEvent(this));
         }
     }
@@ -489,7 +489,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterCol
                     parameterAccess.set(v);
 
                     // Stop loading here to prevent already traversed parameters from being not loaded
-                    if(changedStructure.get())
+                    if (changedStructure.get())
                         break;
                 }
             }

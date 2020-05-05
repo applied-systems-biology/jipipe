@@ -60,7 +60,7 @@ public class InheritanceConversionEditorUI extends JPanel {
     }
 
     private void addEntry() {
-        FormPanel formPanel = new FormPanel(null, false, false, false);
+        FormPanel formPanel = new FormPanel(null, FormPanel.NONE);
         ACAQDataDeclaration[] available = ACAQDatatypeRegistry.getInstance().getUnhiddenRegisteredDataTypes().values()
                 .stream().map(ACAQDataDeclaration::getInstance).toArray(ACAQDataDeclaration[]::new);
         JComboBox<ACAQDataDeclaration> from = new JComboBox<>(available);

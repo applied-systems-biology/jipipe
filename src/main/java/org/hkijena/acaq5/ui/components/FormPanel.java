@@ -14,17 +14,40 @@ import static org.hkijena.acaq5.utils.UIUtils.UI_PADDING;
  */
 public class FormPanel extends JPanel {
 
+    /**
+     * Flag that indicates no modifications, meaning (1) No documentation, and (2) no scrolling
+     */
+    public static final int NONE = 0;
+
+    /**
+     * Flag that indicates that a documentation panel is shown. The documentation panel is
+     * attached on the right-hand side. Use DOCUMENTATION_BELOW to move it below the contents.
+     * The documentation panel is shown even if the documentation provided in the constructor is null.
+     */
+    public static final int WITH_DOCUMENTATION = 1;
+
+    /**
+     * Flag that makes the content be wrapped in a {@link JScrollPane}
+     */
+    public static final int WITH_SCROLLING = 2;
+
+    /**
+     * Flag that indicates that documentation should be shown below if enabled.
+     * This does not enable documentation! Use WITH_DOCUMENTATION for this.
+     */
+    public static final int DOCUMENTATION_BELOW = 3;
+
     private int numRows = 0;
     private JPanel forms = new JPanel();
     private MarkdownReader parameterHelp;
 
     /**
-     * @param document           the default documentation. Can be null.
-     * @param documentationBelow if true, show documentation below
-     * @param withDocumentation  if true, show documentation
-     * @param withScrolling      if true, wrap contents in a scroll bar
+     * Creates a new instance
+     *
+     * @param document optional documentation
+     * @param flags    flags for this component
      */
-    public FormPanel(MarkdownDocument document, boolean documentationBelow, boolean withDocumentation, boolean withScrolling) {
+    public FormPanel(MarkdownDocument document, int flags) {
         setLayout(new BorderLayout());
         forms.setLayout(new GridBagLayout());
 
@@ -34,12 +57,13 @@ public class FormPanel extends JPanel {
         helpPanel.add(parameterHelp, BorderLayout.CENTER);
 
         Component content;
-        if (withScrolling)
+        if ((flags & WITH_SCROLLING) == WITH_SCROLLING)
             content = new JScrollPane(forms);
         else
             content = forms;
 
-        if (withDocumentation) {
+        if ((flags & WITH_DOCUMENTATION) == WITH_DOCUMENTATION) {
+            boolean documentationBelow = (flags & DOCUMENTATION_BELOW) == DOCUMENTATION_BELOW;
             JSplitPane splitPane = new JSplitPane(documentationBelow ? JSplitPane.VERTICAL_SPLIT : JSplitPane.HORIZONTAL_SPLIT, content, helpPanel);
             splitPane.setDividerSize(3);
             splitPane.setResizeWeight(0.33);
@@ -56,35 +80,6 @@ public class FormPanel extends JPanel {
         }
     }
 
-
-    /**
-     * Creates a form panel with scrolling
-     *
-     * @param document           the default documentation. Can be null.
-     * @param documentationBelow if true, show documentation below
-     * @param withDocumentation  if true, show documentation
-     */
-    public FormPanel(MarkdownDocument document, boolean documentationBelow, boolean withDocumentation) {
-        this(document, documentationBelow, withDocumentation, true);
-    }
-
-    /**
-     * Creates a form panel with scrolling and documentation
-     *
-     * @param document           the default documentation. Can be null.
-     * @param documentationBelow if true, show documentation below
-     */
-    public FormPanel(MarkdownDocument document, boolean documentationBelow) {
-        this(document, documentationBelow, true);
-    }
-
-    /**
-     * Creates a form panel without default documentation, documentation shown on the right hand side, and
-     * scrolling enabled
-     */
-    public FormPanel() {
-        this(null, false);
-    }
 
     @Override
     protected void finalize() throws Throwable {

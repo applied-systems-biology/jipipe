@@ -1,7 +1,6 @@
 package org.hkijena.acaq5.extensions.standardparametereditors.editors;
 
 import org.hkijena.acaq5.api.data.ACAQData;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -16,6 +15,7 @@ import java.lang.annotation.Target;
 public @interface ACAQDataParameterSettings {
     /**
      * Control which data types are available
+     *
      * @return the data base class
      */
     Class<? extends ACAQData> dataBaseClass() default ACAQData.class;

@@ -1,10 +1,7 @@
 package org.hkijena.acaq5.extensions.plots.datatypes;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -24,7 +21,6 @@ import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
-import org.hkijena.acaq5.ui.events.PlotChangedEvent;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
@@ -34,8 +30,8 @@ import org.jfree.graphics2d.svg.SVGUtils;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -62,6 +58,7 @@ public abstract class PlotData implements ACAQData, ACAQParameterCollection, ACA
 
     /**
      * Creates a copy of the provided data
+     *
      * @param other the original
      */
     public PlotData(PlotData other) {
@@ -174,46 +171,45 @@ public abstract class PlotData implements ACAQData, ACAQParameterCollection, ACA
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        report.forCategory("Export width").checkIfWithin(this, exportWidth, 0,Double.POSITIVE_INFINITY, false, true);
-        report.forCategory("Export height").checkIfWithin(this, exportHeight, 0,Double.POSITIVE_INFINITY, false, true);
+        report.forCategory("Export width").checkIfWithin(this, exportWidth, 0, Double.POSITIVE_INFINITY, false, true);
+        report.forCategory("Export height").checkIfWithin(this, exportHeight, 0, Double.POSITIVE_INFINITY, false, true);
     }
 
     public List<PlotDataSeries> getSeries() {
-        return series;
+        return Collections.unmodifiableList(series);
     }
 
     /**
-     * Loads data from a folder
-     * @param folder folder
-     * @return loaded data
+     * Adds a new series into this plot
+     *
+     * @param series the series
      */
-    public static PlotData fromFolder(Path folder) {
-        PlotData result;
-        try {
-            JsonNode node = JsonUtils.getObjectMapper().readValue(folder.resolve("plot-metadata.json").toFile(), JsonNode.class);
-            Class<? extends ACAQData> dataClass = ACAQDatatypeRegistry.getInstance().getById(node.get("plot-data-type").textValue());
-            result = (PlotData) ACAQData.createInstance(dataClass);
+    public void addSeries(PlotDataSeries series) {
+        this.series.add(series);
+        getEventBus().post(new ParameterChangedEvent(this, "series"));
+    }
 
-            // Load metadata
-            result.fromJson(node);
+    /**
+     * Removes a series
+     *
+     * @param series the series
+     */
+    public void removeSeries(PlotDataSeries series) {
+        this.series.remove(series);
+        getEventBus().post(new ParameterChangedEvent(this, "series"));
+    }
 
-            // Load series
-            for (JsonNode element : ImmutableList.copyOf(node.get("plot-series").elements())) {
-                PlotDataSeries series = JsonUtils.getObjectMapper().readerFor(PlotDataSeries.class).readValue(element.get("metadata"));
-                Path fileName = folder.resolve(element.get("file-name").textValue());
-                ResultsTableData tableData = new ResultsTableData(fileName);
-                series.setTable(tableData.getTable());
-                result.getSeries().add(series);
-            }
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return result;
+    /**
+     * Removes all series
+     */
+    public void clearSeries() {
+        this.series.clear();
+        getEventBus().post(new ParameterChangedEvent(this, "series"));
     }
 
     /**
      * Loads metadata from JSON
+     *
      * @param node JSON node
      */
     public void fromJson(JsonNode node) {
@@ -264,11 +260,42 @@ public abstract class PlotData implements ACAQData, ACAQParameterCollection, ACA
                     parameterAccess.set(v);
 
                     // Stop loading here to prevent already traversed parameters from being not loaded
-                    if(changedStructure.get())
+                    if (changedStructure.get())
                         break;
                 }
             }
         }
+    }
+
+    /**
+     * Loads data from a folder
+     *
+     * @param folder folder
+     * @return loaded data
+     */
+    public static PlotData fromFolder(Path folder) {
+        PlotData result;
+        try {
+            JsonNode node = JsonUtils.getObjectMapper().readValue(folder.resolve("plot-metadata.json").toFile(), JsonNode.class);
+            Class<? extends ACAQData> dataClass = ACAQDatatypeRegistry.getInstance().getById(node.get("plot-data-type").textValue());
+            result = (PlotData) ACAQData.createInstance(dataClass);
+
+            // Load metadata
+            result.fromJson(node);
+
+            // Load series
+            for (JsonNode element : ImmutableList.copyOf(node.get("plot-series").elements())) {
+                PlotDataSeries series = JsonUtils.getObjectMapper().readerFor(PlotDataSeries.class).readValue(element.get("metadata"));
+                Path fileName = folder.resolve(element.get("file-name").textValue());
+                ResultsTableData tableData = new ResultsTableData(ResultsTable.open(fileName.toString()));
+                series.setTable(tableData.getTable());
+                result.addSeries(series);
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return result;
     }
 
     /**
@@ -302,10 +329,10 @@ public abstract class PlotData implements ACAQData, ACAQParameterCollection, ACA
             // Write series mapping
             gen.writeFieldName("plot-series");
             gen.writeStartArray();
-            for(int i = 0; i < value.series.size(); ++i) {
+            for (int i = 0; i < value.series.size(); ++i) {
                 gen.writeStartObject();
                 gen.writeStringField("file-name", "series" + i + ".csv");
-                gen.writeObjectField("metadata", value.series);
+                gen.writeObjectField("metadata", value.series.get(i));
                 gen.writeEndObject();
             }
             gen.writeEndArray();

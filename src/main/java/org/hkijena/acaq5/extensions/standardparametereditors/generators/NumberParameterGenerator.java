@@ -6,8 +6,8 @@ import org.hkijena.acaq5.api.parameters.ACAQCustomParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQMutableParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.ui.parameters.ACAQParameterAccessUI;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterGeneratorUI;
+import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.scijava.Context;
 
 import java.awt.*;
@@ -41,12 +41,10 @@ public class NumberParameterGenerator<T extends Number & Comparable<T>> extends 
 
     private void initialize() {
         setLayout(new BorderLayout());
-        add(new ACAQParameterAccessUI(getContext(),
+        add(new ParameterPanel(getContext(),
                 this,
                 null,
-                false,
-                false,
-                true));
+                ParameterPanel.WITH_SCROLLING));
     }
 
     private void initializeParameters() {

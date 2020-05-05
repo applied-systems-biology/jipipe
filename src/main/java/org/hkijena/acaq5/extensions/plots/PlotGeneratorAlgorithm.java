@@ -45,18 +45,20 @@ public class PlotGeneratorAlgorithm extends ACAQAlgorithm {
 
     /**
      * Creates a new instance
+     *
      * @param declaration The algorithm declaration
      */
     public PlotGeneratorAlgorithm(ACAQAlgorithmDeclaration declaration) {
         super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ResultsTableData.class)
-        .addOutputSlot("Output", PlotData.class, null)
-        .seal()
-        .build());
+                .addOutputSlot("Output", PlotData.class, null)
+                .seal()
+                .build());
         registerSubParameter(columnAssignments);
     }
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public PlotGeneratorAlgorithm(PlotGeneratorAlgorithm other) {
@@ -69,15 +71,15 @@ public class PlotGeneratorAlgorithm extends ACAQAlgorithm {
     @Override
     public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         PlotMetadata plotMetadata = plotType.getDeclaration().getDataClass().getAnnotation(PlotMetadata.class);
-        for(int row = 0; row < getFirstInputSlot().getRowCount(); ++row) {
+        for (int row = 0; row < getFirstInputSlot().getRowCount(); ++row) {
             ResultsTableData inputData = getFirstInputSlot().getData(row, ResultsTableData.class);
-            PlotData plot = (PlotData)plotTypeParameters.duplicate();
+            PlotData plot = (PlotData) plotTypeParameters.duplicate();
 
             ResultsTable seriesTable = new ResultsTable(inputData.getTable().getCounter());
 
             // Get column headings
             List<String> columnHeadings = new ArrayList<>();
-            for(int i = 0; i <= inputData.getTable().getLastColumn(); ++i) {
+            for (int i = 0; i <= inputData.getTable().getLastColumn(); ++i) {
                 columnHeadings.add(inputData.getTable().getColumnHeading(i));
             }
 
@@ -86,12 +88,12 @@ public class PlotGeneratorAlgorithm extends ACAQAlgorithm {
                 String matchingColumn = null;
                 StringFilter filter = entry.getValue().get();
                 for (String columnHeading : columnHeadings) {
-                    if(filter.test(columnHeading)) {
+                    if (filter.test(columnHeading)) {
                         matchingColumn = columnHeading;
                         break;
                     }
                 }
-                if(matchingColumn == null) {
+                if (matchingColumn == null) {
                     throw new UserFriendlyRuntimeException("Could not find column that matches '" + filter.toString() + "'!",
                             "Could not find column!",
                             "Algorithm '" + getName() + "'",
@@ -103,7 +105,7 @@ public class PlotGeneratorAlgorithm extends ACAQAlgorithm {
                 seriesTable.setColumn(entry.getKey(), inputData.getTable().getColumnAsVariables(matchingColumn));
             }
 
-            plot.getSeries().add(new PlotDataSeries(seriesTable));
+            plot.addSeries(new PlotDataSeries(seriesTable));
 
             getFirstOutputSlot().addData(plot, getFirstInputSlot().getAnnotations(row));
         }
@@ -112,7 +114,7 @@ public class PlotGeneratorAlgorithm extends ACAQAlgorithm {
     @Override
     public void reportValidity(ACAQValidityReport report) {
         report.forCategory("Plot type").checkNonNull(getPlotType().getDeclaration(), this);
-        if(plotTypeParameters != null) {
+        if (plotTypeParameters != null) {
             report.forCategory("Plot parameters").report(plotTypeParameters);
         }
     }
@@ -121,7 +123,7 @@ public class PlotGeneratorAlgorithm extends ACAQAlgorithm {
     @ACAQParameter(value = "plot-type", priority = Priority.HIGH)
     @ACAQDataParameterSettings(dataBaseClass = PlotData.class)
     public ACAQDataDeclarationRef getPlotType() {
-        if(plotType == null) {
+        if (plotType == null) {
             plotType = new ACAQDataDeclarationRef();
         }
         return plotType;
@@ -140,7 +142,7 @@ public class PlotGeneratorAlgorithm extends ACAQAlgorithm {
     private void updateColumnAssignment() {
         columnAssignments.beginModificationBlock();
         columnAssignments.clear();
-        if(plotType.getDeclaration() != null) {
+        if (plotType.getDeclaration() != null) {
             PlotMetadata plotMetadata = plotType.getDeclaration().getDataClass().getAnnotation(PlotMetadata.class);
             for (PlotColumn column : plotMetadata.columns()) {
                 ACAQMutableParameterAccess parameterAccess = new ACAQMutableParameterAccess();
@@ -157,23 +159,21 @@ public class PlotGeneratorAlgorithm extends ACAQAlgorithm {
     }
 
     private void updatePlotTypeParameters() {
-        if(plotTypeParameters == null || (plotType.getDeclaration() != null && !Objects.equals(plotType.getDeclaration().getDataClass(), plotTypeParameters.getClass()))) {
-            if(plotType.getDeclaration() != null) {
+        if (plotTypeParameters == null || (plotType.getDeclaration() != null && !Objects.equals(plotType.getDeclaration().getDataClass(), plotTypeParameters.getClass()))) {
+            if (plotType.getDeclaration() != null) {
                 plotTypeParameters = (PlotData) ACAQData.createInstance(plotType.getDeclaration().getDataClass());
                 getEventBus().post(new ParameterStructureChangedEvent(this));
             }
-        }
-        else if(plotType.getDeclaration() == null) {
+        } else if (plotType.getDeclaration() == null) {
             plotTypeParameters = null;
             getEventBus().post(new ParameterStructureChangedEvent(this));
         }
     }
 
     private void updateOutputSlotType() {
-        if(plotType.getDeclaration() != null) {
+        if (plotType.getDeclaration() != null) {
             getFirstOutputSlot().setAcceptedDataType(plotType.getDeclaration().getDataClass());
-        }
-        else {
+        } else {
             getFirstOutputSlot().setAcceptedDataType(PlotData.class);
         }
         getEventBus().post(new AlgorithmSlotsChangedEvent(this));

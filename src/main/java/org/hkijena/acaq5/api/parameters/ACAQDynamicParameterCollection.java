@@ -29,6 +29,7 @@ public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollec
 
     /**
      * Creates a new instance with user modification enabled
+     *
      * @param allowedTypes The parameter types that can be added
      */
     public ACAQDynamicParameterCollection(Class<?>... allowedTypes) {
@@ -37,8 +38,9 @@ public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollec
 
     /**
      * Creates a new instance
+     *
      * @param allowUserModification let user modify this collection
-     * @param allowedTypes The parameter types that can be added by the user (ignored if user cannot add)
+     * @param allowedTypes          The parameter types that can be added by the user (ignored if user cannot add)
      */
     public ACAQDynamicParameterCollection(boolean allowUserModification, Class<?>... allowedTypes) {
         this.allowUserModification = allowUserModification;

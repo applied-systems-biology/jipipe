@@ -43,7 +43,7 @@ public class CollectionParameterEditorUI extends ACAQParameterEditorUI {
         toolBar.add(addButton);
         add(toolBar, BorderLayout.NORTH);
 
-        formPanel = new FormPanel(null, false, false, false);
+        formPanel = new FormPanel(null, FormPanel.NONE);
         add(formPanel, BorderLayout.CENTER);
     }
 

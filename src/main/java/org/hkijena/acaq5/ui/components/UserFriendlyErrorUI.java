@@ -23,11 +23,11 @@ public class UserFriendlyErrorUI extends FormPanel {
     private List<Entry> entries = new ArrayList<>();
 
     /**
-     * @param helpDocument  the help document to be displayed. If null, no help is displayed
-     * @param withScrolling if true, the content is wrapped in a scroll pane. Always true if a help document is provided
+     * @param helpDocument the help document to be displayed. If null, no help is displayed
+     * @param flags        FormPanel flags
      */
-    public UserFriendlyErrorUI(MarkdownDocument helpDocument, boolean withScrolling) {
-        super(helpDocument, false, helpDocument != null, withScrolling || helpDocument != null);
+    public UserFriendlyErrorUI(MarkdownDocument helpDocument, int flags) {
+        super(helpDocument, flags);
     }
 
     /**
@@ -157,7 +157,7 @@ public class UserFriendlyErrorUI extends FormPanel {
          * @param entry the entry
          */
         public EntryUI(Entry entry) {
-            super(null, false, false, false);
+            super(null, NONE);
             this.entry = entry;
             initialize();
         }

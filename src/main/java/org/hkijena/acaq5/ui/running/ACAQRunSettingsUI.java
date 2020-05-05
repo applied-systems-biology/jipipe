@@ -12,7 +12,7 @@ import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.components.UserFriendlyErrorUI;
 import org.hkijena.acaq5.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.acaq5.ui.events.RunUIWorkerInterruptedEvent;
-import org.hkijena.acaq5.ui.parameters.ACAQParameterAccessUI;
+import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -104,10 +104,9 @@ public class ACAQRunSettingsUI extends ACAQProjectWorkbenchPanel {
 
         removeAll();
         JPanel setupPanel = new JPanel(new BorderLayout());
-        ACAQParameterAccessUI formPanel = new ACAQParameterAccessUI(getProjectWorkbench(), run.getConfiguration(),
+        ParameterPanel formPanel = new ParameterPanel(getProjectWorkbench(), run.getConfiguration(),
                 MarkdownDocument.fromPluginResource("documentation/run.md"),
-                false,
-                true);
+                ParameterPanel.WITH_DOCUMENTATION);
 
         setupPanel.add(formPanel, BorderLayout.CENTER);
 
@@ -161,7 +160,7 @@ public class ACAQRunSettingsUI extends ACAQProjectWorkbenchPanel {
     private void openError(Exception exception) {
         removeAll();
         UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(MarkdownDocument.fromPluginResource("documentation/run-error.md"),
-                true);
+                UserFriendlyErrorUI.WITH_SCROLLING);
         errorUI.displayErrors(exception);
         errorUI.addVerticalGlue();
         add(errorUI, BorderLayout.CENTER);

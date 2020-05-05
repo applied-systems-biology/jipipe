@@ -1,15 +1,8 @@
 package org.hkijena.acaq5.extensions.imagejalgorithms.ij1.statistics;
 
-import gnu.trove.impl.hash.TDoubleIntHash;
 import gnu.trove.map.TDoubleDoubleMap;
-import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TDoubleDoubleHashMap;
-import gnu.trove.map.hash.TDoubleIntHashMap;
-import gnu.trove.map.hash.TIntIntHashMap;
-import gnu.trove.procedure.TDoubleDoubleProcedure;
-import gnu.trove.procedure.TDoubleProcedure;
 import ij.measure.ResultsTable;
-import ij.process.ByteProcessor;
 import ij.process.ColorProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
@@ -49,6 +42,7 @@ public class HistogramGenerator extends ImageJ1Algorithm {
 
     /**
      * Creates a new instance
+     *
      * @param declaration the algorithm declaration
      */
     public HistogramGenerator(ACAQAlgorithmDeclaration declaration) {
@@ -57,6 +51,7 @@ public class HistogramGenerator extends ImageJ1Algorithm {
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public HistogramGenerator(HistogramGenerator other) {
@@ -70,30 +65,27 @@ public class HistogramGenerator extends ImageJ1Algorithm {
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress,
                                 Supplier<Boolean> isCancelled) {
-        if(applyPerSlice) {
+        if (applyPerSlice) {
             ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusData.class);
             ImageJUtils.forEachIndexedSlice(inputData.getImage(), (imp, index) -> {
                 TDoubleDoubleMap histogram;
-                if(imp instanceof ColorProcessor) {
+                if (imp instanceof ColorProcessor) {
                     histogram = getColorHistogram((ColorProcessor) imp);
-                }
-                else {
+                } else {
                     histogram = getGreyscaleHistogram(imp);
                 }
-                if(normalize) {
+                if (normalize) {
                     histogram = normalizeHistogram(histogram);
                 }
                 ResultsTableData resultsTable = toResultsTable(histogram);
-                if(sliceAnnotation != null && sliceAnnotation.getDeclaration() != null) {
+                if (sliceAnnotation != null && sliceAnnotation.getDeclaration() != null) {
                     dataInterface.addOutputData(getFirstOutputSlot(), resultsTable,
                             Collections.singletonList(sliceAnnotation.getDeclaration().newInstance("slice=" + index)));
-                }
-                else {
+                } else {
                     dataInterface.addOutputData(getFirstOutputSlot(), resultsTable);
                 }
             });
-        }
-        else {
+        } else {
             final TDoubleDoubleMap histogram = new TDoubleDoubleHashMap();
             ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusData.class);
             ImageJUtils.forEachSlice(inputData.getImage(), imp -> {
@@ -105,12 +97,11 @@ public class HistogramGenerator extends ImageJ1Algorithm {
                 }
                 mergeHistograms(histogram, sliceHistogram);
             });
-            if(normalize) {
+            if (normalize) {
                 TDoubleDoubleMap normalizedHistogram = normalizeHistogram(histogram);
                 ResultsTableData resultsTable = toResultsTable(normalizedHistogram);
                 dataInterface.addOutputData(getFirstOutputSlot(), resultsTable);
-            }
-            else {
+            } else {
                 ResultsTableData resultsTable = toResultsTable(histogram);
                 dataInterface.addOutputData(getFirstOutputSlot(), resultsTable);
             }
@@ -123,24 +114,23 @@ public class HistogramGenerator extends ImageJ1Algorithm {
             target.adjustOrPutValue(key, value, value);
         }
     }
-    
+
     private TDoubleDoubleMap normalizeHistogram(TDoubleDoubleMap histogram) {
         double max = 0;
         for (double value : histogram.values()) {
             max = Math.max(max, value);
         }
-        if(max > 0) {
+        if (max > 0) {
             TDoubleDoubleMap result = new TDoubleDoubleHashMap();
             for (double key : histogram.keys()) {
                 result.put(key, histogram.get(key) / max);
             }
             return result;
-        }
-        else {
+        } else {
             return histogram;
         }
     }
-    
+
     private ResultsTableData toResultsTable(TDoubleDoubleMap histogram) {
         ResultsTable resultsTable = new ResultsTable(histogram.size());
         double[] keys = histogram.keys();
@@ -196,13 +186,12 @@ public class HistogramGenerator extends ImageJ1Algorithm {
 
     private TDoubleDoubleMap getGreyscaleHistogram(ImageProcessor processor) {
         TDoubleDoubleMap result = new TDoubleDoubleHashMap();
-        if(processor instanceof FloatProcessor) {
-            for(int i = 0; i < processor.getPixelCount(); ++i) {
+        if (processor instanceof FloatProcessor) {
+            for (int i = 0; i < processor.getPixelCount(); ++i) {
                 result.adjustOrPutValue(processor.getf(i), 1, 1);
             }
-        }
-        else {
-            for(int i = 0; i < processor.getPixelCount(); ++i) {
+        } else {
+            for (int i = 0; i < processor.getPixelCount(); ++i) {
                 result.adjustOrPutValue(processor.get(i), 1, 1);
             }
         }
@@ -248,22 +237,22 @@ public class HistogramGenerator extends ImageJ1Algorithm {
             }
             break;
             case Sum: {
-                for(int i = 0; i < red.length; ++i) {
+                for (int i = 0; i < red.length; ++i) {
                     int sum = red[i] + green[i] + blue[i];
                     result.adjustOrPutValue(sum, 1, 1);
                 }
             }
             break;
             case AverageIntensity: {
-                for(int i = 0; i < red.length; ++i) {
+                for (int i = 0; i < red.length; ++i) {
                     int avg = (red[i] + green[i] + blue[i]) / 3;
                     result.adjustOrPutValue(avg, 1, 1);
                 }
             }
             break;
             case WeightedIntensity: {
-                for(int i = 0; i < red.length; ++i) {
-                    int w = (int)(0.3 * red[i] + 0.59 * green[i] + 0.11 * blue[i]);
+                for (int i = 0; i < red.length; ++i) {
+                    int w = (int) (0.3 * red[i] + 0.59 * green[i] + 0.11 * blue[i]);
                     result.adjustOrPutValue(w, 1, 1);
                 }
             }

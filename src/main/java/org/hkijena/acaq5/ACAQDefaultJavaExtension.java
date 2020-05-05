@@ -116,6 +116,7 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
 
     /**
      * Registers a custom menu entry.
+     *
      * @param klass The menu entry
      */
     public void registerMenuExtension(Class<? extends MenuExtension> klass) {
@@ -239,9 +240,9 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
     /**
      * Registers a new plot type
      *
-     * @param plotClass           Plot class
-     * @param name                Plot type name
-     * @param icon                Plot type icon
+     * @param plotClass Plot class
+     * @param name      Plot type name
+     * @param icon      Plot type icon
      */
     public void registerPlot(Class<? extends ACAQLegacyPlot> plotClass, String name, ImageIcon icon) {
         registry.getPlotBuilderRegistry().register(plotClass, name, icon);

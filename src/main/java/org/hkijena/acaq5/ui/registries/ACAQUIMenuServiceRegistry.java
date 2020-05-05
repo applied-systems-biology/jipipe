@@ -8,10 +8,7 @@ import org.hkijena.acaq5.ui.extension.MenuTarget;
 import org.hkijena.acaq5.utils.ReflectionUtils;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.*;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Registry for menu extensions
@@ -21,12 +18,13 @@ public class ACAQUIMenuServiceRegistry {
 
     /**
      * Registers a new extension
+     *
      * @param extension the extension
      */
     public void register(Class<? extends MenuExtension> extension) {
         ACAQOrganization organization = extension.getAnnotation(ACAQOrganization.class);
         List<Class<? extends MenuExtension>> list = registeredExtensions.getOrDefault(organization.menuExtensionTarget(), null);
-        if(list == null) {
+        if (list == null) {
             list = new ArrayList<>();
             registeredExtensions.put(organization.menuExtensionTarget(), list);
         }
@@ -35,7 +33,8 @@ public class ACAQUIMenuServiceRegistry {
 
     /**
      * Gets all extensions for a specific menu
-     * @param target the menu
+     *
+     * @param target    the menu
      * @param workbench the workbench
      * @return the extensions
      */

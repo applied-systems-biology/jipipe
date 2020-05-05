@@ -2,6 +2,7 @@ package org.hkijena.acaq5.ui.plotbuilder;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import ij.macro.Variable;
 import ij.measure.ResultsTable;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQValidatable;
@@ -18,17 +19,21 @@ import org.hkijena.acaq5.extensions.plots.datatypes.PlotDataSeries;
 import org.hkijena.acaq5.extensions.standardparametereditors.editors.ACAQDataParameterSettings;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
+import org.hkijena.acaq5.ui.components.DocumentTabPane;
+import org.hkijena.acaq5.ui.components.PlotReader;
 import org.hkijena.acaq5.ui.components.UserFriendlyErrorUI;
-import org.hkijena.acaq5.ui.parameters.ACAQParameterAccessUI;
+import org.hkijena.acaq5.ui.parameters.ParameterPanel;
+import org.hkijena.acaq5.utils.ReflectionUtils;
+import org.hkijena.acaq5.utils.StringUtils;
+import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Priority;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * User interface for displaying and creating plots
@@ -39,7 +44,10 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
     private ACAQDataDeclarationRef plotType = new ACAQDataDeclarationRef();
     private PlotData currentPlot;
     private JSplitPane splitPane;
-    private List<PlotDataSeries> currentData = new ArrayList<>();
+    private Map<String, PlotDataSource> availableData = new HashMap<>();
+    private List<ACAQPlotSeriesBuilder> seriesBuilders = new ArrayList<>();
+    private boolean seriesChanged = false;
+    private boolean isRebuilding = false;
 
     /**
      * @param workbench the workbench
@@ -53,9 +61,9 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
 
     private void initialize() {
         setLayout(new BorderLayout());
-        splitPane = new JSplitPane();
+        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JPanel(), new JPanel());
         splitPane.setDividerSize(3);
-        splitPane.setResizeWeight(0.33);
+        splitPane.setResizeWeight(0.66);
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -63,11 +71,20 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
                 splitPane.setDividerLocation(0.66);
             }
         });
-        splitPane.setRightComponent(new ACAQParameterAccessUI(getWorkbench().getContext(),
-                this,
-                null,
-                true,
-                true));
+
+        DocumentTabPane tabbedPane = new DocumentTabPane();
+        tabbedPane.addTab("Settings", UIUtils.getIconFromResources("cog.png"),
+                new ParameterPanel(getWorkbench().getContext(),
+                        this,
+                        null,
+                        ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW),
+                DocumentTabPane.CloseMode.withoutCloseButton,
+                false);
+        tabbedPane.addTab("Data", UIUtils.getIconFromResources("table.png"),
+                new ACAQPlotSeriesListEditorUI(getWorkbench(), this),
+                DocumentTabPane.CloseMode.withoutCloseButton);
+
+        splitPane.setRightComponent(tabbedPane);
         add(splitPane, BorderLayout.CENTER);
     }
 
@@ -79,16 +96,20 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
     @Override
     public void reportValidity(ACAQValidityReport report) {
         report.forCategory("Plot type").checkNonNull(getPlotType().getDeclaration(), this);
-        if(currentPlot != null) {
+        if (currentPlot != null) {
             report.forCategory("Plot parameters").report(currentPlot);
         }
+        for (int i = 0; i < seriesBuilders.size(); ++i) {
+            report.forCategory("Data").forCategory("Series #" + (i + 1)).report(seriesBuilders.get(i));
+        }
+
     }
 
     @ACAQDocumentation(name = "Plot type", description = "The type of plot to be generated.")
     @ACAQParameter(value = "plot-type", priority = Priority.HIGH)
     @ACAQDataParameterSettings(dataBaseClass = PlotData.class)
     public ACAQDataDeclarationRef getPlotType() {
-        if(plotType == null) {
+        if (plotType == null) {
             plotType = new ACAQDataDeclarationRef();
         }
         return plotType;
@@ -102,16 +123,18 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
     }
 
     private void updatePlotTypeParameters() {
-        if(currentPlot == null || (plotType.getDeclaration() != null &&
+        if (currentPlot == null || (plotType.getDeclaration() != null &&
                 !Objects.equals(plotType.getDeclaration().getDataClass(), currentPlot.getClass()))) {
-            if(plotType.getDeclaration() != null) {
+            if (plotType.getDeclaration() != null) {
                 currentPlot = (PlotData) ACAQData.createInstance(plotType.getDeclaration().getDataClass());
                 getEventBus().post(new ParameterStructureChangedEvent(this));
+                currentPlot.getEventBus().register(this);
             }
-        }
-        else if(plotType.getDeclaration() == null) {
+        } else if (plotType.getDeclaration() == null) {
             currentPlot = null;
+            seriesBuilders.clear();
             getEventBus().post(new ParameterStructureChangedEvent(this));
+            getEventBus().post(new ParameterChangedEvent(this, "series"));
         }
     }
 
@@ -121,21 +144,45 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
         return currentPlot;
     }
 
-    public void setCurrentPlot(PlotData data) {
+    /**
+     * Imports an existing plot data into this builder.
+     * This replaces the current settings
+     *
+     * @param data the existing plot
+     */
+    public void importExistingPlot(PlotData data) {
         this.plotType.setDeclaration(ACAQDataDeclaration.getInstance(data.getClass()));
         this.currentPlot = data;
-        this.currentData.clear();
+        this.availableData.clear();
+        List<PlotDataSeries> seriesList = new ArrayList<>(data.getSeries());
+        for (PlotDataSeries series : seriesList) {
+            ACAQPlotSeriesBuilder builder = new ACAQPlotSeriesBuilder(this, ACAQDataDeclaration.getInstance(data.getClass()));
+            Map<String, String> columnMap = importData(series);
+            for (Map.Entry<String, String> entry : columnMap.entrySet()) {
+                builder.assignData(entry.getKey(), availableData.get(entry.getValue()));
+            }
+            seriesBuilders.add(builder);
+
+            // Register events
+            builder.getColumnAssignments().getEventBus().register(this);
+            builder.getEventBus().register(this);
+        }
         getEventBus().post(new ParameterChangedEvent(this, "plot-type"));
         getEventBus().post(new ParameterChangedEvent(this, "plot"));
+        getEventBus().post(new ParameterChangedEvent(this, "series"));
         getEventBus().post(new ParameterStructureChangedEvent(this));
+        currentPlot.getEventBus().register(this);
     }
 
     /**
      * Triggered when a parameter was changed
+     *
      * @param event generated event
      */
     @Subscribe
     public void onParameterChanged(ParameterChangedEvent event) {
+        if (event.getSource() == currentPlot && "series".equals(event.getKey()))
+            return;
         rebuildPlot();
     }
 
@@ -143,36 +190,143 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
      * Attempts to rebuild the current plot
      */
     public void rebuildPlot() {
-        ACAQValidityReport report = new ACAQValidityReport();
-        this.reportValidity(report);
-        if(!report.isValid()) {
-            UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(null, true);
-            errorUI.displayErrors(report);
-            splitPane.setLeftComponent(errorUI);
-        }
+        if (isRebuilding)
+            return;
+        try {
+            isRebuilding = true;
 
-        splitPane.setLeftComponent(null);
+            ACAQValidityReport report = new ACAQValidityReport();
+            this.reportValidity(report);
+            if (!report.isValid()) {
+                UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(null, UserFriendlyErrorUI.WITH_SCROLLING);
+                errorUI.displayErrors(report);
+                errorUI.addVerticalGlue();
+                splitPane.setLeftComponent(errorUI);
+                return;
+            }
+
+            // Generate
+            currentPlot.clearSeries();
+            for (ACAQPlotSeriesBuilder seriesBuilder : seriesBuilders) {
+                if (!seriesBuilder.isEnabled())
+                    continue;
+                PlotDataSeries dataSeries = seriesBuilder.buildSeries();
+                currentPlot.addSeries(dataSeries);
+            }
+
+            PlotReader reader = new PlotReader();
+            reader.getChartPanel().setChart(currentPlot.getChart());
+            splitPane.setLeftComponent(reader);
+        } finally {
+            isRebuilding = false;
+        }
     }
 
     /**
      * Adds data into the data storage
+     *
      * @param series the data
+     * @return how the columns of this series are mapped to the columns in the list of available columns
      */
-    public void addData(PlotDataSeries series) {
+    public Map<String, String> importData(PlotDataSeries series) {
+        Map<String, String> columnMapping = new HashMap<>();
+
+        String seriesName = series.getName();
+        if (StringUtils.isNullOrEmpty(seriesName))
+            seriesName = "Series";
+
         ResultsTable table = series.getTable();
-        for(int col = 0; col <= table.getLastColumn(); ++col) {
-            ResultsTable column = new ResultsTable();
-            column.setColumn(table.getColumnHeading(col), table.getColumnAsVariables(table.getColumnHeading(col)));
-            currentData.add(new PlotDataSeries(column));
+        for (int col = 0; col <= table.getLastColumn(); ++col) {
+            String name = seriesName + "/" + table.getColumnHeading(col);
+            name = StringUtils.makeUniqueString(name, " ", s -> availableData.containsKey(s));
+
+            Variable[] data = table.getColumnAsVariables(table.getColumnHeading(col));
+            if (data.length == 0)
+                continue;
+
+            PlotDataSource dataSource;
+            int dataType = (int) ReflectionUtils.invokeMethod(data[0], "getType");
+            if (dataType == 0) {
+                double[] convertedData = new double[data.length];
+                for (int i = 0; i < data.length; ++i) {
+                    convertedData[i] = data[i].getValue();
+                }
+                dataSource = new DoubleArrayPlotDataSource(convertedData, name);
+            } else {
+                String[] convertedData = new String[data.length];
+                for (int i = 0; i < data.length; ++i) {
+                    convertedData[i] = data[i].getString();
+                }
+                dataSource = new StringArrayPlotDataSource(convertedData, name);
+            }
+            availableData.put(name, dataSource);
+            columnMapping.put(table.getColumnHeading(col), name);
         }
         getEventBus().post(new ParameterChangedEvent(this, "available-data"));
+        return columnMapping;
     }
 
     /**
      * Contains single-column series that will be later spliced together depending on the user's settings
+     *
      * @return
      */
-    public List<PlotDataSeries> getCurrentData() {
-        return currentData;
+    public Map<String, PlotDataSource> getAvailableData() {
+        return Collections.unmodifiableMap(availableData);
+    }
+
+    public List<ACAQPlotSeriesBuilder> getSeriesBuilders() {
+        return Collections.unmodifiableList(seriesBuilders);
+    }
+
+    /**
+     * Moves the series down in order
+     *
+     * @param seriesBuilder the series
+     */
+    public void moveSeriesDown(ACAQPlotSeriesBuilder seriesBuilder) {
+        int index = this.seriesBuilders.indexOf(seriesBuilder);
+        if (index >= 0 && index < this.seriesBuilders.size() - 1) {
+            this.seriesBuilders.set(index, this.seriesBuilders.get(index + 1));
+            this.seriesBuilders.set(index + 1, seriesBuilder);
+            eventBus.post(new ParameterChangedEvent(this, "series"));
+        }
+    }
+
+    /**
+     * Moves the series up in order
+     *
+     * @param seriesBuilder the series
+     */
+    public void moveSeriesUp(ACAQPlotSeriesBuilder seriesBuilder) {
+        int index = this.seriesBuilders.indexOf(seriesBuilder);
+        if (index > 0) {
+            this.seriesBuilders.set(index, this.seriesBuilders.get(index - 1));
+            this.seriesBuilders.set(index - 1, seriesBuilder);
+            eventBus.post(new ParameterChangedEvent(this, "series"));
+        }
+    }
+
+    /**
+     * Adds a new series
+     */
+    public void addSeries() {
+        ACAQPlotSeriesBuilder seriesBuilder = new ACAQPlotSeriesBuilder(this, plotType.getDeclaration());
+        seriesBuilders.add(seriesBuilder);
+        eventBus.post(new ParameterChangedEvent(this, "series"));
+
+        // Register events
+        seriesBuilder.getColumnAssignments().getEventBus().register(this);
+        seriesBuilder.getEventBus().register(this);
+    }
+
+    /**
+     * Removes a series from the series builder
+     *
+     * @param seriesBuilder the series
+     */
+    public void removeSeries(ACAQPlotSeriesBuilder seriesBuilder) {
+        this.seriesBuilders.remove(seriesBuilder);
+        eventBus.post(new ParameterChangedEvent(this, "series"));
     }
 }

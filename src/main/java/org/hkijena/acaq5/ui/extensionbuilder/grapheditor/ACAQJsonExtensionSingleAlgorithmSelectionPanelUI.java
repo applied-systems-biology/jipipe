@@ -10,7 +10,7 @@ import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQSlotEditorUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQTraitEditorUI;
-import org.hkijena.acaq5.ui.parameters.ACAQParameterAccessUI;
+import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -43,11 +43,10 @@ public class ACAQJsonExtensionSingleAlgorithmSelectionPanelUI extends ACAQJsonEx
         setLayout(new BorderLayout());
         DocumentTabPane tabbedPane = new DocumentTabPane();
 
-        ACAQParameterAccessUI parametersUI = new ACAQParameterAccessUI(getExtensionWorkbenchUI(),
+        ParameterPanel parametersUI = new ParameterPanel(getExtensionWorkbenchUI(),
                 algorithm,
                 TooltipUtils.getAlgorithmDocumentation(algorithm.getDeclaration()),
-                true,
-                true);
+                ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW);
         tabbedPane.addTab("Parameters", UIUtils.getIconFromResources("cog.png"),
                 parametersUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,

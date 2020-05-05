@@ -31,7 +31,7 @@ public class ACAQDataTypePicker extends JPanel {
     private Set<ACAQDataDeclaration> selectedDataTypes = new HashSet<>();
 
     /**
-     * @param mode            the mode
+     * @param mode               the mode
      * @param availableDataTypes list of available trait types
      */
     public ACAQDataTypePicker(Mode mode, Set<ACAQDataDeclaration> availableDataTypes) {
@@ -289,7 +289,7 @@ public class ACAQDataTypePicker extends JPanel {
         private ACAQDataDeclaration dataDeclaration;
 
         /**
-         * @param dataTypePicker      event source
+         * @param dataTypePicker  event source
          * @param dataDeclaration picked trait
          */
         public DataTypeSelectedEvent(ACAQDataTypePicker dataTypePicker, ACAQDataDeclaration dataDeclaration) {
@@ -314,7 +314,7 @@ public class ACAQDataTypePicker extends JPanel {
         private ACAQDataDeclaration dataDeclaration;
 
         /**
-         * @param dataTypePicker      event source
+         * @param dataTypePicker  event source
          * @param dataDeclaration deselected trait
          */
         public DataTypeDeselectedEvent(ACAQDataTypePicker dataTypePicker, ACAQDataDeclaration dataDeclaration) {

@@ -3,7 +3,7 @@ package org.hkijena.acaq5.ui.settings;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
-import org.hkijena.acaq5.ui.parameters.ACAQParameterAccessUI;
+import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 
 import java.awt.*;
 
@@ -21,11 +21,10 @@ public class ACAQJsonExtensionSettingsUI extends ACAQJsonExtensionWorkbenchPanel
 
     private void initialize() {
         setLayout(new BorderLayout());
-        ACAQParameterAccessUI metadataUI = new ACAQParameterAccessUI(getExtensionWorkbenchUI(),
+        ParameterPanel metadataUI = new ParameterPanel(getExtensionWorkbenchUI(),
                 getProject(),
                 MarkdownDocument.fromPluginResource("documentation/project-settings.md"),
-                false,
-                true);
+                ParameterPanel.WITH_DOCUMENTATION);
         add(metadataUI, BorderLayout.CENTER);
     }
 }

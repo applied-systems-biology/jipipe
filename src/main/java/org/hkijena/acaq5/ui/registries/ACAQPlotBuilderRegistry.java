@@ -29,9 +29,9 @@ public class ACAQPlotBuilderRegistry {
     /**
      * Registers a plot type
      *
-     * @param plotType     Plot instance
-     * @param name         Plot name
-     * @param icon         Plot icon
+     * @param plotType Plot instance
+     * @param name     Plot name
+     * @param icon     Plot icon
      */
     public void register(Class<? extends ACAQLegacyPlot> plotType, String name, Icon icon) {
         entries.put(plotType, new Entry(plotType, name, icon));
@@ -87,9 +87,9 @@ public class ACAQPlotBuilderRegistry {
         private Icon icon;
 
         /**
-         * @param plotType     Plot type
-         * @param name         Plot name
-         * @param icon         Plot icon
+         * @param plotType Plot type
+         * @param name     Plot name
+         * @param icon     Plot icon
          */
         public Entry(Class<? extends ACAQLegacyPlot> plotType, String name, Icon icon) {
             this.plotType = plotType;

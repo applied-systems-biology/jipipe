@@ -26,57 +26,56 @@ import java.util.stream.Collectors;
 /**
  * UI around a {@link ACAQParameterCollection}
  */
-public class ACAQParameterAccessUI extends FormPanel implements Contextual {
+public class ParameterPanel extends FormPanel implements Contextual {
+    /**
+     * Flag for {@link ParameterPanel}. Makes that no group headers are created.
+     * This includes dynamic parameter group headers that contain buttons for modification.
+     */
+    public static final int NO_GROUP_HEADERS = 64;
+    /**
+     * Flag for {@link ParameterPanel}. Makes that group headers without name or description or special functionality (like
+     * dynamic parameters) are not shown. Overridden by NO_GROUP_HEADERS.
+     */
+    public static final int NO_EMPTY_GROUP_HEADERS = 128;
     private Context context;
-    private ACAQParameterCollection parameterHolder;
+    private ACAQParameterCollection parameterCollection;
+    private boolean noGroupHeaders;
+    private boolean noEmptyGroupHeaders;
 
     /**
-     * @param context            SciJava context
-     * @param parameterHolder    Parameter holder
-     * @param documentation      Optional documentation. Can be null.
-     * @param documentationBelow If true, show documentation below
-     * @param withDocumentation  If documentation is shown
-     * @param withScrolling      Allows disabling the scroll view
+     * @param context             SciJava context
+     * @param parameterCollection Object containing the parameters
+     * @param documentation       Optional documentation
+     * @param flags               Flags
      */
-    public ACAQParameterAccessUI(Context context, ACAQParameterCollection parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation, boolean withScrolling) {
-        super(documentation, documentationBelow, withDocumentation, withScrolling);
+    public ParameterPanel(Context context, ACAQParameterCollection parameterCollection, MarkdownDocument documentation, int flags) {
+        super(documentation, flags);
+        this.noGroupHeaders = (flags & NO_GROUP_HEADERS) == NO_GROUP_HEADERS;
+        this.noEmptyGroupHeaders = (flags & NO_EMPTY_GROUP_HEADERS) == NO_EMPTY_GROUP_HEADERS;
         this.context = context;
-        this.parameterHolder = parameterHolder;
+        this.parameterCollection = parameterCollection;
         reloadForm();
-        this.parameterHolder.getEventBus().register(this);
+        this.parameterCollection.getEventBus().register(this);
     }
 
     /**
-     * @param context            SciJava context
-     * @param parameterHolder    Parameter holder
-     * @param documentation      Optional documentation. Can be null.
-     * @param documentationBelow If true, show documentation below
-     * @param withDocumentation  If documentation is shown
+     * @param workbenchUI         Workbench UI
+     * @param parameterCollection Parameter holder
+     * @param documentation       Optional documentation. Can be null.
+     * @param flags               Flags
      */
-    public ACAQParameterAccessUI(Context context, ACAQParameterCollection parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
-        this(context, parameterHolder, documentation, documentationBelow, withDocumentation, true);
+    public ParameterPanel(ACAQProjectWorkbench workbenchUI, ACAQParameterCollection parameterCollection, MarkdownDocument documentation, int flags) {
+        this(workbenchUI.getContext(), parameterCollection, documentation, flags);
     }
 
     /**
-     * @param workbenchUI        Workbench UI
-     * @param parameterHolder    Parameter holder
-     * @param documentation      Optional documentation. Can be null.
-     * @param documentationBelow If true, show documentation below
-     * @param withDocumentation  If documentation is shown
+     * @param workbenchUI         Workbench UI
+     * @param parameterCollection Parameter holder
+     * @param documentation       Optional documentation. Can be null.
+     * @param flags               Flags
      */
-    public ACAQParameterAccessUI(ACAQProjectWorkbench workbenchUI, ACAQParameterCollection parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
-        this(workbenchUI.getContext(), parameterHolder, documentation, documentationBelow, withDocumentation, true);
-    }
-
-    /**
-     * @param workbenchUI        Workbench UI
-     * @param parameterHolder    Parameter holder
-     * @param documentation      Optional documentation. Can be null.
-     * @param documentationBelow If true, show documentation below
-     * @param withDocumentation  If documentation is shown
-     */
-    public ACAQParameterAccessUI(ACAQJsonExtensionWorkbench workbenchUI, ACAQParameterCollection parameterHolder, MarkdownDocument documentation, boolean documentationBelow, boolean withDocumentation) {
-        this(workbenchUI.getContext(), parameterHolder, documentation, documentationBelow, withDocumentation, true);
+    public ParameterPanel(ACAQJsonExtensionWorkbench workbenchUI, ACAQParameterCollection parameterCollection, MarkdownDocument documentation, int flags) {
+        this(workbenchUI.getContext(), parameterCollection, documentation, flags);
     }
 
     /**
@@ -84,17 +83,17 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
      */
     public void reloadForm() {
         clear();
-        ACAQTraversedParameterCollection parameterCollection = new ACAQTraversedParameterCollection(getParameterHolder());
+        ACAQTraversedParameterCollection parameterCollection = new ACAQTraversedParameterCollection(getParameterCollection());
 
         Map<ACAQParameterCollection, List<ACAQParameterAccess>> groupedBySource = parameterCollection.getGroupedBySource();
-        if (groupedBySource.containsKey(parameterHolder)) {
-            addToForm(parameterCollection, parameterHolder, groupedBySource.get(parameterHolder));
+        if (groupedBySource.containsKey(this.parameterCollection)) {
+            addToForm(parameterCollection, this.parameterCollection, groupedBySource.get(this.parameterCollection));
         }
 
         for (ACAQParameterCollection collection : groupedBySource.keySet().stream().sorted(
                 Comparator.nullsFirst(Comparator.comparing(parameterCollection::getSourceDocumentationName)))
                 .collect(Collectors.toList())) {
-            if (collection == parameterHolder)
+            if (collection == this.parameterCollection)
                 continue;
             addToForm(parameterCollection, collection, groupedBySource.get(collection));
         }
@@ -107,20 +106,27 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
         if (!isModifiable && parameterAccesses.isEmpty())
             return;
 
-        GroupHeaderPanel groupHeaderPanel = addGroupHeader(parameterCollection.getSourceDocumentationName(parameterHolder),
-                UIUtils.getIconFromResources("cog.png"));
-        ACAQDocumentation documentation = parameterCollection.getSourceDocumentation(parameterHolder);
-        if (documentation != null && !StringUtils.isNullOrEmpty(documentation.description())) {
-            groupHeaderPanel.getDescriptionArea().setVisible(true);
-            groupHeaderPanel.getDescriptionArea().setText(documentation.description());
-        }
+        if (!noGroupHeaders) {
+            ACAQDocumentation documentation = parameterCollection.getSourceDocumentation(parameterHolder);
+            boolean documentationIsEmpty = documentation == null || (StringUtils.isNullOrEmpty(documentation.name()) && StringUtils.isNullOrEmpty(documentation.description()));
 
-        if (isModifiable) {
-            JButton addButton = new JButton(UIUtils.getIconFromResources("add.png"));
-            initializeAddDynamicParameterButton(addButton, (ACAQDynamicParameterCollection) parameterHolder);
-            addButton.setToolTipText("Add new parameter");
-            UIUtils.makeFlat25x25(addButton);
-            groupHeaderPanel.addColumn(addButton);
+            if (!noEmptyGroupHeaders || (!documentationIsEmpty && !isModifiable)) {
+                GroupHeaderPanel groupHeaderPanel = addGroupHeader(parameterCollection.getSourceDocumentationName(parameterHolder),
+                        UIUtils.getIconFromResources("cog.png"));
+
+                if (documentation != null && !StringUtils.isNullOrEmpty(documentation.description())) {
+                    groupHeaderPanel.getDescriptionArea().setVisible(true);
+                    groupHeaderPanel.getDescriptionArea().setText(documentation.description());
+                }
+
+                if (isModifiable) {
+                    JButton addButton = new JButton(UIUtils.getIconFromResources("add.png"));
+                    initializeAddDynamicParameterButton(addButton, (ACAQDynamicParameterCollection) parameterHolder);
+                    addButton.setToolTipText("Add new parameter");
+                    UIUtils.makeFlat25x25(addButton);
+                    groupHeaderPanel.addColumn(addButton);
+                }
+            }
         }
 
         List<ACAQParameterEditorUI> uiList = new ArrayList<>();
@@ -218,8 +224,8 @@ public class ACAQParameterAccessUI extends FormPanel implements Contextual {
     /**
      * @return The parameterized object
      */
-    public ACAQParameterCollection getParameterHolder() {
-        return parameterHolder;
+    public ACAQParameterCollection getParameterCollection() {
+        return parameterCollection;
     }
 
     @Override

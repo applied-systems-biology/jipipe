@@ -83,6 +83,7 @@ public class StandardParameterEditorsExtension extends ACAQPrepackagedDefaultJav
         registerParameterType(CollectionParameter.class, CollectionParameterEditorUI.class, "Collection", "A collection of parameters");
         registerParameterType(ACAQAlgorithmDeclarationRef.class, ACAQAlgorithmDeclarationRefParameterEditorUI.class, "Algorithm type", "An algorithm type");
         registerParameterType(ParameterTable.class, ParameterTableEditorUI.class, "Parameter table", "A table that contains parameters");
+        registerParameterType(DynamicEnumParameter.class, DynamicEnumParameterEditorUI.class, null, "A selection of different values");
 
         // Register generators
         registerParameterGenerator(byte.class, ByteParameterGenerator.class, "Generate 8-bit integral number sequence", "Generates 8-bit integral numbers");

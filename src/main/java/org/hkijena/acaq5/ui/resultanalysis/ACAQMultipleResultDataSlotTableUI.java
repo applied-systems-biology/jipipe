@@ -10,6 +10,7 @@ import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.FormPanel;
+import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.jdesktop.swingx.JXTable;
@@ -79,7 +80,7 @@ public class ACAQMultipleResultDataSlotTableUI extends ACAQProjectWorkbenchPanel
             }
         });
 
-        rowUIList = new FormPanel(null, false, false, true);
+        rowUIList = new FormPanel(null, ParameterPanel.WITH_SCROLLING);
         add(rowUIList, BorderLayout.SOUTH);
     }
 

@@ -60,7 +60,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
         setLayout(new BorderLayout());
         initializeToolBar();
 
-        formPanel = new FormPanel(null, false, false);
+        formPanel = new FormPanel(null, FormPanel.NONE);
         add(formPanel, BorderLayout.CENTER);
     }
 

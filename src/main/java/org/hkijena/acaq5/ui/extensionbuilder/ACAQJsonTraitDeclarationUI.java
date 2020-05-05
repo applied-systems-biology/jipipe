@@ -3,7 +3,7 @@ package org.hkijena.acaq5.ui.extensionbuilder;
 import org.hkijena.acaq5.api.traits.ACAQJsonTraitDeclaration;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
-import org.hkijena.acaq5.ui.parameters.ACAQParameterAccessUI;
+import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -31,8 +31,8 @@ public class ACAQJsonTraitDeclarationUI extends ACAQJsonExtensionWorkbenchPanel 
     private void initialize() {
         setLayout(new BorderLayout());
 
-        ACAQParameterAccessUI parameterAccessUI = new ACAQParameterAccessUI(getExtensionWorkbenchUI(), declaration,
-                null, false, false);
+        ParameterPanel parameterAccessUI = new ParameterPanel(getExtensionWorkbenchUI(), declaration,
+                null, ParameterPanel.NONE);
         add(parameterAccessUI, BorderLayout.CENTER);
 
         JToolBar toolBar = new JToolBar();

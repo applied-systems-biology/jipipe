@@ -37,6 +37,7 @@ public class ResultsTableData implements ACAQData {
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public ResultsTableData(ResultsTableData other) {

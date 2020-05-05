@@ -4,6 +4,7 @@ import org.apache.commons.lang.reflect.ConstructorUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * Utilities around reflection
@@ -19,7 +20,7 @@ public class ReflectionUtils {
      * Can handle enums
      *
      * @param klass instantiated class
-     * @param args for primitives, ignored. For classes passed to the constructor
+     * @param args  for primitives, ignored. For classes passed to the constructor
      * @return instance
      */
     public static Object newInstance(Class<?> klass, Object... args) {
@@ -69,5 +70,22 @@ public class ReflectionUtils {
         f.setAccessible(true);
         Object o = f.get(null);
         return (E[]) o;
+    }
+
+    /**
+     * Calls a function and returns its output
+     *
+     * @param target       The object
+     * @param functionName the function
+     * @return the output
+     */
+    public static Object invokeMethod(Object target, String functionName) {
+        try {
+            Method declaredMethod = target.getClass().getDeclaredMethod(functionName);
+            declaredMethod.setAccessible(true);
+            return declaredMethod.invoke(target);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

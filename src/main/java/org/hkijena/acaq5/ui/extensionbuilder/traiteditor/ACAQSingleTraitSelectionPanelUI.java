@@ -10,7 +10,7 @@ import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api.ACAQNewTraitNode;
 import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api.ACAQTraitGraph;
 import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api.ACAQTraitNode;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQSlotEditorUI;
-import org.hkijena.acaq5.ui.parameters.ACAQParameterAccessUI;
+import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -40,11 +40,10 @@ public class ACAQSingleTraitSelectionPanelUI extends ACAQJsonExtensionWorkbenchP
         setLayout(new BorderLayout());
         DocumentTabPane tabbedPane = new DocumentTabPane();
 
-        ACAQParameterAccessUI parametersUI = new ACAQParameterAccessUI(getExtensionWorkbenchUI(),
+        ParameterPanel parametersUI = new ParameterPanel(getExtensionWorkbenchUI(),
                 node,
                 MarkdownDocument.fromPluginResource("documentation/trait-graph.md"),
-                true,
-                true);
+                ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW);
         tabbedPane.addTab("Parameters", UIUtils.getIconFromResources("cog.png"),
                 parametersUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,

@@ -3,7 +3,6 @@ package org.hkijena.acaq5.extensions.plots.datatypes;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.eventbus.EventBus;
-import ij.macro.Variable;
 import ij.measure.ResultsTable;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
@@ -27,6 +26,7 @@ public class PlotDataSeries extends ResultsTableData implements ACAQParameterCol
 
     /**
      * Creates a new instance from a {@link ResultsTable}
+     *
      * @param table the table
      */
     public PlotDataSeries(ResultsTable table) {
@@ -35,6 +35,7 @@ public class PlotDataSeries extends ResultsTableData implements ACAQParameterCol
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public PlotDataSeries(PlotDataSeries other) {
@@ -44,6 +45,7 @@ public class PlotDataSeries extends ResultsTableData implements ACAQParameterCol
 
     /**
      * Gets a copy of a column by name
+     *
      * @param name column name
      * @return copy of the column data
      */
@@ -54,13 +56,14 @@ public class PlotDataSeries extends ResultsTableData implements ACAQParameterCol
 
     /**
      * Gets a copy of a column by name
+     *
      * @param name column name
      * @return copy of the column data
      */
     public String[] getColumnAsString(String name) {
         int index = getTable().getColumnIndex(name);
         String[] column = new String[getTable().getCounter()];
-        for(int i = 0; i < column.length; ++i) {
+        for (int i = 0; i < column.length; ++i) {
             column[i] = getTable().getStringValue(index, i);
         }
         return column;
@@ -82,5 +85,10 @@ public class PlotDataSeries extends ResultsTableData implements ACAQParameterCol
     @Override
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    @Override
+    public String toString() {
+        return getName() + " (" + getTable().getCounter() + " rows)";
     }
 }

@@ -67,7 +67,7 @@ public class ACAQValidityReportUI extends JPanel {
         setLayout(new BorderLayout());
 
         // Create table panel
-        errorUI = new UserFriendlyErrorUI(null, true);
+        errorUI = new UserFriendlyErrorUI(null, UserFriendlyErrorUI.WITH_SCROLLING);
 
         // Create alternative panel
         everythingValidPanel = new JPanel(new BorderLayout());

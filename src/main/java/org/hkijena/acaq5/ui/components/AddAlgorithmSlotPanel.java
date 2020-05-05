@@ -74,7 +74,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
         setLayout(new BorderLayout());
         initializeToolBar();
 
-        formPanel = new FormPanel(null, false, false);
+        formPanel = new FormPanel(null, FormPanel.NONE);
 
         datatypeList = new JList<>();
         datatypeList.setCellRenderer(new ACAQDataDeclarationListCellRenderer());

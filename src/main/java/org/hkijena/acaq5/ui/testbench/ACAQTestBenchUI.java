@@ -11,7 +11,7 @@ import org.hkijena.acaq5.ui.components.ConfirmingButton;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.acaq5.ui.events.RunUIWorkerInterruptedEvent;
-import org.hkijena.acaq5.ui.parameters.ACAQParameterAccessUI;
+import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultUI;
 import org.hkijena.acaq5.ui.running.ACAQRunnerQueue;
 import org.hkijena.acaq5.utils.TooltipUtils;
@@ -195,9 +195,9 @@ public class ACAQTestBenchUI extends ACAQProjectWorkbenchPanel {
 
         backup.restore();
 
-        ACAQParameterAccessUI parameters = new ACAQParameterAccessUI(getProjectWorkbench(), testbench.getBenchedAlgorithm(),
+        ParameterPanel parameters = new ParameterPanel(getProjectWorkbench(), testbench.getBenchedAlgorithm(),
                 MarkdownDocument.fromPluginResource("documentation/testbench.md"),
-                true, true);
+                ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW);
         splitPane.setLeftComponent(parameters);
 
         ACAQResultUI resultUI = new ACAQResultUI(getProjectWorkbench(), testbench.getTestbenchRun());

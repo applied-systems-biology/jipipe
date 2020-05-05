@@ -20,7 +20,7 @@ import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.PlotReader;
 import org.hkijena.acaq5.ui.events.PlotChangedEvent;
 import org.hkijena.acaq5.ui.events.PlotSeriesListChangedEvent;
-import org.hkijena.acaq5.ui.parameters.ACAQParameterAccessUI;
+import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.ui.registries.ACAQPlotBuilderRegistry;
 import org.hkijena.acaq5.ui.tableanalyzer.ACAQMergeTableColumnsDialogUI;
 import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableAnalyzerUI;
@@ -189,11 +189,10 @@ public class ACAQLegacyPlotBuilderUI extends ACAQProjectWorkbenchPanel {
         if (currentPlot != null) {
             // Update the settings
             plotSettingsPanel.removeAll();
-            ACAQParameterAccessUI plotParametersEditor = new ACAQParameterAccessUI(getProjectWorkbench(),
+            ParameterPanel plotParametersEditor = new ParameterPanel(getProjectWorkbench(),
                     currentPlot,
                     null,
-                    false,
-                    false);
+                    ParameterPanel.NONE);
             plotSettingsPanel.add(plotParametersEditor, BorderLayout.NORTH);
             plotSettingsPanel.revalidate();
             plotSettingsPanel.repaint();

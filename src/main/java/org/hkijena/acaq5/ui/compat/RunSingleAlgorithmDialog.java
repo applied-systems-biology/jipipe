@@ -15,7 +15,7 @@ import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.components.FormPanel;
-import org.hkijena.acaq5.ui.parameters.ACAQParameterAccessUI;
+import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.ui.registries.ACAQUIImageJDatatypeAdapterRegistry;
 import org.hkijena.acaq5.utils.JsonUtils;
@@ -59,7 +59,7 @@ public class RunSingleAlgorithmDialog extends JDialog {
         JPanel contentPanel = new JPanel(new BorderLayout(8, 8));
 
         JPanel listPanel = new JPanel(new BorderLayout());
-        formPanel = new FormPanel(null, false, false);
+        formPanel = new FormPanel(null, FormPanel.NONE);
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, listPanel, formPanel);
         splitPane.setDividerSize(3);
@@ -195,8 +195,7 @@ public class RunSingleAlgorithmDialog extends JDialog {
 
         // Add parameter editor
         formPanel.addGroupHeader("Algorithm parameters", UIUtils.getIconFromResources("wrench.png"));
-        formPanel.addWideToForm(new ACAQParameterAccessUI(context, runSettings.getAlgorithm(), null, false,
-                false, false), null);
+        formPanel.addWideToForm(new ParameterPanel(context, runSettings.getAlgorithm(), null, ParameterPanel.NONE), null);
 
         formPanel.addVerticalGlue();
     }

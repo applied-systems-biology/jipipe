@@ -15,6 +15,7 @@ public abstract class MenuExtension extends JMenuItem {
 
     /**
      * Creates a new instance
+     *
      * @param workbench workbench the extension is attached to
      */
     public MenuExtension(ACAQWorkbench workbench) {

@@ -282,7 +282,7 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
         // Tools menu
         JMenu toolsMenu = new JMenu("Tools");
         UIUtils.installMenuExtension(this, toolsMenu, MenuTarget.ProjectToolsMenu, false);
-        if(toolsMenu.getItemCount() > 0)
+        if (toolsMenu.getItemCount() > 0)
             menu.add(toolsMenu);
 
         menu.add(Box.createHorizontalGlue());

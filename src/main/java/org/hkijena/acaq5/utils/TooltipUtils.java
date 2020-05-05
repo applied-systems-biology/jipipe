@@ -463,6 +463,7 @@ public class TooltipUtils {
 
     /**
      * Creates a tooltip for data
+     *
      * @param declaration the data type
      * @return the tooltip
      */

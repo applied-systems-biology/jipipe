@@ -10,7 +10,7 @@ import org.hkijena.acaq5.ui.ACAQJsonExtensionWindow;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
-import org.hkijena.acaq5.ui.parameters.ACAQParameterAccessUI;
+import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -23,7 +23,7 @@ import java.awt.*;
 public class ACAQGraphWrapperAlgorithmExporter extends ACAQProjectWorkbenchPanel {
 
     private GraphWrapperAlgorithmDeclaration algorithmDeclaration;
-    private ACAQParameterAccessUI parameterAccessUI;
+    private ParameterPanel parameterAccessUI;
     private JPopupMenu exportMenu;
 
     /**
@@ -48,11 +48,10 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQProjectWorkbenchPanel
     private void initialize() {
         setLayout(new BorderLayout());
 
-        parameterAccessUI = new ACAQParameterAccessUI(getProjectWorkbench(),
+        parameterAccessUI = new ParameterPanel(getProjectWorkbench(),
                 algorithmDeclaration,
                 MarkdownDocument.fromPluginResource("documentation/exporting-algorithms.md"),
-                false,
-                true);
+                ParameterPanel.WITH_DOCUMENTATION);
         add(parameterAccessUI, BorderLayout.CENTER);
 
         initializeToolBar();

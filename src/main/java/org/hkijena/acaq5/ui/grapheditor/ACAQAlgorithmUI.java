@@ -265,7 +265,7 @@ public abstract class ACAQAlgorithmUI extends JPanel {
      */
     @Subscribe
     public void onAlgorithmParametersChanged(ParameterChangedEvent event) {
-        if (event.getParameterHolder() == algorithm && "name".equals(event.getKey())) {
+        if (event.getSource() == algorithm && "name".equals(event.getKey())) {
             updateSize();
             updateName();
             revalidate();

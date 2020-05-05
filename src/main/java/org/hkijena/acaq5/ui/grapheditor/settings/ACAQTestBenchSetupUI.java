@@ -78,7 +78,8 @@ public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
         setupPanel = new JPanel();
         setupPanel.setLayout(new BorderLayout());
 
-        FormPanel formPanel = new FormPanel(MarkdownDocument.fromPluginResource("documentation/testbench.md"), true);
+        FormPanel formPanel = new FormPanel(MarkdownDocument.fromPluginResource("documentation/testbench.md"),
+                FormPanel.WITH_SCROLLING);
         setupPanel.add(formPanel, BorderLayout.CENTER);
 
         // Let the user choose where temporary data is saved
@@ -122,7 +123,7 @@ public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
     private void openError(Exception exception) {
         removeAll();
 
-        UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(null, true);
+        UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(null, UserFriendlyErrorUI.WITH_SCROLLING);
         errorUI.displayErrors(exception);
         errorUI.addVerticalGlue();
 

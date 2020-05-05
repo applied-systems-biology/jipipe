@@ -15,7 +15,12 @@ public @interface PlotMetadata {
     /**
      * @return how many data series this plot can display
      */
-    int seriesCount() default 1;
+    int maxSeriesCount() default 1;
+
+    /**
+     * @return how many data series this plot needs
+     */
+    int minSeriesCount() default 1;
 
     /**
      * @return This plot's columns

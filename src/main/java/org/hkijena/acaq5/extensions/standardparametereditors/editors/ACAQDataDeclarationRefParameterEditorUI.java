@@ -6,7 +6,6 @@ import org.hkijena.acaq5.api.data.ACAQDataDeclaration;
 import org.hkijena.acaq5.api.data.ACAQDataDeclarationRef;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.ui.components.ACAQDataTypePicker;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;

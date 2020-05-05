@@ -14,6 +14,8 @@ import org.scijava.Priority;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A mutable implementation of {@link ACAQParameterAccess}
@@ -30,6 +32,7 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
     private Class<?> fieldClass;
     private Object value;
     private double priority = Priority.NORMAL;
+    private Map<Class<? extends Annotation>, Annotation> annotationMap = new HashMap<>();
 
     /**
      * Creates a new instance
@@ -149,7 +152,7 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
 
     @Override
     public <T extends Annotation> T getAnnotationOfType(Class<T> klass) {
-        return null;
+        return (T) annotationMap.getOrDefault(klass, null);
     }
 
     @Override
@@ -207,6 +210,19 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
 
     public void setPriority(double priority) {
         this.priority = priority;
+    }
+
+    /**
+     * Mutable access to the annotations
+     *
+     * @return access to the annotations
+     */
+    public Map<Class<? extends Annotation>, Annotation> getAnnotationMap() {
+        return annotationMap;
+    }
+
+    public void setAnnotationMap(Map<Class<? extends Annotation>, Annotation> annotationMap) {
+        this.annotationMap = annotationMap;
     }
 
     /**

@@ -301,7 +301,7 @@ public class UIUtils {
     public static void openErrorDialog(Component parent, Exception exception) {
         JDialog dialog = new JDialog();
         dialog.setTitle("Error");
-        UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(null, true);
+        UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(null, UserFriendlyErrorUI.WITH_SCROLLING);
         errorUI.displayErrors(exception);
         errorUI.addVerticalGlue();
         dialog.setContentPane(errorUI);
@@ -587,21 +587,22 @@ public class UIUtils {
 
     /**
      * Installs an extension menu
-     * @param workbench the workbench
-     * @param targetMenu the menu
+     *
+     * @param workbench      the workbench
+     * @param targetMenu     the menu
      * @param targetMenuType the menu type
-     * @param withSeparator if a separator should be prepended if items are installed
+     * @param withSeparator  if a separator should be prepended if items are installed
      */
     public static void installMenuExtension(ACAQWorkbench workbench, JMenu targetMenu, MenuTarget targetMenuType, boolean withSeparator) {
         List<MenuExtension> extensions = ACAQUIMenuServiceRegistry.getInstance()
                 .getMenuExtensionsTargeting(targetMenuType, workbench);
-        if(!extensions.isEmpty()) {
-            if(withSeparator)
+        if (!extensions.isEmpty()) {
+            if (withSeparator)
                 targetMenu.addSeparator();
             for (Map.Entry<String, JMenu> entry : createMenuTree(targetMenu, extensions.stream()
                     .map(MenuExtension::getMenuPath).collect(Collectors.toSet())).entrySet()) {
                 for (MenuExtension extension : extensions) {
-                    if(StringUtils.getCleanedMenuPath(entry.getKey()).equals(StringUtils.getCleanedMenuPath(extension.getMenuPath()))) {
+                    if (StringUtils.getCleanedMenuPath(entry.getKey()).equals(StringUtils.getCleanedMenuPath(extension.getMenuPath()))) {
                         entry.getValue().add(extension);
                     }
                 }

@@ -33,6 +33,7 @@ public @interface ACAQOrganization {
     /**
      * Only used if attached to a {@link MenuExtension}.
      * Determines in which main menu the item is placed
+     *
      * @return menu target
      */
     MenuTarget menuExtensionTarget() default MenuTarget.None;

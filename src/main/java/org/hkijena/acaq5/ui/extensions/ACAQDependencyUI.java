@@ -45,7 +45,7 @@ public class ACAQDependencyUI extends JPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        FormPanel formPanel = new FormPanel(null, false, false);
+        FormPanel formPanel = new FormPanel(null, FormPanel.NONE);
 
         // Add general metadata
         formPanel.addGroupHeader("About", UIUtils.getIconFromResources("info.png"));

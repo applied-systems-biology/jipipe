@@ -38,7 +38,7 @@ public class ACAQParameterCollectionVisibilitiesParameterEditorUI extends ACAQPa
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEtchedBorder());
 
-        formPanel = new FormPanel(null, false, false, false);
+        formPanel = new FormPanel(null, FormPanel.NONE);
         add(formPanel, BorderLayout.CENTER);
     }
 

@@ -10,7 +10,7 @@ import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQSlotEditorUI;
-import org.hkijena.acaq5.ui.parameters.ACAQParameterAccessUI;
+import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -43,11 +43,10 @@ public class ACAQSingleCompartmentSelectionPanelUI extends ACAQProjectWorkbenchP
         setLayout(new BorderLayout());
         DocumentTabPane tabbedPane = new DocumentTabPane();
 
-        ACAQParameterAccessUI parametersUI = new ACAQParameterAccessUI(getProjectWorkbench(),
+        ParameterPanel parametersUI = new ParameterPanel(getProjectWorkbench(),
                 compartment,
                 MarkdownDocument.fromPluginResource("documentation/compartment-graph.md"),
-                true,
-                true);
+                ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW);
         tabbedPane.addTab("Parameters", UIUtils.getIconFromResources("cog.png"),
                 parametersUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,
@@ -110,10 +109,9 @@ public class ACAQSingleCompartmentSelectionPanelUI extends ACAQProjectWorkbenchP
         ACAQExportedCompartment exportedCompartment = new ACAQExportedCompartment(compartment);
         exportedCompartment.getMetadata().setName(compartment.getName());
         exportedCompartment.getMetadata().setDescription("An exported ACAQ5 compartment");
-        ACAQParameterAccessUI metadataEditor = new ACAQParameterAccessUI(getProjectWorkbench(), exportedCompartment.getMetadata(),
+        ParameterPanel metadataEditor = new ParameterPanel(getProjectWorkbench(), exportedCompartment.getMetadata(),
                 null,
-                false,
-                false);
+                ParameterPanel.NONE);
 
         if (JOptionPane.showConfirmDialog(this, metadataEditor, "Export compartment",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION) {

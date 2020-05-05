@@ -8,8 +8,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 
 import java.io.IOException;
 

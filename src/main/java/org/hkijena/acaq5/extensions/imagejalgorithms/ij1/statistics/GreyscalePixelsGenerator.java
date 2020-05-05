@@ -2,10 +2,7 @@ package org.hkijena.acaq5.extensions.imagejalgorithms.ij1.statistics;
 
 import gnu.trove.list.TDoubleList;
 import gnu.trove.list.array.TDoubleArrayList;
-import gnu.trove.map.TDoubleDoubleMap;
-import gnu.trove.map.hash.TDoubleDoubleHashMap;
 import ij.measure.ResultsTable;
-import ij.process.ColorProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.acaq5.api.ACAQDocumentation;
@@ -24,7 +21,6 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlu
 import org.hkijena.acaq5.extensions.standardparametereditors.editors.ACAQTraitParameterSettings;
 import org.hkijena.acaq5.utils.ImageJUtils;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -43,6 +39,7 @@ public class GreyscalePixelsGenerator extends ImageJ1Algorithm {
 
     /**
      * Creates a new instance
+     *
      * @param declaration the algorithm declaration
      */
     public GreyscalePixelsGenerator(ACAQAlgorithmDeclaration declaration) {
@@ -51,6 +48,7 @@ public class GreyscalePixelsGenerator extends ImageJ1Algorithm {
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public GreyscalePixelsGenerator(GreyscalePixelsGenerator other) {
@@ -62,22 +60,20 @@ public class GreyscalePixelsGenerator extends ImageJ1Algorithm {
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress,
                                 Supplier<Boolean> isCancelled) {
-        if(applyPerSlice) {
+        if (applyPerSlice) {
             ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusData.class);
             ImageJUtils.forEachIndexedSlice(inputData.getImage(), (imp, index) -> {
                 TDoubleList pixels = new TDoubleArrayList(imp.getPixelCount());
                 getPixels(imp, pixels);
                 ResultsTableData resultsTable = toResultsTable(pixels);
-                if(sliceAnnotation != null && sliceAnnotation.getDeclaration() != null) {
+                if (sliceAnnotation != null && sliceAnnotation.getDeclaration() != null) {
                     dataInterface.addOutputData(getFirstOutputSlot(), resultsTable,
                             Collections.singletonList(sliceAnnotation.getDeclaration().newInstance("slice=" + index)));
-                }
-                else {
+                } else {
                     dataInterface.addOutputData(getFirstOutputSlot(), resultsTable);
                 }
             });
-        }
-        else {
+        } else {
             ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusData.class);
             final TDoubleList pixels = new TDoubleArrayList();
             ImageJUtils.forEachSlice(inputData.getImage(), imp -> getPixels(imp, pixels));
@@ -85,7 +81,7 @@ public class GreyscalePixelsGenerator extends ImageJ1Algorithm {
             dataInterface.addOutputData(getFirstOutputSlot(), resultsTable);
         }
     }
-    
+
     private ResultsTableData toResultsTable(TDoubleList pixels) {
         ResultsTable resultsTable = new ResultsTable(pixels.size());
         for (int i = 0; i < pixels.size(); ++i) {
@@ -112,13 +108,12 @@ public class GreyscalePixelsGenerator extends ImageJ1Algorithm {
     }
 
     private void getPixels(ImageProcessor processor, TDoubleList result) {
-        if(processor instanceof FloatProcessor) {
-            for(int i = 0; i < processor.getPixelCount(); ++i) {
+        if (processor instanceof FloatProcessor) {
+            for (int i = 0; i < processor.getPixelCount(); ++i) {
                 result.add(processor.getf(i));
             }
-        }
-        else {
-            for(int i = 0; i < processor.getPixelCount(); ++i) {
+        } else {
+            for (int i = 0; i < processor.getPixelCount(); ++i) {
                 result.add(processor.get(i));
             }
         }
