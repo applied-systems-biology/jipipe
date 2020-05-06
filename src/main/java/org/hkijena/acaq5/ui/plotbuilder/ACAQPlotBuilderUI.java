@@ -1,5 +1,7 @@
 package org.hkijena.acaq5.ui.plotbuilder;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import ij.macro.Variable;
@@ -23,12 +25,16 @@ import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.PlotReader;
 import org.hkijena.acaq5.ui.components.UserFriendlyErrorUI;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
+import org.hkijena.acaq5.ui.plotbuilder.datasources.DoubleArrayPlotDataSource;
+import org.hkijena.acaq5.ui.plotbuilder.datasources.StringArrayPlotDataSource;
+import org.hkijena.acaq5.ui.registries.ACAQPlotBuilderRegistry;
 import org.hkijena.acaq5.utils.ReflectionUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Priority;
 
 import javax.swing.*;
+import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -44,10 +50,10 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
     private ACAQDataDeclarationRef plotType = new ACAQDataDeclarationRef();
     private PlotData currentPlot;
     private JSplitPane splitPane;
-    private Map<String, PlotDataSource> availableData = new HashMap<>();
+    private BiMap<String, PlotDataSource> availableData = HashBiMap.create();
     private List<ACAQPlotSeriesBuilder> seriesBuilders = new ArrayList<>();
-    private boolean seriesChanged = false;
     private boolean isRebuilding = false;
+    private PlotReader plotReader;
 
     /**
      * @param workbench the workbench
@@ -56,12 +62,33 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
         super(workbench);
         initialize();
         rebuildPlot();
+        installDefaultDataSources();
         this.eventBus.register(this);
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
-        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JPanel(), new JPanel());
+
+        // Create settings panel
+        DocumentTabPane tabbedPane = new DocumentTabPane();
+        tabbedPane.addTab("Settings", UIUtils.getIconFromResources("cog.png"),
+                new ParameterPanel(getWorkbench().getContext(),
+                        this,
+                        null,
+                        ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW),
+                DocumentTabPane.CloseMode.withoutCloseButton,
+                false);
+        tabbedPane.addTab("Series", UIUtils.getIconFromResources("select-column.png"),
+                new ACAQPlotSeriesListEditorUI(getWorkbench(), this),
+                DocumentTabPane.CloseMode.withoutCloseButton);
+        tabbedPane.addTab("Data", UIUtils.getIconFromResources("table.png"),
+                new ACAQPlotAvailableDataManagerUI(getWorkbench(), this),
+                DocumentTabPane.CloseMode.withoutCloseButton);
+
+        // Create plot reader
+        plotReader = new PlotReader();
+
+        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, plotReader, tabbedPane);
         splitPane.setDividerSize(3);
         splitPane.setResizeWeight(0.66);
         addComponentListener(new ComponentAdapter() {
@@ -72,20 +99,15 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
             }
         });
 
-        DocumentTabPane tabbedPane = new DocumentTabPane();
-        tabbedPane.addTab("Settings", UIUtils.getIconFromResources("cog.png"),
-                new ParameterPanel(getWorkbench().getContext(),
-                        this,
-                        null,
-                        ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW),
-                DocumentTabPane.CloseMode.withoutCloseButton,
-                false);
-        tabbedPane.addTab("Data", UIUtils.getIconFromResources("table.png"),
-                new ACAQPlotSeriesListEditorUI(getWorkbench(), this),
-                DocumentTabPane.CloseMode.withoutCloseButton);
-
-        splitPane.setRightComponent(tabbedPane);
         add(splitPane, BorderLayout.CENTER);
+    }
+
+    private void installDefaultDataSources() {
+        for (Class<? extends PlotDataSource> klass : ACAQPlotBuilderRegistry.getInstance().getRegisteredDataSources()) {
+            PlotDataSource dataSource = (PlotDataSource) ReflectionUtils.newInstance(klass);
+            availableData.put(dataSource.getName(), dataSource);
+        }
+        getEventBus().post(new ParameterChangedEvent(this, "available-data"));
     }
 
     @Override
@@ -153,7 +175,6 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
     public void importExistingPlot(PlotData data) {
         this.plotType.setDeclaration(ACAQDataDeclaration.getInstance(data.getClass()));
         this.currentPlot = data;
-        this.availableData.clear();
         List<PlotDataSeries> seriesList = new ArrayList<>(data.getSeries());
         for (PlotDataSeries series : seriesList) {
             ACAQPlotSeriesBuilder builder = new ACAQPlotSeriesBuilder(this, ACAQDataDeclaration.getInstance(data.getClass()));
@@ -214,9 +235,8 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
                 currentPlot.addSeries(dataSeries);
             }
 
-            PlotReader reader = new PlotReader();
-            reader.getChartPanel().setChart(currentPlot.getChart());
-            splitPane.setLeftComponent(reader);
+            plotReader.getChartPanel().setChart(currentPlot.getChart());
+            splitPane.setLeftComponent(plotReader);
         } finally {
             isRebuilding = false;
         }
@@ -261,6 +281,41 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
             }
             availableData.put(name, dataSource);
             columnMapping.put(table.getColumnHeading(col), name);
+        }
+        getEventBus().post(new ParameterChangedEvent(this, "available-data"));
+        return columnMapping;
+    }
+
+    /**
+     * Imports data from a table model
+     *
+     * @param model      the table model
+     * @param seriesName name for this table model
+     * @return how the columns of this series are mapped to the columns in the list of available columns
+     */
+    public Map<String, String> importData(TableModel model, String seriesName) {
+        Map<String, String> columnMapping = new HashMap<>();
+
+        for (int col = 0; col < model.getColumnCount(); ++col) {
+            String name = seriesName + "/" + model.getColumnName(col);
+            name = StringUtils.makeUniqueString(name, " ", s -> availableData.containsKey(s));
+
+            PlotDataSource dataSource;
+            if (Number.class.isAssignableFrom(model.getColumnClass(col))) {
+                double[] convertedData = new double[model.getRowCount()];
+                for (int i = 0; i < model.getRowCount(); ++i) {
+                    convertedData[i] = (double) model.getValueAt(i, col);
+                }
+                dataSource = new DoubleArrayPlotDataSource(convertedData, name);
+            } else {
+                String[] convertedData = new String[model.getRowCount()];
+                for (int i = 0; i < model.getRowCount(); ++i) {
+                    convertedData[i] = "" + model.getValueAt(i, col);
+                }
+                dataSource = new StringArrayPlotDataSource(convertedData, name);
+            }
+            availableData.put(name, dataSource);
+            columnMapping.put(model.getColumnName(col), name);
         }
         getEventBus().post(new ParameterChangedEvent(this, "available-data"));
         return columnMapping;
@@ -328,5 +383,20 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
     public void removeSeries(ACAQPlotSeriesBuilder seriesBuilder) {
         this.seriesBuilders.remove(seriesBuilder);
         eventBus.post(new ParameterChangedEvent(this, "series"));
+    }
+
+
+    /**
+     * Removes the data
+     *
+     * @param data data
+     */
+    public void removeData(List<PlotDataSource> data) {
+        for (PlotDataSource dataSource : data) {
+            if (dataSource.isUserRemovable()) {
+                availableData.inverse().remove(dataSource);
+            }
+        }
+        eventBus.post(new ParameterChangedEvent(this, "available-data"));
     }
 }

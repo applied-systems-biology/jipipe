@@ -12,6 +12,8 @@
 
 package org.hkijena.acaq5.ui.registries;
 
+import org.hkijena.acaq5.ACAQDefaultRegistry;
+import org.hkijena.acaq5.ui.plotbuilder.PlotDataSource;
 import org.hkijena.acaq5.ui.plotbuilder_old.ACAQLegacyPlot;
 import org.hkijena.acaq5.ui.plotbuilder_old.ACAQLegacyPlotSeriesData;
 
@@ -24,6 +26,7 @@ import java.util.*;
  */
 public class ACAQPlotBuilderRegistry {
 
+    private Set<Class<? extends PlotDataSource>> registeredDataSources = new HashSet<>();
     private Map<Class<? extends ACAQLegacyPlot>, Entry> entries = new HashMap<>();
 
     /**
@@ -76,6 +79,23 @@ public class ACAQPlotBuilderRegistry {
             }
         }
         return plots;
+    }
+
+    /**
+     * Registers a new data source type
+     *
+     * @param klass Data source classRowIteratorPlotDataSource
+     */
+    public void registerDataSource(Class<? extends PlotDataSource> klass) {
+        registeredDataSources.add(klass);
+    }
+
+    public Set<Class<? extends PlotDataSource>> getRegisteredDataSources() {
+        return Collections.unmodifiableSet(registeredDataSources);
+    }
+
+    public static ACAQPlotBuilderRegistry getInstance() {
+        return ACAQDefaultRegistry.getInstance().getPlotBuilderRegistry();
     }
 
     /**

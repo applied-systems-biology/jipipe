@@ -1,4 +1,6 @@
-package org.hkijena.acaq5.ui.plotbuilder;
+package org.hkijena.acaq5.ui.plotbuilder.datasources;
+
+import org.hkijena.acaq5.ui.plotbuilder.PlotDataSource;
 
 /**
  * {@link PlotDataSource} that contains doubles.
@@ -47,6 +49,16 @@ public class StringArrayPlotDataSource implements PlotDataSource {
     @Override
     public int getRows() {
         return data.length;
+    }
+
+    @Override
+    public boolean isNumeric() {
+        return false;
+    }
+
+    @Override
+    public boolean isUserRemovable() {
+        return true;
     }
 
     @Override

@@ -89,6 +89,16 @@ public class DocumentTabPane extends JPanel {
     }
 
     /**
+     * Returns all tabs that contain components of provided type or components that inherit from it
+     *
+     * @param klass component type.
+     * @return tabs that contain components of provided type or components that inherit from it
+     */
+    public List<DocumentTab> getTabsContaining(Class<? extends Component> klass) {
+        return tabs.stream().filter(tab -> klass.isAssignableFrom(tab.getContent().getClass())).collect(Collectors.toList());
+    }
+
+    /**
      * Adds a new tab
      *
      * @param title       The tab title

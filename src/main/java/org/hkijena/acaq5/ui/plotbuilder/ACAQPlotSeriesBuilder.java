@@ -162,6 +162,19 @@ public class ACAQPlotSeriesBuilder implements ACAQParameterCollection, ACAQValid
                         this);
             }
         }
+
+        int rows = 0;
+        Map<String, PlotDataSource> selectedSources = getSelectedSources();
+        for (PlotDataSource source : selectedSources.values()) {
+            if (source != null)
+                rows = Math.max(rows, source.getRows());
+        }
+        if (rows == 0) {
+            report.forCategory("Data assignments").forCategory("Data integrity").reportIsInvalid("Selected data is empty!",
+                    "The plot requires that you select a data source.",
+                    "Please select at least one data source with a known row count.",
+                    this);
+        }
     }
 
     /**

@@ -2,6 +2,7 @@ package org.hkijena.acaq5.extensions.plots;
 
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
+import org.hkijena.acaq5.extensions.plots.datasources.RowIteratorPlotDataSource;
 import org.hkijena.acaq5.extensions.plots.datatypes.HistogramPlotData;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotData;
 import org.hkijena.acaq5.extensions.plots.parameters.UIPlotDataSourceEnum;
@@ -41,6 +42,7 @@ public class StandardPlotsExtension extends ACAQPrepackagedDefaultJavaExtension 
     @Override
     public void register() {
 
+        registerPlotDataSource(RowIteratorPlotDataSource.class);
         registerMenuExtension(NewPlotMenuExtension.class);
 
         registerDatatype("plot",
@@ -96,5 +98,6 @@ public class StandardPlotsExtension extends ACAQPrepackagedDefaultJavaExtension 
         registerParameterType(UIPlotDataSourceEnum.class, UIPlotDataSourceEnumParameterEditorUI.class,
                 "Data column", "A data column to be plot");
     }
+
 
 }

@@ -35,4 +35,19 @@ public interface PlotDataSource {
      * @return the number of rows that are existing (not generated)
      */
     int getRows();
+
+    /**
+     * Returns true if this column contains double entries.
+     * If false, it contains {@link String} entries.
+     *
+     * @return true if this column contains double entries.
+     */
+    boolean isNumeric();
+
+    /**
+     * Returns if users can remove this source
+     *
+     * @return if users can remove this source
+     */
+    boolean isUserRemovable();
 }

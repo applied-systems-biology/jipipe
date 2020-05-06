@@ -1,4 +1,6 @@
-package org.hkijena.acaq5.ui.plotbuilder;
+package org.hkijena.acaq5.ui.plotbuilder.datasources;
+
+import org.hkijena.acaq5.ui.plotbuilder.PlotDataSource;
 
 import java.util.Arrays;
 
@@ -48,5 +50,15 @@ public class DoubleArrayPlotDataSource implements PlotDataSource {
     @Override
     public int getRows() {
         return data.length;
+    }
+
+    @Override
+    public boolean isNumeric() {
+        return true;
+    }
+
+    @Override
+    public boolean isUserRemovable() {
+        return true;
     }
 }

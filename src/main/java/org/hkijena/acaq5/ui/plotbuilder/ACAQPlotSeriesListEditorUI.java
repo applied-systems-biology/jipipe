@@ -63,7 +63,10 @@ public class ACAQPlotSeriesListEditorUI extends ACAQWorkbenchPanel {
     public void reloadEntries() {
         entriesPanel.clear();
         for (ACAQPlotSeriesBuilder seriesBuilder : plotBuilderUI.getSeriesBuilders()) {
-            entriesPanel.addWideToForm(new ACAQPlotSeriesBuilderUI(getWorkbench(), seriesBuilder),
+            ACAQPlotSeriesBuilderUI builderUI = new ACAQPlotSeriesBuilderUI(getWorkbench(), seriesBuilder);
+            builderUI.setPreferredSize(new Dimension((int) (0.33 * plotBuilderUI.getWidth()),
+                    (int) builderUI.getPreferredSize().getHeight()));
+            entriesPanel.addToForm(builderUI,
                     null);
         }
         entriesPanel.addVerticalGlue();
