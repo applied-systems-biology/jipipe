@@ -18,6 +18,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotData;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotDataSeries;
+import org.hkijena.acaq5.extensions.plots.datatypes.PlotMetadata;
 import org.hkijena.acaq5.extensions.standardparametereditors.editors.ACAQDataParameterSettings;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
@@ -122,7 +123,7 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
             report.forCategory("Plot parameters").report(currentPlot);
         }
         for (int i = 0; i < seriesBuilders.size(); ++i) {
-            report.forCategory("Data").forCategory("Series #" + (i + 1)).report(seriesBuilders.get(i));
+            report.forCategory("Series").forCategory("Series #" + (i + 1)).report(seriesBuilders.get(i));
         }
 
     }
@@ -145,18 +146,28 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
     }
 
     private void updatePlotTypeParameters() {
+        boolean changedPlot = false;
         if (currentPlot == null || (plotType.getDeclaration() != null &&
                 !Objects.equals(plotType.getDeclaration().getDataClass(), currentPlot.getClass()))) {
             if (plotType.getDeclaration() != null) {
                 currentPlot = (PlotData) ACAQData.createInstance(plotType.getDeclaration().getDataClass());
-                getEventBus().post(new ParameterStructureChangedEvent(this));
+                changedPlot = true;
                 currentPlot.getEventBus().register(this);
             }
         } else if (plotType.getDeclaration() == null) {
             currentPlot = null;
+            changedPlot = true;
+        }
+        if(changedPlot) {
             seriesBuilders.clear();
-            getEventBus().post(new ParameterStructureChangedEvent(this));
             getEventBus().post(new ParameterChangedEvent(this, "series"));
+            getEventBus().post(new ParameterStructureChangedEvent(this));
+            if(currentPlot != null) {
+                PlotMetadata metadata = currentPlot.getClass().getAnnotation(PlotMetadata.class);
+                for (int i = 0; i < metadata.minSeriesCount(); i++) {
+                    addSeries();
+                }
+            }
         }
     }
 
@@ -175,6 +186,7 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
     public void importExistingPlot(PlotData data) {
         this.plotType.setDeclaration(ACAQDataDeclaration.getInstance(data.getClass()));
         this.currentPlot = data;
+        seriesBuilders.clear();
         List<PlotDataSeries> seriesList = new ArrayList<>(data.getSeries());
         for (PlotDataSeries series : seriesList) {
             ACAQPlotSeriesBuilder builder = new ACAQPlotSeriesBuilder(this, ACAQDataDeclaration.getInstance(data.getClass()));
@@ -211,6 +223,8 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
      * Attempts to rebuild the current plot
      */
     public void rebuildPlot() {
+        if(currentPlot == null)
+            return;
         if (isRebuilding)
             return;
         try {

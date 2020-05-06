@@ -3,6 +3,8 @@ package org.hkijena.acaq5.extensions.plots;
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.plots.datasources.RowIteratorPlotDataSource;
+import org.hkijena.acaq5.extensions.plots.datasources.ZeroPlotDataSource;
+import org.hkijena.acaq5.extensions.plots.datatypes.BarCategoryPlotData;
 import org.hkijena.acaq5.extensions.plots.datatypes.HistogramPlotData;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotData;
 import org.hkijena.acaq5.extensions.plots.parameters.UIPlotDataSourceEnum;
@@ -43,6 +45,7 @@ public class StandardPlotsExtension extends ACAQPrepackagedDefaultJavaExtension 
     public void register() {
 
         registerPlotDataSource(RowIteratorPlotDataSource.class);
+        registerPlotDataSource(ZeroPlotDataSource.class);
         registerMenuExtension(NewPlotMenuExtension.class);
 
         registerDatatype("plot",
@@ -56,7 +59,12 @@ public class StandardPlotsExtension extends ACAQPrepackagedDefaultJavaExtension 
 
         registerDatatype("plot-histogram",
                 HistogramPlotData.class,
-                ResourceUtils.getPluginResource("icons/data-types/data-type-plot.png"),
+                ResourceUtils.getPluginResource("icons/data-types/bar-plot.png"),
+                null,
+                null);
+        registerDatatype("plot-category-bar",
+                BarCategoryPlotData.class,
+                ResourceUtils.getPluginResource("icons/data-types/bar-plot.png"),
                 null,
                 null);
 

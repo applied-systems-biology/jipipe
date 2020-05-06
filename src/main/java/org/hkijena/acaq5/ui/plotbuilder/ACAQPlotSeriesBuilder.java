@@ -191,18 +191,18 @@ public class ACAQPlotSeriesBuilder implements ACAQParameterCollection, ACAQValid
         ResultsTable table = new ResultsTable(rows);
         PlotMetadata metadata = plotType.getDataClass().getAnnotation(PlotMetadata.class);
 
-        Map<String, Class<?>> columnClasses = new HashMap<>();
+        Map<String, Boolean> columnIsNumeric = new HashMap<>();
         Map<String, Integer> columnIndices = new HashMap<>();
         for (PlotColumn column : metadata.columns()) {
-            columnClasses.put(column.name(), column.dataType());
+            columnIsNumeric.put(column.name(), column.isNumeric());
             int columnIndex = table.getFreeColumn(column.name());
             columnIndices.put(column.name(), columnIndex);
         }
 
         for (Map.Entry<String, PlotDataSource> entry : selectedSources.entrySet()) {
             int columnIndex = columnIndices.get(entry.getKey());
-            Class<?> columnClass = columnClasses.get(entry.getKey());
-            if (columnClass == String.class) {
+            boolean isNumeric = columnIsNumeric.get(entry.getKey());
+            if (!isNumeric) {
                 String[] data = entry.getValue().getDataAsString(rows);
                 for (int i = 0; i < data.length; i++) {
                     table.setValue(columnIndex, i, data[i]);

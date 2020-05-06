@@ -19,7 +19,7 @@ import java.util.Set;
  */
 @ACAQDocumentation(name = "Histogram plot", description = "Bar chart that displays the number of items for each bin. Please note that this plot requires " +
         "raw values as input. A pre-defined histogram table should be rendered with an XY bar plot.")
-@PlotMetadata(columns = {@PlotColumn(name = "Value", dataType = Double.class)})
+@PlotMetadata(columns = {@PlotColumn(name = "Value", description = "Values to generate a histogram from.", isNumeric = true)})
 public class HistogramPlotData extends PlotData {
 
     private String binAxisLabel = "Bin";

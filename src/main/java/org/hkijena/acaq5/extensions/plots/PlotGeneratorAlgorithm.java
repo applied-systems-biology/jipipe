@@ -150,8 +150,7 @@ public class PlotGeneratorAlgorithm extends ACAQAlgorithm {
                 parameterAccess.setName(column.name());
                 parameterAccess.setFieldClass(StringFilter.class);
                 parameterAccess.set(new StringFilter(StringFilter.Mode.Equals, column.name()));
-                parameterAccess.setDescription("A column in the input table of following type: " +
-                        ACAQUIParametertypeRegistry.getInstance().getDocumentationFor(column.dataType()).name());
+                parameterAccess.setDescription(column.description() + " " + (column.isNumeric() ? "(Numeric column)" : "(String column)"));
                 columnAssignments.addParameter(parameterAccess);
             }
         }

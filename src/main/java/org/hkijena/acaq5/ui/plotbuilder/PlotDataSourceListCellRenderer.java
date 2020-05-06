@@ -35,8 +35,8 @@ public class PlotDataSourceListCellRenderer extends JLabel implements ListCellRe
             setText(value.getName());
             setIcon(UIUtils.getIconFromResources("cog.png"));
         } else {
-            setText("<Null>");
-            setIcon(null);
+            setText("None selected");
+            setIcon(UIUtils.getIconFromResources("error.png"));
         }
 
         if (isSelected) {

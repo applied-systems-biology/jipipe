@@ -17,7 +17,12 @@ public @interface PlotColumn {
     String name();
 
     /**
-     * @return the data type of this column. Should be double or String
+     * @return a short description
      */
-    Class<?> dataType();
+    String description();
+
+    /**
+     * @return if the column is numeric. In this case, it is converted to double. Otherwise it is assumed the row is {@link String}
+     */
+    boolean isNumeric();
 }
