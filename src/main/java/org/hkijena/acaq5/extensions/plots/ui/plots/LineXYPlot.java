@@ -23,6 +23,7 @@ import java.util.List;
 /**
  * An XY plot
  */
+@Deprecated
 public class LineXYPlot extends XYPlot {
     /**
      * @param seriesDataList the data

@@ -26,6 +26,7 @@ import java.util.List;
 /**
  * A plot with categorical data
  */
+@Deprecated
 public abstract class CategoryPlot extends ACAQLegacyPlot {
 
     private String categoryAxisLabel;

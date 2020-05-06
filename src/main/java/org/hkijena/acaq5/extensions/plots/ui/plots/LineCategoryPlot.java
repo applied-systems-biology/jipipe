@@ -22,6 +22,7 @@ import java.util.List;
 /**
  * A line category plot
  */
+@Deprecated
 public class LineCategoryPlot extends DefaultCategoryPlot {
     /**
      * @param seriesDataList the data

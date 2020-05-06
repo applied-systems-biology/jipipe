@@ -24,6 +24,7 @@ import java.util.List;
 /**
  * A bar category plot
  */
+@Deprecated
 public class BarCategoryPlot extends DefaultCategoryPlot {
     /**
      * @param seriesDataList the data

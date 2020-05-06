@@ -4,9 +4,7 @@ import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.plots.datasources.RowIteratorPlotDataSource;
 import org.hkijena.acaq5.extensions.plots.datasources.ZeroPlotDataSource;
-import org.hkijena.acaq5.extensions.plots.datatypes.BarCategoryPlotData;
-import org.hkijena.acaq5.extensions.plots.datatypes.HistogramPlotData;
-import org.hkijena.acaq5.extensions.plots.datatypes.PlotData;
+import org.hkijena.acaq5.extensions.plots.datatypes.*;
 import org.hkijena.acaq5.extensions.plots.parameters.UIPlotDataSourceEnum;
 import org.hkijena.acaq5.extensions.plots.parameters.UIPlotDataSourceEnumParameterEditorUI;
 import org.hkijena.acaq5.extensions.plots.ui.plots.*;
@@ -44,19 +42,21 @@ public class StandardPlotsExtension extends ACAQPrepackagedDefaultJavaExtension 
     @Override
     public void register() {
 
+        // Register generating data sources
         registerPlotDataSource(RowIteratorPlotDataSource.class);
         registerPlotDataSource(ZeroPlotDataSource.class);
+
+        // Register extension so users can create plots
         registerMenuExtension(NewPlotMenuExtension.class);
 
+        // Register the base plot data type for internal usage
         registerDatatype("plot",
                 PlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/data-type-plot.png"),
                 PlotDataSlotRowUI.class,
                 null);
 
-        registerAlgorithm("plot-from-table", PlotGeneratorAlgorithm.class);
-
-
+        // Register
         registerDatatype("plot-histogram",
                 HistogramPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/bar-plot.png"),
@@ -67,40 +67,44 @@ public class StandardPlotsExtension extends ACAQPrepackagedDefaultJavaExtension 
                 ResourceUtils.getPluginResource("icons/data-types/bar-plot.png"),
                 null,
                 null);
+        registerDatatype("plot-category-bar-stacked",
+                StackedBarCategoryPlotData.class,
+                ResourceUtils.getPluginResource("icons/data-types/bar-plot.png"),
+                null,
+                null);
+        registerDatatype("plot-category-line",
+                LineCategoryPlotData.class,
+                ResourceUtils.getPluginResource("icons/data-types/line-plot.png"),
+                null,
+                null);
+        registerDatatype("plot-pie-2d",
+                Pie2DPlotData.class,
+                ResourceUtils.getPluginResource("icons/data-types/pie-plot.png"),
+                null,
+                null);
+        registerDatatype("plot-pie-3d",
+                Pie3DPlotData.class,
+                ResourceUtils.getPluginResource("icons/data-types/pie-plot.png"),
+                null,
+                null);
+        registerDatatype("plot-xy-scatter",
+                ScatterXYPlotData.class,
+                ResourceUtils.getPluginResource("icons/data-types/scatter-plot.png"),
+                null,
+                null);
+        registerDatatype("plot-xy-line",
+                LineXYPlotData.class,
+                ResourceUtils.getPluginResource("icons/data-types/line-plot.png"),
+                null,
+                null);
+        registerDatatype("plot-box-and-whisker",
+                BarBoxAndWhiskerCategoryPlotData.class,
+                ResourceUtils.getPluginResource("icons/data-types/bar-plot.png"),
+                null,
+                null);
 
-        registerPlot(DefaultBoxAndWhiskerBarCategoryPlot.class,
-                "Box Plot",
-                UIUtils.getIconFromResources("bar-chart.png"));
-        registerPlot(DefaultStatisticalLineCategoryPlot.class,
-                "Statistical Line Plot",
-                UIUtils.getIconFromResources("line-chart.png"));
-        registerPlot(DefaultStatisticalBarCategoryPlot.class,
-                "Statistical Bar Plot",
-                UIUtils.getIconFromResources("bar-chart.png"));
-        registerPlot(LineCategoryPlot.class,
-                "Line Plot",
-                UIUtils.getIconFromResources("line-chart.png"));
-        registerPlot(BarCategoryPlot.class,
-                "Bar Plot",
-                UIUtils.getIconFromResources("bar-chart.png"));
-        registerPlot(StackedBarCategoryPlot.class,
-                "Stacked Bar Plot",
-                UIUtils.getIconFromResources("bar-chart.png"));
-        registerPlot(Pie2DPlot.class,
-                "2D Pie Plot",
-                UIUtils.getIconFromResources("pie-chart.png"));
-        registerPlot(Pie3DPlot.class,
-                "3D Pie Plot",
-                UIUtils.getIconFromResources("pie-chart.png"));
-        registerPlot(LineXYPlot.class,
-                "XY Line Plot",
-                UIUtils.getIconFromResources("line-chart.png"));
-        registerPlot(ScatterXYPlot.class,
-                "XY Scatter Plot",
-                UIUtils.getIconFromResources("scatter-chart.png"));
-        registerPlot(HistogramPlot.class,
-                "Histogram Plot",
-                UIUtils.getIconFromResources("bar-chart.png"));
+        // Register algorithms to create plots
+        registerAlgorithm("plot-from-table", PlotGeneratorAlgorithm.class);
 
         // Register UI-specific parameters
         registerParameterType(UIPlotDataSourceEnum.class, UIPlotDataSourceEnumParameterEditorUI.class,

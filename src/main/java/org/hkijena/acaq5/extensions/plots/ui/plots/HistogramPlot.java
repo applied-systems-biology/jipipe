@@ -31,6 +31,7 @@ import java.util.Set;
 /**
  * Plot that shows a histogram
  */
+@Deprecated
 public class HistogramPlot extends ACAQLegacyPlot {
 
     private String xAxisLabel = "Bin";

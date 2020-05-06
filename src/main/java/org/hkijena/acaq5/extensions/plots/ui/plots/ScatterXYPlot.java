@@ -23,6 +23,7 @@ import java.util.List;
 /**
  * A XY scatter plot
  */
+@Deprecated
 public class ScatterXYPlot extends XYPlot {
     /**
      * @param seriesDataList the data

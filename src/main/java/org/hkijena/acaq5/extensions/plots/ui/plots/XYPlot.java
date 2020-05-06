@@ -29,6 +29,7 @@ import java.util.Set;
 /**
  * A XY point plot
  */
+@Deprecated
 public abstract class XYPlot extends ACAQLegacyPlot {
 
     private String xAxisLabel = "X";

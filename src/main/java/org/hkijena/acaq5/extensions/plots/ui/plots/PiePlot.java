@@ -23,6 +23,7 @@ import java.util.List;
  * Base class for pie plots
  * Expects data "Category" (String) and "Amount" (Numeric)
  */
+@Deprecated
 public abstract class PiePlot extends ACAQLegacyPlot {
 
     private DefaultPieDataset dataset = new DefaultPieDataset();

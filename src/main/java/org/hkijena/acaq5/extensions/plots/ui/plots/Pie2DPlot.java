@@ -23,6 +23,7 @@ import java.util.List;
 /**
  * A 2D pie plot
  */
+@Deprecated
 public class Pie2DPlot extends PiePlot {
     /**
      * @param seriesDataList the data

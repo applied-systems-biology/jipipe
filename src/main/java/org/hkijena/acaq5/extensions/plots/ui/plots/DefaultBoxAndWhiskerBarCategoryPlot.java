@@ -13,6 +13,7 @@
 package org.hkijena.acaq5.extensions.plots.ui.plots;
 
 
+import org.hkijena.acaq5.extensions.plots.datatypes.CustomBoxAndWhiskerRenderer;
 import org.hkijena.acaq5.ui.plotbuilder_old.ACAQLegacyPlotSeriesData;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -23,6 +24,7 @@ import java.util.List;
 /**
  * A box plot
  */
+@Deprecated
 public class DefaultBoxAndWhiskerBarCategoryPlot extends DefaultBoxAndWhiskerCategoryPlot {
 
     /**

@@ -90,7 +90,7 @@
  *
  */
 
-package org.hkijena.acaq5.extensions.plots.ui.plots;
+package org.hkijena.acaq5.extensions.plots.datatypes;
 
 
 import org.jfree.chart.LegendItem;

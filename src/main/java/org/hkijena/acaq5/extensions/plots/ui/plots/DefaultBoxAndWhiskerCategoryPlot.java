@@ -26,6 +26,7 @@ import java.util.Map;
 /**
  * Base class for box plots
  */
+@Deprecated
 public abstract class DefaultBoxAndWhiskerCategoryPlot extends CategoryPlot {
     private DefaultBoxAndWhiskerCategoryDataset dataset = new DefaultBoxAndWhiskerCategoryDataset();
 

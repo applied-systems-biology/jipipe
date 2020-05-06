@@ -22,6 +22,7 @@ import java.util.List;
 /**
  * Default implementation for categorical plots
  */
+@Deprecated
 public abstract class DefaultCategoryPlot extends CategoryPlot {
 
     private DefaultCategoryDataset dataset = new DefaultCategoryDataset();
