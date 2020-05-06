@@ -158,11 +158,11 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
             currentPlot = null;
             changedPlot = true;
         }
-        if(changedPlot) {
+        if (changedPlot) {
             seriesBuilders.clear();
             getEventBus().post(new ParameterChangedEvent(this, "series"));
             getEventBus().post(new ParameterStructureChangedEvent(this));
-            if(currentPlot != null) {
+            if (currentPlot != null) {
                 PlotMetadata metadata = currentPlot.getClass().getAnnotation(PlotMetadata.class);
                 for (int i = 0; i < metadata.minSeriesCount(); i++) {
                     addSeries();
@@ -223,7 +223,7 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
      * Attempts to rebuild the current plot
      */
     public void rebuildPlot() {
-        if(currentPlot == null)
+        if (currentPlot == null)
             return;
         if (isRebuilding)
             return;

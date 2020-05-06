@@ -3,25 +3,14 @@ package org.hkijena.acaq5.extensions.plots.datatypes;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.utils.StringUtils;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.renderer.xy.StandardXYBarPainter;
-import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.data.statistics.HistogramDataset;
-import org.jfree.data.statistics.HistogramType;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Contains data for category plots.
  * Any category plot has following columns:
  * Value (Double), Category (String), Group (String)
- *
+ * <p>
  * Values are assigned a category that is its X-axis.
  * Colors are assigned by its group
  */
@@ -50,6 +39,7 @@ public abstract class CategoryPlotData extends PlotData {
 
     /**
      * Creates a data set from the current series
+     *
      * @return the data set
      */
     public CategoryDataset createDataSet() {

@@ -1,10 +1,5 @@
 package org.hkijena.acaq5.extensions.plots.datatypes;
 
-import org.hkijena.acaq5.api.ACAQDocumentation;
-import org.hkijena.acaq5.api.events.ParameterChangedEvent;
-import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.jfree.data.category.CategoryDataset;
-import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.general.PieDataset;
 
@@ -33,6 +28,7 @@ public abstract class PiePlotData extends PlotData {
 
     /**
      * Creates a data set from the current series
+     *
      * @return the data set
      */
     public PieDataset createDataSet() {

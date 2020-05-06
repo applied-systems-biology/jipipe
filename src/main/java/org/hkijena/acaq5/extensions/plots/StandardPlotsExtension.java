@@ -7,10 +7,8 @@ import org.hkijena.acaq5.extensions.plots.datasources.ZeroPlotDataSource;
 import org.hkijena.acaq5.extensions.plots.datatypes.*;
 import org.hkijena.acaq5.extensions.plots.parameters.UIPlotDataSourceEnum;
 import org.hkijena.acaq5.extensions.plots.parameters.UIPlotDataSourceEnumParameterEditorUI;
-import org.hkijena.acaq5.extensions.plots.ui.plots.*;
 import org.hkijena.acaq5.extensions.plots.ui.resultanalysis.PlotDataSlotRowUI;
 import org.hkijena.acaq5.utils.ResourceUtils;
-import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -100,6 +98,16 @@ public class StandardPlotsExtension extends ACAQPrepackagedDefaultJavaExtension 
         registerDatatype("plot-box-and-whisker",
                 BarBoxAndWhiskerCategoryPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/bar-plot.png"),
+                null,
+                null);
+        registerDatatype("plot-category-statistical-bar",
+                BarStatisticalCategoryPlotData.class,
+                ResourceUtils.getPluginResource("icons/data-types/bar-plot.png"),
+                null,
+                null);
+        registerDatatype("plot-category-statistical-line",
+                LineStatisticalCategoryPlotData.class,
+                ResourceUtils.getPluginResource("icons/data-types/line-plot.png"),
                 null,
                 null);
 
