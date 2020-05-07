@@ -10,30 +10,26 @@
  * See the LICENSE file provided with this code for the full license.
  */
 
-package org.hkijena.acaq5.extensions.tableoperations.ui.tableoperations;
+package org.hkijena.acaq5.extensions.tables.ui.tableoperations;
 
 
 import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableVectorOperation;
 
 /**
- * Calculates the variance
+ * Finds the maximum of entries
  */
-public class StatisticsVarianceVectorOperation implements ACAQTableVectorOperation {
-
+public class StatisticsMaxVectorOperation implements ACAQTableVectorOperation {
     @Override
     public Object[] process(Object[] input) {
-        double sumSquared = 0;
-        double sum = 0;
+        double max = Double.MAX_VALUE;
         for (Object object : input) {
             if (object instanceof Number) {
-                sumSquared += Math.pow(((Number) object).doubleValue(), 2);
-                sum += ((Number) object).doubleValue();
+                max = Math.max(max, ((Number) object).doubleValue());
             } else {
-                sumSquared += Math.pow(Double.parseDouble("" + object), 2);
-                sum += Double.parseDouble("" + object);
+                max = Math.max(max, Double.parseDouble("" + object));
             }
         }
-        return new Object[]{(sumSquared / input.length) - Math.pow(sum / input.length, 2)};
+        return new Object[]{max};
     }
 
     @Override

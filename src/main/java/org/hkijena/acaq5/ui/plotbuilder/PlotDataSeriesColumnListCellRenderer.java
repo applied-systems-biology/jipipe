@@ -1,0 +1,51 @@
+package org.hkijena.acaq5.ui.plotbuilder;
+
+import org.hkijena.acaq5.extensions.tables.datatypes.DoubleArrayTableColumn;
+import org.hkijena.acaq5.extensions.tables.datatypes.StringArrayTableColumn;
+import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
+import org.hkijena.acaq5.utils.UIUtils;
+
+import javax.swing.*;
+import java.awt.*;
+
+/**
+ * Renders entries
+ */
+public class PlotDataSeriesColumnListCellRenderer extends JLabel implements ListCellRenderer<TableColumn> {
+
+    /**
+     * Creates a new renderer
+     */
+    public PlotDataSeriesColumnListCellRenderer() {
+        setOpaque(true);
+        setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+    }
+
+    @Override
+    public Component getListCellRendererComponent(JList<? extends TableColumn> list, TableColumn value, int index, boolean isSelected, boolean cellHasFocus) {
+
+        if (value instanceof DoubleArrayTableColumn) {
+            DoubleArrayTableColumn data = (DoubleArrayTableColumn) value;
+            setText(data.getLabel() + " (" + data.getData().length + " rows)");
+            setIcon(UIUtils.getIconFromResources("table.png"));
+        } else if (value instanceof StringArrayTableColumn) {
+            StringArrayTableColumn data = (StringArrayTableColumn) value;
+            setText(data.getLabel() + " (" + data.getData().length + " rows)");
+            setIcon(UIUtils.getIconFromResources("table.png"));
+        } else if (value != null) {
+            setText(value.getLabel());
+            setIcon(UIUtils.getIconFromResources("cog.png"));
+        } else {
+            setText("None selected");
+            setIcon(UIUtils.getIconFromResources("error.png"));
+        }
+
+        if (isSelected) {
+            setBackground(new Color(184, 207, 229));
+        } else {
+            setBackground(new Color(255, 255, 255));
+        }
+
+        return this;
+    }
+}

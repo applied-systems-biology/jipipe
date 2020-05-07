@@ -68,11 +68,6 @@ public interface ACAQRegistry extends Service, ACAQValidatable {
     ACAQUITraitRegistry getUITraitRegistry();
 
     /**
-     * @return Registered plot types
-     */
-    ACAQPlotBuilderRegistry getPlotBuilderRegistry();
-
-    /**
      * @return Registered ImageJ adapter UIs
      */
     ACAQUIImageJDatatypeAdapterRegistry getUIImageJDatatypeAdapterRegistry();

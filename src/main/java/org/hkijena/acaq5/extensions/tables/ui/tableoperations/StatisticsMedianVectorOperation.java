@@ -10,30 +10,35 @@
  * See the LICENSE file provided with this code for the full license.
  */
 
-package org.hkijena.acaq5.extensions.tableoperations.ui.tableoperations;
+package org.hkijena.acaq5.extensions.tables.ui.tableoperations;
 
 
 import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableVectorOperation;
 
+import java.util.Arrays;
+
 /**
- * Vector operation that converts a number > 0 into 1, and strings "true" into 1
- * otherwise values are converted to 0
+ * Calculates the median
  */
-public class ConvertToNumericBooleanVectorOperation implements ACAQTableVectorOperation {
+public class StatisticsMedianVectorOperation implements ACAQTableVectorOperation {
     @Override
     public Object[] process(Object[] input) {
+        double[] numbers = new double[input.length];
         for (int i = 0; i < input.length; ++i) {
             if (input[i] instanceof Number) {
-                input[i] = ((Number) input[i]).intValue() > 0 ? 1 : 0;
-            } else if (input[i] instanceof String) {
-                input[i] = input[i].toString().equalsIgnoreCase("true") ? 1 : 0;
-            } else if (input[i] instanceof Boolean) {
-                input[i] = (Boolean) input[i] ? 1 : 0;
+                numbers[i] = ((Number) input[i]).doubleValue();
             } else {
-                input[i] = 0;
+                numbers[i] = Double.parseDouble("" + input[i]);
             }
         }
-        return input;
+        Arrays.sort(numbers);
+        if (numbers.length % 2 == 0) {
+            double floor = numbers[numbers.length / 2 - 1];
+            double ceil = numbers[numbers.length / 2];
+            return new Object[]{(floor + ceil) / 2.0};
+        } else {
+            return new Object[]{numbers[numbers.length / 2]};
+        }
     }
 
     @Override
@@ -43,6 +48,6 @@ public class ConvertToNumericBooleanVectorOperation implements ACAQTableVectorOp
 
     @Override
     public int getOutputCount(int inputItemCount) {
-        return inputItemCount;
+        return 1;
     }
 }

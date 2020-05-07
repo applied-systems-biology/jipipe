@@ -10,7 +10,7 @@
  * See the LICENSE file provided with this code for the full license.
  */
 
-package org.hkijena.acaq5.extensions.tableoperations.ui.tableoperations;
+package org.hkijena.acaq5.extensions.tables.ui.tableoperations;
 
 
 import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableVectorOperation;
@@ -18,27 +18,13 @@ import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableVectorOperation;
 import java.util.Arrays;
 
 /**
- * Calculates the median
+ * Counts all non-null and non-empty entries
  */
-public class StatisticsMedianVectorOperation implements ACAQTableVectorOperation {
+public class StatisticsCountNonNullVectorOperation implements ACAQTableVectorOperation {
     @Override
     public Object[] process(Object[] input) {
-        double[] numbers = new double[input.length];
-        for (int i = 0; i < input.length; ++i) {
-            if (input[i] instanceof Number) {
-                numbers[i] = ((Number) input[i]).doubleValue();
-            } else {
-                numbers[i] = Double.parseDouble("" + input[i]);
-            }
-        }
-        Arrays.sort(numbers);
-        if (numbers.length % 2 == 0) {
-            double floor = numbers[numbers.length / 2 - 1];
-            double ceil = numbers[numbers.length / 2];
-            return new Object[]{(floor + ceil) / 2.0};
-        } else {
-            return new Object[]{numbers[numbers.length / 2]};
-        }
+        long count = Arrays.stream(input).filter(o -> o != null && !("" + o).isEmpty()).count();
+        return new Object[]{count};
     }
 
     @Override

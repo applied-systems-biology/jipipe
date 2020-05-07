@@ -1,8 +1,13 @@
-package org.hkijena.acaq5.extensions.tableoperations;
+package org.hkijena.acaq5.extensions.tables;
 
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
-import org.hkijena.acaq5.extensions.tableoperations.ui.tableoperations.*;
+import org.hkijena.acaq5.extensions.tables.datatypes.DoubleArrayTableColumn;
+import org.hkijena.acaq5.extensions.tables.datatypes.RowIndexTableColumn;
+import org.hkijena.acaq5.extensions.tables.datatypes.StringArrayTableColumn;
+import org.hkijena.acaq5.extensions.tables.datatypes.ZeroTableColumn;
+import org.hkijena.acaq5.extensions.tables.ui.tableoperations.*;
+import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.plugin.Plugin;
 
@@ -10,7 +15,7 @@ import org.scijava.plugin.Plugin;
  * Standard set of table operations
  */
 @Plugin(type = ACAQJavaExtension.class)
-public class StandardTableOperationsExtension extends ACAQPrepackagedDefaultJavaExtension {
+public class TablesExtension extends ACAQPrepackagedDefaultJavaExtension {
 
     @Override
     public String getName() {
@@ -34,6 +39,30 @@ public class StandardTableOperationsExtension extends ACAQPrepackagedDefaultJava
 
     @Override
     public void register() {
+
+        // Register the two base column types
+        registerDatatype("table-column-numeric",
+                DoubleArrayTableColumn.class,
+                ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
+                null,
+                null);
+        registerDatatype("table-column-string",
+                StringArrayTableColumn.class,
+                ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
+                null,
+                null);
+
+        // Register generating data sources
+        registerDatatype("table-column-row-index",
+                RowIndexTableColumn.class,
+                ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
+                null,
+                null);
+        registerDatatype("table-column-zero",
+                ZeroTableColumn.class,
+                ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
+                null,
+                null);
 
         registerMenuExtension(NewTableMenuExtension.class);
 

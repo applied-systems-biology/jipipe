@@ -10,26 +10,18 @@
  * See the LICENSE file provided with this code for the full license.
  */
 
-package org.hkijena.acaq5.extensions.tableoperations.ui.tableoperations;
+package org.hkijena.acaq5.extensions.tables.ui.tableoperations;
 
 
 import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableVectorOperation;
 
 /**
- * Finds the minimum value
+ * Counts the number of vector entries
  */
-public class StatisticsMinVectorOperation implements ACAQTableVectorOperation {
+public class StatisticsCountVectorOperation implements ACAQTableVectorOperation {
     @Override
     public Object[] process(Object[] input) {
-        double min = Double.MAX_VALUE;
-        for (Object object : input) {
-            if (object instanceof Number) {
-                min = Math.min(min, ((Number) object).doubleValue());
-            } else {
-                min = Math.min(min, Double.parseDouble("" + object));
-            }
-        }
-        return new Object[]{min};
+        return new Object[]{input.length};
     }
 
     @Override

@@ -1,18 +1,13 @@
-package org.hkijena.acaq5.ui.plotbuilder;
+package org.hkijena.acaq5.extensions.tables.datatypes;
+
+import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.extensions.plots.datatypes.PlotDataSeries;
 
 /**
- * Interface for any data source for plot data.
- * All methods must always return valid outputs.
+ * An {@link ACAQData} type that represents a column in a {@link PlotDataSeries}.
+ * This type allows data to be provided
  */
-public interface PlotDataSource {
-
-    /**
-     * Name of this data source
-     *
-     * @return the name
-     */
-    String getName();
-
+public interface TableColumn extends ACAQData {
     /**
      * Returns as many data entries as rows
      *
@@ -50,4 +45,10 @@ public interface PlotDataSource {
      * @return if users can remove this source
      */
     boolean isUserRemovable();
+
+    /**
+     * Label of this column
+     * @return
+     */
+    String getLabel();
 }

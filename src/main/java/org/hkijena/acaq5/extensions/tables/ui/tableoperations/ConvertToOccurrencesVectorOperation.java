@@ -10,26 +10,30 @@
  * See the LICENSE file provided with this code for the full license.
  */
 
-package org.hkijena.acaq5.extensions.tableoperations.ui.tableoperations;
+package org.hkijena.acaq5.extensions.tables.ui.tableoperations;
 
 
 import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableVectorOperation;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * Calculates the sum
+ * Converts the vector into a histogram vector
  */
-public class StatisticsSumVectorOperation implements ACAQTableVectorOperation {
+public class ConvertToOccurrencesVectorOperation implements ACAQTableVectorOperation {
     @Override
     public Object[] process(Object[] input) {
-        double sum = 0;
+        Map<Object, Integer> counts = new HashMap<>();
         for (Object object : input) {
-            if (object instanceof Number) {
-                sum += ((Number) object).doubleValue();
-            } else {
-                sum += Double.parseDouble("" + object);
-            }
+            int count = counts.getOrDefault(object, 0);
+            ++count;
+            counts.put(object, count);
         }
-        return new Object[]{sum};
+        for (int i = 0; i < input.length; ++i) {
+            input[i] = counts.get(input[i]);
+        }
+        return input;
     }
 
     @Override
@@ -39,6 +43,6 @@ public class StatisticsSumVectorOperation implements ACAQTableVectorOperation {
 
     @Override
     public int getOutputCount(int inputItemCount) {
-        return 1;
+        return inputItemCount;
     }
 }

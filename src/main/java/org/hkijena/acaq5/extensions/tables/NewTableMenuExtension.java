@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.tableoperations;
+package org.hkijena.acaq5.extensions.tables;
 
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;

@@ -10,18 +10,26 @@
  * See the LICENSE file provided with this code for the full license.
  */
 
-package org.hkijena.acaq5.extensions.tableoperations.ui.tableoperations;
+package org.hkijena.acaq5.extensions.tables.ui.tableoperations;
 
 
 import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableVectorOperation;
 
 /**
- * Counts the number of vector entries
+ * Calculates the sum
  */
-public class StatisticsCountVectorOperation implements ACAQTableVectorOperation {
+public class StatisticsSumVectorOperation implements ACAQTableVectorOperation {
     @Override
     public Object[] process(Object[] input) {
-        return new Object[]{input.length};
+        double sum = 0;
+        for (Object object : input) {
+            if (object instanceof Number) {
+                sum += ((Number) object).doubleValue();
+            } else {
+                sum += Double.parseDouble("" + object);
+            }
+        }
+        return new Object[]{sum};
     }
 
     @Override

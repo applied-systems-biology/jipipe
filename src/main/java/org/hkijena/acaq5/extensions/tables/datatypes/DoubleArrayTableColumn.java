@@ -1,26 +1,29 @@
-package org.hkijena.acaq5.ui.plotbuilder.datasources;
+package org.hkijena.acaq5.extensions.tables.datatypes;
 
-import org.hkijena.acaq5.ui.plotbuilder.PlotDataSource;
+import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.data.ACAQData;
 
+import java.nio.file.Path;
 import java.util.Arrays;
 
 /**
- * {@link PlotDataSource} that contains doubles.
+ * {@link TableColumn} that contains doubles.
  */
-public class DoubleArrayPlotDataSource implements PlotDataSource {
+@ACAQDocumentation(name = "")
+public class DoubleArrayTableColumn implements TableColumn {
 
     private double[] data;
-    private String name;
+    private String label;
 
     /**
      * Creates a new instance
      *
      * @param data the data. Can have any size
-     * @param name non-empty name
+     * @param label non-empty name
      */
-    public DoubleArrayPlotDataSource(double[] data, String name) {
+    public DoubleArrayTableColumn(double[] data, String label) {
         this.data = data;
-        this.name = name;
+        this.label = label;
     }
 
     @Override
@@ -39,8 +42,8 @@ public class DoubleArrayPlotDataSource implements PlotDataSource {
     }
 
     @Override
-    public String getName() {
-        return name;
+    public String getLabel() {
+        return label;
     }
 
     public double[] getData() {
@@ -60,5 +63,15 @@ public class DoubleArrayPlotDataSource implements PlotDataSource {
     @Override
     public boolean isUserRemovable() {
         return true;
+    }
+
+    @Override
+    public void saveTo(Path storageFilePath, String name) {
+
+    }
+
+    @Override
+    public ACAQData duplicate() {
+        return new DoubleArrayTableColumn(Arrays.copyOf(data, data.length), label);
     }
 }

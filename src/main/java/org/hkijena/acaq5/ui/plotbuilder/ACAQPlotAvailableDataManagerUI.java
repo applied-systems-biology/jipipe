@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import ij.measure.ResultsTable;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotDataSeries;
+import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
@@ -27,7 +28,7 @@ import java.util.stream.Collectors;
 public class ACAQPlotAvailableDataManagerUI extends ACAQWorkbenchPanel {
 
     private ACAQPlotBuilderUI plotBuilderUI;
-    private JList<PlotDataSource> dataSourceJList;
+    private JList<TableColumn> dataSourceJList;
     private JPopupMenu importPopupMenu;
 
     /**
@@ -66,7 +67,7 @@ public class ACAQPlotAvailableDataManagerUI extends ACAQWorkbenchPanel {
         add(toolBar, BorderLayout.NORTH);
 
         dataSourceJList = new JList<>(new DefaultListModel<>());
-        dataSourceJList.setCellRenderer(new PlotDataSourceListCellRenderer());
+        dataSourceJList.setCellRenderer(new PlotDataSeriesColumnListCellRenderer());
         add(dataSourceJList, BorderLayout.CENTER);
 
         dataSourceJList.addMouseListener(new MouseAdapter() {
@@ -125,14 +126,14 @@ public class ACAQPlotAvailableDataManagerUI extends ACAQWorkbenchPanel {
 
     private void showSelectedData() {
         int rows = 0;
-        for (PlotDataSource dataSource : dataSourceJList.getSelectedValuesList()) {
+        for (TableColumn dataSource : dataSourceJList.getSelectedValuesList()) {
             rows = Math.max(dataSource.getRows(), rows);
         }
 
         DefaultTableModel tableModel = new DefaultTableModel(rows, dataSourceJList.getSelectedValuesList().size());
-        tableModel.setColumnIdentifiers(dataSourceJList.getSelectedValuesList().stream().map(PlotDataSource::getName).toArray());
+        tableModel.setColumnIdentifiers(dataSourceJList.getSelectedValuesList().stream().map(TableColumn::getLabel).toArray());
         for (int column = 0; column < dataSourceJList.getSelectedValuesList().size(); column++) {
-            PlotDataSource dataSource = dataSourceJList.getSelectedValuesList().get(column);
+            TableColumn dataSource = dataSourceJList.getSelectedValuesList().get(column);
             if (dataSource.isNumeric()) {
                 double[] data = dataSource.getDataAsDouble(rows);
                 for (int row = 0; row < rows; row++) {
@@ -146,7 +147,7 @@ public class ACAQPlotAvailableDataManagerUI extends ACAQWorkbenchPanel {
             }
         }
 
-        String name = dataSourceJList.getSelectedValuesList().size() == 1 ? dataSourceJList.getSelectedValuesList().get(0).getName() : "Table";
+        String name = dataSourceJList.getSelectedValuesList().size() == 1 ? dataSourceJList.getSelectedValuesList().get(0).getLabel() : "Table";
         ACAQTableAnalyzerUI tableAnalyzerUI = new ACAQTableAnalyzerUI((ACAQProjectWorkbench) getWorkbench(), tableModel);
         getWorkbench().getDocumentTabPane().addTab(name, UIUtils.getIconFromResources("table.png"),
                 tableAnalyzerUI,
@@ -159,10 +160,10 @@ public class ACAQPlotAvailableDataManagerUI extends ACAQWorkbenchPanel {
      * Reloads the list of data sources
      */
     public void reloadList() {
-        DefaultListModel<PlotDataSource> model = (DefaultListModel<PlotDataSource>) dataSourceJList.getModel();
+        DefaultListModel<TableColumn> model = (DefaultListModel<TableColumn>) dataSourceJList.getModel();
         model.clear();
-        for (PlotDataSource dataSource : plotBuilderUI.getAvailableData().values().stream()
-                .sorted(Comparator.comparing(PlotDataSource::getName)).collect(Collectors.toList())) {
+        for (TableColumn dataSource : plotBuilderUI.getAvailableData().values().stream()
+                .sorted(Comparator.comparing(TableColumn::getLabel)).collect(Collectors.toList())) {
             model.addElement(dataSource);
         }
     }

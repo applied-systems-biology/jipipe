@@ -12,8 +12,9 @@ import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotColumn;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotDataSeries;
+import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotMetadata;
-import org.hkijena.acaq5.extensions.plots.parameters.UIPlotDataSourceEnum;
+import org.hkijena.acaq5.extensions.plots.parameters.UIPlotDataSeriesColumnEnum;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,10 +44,10 @@ public class ACAQPlotSeriesBuilder implements ACAQParameterCollection, ACAQValid
 
         PlotMetadata metadata = plotType.getDataClass().getAnnotation(PlotMetadata.class);
         for (PlotColumn column : metadata.columns()) {
-            UIPlotDataSourceEnum parameter = new UIPlotDataSourceEnum();
+            UIPlotDataSeriesColumnEnum parameter = new UIPlotDataSeriesColumnEnum();
             ACAQMutableParameterAccess parameterAccess = new ACAQMutableParameterAccess();
             parameterAccess.set(parameter);
-            parameterAccess.setFieldClass(UIPlotDataSourceEnum.class);
+            parameterAccess.setFieldClass(UIPlotDataSeriesColumnEnum.class);
             parameterAccess.setKey(column.name());
             parameterAccess.setName(column.name());
             columnAssignments.addParameter(parameterAccess);
@@ -61,11 +62,11 @@ public class ACAQPlotSeriesBuilder implements ACAQParameterCollection, ACAQValid
      *
      * @return map of series column ID to source
      */
-    public Map<String, PlotDataSource> getSelectedSources() {
-        Map<String, PlotDataSource> result = new HashMap<>();
+    public Map<String, TableColumn> getSelectedSources() {
+        Map<String, TableColumn> result = new HashMap<>();
         for (Map.Entry<String, ACAQParameterAccess> entry : columnAssignments.getParameters().entrySet()) {
-            UIPlotDataSourceEnum parameter = entry.getValue().get();
-            result.put(entry.getKey(), (PlotDataSource) parameter.getValue());
+            UIPlotDataSeriesColumnEnum parameter = entry.getValue().get();
+            result.put(entry.getKey(), (TableColumn) parameter.getValue());
         }
         return result;
     }
@@ -78,7 +79,7 @@ public class ACAQPlotSeriesBuilder implements ACAQParameterCollection, ACAQValid
 
         for (ACAQParameterAccess value : columnAssignments.getParameters().values()) {
             ACAQMutableParameterAccess parameterAccess = (ACAQMutableParameterAccess) value;
-            UIPlotDataSourceEnum parameter = parameterAccess.get();
+            UIPlotDataSeriesColumnEnum parameter = parameterAccess.get();
             parameter.setAllowedValues(allowedItems);
         }
 
@@ -108,9 +109,9 @@ public class ACAQPlotSeriesBuilder implements ACAQParameterCollection, ACAQValid
      * @param column     the series column
      * @param columnData the assigned data
      */
-    public void assignData(String column, PlotDataSource columnData) {
+    public void assignData(String column, TableColumn columnData) {
         ACAQMutableParameterAccess parameterAccess = columnAssignments.getParameter(column);
-        UIPlotDataSourceEnum parameter = parameterAccess.get();
+        UIPlotDataSeriesColumnEnum parameter = parameterAccess.get();
         parameter.setValue(columnData);
         parameterAccess.set(parameter);
     }
@@ -154,7 +155,7 @@ public class ACAQPlotSeriesBuilder implements ACAQParameterCollection, ACAQValid
     public void reportValidity(ACAQValidityReport report) {
         for (Map.Entry<String, ACAQParameterAccess> entry : columnAssignments.getParameters().entrySet()) {
             ACAQMutableParameterAccess parameterAccess = (ACAQMutableParameterAccess) entry.getValue();
-            UIPlotDataSourceEnum parameter = parameterAccess.get();
+            UIPlotDataSeriesColumnEnum parameter = parameterAccess.get();
             if (parameter.getValue() == null) {
                 report.forCategory("Data assignments").forCategory(entry.getKey()).reportIsInvalid("No data selected!",
                         "The plot requires that you select a data source.",
@@ -164,8 +165,8 @@ public class ACAQPlotSeriesBuilder implements ACAQParameterCollection, ACAQValid
         }
 
         int rows = 0;
-        Map<String, PlotDataSource> selectedSources = getSelectedSources();
-        for (PlotDataSource source : selectedSources.values()) {
+        Map<String, TableColumn> selectedSources = getSelectedSources();
+        for (TableColumn source : selectedSources.values()) {
             if (source != null)
                 rows = Math.max(rows, source.getRows());
         }
@@ -184,8 +185,8 @@ public class ACAQPlotSeriesBuilder implements ACAQParameterCollection, ACAQValid
      */
     public PlotDataSeries buildSeries() {
         int rows = 0;
-        Map<String, PlotDataSource> selectedSources = getSelectedSources();
-        for (PlotDataSource source : selectedSources.values()) {
+        Map<String, TableColumn> selectedSources = getSelectedSources();
+        for (TableColumn source : selectedSources.values()) {
             rows = Math.max(rows, source.getRows());
         }
         ResultsTable table = new ResultsTable(rows);
@@ -199,7 +200,7 @@ public class ACAQPlotSeriesBuilder implements ACAQParameterCollection, ACAQValid
             columnIndices.put(column.name(), columnIndex);
         }
 
-        for (Map.Entry<String, PlotDataSource> entry : selectedSources.entrySet()) {
+        for (Map.Entry<String, TableColumn> entry : selectedSources.entrySet()) {
             int columnIndex = columnIndices.get(entry.getKey());
             boolean isNumeric = columnIsNumeric.get(entry.getKey());
             if (!isNumeric) {

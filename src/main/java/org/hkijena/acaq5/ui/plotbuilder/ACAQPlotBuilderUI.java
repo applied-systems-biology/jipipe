@@ -16,8 +16,10 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
+import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotData;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotDataSeries;
+import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotMetadata;
 import org.hkijena.acaq5.extensions.parametereditors.editors.ACAQDataParameterSettings;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
@@ -26,9 +28,8 @@ import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.PlotReader;
 import org.hkijena.acaq5.ui.components.UserFriendlyErrorUI;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
-import org.hkijena.acaq5.ui.plotbuilder.datasources.DoubleArrayPlotDataSource;
-import org.hkijena.acaq5.ui.plotbuilder.datasources.StringArrayPlotDataSource;
-import org.hkijena.acaq5.ui.registries.ACAQPlotBuilderRegistry;
+import org.hkijena.acaq5.extensions.tables.datatypes.DoubleArrayTableColumn;
+import org.hkijena.acaq5.extensions.tables.datatypes.StringArrayTableColumn;
 import org.hkijena.acaq5.utils.ReflectionUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -51,7 +52,7 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
     private ACAQDataDeclarationRef plotType = new ACAQDataDeclarationRef();
     private PlotData currentPlot;
     private JSplitPane splitPane;
-    private BiMap<String, PlotDataSource> availableData = HashBiMap.create();
+    private BiMap<String, TableColumn> availableData = HashBiMap.create();
     private List<ACAQPlotSeriesBuilder> seriesBuilders = new ArrayList<>();
     private boolean isRebuilding = false;
     private PlotReader plotReader;
@@ -104,9 +105,11 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
     }
 
     private void installDefaultDataSources() {
-        for (Class<? extends PlotDataSource> klass : ACAQPlotBuilderRegistry.getInstance().getRegisteredDataSources()) {
-            PlotDataSource dataSource = (PlotDataSource) ReflectionUtils.newInstance(klass);
-            availableData.put(dataSource.getName(), dataSource);
+        for (Class<? extends ACAQData> klass : ACAQDatatypeRegistry.getInstance().getRegisteredDataTypes().values()) {
+            if(TableColumn.class.isAssignableFrom(klass) && ReflectionUtils.hasDefaultConstructor(klass)) {
+                TableColumn dataSource = (TableColumn) ReflectionUtils.newInstance(klass);
+                availableData.put(dataSource.getLabel(), dataSource);
+            }
         }
         getEventBus().post(new ParameterChangedEvent(this, "available-data"));
     }
@@ -278,20 +281,20 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
             if (data.length == 0)
                 continue;
 
-            PlotDataSource dataSource;
+            TableColumn dataSource;
             int dataType = (int) ReflectionUtils.invokeMethod(data[0], "getType");
             if (dataType == 0) {
                 double[] convertedData = new double[data.length];
                 for (int i = 0; i < data.length; ++i) {
                     convertedData[i] = data[i].getValue();
                 }
-                dataSource = new DoubleArrayPlotDataSource(convertedData, name);
+                dataSource = new DoubleArrayTableColumn(convertedData, name);
             } else {
                 String[] convertedData = new String[data.length];
                 for (int i = 0; i < data.length; ++i) {
                     convertedData[i] = data[i].getString();
                 }
-                dataSource = new StringArrayPlotDataSource(convertedData, name);
+                dataSource = new StringArrayTableColumn(convertedData, name);
             }
             availableData.put(name, dataSource);
             columnMapping.put(table.getColumnHeading(col), name);
@@ -314,19 +317,19 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
             String name = seriesName + "/" + model.getColumnName(col);
             name = StringUtils.makeUniqueString(name, " ", s -> availableData.containsKey(s));
 
-            PlotDataSource dataSource;
+            TableColumn dataSource;
             if (Number.class.isAssignableFrom(model.getColumnClass(col))) {
                 double[] convertedData = new double[model.getRowCount()];
                 for (int i = 0; i < model.getRowCount(); ++i) {
                     convertedData[i] = (double) model.getValueAt(i, col);
                 }
-                dataSource = new DoubleArrayPlotDataSource(convertedData, name);
+                dataSource = new DoubleArrayTableColumn(convertedData, name);
             } else {
                 String[] convertedData = new String[model.getRowCount()];
                 for (int i = 0; i < model.getRowCount(); ++i) {
                     convertedData[i] = "" + model.getValueAt(i, col);
                 }
-                dataSource = new StringArrayPlotDataSource(convertedData, name);
+                dataSource = new StringArrayTableColumn(convertedData, name);
             }
             availableData.put(name, dataSource);
             columnMapping.put(model.getColumnName(col), name);
@@ -340,7 +343,7 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
      *
      * @return
      */
-    public Map<String, PlotDataSource> getAvailableData() {
+    public Map<String, TableColumn> getAvailableData() {
         return Collections.unmodifiableMap(availableData);
     }
 
@@ -405,8 +408,8 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
      *
      * @param data data
      */
-    public void removeData(List<PlotDataSource> data) {
-        for (PlotDataSource dataSource : data) {
+    public void removeData(List<TableColumn> data) {
+        for (TableColumn dataSource : data) {
             if (dataSource.isUserRemovable()) {
                 availableData.inverse().remove(dataSource);
             }

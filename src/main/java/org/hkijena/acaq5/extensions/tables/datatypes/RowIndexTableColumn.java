@@ -1,13 +1,15 @@
-package org.hkijena.acaq5.extensions.plots.datasources;
+package org.hkijena.acaq5.extensions.tables.datatypes;
 
-import org.hkijena.acaq5.ui.plotbuilder.PlotDataSource;
+import org.hkijena.acaq5.api.data.ACAQData;
+
+import java.nio.file.Path;
 
 /**
  * Generates numbers from 0 to row count
  */
-public class RowIteratorPlotDataSource implements PlotDataSource {
+public class RowIndexTableColumn implements TableColumn {
     @Override
-    public String getName() {
+    public String getLabel() {
         return "Generate: Row index";
     }
 
@@ -42,5 +44,15 @@ public class RowIteratorPlotDataSource implements PlotDataSource {
     @Override
     public boolean isUserRemovable() {
         return false;
+    }
+
+    @Override
+    public void saveTo(Path storageFilePath, String name) {
+
+    }
+
+    @Override
+    public ACAQData duplicate() {
+        return new RowIndexTableColumn();
     }
 }

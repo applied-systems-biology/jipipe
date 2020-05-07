@@ -33,7 +33,6 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
     private ACAQUIDatatypeRegistry uiDatatypeRegistry = new ACAQUIDatatypeRegistry();
     private ACAQUIParametertypeRegistry uiParametertypeRegistry = new ACAQUIParametertypeRegistry();
     private ACAQUITraitRegistry acaquiTraitRegistry = new ACAQUITraitRegistry();
-    private ACAQPlotBuilderRegistry plotBuilderRegistry = new ACAQPlotBuilderRegistry();
     private ACAQTableAnalyzerUIOperationRegistry tableAnalyzerUIOperationRegistry = new ACAQTableAnalyzerUIOperationRegistry();
     private ACAQImageJAdapterRegistry imageJDataAdapterRegistry = new ACAQImageJAdapterRegistry();
     private ACAQUIImageJDatatypeAdapterRegistry uiImageJDatatypeAdapterRegistry = new ACAQUIImageJDatatypeAdapterRegistry();
@@ -62,7 +61,6 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
         uiDatatypeRegistry = new ACAQUIDatatypeRegistry();
         uiParametertypeRegistry = new ACAQUIParametertypeRegistry();
         acaquiTraitRegistry = new ACAQUITraitRegistry();
-        plotBuilderRegistry = new ACAQPlotBuilderRegistry();
         tableAnalyzerUIOperationRegistry = new ACAQTableAnalyzerUIOperationRegistry();
         imageJDataAdapterRegistry = new ACAQImageJAdapterRegistry();
         uiImageJDatatypeAdapterRegistry = new ACAQUIImageJDatatypeAdapterRegistry();
@@ -157,11 +155,6 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
     @Override
     public List<ACAQDependency> getRegisteredExtensions() {
         return Collections.unmodifiableList(registeredExtensions);
-    }
-
-    @Override
-    public ACAQPlotBuilderRegistry getPlotBuilderRegistry() {
-        return plotBuilderRegistry;
     }
 
     @Override

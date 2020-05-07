@@ -10,27 +10,22 @@
  * See the LICENSE file provided with this code for the full license.
  */
 
-package org.hkijena.acaq5.extensions.tableoperations.ui.tableoperations;
+package org.hkijena.acaq5.extensions.tables.ui.tableoperations;
 
 
 import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableVectorOperation;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * Converts contents into numeric representations
+ * Ensures that all values are numbers. Non-numeric values are converted to zero.
  */
-public class ConvertToNumericFactorOperation implements ACAQTableVectorOperation {
+public class ConvertToNumericVectorOperation implements ACAQTableVectorOperation {
     @Override
     public Object[] process(Object[] input) {
-        Map<Object, Integer> factors = new HashMap<>();
-        for (Object object : input) {
-            if (!factors.containsKey(object))
-                factors.put(object, factors.size());
-        }
         for (int i = 0; i < input.length; ++i) {
-            input[i] = factors.get(input[i]);
+            if (input[i] instanceof Number) {
+            } else {
+                input[i] = 0;
+            }
         }
         return input;
     }

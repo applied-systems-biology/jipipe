@@ -18,7 +18,6 @@ import org.hkijena.acaq5.ui.compat.ImageJDatatypeImporterUI;
 import org.hkijena.acaq5.ui.extension.MenuExtension;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterGeneratorUI;
-import org.hkijena.acaq5.ui.plotbuilder.PlotDataSource;
 import org.hkijena.acaq5.ui.registries.ACAQUIParametertypeRegistry;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultDataSlotCellUI;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultDataSlotRowUI;
@@ -265,16 +264,6 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
     public void registerImageJDataAdapter(ImageJDatatypeAdapter adapter, Class<? extends ImageJDatatypeImporterUI> importerUIClass) {
         registry.getImageJDataAdapterRegistry().register(adapter);
         registry.getUIImageJDatatypeAdapterRegistry().registerImporterFor(adapter.getImageJDatatype(), importerUIClass);
-    }
-
-    /**
-     * Registers a plot data source
-     *
-     * @param id ID of the data source
-     * @param klass the data source
-     */
-    public void registerPlotDataSource(String id, Class<? extends PlotDataSource> klass) {
-        registry.getPlotBuilderRegistry().registerDataSource(id, klass);
     }
 
     @Override

@@ -2,11 +2,11 @@ package org.hkijena.acaq5.extensions.plots;
 
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
-import org.hkijena.acaq5.extensions.plots.datasources.RowIteratorPlotDataSource;
-import org.hkijena.acaq5.extensions.plots.datasources.ZeroPlotDataSource;
+import org.hkijena.acaq5.extensions.tables.datatypes.RowIndexTableColumn;
+import org.hkijena.acaq5.extensions.tables.datatypes.ZeroTableColumn;
 import org.hkijena.acaq5.extensions.plots.datatypes.*;
-import org.hkijena.acaq5.extensions.plots.parameters.UIPlotDataSourceEnum;
-import org.hkijena.acaq5.extensions.plots.parameters.UIPlotDataSourceEnumParameterEditorUI;
+import org.hkijena.acaq5.extensions.plots.parameters.UIPlotDataSeriesColumnEnum;
+import org.hkijena.acaq5.extensions.plots.parameters.UIPlotDataSeriesColumnEnumParameterEditorUI;
 import org.hkijena.acaq5.extensions.plots.ui.resultanalysis.PlotDataSlotRowUI;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
@@ -15,7 +15,7 @@ import org.scijava.plugin.Plugin;
  * Provides a standard selection of plots
  */
 @Plugin(type = ACAQJavaExtension.class)
-public class StandardPlotsExtension extends ACAQPrepackagedDefaultJavaExtension {
+public class PlotsExtension extends ACAQPrepackagedDefaultJavaExtension {
 
     @Override
     public String getName() {
@@ -39,10 +39,6 @@ public class StandardPlotsExtension extends ACAQPrepackagedDefaultJavaExtension 
 
     @Override
     public void register() {
-
-        // Register generating data sources
-        registerPlotDataSource(RowIteratorPlotDataSource.class);
-        registerPlotDataSource(ZeroPlotDataSource.class);
 
         // Register extension so users can create plots
         registerMenuExtension(NewPlotMenuExtension.class);
@@ -115,7 +111,7 @@ public class StandardPlotsExtension extends ACAQPrepackagedDefaultJavaExtension 
         registerAlgorithm("plot-from-table", PlotGeneratorAlgorithm.class);
 
         // Register UI-specific parameters
-        registerParameterType(UIPlotDataSourceEnum.class, UIPlotDataSourceEnumParameterEditorUI.class,
+        registerParameterType(UIPlotDataSeriesColumnEnum.class, UIPlotDataSeriesColumnEnumParameterEditorUI.class,
                 "Data column", "A data column to be plot");
     }
 

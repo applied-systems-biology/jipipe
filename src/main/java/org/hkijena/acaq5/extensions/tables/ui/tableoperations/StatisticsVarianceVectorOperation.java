@@ -10,30 +10,30 @@
  * See the LICENSE file provided with this code for the full license.
  */
 
-package org.hkijena.acaq5.extensions.tableoperations.ui.tableoperations;
+package org.hkijena.acaq5.extensions.tables.ui.tableoperations;
 
 
 import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableVectorOperation;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * Converts the vector into a histogram vector
+ * Calculates the variance
  */
-public class ConvertToOccurrencesVectorOperation implements ACAQTableVectorOperation {
+public class StatisticsVarianceVectorOperation implements ACAQTableVectorOperation {
+
     @Override
     public Object[] process(Object[] input) {
-        Map<Object, Integer> counts = new HashMap<>();
+        double sumSquared = 0;
+        double sum = 0;
         for (Object object : input) {
-            int count = counts.getOrDefault(object, 0);
-            ++count;
-            counts.put(object, count);
+            if (object instanceof Number) {
+                sumSquared += Math.pow(((Number) object).doubleValue(), 2);
+                sum += ((Number) object).doubleValue();
+            } else {
+                sumSquared += Math.pow(Double.parseDouble("" + object), 2);
+                sum += Double.parseDouble("" + object);
+            }
         }
-        for (int i = 0; i < input.length; ++i) {
-            input[i] = counts.get(input[i]);
-        }
-        return input;
+        return new Object[]{(sumSquared / input.length) - Math.pow(sum / input.length, 2)};
     }
 
     @Override
@@ -43,6 +43,6 @@ public class ConvertToOccurrencesVectorOperation implements ACAQTableVectorOpera
 
     @Override
     public int getOutputCount(int inputItemCount) {
-        return inputItemCount;
+        return 1;
     }
 }

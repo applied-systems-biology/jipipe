@@ -2,6 +2,7 @@ package org.hkijena.acaq5.utils;
 
 import org.apache.commons.lang.reflect.ConstructorUtils;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -87,5 +88,20 @@ public class ReflectionUtils {
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Returns true if the class has a default constructor
+     * @param klass the class
+     * @return if the class has a default constructor
+     */
+    public static boolean hasDefaultConstructor(Class<?> klass) {
+        for (Constructor<?> constructor : klass.getConstructors()) {
+            // In Java 7-, use getParameterTypes and check the length of the array returned
+            if (constructor.getParameterTypes().length == 0) {
+                return true;
+            }
+        }
+        return false;
     }
 }

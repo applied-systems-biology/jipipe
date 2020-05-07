@@ -10,26 +10,30 @@
  * See the LICENSE file provided with this code for the full license.
  */
 
-package org.hkijena.acaq5.extensions.tableoperations.ui.tableoperations;
+package org.hkijena.acaq5.extensions.tables.ui.tableoperations;
 
 
 import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableVectorOperation;
 
 /**
- * Finds the maximum of entries
+ * Vector operation that converts a number > 0 into 1, and strings "true" into 1
+ * otherwise values are converted to 0
  */
-public class StatisticsMaxVectorOperation implements ACAQTableVectorOperation {
+public class ConvertToNumericBooleanVectorOperation implements ACAQTableVectorOperation {
     @Override
     public Object[] process(Object[] input) {
-        double max = Double.MAX_VALUE;
-        for (Object object : input) {
-            if (object instanceof Number) {
-                max = Math.max(max, ((Number) object).doubleValue());
+        for (int i = 0; i < input.length; ++i) {
+            if (input[i] instanceof Number) {
+                input[i] = ((Number) input[i]).intValue() > 0 ? 1 : 0;
+            } else if (input[i] instanceof String) {
+                input[i] = input[i].toString().equalsIgnoreCase("true") ? 1 : 0;
+            } else if (input[i] instanceof Boolean) {
+                input[i] = (Boolean) input[i] ? 1 : 0;
             } else {
-                max = Math.max(max, Double.parseDouble("" + object));
+                input[i] = 0;
             }
         }
-        return new Object[]{max};
+        return input;
     }
 
     @Override
@@ -39,6 +43,6 @@ public class StatisticsMaxVectorOperation implements ACAQTableVectorOperation {
 
     @Override
     public int getOutputCount(int inputItemCount) {
-        return 1;
+        return inputItemCount;
     }
 }

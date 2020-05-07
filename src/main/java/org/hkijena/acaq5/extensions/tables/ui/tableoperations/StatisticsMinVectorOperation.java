@@ -10,24 +10,26 @@
  * See the LICENSE file provided with this code for the full license.
  */
 
-package org.hkijena.acaq5.extensions.tableoperations.ui.tableoperations;
+package org.hkijena.acaq5.extensions.tables.ui.tableoperations;
 
 
 import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableVectorOperation;
 
 /**
- * Ensures that all values are numbers. Non-numeric values are converted to zero.
+ * Finds the minimum value
  */
-public class ConvertToNumericVectorOperation implements ACAQTableVectorOperation {
+public class StatisticsMinVectorOperation implements ACAQTableVectorOperation {
     @Override
     public Object[] process(Object[] input) {
-        for (int i = 0; i < input.length; ++i) {
-            if (input[i] instanceof Number) {
+        double min = Double.MAX_VALUE;
+        for (Object object : input) {
+            if (object instanceof Number) {
+                min = Math.min(min, ((Number) object).doubleValue());
             } else {
-                input[i] = 0;
+                min = Math.min(min, Double.parseDouble("" + object));
             }
         }
-        return input;
+        return new Object[]{min};
     }
 
     @Override
@@ -37,6 +39,6 @@ public class ConvertToNumericVectorOperation implements ACAQTableVectorOperation
 
     @Override
     public int getOutputCount(int inputItemCount) {
-        return inputItemCount;
+        return 1;
     }
 }

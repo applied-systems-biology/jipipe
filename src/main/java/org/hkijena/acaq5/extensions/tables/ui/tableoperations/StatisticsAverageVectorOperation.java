@@ -10,21 +10,26 @@
  * See the LICENSE file provided with this code for the full license.
  */
 
-package org.hkijena.acaq5.extensions.tableoperations.ui.tableoperations;
+package org.hkijena.acaq5.extensions.tables.ui.tableoperations;
 
 
 import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableVectorOperation;
 
-import java.util.Arrays;
-
 /**
- * Counts all non-null and non-empty entries
+ * Calculates the average
  */
-public class StatisticsCountNonNullVectorOperation implements ACAQTableVectorOperation {
+public class StatisticsAverageVectorOperation implements ACAQTableVectorOperation {
     @Override
     public Object[] process(Object[] input) {
-        long count = Arrays.stream(input).filter(o -> o != null && !("" + o).isEmpty()).count();
-        return new Object[]{count};
+        double sum = 0;
+        for (Object object : input) {
+            if (object instanceof Number) {
+                sum += ((Number) object).doubleValue();
+            } else {
+                sum += Double.parseDouble("" + object);
+            }
+        }
+        return new Object[]{sum / input.length};
     }
 
     @Override
