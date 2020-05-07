@@ -35,7 +35,7 @@ public class FormPanel extends JPanel {
      * Flag that indicates that documentation should be shown below if enabled.
      * This does not enable documentation! Use WITH_DOCUMENTATION for this.
      */
-    public static final int DOCUMENTATION_BELOW = 3;
+    public static final int DOCUMENTATION_BELOW = 4;
 
     private int numRows = 0;
     private JPanel forms = new JPanel();
