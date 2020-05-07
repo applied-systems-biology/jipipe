@@ -19,7 +19,7 @@ import org.hkijena.acaq5.extensions.plots.datatypes.PlotColumn;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotData;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotDataSeries;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotMetadata;
-import org.hkijena.acaq5.extensions.standardparametereditors.editors.ACAQDataParameterSettings;
+import org.hkijena.acaq5.extensions.parametereditors.editors.ACAQDataParameterSettings;
 import org.scijava.Priority;
 
 import java.util.ArrayList;

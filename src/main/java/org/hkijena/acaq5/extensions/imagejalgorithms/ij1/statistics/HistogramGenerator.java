@@ -18,7 +18,7 @@ import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
-import org.hkijena.acaq5.extensions.standardparametereditors.editors.ACAQTraitParameterSettings;
+import org.hkijena.acaq5.extensions.parametereditors.editors.ACAQTraitParameterSettings;
 import org.hkijena.acaq5.utils.ImageJUtils;
 
 import java.util.Arrays;

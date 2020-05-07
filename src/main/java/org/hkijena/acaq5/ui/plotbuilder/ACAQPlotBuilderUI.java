@@ -19,7 +19,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotData;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotDataSeries;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotMetadata;
-import org.hkijena.acaq5.extensions.standardparametereditors.editors.ACAQDataParameterSettings;
+import org.hkijena.acaq5.extensions.parametereditors.editors.ACAQDataParameterSettings;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;

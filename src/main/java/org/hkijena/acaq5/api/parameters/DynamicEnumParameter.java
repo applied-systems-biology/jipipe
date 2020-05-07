@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.api.parameters;
 
-import org.hkijena.acaq5.extensions.standardparametereditors.editors.DynamicEnumParameterSettings;
+import org.hkijena.acaq5.extensions.parametereditors.editors.DynamicEnumParameterSettings;
 
 import java.util.List;
 

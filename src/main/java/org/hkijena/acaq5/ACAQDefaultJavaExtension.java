@@ -19,7 +19,6 @@ import org.hkijena.acaq5.ui.extension.MenuExtension;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterGeneratorUI;
 import org.hkijena.acaq5.ui.plotbuilder.PlotDataSource;
-import org.hkijena.acaq5.ui.plotbuilder_old.ACAQLegacyPlot;
 import org.hkijena.acaq5.ui.registries.ACAQUIParametertypeRegistry;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultDataSlotCellUI;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultDataSlotRowUI;
@@ -239,17 +238,6 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
     }
 
     /**
-     * Registers a new plot type
-     *
-     * @param plotClass Plot class
-     * @param name      Plot type name
-     * @param icon      Plot type icon
-     */
-    public void registerPlot(Class<? extends ACAQLegacyPlot> plotClass, String name, ImageIcon icon) {
-        registry.getPlotBuilderRegistry().register(plotClass, name, icon);
-    }
-
-    /**
      * Registers a new table operation
      *
      * @param operationClass Operation class
@@ -282,10 +270,11 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
     /**
      * Registers a plot data source
      *
+     * @param id ID of the data source
      * @param klass the data source
      */
-    public void registerPlotDataSource(Class<? extends PlotDataSource> klass) {
-        registry.getPlotBuilderRegistry().registerDataSource(klass);
+    public void registerPlotDataSource(String id, Class<? extends PlotDataSource> klass) {
+        registry.getPlotBuilderRegistry().registerDataSource(id, klass);
     }
 
     @Override
