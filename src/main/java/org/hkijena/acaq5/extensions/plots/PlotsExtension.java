@@ -54,57 +54,57 @@ public class PlotsExtension extends ACAQPrepackagedDefaultJavaExtension {
         registerDatatype("plot-histogram",
                 HistogramPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/bar-plot.png"),
-                null,
+                PlotDataSlotRowUI.class,
                 null);
         registerDatatype("plot-category-bar",
                 BarCategoryPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/bar-plot.png"),
-                null,
+                PlotDataSlotRowUI.class,
                 null);
         registerDatatype("plot-category-bar-stacked",
                 StackedBarCategoryPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/bar-plot.png"),
-                null,
+                PlotDataSlotRowUI.class,
                 null);
         registerDatatype("plot-category-line",
                 LineCategoryPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/line-plot.png"),
-                null,
+                PlotDataSlotRowUI.class,
                 null);
         registerDatatype("plot-pie-2d",
                 Pie2DPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/pie-plot.png"),
-                null,
+                PlotDataSlotRowUI.class,
                 null);
         registerDatatype("plot-pie-3d",
                 Pie3DPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/pie-plot.png"),
-                null,
+                PlotDataSlotRowUI.class,
                 null);
         registerDatatype("plot-xy-scatter",
                 ScatterXYPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/scatter-plot.png"),
-                null,
+                PlotDataSlotRowUI.class,
                 null);
         registerDatatype("plot-xy-line",
                 LineXYPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/line-plot.png"),
-                null,
+                PlotDataSlotRowUI.class,
                 null);
         registerDatatype("plot-box-and-whisker",
                 BarBoxAndWhiskerCategoryPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/bar-plot.png"),
-                null,
+                PlotDataSlotRowUI.class,
                 null);
         registerDatatype("plot-category-statistical-bar",
                 BarStatisticalCategoryPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/bar-plot.png"),
-                null,
+                PlotDataSlotRowUI.class,
                 null);
         registerDatatype("plot-category-statistical-line",
                 LineStatisticalCategoryPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/line-plot.png"),
-                null,
+                PlotDataSlotRowUI.class,
                 null);
 
         // Register algorithms to create plots
