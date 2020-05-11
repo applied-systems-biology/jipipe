@@ -1,5 +1,7 @@
 package org.hkijena.acaq5.api.traits;
 
+import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
+
 import java.util.ArrayList;
 import java.util.Collection;
 

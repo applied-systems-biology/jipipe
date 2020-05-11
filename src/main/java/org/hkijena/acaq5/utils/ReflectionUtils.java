@@ -92,6 +92,7 @@ public class ReflectionUtils {
 
     /**
      * Returns true if the class has a default constructor
+     *
      * @param klass the class
      * @return if the class has a default constructor
      */

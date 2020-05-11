@@ -20,10 +20,10 @@ import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefCollection;
-import org.hkijena.acaq5.extensions.parametereditors.editors.ACAQTraitParameterSettings;
-import org.hkijena.acaq5.extensions.parametereditors.editors.StringParameterSettings;
+import org.hkijena.acaq5.extensions.parameters.editors.ACAQTraitParameterSettings;
+import org.hkijena.acaq5.extensions.parameters.editors.StringParameterSettings;
+import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.*;

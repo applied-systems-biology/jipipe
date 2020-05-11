@@ -25,6 +25,7 @@ public class AddColumnAlgorithm extends ACAQIteratingAlgorithm {
 
     /**
      * Creates a new instance
+     *
      * @param declaration algorithm declaration
      */
     public AddColumnAlgorithm(ACAQAlgorithmDeclaration declaration) {
@@ -33,6 +34,7 @@ public class AddColumnAlgorithm extends ACAQIteratingAlgorithm {
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public AddColumnAlgorithm(AddColumnAlgorithm other) {

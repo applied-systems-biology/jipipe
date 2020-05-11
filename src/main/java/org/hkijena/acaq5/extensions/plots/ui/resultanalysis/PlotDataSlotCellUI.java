@@ -41,10 +41,9 @@ public class PlotDataSlotCellUI extends ACAQResultDataSlotCellUI {
     public void render(ACAQProjectWorkbench workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
         setIcon(ACAQUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()));
         Path pngExport = findPlotPNGExport(slot, row);
-        if(pngExport == null) {
+        if (pngExport == null) {
             setIcon(ACAQUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()));
-        }
-        else {
+        } else {
             try {
                 BufferedImage image = ImageIO.read(pngExport.toFile());
                 double factor = image.getWidth() / 100.0;

@@ -18,7 +18,7 @@ public class DoubleArrayTableColumn implements TableColumn {
     /**
      * Creates a new instance
      *
-     * @param data the data. Can have any size
+     * @param data  the data. Can have any size
      * @param label non-empty name
      */
     public DoubleArrayTableColumn(double[] data, String label) {

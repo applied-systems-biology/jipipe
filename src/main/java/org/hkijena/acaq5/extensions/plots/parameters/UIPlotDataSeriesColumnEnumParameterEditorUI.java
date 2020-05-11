@@ -1,8 +1,8 @@
 package org.hkijena.acaq5.extensions.plots.parameters;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.parameters.DynamicEnumParameter;
-import org.hkijena.acaq5.extensions.parametereditors.editors.DynamicEnumParameterSettings;
+import org.hkijena.acaq5.extensions.parameters.DynamicEnumParameter;
+import org.hkijena.acaq5.extensions.parameters.editors.DynamicEnumParameterSettings;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.plotbuilder.PlotDataSeriesColumnListCellRenderer;

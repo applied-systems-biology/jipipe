@@ -9,6 +9,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
+import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitIconRef;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.HashSet;

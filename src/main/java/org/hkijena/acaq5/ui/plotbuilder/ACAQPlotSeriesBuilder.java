@@ -12,9 +12,9 @@ import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotColumn;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotDataSeries;
-import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotMetadata;
 import org.hkijena.acaq5.extensions.plots.parameters.UIPlotDataSeriesColumnEnum;
+import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
 
 import java.util.ArrayList;
 import java.util.HashMap;

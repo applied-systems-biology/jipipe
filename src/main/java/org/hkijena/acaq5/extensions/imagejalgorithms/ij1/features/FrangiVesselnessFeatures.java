@@ -5,7 +5,6 @@ import fiji.features.MultiTaskProgress;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import mpicbg.imglib.type.numeric.real.FloatType;
-import net.imglib2.transform.integer.Slicing;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
@@ -71,7 +70,7 @@ public class FrangiVesselnessFeatures extends ImageJ1Algorithm {
         ImagePlusGreyscale32FData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusGreyscale32FData.class);
         ImagePlus img = inputData.getImage();
 
-        if(invert) {
+        if (invert) {
             img = img.duplicate();
             ImageJUtils.forEachSlice(img, ImageProcessor::invert);
         }
@@ -90,7 +89,7 @@ public class FrangiVesselnessFeatures extends ImageJ1Algorithm {
         };
         ImagePlus result;
 
-        if(slicingMode == SlicingMode.Unchanged) {
+        if (slicingMode == SlicingMode.Unchanged) {
             result = frangi.process(img,
                     numScales,
                     minimumScale,
@@ -99,12 +98,10 @@ public class FrangiVesselnessFeatures extends ImageJ1Algorithm {
                     false,
                     false,
                     multiTaskProgress);
-        }
-        else if(slicingMode == SlicingMode.ApplyPer2DSlice) {
-            if(img != inputData.getImage()) {
+        } else if (slicingMode == SlicingMode.ApplyPer2DSlice) {
+            if (img != inputData.getImage()) {
                 result = img;
-            }
-            else {
+            } else {
                 result = img.duplicate();
             }
             ImageJUtils.forEachSlice(result, imp -> {
@@ -119,8 +116,7 @@ public class FrangiVesselnessFeatures extends ImageJ1Algorithm {
                         multiTaskProgress);
                 imp.setPixels(processedSlice.getProcessor().getPixels());
             });
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException("Not implemented: " + slicingMode);
         }
 

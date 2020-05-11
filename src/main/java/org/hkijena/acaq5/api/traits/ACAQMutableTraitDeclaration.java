@@ -7,7 +7,7 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
-import org.hkijena.acaq5.extensions.parametereditors.editors.StringParameterSettings;
+import org.hkijena.acaq5.extensions.parameters.editors.StringParameterSettings;
 
 import java.util.HashSet;
 import java.util.Set;
