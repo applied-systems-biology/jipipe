@@ -21,6 +21,7 @@ import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.edge.SobelEdgeDetectorA
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.features.FrangiVesselnessFeatures;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.fft.FFT2DForwardTransform;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.fft.FFT2DInverseTransform;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.fft.FFT2DSwapQuadrants;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.math.*;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.morphology.*;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.noise.AddNoise2DAlgorithm;
@@ -200,6 +201,7 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
 
         registerAlgorithm("ij1-fft-forward2d", FFT2DForwardTransform.class);
         registerAlgorithm("ij1-fft-inverse2d", FFT2DInverseTransform.class);
+        registerAlgorithm("ij1-fft-swap2d", FFT2DSwapQuadrants.class);
 
         registerAlgorithm("ij1-transform-flip2d", TransformFlip2DAlgorithm.class);
         registerAlgorithm("ij1-transform-rotate2d", TransformRotate2DAlgorithm.class);
