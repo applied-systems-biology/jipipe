@@ -13,6 +13,7 @@ import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.blur.*;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.color.InvertColorsAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.color.MergeChannelsAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.contrast.CLAHEContrastEnhancer;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions.StackInverterAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions.StackMergerAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions.StackSplitterAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions.ZProjectorAlgorithm;
@@ -187,6 +188,7 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
 
         registerAlgorithm("ij1-dimensions-stacksplitter", StackSplitterAlgorithm.class);
         registerAlgorithm("ij1-dimensions-stackmerger", StackMergerAlgorithm.class);
+        registerAlgorithm("ij1-dimensions-stackinverter", StackInverterAlgorithm.class);
         registerAlgorithm("ij1-dimensions-zproject", ZProjectorAlgorithm.class);
 
         registerAlgorithm("ij1-analyze-statistics-histogram", HistogramGenerator.class);
