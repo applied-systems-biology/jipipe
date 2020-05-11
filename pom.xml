@@ -104,6 +104,11 @@ See the LICENSE file provided with this code for the full license.
             <artifactId>imagej-legacy</artifactId>
         </dependency>
         <dependency>
+            <groupId>sc.fiji</groupId>
+            <artifactId>Feature_Detection</artifactId>
+            <version>2.0.2</version>
+        </dependency>
+        <dependency>
             <groupId>org.scijava</groupId>
             <artifactId>scijava-log-slf4j</artifactId>
         </dependency>

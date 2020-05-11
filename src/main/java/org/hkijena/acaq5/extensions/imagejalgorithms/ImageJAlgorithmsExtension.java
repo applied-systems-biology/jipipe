@@ -17,6 +17,7 @@ import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions.StackMergerA
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions.StackSplitterAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions.ZProjectorAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.edge.SobelEdgeDetectorAlgorithm;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.features.FrangiVesselnessFeatures;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.math.*;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.morphology.*;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.noise.AddNoise2DAlgorithm;
@@ -147,6 +148,8 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerAlgorithm("ij1-edge-sobel", SobelEdgeDetectorAlgorithm.class);
 
         registerAlgorithm("ij1-contrast-clahe", CLAHEContrastEnhancer.class);
+
+        registerAlgorithm("ij1-feature-vesselness-frangi", FrangiVesselnessFeatures.class);
 
         registerAlgorithm("ij1-math-math2d", ApplyMath2DAlgorithm.class);
         registerAlgorithm("ij1-math-transform2d", ApplyTransform2DAlgorithm.class);

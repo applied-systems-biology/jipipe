@@ -24,7 +24,6 @@
     <orderEntry type="library" name="Maven: net.imagej:imagej-mesh:0.7.1" level="project" />
     <orderEntry type="library" name="Maven: net.imglib2:imglib2-algorithm:0.11.1" level="project" />
     <orderEntry type="library" name="Maven: net.imglib2:imglib2-algorithm-fft:0.2.0" level="project" />
-    <orderEntry type="library" name="Maven: edu.mines:mines-jtk:20151125" level="project" />
     <orderEntry type="library" name="Maven: net.imglib2:imglib2-realtransform:2.2.1" level="project" />
     <orderEntry type="library" name="Maven: jitk:jitk-tps:3.0.1" level="project" />
     <orderEntry type="library" name="Maven: com.googlecode.efficient-java-matrix-library:ejml:0.24" level="project" />
@@ -150,6 +149,11 @@
     <orderEntry type="library" name="Maven: org.scijava:swing-checkbox-tree:1.0.2" level="project" />
     <orderEntry type="library" name="Maven: net.sourceforge.jdatepicker:jdatepicker:1.3.2" level="project" />
     <orderEntry type="library" name="Maven: org.javassist:javassist:3.25.0-GA" level="project" />
+    <orderEntry type="library" name="Maven: sc.fiji:Feature_Detection:2.0.2" level="project" />
+    <orderEntry type="library" name="Maven: sc.fiji:legacy-imglib1:1.1.9" level="project" />
+    <orderEntry type="library" name="Maven: edu.mines:mines-jtk:20151125" level="project" />
+    <orderEntry type="library" name="Maven: org.scijava:vecmath:1.6.0-scijava-2" level="project" />
+    <orderEntry type="library" name="Maven: gov.nist.math:jama:1.0.3" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:scijava-log-slf4j:1.0.5" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:guava:26.0-jre" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.findbugs:jsr305:3.0.2" level="project" />
@@ -158,7 +162,6 @@
     <orderEntry type="library" name="Maven: com.google.j2objc:j2objc-annotations:1.1" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.mojo:animal-sniffer-annotations:1.14" level="project" />
     <orderEntry type="library" name="Maven: fr.inra.ijpb:MorphoLibJ_:1.4.1" level="project" />
-    <orderEntry type="library" name="Maven: gov.nist.math:jama:1.0.3" level="project" />
     <orderEntry type="library" name="Maven: sc.fiji:FeatureJ_:2.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.7.3" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.7.3" level="project" />
