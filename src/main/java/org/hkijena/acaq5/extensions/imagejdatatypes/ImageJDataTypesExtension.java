@@ -42,6 +42,7 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d5.color.ImagePlus
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d5.color.ImagePlus5DColorData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d5.color.ImagePlus5DColorRGBData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d5.greyscale.*;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.fft.*;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.*;
 import org.hkijena.acaq5.extensions.imagejdatatypes.resultanalysis.ImageDataSlotRowUI;
 import org.hkijena.acaq5.extensions.imagejdatatypes.resultanalysis.ROIDataSlotRowUI;
@@ -136,6 +137,13 @@ public class ImageJDataTypesExtension extends ACAQPrepackagedDefaultJavaExtensio
         registerDatatype("imagej-results-table", ResultsTableData.class, ResourceUtils.getPluginResource("icons/data-types/results-table.png"),
                 ResultsTableDataSlotRowUI.class, null);
         registerImageJDataAdapter(new ResultsTableDataImageJAdapter(), ResultsTableDataImporterUI.class);
+
+        // Register FFT data types
+        registerImageDataType("imagej-imgplus-fft", ImagePlusFFTData.class, "icons/data-types/imgplus-fft.png");
+        registerImageDataType("imagej-imgplus-fft-2d", ImagePlusFFT2DData.class, "icons/data-types/imgplus-fft-2d.png");
+        registerImageDataType("imagej-imgplus-fft-3d", ImagePlusFFT3DData.class, "icons/data-types/imgplus-fft-3d.png");
+        registerImageDataType("imagej-imgplus-fft-4d", ImagePlusFFT4DData.class, "icons/data-types/imgplus-fft-4d.png");
+        registerImageDataType("imagej-imgplus-fft-5d", ImagePlusFFT5DData.class, "icons/data-types/imgplus-fft-5d.png");
 
         // Register data sources
         registerAlgorithm("import-imagej-roi-from-file", ROIDataFromFile.class);

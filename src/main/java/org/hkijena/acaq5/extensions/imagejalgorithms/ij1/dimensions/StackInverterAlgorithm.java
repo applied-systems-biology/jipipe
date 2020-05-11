@@ -1,7 +1,6 @@
 package org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions;
 
 import ij.ImagePlus;
-import ij.ImageStack;
 import ij.plugin.StackReverser;
 import ij.process.ImageProcessor;
 import org.hkijena.acaq5.api.ACAQDocumentation;
@@ -10,19 +9,10 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
-import org.hkijena.acaq5.api.traits.*;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
-import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 
-import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
-import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExtension.TO_3D_CONVERSION;
 
 /**
  * Wrapper around {@link ImageProcessor}
@@ -46,14 +36,6 @@ public class StackInverterAlgorithm extends ACAQIteratingAlgorithm {
                 .build());
     }
 
-    @Override
-    protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ImagePlus img = dataInterface.getInputData(getFirstInputSlot(), ImagePlus3DData.class).getImage().duplicate();
-        StackReverser reverser = new StackReverser();
-        reverser.flipStack(img);
-        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlus3DData(img));
-    }
-
     /**
      * Instantiates a new algorithm.
      *
@@ -61,6 +43,14 @@ public class StackInverterAlgorithm extends ACAQIteratingAlgorithm {
      */
     public StackInverterAlgorithm(StackInverterAlgorithm other) {
         super(other);
+    }
+
+    @Override
+    protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        ImagePlus img = dataInterface.getInputData(getFirstInputSlot(), ImagePlus3DData.class).getImage().duplicate();
+        StackReverser reverser = new StackReverser();
+        reverser.flipStack(img);
+        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlus3DData(img));
     }
 
     @Override

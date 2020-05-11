@@ -19,6 +19,8 @@ import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions.StackSplitte
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions.ZProjectorAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.edge.SobelEdgeDetectorAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.features.FrangiVesselnessFeatures;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.fft.FFT2DForwardTransform;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.fft.FFT2DInverseTransform;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.math.*;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.morphology.*;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.noise.AddNoise2DAlgorithm;
@@ -30,6 +32,8 @@ import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.statistics.HistogramGen
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.threshold.AutoThreshold2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.threshold.ManualThreshold16U2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.threshold.ManualThreshold8U2DAlgorithm;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.transform.TransformFlip2DAlgorithm;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.transform.TransformRotate2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColor8UData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
@@ -193,6 +197,12 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
 
         registerAlgorithm("ij1-analyze-statistics-histogram", HistogramGenerator.class);
         registerAlgorithm("ij1-analyze-statistics-pixels-greyscale", GreyscalePixelsGenerator.class);
+
+        registerAlgorithm("ij1-fft-forward2d", FFT2DForwardTransform.class);
+        registerAlgorithm("ij1-fft-inverse2d", FFT2DInverseTransform.class);
+
+        registerAlgorithm("ij1-transform-flip2d", TransformFlip2DAlgorithm.class);
+        registerAlgorithm("ij1-transform-rotate2d", TransformRotate2DAlgorithm.class);
 //        for (CommandInfo command : commandService.getCommands()) {
 //            if (ImageJ2AlgorithmWrapper.isCompatible(command, getContext())) {
 //                try {
