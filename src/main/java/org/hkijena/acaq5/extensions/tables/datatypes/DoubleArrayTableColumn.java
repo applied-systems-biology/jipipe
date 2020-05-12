@@ -9,8 +9,8 @@ import java.util.Arrays;
 /**
  * {@link TableColumn} that contains doubles.
  */
-@ACAQDocumentation(name = "")
-public class DoubleArrayTableColumn implements TableColumn {
+@ACAQDocumentation(name = "Numeric table column", description = "A table column that contains numbers (64bit floating point)")
+public class DoubleArrayTableColumn implements MutableTableColumn {
 
     private double[] data;
     private String label;

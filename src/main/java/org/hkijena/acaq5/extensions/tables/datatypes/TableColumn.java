@@ -52,4 +52,26 @@ public interface TableColumn extends ACAQData {
      * @return
      */
     String getLabel();
+
+    /**
+     * Returns true if the parameter is a mutable table column.
+     * Will return false if the data is not a {@link TableColumn}
+     *
+     * @param klass the class
+     * @return if the parameter is a mutable table column
+     */
+    static boolean isMutableTableColumn(Class<? extends ACAQData> klass) {
+        return MutableTableColumn.class.isAssignableFrom(klass);
+    }
+
+    /**
+     * Returns true if the parameter is a generating table column.
+     * Will return false if the data is not a {@link TableColumn}
+     *
+     * @param klass the class
+     * @return if the parameter is a mutable table column
+     */
+    static boolean isGeneratingTableColumn(Class<? extends ACAQData> klass) {
+        return TableColumn.class.isAssignableFrom(klass) && !MutableTableColumn.class.isAssignableFrom(klass);
+    }
 }

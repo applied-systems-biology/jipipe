@@ -19,6 +19,18 @@ public class StringFilterCollection extends CollectionParameter<StringFilter> im
     }
 
     /**
+     * Creates a copy
+     *
+     * @param other the original
+     */
+    public StringFilterCollection(StringFilterCollection other) {
+        super(StringFilter.class);
+        for (StringFilter filter : other) {
+            add(new StringFilter(filter));
+        }
+    }
+
+    /**
      * Returns true if one or more filters report that the string matches
      *
      * @param s the string

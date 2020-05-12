@@ -9,7 +9,6 @@ import org.hkijena.acaq5.extensions.tables.ColumnContentType;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
 import org.hkijena.acaq5.ui.components.ACAQDataDeclarationRefListCellRenderer;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
-import org.hkijena.acaq5.utils.ReflectionUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Context;
 
@@ -90,7 +89,7 @@ public class TableColumnGeneratorParameterEditorUI extends ACAQParameterEditorUI
     private ACAQDataDeclarationRef[] getAvailableGenerators() {
         List<Object> result = new ArrayList<>();
         for (Class<? extends ACAQData> klass : ACAQDatatypeRegistry.getInstance().getRegisteredDataTypes().values()) {
-            if (TableColumn.class.isAssignableFrom(klass) && ReflectionUtils.hasDefaultConstructor(klass)) {
+            if (TableColumn.isGeneratingTableColumn(klass)) {
                 ACAQDataDeclarationRef ref = new ACAQDataDeclarationRef(ACAQDataDeclaration.getInstance(klass));
                 result.add(ref);
             }

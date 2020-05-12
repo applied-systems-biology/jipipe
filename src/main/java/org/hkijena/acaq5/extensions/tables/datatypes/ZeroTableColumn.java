@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.extensions.tables.datatypes;
 
+import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.data.ACAQData;
 
 import java.nio.file.Path;
@@ -7,6 +8,7 @@ import java.nio.file.Path;
 /**
  * Generates numbers from 0 to row count
  */
+@ACAQDocumentation(name = "Zero table column", description = "A table column that generates zeros for each row.")
 public class ZeroTableColumn implements TableColumn {
     @Override
     public String getLabel() {

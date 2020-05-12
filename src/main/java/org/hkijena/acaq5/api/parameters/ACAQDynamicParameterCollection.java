@@ -15,6 +15,7 @@ import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * Holds a user-definable set of parameters
@@ -24,6 +25,7 @@ public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollec
     private EventBus eventBus = new EventBus();
     private BiMap<String, ACAQMutableParameterAccess> dynamicParameters = HashBiMap.create();
     private Set<Class<?>> allowedTypes = new HashSet<>();
+    private Function<UserParameterDefinition, ACAQMutableParameterAccess> instanceGenerator;
     private String name;
     private String description;
     private boolean allowUserModification = true;
@@ -57,6 +59,7 @@ public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollec
     public ACAQDynamicParameterCollection(ACAQDynamicParameterCollection other) {
         this.allowedTypes.addAll(other.allowedTypes);
         this.allowUserModification = other.allowUserModification;
+        this.instanceGenerator = other.instanceGenerator;
         for (Map.Entry<String, ACAQMutableParameterAccess> entry : other.dynamicParameters.entrySet()) {
             ACAQMutableParameterAccess parameterAccess = new ACAQMutableParameterAccess(entry.getValue());
             parameterAccess.setParameterHolder(this);
@@ -104,8 +107,14 @@ public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollec
      * @return The created parameter access
      */
     public ACAQMutableParameterAccess addParameter(String key, Class<?> fieldClass) {
-        ACAQMutableParameterAccess parameterAccess = new ACAQMutableParameterAccess(this, key, fieldClass);
-        parameterAccess.setName(key);
+        ACAQMutableParameterAccess parameterAccess;
+        if (instanceGenerator != null) {
+            parameterAccess = instanceGenerator.apply(new UserParameterDefinition(this, key, fieldClass));
+        } else {
+            parameterAccess = new ACAQMutableParameterAccess(this, key, fieldClass);
+            parameterAccess.setName(key);
+        }
+
         return addParameter(parameterAccess);
     }
 
@@ -298,6 +307,47 @@ public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollec
             if (o instanceof ACAQValidatable) {
                 report.forCategory(entry.getKey()).report((ACAQValidatable) o);
             }
+        }
+    }
+
+    public Function<UserParameterDefinition, ACAQMutableParameterAccess> getInstanceGenerator() {
+        return instanceGenerator;
+    }
+
+    public void setInstanceGenerator(Function<UserParameterDefinition, ACAQMutableParameterAccess> instanceGenerator) {
+        this.instanceGenerator = instanceGenerator;
+    }
+
+
+    /**
+     * Parameter definition by a user
+     */
+    public static class UserParameterDefinition {
+        private ACAQDynamicParameterCollection source;
+        private String name;
+        private Class<?> fieldClass;
+
+        /**
+         * @param source     parameter holder
+         * @param name       parameter name
+         * @param fieldClass parameter type
+         */
+        public UserParameterDefinition(ACAQDynamicParameterCollection source, String name, Class<?> fieldClass) {
+            this.source = source;
+            this.name = name;
+            this.fieldClass = fieldClass;
+        }
+
+        public ACAQDynamicParameterCollection getSource() {
+            return source;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public Class<?> getFieldClass() {
+            return fieldClass;
         }
     }
 }

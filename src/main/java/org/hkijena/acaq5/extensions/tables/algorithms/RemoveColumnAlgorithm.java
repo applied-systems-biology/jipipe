@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
- * Algorithm that adds or replaces a column by a generated value
+ * Algorithm that removes columns
  */
 @ACAQDocumentation(name = "Remove table column", description = "Removes one or multiple columns by name")
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Processor, menuPath = "Tables")
@@ -39,6 +39,7 @@ public class RemoveColumnAlgorithm extends ACAQIteratingAlgorithm {
      */
     public RemoveColumnAlgorithm(RemoveColumnAlgorithm other) {
         super(other);
+        this.filters = new StringFilterCollection(filters);
     }
 
     @Override

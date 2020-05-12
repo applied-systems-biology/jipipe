@@ -1,14 +1,18 @@
 package org.hkijena.acaq5.extensions.tables.algorithms;
 
+import com.google.common.html.HtmlEscapers;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.api.data.ACAQDataDeclaration;
 import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
+import org.hkijena.acaq5.api.parameters.ACAQMutableParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.extensions.tables.ColumnContentType;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
@@ -37,6 +41,7 @@ public class GenerateColumnAlgorithm extends ACAQIteratingAlgorithm {
      */
     public GenerateColumnAlgorithm(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
+        columns.setInstanceGenerator(GenerateColumnAlgorithm::generateColumnParameter);
     }
 
     /**
@@ -46,6 +51,8 @@ public class GenerateColumnAlgorithm extends ACAQIteratingAlgorithm {
      */
     public GenerateColumnAlgorithm(GenerateColumnAlgorithm other) {
         super(other);
+        this.replaceIfExists = other.replaceIfExists;
+        this.columns = new ACAQDynamicParameterCollection(other.columns);
     }
 
     @Override
@@ -97,5 +104,32 @@ public class GenerateColumnAlgorithm extends ACAQIteratingAlgorithm {
     @ACAQParameter("columns")
     public ACAQDynamicParameterCollection getColumns() {
         return columns;
+    }
+
+    /**
+     * Used for generating a new generator entry
+     *
+     * @param definition the parameter definition
+     * @return generated parameter
+     */
+    public static ACAQMutableParameterAccess generateColumnParameter(ACAQDynamicParameterCollection.UserParameterDefinition definition) {
+        ACAQMutableParameterAccess result = new ACAQMutableParameterAccess(definition.getSource(), definition.getName(), definition.getFieldClass());
+        result.setKey(definition.getName());
+
+        StringBuilder markdown = new StringBuilder();
+        markdown.append("You can select from one of the following generators: ");
+        markdown.append("<table>");
+        for (Class<? extends ACAQData> klass : ACAQDatatypeRegistry.getInstance().getRegisteredDataTypes().values()) {
+            if (TableColumn.isGeneratingTableColumn(klass)) {
+                ACAQDataDeclaration declaration = ACAQDataDeclaration.getInstance(klass);
+                markdown.append("<tr><td><strong>").append(HtmlEscapers.htmlEscaper().escape(declaration.getName())).append("</strong></td><td>")
+                        .append(HtmlEscapers.htmlEscaper().escape(declaration.getDescription())).append("</td></tr>");
+            }
+        }
+
+        markdown.append("</table>");
+        result.setDescription(markdown.toString());
+
+        return result;
     }
 }

@@ -106,7 +106,7 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
 
     private void installDefaultDataSources() {
         for (Class<? extends ACAQData> klass : ACAQDatatypeRegistry.getInstance().getRegisteredDataTypes().values()) {
-            if (TableColumn.class.isAssignableFrom(klass) && ReflectionUtils.hasDefaultConstructor(klass)) {
+            if (TableColumn.isGeneratingTableColumn(klass)) {
                 TableColumn dataSource = (TableColumn) ReflectionUtils.newInstance(klass);
                 availableData.put(dataSource.getLabel(), dataSource);
             }

@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.extensions.tables.datatypes;
 
+import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.data.ACAQData;
 
 import java.nio.file.Path;
@@ -8,7 +9,8 @@ import java.util.Arrays;
 /**
  * {@link TableColumn} that contains doubles.
  */
-public class StringArrayTableColumn implements TableColumn {
+@ACAQDocumentation(name = "String table column", description = "A table column that contains text values")
+public class StringArrayTableColumn implements MutableTableColumn {
 
     private String[] data;
     private String label;
