@@ -11,6 +11,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.data.ACAQDataDeclaration;
 
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Helper to allow easy serialization of {@link ACAQDataDeclaration} references
@@ -69,6 +70,19 @@ public class ACAQDataDeclarationRef implements ACAQValidatable {
             return declaration.getId();
         else
             return "<Null>";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ACAQDataDeclarationRef that = (ACAQDataDeclarationRef) o;
+        return Objects.equals(declaration, that.declaration);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(declaration);
     }
 
     /**

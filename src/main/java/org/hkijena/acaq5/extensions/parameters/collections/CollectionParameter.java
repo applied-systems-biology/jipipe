@@ -5,6 +5,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.hkijena.acaq5.api.ACAQValidatable;
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.io.IOException;
@@ -14,7 +16,7 @@ import java.util.ArrayList;
  * A parameter that is a collection of another parameter type
  */
 @JsonSerialize(using = CollectionParameter.Serializer.class)
-public abstract class CollectionParameter<T> extends ArrayList<T> {
+public abstract class CollectionParameter<T> extends ArrayList<T> implements ACAQValidatable {
     private Class<T> contentClass;
 
     /**
@@ -40,6 +42,16 @@ public abstract class CollectionParameter<T> extends ArrayList<T> {
             return instance;
         } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+        if (ACAQValidatable.class.isAssignableFrom(contentClass)) {
+            for (int i = 0; i < size(); i++) {
+                ACAQValidatable validatable = (ACAQValidatable) get(i);
+                report.forCategory("Item #" + (i + 1)).report(validatable);
+            }
         }
     }
 

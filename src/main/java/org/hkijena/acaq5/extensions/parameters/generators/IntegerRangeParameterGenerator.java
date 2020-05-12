@@ -5,14 +5,14 @@ import org.scijava.Context;
 /**
  * Generates {@link Integer}
  */
-public class IntegerParameterGenerator extends NumberParameterGenerator {
+public class IntegerRangeParameterGenerator extends NumberRangeParameterGenerator {
 
     /**
      * Creates a new instance
      *
      * @param context the SciJava context
      */
-    public IntegerParameterGenerator(Context context) {
+    public IntegerRangeParameterGenerator(Context context) {
         super(context, Integer.class);
     }
 }

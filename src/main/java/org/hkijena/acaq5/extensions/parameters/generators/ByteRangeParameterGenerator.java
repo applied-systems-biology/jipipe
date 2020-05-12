@@ -5,14 +5,14 @@ import org.scijava.Context;
 /**
  * Generates {@link Byte}
  */
-public class ByteParameterGenerator extends NumberParameterGenerator {
+public class ByteRangeParameterGenerator extends NumberRangeParameterGenerator {
 
     /**
      * Creates a new instance
      *
      * @param context the SciJava context
      */
-    public ByteParameterGenerator(Context context) {
+    public ByteRangeParameterGenerator(Context context) {
         super(context, Byte.class);
     }
 }

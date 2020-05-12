@@ -5,14 +5,14 @@ import org.scijava.Context;
 /**
  * Generates {@link Float}
  */
-public class FloatParameterGenerator extends NumberParameterGenerator {
+public class FloatRangeParameterGenerator extends NumberRangeParameterGenerator {
 
     /**
      * Creates a new instance
      *
      * @param context the SciJava context
      */
-    public FloatParameterGenerator(Context context) {
+    public FloatRangeParameterGenerator(Context context) {
         super(context, Float.class);
     }
 }

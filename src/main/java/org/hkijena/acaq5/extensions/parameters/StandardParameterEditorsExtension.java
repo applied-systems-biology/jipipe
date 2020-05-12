@@ -89,19 +89,20 @@ public class StandardParameterEditorsExtension extends ACAQPrepackagedDefaultJav
         registerParameterType(ACAQAlgorithmDeclarationRef.class, ACAQAlgorithmDeclarationRefParameterEditorUI.class, "Algorithm type", "An algorithm type");
         registerParameterType(ParameterTable.class, ParameterTableEditorUI.class, "Parameter table", "A table that contains parameters");
         registerParameterType(DynamicEnumParameter.class, DynamicEnumParameterEditorUI.class, null, "A selection of different values");
+        registerParameterType(DynamicStringEnumParameter.class, DynamicEnumParameterEditorUI.class, "String", "A selection of different values");
 
         // Register generators
-        registerParameterGenerator(byte.class, ByteParameterGenerator.class, "Generate 8-bit integral number sequence", "Generates 8-bit integral numbers");
-        registerParameterGenerator(short.class, ShortParameterGenerator.class, "Generate 16-bit integral number sequence", "Generates 16-bit integral numbers");
-        registerParameterGenerator(int.class, IntegerParameterGenerator.class, "Generate 32-bit integral number sequence", "Generates 32-bit integral numbers");
-        registerParameterGenerator(long.class, LongParameterGenerator.class, "Generate 64-bit integral number sequence", "Generates 64-bit integral numbers");
-        registerParameterGenerator(float.class, FloatParameterGenerator.class, "Generate single precision floating point number sequence", "Generates 32-bit floating point numbers");
-        registerParameterGenerator(double.class, DoubleParameterGenerator.class, "Generate double precision floating point number sequence", "Generates 64-bit floating point numbers");
-        registerParameterGenerator(Byte.class, ByteParameterGenerator.class, "Generate 8-bit integral number sequence", "Generates 8-bit integral numbers");
-        registerParameterGenerator(Short.class, ShortParameterGenerator.class, "Generate 16-bit integral number sequence", "Generates 16-bit integral numbers");
-        registerParameterGenerator(Integer.class, IntegerParameterGenerator.class, "Generate 32-bit integral number sequence", "Generates 32-bit integral numbers");
-        registerParameterGenerator(Long.class, LongParameterGenerator.class, "Generate 64-bit integral number sequence", "Generates 64-bit integral numbers");
-        registerParameterGenerator(Float.class, FloatParameterGenerator.class, "Generate single precision floating point number sequence", "Generates 32-bit floating point numbers");
-        registerParameterGenerator(Double.class, DoubleParameterGenerator.class, "Generate double precision floating point number sequence", "Generates 64-bit floating point numbers");
+        registerParameterGenerator(byte.class, ByteRangeParameterGenerator.class, "Generate 8-bit integral number sequence", "Generates 8-bit integral numbers");
+        registerParameterGenerator(short.class, ShortRangeParameterGenerator.class, "Generate 16-bit integral number sequence", "Generates 16-bit integral numbers");
+        registerParameterGenerator(int.class, IntegerRangeParameterGenerator.class, "Generate 32-bit integral number sequence", "Generates 32-bit integral numbers");
+        registerParameterGenerator(long.class, LongRangeParameterGenerator.class, "Generate 64-bit integral number sequence", "Generates 64-bit integral numbers");
+        registerParameterGenerator(float.class, FloatRangeParameterGenerator.class, "Generate single precision floating point number sequence", "Generates 32-bit floating point numbers");
+        registerParameterGenerator(double.class, DoubleRangeParameterGenerator.class, "Generate double precision floating point number sequence", "Generates 64-bit floating point numbers");
+        registerParameterGenerator(Byte.class, ByteRangeParameterGenerator.class, "Generate 8-bit integral number sequence", "Generates 8-bit integral numbers");
+        registerParameterGenerator(Short.class, ShortRangeParameterGenerator.class, "Generate 16-bit integral number sequence", "Generates 16-bit integral numbers");
+        registerParameterGenerator(Integer.class, IntegerRangeParameterGenerator.class, "Generate 32-bit integral number sequence", "Generates 32-bit integral numbers");
+        registerParameterGenerator(Long.class, LongRangeParameterGenerator.class, "Generate 64-bit integral number sequence", "Generates 64-bit integral numbers");
+        registerParameterGenerator(Float.class, FloatRangeParameterGenerator.class, "Generate single precision floating point number sequence", "Generates 32-bit floating point numbers");
+        registerParameterGenerator(Double.class, DoubleRangeParameterGenerator.class, "Generate double precision floating point number sequence", "Generates 64-bit floating point numbers");
     }
 }

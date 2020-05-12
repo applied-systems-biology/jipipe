@@ -7,6 +7,8 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
+import org.hkijena.acaq5.api.ACAQValidatable;
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.utils.JsonUtils;
@@ -17,7 +19,7 @@ import java.util.*;
 /**
  * Holds a user-definable set of parameters
  */
-public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollection {
+public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollection, ACAQValidatable {
 
     private EventBus eventBus = new EventBus();
     private BiMap<String, ACAQMutableParameterAccess> dynamicParameters = HashBiMap.create();
@@ -289,4 +291,13 @@ public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollec
         target.endModificationBlock();
     }
 
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+        for (Map.Entry<String, ACAQMutableParameterAccess> entry : dynamicParameters.entrySet()) {
+            Object o = entry.getValue().get();
+            if (o instanceof ACAQValidatable) {
+                report.forCategory(entry.getKey()).report((ACAQValidatable) o);
+            }
+        }
+    }
 }

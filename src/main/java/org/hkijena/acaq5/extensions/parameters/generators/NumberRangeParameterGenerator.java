@@ -20,7 +20,7 @@ import java.util.Map;
  * This cannot be used directly in {@link org.hkijena.acaq5.ui.registries.ACAQUIParametertypeRegistry}, as the constructor does
  * not match. You have to inherit from this type and define the number type.
  */
-public class NumberParameterGenerator<T extends Number & Comparable<T>> extends ACAQParameterGeneratorUI implements ACAQCustomParameterCollection {
+public class NumberRangeParameterGenerator<T extends Number & Comparable<T>> extends ACAQParameterGeneratorUI implements ACAQCustomParameterCollection {
 
     private EventBus eventBus = new EventBus();
     private Class<? extends Number> numberClass;
@@ -32,7 +32,7 @@ public class NumberParameterGenerator<T extends Number & Comparable<T>> extends 
      * @param context     the SciJava context
      * @param numberClass the Number class that is created
      */
-    public NumberParameterGenerator(Context context, Class<? extends Number> numberClass) {
+    public NumberRangeParameterGenerator(Context context, Class<? extends Number> numberClass) {
         super(context);
         this.numberClass = numberClass;
         initializeParameters();

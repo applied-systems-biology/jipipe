@@ -2,10 +2,14 @@ package org.hkijena.acaq5.extensions.tables;
 
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
+import org.hkijena.acaq5.extensions.tables.algorithms.GenerateColumnAlgorithm;
+import org.hkijena.acaq5.extensions.tables.algorithms.RemoveColumnAlgorithm;
 import org.hkijena.acaq5.extensions.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.acaq5.extensions.tables.datatypes.RowIndexTableColumn;
 import org.hkijena.acaq5.extensions.tables.datatypes.StringArrayTableColumn;
 import org.hkijena.acaq5.extensions.tables.datatypes.ZeroTableColumn;
+import org.hkijena.acaq5.extensions.tables.parameters.TableColumnGeneratorParameter;
+import org.hkijena.acaq5.extensions.tables.parameters.TableColumnGeneratorParameterEditorUI;
 import org.hkijena.acaq5.extensions.tables.ui.tableoperations.*;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -146,5 +150,12 @@ public class TablesExtension extends ACAQPrepackagedDefaultJavaExtension {
                 "TO_FACTORS",
                 "Replaces each item with an ID that uniquely identifies the item.",
                 UIUtils.getIconFromResources("inplace-function.png"));
+
+        // Register parameter types
+        registerParameterType(TableColumnGeneratorParameter.class, TableColumnGeneratorParameterEditorUI.class, "Column generator", "Defines a column generator");
+
+        // Register algorithms
+        registerAlgorithm("table-add-columns-generate", GenerateColumnAlgorithm.class);
+        registerAlgorithm("table-remove-columns", RemoveColumnAlgorithm.class);
     }
 }

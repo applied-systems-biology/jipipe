@@ -5,14 +5,14 @@ import org.scijava.Context;
 /**
  * Generates {@link Long}
  */
-public class LongParameterGenerator extends NumberParameterGenerator {
+public class LongRangeParameterGenerator extends NumberRangeParameterGenerator {
 
     /**
      * Creates a new instance
      *
      * @param context the SciJava context
      */
-    public LongParameterGenerator(Context context) {
+    public LongRangeParameterGenerator(Context context) {
         super(context, Long.class);
     }
 }

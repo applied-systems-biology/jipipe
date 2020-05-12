@@ -87,6 +87,11 @@ public class ACAQDataDeclaration implements Comparable<ACAQDataDeclaration> {
     }
 
     @Override
+    public String toString() {
+        return getName();
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(dataClass);
     }
