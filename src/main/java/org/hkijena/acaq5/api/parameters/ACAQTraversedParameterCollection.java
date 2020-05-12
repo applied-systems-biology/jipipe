@@ -7,7 +7,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
-import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.acaq5.utils.StringUtils;
 import org.scijava.Priority;
 
 import java.lang.reflect.InvocationTargetException;
@@ -27,6 +27,7 @@ public class ACAQTraversedParameterCollection implements ACAQParameterCollection
     private Map<ACAQParameterCollection, ACAQDocumentation> sourceDocumentation = new HashMap<>();
     private BiMap<String, ACAQParameterAccess> parameters = HashBiMap.create();
     private PriorityQueue<ACAQParameterAccess> parametersByPriority = new PriorityQueue<>(ACAQParameterAccess::comparePriority);
+    private Map<ACAQParameterCollection, Integer> sourceOrder = new HashMap<>();
 
     private boolean ignoreReflectionParameters = false;
     private boolean ignoreCustomParameters = false;
@@ -62,6 +63,18 @@ public class ACAQTraversedParameterCollection implements ACAQParameterCollection
      */
     public String getSourceKey(ACAQParameterCollection source) {
         return sourceKeys.getOrDefault(source, null);
+    }
+
+    /**
+     * Gets the UI order of an {@link ACAQParameterCollection}
+     * This is only used for UI.
+     * Lower values indicate that the source should be placed higher.
+     *
+     * @param source the collection
+     * @return UI order. 0 if no order was defined.
+     */
+    public int getSourceUIOrder(ACAQParameterCollection source) {
+        return sourceOrder.getOrDefault(source, 0);
     }
 
     /**
@@ -188,16 +201,15 @@ public class ACAQTraversedParameterCollection implements ACAQParameterCollection
             GetterSetterPair pair = entry.getValue();
             if (pair.getFieldClass() != null && !ACAQParameterCollection.class.isAssignableFrom(pair.getFieldClass())) {
                 if (pair.getter == null || pair.setter == null)
-                    throw new UserFriendlyRuntimeException("Invalid parameter definition: Getter or setter could not be found for key '" + entry.getKey() + "' in " + source,
-                            "Unable to load parameter!",
-                            "Parameters", "There is an error in the algorithm's code.",
-                            "Please contact the authors of the algorithm.");
+                    throw new RuntimeException("Invalid parameter definition: Getter or setter could not be found for key '" + entry.getKey() + "' in " + source);
 
                 ACAQReflectionParameterAccess parameterAccess = new ACAQReflectionParameterAccess();
                 parameterAccess.setSource(source);
                 parameterAccess.setKey(entry.getKey());
                 parameterAccess.setGetter(pair.getter);
                 parameterAccess.setSetter(pair.setter);
+                parameterAccess.setShortKey(pair.getShortKey());
+                parameterAccess.setUIOrder(pair.getUIOrder());
                 parameterAccess.setDocumentation(pair.getDocumentation());
                 parameterAccess.setVisibility(pair.getVisibility());
                 parameterAccess.setPriority(pair.getPriority());
@@ -216,6 +228,7 @@ public class ACAQTraversedParameterCollection implements ACAQParameterCollection
                         continue;
                     setSourceDocumentation(subParameters, pair.getDocumentation());
                     setSourceKey(subParameters, entry.getKey());
+                    setSourceUIOrder(subParameters, entry.getValue().getUIOrder());
                     List<ACAQParameterCollection> subParameterHierarchy = new ArrayList<>(hierarchy);
                     subParameterHierarchy.add(subParameters);
                     add(subParameters, subParameterHierarchy);
@@ -224,6 +237,16 @@ public class ACAQTraversedParameterCollection implements ACAQParameterCollection
                 }
             }
         }
+    }
+
+    /**
+     * Sets the UI order of a source
+     *
+     * @param collection the source
+     * @param uiOrder    the UI order
+     */
+    public void setSourceUIOrder(ACAQParameterCollection collection, int uiOrder) {
+        sourceOrder.put(collection, uiOrder);
     }
 
     @Override
@@ -341,6 +364,22 @@ public class ACAQTraversedParameterCollection implements ACAQParameterCollection
                 return getterAnnotation.priority();
             ACAQParameter setterAnnotation = setter.getAnnotation(ACAQParameter.class);
             return getterAnnotation.priority() != Priority.NORMAL ? getterAnnotation.priority() : setterAnnotation.priority();
+        }
+
+        public String getShortKey() {
+            ACAQParameter getterAnnotation = getter.getAnnotation(ACAQParameter.class);
+            if (!StringUtils.isNullOrEmpty(getterAnnotation.shortKey()))
+                return getterAnnotation.shortKey();
+            ACAQParameter setterAnnotation = setter.getAnnotation(ACAQParameter.class);
+            return setterAnnotation.shortKey();
+        }
+
+        public int getUIOrder() {
+            ACAQParameter getterAnnotation = getter.getAnnotation(ACAQParameter.class);
+            if (setter == null)
+                return getterAnnotation.uiOrder();
+            ACAQParameter setterAnnotation = setter.getAnnotation(ACAQParameter.class);
+            return getterAnnotation.uiOrder() != 0 ? getterAnnotation.uiOrder() : setterAnnotation.uiOrder();
         }
 
         public ACAQDocumentation getDocumentation() {

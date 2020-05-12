@@ -2,6 +2,7 @@ package org.hkijena.acaq5.api.parameters;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
+import org.scijava.util.StringUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -17,10 +18,10 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
     private Method setter;
     private double priority;
     private ACAQDocumentation documentation;
-    private String holderName;
-    private String holderDescription;
     private ACAQParameterVisibility visibility = ACAQParameterVisibility.TransitiveVisible;
     private ACAQParameterCollection source;
+    private String shortKey;
+    private int uiOrder;
 
     @Override
     public String getKey() {
@@ -129,5 +130,23 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
 
     public void setGetter(Method getter) {
         this.getter = getter;
+    }
+
+    @Override
+    public String getShortKey() {
+        return !StringUtils.isNullOrEmpty(shortKey) ? shortKey : getKey();
+    }
+
+    public void setShortKey(String shortKey) {
+        this.shortKey = shortKey;
+    }
+
+    @Override
+    public int getUIOrder() {
+        return uiOrder;
+    }
+
+    public void setUIOrder(int uiOrder) {
+        this.uiOrder = uiOrder;
     }
 }

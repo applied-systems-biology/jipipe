@@ -83,4 +83,14 @@ public class CollectionEntryParameterAccess<T> implements ACAQParameterAccess {
     public double getPriority() {
         return Priority.NORMAL;
     }
+
+    @Override
+    public String getShortKey() {
+        return getKey();
+    }
+
+    @Override
+    public int getUIOrder() {
+        return 0;
+    }
 }

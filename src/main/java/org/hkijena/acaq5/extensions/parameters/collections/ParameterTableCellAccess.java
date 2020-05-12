@@ -81,4 +81,14 @@ public class ParameterTableCellAccess implements ACAQParameterAccess {
     public double getPriority() {
         return 0;
     }
+
+    @Override
+    public String getShortKey() {
+        return getKey();
+    }
+
+    @Override
+    public int getUIOrder() {
+        return 0;
+    }
 }

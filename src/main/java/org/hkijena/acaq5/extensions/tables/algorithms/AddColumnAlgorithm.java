@@ -50,7 +50,7 @@ public class AddColumnAlgorithm extends ACAQIteratingAlgorithm {
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        if(StringUtils.isNullOrEmpty(columnName))
+        if (StringUtils.isNullOrEmpty(columnName))
             report.forCategory("Column name").reportIsInvalid("Column name is empty!",
                     "The target column name cannot be empty.",
                     "Please provide a non-empty name.",

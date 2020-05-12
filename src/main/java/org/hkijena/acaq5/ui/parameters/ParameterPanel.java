@@ -2,20 +2,18 @@ package org.hkijena.acaq5.ui.parameters;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.common.html.HtmlEscapers;
-import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.parameters.*;
-import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
-import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.registries.ACAQUIParametertypeRegistry;
 import org.hkijena.acaq5.utils.ResourceUtils;
-import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.Contextual;
+import org.scijava.util.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -37,6 +35,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
      * dynamic parameters) are not shown. Overridden by NO_GROUP_HEADERS.
      */
     public static final int NO_EMPTY_GROUP_HEADERS = 128;
+
     private Context context;
     private ACAQParameterCollection parameterCollection;
     private boolean noGroupHeaders;
@@ -59,23 +58,13 @@ public class ParameterPanel extends FormPanel implements Contextual {
     }
 
     /**
-     * @param workbenchUI         Workbench UI
-     * @param parameterCollection Parameter holder
-     * @param documentation       Optional documentation. Can be null.
+     * @param workbench           a workbench that contains a SciJava context
+     * @param parameterCollection Object containing the parameters
+     * @param documentation       Optional documentation
      * @param flags               Flags
      */
-    public ParameterPanel(ACAQProjectWorkbench workbenchUI, ACAQParameterCollection parameterCollection, MarkdownDocument documentation, int flags) {
-        this(workbenchUI.getContext(), parameterCollection, documentation, flags);
-    }
-
-    /**
-     * @param workbenchUI         Workbench UI
-     * @param parameterCollection Parameter holder
-     * @param documentation       Optional documentation. Can be null.
-     * @param flags               Flags
-     */
-    public ParameterPanel(ACAQJsonExtensionWorkbench workbenchUI, ACAQParameterCollection parameterCollection, MarkdownDocument documentation, int flags) {
-        this(workbenchUI.getContext(), parameterCollection, documentation, flags);
+    public ParameterPanel(ACAQWorkbench workbench, ACAQParameterCollection parameterCollection, MarkdownDocument documentation, int flags) {
+        this(workbench.getContext(), parameterCollection, documentation, flags);
     }
 
     /**
@@ -91,7 +80,8 @@ public class ParameterPanel extends FormPanel implements Contextual {
         }
 
         for (ACAQParameterCollection collection : groupedBySource.keySet().stream().sorted(
-                Comparator.nullsFirst(Comparator.comparing(parameterCollection::getSourceDocumentationName)))
+                Comparator.comparing(parameterCollection::getSourceUIOrder).thenComparing(
+                        Comparator.nullsFirst(Comparator.comparing(parameterCollection::getSourceDocumentationName))))
                 .collect(Collectors.toList())) {
             if (collection == this.parameterCollection)
                 continue;
@@ -108,7 +98,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
 
         if (!noGroupHeaders) {
             ACAQDocumentation documentation = parameterCollection.getSourceDocumentation(parameterHolder);
-            boolean documentationIsEmpty = documentation == null || (StringUtils.isNullOrEmpty(documentation.name()) && StringUtils.isNullOrEmpty(documentation.description()));
+            boolean documentationIsEmpty = documentation == null || (org.scijava.util.StringUtils.isNullOrEmpty(documentation.name()) && org.scijava.util.StringUtils.isNullOrEmpty(documentation.description()));
 
             if (!noEmptyGroupHeaders || (!documentationIsEmpty && !isModifiable)) {
                 GroupHeaderPanel groupHeaderPanel = addGroupHeader(parameterCollection.getSourceDocumentationName(parameterHolder),
@@ -131,11 +121,11 @@ public class ParameterPanel extends FormPanel implements Contextual {
 
         List<ACAQParameterEditorUI> uiList = new ArrayList<>();
         for (ACAQParameterAccess parameterAccess : parameterAccesses) {
-            ACAQParameterEditorUI ui = ACAQDefaultRegistry.getInstance()
-                    .getUIParametertypeRegistry().createEditorFor(getContext(), parameterAccess);
+            ACAQParameterEditorUI ui = ACAQUIParametertypeRegistry.getInstance().createEditorFor(getContext(), parameterAccess);
             uiList.add(ui);
         }
         for (ACAQParameterEditorUI ui : uiList.stream().sorted(Comparator.comparing((ACAQParameterEditorUI u) -> !u.isUILabelEnabled())
+                .thenComparing(u -> u.getParameterAccess().getUIOrder())
                 .thenComparing(u -> u.getParameterAccess().getName())).collect(Collectors.toList())) {
             ACAQParameterAccess parameterAccess = ui.getParameterAccess();
             JPanel labelPanel = new JPanel(new BorderLayout());
@@ -162,7 +152,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
         ACAQDocumentation documentation = ACAQUIParametertypeRegistry.getInstance().getDocumentationFor(access.getFieldClass());
         if (documentation != null) {
             markdownString.append("<table><tr>");
-            markdownString.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/data-types/data-type-parameters.png")).append("\" /></td>");
+            markdownString.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/wrench.png")).append("\" /></td>");
             markdownString.append("<td><strong>").append(HtmlEscapers.htmlEscaper().escape(documentation.name())).append("</strong>: ");
             markdownString.append(HtmlEscapers.htmlEscaper().escape(documentation.description())).append("</td></tr></table>\n\n");
         }

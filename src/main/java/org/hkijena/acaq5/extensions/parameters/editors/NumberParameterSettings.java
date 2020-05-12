@@ -13,18 +13,21 @@ import java.lang.annotation.Target;
 public @interface NumberParameterSettings {
     /**
      * Minimum value
+     *
      * @return Minimum value
      */
     double min() default Double.NEGATIVE_INFINITY;
 
     /**
      * Maximum value
+     *
      * @return Maximum value
      */
     double max() default Double.POSITIVE_INFINITY;
 
     /**
      * The step size when the user clicks increase/decrease
+     *
      * @return step size when the user clicks increase/decrease
      */
     double step() default 1;

@@ -1,7 +1,6 @@
 package org.hkijena.acaq5.extensions.imagejalgorithms.ij1.fft;
 
 import ij.ImagePlus;
-import ij.plugin.FFT;
 import ij.process.FHT;
 import ij.process.FloatProcessor;
 import org.hkijena.acaq5.api.ACAQDocumentation;
@@ -11,7 +10,6 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.fft.ImagePlusFFT2DData;
 import org.hkijena.acaq5.utils.ImageJUtils;
 

@@ -62,7 +62,7 @@ public class NumberParameterEditorUI extends ACAQParameterEditorUI {
 
     private Comparable<?> getMinimumValue() {
         NumberParameterSettings settings = getParameterAccess().getAnnotationOfType(NumberParameterSettings.class);
-        if(settings != null) {
+        if (settings != null) {
             return settings.min();
         }
 
@@ -85,7 +85,7 @@ public class NumberParameterEditorUI extends ACAQParameterEditorUI {
 
     private Comparable<?> getMaximumValue() {
         NumberParameterSettings settings = getParameterAccess().getAnnotationOfType(NumberParameterSettings.class);
-        if(settings != null) {
+        if (settings != null) {
             return settings.max();
         }
 
@@ -108,7 +108,7 @@ public class NumberParameterEditorUI extends ACAQParameterEditorUI {
 
     private double getStep() {
         NumberParameterSettings settings = getParameterAccess().getAnnotationOfType(NumberParameterSettings.class);
-        if(settings != null) {
+        if (settings != null) {
             return settings.step();
         }
         return 1;

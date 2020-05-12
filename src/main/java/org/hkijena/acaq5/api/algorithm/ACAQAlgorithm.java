@@ -202,7 +202,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterCol
      *
      * @return algorithm name
      */
-    @ACAQParameter(value = "name", visibility = ACAQParameterVisibility.Visible)
+    @ACAQParameter(value = "name", visibility = ACAQParameterVisibility.Visible, uiOrder = -1999)
     @ACAQDocumentation(name = "Name", description = "Custom algorithm name.")
     public String getName() {
         if (customName == null || customName.isEmpty())
@@ -733,7 +733,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterCol
      */
     @ACAQDocumentation(name = "Description", description = "A custom description")
     @StringParameterSettings(multiline = true)
-    @ACAQParameter(value = "description", visibility = ACAQParameterVisibility.Visible)
+    @ACAQParameter(value = "description", visibility = ACAQParameterVisibility.Visible, uiOrder = -999)
     public String getCustomDescription() {
         return customDescription;
     }

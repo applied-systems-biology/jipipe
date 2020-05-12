@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.scijava.Priority;
+import org.scijava.util.StringUtils;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -33,6 +34,8 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
     private Object value;
     private double priority = Priority.NORMAL;
     private Map<Class<? extends Annotation>, Annotation> annotationMap = new HashMap<>();
+    private String shortKey;
+    private int uiOrder;
 
     /**
      * Creates a new instance
@@ -223,6 +226,24 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
 
     public void setAnnotationMap(Map<Class<? extends Annotation>, Annotation> annotationMap) {
         this.annotationMap = annotationMap;
+    }
+
+    @Override
+    public String getShortKey() {
+        return !StringUtils.isNullOrEmpty(shortKey) ? shortKey : getKey();
+    }
+
+    public void setShortKey(String shortKey) {
+        this.shortKey = shortKey;
+    }
+
+    @Override
+    public int getUIOrder() {
+        return uiOrder;
+    }
+
+    public void setUIOrder(int uiOrder) {
+        this.uiOrder = uiOrder;
     }
 
     /**
