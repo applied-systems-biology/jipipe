@@ -191,6 +191,23 @@ public class ResultsTableData implements ACAQData, TableModel {
     }
 
     /**
+     * Renames a column
+     *
+     * @param column  the column
+     * @param newName the new name
+     */
+    public void renameColumn(String column, String newName) {
+        if (getColumnIndex(column) == -1)
+            throw new NullPointerException("Column '" + column + "' does not exist!");
+        if (column.equals(newName))
+            return;
+        if (getColumnIndex(newName) != -1)
+            throw new NullPointerException("Column '" + newName + "' already exists!");
+
+        table.renameColumn(column, newName);
+    }
+
+    /**
      * Fires a {@link TableModelEvent} to all listeners
      *
      * @param event the event

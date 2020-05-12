@@ -11,6 +11,7 @@ import org.hkijena.acaq5.extensions.parameters.collections.PathCollection;
 import org.hkijena.acaq5.extensions.parameters.editors.*;
 import org.hkijena.acaq5.extensions.parameters.filters.PathFilter;
 import org.hkijena.acaq5.extensions.parameters.filters.StringFilter;
+import org.hkijena.acaq5.extensions.parameters.filters.StringRenaming;
 import org.hkijena.acaq5.extensions.parameters.generators.*;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQAlgorithmDeclarationRef;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQDataDeclarationRef;
@@ -90,6 +91,7 @@ public class StandardParameterEditorsExtension extends ACAQPrepackagedDefaultJav
         registerParameterType(ParameterTable.class, ParameterTableEditorUI.class, "Parameter table", "A table that contains parameters");
         registerParameterType(DynamicEnumParameter.class, DynamicEnumParameterEditorUI.class, null, "A selection of different values");
         registerParameterType(DynamicStringEnumParameter.class, DynamicEnumParameterEditorUI.class, "String", "A selection of different values");
+        registerParameterType(StringRenaming.class, StringRenamingParameterEditorUI.class, "String renaming", "Contains instructions to rename a string");
 
         // Register generators
         registerParameterGenerator(byte.class, ByteRangeParameterGenerator.class, "Generate 8-bit integral number sequence", "Generates 8-bit integral numbers");

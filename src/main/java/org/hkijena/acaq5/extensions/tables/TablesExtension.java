@@ -4,6 +4,7 @@ import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.tables.algorithms.GenerateColumnAlgorithm;
 import org.hkijena.acaq5.extensions.tables.algorithms.RemoveColumnAlgorithm;
+import org.hkijena.acaq5.extensions.tables.algorithms.RenameColumnAlgorithm;
 import org.hkijena.acaq5.extensions.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.acaq5.extensions.tables.datatypes.RowIndexTableColumn;
 import org.hkijena.acaq5.extensions.tables.datatypes.StringArrayTableColumn;
@@ -157,5 +158,6 @@ public class TablesExtension extends ACAQPrepackagedDefaultJavaExtension {
         // Register algorithms
         registerAlgorithm("table-add-columns-generate", GenerateColumnAlgorithm.class);
         registerAlgorithm("table-remove-columns", RemoveColumnAlgorithm.class);
+        registerAlgorithm("table-rename-columns", RenameColumnAlgorithm.class);
     }
 }
