@@ -3,74 +3,69 @@ package org.hkijena.acaq5.extensions.parameters.collections;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
-import org.scijava.Priority;
 
 import java.lang.annotation.Annotation;
-import java.util.List;
 
 /**
- * Parameter access for one entry in {@link CollectionParameter}
+ * Parameter access for the key entry in {@link KeyValuePairParameter}
  */
-public class CollectionEntryParameterAccess<T> implements ACAQParameterAccess {
-
-    private List<T> entryList;
-    private Class<T> entryType;
-    private int index;
+public class KeyValueParameterValueAccess<K, V> implements ACAQParameterAccess {
     private ACAQParameterAccess parent;
+    private KeyValuePairParameter<K, V> keyValuePairParameter;
 
     /**
      * Creates a new instance
      *
-     * @param parent    the parent access
-     * @param entryList the list
-     * @param entryType type of the content
-     * @param index     the list entry index
+     * @param parent                the parent access
+     * @param keyValuePairParameter the parameter
      */
-    public CollectionEntryParameterAccess(ACAQParameterAccess parent, List<T> entryList, Class<T> entryType, int index) {
-        this.entryList = entryList;
-        this.entryType = entryType;
-        this.index = index;
+    public KeyValueParameterValueAccess(ACAQParameterAccess parent, KeyValuePairParameter<K, V> keyValuePairParameter) {
         this.parent = parent;
+        this.keyValuePairParameter = keyValuePairParameter;
+    }
+
+    public KeyValuePairParameter<K, V> getKeyValuePairParameter() {
+        return keyValuePairParameter;
     }
 
     @Override
     public String getKey() {
-        return "" + index;
+        return "value";
     }
 
     @Override
     public String getName() {
-        return "Item " + (index + 1);
+        return "Value";
     }
 
     @Override
     public String getDescription() {
-        return "Item in the collection";
+        return "Parameter value";
     }
 
     @Override
     public ACAQParameterVisibility getVisibility() {
-        return parent.getVisibility();
+        return ACAQParameterVisibility.TransitiveVisible;
     }
 
     @Override
     public <T extends Annotation> T getAnnotationOfType(Class<T> klass) {
-        return parent.getAnnotationOfType(klass);
+        return null;
     }
 
     @Override
     public Class<?> getFieldClass() {
-        return entryType;
+        return keyValuePairParameter.getValueClass();
     }
 
     @Override
-    public <U> U get() {
-        return (U) entryList.get(index);
+    public <T> T get() {
+        return (T) keyValuePairParameter.getValue();
     }
 
     @Override
-    public <U> boolean set(U value) {
-        entryList.set(index, (T) value);
+    public <T> boolean set(T value) {
+        keyValuePairParameter.setValue((V) value);
         return true;
     }
 
@@ -81,16 +76,20 @@ public class CollectionEntryParameterAccess<T> implements ACAQParameterAccess {
 
     @Override
     public double getPriority() {
-        return Priority.NORMAL;
+        return 0;
     }
 
     @Override
     public String getShortKey() {
-        return getKey();
+        return null;
     }
 
     @Override
     public int getUIOrder() {
         return 0;
+    }
+
+    public ACAQParameterAccess getParent() {
+        return parent;
     }
 }

@@ -1,7 +1,6 @@
 package org.hkijena.acaq5;
 
 import com.google.common.eventbus.EventBus;
-import org.hkijena.acaq5.api.ACAQDefaultDocumentation;
 import org.hkijena.acaq5.api.ACAQProjectMetadata;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
@@ -9,16 +8,19 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataConverter;
+import org.hkijena.acaq5.api.parameters.ACAQDefaultParameterTypeDeclaration;
+import org.hkijena.acaq5.api.parameters.ACAQParameterTypeDeclaration;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistrationTask;
 import org.hkijena.acaq5.api.registries.ACAQJavaAlgorithmRegistrationTask;
 import org.hkijena.acaq5.api.traits.ACAQJavaTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
+import org.hkijena.acaq5.extensions.parameters.primitives.EnumParameterTypeDeclaration;
 import org.hkijena.acaq5.ui.compat.ImageJDatatypeImporterUI;
 import org.hkijena.acaq5.ui.extension.MenuExtension;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterGeneratorUI;
-import org.hkijena.acaq5.ui.registries.ACAQUIParametertypeRegistry;
+import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultDataSlotCellUI;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultDataSlotRowUI;
 import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableVectorOperation;
@@ -30,6 +32,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Default implementation of {@link ACAQJavaExtension}
@@ -210,17 +214,61 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
     }
 
     /**
-     * Registers a new parameter type and respective editors
+     * Registers an {@link Enum} as parameter
      *
+     * @param id             Unique ID of this parameter type
      * @param parameterClass Parameter class
-     * @param uiClass        Parameter editor UI
      * @param name           Parameter class name
      * @param description    Description for the parameter type
      */
-    public void registerParameterType(Class<?> parameterClass, Class<? extends ACAQParameterEditorUI> uiClass, String name, String description) {
-        ACAQUIParametertypeRegistry parametertypeRegistry = registry.getUIParametertypeRegistry();
-        parametertypeRegistry.registerParameterEditor(parameterClass, uiClass);
-        parametertypeRegistry.registerDocumentation(parameterClass, new ACAQDefaultDocumentation(name, description));
+    public void registerEnumParameterType(String id, Class<? extends Enum<?>> parameterClass, String name, String description) {
+        registerParameterType(new EnumParameterTypeDeclaration(id, parameterClass, name, description), null);
+    }
+
+    /**
+     * Registers a new parameter type and respective editors
+     *
+     * @param id                   Unique ID of this parameter type
+     * @param parameterClass       Parameter class
+     * @param newInstanceGenerator Function that creates a new instance
+     * @param duplicateFunction    Function that copies an existing instance
+     * @param name                 Parameter class name
+     * @param description          Description for the parameter type
+     * @param uiClass              Parameter editor UI. Can be null if the editor is already provided.
+     */
+    public void registerParameterType(String id, Class<?> parameterClass, Supplier<Object> newInstanceGenerator, Function<Object, Object> duplicateFunction, String name, String description, Class<? extends ACAQParameterEditorUI> uiClass) {
+        ACAQDefaultParameterTypeDeclaration declaration = new ACAQDefaultParameterTypeDeclaration(id,
+                parameterClass,
+                newInstanceGenerator,
+                duplicateFunction,
+                name,
+                description);
+        registerParameterType(declaration, uiClass);
+    }
+
+    /**
+     * Registers a new parameter type and respective editor
+     *
+     * @param declaration the declaration
+     * @param uiClass     Parameter editor UI. Can be null if the editor is already provided.
+     */
+    public void registerParameterType(ACAQParameterTypeDeclaration declaration, Class<? extends ACAQParameterEditorUI> uiClass) {
+        registry.getParameterTypeRegistry().register(declaration);
+        if (uiClass != null) {
+            registerParameterEditor(declaration.getFieldClass(), uiClass);
+        }
+    }
+
+    /**
+     * Registers an editor for any parameter type that inherits from the provided parameter class.
+     * Please use this with caution, as unregistered parameters are rejected by components that require a unique
+     * parameter type ID (for example {@link org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection})
+     *
+     * @param parameterClass the parameter class
+     * @param uiClass        the editor class
+     */
+    public void registerParameterEditor(Class<?> parameterClass, Class<? extends ACAQParameterEditorUI> uiClass) {
+        registry.getUIParameterTypeRegistry().registerParameterEditor(parameterClass, uiClass);
     }
 
     /**
@@ -232,7 +280,7 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
      * @param description    Description for the generator
      */
     public void registerParameterGenerator(Class<?> parameterClass, Class<? extends ACAQParameterGeneratorUI> uiClass, String name, String description) {
-        ACAQUIParametertypeRegistry parametertypeRegistry = registry.getUIParametertypeRegistry();
+        ACAQUIParameterTypeRegistry parametertypeRegistry = registry.getUIParameterTypeRegistry();
         parametertypeRegistry.registerGenerator(parameterClass, uiClass, name, description);
     }
 

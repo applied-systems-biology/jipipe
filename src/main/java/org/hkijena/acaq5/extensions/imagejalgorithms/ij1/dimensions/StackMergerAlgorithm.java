@@ -32,7 +32,7 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
 @AlgorithmOutputSlot(value = ImagePlus3DData.class, slotName = "Output")
 public class StackMergerAlgorithm extends ACAQAlgorithm {
 
-    private ACAQTraitDeclarationRefCollection referenceAnnotations = new ACAQTraitDeclarationRefCollection();
+    private ACAQTraitDeclarationRefList referenceAnnotations = new ACAQTraitDeclarationRefList();
     private ACAQTraitDeclarationRef counterAnnotation = new ACAQTraitDeclarationRef(ACAQTraitRegistry.getInstance().getDeclarationById("image-index"));
     private boolean overrideReferenceAnnotations = false;
 
@@ -56,7 +56,7 @@ public class StackMergerAlgorithm extends ACAQAlgorithm {
      */
     public StackMergerAlgorithm(StackMergerAlgorithm other) {
         super(other);
-        this.referenceAnnotations = new ACAQTraitDeclarationRefCollection(other.referenceAnnotations);
+        this.referenceAnnotations = new ACAQTraitDeclarationRefList(other.referenceAnnotations);
         this.counterAnnotation = new ACAQTraitDeclarationRef(other.counterAnnotation);
         this.overrideReferenceAnnotations = other.overrideReferenceAnnotations;
     }
@@ -185,12 +185,12 @@ public class StackMergerAlgorithm extends ACAQAlgorithm {
     @ACAQDocumentation(name = "Reference annotations",
             description = "Data annotation types that are used as reference to group slices.")
     @ACAQParameter("reference-annotation-types")
-    public ACAQTraitDeclarationRefCollection getReferenceAnnotations() {
+    public ACAQTraitDeclarationRefList getReferenceAnnotations() {
         return referenceAnnotations;
     }
 
     @ACAQParameter("reference-annotation-types")
-    public void setReferenceAnnotations(ACAQTraitDeclarationRefCollection referenceAnnotations) {
+    public void setReferenceAnnotations(ACAQTraitDeclarationRefList referenceAnnotations) {
         this.referenceAnnotations = referenceAnnotations;
     }
 

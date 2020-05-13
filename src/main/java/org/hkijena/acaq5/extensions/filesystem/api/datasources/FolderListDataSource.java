@@ -11,7 +11,7 @@ import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FolderData;
-import org.hkijena.acaq5.extensions.parameters.collections.PathCollection;
+import org.hkijena.acaq5.extensions.parameters.collections.PathListParameter;
 import org.hkijena.acaq5.extensions.parameters.editors.FilePathParameterSettings;
 import org.hkijena.acaq5.ui.components.FileSelection;
 
@@ -28,7 +28,7 @@ import java.util.function.Supplier;
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.DataSource)
 public class FolderListDataSource extends ACAQAlgorithm {
 
-    private PathCollection folderPaths = new PathCollection();
+    private PathListParameter folderPaths = new PathListParameter();
     private Path currentWorkingDirectory;
 
     /**
@@ -64,7 +64,7 @@ public class FolderListDataSource extends ACAQAlgorithm {
     @ACAQParameter("folder-paths")
     @ACAQDocumentation(name = "Folder paths")
     @FilePathParameterSettings(ioMode = FileSelection.IOMode.Open, pathMode = FileSelection.PathMode.DirectoriesOnly)
-    public PathCollection getFolderPaths() {
+    public PathListParameter getFolderPaths() {
         return folderPaths;
     }
 
@@ -74,7 +74,7 @@ public class FolderListDataSource extends ACAQAlgorithm {
      * @param folderPaths Folder paths
      */
     @ACAQParameter("folder-paths")
-    public void setFolderPaths(PathCollection folderPaths) {
+    public void setFolderPaths(PathListParameter folderPaths) {
         this.folderPaths = folderPaths;
         getEventBus().post(new ParameterChangedEvent(this, "folder-paths"));
     }
@@ -82,8 +82,8 @@ public class FolderListDataSource extends ACAQAlgorithm {
     /**
      * @return Folder paths as absolute paths
      */
-    public PathCollection getAbsoluteFolderPaths() {
-        PathCollection result = new PathCollection();
+    public PathListParameter getAbsoluteFolderPaths() {
+        PathListParameter result = new PathListParameter();
         for (Path folderPath : folderPaths) {
             if (folderPath == null)
                 result.add(null);

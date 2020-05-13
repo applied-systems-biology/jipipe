@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.extensions.parameters.editors;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.extensions.parameters.collections.PathCollection;
+import org.hkijena.acaq5.extensions.parameters.collections.PathListParameter;
 import org.hkijena.acaq5.ui.components.FileSelection;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -14,7 +14,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 
 /**
- * Editor for {@link PathCollection}
+ * Editor for {@link PathListParameter}
  */
 public class PathCollectionParameterEditorUI extends ACAQParameterEditorUI {
 
@@ -64,9 +64,9 @@ public class PathCollectionParameterEditorUI extends ACAQParameterEditorUI {
     }
 
     private void removeSelectedEntries() {
-        PathCollection parameter = getParameterAccess().get();
+        PathListParameter parameter = getParameterAccess().get();
         if (parameter == null) {
-            parameter = new PathCollection();
+            parameter = new PathListParameter();
         }
         int[] indicies = listPanel.getSelectedIndices();
         Arrays.sort(indicies);
@@ -90,9 +90,9 @@ public class PathCollectionParameterEditorUI extends ACAQParameterEditorUI {
                 fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
                 break;
         }
-        PathCollection parameter = getParameterAccess().get();
+        PathListParameter parameter = getParameterAccess().get();
         if (parameter == null) {
-            parameter = new PathCollection();
+            parameter = new PathListParameter();
             getParameterAccess().set(parameter);
         }
         if (ioMode == FileSelection.IOMode.Open) {
@@ -122,9 +122,9 @@ public class PathCollectionParameterEditorUI extends ACAQParameterEditorUI {
     @Override
     public void reload() {
         DefaultListModel<String> listModel = new DefaultListModel<>();
-        PathCollection parameter = getParameterAccess().get();
+        PathListParameter parameter = getParameterAccess().get();
         if (parameter == null) {
-            parameter = new PathCollection();
+            parameter = new PathListParameter();
             getParameterAccess().set(parameter);
         }
         for (Path path : parameter) {

@@ -14,9 +14,7 @@ import java.util.*;
 /**
  * Registry for parameter types
  */
-public class ACAQUIParametertypeRegistry {
-
-    private Map<Class<?>, ACAQDocumentation> parameterDocumentations = new HashMap<>();
+public class ACAQUIParameterTypeRegistry {
     private Map<Class<?>, Class<? extends ACAQParameterEditorUI>> parameterTypes = new HashMap<>();
 
     private Map<Class<?>, Set<Class<? extends ACAQParameterGeneratorUI>>> parameterGenerators = new HashMap<>();
@@ -25,7 +23,7 @@ public class ACAQUIParametertypeRegistry {
     /**
      * New instance
      */
-    public ACAQUIParametertypeRegistry() {
+    public ACAQUIParameterTypeRegistry() {
 
     }
 
@@ -37,26 +35,6 @@ public class ACAQUIParametertypeRegistry {
      */
     public void registerParameterEditor(Class<?> parameterType, Class<? extends ACAQParameterEditorUI> uiClass) {
         parameterTypes.put(parameterType, uiClass);
-    }
-
-    /**
-     * Registers documentation for a parameter type
-     *
-     * @param parameterType parameter type
-     * @param documentation the documentation
-     */
-    public void registerDocumentation(Class<?> parameterType, ACAQDocumentation documentation) {
-        parameterDocumentations.put(parameterType, documentation);
-    }
-
-    /**
-     * Gets documentation for a parameter type
-     *
-     * @param parameterType parameter type
-     * @return documentation. Can be null.
-     */
-    public ACAQDocumentation getDocumentationFor(Class<?> parameterType) {
-        return parameterDocumentations.getOrDefault(parameterType, null);
     }
 
     /**
@@ -135,7 +113,7 @@ public class ACAQUIParametertypeRegistry {
         return parameterGeneratorDocumentations.get(generatorClass);
     }
 
-    public static ACAQUIParametertypeRegistry getInstance() {
-        return ACAQDefaultRegistry.getInstance().getUIParametertypeRegistry();
+    public static ACAQUIParameterTypeRegistry getInstance() {
+        return ACAQDefaultRegistry.getInstance().getUIParameterTypeRegistry();
     }
 }

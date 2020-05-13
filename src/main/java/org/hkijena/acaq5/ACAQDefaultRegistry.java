@@ -31,12 +31,13 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
     private ACAQDatatypeRegistry datatypeRegistry = new ACAQDatatypeRegistry();
     private ACAQTraitRegistry traitRegistry = new ACAQTraitRegistry();
     private ACAQUIDatatypeRegistry uiDatatypeRegistry = new ACAQUIDatatypeRegistry();
-    private ACAQUIParametertypeRegistry uiParametertypeRegistry = new ACAQUIParametertypeRegistry();
+    private ACAQUIParameterTypeRegistry uiParametertypeRegistry = new ACAQUIParameterTypeRegistry();
     private ACAQUITraitRegistry acaquiTraitRegistry = new ACAQUITraitRegistry();
     private ACAQTableAnalyzerUIOperationRegistry tableAnalyzerUIOperationRegistry = new ACAQTableAnalyzerUIOperationRegistry();
     private ACAQImageJAdapterRegistry imageJDataAdapterRegistry = new ACAQImageJAdapterRegistry();
     private ACAQUIImageJDatatypeAdapterRegistry uiImageJDatatypeAdapterRegistry = new ACAQUIImageJDatatypeAdapterRegistry();
     private ACAQUIMenuServiceRegistry uiMenuServiceRegistry = new ACAQUIMenuServiceRegistry();
+    private ACAQParameterTypeRegistry parameterTypeRegistry = new ACAQParameterTypeRegistry();
 
     @Parameter
     private PluginService pluginService;
@@ -59,12 +60,13 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
         datatypeRegistry = new ACAQDatatypeRegistry();
         algorithmRegistry = new ACAQAlgorithmRegistry();
         uiDatatypeRegistry = new ACAQUIDatatypeRegistry();
-        uiParametertypeRegistry = new ACAQUIParametertypeRegistry();
+        uiParametertypeRegistry = new ACAQUIParameterTypeRegistry();
         acaquiTraitRegistry = new ACAQUITraitRegistry();
         tableAnalyzerUIOperationRegistry = new ACAQTableAnalyzerUIOperationRegistry();
         imageJDataAdapterRegistry = new ACAQImageJAdapterRegistry();
         uiImageJDatatypeAdapterRegistry = new ACAQUIImageJDatatypeAdapterRegistry();
         uiMenuServiceRegistry = new ACAQUIMenuServiceRegistry();
+        parameterTypeRegistry = new ACAQParameterTypeRegistry();
         discover();
     }
 
@@ -133,7 +135,7 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
     }
 
     @Override
-    public ACAQUIParametertypeRegistry getUIParametertypeRegistry() {
+    public ACAQUIParameterTypeRegistry getUIParameterTypeRegistry() {
         return uiParametertypeRegistry;
     }
 
@@ -202,6 +204,11 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
 
     public PluginService getPluginService() {
         return pluginService;
+    }
+
+    @Override
+    public ACAQParameterTypeRegistry getParameterTypeRegistry() {
+        return parameterTypeRegistry;
     }
 
     /**

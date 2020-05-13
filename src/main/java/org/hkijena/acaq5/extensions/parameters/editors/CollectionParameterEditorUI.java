@@ -1,11 +1,11 @@
 package org.hkijena.acaq5.extensions.parameters.editors;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.extensions.parameters.collections.CollectionEntryParameterAccess;
-import org.hkijena.acaq5.extensions.parameters.collections.CollectionParameter;
+import org.hkijena.acaq5.extensions.parameters.collections.ListParameter;
+import org.hkijena.acaq5.extensions.parameters.collections.ListParameterItemParameterAccess;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
-import org.hkijena.acaq5.ui.registries.ACAQUIParametertypeRegistry;
+import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Context;
 
@@ -13,7 +13,7 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Generic parameter for {@link CollectionParameter}
+ * Generic parameter for {@link ListParameter}
  */
 public class CollectionParameterEditorUI extends ACAQParameterEditorUI {
     private FormPanel formPanel;
@@ -52,7 +52,7 @@ public class CollectionParameterEditorUI extends ACAQParameterEditorUI {
         reload();
     }
 
-    private CollectionParameter<?> getParameter() {
+    private ListParameter<?> getParameter() {
         return getParameterAccess().get();
     }
 
@@ -71,11 +71,11 @@ public class CollectionParameterEditorUI extends ACAQParameterEditorUI {
             UIUtils.makeBorderlessWithoutMargin(removeButton);
             removeButton.addActionListener(e -> removeEntry(entry));
 
-            CollectionEntryParameterAccess<?> access = new CollectionEntryParameterAccess(getParameterAccess(),
+            ListParameterItemParameterAccess<?> access = new ListParameterItemParameterAccess(getParameterAccess(),
                     getParameter(),
                     getParameter().getContentClass(),
                     i);
-            ACAQParameterEditorUI ui = ACAQUIParametertypeRegistry.getInstance().createEditorFor(getContext(), access);
+            ACAQParameterEditorUI ui = ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getContext(), access);
             formPanel.addToForm(ui, removeButton, null);
         }
     }

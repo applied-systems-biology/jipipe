@@ -7,7 +7,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
-import org.hkijena.acaq5.extensions.parameters.collections.StringFilterCollection;
+import org.hkijena.acaq5.extensions.parameters.collections.StringFilterListParameter;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 @AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class RemoveColumnAlgorithm extends ACAQIteratingAlgorithm {
 
-    private StringFilterCollection filters = new StringFilterCollection();
+    private StringFilterListParameter filters = new StringFilterListParameter();
 
     /**
      * Creates a new instance
@@ -39,7 +39,7 @@ public class RemoveColumnAlgorithm extends ACAQIteratingAlgorithm {
      */
     public RemoveColumnAlgorithm(RemoveColumnAlgorithm other) {
         super(other);
-        this.filters = new StringFilterCollection(filters);
+        this.filters = new StringFilterListParameter(filters);
     }
 
     @Override
@@ -62,12 +62,12 @@ public class RemoveColumnAlgorithm extends ACAQIteratingAlgorithm {
     @ACAQDocumentation(name = "Filters", description = "Please create one or more filters to select the removed columns. " +
             "Filters are linked via a logical OR operation.")
     @ACAQParameter("filters")
-    public StringFilterCollection getFilters() {
+    public StringFilterListParameter getFilters() {
         return filters;
     }
 
     @ACAQParameter("filters")
-    public void setFilters(StringFilterCollection filters) {
+    public void setFilters(StringFilterListParameter filters) {
         this.filters = filters;
     }
 }

@@ -25,6 +25,15 @@ public class DynamicStringEnumParameter extends DynamicEnumParameter {
     }
 
     /**
+     * Creates a copy
+     *
+     * @param other the original
+     */
+    public DynamicStringEnumParameter(DynamicStringEnumParameter other) {
+        setValue(other.getValue());
+    }
+
+    /**
      * Creates a new instance
      *
      * @param value initial value

@@ -20,7 +20,7 @@ import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefCollection;
+import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefList;
 import org.hkijena.acaq5.extensions.parameters.editors.ACAQTraitParameterSettings;
 import org.hkijena.acaq5.extensions.parameters.editors.StringParameterSettings;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
@@ -185,13 +185,13 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     @ACAQParameter("preferred-traits")
     @JsonGetter("preferred-traits")
     @ACAQTraitParameterSettings(showHidden = true)
-    public ACAQTraitDeclarationRefCollection getPreferredTraitIds() {
-        return new ACAQTraitDeclarationRefCollection(preferredTraits.stream().map(ACAQTraitDeclarationRef::new).collect(Collectors.toList()));
+    public ACAQTraitDeclarationRefList getPreferredTraitIds() {
+        return new ACAQTraitDeclarationRefList(preferredTraits.stream().map(ACAQTraitDeclarationRef::new).collect(Collectors.toList()));
     }
 
     @ACAQParameter("preferred-traits")
     @JsonGetter("preferred-traits")
-    public void setPreferredTraitIds(ACAQTraitDeclarationRefCollection ids) {
+    public void setPreferredTraitIds(ACAQTraitDeclarationRefList ids) {
         preferredTraits.clear();
         for (ACAQTraitDeclarationRef declarationRef : ids) {
             preferredTraits.add(declarationRef.getDeclaration());
@@ -203,13 +203,13 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     @ACAQParameter("unwanted-traits")
     @JsonGetter("unwanted-traits")
     @ACAQTraitParameterSettings(showHidden = true)
-    public ACAQTraitDeclarationRefCollection getUnwantedTraitIds() {
-        return new ACAQTraitDeclarationRefCollection(unwantedTraits.stream().map(ACAQTraitDeclarationRef::new).collect(Collectors.toList()));
+    public ACAQTraitDeclarationRefList getUnwantedTraitIds() {
+        return new ACAQTraitDeclarationRefList(unwantedTraits.stream().map(ACAQTraitDeclarationRef::new).collect(Collectors.toList()));
     }
 
     @ACAQParameter("unwanted-traits")
     @JsonGetter("unwanted-traits")
-    public void setUnwantedTraitIds(ACAQTraitDeclarationRefCollection ids) {
+    public void setUnwantedTraitIds(ACAQTraitDeclarationRefList ids) {
         unwantedTraits.clear();
         for (ACAQTraitDeclarationRef declarationRef : ids) {
             unwantedTraits.add(declarationRef.getDeclaration());
@@ -221,13 +221,13 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     @ACAQParameter("added-traits")
     @JsonGetter("added-traits")
     @ACAQTraitParameterSettings(showHidden = true)
-    public ACAQTraitDeclarationRefCollection getAddedTraitIds() {
-        return new ACAQTraitDeclarationRefCollection(addedTraits.stream().map(ACAQTraitDeclarationRef::new).collect(Collectors.toList()));
+    public ACAQTraitDeclarationRefList getAddedTraitIds() {
+        return new ACAQTraitDeclarationRefList(addedTraits.stream().map(ACAQTraitDeclarationRef::new).collect(Collectors.toList()));
     }
 
     @ACAQParameter("added-traits")
     @JsonGetter("added-traits")
-    public void setAddedTraitIds(ACAQTraitDeclarationRefCollection ids) {
+    public void setAddedTraitIds(ACAQTraitDeclarationRefList ids) {
         addedTraits.clear();
         for (ACAQTraitDeclarationRef declarationRef : ids) {
             addedTraits.add(declarationRef.getDeclaration());
@@ -239,13 +239,13 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     @ACAQParameter("removed-traits")
     @JsonGetter("removed-traits")
     @ACAQTraitParameterSettings(showHidden = true)
-    public ACAQTraitDeclarationRefCollection getRemovedTraitIds() {
-        return new ACAQTraitDeclarationRefCollection(removedTraits.stream().map(ACAQTraitDeclarationRef::new).collect(Collectors.toList()));
+    public ACAQTraitDeclarationRefList getRemovedTraitIds() {
+        return new ACAQTraitDeclarationRefList(removedTraits.stream().map(ACAQTraitDeclarationRef::new).collect(Collectors.toList()));
     }
 
     @ACAQParameter("removed-traits")
     @JsonGetter("removed-traits")
-    public void setRemovedTraitIds(ACAQTraitDeclarationRefCollection ids) {
+    public void setRemovedTraitIds(ACAQTraitDeclarationRefList ids) {
         removedTraits.clear();
         for (ACAQTraitDeclarationRef declarationRef : ids) {
             removedTraits.add(declarationRef.getDeclaration());

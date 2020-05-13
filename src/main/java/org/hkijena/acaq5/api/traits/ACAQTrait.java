@@ -32,6 +32,13 @@ public interface ACAQTrait {
     ACAQTraitDeclaration getDeclaration();
 
     /**
+     * Creates a copy of this trait
+     *
+     * @return the copy
+     */
+    ACAQTrait duplicate();
+
+    /**
      * Returns the name of given trait
      *
      * @param klass data class

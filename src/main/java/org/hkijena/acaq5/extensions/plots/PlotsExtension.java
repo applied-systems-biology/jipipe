@@ -108,9 +108,18 @@ public class PlotsExtension extends ACAQPrepackagedDefaultJavaExtension {
         // Register algorithms to create plots
         registerAlgorithm("plot-from-table", PlotGeneratorAlgorithm.class);
 
-        // Register UI-specific parameters
-        registerParameterType(UIPlotDataSeriesColumnEnum.class, UIPlotDataSeriesColumnEnumParameterEditorUI.class,
-                "Data column", "A data column to be plot");
+        // Register parameters
+        registerEnumParameterType("plot-histogram:type",
+                HistogramPlotData.HistogramType_.class,
+                "Histogram type",
+                "Available histogram types");
+        registerParameterType("plot-data:series-column",
+                UIPlotDataSeriesColumnEnum.class,
+                UIPlotDataSeriesColumnEnum::new,
+                c -> c,
+                "Data column",
+                "A data column to be plot",
+                UIPlotDataSeriesColumnEnumParameterEditorUI.class);
     }
 
 

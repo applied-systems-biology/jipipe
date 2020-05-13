@@ -16,6 +16,22 @@ public class TableColumnGeneratorParameter implements ACAQValidatable {
     private ACAQDataDeclarationRef generatorType;
     private ColumnContentType generatedType;
 
+    /**
+     * Creates a new instance
+     */
+    public TableColumnGeneratorParameter() {
+    }
+
+    /**
+     * Creates a copy
+     *
+     * @param other the original
+     */
+    public TableColumnGeneratorParameter(TableColumnGeneratorParameter other) {
+        this.generatorType = new ACAQDataDeclarationRef(other.generatorType);
+        this.generatedType = other.generatedType;
+    }
+
     @ACAQDocumentation(name = "Generator", description = "Which generator is responsible for generating the column")
     @JsonGetter("generator-type")
     @ACAQParameter("generator-type")

@@ -8,6 +8,7 @@ import org.hkijena.acaq5.api.parameters.ACAQMutableParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterGeneratorUI;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
+import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
 import org.scijava.Context;
 
 import java.awt.*;
@@ -17,7 +18,7 @@ import java.util.Map;
 
 /**
  * Generator that creates instances of {@link Number}.
- * This cannot be used directly in {@link org.hkijena.acaq5.ui.registries.ACAQUIParametertypeRegistry}, as the constructor does
+ * This cannot be used directly in {@link ACAQUIParameterTypeRegistry}, as the constructor does
  * not match. You have to inherit from this type and define the number type.
  */
 public class NumberRangeParameterGenerator<T extends Number & Comparable<T>> extends ACAQParameterGeneratorUI implements ACAQCustomParameterCollection {

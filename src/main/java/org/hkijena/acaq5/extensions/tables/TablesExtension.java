@@ -153,7 +153,17 @@ public class TablesExtension extends ACAQPrepackagedDefaultJavaExtension {
                 UIUtils.getIconFromResources("inplace-function.png"));
 
         // Register parameter types
-        registerParameterType(TableColumnGeneratorParameter.class, TableColumnGeneratorParameterEditorUI.class, "Column generator", "Defines a column generator");
+        registerEnumParameterType("table-column-content-type",
+                ColumnContentType.class,
+                "Column content type",
+                "Determines if the column is numeric or contains text values");
+        registerParameterType("table-column-generator",
+                TableColumnGeneratorParameter.class,
+                TableColumnGeneratorParameter::new,
+                p -> new TableColumnGeneratorParameter((TableColumnGeneratorParameter) p),
+                "Column generator",
+                "Defines a column generator",
+                TableColumnGeneratorParameterEditorUI.class);
 
         // Register algorithms
         registerAlgorithm("table-add-columns-generate", GenerateColumnAlgorithm.class);

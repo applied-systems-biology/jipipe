@@ -5,10 +5,11 @@ import com.google.common.html.HtmlEscapers;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.parameters.*;
+import org.hkijena.acaq5.api.registries.ACAQParameterTypeRegistry;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
-import org.hkijena.acaq5.ui.registries.ACAQUIParametertypeRegistry;
+import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Context;
@@ -121,7 +122,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
 
         List<ACAQParameterEditorUI> uiList = new ArrayList<>();
         for (ACAQParameterAccess parameterAccess : parameterAccesses) {
-            ACAQParameterEditorUI ui = ACAQUIParametertypeRegistry.getInstance().createEditorFor(getContext(), parameterAccess);
+            ACAQParameterEditorUI ui = ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getContext(), parameterAccess);
             uiList.add(ui);
         }
         for (ACAQParameterEditorUI ui : uiList.stream().sorted(Comparator.comparing((ACAQParameterEditorUI u) -> !u.isUILabelEnabled())
@@ -149,12 +150,12 @@ public class ParameterPanel extends FormPanel implements Contextual {
     private MarkdownDocument generateParameterDocumentation(ACAQParameterAccess access) {
         StringBuilder markdownString = new StringBuilder();
         markdownString.append("# Parameter '").append(access.getName()).append("'\n\n");
-        ACAQDocumentation documentation = ACAQUIParametertypeRegistry.getInstance().getDocumentationFor(access.getFieldClass());
-        if (documentation != null) {
+        ACAQParameterTypeDeclaration declaration = ACAQParameterTypeRegistry.getInstance().getDeclarationByFieldClass(access.getFieldClass());
+        if (declaration != null) {
             markdownString.append("<table><tr>");
             markdownString.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/wrench.png")).append("\" /></td>");
-            markdownString.append("<td><strong>").append(HtmlEscapers.htmlEscaper().escape(documentation.name())).append("</strong>: ");
-            markdownString.append(HtmlEscapers.htmlEscaper().escape(documentation.description())).append("</td></tr></table>\n\n");
+            markdownString.append("<td><strong>").append(HtmlEscapers.htmlEscaper().escape(declaration.getName())).append("</strong>: ");
+            markdownString.append(HtmlEscapers.htmlEscaper().escape(declaration.getDescription())).append("</td></tr></table>\n\n");
         }
         if (access.getDescription() != null && !access.getDescription().isEmpty()) {
             markdownString.append(access.getDescription());
@@ -176,12 +177,12 @@ public class ParameterPanel extends FormPanel implements Contextual {
     private void initializeAddDynamicParameterButton(JButton addButton, ACAQDynamicParameterCollection parameterHolder) {
         JPopupMenu menu = UIUtils.addPopupMenuToComponent(addButton);
         for (Class<?> allowedType : parameterHolder.getAllowedTypes()) {
-            ACAQDocumentation documentation = ACAQUIParametertypeRegistry.getInstance().getDocumentationFor(allowedType);
+            ACAQParameterTypeDeclaration declaration = ACAQParameterTypeRegistry.getInstance().getDeclarationByFieldClass(allowedType);
             String name = allowedType.getSimpleName();
             String description = "Inserts a new parameter";
-            if (documentation != null) {
-                name = documentation.name();
-                description = documentation.description();
+            if (declaration != null) {
+                name = declaration.getName();
+                description = declaration.getDescription();
             }
 
             JMenuItem addItem = new JMenuItem(name, UIUtils.getIconFromResources("add.png"));

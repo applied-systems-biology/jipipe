@@ -11,7 +11,7 @@ import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FileData;
-import org.hkijena.acaq5.extensions.parameters.collections.PathCollection;
+import org.hkijena.acaq5.extensions.parameters.collections.PathListParameter;
 import org.hkijena.acaq5.extensions.parameters.editors.FilePathParameterSettings;
 import org.hkijena.acaq5.ui.components.FileSelection;
 
@@ -28,7 +28,7 @@ import java.util.function.Supplier;
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.DataSource)
 public class FileListDataSource extends ACAQAlgorithm {
 
-    private PathCollection fileNames = new PathCollection();
+    private PathListParameter fileNames = new PathListParameter();
     private Path currentWorkingDirectory;
 
     /**
@@ -64,7 +64,7 @@ public class FileListDataSource extends ACAQAlgorithm {
     @ACAQParameter("file-names")
     @ACAQDocumentation(name = "File names")
     @FilePathParameterSettings(ioMode = FileSelection.IOMode.Open, pathMode = FileSelection.PathMode.FilesOnly)
-    public PathCollection getFileNames() {
+    public PathListParameter getFileNames() {
         return fileNames;
     }
 
@@ -74,7 +74,7 @@ public class FileListDataSource extends ACAQAlgorithm {
      * @param fileNames The file names
      */
     @ACAQParameter("file-names")
-    public void setFileNames(PathCollection fileNames) {
+    public void setFileNames(PathListParameter fileNames) {
         this.fileNames = fileNames;
         getEventBus().post(new ParameterChangedEvent(this, "file-names"));
     }
@@ -82,8 +82,8 @@ public class FileListDataSource extends ACAQAlgorithm {
     /**
      * @return Absolute file names
      */
-    public PathCollection getAbsoluteFileNames() {
-        PathCollection result = new PathCollection();
+    public PathListParameter getAbsoluteFileNames() {
+        PathListParameter result = new PathListParameter();
         for (Path fileName : fileNames) {
             if (fileName == null)
                 result.add(null);

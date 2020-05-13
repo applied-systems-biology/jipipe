@@ -1,18 +1,18 @@
 package org.hkijena.acaq5.extensions.parameters;
 
 import org.hkijena.acaq5.ACAQJavaExtension;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollectionVisibilities;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefCollection;
+import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefList;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
-import org.hkijena.acaq5.extensions.parameters.collections.CollectionParameter;
-import org.hkijena.acaq5.extensions.parameters.collections.ParameterTable;
-import org.hkijena.acaq5.extensions.parameters.collections.PathCollection;
+import org.hkijena.acaq5.extensions.parameters.collections.*;
 import org.hkijena.acaq5.extensions.parameters.editors.*;
 import org.hkijena.acaq5.extensions.parameters.filters.PathFilter;
 import org.hkijena.acaq5.extensions.parameters.filters.StringFilter;
 import org.hkijena.acaq5.extensions.parameters.filters.StringRenaming;
 import org.hkijena.acaq5.extensions.parameters.generators.*;
+import org.hkijena.acaq5.extensions.parameters.primitives.*;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQAlgorithmDeclarationRef;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQDataDeclarationRef;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
@@ -22,6 +22,7 @@ import org.scijava.plugin.Plugin;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Provides some standard parameters
@@ -53,45 +54,152 @@ public class StandardParameterEditorsExtension extends ACAQPrepackagedDefaultJav
     public void register() {
 
         // Register boolean
-        registerParameterType(boolean.class, BooleanParameterEditorUI.class, "Boolean value", "A boolean value (true/false)");
-        registerParameterType(Boolean.class, BooleanParameterEditorUI.class, "Boolean value", "A boolean value (true/false)");
+        registerParameterType(new BooleanPrimitiveParameterTypeDeclaration(), BooleanParameterEditorUI.class);
+        registerParameterType(new BooleanParameterTypeDeclaration(), BooleanParameterEditorUI.class);
 
         // Register numbers
-        registerParameterType(byte.class, NumberParameterEditorUI.class, "8-bit integer number", "A 8-bit integral number ranging from " + Byte.MIN_VALUE + " to " + Byte.MAX_VALUE);
-        registerParameterType(short.class, NumberParameterEditorUI.class, "16-bit integer number", "A 16-bit integral number ranging from " + Short.MIN_VALUE + " to " + Short.MAX_VALUE);
-        registerParameterType(int.class, NumberParameterEditorUI.class, "Integer number", "A 32-bit integral number ranging from " + Integer.MIN_VALUE + " to " + Integer.MAX_VALUE);
-        registerParameterType(long.class, NumberParameterEditorUI.class, "64-bit integer number", "A 64-bit integral number ranging from " + Long.MIN_VALUE + " to " + Long.MAX_VALUE);
-        registerParameterType(float.class, NumberParameterEditorUI.class, "Floating point number (single)", "A floating point number with single precision");
-        registerParameterType(double.class, NumberParameterEditorUI.class, "Floating point number (double)", "A floating point number with double precision");
-        registerParameterType(Byte.class, NumberParameterEditorUI.class, "8-bit integer number", "A 8-bit integral number ranging from " + Byte.MIN_VALUE + " to " + Byte.MAX_VALUE);
-        registerParameterType(Short.class, NumberParameterEditorUI.class, "16-bit integer number", "A 16-bit integral number ranging from " + Short.MIN_VALUE + " to " + Short.MAX_VALUE);
-        registerParameterType(Integer.class, NumberParameterEditorUI.class, "Integer number", "A integral number ranging from " + Integer.MIN_VALUE + " to " + Integer.MAX_VALUE);
-        registerParameterType(Long.class, NumberParameterEditorUI.class, "64-bit integer number", "A 64-bit integral number ranging from " + Long.MIN_VALUE + " to " + Long.MAX_VALUE);
-        registerParameterType(Float.class, NumberParameterEditorUI.class, "Floating point number (single)", "A floating point number with single precision");
-        registerParameterType(Double.class, NumberParameterEditorUI.class, "Floating point number (double)", "A floating point number with double precision");
+        registerParameterType(new BytePrimitiveParameterTypeDeclaration(), NumberParameterEditorUI.class);
+        registerParameterType(new ShortPrimitiveParameterTypeDeclaration(), NumberParameterEditorUI.class);
+        registerParameterType(new IntPrimitiveParameterTypeDeclaration(), NumberParameterEditorUI.class);
+        registerParameterType(new LongPrimitiveParameterTypeDeclaration(), NumberParameterEditorUI.class);
+        registerParameterType(new FloatPrimitiveParameterTypeDeclaration(), NumberParameterEditorUI.class);
+        registerParameterType(new DoublePrimitiveParameterTypeDeclaration(), NumberParameterEditorUI.class);
+        registerParameterType(new ByteParameterTypeDeclaration(), NumberParameterEditorUI.class);
+        registerParameterType(new ShortParameterTypeDeclaration(), NumberParameterEditorUI.class);
+        registerParameterType(new IntParameterTypeDeclaration(), NumberParameterEditorUI.class);
+        registerParameterType(new LongParameterTypeDeclaration(), NumberParameterEditorUI.class);
+        registerParameterType(new FloatParameterTypeDeclaration(), NumberParameterEditorUI.class);
+        registerParameterType(new DoubleParameterTypeDeclaration(), NumberParameterEditorUI.class);
 
         // Register other common Java classes
-        registerParameterType(Enum.class, EnumParameterEditorUI.class, null, "A selection of different values");
-        registerParameterType(String.class, StringParameterEditorUI.class, "String", "A text value");
-        registerParameterType(Path.class, FilePathParameterEditorUI.class, "Filesystem path", "A path");
-        registerParameterType(File.class, FileParameterEditorUI.class, "Filesystem path (legacy)", "A path (legacy)");
+        registerParameterEditor(Enum.class, EnumParameterEditorUI.class);
+        registerParameterType("string", String.class, () -> "", s -> s, "String", "A text value", StringParameterEditorUI.class);
+        registerParameterType("path", Path.class, () -> Paths.get(""), p -> p, "Filesystem path", "A path", FilePathParameterEditorUI.class);
+        registerParameterType("file", File.class, () -> new File(""), f -> f, "Filesystem path", "A path", FileParameterEditorUI.class);
 
-        // Register custom ACAQ5 parameters
-        registerParameterType(PathCollection.class, PathCollectionParameterEditorUI.class, "Path collection", "A list of multiple filesystem paths");
-        registerParameterType(PathFilter.class, PathFilterParameterEditorUI.class, "Path filter", "A filter for filenames or folder names");
-        registerParameterType(StringFilter.class, StringFilterParameterEditorUI.class, "String filter", "A filter for strings");
-        registerParameterType(ACAQTraitDeclarationRef.class, ACAQTraitDeclarationRefParameterEditorUI.class, "Annotation type", "An ACAQ5 annotation type");
-        registerParameterType(ACAQTraitDeclarationRefCollection.class, ACAQTraitDeclarationRefCollectionParameterEditorUI.class, "Annotation type collection", "A list of ACAQ5 annotation types");
-        registerParameterType(ACAQTrait.class, ACAQTraitParameterEditorUI.class, "Annotation", "An ACAQ5 annotation");
-        registerParameterType(ACAQDataDeclarationRef.class, ACAQDataDeclarationRefParameterEditorUI.class, "Data type", "An ACAQ5 data type");
-        registerParameterType(ACAQParameterCollectionVisibilities.class, ACAQParameterCollectionVisibilitiesParameterEditorUI.class, "Parameter visibilities", "ACAQ5 parameter visibilities");
-        registerParameterType(ACAQTraitIconRef.class, ACAQTraitIconRefParameterEditorUI.class, "Annotation icon", "An icon of an annotation type");
-        registerParameterType(CollectionParameter.class, CollectionParameterEditorUI.class, "Collection", "A collection of parameters");
-        registerParameterType(ACAQAlgorithmDeclarationRef.class, ACAQAlgorithmDeclarationRefParameterEditorUI.class, "Algorithm type", "An algorithm type");
-        registerParameterType(ParameterTable.class, ParameterTableEditorUI.class, "Parameter table", "A table that contains parameters");
-        registerParameterType(DynamicEnumParameter.class, DynamicEnumParameterEditorUI.class, null, "A selection of different values");
-        registerParameterType(DynamicStringEnumParameter.class, DynamicEnumParameterEditorUI.class, "String", "A selection of different values");
-        registerParameterType(StringRenaming.class, StringRenamingParameterEditorUI.class, "String renaming", "Contains instructions to rename a string");
+        // ACAQ5 registry reference types
+        registerParameterType("trait-type",
+                ACAQTraitDeclarationRef.class,
+                ACAQAlgorithmDeclarationRef::new,
+                r -> new ACAQAlgorithmDeclarationRef((ACAQAlgorithmDeclaration) r),
+                "Annotation type",
+                "Reference to an annotation type",
+                ACAQTraitDeclarationRefParameterEditorUI.class);
+        registerParameterType("data-type",
+                ACAQDataDeclarationRef.class,
+                ACAQDataDeclarationRef::new,
+                r -> new ACAQDataDeclarationRef((ACAQDataDeclarationRef) r),
+                "Data type",
+                "Reference to a data type",
+                ACAQDataDeclarationRefParameterEditorUI.class);
+        registerParameterType("algorithm-type",
+                ACAQAlgorithmDeclarationRef.class,
+                ACAQAlgorithmDeclarationRef::new,
+                r -> new ACAQAlgorithmDeclarationRef((ACAQAlgorithmDeclarationRef) r),
+                "Algorithm type",
+                "Reference to an algorithm type",
+                ACAQAlgorithmDeclarationRefParameterEditorUI.class);
+
+        // Special ACAQ5 reference types
+        registerParameterType("trait-type-icon",
+                ACAQTraitIconRef.class,
+                ACAQTraitIconRef::new,
+                r -> new ACAQTraitIconRef((ACAQTraitIconRef) r),
+                "Annotation type icon",
+                "Reference to an annotation type icon",
+                ACAQTraitIconRefParameterEditorUI.class);
+
+        // Filter parameters
+        registerParameterType("path-filter",
+                PathFilter.class,
+                PathFilter::new,
+                f -> new PathFilter((PathFilter) f),
+                "Path filter",
+                "A filter for file or folder names",
+                PathFilterParameterEditorUI.class);
+        registerParameterType("string-filter",
+                StringFilter.class,
+                StringFilter::new,
+                f -> new StringFilter((StringFilter) f),
+                "String filter",
+                "A filter for text values",
+                StringFilterParameterEditorUI.class);
+
+        // Map-like parameters
+        registerParameterEditor(KeyValuePairParameter.class, KeyValuePairParameterEditorUI.class);
+        registerParameterType("string-renaming",
+                StringRenaming.class,
+                StringRenaming::new,
+                r -> new StringRenaming((StringRenaming) r),
+                "Text replacement",
+                "Replaces a matched string by the target string",
+                null);
+
+        // Enum-like parameters
+        registerParameterEditor(DynamicEnumParameter.class, DynamicEnumParameterEditorUI.class);
+        registerParameterType("string-enum",
+                DynamicStringEnumParameter.class,
+                DynamicStringEnumParameter::new,
+                p -> new DynamicStringEnumParameter((DynamicStringEnumParameter) p),
+                "String selection",
+                "A selection of available strings",
+                null);
+
+        // Other ACAQ5 parameters
+        registerParameterType("trait",
+                ACAQTrait.class,
+                () -> null,
+                t -> ((ACAQTrait) t).duplicate(),
+                "Annotation",
+                "An annotation",
+                ACAQTraitParameterEditorUI.class);
+        registerParameterType("parameter-visibilities",
+                ACAQParameterCollectionVisibilities.class,
+                ACAQParameterCollectionVisibilities::new,
+                v -> new ACAQParameterCollectionVisibilities((ACAQParameterCollectionVisibilities) v),
+                "Parameter visibilities",
+                "Determines which parameters are visible to users",
+                ACAQParameterCollectionVisibilitiesParameterEditorUI.class);
+        registerParameterType("parameter-table",
+                ParameterTable.class,
+                ParameterTable::new,
+                t -> new ParameterTable((ParameterTable) t),
+                "Parameter table",
+                "A table that contains parameters",
+                ParameterTableEditorUI.class);
+        registerParameterType("path-list",
+                PathListParameter.class,
+                PathListParameter::new,
+                t -> new PathListParameter((PathListParameter) t),
+                "Path list",
+                "A list of file or folder paths",
+                PathCollectionParameterEditorUI.class);
+
+
+        // Collection parameters
+        registerParameterEditor(ListParameter.class, CollectionParameterEditorUI.class);
+        registerParameterType("path-filter-list", PathFilterListParameter.class,
+                PathFilterListParameter::new,
+                l -> new PathFilterListParameter((PathFilterListParameter) l),
+                "List of path filters",
+                "A list of filters that filter folder or file names",
+                null);
+        registerParameterType("string-filter-list", StringFilterListParameter.class,
+                StringFilterListParameter::new,
+                l -> new StringFilterListParameter((StringFilterListParameter) l),
+                "List of string filters",
+                "A list of filters for strings",
+                null);
+        registerParameterType("trait-type-list", ACAQTraitDeclarationRefList.class,
+                ACAQTraitDeclarationRefList::new,
+                l -> new ACAQTraitDeclarationRefList((ACAQTraitDeclarationRefList) l),
+                "List of annotation types",
+                "A list of annotation types",
+                ACAQTraitDeclarationRefCollectionParameterEditorUI.class);
+
+        // Enums
+        registerEnumParameterType("path-filter:mode", PathFilter.Mode.class, "Mode", "Available modes");
+        registerEnumParameterType("string-filter:mode", StringFilter.Mode.class, "Mode", "Available modes");
 
         // Register generators
         registerParameterGenerator(byte.class, ByteRangeParameterGenerator.class, "Generate 8-bit integral number sequence", "Generates 8-bit integral numbers");

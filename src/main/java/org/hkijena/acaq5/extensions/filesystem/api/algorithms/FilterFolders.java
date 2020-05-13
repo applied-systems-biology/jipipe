@@ -9,7 +9,7 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FolderData;
-import org.hkijena.acaq5.extensions.parameters.collections.PathFilterCollection;
+import org.hkijena.acaq5.extensions.parameters.collections.PathFilterListParameter;
 import org.hkijena.acaq5.extensions.parameters.filters.PathFilter;
 
 import java.util.function.Consumer;
@@ -28,7 +28,7 @@ import java.util.function.Supplier;
 // Traits
 public class FilterFolders extends ACAQIteratingAlgorithm {
 
-    private PathFilterCollection filters = new PathFilterCollection();
+    private PathFilterListParameter filters = new PathFilterListParameter();
 
     /**
      * Initializes the algorithm
@@ -78,12 +78,12 @@ public class FilterFolders extends ACAQIteratingAlgorithm {
 
     @ACAQParameter("filters")
     @ACAQDocumentation(name = "Filters")
-    public PathFilterCollection getFilters() {
+    public PathFilterListParameter getFilters() {
         return filters;
     }
 
     @ACAQParameter("filters")
-    public void setFilters(PathFilterCollection filters) {
+    public void setFilters(PathFilterListParameter filters) {
         this.filters = filters;
         getEventBus().post(new ParameterChangedEvent(this, "filters"));
     }

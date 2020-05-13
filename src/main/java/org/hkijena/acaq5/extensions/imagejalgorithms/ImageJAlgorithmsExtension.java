@@ -205,16 +205,47 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
 
         registerAlgorithm("ij1-transform-flip2d", TransformFlip2DAlgorithm.class);
         registerAlgorithm("ij1-transform-rotate2d", TransformRotate2DAlgorithm.class);
-//        for (CommandInfo command : commandService.getCommands()) {
-//            if (ImageJ2AlgorithmWrapper.isCompatible(command, getContext())) {
-//                try {
-//                    ImageJ2AlgorithmWrapperDeclaration declaration = new ImageJ2AlgorithmWrapperDeclaration(command, getContext());
-//                    registerAlgorithm(new ImageJ2AlgorithmWrapperRegistrationTask(this, declaration));
-//                } catch (ModuleException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
+
+        // Register enum parameters
+        registerEnumParameterType("ij1-background-rollingball2d:background-type", RollingBallBackgroundEstimator2DAlgorithm.BackgroundType.class,
+                "Background type", "Available background types");
+        registerEnumParameterType("ij1-background-rollingball2d:background-method", RollingBallBackgroundEstimator2DAlgorithm.Method.class,
+                "Rolling ball method", "Available methods");
+
+        registerEnumParameterType("ij1-color-merge-channels:channel-color", MergeChannelsAlgorithm.ChannelColor.class,
+                "Channel color", "Available channel colors");
+
+        registerEnumParameterType("ij1-dimensions-zproject:method", ZProjectorAlgorithm.Method.class,
+                "Method", "Available methods");
+
+        registerEnumParameterType("ij1-feature-vesselness-frangi:slicing-mode", FrangiVesselnessFeatures.SlicingMode.class,
+                "Slicing mode", "Available slicing modes");
+
+        registerEnumParameterType("ij1-math-math2d:transformation", ApplyMath2DAlgorithm.Transformation.class,
+                "Transformation", "Available transformations");
+        registerEnumParameterType("ij1-math-transform2d:transformation", ApplyTransform2DAlgorithm.Transformation.class,
+                "Transformation", "Available transformations");
+
+        registerEnumParameterType("ij1-math-imagecalculator2d:operation", ImageCalculator2DAlgorithm.Operation.class,
+                "Operation", "Available operations");
+        registerEnumParameterType("ij1-math-imagecalculator2d:operand", ImageCalculator2DAlgorithm.Operand.class,
+                "Operand", "Available operands");
+
+        registerEnumParameterType("ij1-morph-binary-operation2d:operation", MorphologyBinary2DAlgorithm.Operation.class,
+                "Operation", "Available operations");
+        registerEnumParameterType("ij1-morph-greyscale-operation2d:operation", MorphologyGreyscale2DAlgorithm.Operation.class,
+                "Operation", "Available operations");
+
+        registerEnumParameterType("ij1-noise-removeoutliers2d:mode", RemoveOutliersFilter2DAlgorithm.Mode.class,
+                "Mode", "Available modes");
+
+        registerEnumParameterType("ij1-analyze-statistics-histogram:multi-channel-mode", HistogramGenerator.MultiChannelMode.class,
+                "Multichannel mode", "Available modes");
+
+        registerEnumParameterType("ij1-transform-flip2d:flip-mode", TransformFlip2DAlgorithm.FlipMode.class,
+                "Flip mode", "Available modes");
+        registerEnumParameterType("ij1-transform-rotate2d:rotation-mode", TransformRotate2DAlgorithm.RotationMode.class,
+                "Rotation mode", "Available modes");
     }
 
     @Override

@@ -3,6 +3,7 @@ package org.hkijena.acaq5.api.parameters;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -19,6 +20,16 @@ public class ACAQParameterCollectionVisibilities {
      * Creates new instance
      */
     public ACAQParameterCollectionVisibilities() {
+    }
+
+    /**
+     * Creates a copy
+     *
+     * @param other the original
+     */
+    public ACAQParameterCollectionVisibilities(ACAQParameterCollectionVisibilities other) {
+        this.availableParameters = new HashMap<>(other.availableParameters);
+        this.visibleParameters = new HashSet<>(other.visibleParameters);
     }
 
     /**

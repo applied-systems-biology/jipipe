@@ -20,6 +20,11 @@ public class ACAQDefaultTrait implements ACAQTrait {
     }
 
     @Override
+    public ACAQTrait duplicate() {
+        return declaration.newInstance();
+    }
+
+    @Override
     public String toString() {
         return "" + getDeclaration();
     }

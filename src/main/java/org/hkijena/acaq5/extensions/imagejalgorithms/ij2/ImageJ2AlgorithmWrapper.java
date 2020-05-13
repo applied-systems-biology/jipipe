@@ -15,7 +15,7 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.acaq5.ui.registries.ACAQUIParametertypeRegistry;
+import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
@@ -219,7 +219,7 @@ public class ImageJ2AlgorithmWrapper extends ACAQIteratingAlgorithm {
      * @return if the module item is of a parameter type supported by ACAQ5 parameter editors
      */
     public static boolean isCompatibleParameter(ModuleItem<?> moduleItem) {
-        return ACAQUIParametertypeRegistry.getInstance().hasEditorFor(moduleItem.getType());
+        return ACAQUIParameterTypeRegistry.getInstance().hasEditorFor(moduleItem.getType());
     }
 
 }

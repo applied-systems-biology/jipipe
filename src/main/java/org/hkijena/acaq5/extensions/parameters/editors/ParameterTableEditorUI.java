@@ -6,7 +6,7 @@ import org.hkijena.acaq5.extensions.parameters.collections.ParameterTable;
 import org.hkijena.acaq5.extensions.parameters.collections.ParameterTableCellAccess;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterGeneratorUI;
-import org.hkijena.acaq5.ui.registries.ACAQUIParametertypeRegistry;
+import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 import org.scijava.Context;
@@ -101,9 +101,9 @@ public class ParameterTableEditorUI extends ACAQParameterEditorUI {
         ParameterTable parameterTable = getParameterAccess().get();
         boolean hasColumnEntries = false;
         if (parameterTable != null) {
-            for (Class<? extends ACAQParameterGeneratorUI> generator : ACAQUIParametertypeRegistry.getInstance()
+            for (Class<? extends ACAQParameterGeneratorUI> generator : ACAQUIParameterTypeRegistry.getInstance()
                     .getGeneratorsFor(parameterTable.getColumn(col).getFieldClass())) {
-                ACAQDocumentation documentation = ACAQUIParametertypeRegistry.getInstance().getGeneratorDocumentationFor(generator);
+                ACAQDocumentation documentation = ACAQUIParameterTypeRegistry.getInstance().getGeneratorDocumentationFor(generator);
                 JMenuItem replaceCellItem = new JMenuItem(documentation.name());
                 replaceCellItem.setToolTipText(documentation.description());
                 replaceCellItem.setIcon(UIUtils.getIconFromResources("edit.png"));
@@ -147,9 +147,9 @@ public class ParameterTableEditorUI extends ACAQParameterEditorUI {
                 JMenu columnMenu = new JMenu(parameterTable.getColumn(col).getName());
                 columnMenu.setIcon(UIUtils.getIconFromResources("data-types/data-type-parameters.png"));
 
-                for (Class<? extends ACAQParameterGeneratorUI> generator : ACAQUIParametertypeRegistry.getInstance()
+                for (Class<? extends ACAQParameterGeneratorUI> generator : ACAQUIParameterTypeRegistry.getInstance()
                         .getGeneratorsFor(parameterTable.getColumn(col).getFieldClass())) {
-                    ACAQDocumentation documentation = ACAQUIParametertypeRegistry.getInstance().getGeneratorDocumentationFor(generator);
+                    ACAQDocumentation documentation = ACAQUIParameterTypeRegistry.getInstance().getGeneratorDocumentationFor(generator);
                     JMenuItem generateRowItem = new JMenuItem(documentation.name());
                     generateRowItem.setToolTipText(documentation.description());
                     generateRowItem.setIcon(UIUtils.getIconFromResources("add.png"));
@@ -198,7 +198,7 @@ public class ParameterTableEditorUI extends ACAQParameterEditorUI {
                 ParameterTable parameterTable = getParameterAccess().get();
                 ParameterTableCellAccess access = new ParameterTableCellAccess(getParameterAccess(), parameterTable,
                         currentSelection.x, currentSelection.y);
-                currentEditor = ACAQUIParametertypeRegistry.getInstance().createEditorFor(getContext(), access);
+                currentEditor = ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getContext(), access);
                 add(currentEditor, BorderLayout.SOUTH);
             }
         }

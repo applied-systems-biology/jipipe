@@ -18,6 +18,21 @@ import java.io.IOException;
 public class ACAQTraitIconRef {
     private String iconName;
 
+    /**
+     * Creates a new instance
+     */
+    public ACAQTraitIconRef() {
+    }
+
+    /**
+     * Copies an instance
+     *
+     * @param other the original
+     */
+    public ACAQTraitIconRef(ACAQTraitIconRef other) {
+        this.iconName = other.iconName;
+    }
+
     public String getIconName() {
         return iconName;
     }

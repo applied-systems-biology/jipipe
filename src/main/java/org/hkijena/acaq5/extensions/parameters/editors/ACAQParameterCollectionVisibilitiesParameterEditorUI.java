@@ -75,7 +75,7 @@ public class ACAQParameterCollectionVisibilitiesParameterEditorUI extends ACAQPa
                 ACAQParameterAccess parameterAccess = parameters.get(key);
 
                 ACAQParameterEditorUI ui = ACAQDefaultRegistry.getInstance()
-                        .getUIParametertypeRegistry().createEditorFor(getContext(), parameterAccess);
+                        .getUIParameterTypeRegistry().createEditorFor(getContext(), parameterAccess);
 
                 JPanel labelPanel = new JPanel(new BorderLayout(8, 8));
                 JToggleButton exportParameterToggle = new JToggleButton(UIUtils.getIconFromResources("eye.png"));

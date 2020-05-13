@@ -29,6 +29,15 @@ public class ACAQAlgorithmDeclarationRef implements ACAQValidatable {
     }
 
     /**
+     * Creates a copy
+     *
+     * @param other the original
+     */
+    public ACAQAlgorithmDeclarationRef(ACAQAlgorithmDeclarationRef other) {
+        this.declaration = other.declaration;
+    }
+
+    /**
      * New instance
      */
     public ACAQAlgorithmDeclarationRef() {

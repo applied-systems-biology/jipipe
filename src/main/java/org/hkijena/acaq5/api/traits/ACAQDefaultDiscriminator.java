@@ -21,6 +21,11 @@ public class ACAQDefaultDiscriminator extends ACAQDefaultTrait implements ACAQDi
     }
 
     @Override
+    public ACAQTrait duplicate() {
+        return getDeclaration().newInstance(value);
+    }
+
+    @Override
     public String getValue() {
         return value;
     }

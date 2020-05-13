@@ -155,7 +155,17 @@ public class ImageJDataTypesExtension extends ACAQPrepackagedDefaultJavaExtensio
         registerAlgorithm("convert-imagej-image", ImageTypeConverter.class);
 
         // Register parameter editors
-        registerParameterType(MacroCode.class, MacroParameterEditorUI.class, "ImageJ macro", "An ImageJ macro code");
+        registerEnumParameterType("import-imagej-bioformats:color-mode", BioformatsImporter.ColorMode.class,
+                "Color mode", "Available modes");
+        registerEnumParameterType("import-imagej-bioformats:order", BioformatsImporter.Order.class,
+                "Order", "Available orders");
+        registerParameterType("ij-macro-code",
+                MacroCode.class,
+                MacroCode::new,
+                m -> new MacroCode((MacroCode) m),
+                "ImageJ macro",
+                "An ImageJ macro code",
+                MacroParameterEditorUI.class);
     }
 
     /**
