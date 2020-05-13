@@ -196,6 +196,12 @@ public class StandardParameterEditorsExtension extends ACAQPrepackagedDefaultJav
                 "List of annotation types",
                 "A list of annotation types",
                 ACAQTraitDeclarationRefCollectionParameterEditorUI.class);
+        registerParameterType("string-renaming-list", StringRenamingList.class,
+                StringRenamingList::new,
+                l -> new StringRenamingList((StringRenamingList) l),
+                "List of string renaming operations",
+                "A list of operations that rename strings",
+                null);
 
         // Enums
         registerEnumParameterType("path-filter:mode", PathFilter.Mode.class, "Mode", "Available modes");

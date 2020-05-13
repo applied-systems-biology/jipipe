@@ -34,7 +34,7 @@ public class PathFilterParameterEditorUI extends ACAQParameterEditorUI {
     @Override
     public void reload() {
         removeAll();
-        PathFilter filter = getParameterAccess().get();
+        PathFilter filter = getParameterAccess().get(PathFilter.class);
         JTextField filterStringEditor = new JTextField(filter.getFilterString());
         filterStringEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         filterStringEditor.getDocument().addDocumentListener(new DocumentChangeListener() {

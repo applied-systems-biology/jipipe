@@ -50,7 +50,7 @@ public class ACAQParameterCollectionVisibilitiesParameterEditorUI extends ACAQPa
     @Override
     public void reload() {
         formPanel.clear();
-        ACAQParameterCollectionVisibilities visibilities = getParameterAccess().get();
+        ACAQParameterCollectionVisibilities visibilities = getParameterAccess().get(ACAQParameterCollectionVisibilities.class);
         if (visibilities == null) {
             visibilities = new ACAQParameterCollectionVisibilities();
         }

@@ -26,8 +26,6 @@ public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollec
     private BiMap<String, ACAQMutableParameterAccess> dynamicParameters = HashBiMap.create();
     private Set<Class<?>> allowedTypes = new HashSet<>();
     private Function<UserParameterDefinition, ACAQMutableParameterAccess> instanceGenerator;
-    private String name;
-    private String description;
     private boolean allowUserModification = true;
     private boolean delayEvents = false;
 
@@ -151,12 +149,13 @@ public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollec
     /**
      * Gets a parameter value
      *
-     * @param key The parameter key
      * @param <T> The parameter type
+     * @param key The parameter key
+     * @param klass The returned type
      * @return The parameter value
      */
-    public <T> T getValue(String key) {
-        return getParameter(key).get();
+    public <T> T getValue(String key, Class<T> klass) {
+        return getParameter(key).get(klass);
     }
 
     /**
@@ -185,20 +184,6 @@ public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollec
      */
     public void setAllowedTypes(Set<Class<?>> allowedTypes) {
         this.allowedTypes = allowedTypes;
-    }
-
-    /**
-     * @return Parameter holder name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @return Parameter holder description
-     */
-    public String getDescription() {
-        return description;
     }
 
     /**
@@ -303,7 +288,7 @@ public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollec
     @Override
     public void reportValidity(ACAQValidityReport report) {
         for (Map.Entry<String, ACAQMutableParameterAccess> entry : dynamicParameters.entrySet()) {
-            Object o = entry.getValue().get();
+            Object o = entry.getValue().get(Object.class);
             if (o instanceof ACAQValidatable) {
                 report.forCategory(entry.getKey()).report((ACAQValidatable) o);
             }

@@ -976,7 +976,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterCol
             jsonGenerator.writeStringField("acaq:algorithm-compartment", algorithm.getCompartment());
             ACAQTraversedParameterCollection parameterCollection = new ACAQTraversedParameterCollection(algorithm);
             for (Map.Entry<String, ACAQParameterAccess> kv : parameterCollection.getParameters().entrySet()) {
-                jsonGenerator.writeObjectField(kv.getKey(), kv.getValue().get());
+                jsonGenerator.writeObjectField(kv.getKey(), kv.getValue().get(Object.class));
             }
             if (algorithm.getTraitConfiguration() instanceof ACAQMutableTraitConfiguration) {
                 jsonGenerator.writeObjectField("acaq:trait-generation", algorithm.getTraitConfiguration());

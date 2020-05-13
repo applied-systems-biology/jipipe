@@ -97,7 +97,7 @@ public class ACAQTestbenchSnapshot {
         private void backupParameters() {
             Map<String, ACAQParameterAccess> parameters = ACAQTraversedParameterCollection.getParameters(algorithm);
             for (Map.Entry<String, ACAQParameterAccess> entry : parameters.entrySet()) {
-                parameterBackups.put(entry.getKey(), entry.getValue().get());
+                parameterBackups.put(entry.getKey(), entry.getValue().get(Object.class));
             }
         }
 

@@ -78,7 +78,8 @@ public class ImageCalculator2DAlgorithm extends ImageJ1Algorithm {
 
     private Operand getNewOperand() {
         for (Operand value : Operand.values()) {
-            if (operands.getParameters().values().stream().noneMatch(parameterAccess -> parameterAccess.get() == value)) {
+            if (operands.getParameters().values().stream()
+                    .noneMatch(parameterAccess -> parameterAccess.get(Operand.class) == value)) {
                 return value;
             }
         }
@@ -90,7 +91,7 @@ public class ImageCalculator2DAlgorithm extends ImageJ1Algorithm {
         ImagePlusData leftOperand = null;
         ImagePlusData rightOperand = null;
         for (Map.Entry<String, ACAQParameterAccess> entry : operands.getParameters().entrySet()) {
-            Operand operand = entry.getValue().get();
+            Operand operand = entry.getValue().get(Operand.class);
             if (operand == Operand.LeftOperand) {
                 leftOperand = dataInterface.getInputData(entry.getKey(), ImagePlusData.class);
             } else if (operand == Operand.RightOperand) {
@@ -118,7 +119,7 @@ public class ImageCalculator2DAlgorithm extends ImageJ1Algorithm {
     public void reportValidity(ACAQValidityReport report) {
         Set<Operand> existing = new HashSet<>();
         for (Map.Entry<String, ACAQParameterAccess> entry : operands.getParameters().entrySet()) {
-            Operand operand = entry.getValue().get();
+            Operand operand = entry.getValue().get(Operand.class);
             report.forCategory("Operands").forCategory(entry.getKey()).checkNonNull(operand, this);
             if (operand != null) {
                 if (existing.contains(operand))

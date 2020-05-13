@@ -65,7 +65,7 @@ public class ACAQTraitDeclarationRefCollectionParameterEditorUI extends ACAQPara
 
     @Override
     public void reload() {
-        ACAQTraitDeclarationRefList declarationRefs = getParameterAccess().get();
+        ACAQTraitDeclarationRefList declarationRefs = getParameterAccess().get(ACAQTraitDeclarationRefList.class);
         if (declarationRefs == null) {
             declarationRefs = new ACAQTraitDeclarationRefList();
         }
@@ -127,7 +127,7 @@ public class ACAQTraitDeclarationRefCollectionParameterEditorUI extends ACAQPara
     @Subscribe
     public void onTraitSelected(ACAQTraitPicker.SelectedTraitsChangedEvent event) {
         if (pickerDialog.isVisible()) {
-            ACAQTraitDeclarationRefList refs = getParameterAccess().get();
+            ACAQTraitDeclarationRefList refs = getParameterAccess().get(ACAQTraitDeclarationRefList.class);
             refs.clear();
             for (ACAQTraitDeclaration selectedTrait : event.getTraitPicker().getSelectedTraits()) {
                 refs.add(new ACAQTraitDeclarationRef(selectedTrait));

@@ -82,7 +82,7 @@ public class MultiParameterAlgorithm extends ACAQAlgorithm {
                     throw new UnsupportedOperationException("Cannot assign parameter '" + entry.getKey() +
                             "' and value '" + entry.getValue() + "' to " + algorithmInstance);
                 }
-                if (!Objects.equals(parameterAccess.get(), entry.getValue())) {
+                if (!Objects.equals(parameterAccess.get(Object.class), entry.getValue())) {
                     String traitId = "parameter-" + StringUtils.jsonify(parameterAccess.getName());
                     if (ACAQTraitRegistry.getInstance().hasTraitWithId(traitId)) {
                         changedParameterTraits.put(entry.getKey(), ACAQTraitRegistry.getInstance().getDeclarationById(traitId));
@@ -114,7 +114,7 @@ public class MultiParameterAlgorithm extends ACAQAlgorithm {
         Map<String, Object> result = new HashMap<>();
         ACAQTraversedParameterCollection collection = new ACAQTraversedParameterCollection(algorithmInstance);
         for (Map.Entry<String, ACAQParameterAccess> entry : collection.getParameters().entrySet()) {
-            result.put(entry.getKey(), entry.getValue().get());
+            result.put(entry.getKey(), entry.getValue().get(Object.class));
         }
         return result;
     }
@@ -126,7 +126,7 @@ public class MultiParameterAlgorithm extends ACAQAlgorithm {
                 ACAQData data = wrappedOutputSlot.getData(row, ACAQData.class);
                 List<ACAQTrait> traits = wrappedOutputSlot.getAnnotations(row);
                 for (Map.Entry<String, ACAQTraitDeclaration> entry : newParameters.entrySet()) {
-                    traits.add(entry.getValue().newInstance("" + parameters.get(entry.getKey()).get()));
+                    traits.add(entry.getValue().newInstance("" + parameters.get(entry.getKey()).get(Object.class)));
                 }
                 outputSlot.addData(data, traits);
             }

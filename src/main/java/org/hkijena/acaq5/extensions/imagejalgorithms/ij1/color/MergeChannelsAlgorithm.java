@@ -66,7 +66,8 @@ public class MergeChannelsAlgorithm extends ImageJ1Algorithm {
 
     private ChannelColor getNewChannelColor() {
         for (ChannelColor value : ChannelColor.values()) {
-            if (channelColorAssignment.getParameters().values().stream().noneMatch(parameterAccess -> parameterAccess.get() == value)) {
+            if (channelColorAssignment.getParameters().values().stream().noneMatch(
+                    parameterAccess -> parameterAccess.get(ChannelColor.class) == value)) {
                 return value;
             }
         }
@@ -79,7 +80,7 @@ public class MergeChannelsAlgorithm extends ImageJ1Algorithm {
         for (int i = 0; i < ChannelColor.values().length; ++i) {
             ChannelColor color = ChannelColor.values()[i];
             for (Map.Entry<String, ACAQParameterAccess> entry : channelColorAssignment.getParameters().entrySet()) {
-                ChannelColor entryColor = entry.getValue().get();
+                ChannelColor entryColor = entry.getValue().get(ChannelColor.class);
                 if (entryColor == color) {
                     channels[i] = dataInterface.getInputData(entry.getKey(), ImagePlusGreyscaleData.class).getImage();
                 }
@@ -94,7 +95,7 @@ public class MergeChannelsAlgorithm extends ImageJ1Algorithm {
     public void reportValidity(ACAQValidityReport report) {
         Set<ChannelColor> existing = new HashSet<>();
         for (Map.Entry<String, ACAQParameterAccess> entry : channelColorAssignment.getParameters().entrySet()) {
-            ChannelColor color = entry.getValue().get();
+            ChannelColor color = entry.getValue().get(ChannelColor.class);
             report.forCategory("Channel colors").forCategory(entry.getKey()).checkNonNull(color, this);
             if (color != null) {
                 if (existing.contains(color))

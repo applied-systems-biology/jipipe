@@ -38,7 +38,7 @@ public class EnumParameterEditorUI extends ACAQParameterEditorUI {
             return;
         }
         isReloading = true;
-        comboBox.setSelectedItem(getParameterAccess().get());
+        comboBox.setSelectedItem(getParameterAccess().get(Object.class));
         isReloading = false;
     }
 
@@ -46,7 +46,7 @@ public class EnumParameterEditorUI extends ACAQParameterEditorUI {
         setLayout(new BorderLayout());
         Object[] values = getParameterAccess().getFieldClass().getEnumConstants();
         comboBox = new JComboBox<>(values);
-        comboBox.setSelectedItem(getParameterAccess().get());
+        comboBox.setSelectedItem(getParameterAccess().get(Object.class));
         comboBox.addActionListener(e -> {
             if (!isReloading) {
                 skipNextReload = true;

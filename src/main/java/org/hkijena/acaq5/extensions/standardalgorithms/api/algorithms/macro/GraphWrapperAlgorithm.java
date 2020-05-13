@@ -52,7 +52,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
         initializeSlots();
         initializeParameters();
         for (Map.Entry<String, ACAQParameterAccess> entry : other.parameterAccessMap.entrySet()) {
-            parameterAccessMap.get(entry.getKey()).set(entry.getValue().get());
+            parameterAccessMap.get(entry.getKey()).set(entry.getValue().get(Object.class));
         }
     }
 

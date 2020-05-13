@@ -51,7 +51,7 @@ public class ACAQTraitIconRefParameterEditorUI extends ACAQParameterEditorUI {
 
     private void pickIcon() {
         String picked = ACAQIconPickerDialog.showDialog(this, ResourceUtils.getResourcePath("icons/traits"), getAvailableTraitIcons());
-        ACAQTraitIconRef ref = getParameterAccess().get();
+        ACAQTraitIconRef ref = getParameterAccess().get(ACAQTraitIconRef.class);
         if (ref == null) {
             ref = new ACAQTraitIconRef();
         }
@@ -67,7 +67,7 @@ public class ACAQTraitIconRefParameterEditorUI extends ACAQParameterEditorUI {
 
     @Override
     public void reload() {
-        ACAQTraitIconRef ref = getParameterAccess().get();
+        ACAQTraitIconRef ref = getParameterAccess().get(ACAQTraitIconRef.class);
         if (ref == null) {
             ref = new ACAQTraitIconRef();
         }

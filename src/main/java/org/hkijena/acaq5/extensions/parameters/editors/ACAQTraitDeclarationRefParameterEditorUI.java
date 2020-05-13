@@ -69,7 +69,7 @@ public class ACAQTraitDeclarationRefParameterEditorUI extends ACAQParameterEdito
         if (isReloading)
             return;
         isReloading = true;
-        ACAQTraitDeclarationRef declarationRef = getParameterAccess().get();
+        ACAQTraitDeclarationRef declarationRef = getParameterAccess().get(ACAQTraitDeclarationRef.class);
         if (declarationRef == null) {
             declarationRef = new ACAQTraitDeclarationRef();
         }
@@ -126,7 +126,7 @@ public class ACAQTraitDeclarationRefParameterEditorUI extends ACAQParameterEdito
     @Subscribe
     public void onTraitSelected(ACAQTraitPicker.SelectedTraitsChangedEvent event) {
         if (pickerDialog.isVisible()) {
-            ACAQTraitDeclarationRef declarationRef = getParameterAccess().get();
+            ACAQTraitDeclarationRef declarationRef = getParameterAccess().get(ACAQTraitDeclarationRef.class);
             declarationRef.setDeclaration(picker.getSelectedTraits().isEmpty() ? null : picker.getSelectedTraits().iterator().next());
             getParameterAccess().set(declarationRef);
             reload();

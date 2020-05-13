@@ -119,7 +119,7 @@ public class ParametersDataTableDefinition extends ACAQAlgorithm {
             List<Object> row = new ArrayList<>();
             for (int col = 0; col < parameterTable.getColumnCount(); ++col) {
                 String key = parameterTable.getColumn(col).getKey();
-                row.add(parameters.get(key).get());
+                row.add(parameters.get(key).get(Object.class));
             }
             return row;
         });

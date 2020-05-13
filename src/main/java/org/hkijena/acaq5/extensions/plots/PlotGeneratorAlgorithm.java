@@ -89,7 +89,7 @@ public class PlotGeneratorAlgorithm extends ACAQAlgorithm {
             // Check if columns exist
             for (Map.Entry<String, ACAQParameterAccess> entry : columnAssignments.getParameters().entrySet()) {
                 String matchingColumn = null;
-                StringFilter filter = entry.getValue().get();
+                StringFilter filter = entry.getValue().get(StringFilter.class);
                 for (String columnHeading : columnHeadings) {
                     if (filter.test(columnHeading)) {
                         matchingColumn = columnHeading;

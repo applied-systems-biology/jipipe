@@ -44,11 +44,11 @@ public class TableColumnGeneratorParameterEditorUI extends ACAQParameterEditorUI
     @Override
     public void reload() {
         isProcessing = true;
-        TableColumnGeneratorParameter parameter = getParameterAccess().get();
+        TableColumnGeneratorParameter parameter = getParameterAccess().get(TableColumnGeneratorParameter.class);
         if (parameter == null) {
             parameter = new TableColumnGeneratorParameter();
         }
-        comboBox.setSelectedItem(getParameterAccess().get());
+        comboBox.setSelectedItem(getParameterAccess().get(Object.class));
         if (parameter.getGeneratedType() == ColumnContentType.NumericColumn) {
             numericColumnToggle.setSelected(true);
         } else {
@@ -73,7 +73,7 @@ public class TableColumnGeneratorParameterEditorUI extends ACAQParameterEditorUI
         if (isProcessing)
             return;
         isProcessing = true;
-        TableColumnGeneratorParameter parameter = getParameterAccess().get();
+        TableColumnGeneratorParameter parameter = getParameterAccess().get(TableColumnGeneratorParameter.class);
         if (parameter == null) {
             parameter = new TableColumnGeneratorParameter();
         }

@@ -34,7 +34,7 @@ public class StringFilterParameterEditorUI extends ACAQParameterEditorUI {
     @Override
     public void reload() {
         removeAll();
-        StringFilter filter = getParameterAccess().get();
+        StringFilter filter = getParameterAccess().get(StringFilter.class);
         if (filter == null) {
             getParameterAccess().set(new StringFilter());
             return;

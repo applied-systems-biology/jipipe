@@ -10,6 +10,8 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
+import org.hkijena.acaq5.api.parameters.ACAQParameterTypeDeclaration;
+import org.hkijena.acaq5.api.registries.ACAQParameterTypeRegistry;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.ReflectionUtils;
 
@@ -50,9 +52,16 @@ public class ParameterTable implements TableModel {
         for (ParameterColumn column : other.columns) {
             this.columns.add(new ParameterColumn(column));
         }
+        int columnIndex = 0;
         for (List<Object> row : other.rows) {
-            List<Object> thisRow = new ArrayList<>(row); // TODO: No deep-copy!
+            ACAQParameterTypeDeclaration declaration = ACAQParameterTypeRegistry.getInstance().
+                    getDeclarationByFieldClass(columns.get(columnIndex).fieldClass);
+            List<Object> thisRow = new ArrayList<>();
+            for (Object o : row) {
+                thisRow.add(declaration.duplicate(o));
+            }
             this.rows.add(thisRow);
+            ++columnIndex;
         }
     }
 
@@ -64,8 +73,9 @@ public class ParameterTable implements TableModel {
      */
     public void addColumn(ParameterColumn column, Object initialValue) {
         columns.add(column);
+        ACAQParameterTypeDeclaration declaration = ACAQParameterTypeRegistry.getInstance().getDeclarationByFieldClass(column.fieldClass);
         for (List<Object> row : rows) {
-            row.add(initialValue); // TODO: No deep-copy!
+            row.add(declaration.duplicate(initialValue)); // Deep-copy!
         }
 
     }
@@ -152,8 +162,8 @@ public class ParameterTable implements TableModel {
             List<Object> row = new ArrayList<>();
 
             for (ParameterColumn column : columns) {
-                Object instance = ReflectionUtils.newInstance(column.fieldClass);
-                row.add(instance);
+                ACAQParameterTypeDeclaration declaration = ACAQParameterTypeRegistry.getInstance().getDeclarationByFieldClass(column.fieldClass);
+                row.add(declaration.newInstance());
             }
             rows.add(row);
         }
@@ -242,9 +252,18 @@ public class ParameterTable implements TableModel {
             return fieldClass;
         }
 
-        @JsonSetter("field-class")
         public void setFieldClass(Class<?> fieldClass) {
             this.fieldClass = fieldClass;
+        }
+
+        @JsonGetter("field-class-id")
+        public String getFieldClassDeclarationType() {
+            return ACAQParameterTypeRegistry.getInstance().getDeclarationByFieldClass(fieldClass).getId();
+        }
+
+        @JsonSetter("field-class-id")
+        public void setFieldClassDeclarationType(String id) {
+            fieldClass = ACAQParameterTypeRegistry.getInstance().getDeclarationById(id).getFieldClass();
         }
 
         @JsonGetter("key")

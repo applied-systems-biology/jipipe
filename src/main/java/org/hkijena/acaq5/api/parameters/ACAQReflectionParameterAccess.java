@@ -71,7 +71,7 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
     }
 
     @Override
-    public <T> T get() {
+    public <T> T get(Class<T> klass) {
         try {
             return (T) getter.invoke(source);
         } catch (IllegalAccessException | InvocationTargetException e) {

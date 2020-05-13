@@ -64,7 +64,7 @@ public class GenerateColumnAlgorithm extends ACAQIteratingAlgorithm {
             if (table.getColumnIndex(columnName) != -1 && !replaceIfExists)
                 continue;
 
-            TableColumnGeneratorParameter generatorParameter = entry.getValue().get();
+            TableColumnGeneratorParameter generatorParameter = entry.getValue().get(TableColumnGeneratorParameter.class);
             TableColumn generator = (TableColumn) ACAQData.createInstance(generatorParameter.getGeneratorType().getDeclaration().getDataClass());
             int columnId = table.getOrCreateColumnIndex(columnName);
 

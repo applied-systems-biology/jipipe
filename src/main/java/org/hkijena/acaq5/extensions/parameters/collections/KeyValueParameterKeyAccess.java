@@ -59,7 +59,7 @@ public class KeyValueParameterKeyAccess<K, V> implements ACAQParameterAccess {
     }
 
     @Override
-    public <T> T get() {
+    public <T> T get(Class<T> klass) {
         return (T) keyValuePairParameter.getKey();
     }
 

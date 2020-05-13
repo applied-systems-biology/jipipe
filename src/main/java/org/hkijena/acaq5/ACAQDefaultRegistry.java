@@ -3,8 +3,12 @@ package org.hkijena.acaq5;
 import com.google.common.eventbus.EventBus;
 import ij.IJ;
 import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.events.ExtensionRegisteredEvent;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.api.parameters.ACAQTraversedParameterCollection;
 import org.hkijena.acaq5.api.registries.*;
 import org.hkijena.acaq5.ui.registries.*;
 import org.scijava.Context;
@@ -101,6 +105,22 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
 
         for (ACAQAlgorithmRegistrationTask task : algorithmRegistry.getScheduledRegistrationTasks()) {
             System.err.println("Could not register: " + task.toString());
+        }
+
+        // Check for errors
+        for (ACAQAlgorithmDeclaration declaration : algorithmRegistry.getRegisteredAlgorithms().values()) {
+            ACAQAlgorithm algorithm = declaration.newInstance();
+            ACAQTraversedParameterCollection collection = new ACAQTraversedParameterCollection(algorithm);
+            for (Map.Entry<String, ACAQParameterAccess> entry : collection.getParameters().entrySet()) {
+                if(ACAQParameterTypeRegistry.getInstance().getDeclarationByFieldClass(entry.getValue().getFieldClass()) == null) {
+                    throw new UserFriendlyRuntimeException("Unregistered parameter found: " + entry.getValue().getFieldClass() + " @ "
+                            + algorithm + " -> " + entry.getKey(),
+                            "A plugin is invalid!",
+                            "ACAQ plugin checker",
+                            "There is an error in the plugin's code that makes it use an unsupported parameter type.",
+                            "Please contact the plugin author for further help.");
+                }
+            }
         }
 
     }

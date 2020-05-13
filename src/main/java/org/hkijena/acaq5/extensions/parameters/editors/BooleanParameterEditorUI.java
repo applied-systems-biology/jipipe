@@ -37,7 +37,7 @@ public class BooleanParameterEditorUI extends ACAQParameterEditorUI {
             return;
         }
         isReloading = true;
-        Object value = getParameterAccess().get();
+        Object value = getParameterAccess().get(Object.class);
         boolean booleanValue = false;
         if (value != null)
             booleanValue = (boolean) value;
@@ -47,7 +47,7 @@ public class BooleanParameterEditorUI extends ACAQParameterEditorUI {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        Object value = getParameterAccess().get();
+        Object value = getParameterAccess().get(Object.class);
         boolean booleanValue = false;
         if (value != null)
             booleanValue = (boolean) value;

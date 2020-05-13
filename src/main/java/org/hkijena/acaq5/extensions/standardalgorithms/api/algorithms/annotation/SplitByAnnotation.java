@@ -75,7 +75,7 @@ public class SplitByAnnotation extends ACAQAlgorithm {
             }
 
             for (ACAQDataSlot slot : getOutputSlots().stream().sorted(Comparator.comparing(ACAQDataSlot::getName)).collect(Collectors.toList())) {
-                StringFilter filter = targetSlots.getParameters().get(slot.getName()).get();
+                StringFilter filter = targetSlots.getParameters().get(slot.getName()).get(StringFilter.class);
                 if (filter.test(matchingValue)) {
                     slot.addData(inputSlot.getData(row, ACAQData.class), inputSlot.getAnnotations(row));
                     if (!enableFallthrough)

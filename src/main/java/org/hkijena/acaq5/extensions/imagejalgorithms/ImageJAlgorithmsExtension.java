@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.extensions.imagejalgorithms;
 
 import com.google.common.collect.ImmutableMap;
+import ij.process.AutoThresholder;
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.traits.ACAQJavaTraitDeclaration;
@@ -246,6 +247,9 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
                 "Flip mode", "Available modes");
         registerEnumParameterType("ij1-transform-rotate2d:rotation-mode", TransformRotate2DAlgorithm.RotationMode.class,
                 "Rotation mode", "Available modes");
+
+        registerEnumParameterType(AutoThresholder.Method.class.getCanonicalName(), AutoThresholder.Method.class,
+                "Auto threshold method", "Available methods");
     }
 
     @Override

@@ -33,7 +33,7 @@ public class StringParameterEditorUI extends ACAQParameterEditorUI {
         setLayout(new BorderLayout());
 
         StringParameterSettings settings = getParameterAccess().getAnnotationOfType(StringParameterSettings.class);
-        Object value = getParameterAccess().get();
+        Object value = getParameterAccess().get(Object.class);
         String stringValue = "";
         if (value != null) {
             stringValue = "" + value;
@@ -75,7 +75,7 @@ public class StringParameterEditorUI extends ACAQParameterEditorUI {
             return;
         }
         isReloading = true;
-        Object value = getParameterAccess().get();
+        Object value = getParameterAccess().get(Object.class);
         String stringValue = "";
         if (value != null) {
             stringValue = "" + value;

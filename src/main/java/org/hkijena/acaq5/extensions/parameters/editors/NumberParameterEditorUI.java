@@ -42,7 +42,7 @@ public class NumberParameterEditorUI extends ACAQParameterEditorUI {
     }
 
     private Number getCurrentValue() {
-        Object value = getParameterAccess().get();
+        Object value = getParameterAccess().get(Object.class);
         if (getParameterAccess().getFieldClass() == byte.class || getParameterAccess().getFieldClass() == Byte.class) {
             return value != null ? (Byte) value : (byte) 0;
         } else if (getParameterAccess().getFieldClass() == short.class || getParameterAccess().getFieldClass() == Short.class) {

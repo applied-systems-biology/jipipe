@@ -36,6 +36,8 @@ public class CollectionParameterEditorUI extends ACAQParameterEditorUI {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
+        toolBar.add(new JLabel(getParameterAccess().getName()));
+
         toolBar.add(Box.createHorizontalGlue());
 
         JButton addButton = new JButton("Add", UIUtils.getIconFromResources("add.png"));
@@ -53,7 +55,7 @@ public class CollectionParameterEditorUI extends ACAQParameterEditorUI {
     }
 
     private ListParameter<?> getParameter() {
-        return getParameterAccess().get();
+        return getParameterAccess().get(ListParameter.class);
     }
 
     @Override

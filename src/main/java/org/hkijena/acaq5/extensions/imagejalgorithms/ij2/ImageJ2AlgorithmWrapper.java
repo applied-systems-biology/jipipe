@@ -87,7 +87,7 @@ public class ImageJ2AlgorithmWrapper extends ACAQIteratingAlgorithm {
 
         // Pass parameters
         for (Map.Entry<String, String> entry : parameterMap.entrySet()) {
-            Object value = moduleParameters.getValue(entry.getValue());
+            Object value = moduleParameters.getValue(entry.getValue(), Object.class);
             module.setInput(entry.getKey(), value);
         }
 

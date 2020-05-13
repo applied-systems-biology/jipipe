@@ -65,7 +65,7 @@ public class ACAQPlotSeriesBuilder implements ACAQParameterCollection, ACAQValid
     public Map<String, TableColumn> getSelectedSources() {
         Map<String, TableColumn> result = new HashMap<>();
         for (Map.Entry<String, ACAQParameterAccess> entry : columnAssignments.getParameters().entrySet()) {
-            UIPlotDataSeriesColumnEnum parameter = entry.getValue().get();
+            UIPlotDataSeriesColumnEnum parameter = entry.getValue().get(UIPlotDataSeriesColumnEnum.class);
             result.put(entry.getKey(), (TableColumn) parameter.getValue());
         }
         return result;
@@ -79,7 +79,7 @@ public class ACAQPlotSeriesBuilder implements ACAQParameterCollection, ACAQValid
 
         for (ACAQParameterAccess value : columnAssignments.getParameters().values()) {
             ACAQMutableParameterAccess parameterAccess = (ACAQMutableParameterAccess) value;
-            UIPlotDataSeriesColumnEnum parameter = parameterAccess.get();
+            UIPlotDataSeriesColumnEnum parameter = parameterAccess.get(UIPlotDataSeriesColumnEnum.class);
             parameter.setAllowedValues(allowedItems);
         }
 
@@ -111,7 +111,7 @@ public class ACAQPlotSeriesBuilder implements ACAQParameterCollection, ACAQValid
      */
     public void assignData(String column, TableColumn columnData) {
         ACAQMutableParameterAccess parameterAccess = columnAssignments.getParameter(column);
-        UIPlotDataSeriesColumnEnum parameter = parameterAccess.get();
+        UIPlotDataSeriesColumnEnum parameter = parameterAccess.get(UIPlotDataSeriesColumnEnum.class);
         parameter.setValue(columnData);
         parameterAccess.set(parameter);
     }
@@ -155,7 +155,7 @@ public class ACAQPlotSeriesBuilder implements ACAQParameterCollection, ACAQValid
     public void reportValidity(ACAQValidityReport report) {
         for (Map.Entry<String, ACAQParameterAccess> entry : columnAssignments.getParameters().entrySet()) {
             ACAQMutableParameterAccess parameterAccess = (ACAQMutableParameterAccess) entry.getValue();
-            UIPlotDataSeriesColumnEnum parameter = parameterAccess.get();
+            UIPlotDataSeriesColumnEnum parameter = parameterAccess.get(UIPlotDataSeriesColumnEnum.class);
             if (parameter.getValue() == null) {
                 report.forCategory("Data assignments").forCategory(entry.getKey()).reportIsInvalid("No data selected!",
                         "The plot requires that you select a data source.",

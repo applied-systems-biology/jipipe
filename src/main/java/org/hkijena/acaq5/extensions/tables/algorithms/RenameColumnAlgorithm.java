@@ -73,7 +73,7 @@ public class RenameColumnAlgorithm extends ACAQIteratingAlgorithm {
         }
     }
 
-    @ACAQDocumentation(name = "Renaming entries", description = "You can rename one or multiple columns:")
+    @ACAQDocumentation(name = "Renaming entries", description = "You can rename one or multiple columns.")
     @ACAQParameter("renaming-entries")
     public StringRenamingList getRenamingEntries() {
         return renamingEntries;

@@ -102,23 +102,23 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
             finalCode.append("var ").append(entry.getKey()).append(" = ");
             if (entry.getValue().getFieldClass() == Integer.class) {
                 int value = 0;
-                if (entry.getValue().get() != null)
-                    value = entry.getValue().get();
+                if (entry.getValue().get(Integer.class) != null)
+                    value = entry.getValue().get(Integer.class);
                 finalCode.append(value);
             } else if (entry.getValue().getFieldClass() == Double.class) {
                 double value = 0;
-                if (entry.getValue().get() != null)
-                    value = entry.getValue().get();
+                if (entry.getValue().get(Double.class) != null)
+                    value = entry.getValue().get(Double.class);
                 finalCode.append(value);
             } else if (entry.getValue().getFieldClass() == Float.class) {
                 float value = 0;
-                if (entry.getValue().get() != null)
-                    value = entry.getValue().get();
+                if (entry.getValue().get(Float.class) != null)
+                    value = entry.getValue().get(Float.class);
                 finalCode.append(value);
             } else {
                 String value = "";
-                if (entry.getValue().get() != null)
-                    value = "" + entry.getValue().get();
+                if (entry.getValue().get(String.class) != null)
+                    value = "" + entry.getValue().get(String.class);
                 finalCode.append("\"").append(MacroUtils.escapeString(value)).append("\"");
             }
             finalCode.append(";\n");

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
+import org.hkijena.acaq5.api.registries.ACAQParameterTypeRegistry;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.scijava.Priority;
 import org.scijava.util.StringUtils;
@@ -55,7 +56,8 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
         this.description = other.getDescription();
         this.visibility = other.getVisibility();
         this.fieldClass = other.getFieldClass();
-        this.value = other.get();
+        ACAQParameterTypeDeclaration declaration = ACAQParameterTypeRegistry.getInstance().getDeclarationByFieldClass(fieldClass);
+        this.value = declaration.duplicate(other.get(fieldClass)); // Deep copy
     }
 
     /**
@@ -174,9 +176,19 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
         this.fieldClass = fieldClass;
     }
 
+    @JsonGetter("field-class-id")
+    public String getFieldClassDeclarationId() {
+        return ACAQParameterTypeRegistry.getInstance().getDeclarationByFieldClass(getFieldClass()).getId();
+    }
+
+    @JsonSetter("field-class-id")
+    public void setFieldClassDeclarationId(String id) {
+        setFieldClass(ACAQParameterTypeRegistry.getInstance().getDeclarationById(id).getFieldClass());
+    }
+
     @Override
     @JsonGetter("value")
-    public <T> T get() {
+    public <T> T get(Class<T> klass) {
         return (T) value;
     }
 
@@ -228,20 +240,24 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
         this.annotationMap = annotationMap;
     }
 
+    @JsonGetter("short-key")
     @Override
     public String getShortKey() {
         return !StringUtils.isNullOrEmpty(shortKey) ? shortKey : getKey();
     }
 
+    @JsonSetter("short-key")
     public void setShortKey(String shortKey) {
         this.shortKey = shortKey;
     }
 
+    @JsonGetter("ui-order")
     @Override
     public int getUIOrder() {
         return uiOrder;
     }
 
+    @JsonSetter("ui-order")
     public void setUIOrder(int uiOrder) {
         this.uiOrder = uiOrder;
     }
@@ -257,8 +273,12 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
             result.setName(jsonNode.get("name").textValue());
             result.setDescription(jsonNode.get("description").textValue());
             result.setVisibility(JsonUtils.getObjectMapper().readerFor(ACAQParameterVisibility.class).readValue(jsonNode.get("visibility")));
-            result.setFieldClass(JsonUtils.getObjectMapper().readerFor(Class.class).readValue(jsonNode.get("field-class")));
+            result.setFieldClassDeclarationId(jsonNode.get("field-class-id").textValue());
             result.set(JsonUtils.getObjectMapper().readerFor(result.getFieldClass()).readValue(jsonNode.get("value")));
+            if(jsonNode.has("short-key"))
+                result.setShortKey(jsonNode.get("short-key").textValue());
+            if(jsonNode.has("ui-order"))
+                result.setUIOrder(jsonNode.get("ui-order").intValue());
             return result;
         }
     }

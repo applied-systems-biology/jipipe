@@ -108,7 +108,7 @@ public class ACAQTraitParameterEditorUI extends ACAQParameterEditorUI {
             return;
         }
         isReloading = true;
-        ACAQTrait trait = getParameterAccess().get();
+        ACAQTrait trait = getParameterAccess().get(ACAQTrait.class);
         if (trait != null) {
             ACAQTraitDeclaration declaration = trait.getDeclaration();
             currentlyDisplayed.setText(declaration.getName());
@@ -179,7 +179,7 @@ public class ACAQTraitParameterEditorUI extends ACAQParameterEditorUI {
 
     private void onCurrentValueChanged(String text) {
         if (!isReloading) {
-            ACAQTrait trait = getParameterAccess().get();
+            ACAQTrait trait = getParameterAccess().get(ACAQTrait.class);
             if (trait instanceof ACAQDiscriminator) {
                 if (text != null && !text.isEmpty() && !text.equals(((ACAQDiscriminator) trait).getValue())) {
                     skipNextReload = true;

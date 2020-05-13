@@ -42,7 +42,7 @@ public class DynamicEnumParameterEditorUI extends ACAQParameterEditorUI {
             return;
         }
         isReloading = true;
-        DynamicEnumParameter parameter = getParameterAccess().get();
+        DynamicEnumParameter parameter = getParameterAccess().get(DynamicEnumParameter.class);
         comboBox.setSelectedItem(parameter.getValue());
         isReloading = false;
     }
@@ -50,7 +50,7 @@ public class DynamicEnumParameterEditorUI extends ACAQParameterEditorUI {
     private void initialize() {
         setLayout(new BorderLayout());
 
-        DynamicEnumParameter parameter = getParameterAccess().get();
+        DynamicEnumParameter parameter = getParameterAccess().get(DynamicEnumParameter.class);
         Object[] values;
         if (parameter.getAllowedValues() != null) {
             values = parameter.getAllowedValues().toArray();

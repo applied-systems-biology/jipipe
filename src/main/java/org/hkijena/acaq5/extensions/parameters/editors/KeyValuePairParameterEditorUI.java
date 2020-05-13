@@ -37,7 +37,7 @@ public class KeyValuePairParameterEditorUI extends ACAQParameterEditorUI {
     public void reload() {
         removeAll();
 
-        KeyValuePairParameter<?, ?> renaming = getParameterAccess().get();
+        KeyValuePairParameter<?, ?> renaming = getParameterAccess().get(KeyValuePairParameter.class);
         KeyValueParameterKeyAccess<?, ?> keyAccess = new KeyValueParameterKeyAccess<>(getParameterAccess(), renaming);
         KeyValueParameterValueAccess<?, ?> valueAccess = new KeyValueParameterValueAccess<>(getParameterAccess(), renaming);
 

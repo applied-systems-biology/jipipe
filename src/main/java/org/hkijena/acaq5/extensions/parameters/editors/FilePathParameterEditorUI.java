@@ -6,6 +6,7 @@ import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.scijava.Context;
 
 import java.awt.*;
+import java.nio.file.Path;
 
 /**
  * Editor for a {@link java.nio.file.Path} parameter
@@ -38,7 +39,7 @@ public class FilePathParameterEditorUI extends ACAQParameterEditorUI {
             return;
         }
         isReloading = true;
-        fileSelection.setPath(getParameterAccess().get());
+        fileSelection.setPath(getParameterAccess().get(Path.class));
         isReloading = false;
     }
 
@@ -51,7 +52,7 @@ public class FilePathParameterEditorUI extends ACAQParameterEditorUI {
             fileSelection.setPathMode(settings.pathMode());
         }
 
-        fileSelection.setPath(getParameterAccess().get());
+        fileSelection.setPath(getParameterAccess().get(Path.class));
         add(fileSelection, BorderLayout.CENTER);
         fileSelection.addActionListener(e -> {
             if (!isReloading) {

@@ -62,7 +62,7 @@ public class ParameterTableCellAccess implements ACAQParameterAccess {
     }
 
     @Override
-    public <T> T get() {
+    public <T> T get(Class<T> klass) {
         return (T) table.getValueAt(row, column);
     }
 

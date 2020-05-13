@@ -254,8 +254,8 @@ public class SingleImageJAlgorithmRun implements ACAQValidatable {
 
             for (Map.Entry<String, ACAQParameterAccess> entry : ACAQTraversedParameterCollection.getParameters(run.getAlgorithm()).entrySet()) {
                 ACAQParameterAccess originalAccess = comparisonParameters.getOrDefault(entry.getKey(), null);
-                Object originalValue = originalAccess != null ? originalAccess.get() : null;
-                Object value = entry.getValue().get();
+                Object originalValue = originalAccess != null ? originalAccess.get(Object.class) : null;
+                Object value = entry.getValue().get(Object.class);
                 if (!Objects.equals(originalValue, value)) {
                     serializedParameters.put(entry.getKey(), value);
                 }

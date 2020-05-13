@@ -51,7 +51,7 @@ public class ParametersDataDefinition extends ACAQAlgorithm {
         ParametersData result = new ParametersData();
         for (Map.Entry<String, ACAQParameterAccess> entry : ACAQTraversedParameterCollection.getParameters(algorithmInstance).entrySet()) {
             if (entry.getValue().getVisibility().isVisibleIn(ACAQParameterVisibility.TransitiveVisible)) {
-                result.getParameterData().put(entry.getKey(), entry.getValue().get());
+                result.getParameterData().put(entry.getKey(), entry.getValue().get(Object.class));
             }
         }
         getFirstOutputSlot().addData(result);

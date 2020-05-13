@@ -64,7 +64,7 @@ public class ListParameterItemParameterAccess<T> implements ACAQParameterAccess 
     }
 
     @Override
-    public <U> U get() {
+    public <U> U get(Class<U> klass) {
         return (U) entryList.get(index);
     }
 

@@ -38,7 +38,7 @@ public class MacroParameterEditorUI extends ACAQParameterEditorUI {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        MacroCode code = getParameterAccess().get();
+        MacroCode code = getParameterAccess().get(MacroCode.class);
         textArea = new EditorPane();
         textArea.setBorder(BorderFactory.createEtchedBorder());
         getContext().inject(textArea);
@@ -68,7 +68,7 @@ public class MacroParameterEditorUI extends ACAQParameterEditorUI {
             return;
         }
         isReloading = true;
-        MacroCode code = getParameterAccess().get();
+        MacroCode code = getParameterAccess().get(MacroCode.class);
         textArea.setText(code.getCode());
         isReloading = false;
     }

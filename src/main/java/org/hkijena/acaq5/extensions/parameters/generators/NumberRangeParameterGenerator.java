@@ -59,7 +59,7 @@ public class NumberRangeParameterGenerator<T extends Number & Comparable<T>> ext
     }
 
     private T getCurrentMin() {
-        Object result = parameters.get("min").get();
+        Object result = parameters.get("min").get(Object.class);
         if (result == null) {
             result = getZero();
         }
@@ -67,7 +67,7 @@ public class NumberRangeParameterGenerator<T extends Number & Comparable<T>> ext
     }
 
     private T getCurrentMax() {
-        Object result = parameters.get("max").get();
+        Object result = parameters.get("max").get(Object.class);
         if (result == null) {
             result = getZero();
         }
@@ -75,7 +75,7 @@ public class NumberRangeParameterGenerator<T extends Number & Comparable<T>> ext
     }
 
     private T getCurrentStepSize() {
-        Object result = parameters.get("step-size").get();
+        Object result = parameters.get("step-size").get(Object.class);
         if (result == null) {
             result = getZero();
         }

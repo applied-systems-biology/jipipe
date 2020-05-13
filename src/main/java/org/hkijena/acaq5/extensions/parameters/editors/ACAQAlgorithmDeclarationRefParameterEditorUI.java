@@ -63,7 +63,7 @@ public class ACAQAlgorithmDeclarationRefParameterEditorUI extends ACAQParameterE
 
     @Override
     public void reload() {
-        ACAQAlgorithmDeclarationRef declarationRef = getParameterAccess().get();
+        ACAQAlgorithmDeclarationRef declarationRef = getParameterAccess().get(ACAQAlgorithmDeclarationRef.class);
         if (declarationRef == null) {
             declarationRef = new ACAQAlgorithmDeclarationRef();
         }
@@ -102,7 +102,7 @@ public class ACAQAlgorithmDeclarationRefParameterEditorUI extends ACAQParameterE
     @Subscribe
     public void onAlgorithmSelected(ACAQAlgorithmPicker.AlgorithmSelectedEvent event) {
         if (pickerDialog.isVisible()) {
-            ACAQAlgorithmDeclarationRef declarationRef = getParameterAccess().get();
+            ACAQAlgorithmDeclarationRef declarationRef = getParameterAccess().get(ACAQAlgorithmDeclarationRef.class);
             declarationRef.setDeclaration(event.getDeclaration());
             getParameterAccess().set(declarationRef);
             reload();

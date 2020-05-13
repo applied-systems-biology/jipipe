@@ -5,8 +5,10 @@ import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FileData;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FolderData;
+import org.hkijena.acaq5.extensions.parameters.collections.PathFilterListParameter;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -27,6 +29,8 @@ import java.util.stream.Collectors;
 
 // Traits
 public class ListFiles extends ACAQIteratingAlgorithm {
+
+    private PathFilterListParameter filters = new PathFilterListParameter();
 
     /**
      * Creates new instance
@@ -51,7 +55,9 @@ public class ListFiles extends ACAQIteratingAlgorithm {
         FolderData inputFolder = dataInterface.getInputData("Folders", FolderData.class);
         try {
             for (Path file : Files.list(inputFolder.getFolderPath()).filter(Files::isRegularFile).collect(Collectors.toList())) {
-                dataInterface.addOutputData("Files", new FileData(file));
+                if(filters.isEmpty() || filters.stream().anyMatch(f -> f.test(file))) {
+                    dataInterface.addOutputData("Files", new FileData(file));
+                }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -60,6 +66,18 @@ public class ListFiles extends ACAQIteratingAlgorithm {
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
+        report.forCategory("Filters").report(filters);
+    }
 
+    @ACAQDocumentation(name = "Filters", description = "You can optionally filter the result folders. " +
+            "The filters are connected via a logical OR operation. An empty list disables filtering")
+    @ACAQParameter("filters")
+    public PathFilterListParameter getFilters() {
+        return filters;
+    }
+
+    @ACAQParameter("filters")
+    public void setFilters(PathFilterListParameter filters) {
+        this.filters = filters;
     }
 }

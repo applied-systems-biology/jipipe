@@ -64,7 +64,7 @@ public class PathCollectionParameterEditorUI extends ACAQParameterEditorUI {
     }
 
     private void removeSelectedEntries() {
-        PathListParameter parameter = getParameterAccess().get();
+        PathListParameter parameter = getParameterAccess().get(PathListParameter.class);
         if (parameter == null) {
             parameter = new PathListParameter();
         }
@@ -90,7 +90,7 @@ public class PathCollectionParameterEditorUI extends ACAQParameterEditorUI {
                 fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
                 break;
         }
-        PathListParameter parameter = getParameterAccess().get();
+        PathListParameter parameter = getParameterAccess().get(PathListParameter.class);
         if (parameter == null) {
             parameter = new PathListParameter();
             getParameterAccess().set(parameter);
@@ -122,7 +122,7 @@ public class PathCollectionParameterEditorUI extends ACAQParameterEditorUI {
     @Override
     public void reload() {
         DefaultListModel<String> listModel = new DefaultListModel<>();
-        PathListParameter parameter = getParameterAccess().get();
+        PathListParameter parameter = getParameterAccess().get(PathListParameter.class);
         if (parameter == null) {
             parameter = new PathListParameter();
             getParameterAccess().set(parameter);

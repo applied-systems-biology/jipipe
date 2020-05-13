@@ -310,7 +310,7 @@ public abstract class PlotData implements ACAQData, ACAQParameterCollection, ACA
             // Write parameters
             ACAQTraversedParameterCollection parameterCollection = new ACAQTraversedParameterCollection(value);
             for (Map.Entry<String, ACAQParameterAccess> kv : parameterCollection.getParameters().entrySet()) {
-                gen.writeObjectField(kv.getKey(), kv.getValue().get());
+                gen.writeObjectField(kv.getKey(), kv.getValue().get(Object.class));
             }
 
             // Save dynamic parameter storage
