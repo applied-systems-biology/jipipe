@@ -171,7 +171,6 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
      *
      * @param fieldClass The parameter class
      */
-    @JsonSetter("field-class")
     public void setFieldClass(Class<?> fieldClass) {
         this.fieldClass = fieldClass;
     }
@@ -186,8 +185,13 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
         setFieldClass(ACAQParameterTypeRegistry.getInstance().getDeclarationById(id).getFieldClass());
     }
 
-    @Override
     @JsonGetter("value")
+    public Object getValue() {
+        return value;
+    }
+
+    @Override
+
     public <T> T get(Class<T> klass) {
         return (T) value;
     }
@@ -274,7 +278,8 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
             result.setDescription(jsonNode.get("description").textValue());
             result.setVisibility(JsonUtils.getObjectMapper().readerFor(ACAQParameterVisibility.class).readValue(jsonNode.get("visibility")));
             result.setFieldClassDeclarationId(jsonNode.get("field-class-id").textValue());
-            result.set(JsonUtils.getObjectMapper().readerFor(result.getFieldClass()).readValue(jsonNode.get("value")));
+            if(jsonNode.has("value"))
+                result.set(JsonUtils.getObjectMapper().readerFor(result.getFieldClass()).readValue(jsonNode.get("value")));
             if(jsonNode.has("short-key"))
                 result.setShortKey(jsonNode.get("short-key").textValue());
             if(jsonNode.has("ui-order"))

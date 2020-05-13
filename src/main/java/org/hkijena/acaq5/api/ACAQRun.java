@@ -95,12 +95,12 @@ public class ACAQRun implements ACAQRunnable {
         }
     }
 
-    private void flushFinishedSlots(List<ACAQDataSlot> traversedSlots, Set<ACAQAlgorithm> executedAlgorithms, int i, ACAQDataSlot outputSlot) {
+    private void flushFinishedSlots(List<ACAQDataSlot> traversedSlots, Set<ACAQAlgorithm> executedAlgorithms, int currentIndex, ACAQDataSlot outputSlot) {
         if (!executedAlgorithms.contains(outputSlot.getAlgorithm()))
             return;
         if (configuration.isFlushingEnabled()) {
             boolean canFlush = true;
-            for (int j = i + 1; j < traversedSlots.size(); ++j) {
+            for (int j = currentIndex + 1; j < traversedSlots.size(); ++j) {
                 ACAQDataSlot futureSlot = traversedSlots.get(j);
                 if (futureSlot.isInput() && algorithmGraph.getSourceSlot(futureSlot) == outputSlot) {
                     canFlush = false;
@@ -138,19 +138,19 @@ public class ACAQRun implements ACAQRunnable {
             algorithmLimits.addAll(algorithmGraph.getAlgorithmNodes().values());
         }
 
-        for (int i = 0; i < traversedSlots.size(); ++i) {
+        for (int index = 0; index < traversedSlots.size(); ++index) {
             if (isCancelled.get())
                 throw new UserFriendlyRuntimeException("Execution was cancelled",
                         "You cancelled the execution of the algorithm pipeline.",
                         "Pipeline run", "You clicked 'Cancel'.",
                         "Do not click 'Cancel' if you do not want to cancel the execution.");
-            ACAQDataSlot slot = traversedSlots.get(i);
-            onProgress.accept(new ACAQRunnerStatus(i, algorithmGraph.getSlotCount(), slot.getNameWithAlgorithmName()));
+            ACAQDataSlot slot = traversedSlots.get(index);
+            onProgress.accept(new ACAQRunnerStatus(index, algorithmGraph.getSlotCount(), slot.getNameWithAlgorithmName()));
 
             // Let algorithms provide sub-progress
             String statusMessage = "Algorithm: " + slot.getAlgorithm().getName();
-            int traversionIndex = i;
-            Consumer<ACAQRunnerSubStatus> algorithmProgress = s -> onProgress.accept(new ACAQRunnerStatus(traversionIndex, algorithmGraph.getSlotCount(),
+            int traversionIndex = index;
+            Consumer<ACAQRunnerSubStatus> algorithmProgress = s -> onProgress.accept(new ACAQRunnerStatus(traversionIndex, traversedSlots.size(),
                     statusMessage + " | " + s));
 
             if (slot.isInput()) {
@@ -159,11 +159,11 @@ public class ACAQRun implements ACAQRunnable {
                 slot.copyFrom(sourceSlot);
 
                 // Check if we can flush the output
-                flushFinishedSlots(traversedSlots, executedAlgorithms, i, sourceSlot);
+                flushFinishedSlots(traversedSlots, executedAlgorithms, index, sourceSlot);
             } else if (slot.isOutput()) {
                 // Ensure the algorithm has run
                 if (!executedAlgorithms.contains(slot.getAlgorithm()) && algorithmLimits.contains(slot.getAlgorithm())) {
-                    onProgress.accept(new ACAQRunnerStatus(i, algorithmGraph.getSlotCount(), statusMessage));
+                    onProgress.accept(new ACAQRunnerStatus(index, traversedSlots.size(), statusMessage));
                     try {
                         slot.getAlgorithm().run(new ACAQRunnerSubStatus(), algorithmProgress, isCancelled);
                     } catch (Exception e) {
@@ -178,9 +178,8 @@ public class ACAQRun implements ACAQRunnable {
                 }
 
                 // Check if we can flush the output
-                flushFinishedSlots(traversedSlots, executedAlgorithms, i, slot);
+                flushFinishedSlots(traversedSlots, executedAlgorithms, index, slot);
             }
-            onProgress.accept(new ACAQRunnerStatus(i + 1, algorithmGraph.getSlotCount(), slot.getNameWithAlgorithmName() + " done"));
         }
 
         // Postprocessing

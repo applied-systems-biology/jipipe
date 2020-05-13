@@ -13,6 +13,21 @@ import org.jfree.data.statistics.BoxAndWhiskerCategoryDataset;
         @PlotColumn(name = "Category", description = "Category for each value. Displayed in the X axis.", isNumeric = false),
         @PlotColumn(name = "Group", description = "Group for each value. Bars are colored by this column.", isNumeric = false)})
 public class BarBoxAndWhiskerCategoryPlotData extends CategoryPlotData {
+
+    /**
+     * Creates a new instance
+     */
+    public BarBoxAndWhiskerCategoryPlotData() {
+    }
+
+    /**
+     * Creates a copy
+     * @param other the original
+     */
+    public BarBoxAndWhiskerCategoryPlotData(BarBoxAndWhiskerCategoryPlotData other) {
+        super(other);
+    }
+
     @Override
     public JFreeChart getChart() {
         JFreeChart chart = ChartFactory.createBoxAndWhiskerChart(getTitle(),

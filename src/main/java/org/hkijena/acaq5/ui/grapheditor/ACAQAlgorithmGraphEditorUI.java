@@ -106,6 +106,9 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
         scrollPane.getHorizontalScrollBar().addAdjustmentListener(e -> {
             graphUI.setNewEntryLocationX(scrollPane.getHorizontalScrollBar().getValue());
         });
+        scrollPane.getVerticalScrollBar().addAdjustmentListener(e -> {
+            graphUI.setNewEntryLocationY(scrollPane.getVerticalScrollBar().getValue());
+        });
         splitPane.setLeftComponent(scrollPane);
         splitPane.setRightComponent(new JPanel());
         add(splitPane, BorderLayout.CENTER);

@@ -11,6 +11,21 @@ import org.jfree.chart.JFreeChart;
 @PlotMetadata(columns = {@PlotColumn(name = "Amount", description = "The values to be displayed", isNumeric = true),
         @PlotColumn(name = "Category", description = "The categories to be displayed", isNumeric = false)})
 public class Pie2DPlotData extends PiePlotData {
+
+    /**
+     * Creates a new instance
+     */
+    public Pie2DPlotData() {
+    }
+
+    /**
+     * Creates a copy
+     * @param other the original
+     */
+    public Pie2DPlotData(Pie2DPlotData other) {
+        super(other);
+    }
+
     @Override
     public JFreeChart getChart() {
         return ChartFactory.createPieChart(getTitle(), createDataSet(), true, true, false);

@@ -14,6 +14,21 @@ import org.jfree.chart.renderer.category.StatisticalLineAndShapeRenderer;
         @PlotColumn(name = "Category", description = "Categories displayed in the X axis. Must correspond to each value.", isNumeric = false),
         @PlotColumn(name = "Group", description = "Groups to color the bars. Shown in the legend. Must correspond to each value.", isNumeric = false)})
 public class LineStatisticalCategoryPlotData extends CategoryPlotData {
+
+    /**
+     * Creates a new instance
+     */
+    public LineStatisticalCategoryPlotData() {
+    }
+
+    /**
+     * Creates a copy
+     * @param other the original
+     */
+    public LineStatisticalCategoryPlotData(LineStatisticalCategoryPlotData other) {
+        super(other);
+    }
+
     @Override
     public JFreeChart getChart() {
         JFreeChart chart = ChartFactory.createLineChart(getTitle(), getCategoryAxisLabel(), getValueAxisLabel(), createDataSet());

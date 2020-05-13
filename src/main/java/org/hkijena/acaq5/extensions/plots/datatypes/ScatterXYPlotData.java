@@ -11,6 +11,21 @@ import org.jfree.chart.JFreeChart;
 @PlotMetadata(columns = {@PlotColumn(name = "X", description = "The X values", isNumeric = true),
         @PlotColumn(name = "Y", description = "The Y values", isNumeric = true)})
 public class ScatterXYPlotData extends XYPlotData {
+
+    /**
+     * Creates a new instance
+     */
+    public ScatterXYPlotData() {
+    }
+
+    /**
+     * Creates a copy
+     * @param other the original
+     */
+    public ScatterXYPlotData(ScatterXYPlotData other) {
+        super(other);
+    }
+
     @Override
     public JFreeChart getChart() {
         return ChartFactory.createScatterPlot(getTitle(), getxAxisLabel(), getyAxisLabel(), createDataSet());

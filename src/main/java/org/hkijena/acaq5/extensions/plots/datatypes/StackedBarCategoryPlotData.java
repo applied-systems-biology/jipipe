@@ -15,6 +15,21 @@ import org.jfree.chart.renderer.category.StandardBarPainter;
         @PlotColumn(name = "Category", description = "Categories displayed in the X axis. Must correspond to each value.", isNumeric = false),
         @PlotColumn(name = "Group", description = "Groups to color the bars. Shown in the legend. Must correspond to each value.", isNumeric = false)})
 public class StackedBarCategoryPlotData extends CategoryPlotData {
+
+    /**
+     * Creates a new instance
+     */
+    public StackedBarCategoryPlotData() {
+    }
+
+    /**
+     * Creates a copy
+     * @param other the original
+     */
+    public StackedBarCategoryPlotData(StackedBarCategoryPlotData other) {
+        super(other);
+    }
+
     @Override
     public JFreeChart getChart() {
         JFreeChart chart = ChartFactory.createStackedBarChart(getTitle(), getCategoryAxisLabel(), getValueAxisLabel(), createDataSet());

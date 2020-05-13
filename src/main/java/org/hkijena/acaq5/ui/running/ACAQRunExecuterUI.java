@@ -103,7 +103,7 @@ public class ACAQRunExecuterUI extends JPanel {
         if (event.getRun() == run) {
             progressBar.setIndeterminate(false);
             progressBar.setMaximum(event.getStatus().getMaxProgress());
-            progressBar.setValue(event.getStatus().getMaxProgress());
+            progressBar.setValue(event.getStatus().getProgress());
             progressBar.setString("(" + progressBar.getValue() + "/" + progressBar.getMaximum() + ") " + event.getStatus().getMessage());
         }
     }

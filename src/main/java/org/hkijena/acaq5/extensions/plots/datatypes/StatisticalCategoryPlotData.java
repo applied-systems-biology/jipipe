@@ -19,6 +19,20 @@ import java.util.Map;
  */
 public abstract class StatisticalCategoryPlotData extends CategoryPlotData {
 
+    /**
+     * Creates a new instance
+     */
+    public StatisticalCategoryPlotData() {
+    }
+
+    /**
+     * Creates a copy
+     * @param other the original
+     */
+    public StatisticalCategoryPlotData(StatisticalCategoryPlotData other) {
+        super(other);
+    }
+
     @Override
     public CategoryDataset createDataSet() {
         DefaultStatisticalCategoryDataset dataset = new DefaultStatisticalCategoryDataset();

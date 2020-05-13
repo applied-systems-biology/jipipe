@@ -11,6 +11,21 @@ import org.jfree.chart.JFreeChart;
 @PlotMetadata(columns = {@PlotColumn(name = "X", description = "The X values", isNumeric = true),
         @PlotColumn(name = "Y", description = "The Y values", isNumeric = true)})
 public class LineXYPlotData extends XYPlotData {
+
+    /**
+     * Creates a new instance
+     */
+    public LineXYPlotData() {
+    }
+
+    /**
+     * Creates a copy
+     * @param other the original
+     */
+    public LineXYPlotData(LineXYPlotData other) {
+        super(other);
+    }
+
     @Override
     public JFreeChart getChart() {
         return ChartFactory.createXYLineChart(getTitle(), getxAxisLabel(), getyAxisLabel(), createDataSet());

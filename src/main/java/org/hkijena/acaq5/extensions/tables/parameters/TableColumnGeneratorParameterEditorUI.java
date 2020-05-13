@@ -7,6 +7,7 @@ import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQDataDeclarationRef;
 import org.hkijena.acaq5.extensions.tables.ColumnContentType;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
+import org.hkijena.acaq5.ui.components.ACAQDataDeclarationListCellRenderer;
 import org.hkijena.acaq5.ui.components.ACAQDataDeclarationRefListCellRenderer;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -22,7 +23,7 @@ import java.util.List;
 public class TableColumnGeneratorParameterEditorUI extends ACAQParameterEditorUI {
 
     private boolean isProcessing = false;
-    private JComboBox<ACAQDataDeclarationRef> comboBox;
+    private JComboBox<ACAQDataDeclaration> comboBox;
     private JToggleButton numericColumnToggle;
     private JToggleButton textColumnToggle;
 
@@ -45,10 +46,11 @@ public class TableColumnGeneratorParameterEditorUI extends ACAQParameterEditorUI
     public void reload() {
         isProcessing = true;
         TableColumnGeneratorParameter parameter = getParameterAccess().get(TableColumnGeneratorParameter.class);
+        System.out.println("--> " + parameter.getGeneratorType());
         if (parameter == null) {
             parameter = new TableColumnGeneratorParameter();
         }
-        comboBox.setSelectedItem(getParameterAccess().get(Object.class));
+        comboBox.setSelectedItem(parameter.getGeneratorType().getDeclaration());
         if (parameter.getGeneratedType() == ColumnContentType.NumericColumn) {
             numericColumnToggle.setSelected(true);
         } else {
@@ -60,7 +62,7 @@ public class TableColumnGeneratorParameterEditorUI extends ACAQParameterEditorUI
     private void initialize() {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         comboBox = new JComboBox<>(getAvailableGenerators());
-        comboBox.setRenderer(new ACAQDataDeclarationRefListCellRenderer());
+        comboBox.setRenderer(new ACAQDataDeclarationListCellRenderer());
         comboBox.addActionListener(e -> writeValueToParameter());
         add(comboBox);
 
@@ -77,7 +79,10 @@ public class TableColumnGeneratorParameterEditorUI extends ACAQParameterEditorUI
         if (parameter == null) {
             parameter = new TableColumnGeneratorParameter();
         }
-        parameter.setGeneratorType((ACAQDataDeclarationRef) comboBox.getSelectedItem());
+        if(comboBox.getSelectedItem() != null)
+            parameter.getGeneratorType().setDeclaration((ACAQDataDeclaration)comboBox.getSelectedItem());
+        else
+            parameter.getGeneratorType().setDeclaration(null);
         if (numericColumnToggle.isSelected())
             parameter.setGeneratedType(ColumnContentType.NumericColumn);
         else
@@ -86,16 +91,16 @@ public class TableColumnGeneratorParameterEditorUI extends ACAQParameterEditorUI
         isProcessing = false;
     }
 
-    private ACAQDataDeclarationRef[] getAvailableGenerators() {
+    private ACAQDataDeclaration[] getAvailableGenerators() {
         List<Object> result = new ArrayList<>();
+        result.add(null);
         for (Class<? extends ACAQData> klass : ACAQDatatypeRegistry.getInstance().getRegisteredDataTypes().values()) {
             if (TableColumn.isGeneratingTableColumn(klass)) {
-                ACAQDataDeclarationRef ref = new ACAQDataDeclarationRef(ACAQDataDeclaration.getInstance(klass));
-                result.add(ref);
+                result.add(ACAQDataDeclaration.getInstance(klass));
             }
         }
 
-        return result.toArray(new ACAQDataDeclarationRef[0]);
+        return result.toArray(new ACAQDataDeclaration[0]);
     }
 
     private JToggleButton addToggle(ButtonGroup group, Icon icon, String description) {

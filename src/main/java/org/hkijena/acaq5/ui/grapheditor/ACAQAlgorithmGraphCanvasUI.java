@@ -44,6 +44,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     private BiMap<ACAQAlgorithm, ACAQAlgorithmUI> nodeUIs = HashBiMap.create();
     private EventBus eventBus = new EventBus();
     private int newEntryLocationX = ACAQAlgorithmUI.SLOT_UI_WIDTH * 4;
+    private int newEntryLocationY = ACAQAlgorithmUI.SLOT_UI_HEIGHT;
     private boolean layoutHelperEnabled;
     private String compartment;
     private JPopupMenu contextMenu;
@@ -283,7 +284,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             }
 
             // Auto-place
-            int minY = ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+            int minY = (int) (newEntryLocationY * 1.0 / ACAQAlgorithmUI.SLOT_UI_HEIGHT) * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
             if (bottomMostSource != null) {
                 minY = Math.max(minY, bottomMostSource.getBottomY() + ACAQAlgorithmUI.SLOT_UI_HEIGHT);
             }
@@ -932,6 +933,14 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
     public JPopupMenu getContextMenu() {
         return contextMenu;
+    }
+
+    public int getNewEntryLocationY() {
+        return newEntryLocationY;
+    }
+
+    public void setNewEntryLocationY(int newEntryLocationY) {
+        this.newEntryLocationY = newEntryLocationY;
     }
 
     /**

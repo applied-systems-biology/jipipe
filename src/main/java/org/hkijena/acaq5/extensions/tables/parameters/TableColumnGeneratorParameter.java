@@ -36,7 +36,7 @@ public class TableColumnGeneratorParameter implements ACAQValidatable {
     @JsonGetter("generator-type")
     @ACAQParameter("generator-type")
     public ACAQDataDeclarationRef getGeneratorType() {
-        if (generatorType != null)
+        if (generatorType == null)
             generatorType = new ACAQDataDeclarationRef();
         return generatorType;
     }

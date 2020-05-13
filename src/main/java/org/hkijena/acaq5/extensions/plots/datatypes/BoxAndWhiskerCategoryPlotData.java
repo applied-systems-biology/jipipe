@@ -18,6 +18,20 @@ import java.util.Map;
  */
 public abstract class BoxAndWhiskerCategoryPlotData extends CategoryPlotData {
 
+    /**
+     * Creates a new instance
+     */
+    public BoxAndWhiskerCategoryPlotData() {
+    }
+
+    /**
+     * Creates a copy
+     * @param other the original
+     */
+    public BoxAndWhiskerCategoryPlotData(BoxAndWhiskerCategoryPlotData other) {
+        super(other);
+    }
+
     @Override
     public CategoryDataset createDataSet() {
         DefaultBoxAndWhiskerCategoryDataset dataset = new DefaultBoxAndWhiskerCategoryDataset();
