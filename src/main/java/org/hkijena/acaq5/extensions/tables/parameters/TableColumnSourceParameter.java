@@ -83,10 +83,9 @@ public class TableColumnSourceParameter implements ACAQParameterCollection, ACAQ
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        if(mode == Mode.PickColumn) {
+        if (mode == Mode.PickColumn) {
             report.report(columnSource);
-        }
-        else if(mode == Mode.GenerateColumn) {
+        } else if (mode == Mode.GenerateColumn) {
             report.report(generatorSource);
         }
     }

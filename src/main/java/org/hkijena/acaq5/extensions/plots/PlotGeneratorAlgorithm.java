@@ -163,12 +163,12 @@ public class PlotGeneratorAlgorithm extends ACAQAlgorithm {
         for (Map.Entry<String, ACAQParameterAccess> entry : columnAssignments.getParameters().entrySet()) {
             TableColumnSourceParameter parameter = entry.getValue().get(TableColumnSourceParameter.class);
             report.forCategory("Input columns").forCategory(entry.getKey()).report(parameter);
-            if(parameter.getMode() == TableColumnSourceParameter.Mode.PickColumn) {
+            if (parameter.getMode() == TableColumnSourceParameter.Mode.PickColumn) {
                 foundRealDataColumn = true;
                 break;
             }
         }
-        if(!foundRealDataColumn) {
+        if (!foundRealDataColumn) {
             report.forCategory("Input columns").reportIsInvalid("Plot has no input data!",
                     "A plot only has column generators. But generators need to know how many rows they should generate.",
                     "Please pick at least one input column from the input table.",

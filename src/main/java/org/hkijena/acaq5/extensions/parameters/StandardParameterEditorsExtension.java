@@ -8,6 +8,7 @@ import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefList;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.parameters.collections.*;
 import org.hkijena.acaq5.extensions.parameters.editors.*;
+import org.hkijena.acaq5.extensions.parameters.filters.IntegerRenaming;
 import org.hkijena.acaq5.extensions.parameters.filters.PathFilter;
 import org.hkijena.acaq5.extensions.parameters.filters.StringFilter;
 import org.hkijena.acaq5.extensions.parameters.filters.StringRenaming;
@@ -134,6 +135,13 @@ public class StandardParameterEditorsExtension extends ACAQPrepackagedDefaultJav
                 "Text replacement",
                 "Replaces a matched string by the target string",
                 null);
+        registerParameterType("integer-renaming",
+                IntegerRenaming.class,
+                IntegerRenaming::new,
+                r -> new IntegerRenaming((IntegerRenaming) r),
+                "Integer replacement",
+                "Replaces a number with another number",
+                null);
 
         // Enum-like parameters
         registerParameterEditor(DynamicEnumParameter.class, DynamicEnumParameterEditorUI.class);
@@ -201,6 +209,12 @@ public class StandardParameterEditorsExtension extends ACAQPrepackagedDefaultJav
                 l -> new StringRenamingList((StringRenamingList) l),
                 "List of string renaming operations",
                 "A list of operations that rename strings",
+                null);
+        registerParameterType("integer-renaming-list", IntegerRenamingList.class,
+                IntegerRenamingList::new,
+                l -> new IntegerRenamingList((IntegerRenamingList) l),
+                "List of integer replacement operations",
+                "A list of operations that replace integers",
                 null);
 
         // Enums
