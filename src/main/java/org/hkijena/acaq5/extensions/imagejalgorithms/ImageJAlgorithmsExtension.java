@@ -21,6 +21,7 @@ import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions.StackSplitte
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions.ZProjectorAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.edge.SobelEdgeDetectorAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.features.FrangiVesselnessFeatures;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.features.LocalMaxima2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.fft.FFT2DForwardTransform;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.fft.FFT2DInverseTransform;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.fft.FFT2DSwapQuadrants;
@@ -159,6 +160,7 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerAlgorithm("ij1-contrast-clahe", CLAHEContrastEnhancer.class);
 
         registerAlgorithm("ij1-feature-vesselness-frangi", FrangiVesselnessFeatures.class);
+        registerAlgorithm("ij1-feature-maxima-local-2d", LocalMaxima2DAlgorithm.class);
 
         registerAlgorithm("ij1-math-math2d", ApplyMath2DAlgorithm.class);
         registerAlgorithm("ij1-math-transform2d", ApplyTransform2DAlgorithm.class);
@@ -223,6 +225,8 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
 
         registerEnumParameterType("ij1-feature-vesselness-frangi:slicing-mode", FrangiVesselnessFeatures.SlicingMode.class,
                 "Slicing mode", "Available slicing modes");
+        registerEnumParameterType("ij1-feature-maxima-local-2d:output-type", LocalMaxima2DAlgorithm.OutputType.class,
+                "Output type", "Available output types");
 
         registerEnumParameterType("ij1-math-math2d:transformation", ApplyMath2DAlgorithm.Transformation.class,
                 "Transformation", "Available transformations");
