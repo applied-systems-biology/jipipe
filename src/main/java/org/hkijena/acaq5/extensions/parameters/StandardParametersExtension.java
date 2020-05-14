@@ -29,7 +29,7 @@ import java.nio.file.Paths;
  * Provides some standard parameters
  */
 @Plugin(type = ACAQJavaExtension.class, priority = Priority.FIRST)
-public class StandardParameterEditorsExtension extends ACAQPrepackagedDefaultJavaExtension {
+public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExtension {
 
     @Override
     public String getName() {
@@ -215,6 +215,16 @@ public class StandardParameterEditorsExtension extends ACAQPrepackagedDefaultJav
                 l -> new IntegerRenamingList((IntegerRenamingList) l),
                 "List of integer replacement operations",
                 "A list of operations that replace integers",
+                null);
+
+        // Matrix parameters
+        registerParameterEditor(Matrix2DParameter.class, Matrix2DParameterEditorUI.class);
+        registerParameterType("matrix2d-float",
+                Matrix2DFloatParameter.class,
+                Matrix2DFloatParameter::new,
+                p -> new Matrix2DFloatParameter((Matrix2DFloatParameter) p),
+                "2D matrix (float)",
+                "A matrix containing float numbers",
                 null);
 
         // Enums
