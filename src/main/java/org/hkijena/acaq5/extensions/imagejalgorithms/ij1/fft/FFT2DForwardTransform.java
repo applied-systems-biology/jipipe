@@ -19,7 +19,7 @@ import java.util.function.Supplier;
  * Applies a FFT forward transformation
  */
 @ACAQDocumentation(name = "2D FFT forward transformation", description = "Converts a real space image into an image in frequency space.")
-@ACAQOrganization(menuPath = "FFT", algorithmCategory = ACAQAlgorithmCategory.Processor)
+@ACAQOrganization(menuPath = "FFT", algorithmCategory = ACAQAlgorithmCategory.Converter)
 @AlgorithmInputSlot(ImagePlus2DData.class)
 @AlgorithmOutputSlot(ImagePlusFFT2DData.class)
 public class FFT2DForwardTransform extends ImageJ1Algorithm {
