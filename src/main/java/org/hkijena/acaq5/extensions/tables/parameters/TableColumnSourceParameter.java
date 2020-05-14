@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQValidatable;
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.extensions.parameters.filters.StringFilter;
@@ -11,7 +13,7 @@ import org.hkijena.acaq5.extensions.parameters.filters.StringFilter;
 /**
  * Parameter that acts as source (via matching a column) or a generator
  */
-public class TableColumnSourceParameter implements ACAQParameterCollection {
+public class TableColumnSourceParameter implements ACAQParameterCollection, ACAQValidatable {
 
     private EventBus eventBus = new EventBus();
     private Mode mode = Mode.PickColumn;
@@ -77,6 +79,16 @@ public class TableColumnSourceParameter implements ACAQParameterCollection {
     @Override
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+        if(mode == Mode.PickColumn) {
+            report.report(columnSource);
+        }
+        else if(mode == Mode.GenerateColumn) {
+            report.report(generatorSource);
+        }
     }
 
     /**
