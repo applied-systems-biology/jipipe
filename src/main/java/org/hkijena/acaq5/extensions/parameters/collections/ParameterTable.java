@@ -13,7 +13,6 @@ import com.google.common.collect.ImmutableList;
 import org.hkijena.acaq5.api.parameters.ACAQParameterTypeDeclaration;
 import org.hkijena.acaq5.api.registries.ACAQParameterTypeRegistry;
 import org.hkijena.acaq5.utils.JsonUtils;
-import org.hkijena.acaq5.utils.ReflectionUtils;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;

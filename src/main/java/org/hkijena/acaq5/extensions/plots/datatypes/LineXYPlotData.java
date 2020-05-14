@@ -20,6 +20,7 @@ public class LineXYPlotData extends XYPlotData {
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public LineXYPlotData(LineXYPlotData other) {

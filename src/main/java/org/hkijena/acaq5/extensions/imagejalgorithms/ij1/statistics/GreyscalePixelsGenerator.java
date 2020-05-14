@@ -28,7 +28,8 @@ import java.util.function.Supplier;
 /**
  * Algorithm that generates {@link ResultsTableData} as histogram
  */
-@ACAQDocumentation(name = "Get pixel values (Greyscale)", description = "Extracts the greyscale values of an image and puts them into a table.")
+@ACAQDocumentation(name = "Get pixel values (Greyscale)", description = "Extracts the greyscale values of an image and puts them into a table. " +
+        "It generates following output columns: <pre>value</pre>")
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Analysis, menuPath = "Statistics")
 @AlgorithmInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
 @AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)

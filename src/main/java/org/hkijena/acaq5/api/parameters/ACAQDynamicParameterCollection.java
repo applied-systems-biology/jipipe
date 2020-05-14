@@ -149,8 +149,8 @@ public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollec
     /**
      * Gets a parameter value
      *
-     * @param <T> The parameter type
-     * @param key The parameter key
+     * @param <T>   The parameter type
+     * @param key   The parameter key
      * @param klass The returned type
      * @return The parameter value
      */

@@ -11,6 +11,8 @@ import org.hkijena.acaq5.extensions.tables.datatypes.StringArrayTableColumn;
 import org.hkijena.acaq5.extensions.tables.datatypes.ZeroTableColumn;
 import org.hkijena.acaq5.extensions.tables.parameters.TableColumnGeneratorParameter;
 import org.hkijena.acaq5.extensions.tables.parameters.TableColumnGeneratorParameterEditorUI;
+import org.hkijena.acaq5.extensions.tables.parameters.TableColumnSourceParameter;
+import org.hkijena.acaq5.extensions.tables.parameters.TableColumnSourceParameterEditorUI;
 import org.hkijena.acaq5.extensions.tables.ui.tableoperations.*;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -164,6 +166,13 @@ public class TablesExtension extends ACAQPrepackagedDefaultJavaExtension {
                 "Column generator",
                 "Defines a column generator",
                 TableColumnGeneratorParameterEditorUI.class);
+        registerParameterType("table-column-source",
+                TableColumnSourceParameter.class,
+                TableColumnSourceParameter::new,
+                p -> new TableColumnSourceParameter((TableColumnSourceParameter) p),
+                "Column source",
+                "Defines a column source",
+                TableColumnSourceParameterEditorUI.class);
 
         // Register algorithms
         registerAlgorithm("table-add-columns-generate", GenerateColumnAlgorithm.class);

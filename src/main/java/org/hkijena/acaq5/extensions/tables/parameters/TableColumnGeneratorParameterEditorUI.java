@@ -4,11 +4,9 @@ import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataDeclaration;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
-import org.hkijena.acaq5.extensions.parameters.references.ACAQDataDeclarationRef;
 import org.hkijena.acaq5.extensions.tables.ColumnContentType;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
 import org.hkijena.acaq5.ui.components.ACAQDataDeclarationListCellRenderer;
-import org.hkijena.acaq5.ui.components.ACAQDataDeclarationRefListCellRenderer;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Context;
@@ -46,7 +44,6 @@ public class TableColumnGeneratorParameterEditorUI extends ACAQParameterEditorUI
     public void reload() {
         isProcessing = true;
         TableColumnGeneratorParameter parameter = getParameterAccess().get(TableColumnGeneratorParameter.class);
-        System.out.println("--> " + parameter.getGeneratorType());
         if (parameter == null) {
             parameter = new TableColumnGeneratorParameter();
         }
@@ -79,8 +76,8 @@ public class TableColumnGeneratorParameterEditorUI extends ACAQParameterEditorUI
         if (parameter == null) {
             parameter = new TableColumnGeneratorParameter();
         }
-        if(comboBox.getSelectedItem() != null)
-            parameter.getGeneratorType().setDeclaration((ACAQDataDeclaration)comboBox.getSelectedItem());
+        if (comboBox.getSelectedItem() != null)
+            parameter.getGeneratorType().setDeclaration((ACAQDataDeclaration) comboBox.getSelectedItem());
         else
             parameter.getGeneratorType().setDeclaration(null);
         if (numericColumnToggle.isSelected())

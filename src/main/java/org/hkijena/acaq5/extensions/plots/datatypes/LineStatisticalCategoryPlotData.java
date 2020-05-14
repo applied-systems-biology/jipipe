@@ -23,6 +23,7 @@ public class LineStatisticalCategoryPlotData extends CategoryPlotData {
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public LineStatisticalCategoryPlotData(LineStatisticalCategoryPlotData other) {

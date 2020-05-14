@@ -20,6 +20,7 @@ public class Pie2DPlotData extends PiePlotData {
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public Pie2DPlotData(Pie2DPlotData other) {

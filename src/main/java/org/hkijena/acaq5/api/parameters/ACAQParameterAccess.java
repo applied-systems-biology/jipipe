@@ -56,7 +56,7 @@ public interface ACAQParameterAccess {
     /**
      * Gets the parameter value
      *
-     * @param <T> Parameter data type
+     * @param <T>   Parameter data type
      * @param klass
      * @return Parameter value
      */

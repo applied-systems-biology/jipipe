@@ -20,6 +20,7 @@ public class ScatterXYPlotData extends XYPlotData {
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public ScatterXYPlotData(ScatterXYPlotData other) {

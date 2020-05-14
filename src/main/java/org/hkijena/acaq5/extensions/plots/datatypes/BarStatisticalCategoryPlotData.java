@@ -25,6 +25,7 @@ public class BarStatisticalCategoryPlotData extends CategoryPlotData {
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public BarStatisticalCategoryPlotData(BarStatisticalCategoryPlotData other) {

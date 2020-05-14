@@ -22,6 +22,7 @@ public class BarBoxAndWhiskerCategoryPlotData extends CategoryPlotData {
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public BarBoxAndWhiskerCategoryPlotData(BarBoxAndWhiskerCategoryPlotData other) {

@@ -29,7 +29,8 @@ import java.util.function.Supplier;
 /**
  * Algorithm that generates {@link org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData} as histogram
  */
-@ACAQDocumentation(name = "Histogram", description = "Generates a histogram of the input image. It generates following output columns: `value`, `count`.")
+@ACAQDocumentation(name = "Histogram", description = "Generates a histogram of the input image. " +
+        "It generates following output columns: <pre>value</pre>, <pre>count</pre>.")
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Analysis, menuPath = "Statistics")
 @AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)

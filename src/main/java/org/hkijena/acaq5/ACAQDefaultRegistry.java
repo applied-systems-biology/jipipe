@@ -112,7 +112,7 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
             ACAQAlgorithm algorithm = declaration.newInstance();
             ACAQTraversedParameterCollection collection = new ACAQTraversedParameterCollection(algorithm);
             for (Map.Entry<String, ACAQParameterAccess> entry : collection.getParameters().entrySet()) {
-                if(ACAQParameterTypeRegistry.getInstance().getDeclarationByFieldClass(entry.getValue().getFieldClass()) == null) {
+                if (ACAQParameterTypeRegistry.getInstance().getDeclarationByFieldClass(entry.getValue().getFieldClass()) == null) {
                     throw new UserFriendlyRuntimeException("Unregistered parameter found: " + entry.getValue().getFieldClass() + " @ "
                             + algorithm + " -> " + entry.getKey(),
                             "A plugin is invalid!",

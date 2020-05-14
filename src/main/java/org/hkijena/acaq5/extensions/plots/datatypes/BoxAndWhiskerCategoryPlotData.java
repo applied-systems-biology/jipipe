@@ -26,6 +26,7 @@ public abstract class BoxAndWhiskerCategoryPlotData extends CategoryPlotData {
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public BoxAndWhiskerCategoryPlotData(BoxAndWhiskerCategoryPlotData other) {

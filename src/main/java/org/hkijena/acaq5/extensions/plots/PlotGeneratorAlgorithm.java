@@ -24,12 +24,13 @@ import org.hkijena.acaq5.extensions.plots.datatypes.PlotColumn;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotData;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotDataSeries;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotMetadata;
+import org.hkijena.acaq5.extensions.tables.ColumnContentType;
+import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
+import org.hkijena.acaq5.extensions.tables.parameters.TableColumnSourceParameter;
+import org.hkijena.acaq5.utils.ReflectionUtils;
 import org.scijava.Priority;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -74,6 +75,12 @@ public class PlotGeneratorAlgorithm extends ACAQAlgorithm {
     @Override
     public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         PlotMetadata plotMetadata = plotType.getDeclaration().getDataClass().getAnnotation(PlotMetadata.class);
+        Map<String, PlotColumn> plotColumns = new HashMap<>();
+        for (PlotColumn column : plotMetadata.columns()) {
+            plotColumns.put(column.name(), column);
+        }
+
+
         for (int row = 0; row < getFirstInputSlot().getRowCount(); ++row) {
             ResultsTableData inputData = getFirstInputSlot().getData(row, ResultsTableData.class);
             PlotData plot = (PlotData) plotTypeParameters.duplicate();
@@ -86,26 +93,58 @@ public class PlotGeneratorAlgorithm extends ACAQAlgorithm {
                 columnHeadings.add(inputData.getTable().getColumnHeading(i));
             }
 
-            // Check if columns exist
+            // First generate real column data
             for (Map.Entry<String, ACAQParameterAccess> entry : columnAssignments.getParameters().entrySet()) {
-                String matchingColumn = null;
-                StringFilter filter = entry.getValue().get(StringFilter.class);
-                for (String columnHeading : columnHeadings) {
-                    if (filter.test(columnHeading)) {
-                        matchingColumn = columnHeading;
-                        break;
+                TableColumnSourceParameter parameter = entry.getValue().get(TableColumnSourceParameter.class);
+                if (parameter.getMode() == TableColumnSourceParameter.Mode.PickColumn) {
+                    String matchingColumn = null;
+                    StringFilter filter = parameter.getColumnSource();
+                    for (String columnHeading : columnHeadings) {
+                        if (filter.test(columnHeading)) {
+                            matchingColumn = columnHeading;
+                            break;
+                        }
+                    }
+                    if (matchingColumn == null) {
+                        throw new UserFriendlyRuntimeException("Could not find column that matches '" + filter.toString() + "'!",
+                                "Could not find column!",
+                                "Algorithm '" + getName() + "'",
+                                "A plot generator algorithm was instructed to extract a column matching the rule '" + filter.toString() + "' for plotting. The column could note be found. " +
+                                        "The table contains only following columns: " + String.join(", ", columnHeadings),
+                                "Please check if your input columns are set up with valid filters. Please check the input of the plot generator " +
+                                        "via the testbench to see if the input data is correct. You can also select a generator instead of picking a column.");
+                    }
+                    seriesTable.setColumn(entry.getKey(), inputData.getTable().getColumnAsVariables(matchingColumn));
+                }
+            }
+
+            if (seriesTable.getCounter() == 0) {
+                throw new UserFriendlyRuntimeException("Table has now rows!",
+                        "Plot has no real input data!",
+                        "Algorithm '" + getName() + "'",
+                        "A plot only has column generators. But generators need to know how many rows they should generate.",
+                        "Please pick at least one input column from the input table.");
+            }
+
+            for (Map.Entry<String, ACAQParameterAccess> entry : columnAssignments.getParameters().entrySet()) {
+                TableColumnSourceParameter parameter = entry.getValue().get(TableColumnSourceParameter.class);
+                if (parameter.getMode() == TableColumnSourceParameter.Mode.GenerateColumn) {
+                    PlotColumn column = plotColumns.get(entry.getKey());
+                    TableColumn generator = (TableColumn) ReflectionUtils.newInstance(parameter.getGeneratorSource().getGeneratorType().getDeclaration().getDataClass());
+                    if (column.isNumeric()) {
+                        double[] data = generator.getDataAsDouble(seriesTable.getCounter());
+                        int col = seriesTable.getFreeColumn(entry.getKey());
+                        for (int i = 0; i < data.length; i++) {
+                            seriesTable.setValue(col, i, data[i]);
+                        }
+                    } else {
+                        String[] data = generator.getDataAsString(seriesTable.getCounter());
+                        int col = seriesTable.getFreeColumn(entry.getKey());
+                        for (int i = 0; i < data.length; i++) {
+                            seriesTable.setValue(col, i, data[i]);
+                        }
                     }
                 }
-                if (matchingColumn == null) {
-                    throw new UserFriendlyRuntimeException("Could not find column that matches '" + filter.toString() + "'!",
-                            "Could not find column!",
-                            "Algorithm '" + getName() + "'",
-                            "A plot generator algorithm was instructed to extract a column matching the rule '" + filter.toString() + "' for plotting. The column could note be found. " +
-                                    "The table contains only following columns: " + String.join(", ", columnHeadings),
-                            "Please check if your input columns are set up with valid filters. Please check the input of the plot generator " +
-                                    "via the testbench to see if the input data is correct.");
-                }
-                seriesTable.setColumn(entry.getKey(), inputData.getTable().getColumnAsVariables(matchingColumn));
             }
 
             plot.addSeries(new PlotDataSeries(seriesTable));
@@ -151,8 +190,12 @@ public class PlotGeneratorAlgorithm extends ACAQAlgorithm {
                 ACAQMutableParameterAccess parameterAccess = new ACAQMutableParameterAccess();
                 parameterAccess.setKey(column.name());
                 parameterAccess.setName(column.name());
-                parameterAccess.setFieldClass(StringFilter.class);
-                parameterAccess.set(new StringFilter(StringFilter.Mode.Equals, column.name()));
+                parameterAccess.setFieldClass(TableColumnSourceParameter.class);
+                TableColumnSourceParameter initialValue = new TableColumnSourceParameter();
+                initialValue.setMode(TableColumnSourceParameter.Mode.PickColumn);
+                initialValue.setColumnSource(new StringFilter(StringFilter.Mode.Equals, column.name()));
+                initialValue.getGeneratorSource().setGeneratedType(column.isNumeric() ? ColumnContentType.NumericColumn : ColumnContentType.StringColumn);
+                parameterAccess.set(initialValue);
                 parameterAccess.setDescription(column.description() + " " + (column.isNumeric() ? "(Numeric column)" : "(String column)"));
                 columnAssignments.addParameter(parameterAccess);
             }

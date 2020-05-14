@@ -27,6 +27,7 @@ public abstract class StatisticalCategoryPlotData extends CategoryPlotData {
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public StatisticalCategoryPlotData(StatisticalCategoryPlotData other) {

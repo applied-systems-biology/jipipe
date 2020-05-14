@@ -55,7 +55,7 @@ public class ListFiles extends ACAQIteratingAlgorithm {
         FolderData inputFolder = dataInterface.getInputData("Folders", FolderData.class);
         try {
             for (Path file : Files.list(inputFolder.getFolderPath()).filter(Files::isRegularFile).collect(Collectors.toList())) {
-                if(filters.isEmpty() || filters.stream().anyMatch(f -> f.test(file))) {
+                if (filters.isEmpty() || filters.stream().anyMatch(f -> f.test(file))) {
                     dataInterface.addOutputData("Files", new FileData(file));
                 }
             }

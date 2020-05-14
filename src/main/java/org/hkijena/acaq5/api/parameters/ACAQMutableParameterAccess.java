@@ -278,11 +278,11 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
             result.setDescription(jsonNode.get("description").textValue());
             result.setVisibility(JsonUtils.getObjectMapper().readerFor(ACAQParameterVisibility.class).readValue(jsonNode.get("visibility")));
             result.setFieldClassDeclarationId(jsonNode.get("field-class-id").textValue());
-            if(jsonNode.has("value"))
+            if (jsonNode.has("value"))
                 result.set(JsonUtils.getObjectMapper().readerFor(result.getFieldClass()).readValue(jsonNode.get("value")));
-            if(jsonNode.has("short-key"))
+            if (jsonNode.has("short-key"))
                 result.setShortKey(jsonNode.get("short-key").textValue());
-            if(jsonNode.has("ui-order"))
+            if (jsonNode.has("ui-order"))
                 result.setUIOrder(jsonNode.get("ui-order").intValue());
             return result;
         }

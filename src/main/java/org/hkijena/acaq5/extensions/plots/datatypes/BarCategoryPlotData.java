@@ -23,6 +23,7 @@ public class BarCategoryPlotData extends CategoryPlotData {
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public BarCategoryPlotData(BarCategoryPlotData other) {

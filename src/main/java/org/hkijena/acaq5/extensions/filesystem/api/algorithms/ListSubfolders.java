@@ -54,7 +54,7 @@ public class ListSubfolders extends ACAQIteratingAlgorithm {
         FolderData inputFolder = dataInterface.getInputData("Folders", FolderData.class);
         try {
             for (Path path : Files.list(inputFolder.getFolderPath()).filter(Files::isDirectory).collect(Collectors.toList())) {
-                if(filters.isEmpty() || filters.stream().anyMatch(f -> f.test(path))) {
+                if (filters.isEmpty() || filters.stream().anyMatch(f -> f.test(path))) {
                     dataInterface.addOutputData("Subfolders", new FolderData(path));
                 }
             }

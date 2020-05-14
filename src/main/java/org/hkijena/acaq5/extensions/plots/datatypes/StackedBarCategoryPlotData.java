@@ -24,6 +24,7 @@ public class StackedBarCategoryPlotData extends CategoryPlotData {
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public StackedBarCategoryPlotData(StackedBarCategoryPlotData other) {
