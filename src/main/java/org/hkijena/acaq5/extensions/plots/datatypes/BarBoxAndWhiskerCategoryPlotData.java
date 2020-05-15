@@ -12,7 +12,7 @@ import org.jfree.data.statistics.BoxAndWhiskerCategoryDataset;
 @PlotMetadata(columns = {@PlotColumn(name = "Value", description = "The values", isNumeric = true),
         @PlotColumn(name = "Category", description = "Category for each value. Displayed in the X axis.", isNumeric = false),
         @PlotColumn(name = "Group", description = "Group for each value. Bars are colored by this column.", isNumeric = false)})
-public class BarBoxAndWhiskerCategoryPlotData extends CategoryPlotData {
+public class BarBoxAndWhiskerCategoryPlotData extends BoxAndWhiskerCategoryPlotData {
 
     /**
      * Creates a new instance
