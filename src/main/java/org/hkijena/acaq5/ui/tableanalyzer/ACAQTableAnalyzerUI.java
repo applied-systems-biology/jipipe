@@ -19,6 +19,9 @@ import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
+import org.hkijena.acaq5.ui.components.FormPanel;
+import org.hkijena.acaq5.ui.components.MarkdownDocument;
+import org.hkijena.acaq5.ui.components.ModifiedFlowLayout;
 import org.hkijena.acaq5.ui.plotbuilder.ACAQPlotBuilderUI;
 import org.hkijena.acaq5.ui.registries.ACAQTableAnalyzerUIOperationRegistry;
 import org.hkijena.acaq5.utils.BusyCursor;
@@ -29,6 +32,8 @@ import org.jdesktop.swingx.JXTable;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.List;
@@ -43,6 +48,9 @@ public class ACAQTableAnalyzerUI extends ACAQProjectWorkbenchPanel {
     private JXTable jxTable;
     private Stack<DefaultTableModel> undoBuffer = new Stack<>();
     private boolean isRebuildingSelection = false;
+
+    private FormPanel palettePanel;
+    private JPanel currentPaletteGroup;
 
     private JButton convertSelectedCellsButton;
     private JPopupMenu convertSelectedCellsMenu;
@@ -60,7 +68,9 @@ public class ACAQTableAnalyzerUI extends ACAQProjectWorkbenchPanel {
     private void initialize() {
         setLayout(new BorderLayout());
 
+        // Add toolbar buttons
         JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
 
         JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("save.png"));
         {
@@ -69,10 +79,6 @@ public class ACAQTableAnalyzerUI extends ACAQProjectWorkbenchPanel {
             JMenuItem exportAsCSV = new JMenuItem("as CSV table (*.csv)", UIUtils.getIconFromResources("filetype-csv.png"));
             exportAsCSV.addActionListener(e -> exportTableAsCSV());
             exportPopup.add(exportAsCSV);
-
-//            JMenuItem exportAsXLSX = new JMenuItem("as Excel table (*.xlsx)", UIUtils.getIconFromResources("filetype-excel.png"));
-//            exportAsXLSX.addActionListener(e -> exportTableAsXLSX());
-//            exportPopup.add(exportAsXLSX);
         }
         toolBar.add(exportButton);
 
@@ -86,101 +92,7 @@ public class ACAQTableAnalyzerUI extends ACAQProjectWorkbenchPanel {
         undoButton.addActionListener(e -> undo());
         toolBar.add(undoButton);
 
-        toolBar.addSeparator();
-
-        JButton addRowButton = new JButton("Add row", UIUtils.getIconFromResources("add-row.png"));
-        JPopupMenu addRowMenu = UIUtils.addPopupMenuToComponent(addRowButton);
-
-        JMenuItem addNewRowButton = new JMenuItem("Add empty row", UIUtils.getIconFromResources("add.png"));
-        addNewRowButton.addActionListener(e -> addRow());
-        addRowMenu.add(addNewRowButton);
-
-        JMenuItem mergeRowsButton = new JMenuItem("Add rows from other table", UIUtils.getIconFromResources("table.png"));
-        mergeRowsButton.addActionListener(e -> mergeRows());
-        addRowMenu.add(mergeRowsButton);
-
-        toolBar.add(addRowButton);
-
-        JButton addColumnButton = new JButton("Add column", (UIUtils.getIconFromResources("add-column.png")));
-        JPopupMenu addColumnMenu = UIUtils.addPopupMenuToComponent(addColumnButton);
-
-        JMenuItem addNewColumnButton = new JMenuItem("Create new column", UIUtils.getIconFromResources("add.png"));
-        addNewColumnButton.addActionListener(e -> addColumn());
-        addColumnMenu.add(addNewColumnButton);
-
-        JMenuItem copyColumnButton = new JMenuItem("Copy selected column", UIUtils.getIconFromResources("copy.png"));
-        copyColumnButton.addActionListener(e -> copyColumn());
-        addColumnMenu.add(copyColumnButton);
-
-        JMenuItem addNewCombinedColumnButton = new JMenuItem("Combine selected columns", UIUtils.getIconFromResources("statistics.png"));
-        addNewCombinedColumnButton.addActionListener(e -> addNewCombinedColumn());
-        addColumnMenu.add(addNewCombinedColumnButton);
-
-        JMenuItem mergeColumnsButton = new JMenuItem("Add column from other table", UIUtils.getIconFromResources("table.png"));
-        mergeColumnsButton.addActionListener(e -> mergeColumns());
-        addColumnMenu.add(mergeColumnsButton);
-
-        toolBar.add(addColumnButton);
-
-        JButton removeRowButton = new JButton(UIUtils.getIconFromResources("remove-row.png"));
-        removeRowButton.setToolTipText("Remove selected rows");
-        removeRowButton.addActionListener(e -> removeSelectedRows());
-        toolBar.add(removeRowButton);
-
-        JButton removeColumnButton = new JButton(UIUtils.getIconFromResources("remove-column.png"));
-        removeColumnButton.setToolTipText("Remove selected columns");
-        removeColumnButton.addActionListener(e -> removeSelectedColumns());
-        toolBar.add(removeColumnButton);
-
-        toolBar.addSeparator();
-
-        JButton renameColumnButton = new JButton(UIUtils.getIconFromResources("label.png"));
-        renameColumnButton.setToolTipText("Rename column");
-        renameColumnButton.addActionListener(e -> renameColumn());
-        toolBar.add(renameColumnButton);
-
-        toolBar.addSeparator();
-
-        JButton selectRowButton = new JButton(UIUtils.getIconFromResources("select-row.png"));
-        selectRowButton.setToolTipText("Expand selection to whole row");
-        selectRowButton.addActionListener(e -> selectMissingRows());
-        toolBar.add(selectRowButton);
-
-        JButton selectColumnButton = new JButton(UIUtils.getIconFromResources("select-column.png"));
-        selectColumnButton.setToolTipText("Expand selection to whole column");
-        selectColumnButton.addActionListener(e -> selectMissingColumns());
-        toolBar.add(selectColumnButton);
-
-        JButton invertSelectionButton = new JButton(UIUtils.getIconFromResources("invert.png"));
-        invertSelectionButton.setToolTipText("Invert selection");
-        invertSelectionButton.addActionListener(e -> invertSelection());
-        toolBar.add(invertSelectionButton);
-
-        JButton filterSelectButton = new JButton(UIUtils.getIconFromResources("filter.png"));
-        filterSelectButton.setToolTipText("Select all rows that contain the selection of values");
-        filterSelectButton.addActionListener(e -> selectEquivalent());
-        toolBar.add(filterSelectButton);
-
-        toolBar.addSeparator();
-
-        JButton autoSizeColumnButton = new JButton(UIUtils.getIconFromResources("column-autosize.png"));
-        autoSizeColumnButton.setToolTipText("Autosize selected columns");
-        autoSizeColumnButton.addActionListener(e -> autoSizeColumns());
-        toolBar.add(autoSizeColumnButton);
-
         toolBar.add(Box.createHorizontalGlue());
-
-        JButton splitColumnsButton = new JButton("Split columns", UIUtils.getIconFromResources("split.png"));
-        splitColumnsButton.addActionListener(e -> splitColumns());
-        toolBar.add(splitColumnsButton);
-
-        JButton collapseColumnsButton = new JButton("Integrate columns", UIUtils.getIconFromResources("statistics.png"));
-        collapseColumnsButton.addActionListener(e -> collapseColumns());
-        toolBar.add(collapseColumnsButton);
-
-        convertSelectedCellsButton = new JButton("Convert selection", UIUtils.getIconFromResources("inplace-function.png"));
-        convertSelectedCellsMenu = UIUtils.addPopupMenuToComponent(convertSelectedCellsButton);
-        toolBar.add(convertSelectedCellsButton);
 
         JButton createPlotButton = new JButton("Create plot", UIUtils.getIconFromResources("graph.png"));
         createPlotButton.addActionListener(e -> createNewPlot());
@@ -188,15 +100,142 @@ public class ACAQTableAnalyzerUI extends ACAQProjectWorkbenchPanel {
 
         add(toolBar, BorderLayout.NORTH);
 
+        // Create palette
+        palettePanel = new FormPanel(MarkdownDocument.fromPluginResource("documentation/table-analyzer.md"),
+                FormPanel.WITH_SCROLLING);
+
+        addPaletteGroup("Rows", UIUtils.getIconFromResources("select-row.png"));
+        addActionToPalette("Add",
+                "Adds an empty row at the end of the table.",
+                UIUtils.getIconFromResources("add-row.png"),
+                this::addRow);
+        addActionToPalette("Import",
+                "Adds rows from another ACAQ5 table that is currently open",
+                UIUtils.getIconFromResources("table.png"),
+                this::mergeRows);
+        addSeparatorToPalette();
+        addActionToPalette("Remove",
+                "Remove selected rows",
+                UIUtils.getIconFromResources("remove-row.png"),
+                this::removeSelectedRows);
+
+        addPaletteGroup("Columns", UIUtils.getIconFromResources("select-column.png"));
+        addActionToPalette("Add",
+                "Adds an empty column with a custom name to the table.",
+                UIUtils.getIconFromResources("add-column.png"),
+                this::addColumn);
+        addActionToPalette("Import",
+                "Adds columns from another ACAQ5 table that is currently open.",
+                UIUtils.getIconFromResources("table.png"),
+                this::mergeColumns);
+        addActionToPalette("Duplicate",
+                "Copies the selected column into a new one.",
+                UIUtils.getIconFromResources("copy.png"),
+                this::copyColumn);
+        addActionToPalette("Combine",
+                "Creates a new column that combines the selected columns into a new column.",
+                UIUtils.getIconFromResources("statistics.png"),
+                this::addNewCombinedColumn);
+        addSeparatorToPalette();
+        addActionToPalette("Rename",
+                "Renames the selected column",
+                UIUtils.getIconFromResources("label.png"),
+                this::renameColumn);
+        addSeparatorToPalette();
+        addActionToPalette("Remove",
+                "Remove selected columns",
+                UIUtils.getIconFromResources("remove-column.png"),
+                this::removeSelectedColumns);
+
+        addPaletteGroup("Selection", UIUtils.getIconFromResources("select.png"));
+        addActionToPalette("Whole row",
+                "Expands the selection to the whole row",
+                UIUtils.getIconFromResources("select-row.png"),
+                this::selectWholeRow);
+        addActionToPalette("Whole column",
+                "Expands the selection to the whole column",
+                UIUtils.getIconFromResources("select-column.png"),
+                this::selectWholeColumn);
+        addSeparatorToPalette();
+        addActionToPalette("Invert",
+                "Inverts the selection",
+                UIUtils.getIconFromResources("invert.png"),
+                this::invertSelection);
+        addActionToPalette("Select equivalent",
+                "Select all rows that contain the selection of values",
+                UIUtils.getIconFromResources("filter.png"),
+                this::selectEquivalent);
+
+        addPaletteGroup("View", UIUtils.getIconFromResources("search.png"));
+
+        addActionToPalette("Autosize columns",
+                "Resizes the selected columns, so they fit their contents.",
+                UIUtils.getIconFromResources("column-autosize.png"),
+                this::autoSizeColumns);
+
+        addPaletteGroup("Data", UIUtils.getIconFromResources("table.png"));
+        addActionToPalette("Split",
+                "Allows to split the data of a value column by a user-defined list of reference columns.",
+                UIUtils.getIconFromResources("split.png"),
+                this::splitColumns);
+        addActionToPalette("Integrate",
+                "Collapses the table into a one-row table by applying an integration operation on each column..",
+                UIUtils.getIconFromResources("statistics.png"),
+                this::collapseColumns);
+        addSeparatorToPalette();
+        convertSelectedCellsButton = addActionToPalette("Convert cells",
+                "Converts the values in the selected cells",
+                UIUtils.getIconFromResources("inplace-function.png"),
+                () -> {
+                });
+        convertSelectedCellsMenu = UIUtils.addPopupMenuToComponent(convertSelectedCellsButton);
+        palettePanel.addVerticalGlue();
+
         jxTable = new JXTable();
         jxTable.setModel(tableModel);
         jxTable.setColumnSelectionAllowed(true);
         jxTable.setRowSelectionAllowed(true);
         jxTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         jxTable.packAll();
-        add(new JScrollPane(jxTable), BorderLayout.CENTER);
+
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JScrollPane(jxTable), palettePanel);
+        splitPane.setDividerSize(3);
+        splitPane.setResizeWeight(0.66);
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                splitPane.setDividerLocation(0.66);
+            }
+        });
+
+        add(splitPane, BorderLayout.CENTER);
 
         jxTable.getSelectionModel().addListSelectionListener(listSelectionEvent -> updateConvertMenu());
+    }
+
+    private JButton addActionToPalette(String name, String description, Icon icon, Runnable action) {
+        JButton button = new JButton(name, icon);
+        button.setToolTipText(description);
+        UIUtils.makeFlat(button);
+        button.setVerticalTextPosition(SwingConstants.BOTTOM);
+        button.setHorizontalTextPosition(SwingConstants.CENTER);
+        button.addActionListener(e -> action.run());
+//        palettePanel.addWideToForm(button, new MarkdownDocument(description));
+        currentPaletteGroup.add(button);
+        return button;
+    }
+
+    private void addPaletteGroup(String name, Icon icon) {
+        palettePanel.addGroupHeader(name, icon);
+        currentPaletteGroup = new JPanel();
+        currentPaletteGroup.setLayout(new ModifiedFlowLayout(FlowLayout.LEFT));
+        palettePanel.addWideToForm(currentPaletteGroup, null);
+    }
+
+    private void addSeparatorToPalette() {
+//        palettePanel.addWideToForm(Box.createVerticalStrut(8), null);
+        currentPaletteGroup.add(Box.createVerticalStrut(8));
     }
 
     private void splitColumns() {
@@ -332,11 +371,11 @@ public class ACAQTableAnalyzerUI extends ACAQProjectWorkbenchPanel {
         updateConvertMenu();
     }
 
-    private void selectMissingColumns() {
+    private void selectWholeColumn() {
         jxTable.addRowSelectionInterval(0, tableModel.getRowCount() - 1);
     }
 
-    private void selectMissingRows() {
+    private void selectWholeRow() {
         jxTable.addColumnSelectionInterval(0, tableModel.getColumnCount() - 1);
     }
 
