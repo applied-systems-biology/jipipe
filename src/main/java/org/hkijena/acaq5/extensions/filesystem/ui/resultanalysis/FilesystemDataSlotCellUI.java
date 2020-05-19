@@ -2,8 +2,7 @@ package org.hkijena.acaq5.extensions.filesystem.ui.resultanalysis;
 
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
-import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FileData;
-import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FolderData;
+import org.hkijena.acaq5.extensions.filesystem.api.dataypes.PathData;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultDataSlotCellUI;
@@ -42,19 +41,10 @@ public class FilesystemDataSlotCellUI extends ACAQResultDataSlotCellUI {
         Path listFile = findListFile(slot, row);
         if (listFile != null) {
             Path fileOrFolderPath = null;
-            if (slot.getAcceptedDataType() == FileData.class) {
-                try {
-                    fileOrFolderPath = ((FileData) JsonUtils.getObjectMapper().readerFor(FileData.class).readValue(listFile.toFile())).getFilePath();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
-            } else if (slot.getAcceptedDataType() == FolderData.class) {
-                try {
-                    fileOrFolderPath = ((FolderData) JsonUtils.getObjectMapper().readerFor(FolderData.class).readValue(listFile.toFile())).getFolderPath();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+            try {
+                PathData pathData = JsonUtils.getObjectMapper().readerFor(PathData.class).readValue(listFile.toFile());
+                fileOrFolderPath = pathData.getPath();
+            } catch (IOException ignored) {
             }
 
             if (fileOrFolderPath != null) {

@@ -29,6 +29,7 @@ import java.util.function.Supplier;
 public class FilterFolders extends ACAQIteratingAlgorithm {
 
     private PathFilterListParameter filters = new PathFilterListParameter();
+    private boolean filterOnlyFolderNames = true;
 
     /**
      * Initializes the algorithm
@@ -47,6 +48,7 @@ public class FilterFolders extends ACAQIteratingAlgorithm {
      */
     public FilterFolders(FilterFolders other) {
         super(other);
+        this.filterOnlyFolderNames = other.filterOnlyFolderNames;
         this.filters.clear();
         for (PathFilter filter : other.filters) {
             this.filters.add(new PathFilter(filter));
@@ -59,7 +61,7 @@ public class FilterFolders extends ACAQIteratingAlgorithm {
         ACAQDataSlot firstOutputSlot = getFirstOutputSlot();
         if (!filters.isEmpty()) {
             for (PathFilter filter : filters) {
-                if (filter.test(inputData.getFolderPath())) {
+                if (filter.test(inputData.getPath())) {
                     dataInterface.addOutputData(firstOutputSlot, inputData);
                     break;
                 }
@@ -86,5 +88,17 @@ public class FilterFolders extends ACAQIteratingAlgorithm {
     public void setFilters(PathFilterListParameter filters) {
         this.filters = filters;
         getEventBus().post(new ParameterChangedEvent(this, "filters"));
+    }
+
+    @ACAQDocumentation(name = "Filter only folder names", description = "If enabled, the filter is only applied for the folder name. If disabled, the filter is " +
+            "applied for the absolute path. For non-existing paths it cannot bne guaranteed that the absolute path is tested.")
+    @ACAQParameter("only-filenames")
+    public boolean isFilterOnlyFolderNames() {
+        return filterOnlyFolderNames;
+    }
+
+    @ACAQParameter("only-filenames")
+    public void setFilterOnlyFolderNames(boolean filterOnlyFolderNames) {
+        this.filterOnlyFolderNames = filterOnlyFolderNames;
     }
 }

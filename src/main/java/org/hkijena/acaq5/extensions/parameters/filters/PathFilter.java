@@ -73,11 +73,11 @@ public class PathFilter implements Predicate<Path>, ACAQValidatable {
     public boolean test(Path path) {
         switch (mode) {
             case Contains:
-                return path.getFileName().toString().contains(filterString);
+                return path.toString().contains(filterString);
             case Glob:
-                return globPathMatcher.matches(path.getFileName());
+                return globPathMatcher.matches(path);
             case Regex:
-                return path.getFileName().toString().matches(filterString);
+                return path.toString().matches(filterString);
             default:
                 throw new RuntimeException("Unknown mode!");
         }

@@ -12,6 +12,7 @@ import org.hkijena.acaq5.extensions.filesystem.api.datasources.FolderDataSource;
 import org.hkijena.acaq5.extensions.filesystem.api.datasources.FolderListDataSource;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FileData;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FolderData;
+import org.hkijena.acaq5.extensions.filesystem.api.dataypes.PathData;
 import org.hkijena.acaq5.extensions.filesystem.ui.resultanalysis.FilesystemDataSlotCellUI;
 import org.hkijena.acaq5.extensions.filesystem.ui.resultanalysis.FilesystemDataSlotRowUI;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.registries.GraphWrapperAlgorithmRegistrationTask;
@@ -50,10 +51,16 @@ public class FilesystemExtension extends ACAQPrepackagedDefaultJavaExtension {
 
     @Override
     public void register() {
+        registerDatatype("path", PathData.class, ResourceUtils.getPluginResource("icons/data-types/path.png"),
+                FilesystemDataSlotRowUI.class, new FilesystemDataSlotCellUI());
         registerDatatype("file", FileData.class, ResourceUtils.getPluginResource("icons/data-types/file.png"),
                 FilesystemDataSlotRowUI.class, new FilesystemDataSlotCellUI());
         registerDatatype("folder", FolderData.class, ResourceUtils.getPluginResource("icons/data-types/folder.png"),
                 FilesystemDataSlotRowUI.class, new FilesystemDataSlotCellUI());
+        registerDatatypeConversion(new ImplicitPathTypeConverter(PathData.class, FileData.class));
+        registerDatatypeConversion(new ImplicitPathTypeConverter(PathData.class, FolderData.class));
+        registerDatatypeConversion(new ImplicitPathTypeConverter(FileData.class, FolderData.class));
+        registerDatatypeConversion(new ImplicitPathTypeConverter(FolderData.class, FileData.class));
 
         registerAlgorithm("import-file", FileDataSource.class);
         registerAlgorithm("import-file-list", FileListDataSource.class);

@@ -54,7 +54,7 @@ public class FileAnnotationGenerator extends ACAQIteratingAlgorithm {
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         if (generatedAnnotation.getDeclaration() != null) {
             FileData inputData = dataInterface.getInputData(getFirstInputSlot(), FileData.class);
-            String discriminator = inputData.getFilePath().getFileName().toString();
+            String discriminator = inputData.getPath().getFileName().toString();
             dataInterface.addGlobalAnnotation(generatedAnnotation.getDeclaration().newInstance(discriminator));
             dataInterface.addOutputData(getFirstOutputSlot(), inputData);
         }

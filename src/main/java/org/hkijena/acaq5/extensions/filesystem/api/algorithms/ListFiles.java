@@ -9,6 +9,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FileData;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FolderData;
 import org.hkijena.acaq5.extensions.parameters.collections.PathFilterListParameter;
+import org.hkijena.acaq5.extensions.parameters.filters.PathFilter;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
 public class ListFiles extends ACAQIteratingAlgorithm {
 
     private PathFilterListParameter filters = new PathFilterListParameter();
+    private boolean filterOnlyFileNames = true;
 
     /**
      * Creates new instance
@@ -48,14 +50,24 @@ public class ListFiles extends ACAQIteratingAlgorithm {
      */
     public ListFiles(ListFiles other) {
         super(other);
+        this.filterOnlyFileNames = other.filterOnlyFileNames;
+        this.filters.clear();
+        for (PathFilter filter : other.filters) {
+            this.filters.add(new PathFilter(filter));
+        }
     }
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         FolderData inputFolder = dataInterface.getInputData("Folders", FolderData.class);
         try {
-            for (Path file : Files.list(inputFolder.getFolderPath()).filter(Files::isRegularFile).collect(Collectors.toList())) {
-                if (filters.isEmpty() || filters.stream().anyMatch(f -> f.test(file))) {
+            for (Path file : Files.list(inputFolder.getPath()).filter(Files::isRegularFile).collect(Collectors.toList())) {
+                Path testedFile;
+                if (filterOnlyFileNames)
+                    testedFile = file.getFileName();
+                else
+                    testedFile = file;
+                if (filters.isEmpty() || filters.stream().anyMatch(f -> f.test(testedFile))) {
                     dataInterface.addOutputData("Files", new FileData(file));
                 }
             }
@@ -79,5 +91,17 @@ public class ListFiles extends ACAQIteratingAlgorithm {
     @ACAQParameter("filters")
     public void setFilters(PathFilterListParameter filters) {
         this.filters = filters;
+    }
+
+    @ACAQDocumentation(name = "Filter only file names", description = "If enabled, the filter is only applied for the file name. If disabled, the filter is " +
+            "applied for the absolute path. For non-existing paths it cannot bne guaranteed that the absolute path is tested.")
+    @ACAQParameter("only-filenames")
+    public boolean isFilterOnlyFileNames() {
+        return filterOnlyFileNames;
+    }
+
+    @ACAQParameter("only-filenames")
+    public void setFilterOnlyFileNames(boolean filterOnlyFileNames) {
+        this.filterOnlyFileNames = filterOnlyFileNames;
     }
 }

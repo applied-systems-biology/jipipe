@@ -86,7 +86,7 @@ public class BioformatsImporter extends ACAQIteratingAlgorithm {
             throw new RuntimeException(e);
         }
 
-        options.setId(inputFile.getFilePath().toString());
+        options.setId(inputFile.getPath().toString());
         options.setWindowless(true);
         options.setQuiet(true);
         options.setShowMetadata(false);

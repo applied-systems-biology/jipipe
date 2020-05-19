@@ -46,7 +46,7 @@ public class NavigateSubFolder extends ACAQIteratingAlgorithm {
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         FolderData inputFolder = dataInterface.getInputData("Folders", FolderData.class);
-        dataInterface.addOutputData("Subfolders", new FolderData(inputFolder.getFolderPath().resolve(subFolder)));
+        dataInterface.addOutputData("Subfolders", new FolderData(inputFolder.getPath().resolve(subFolder)));
     }
 
     @Override

@@ -42,7 +42,7 @@ public class ResultsTableFromFile extends ACAQIteratingAlgorithm {
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         FileData fileData = dataInterface.getInputData(getFirstInputSlot(), FileData.class);
         try {
-            ResultsTable resultsTable = ResultsTable.open(fileData.getFilePath().toString());
+            ResultsTable resultsTable = ResultsTable.open(fileData.getPath().toString());
             dataInterface.addOutputData(getFirstOutputSlot(), new ResultsTableData(resultsTable));
         } catch (IOException e) {
             throw new RuntimeException(e);

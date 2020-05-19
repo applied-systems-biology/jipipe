@@ -62,7 +62,7 @@ public class ImagePlusFromFile extends ACAQIteratingAlgorithm {
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         FileData fileData = dataInterface.getInputData(getFirstInputSlot(), FileData.class);
-        dataInterface.addOutputData(getFirstOutputSlot(), readImageFrom(fileData.getFilePath()));
+        dataInterface.addOutputData(getFirstOutputSlot(), readImageFrom(fileData.getPath()));
     }
 
     /**

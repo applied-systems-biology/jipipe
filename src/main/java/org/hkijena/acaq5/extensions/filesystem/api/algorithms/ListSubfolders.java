@@ -8,6 +8,7 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FolderData;
 import org.hkijena.acaq5.extensions.parameters.collections.PathFilterListParameter;
+import org.hkijena.acaq5.extensions.parameters.filters.PathFilter;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 public class ListSubfolders extends ACAQIteratingAlgorithm {
 
     private PathFilterListParameter filters = new PathFilterListParameter();
+    private boolean filterOnlyFolderNames = true;
 
     /**
      * Creates a new instance
@@ -47,14 +49,24 @@ public class ListSubfolders extends ACAQIteratingAlgorithm {
      */
     public ListSubfolders(ListSubfolders other) {
         super(other);
+        this.filterOnlyFolderNames = other.filterOnlyFolderNames;
+        this.filters.clear();
+        for (PathFilter filter : other.filters) {
+            this.filters.add(new PathFilter(filter));
+        }
     }
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         FolderData inputFolder = dataInterface.getInputData("Folders", FolderData.class);
         try {
-            for (Path path : Files.list(inputFolder.getFolderPath()).filter(Files::isDirectory).collect(Collectors.toList())) {
-                if (filters.isEmpty() || filters.stream().anyMatch(f -> f.test(path))) {
+            for (Path path : Files.list(inputFolder.getPath()).filter(Files::isDirectory).collect(Collectors.toList())) {
+                Path testedPath;
+                if (filterOnlyFolderNames)
+                    testedPath = path.getFileName();
+                else
+                    testedPath = path;
+                if (filters.isEmpty() || filters.stream().anyMatch(f -> f.test(testedPath))) {
                     dataInterface.addOutputData("Subfolders", new FolderData(path));
                 }
             }
@@ -78,5 +90,17 @@ public class ListSubfolders extends ACAQIteratingAlgorithm {
     @ACAQParameter("filters")
     public void setFilters(PathFilterListParameter filters) {
         this.filters = filters;
+    }
+
+    @ACAQDocumentation(name = "Filter only folder names", description = "If enabled, the filter is only applied for the folder name. If disabled, the filter is " +
+            "applied for the absolute path. For non-existing paths it cannot bne guaranteed that the absolute path is tested.")
+    @ACAQParameter("only-filenames")
+    public boolean isFilterOnlyFolderNames() {
+        return filterOnlyFolderNames;
+    }
+
+    @ACAQParameter("only-filenames")
+    public void setFilterOnlyFolderNames(boolean filterOnlyFolderNames) {
+        this.filterOnlyFolderNames = filterOnlyFolderNames;
     }
 }

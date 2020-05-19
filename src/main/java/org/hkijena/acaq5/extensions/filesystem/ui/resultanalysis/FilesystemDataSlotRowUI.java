@@ -4,8 +4,7 @@ import ij.IJ;
 import ij.io.Opener;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
-import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FileData;
-import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FolderData;
+import org.hkijena.acaq5.extensions.filesystem.api.dataypes.PathData;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultResultDataSlotRowUI;
 import org.hkijena.acaq5.utils.JsonUtils;
@@ -48,28 +47,19 @@ public class FilesystemDataSlotRowUI extends ACAQDefaultResultDataSlotRowUI {
 
         Path listFile = findListFile();
         if (listFile != null) {
-            Path fileOrFolderPath = null;
-            if (getSlot().getAcceptedDataType() == FileData.class) {
-                try {
-                    fileOrFolderPath = ((FileData) JsonUtils.getObjectMapper().readerFor(FileData.class).readValue(listFile.toFile())).getFilePath();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
-            } else if (getSlot().getAcceptedDataType() == FolderData.class) {
-                try {
-                    fileOrFolderPath = ((FolderData) JsonUtils.getObjectMapper().readerFor(FolderData.class).readValue(listFile.toFile())).getFolderPath();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+            Path fileOrFolderPath;
+            try {
+                PathData pathData = JsonUtils.getObjectMapper().readerFor(PathData.class).readValue(listFile.toFile());
+                fileOrFolderPath = pathData.getPath();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
 
             if (fileOrFolderPath != null) {
-                Path finalFileOrFolderPath = fileOrFolderPath;
                 registerAction("Copy to clipboard", "Copies the path '" + fileOrFolderPath + "' to the clipboard", UIUtils.getIconFromResources("copy.png"),
-                        e -> copyPathToClipboard(finalFileOrFolderPath));
+                        e -> copyPathToClipboard(fileOrFolderPath));
                 registerAction("Open", "Opens '" + fileOrFolderPath + "' in the default application", UIUtils.getIconFromResources("open.png"),
-                        e -> open(finalFileOrFolderPath));
+                        e -> open(fileOrFolderPath));
                 if (Files.isRegularFile(fileOrFolderPath)) {
                     String fileType = Opener.getFileFormat(fileOrFolderPath.toString());
                     switch (fileType) {
@@ -83,7 +73,7 @@ public class FilesystemDataSlotRowUI extends ACAQDefaultResultDataSlotRowUI {
                         case "bmp":
                         case "roi": {
                             registerAction("Import", "Imports the data into ImageJ",
-                                    UIUtils.getIconFromResources("imagej.png"), e -> IJ.open(finalFileOrFolderPath.toString()));
+                                    UIUtils.getIconFromResources("imagej.png"), e -> IJ.open(fileOrFolderPath.toString()));
                         }
                     }
                 }
