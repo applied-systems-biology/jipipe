@@ -19,6 +19,7 @@ import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.ui.registries.ACAQUIImageJDatatypeAdapterRegistry;
 import org.hkijena.acaq5.utils.JsonUtils;
+import org.hkijena.acaq5.utils.MacroUtils;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTextField;
@@ -27,6 +28,8 @@ import org.scijava.Context;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.Comparator;
@@ -296,6 +299,12 @@ public class RunSingleAlgorithmDialog extends JDialog {
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
+        JButton copyCommandButton = new JButton("Copy command", UIUtils.getIconFromResources("copy.png"));
+        copyCommandButton.addActionListener(e -> copyCommand());
+        buttonPanel.add(copyCommandButton);
+
+        buttonPanel.add(Box.createHorizontalStrut(8));
+
         JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("remove.png"));
         cancelButton.addActionListener(e -> {
             this.canceled = true;
@@ -308,6 +317,20 @@ public class RunSingleAlgorithmDialog extends JDialog {
         buttonPanel.add(confirmButton);
 
         contentPanel.add(buttonPanel, BorderLayout.SOUTH);
+    }
+
+    private void copyCommand() {
+        ACAQValidityReport report = new ACAQValidityReport();
+        runSettings.reportValidity(report);
+        if (!report.isValid()) {
+            UIUtils.openValidityReportDialog(this, report, false);
+            return;
+        }
+        String json = getAlgorithmParametersJson();
+        String macro = "run(\"Run ACAQ5 algorithm\", \"algorithmId=" + getAlgorithmId() + ", algorithmParameters=" + MacroUtils.escapeString(json) + "\");";
+        StringSelection selection = new StringSelection(macro);
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(selection, selection);
     }
 
     private void runNow() {
