@@ -15,6 +15,7 @@ import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.blur.*;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.color.ArrangeChannelsAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.color.InvertColorsAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.color.MergeChannelsAlgorithm;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.color.SplitChannelsAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.contrast.CLAHEContrastEnhancer;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.convolve.Convolve2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions.StackInverterAlgorithm;
@@ -156,6 +157,7 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerAlgorithm("ij1-color-invert", InvertColorsAlgorithm.class);
         registerAlgorithm("ij1-color-merge-channels", MergeChannelsAlgorithm.class);
         registerAlgorithm("ij1-color-arrange-channels", ArrangeChannelsAlgorithm.class);
+        registerAlgorithm("ij1-color-split-channels", SplitChannelsAlgorithm.class);
 
         registerAlgorithm("ij1-edge-sobel", SobelEdgeDetectorAlgorithm.class);
 

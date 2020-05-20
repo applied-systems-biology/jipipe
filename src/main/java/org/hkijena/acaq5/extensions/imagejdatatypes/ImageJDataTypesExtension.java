@@ -50,6 +50,7 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.resultanalysis.ResultsTableD
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -60,6 +61,62 @@ import java.util.stream.Collectors;
  */
 @Plugin(type = ACAQJavaExtension.class)
 public class ImageJDataTypesExtension extends ACAQPrepackagedDefaultJavaExtension {
+
+    public static final List<Class<? extends ACAQData>> IMAGE_TYPES_GREYSCALE = Arrays.asList(
+            ImagePlusGreyscaleData.class, ImagePlusGreyscale32FData.class, ImagePlusGreyscaleMaskData.class, ImagePlusGreyscale8UData.class, ImagePlusGreyscale8UData.class, ImagePlusGreyscale16UData.class,
+            ImagePlus2DGreyscaleData.class, ImagePlus2DGreyscale32FData.class, ImagePlus2DGreyscaleMaskData.class, ImagePlus2DGreyscale8UData.class, ImagePlus2DGreyscale8UData.class, ImagePlus2DGreyscale16UData.class,
+            ImagePlus3DGreyscaleData.class, ImagePlus3DGreyscale32FData.class, ImagePlus3DGreyscaleMaskData.class, ImagePlus3DGreyscale8UData.class, ImagePlus3DGreyscale8UData.class, ImagePlus3DGreyscale16UData.class,
+            ImagePlus4DGreyscaleData.class, ImagePlus4DGreyscale32FData.class, ImagePlus4DGreyscaleMaskData.class, ImagePlus4DGreyscale8UData.class, ImagePlus4DGreyscale8UData.class, ImagePlus4DGreyscale16UData.class,
+            ImagePlus5DGreyscaleData.class, ImagePlus5DGreyscale32FData.class, ImagePlus5DGreyscaleMaskData.class, ImagePlus5DGreyscale8UData.class, ImagePlus5DGreyscale8UData.class, ImagePlus5DGreyscale16UData.class);
+
+    public static final List<Class<? extends ACAQData>> IMAGE_TYPES_GREYSCALE_8U = Arrays.asList(
+            ImagePlusGreyscale8UData.class,
+            ImagePlus2DGreyscale8UData.class,
+            ImagePlus3DGreyscale8UData.class,
+            ImagePlus4DGreyscale8UData.class,
+            ImagePlus5DGreyscale8UData.class);
+
+    public static final List<Class<? extends ACAQData>> IMAGE_TYPES_GREYSCALE_16U = Arrays.asList(
+            ImagePlusGreyscale16UData.class,
+            ImagePlus2DGreyscale16UData.class,
+            ImagePlus3DGreyscale16UData.class,
+            ImagePlus4DGreyscale16UData.class,
+            ImagePlus5DGreyscale16UData.class);
+
+    public static final List<Class<? extends ACAQData>> IMAGE_TYPES_GREYSCALE_MASK = Arrays.asList(
+            ImagePlusGreyscaleMaskData.class,
+            ImagePlus2DGreyscaleMaskData.class,
+            ImagePlus3DGreyscaleMaskData.class,
+            ImagePlus4DGreyscaleMaskData.class,
+            ImagePlus5DGreyscaleMaskData.class);
+
+    public static final List<Class<? extends ACAQData>> IMAGE_TYPES_GREYSCALE_32F = Arrays.asList(
+            ImagePlusGreyscale32FData.class,
+            ImagePlus2DGreyscale32FData.class,
+            ImagePlus3DGreyscale32FData.class,
+            ImagePlus4DGreyscale32FData.class,
+            ImagePlus5DGreyscale32FData.class);
+
+    public static final List<Class<? extends ACAQData>> IMAGE_TYPES_COLOR = Arrays.asList(
+            ImagePlusColorData.class, ImagePlusColor8UData.class, ImagePlusColorRGBData.class,
+            ImagePlus2DColorData.class, ImagePlus2DColor8UData.class, ImagePlus2DColorRGBData.class,
+            ImagePlus3DColorData.class, ImagePlus3DColor8UData.class, ImagePlus3DColorRGBData.class,
+            ImagePlus4DColorData.class, ImagePlus4DColor8UData.class, ImagePlus4DColorRGBData.class,
+            ImagePlus5DColorData.class, ImagePlus5DColor8UData.class, ImagePlus5DColorRGBData.class);
+
+    public static final List<Class<? extends ACAQData>> IMAGE_TYPES_COLOR_8U = Arrays.asList(
+            ImagePlusColor8UData.class,
+            ImagePlus2DColor8UData.class,
+            ImagePlus3DColor8UData.class,
+            ImagePlus4DColor8UData.class,
+            ImagePlus5DColor8UData.class);
+
+    public static final List<Class<? extends ACAQData>> IMAGE_TYPES_COLOR_RGB = Arrays.asList(
+            ImagePlusColorRGBData.class,
+            ImagePlus2DColorRGBData.class,
+            ImagePlus3DColorRGBData.class,
+            ImagePlus4DColorRGBData.class,
+            ImagePlus5DColorRGBData.class);
 
     @Override
     public String getName() {
