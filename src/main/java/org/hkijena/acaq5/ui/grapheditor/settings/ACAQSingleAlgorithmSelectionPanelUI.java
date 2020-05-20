@@ -25,6 +25,7 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPan
     private ACAQAlgorithmGraph graph;
     private ACAQAlgorithmGraphCanvasUI canvas;
     private ACAQAlgorithm algorithm;
+    private JPanel testbenchTabContent;
 
     /**
      * @param workbenchUI the workbench UI
@@ -65,16 +66,27 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPan
                 false);
 
         if (algorithm.getCategory() != ACAQAlgorithmCategory.Internal) {
-            ACAQTestBenchSetupUI testBenchSetupUI = new ACAQTestBenchSetupUI(getProjectWorkbench(), algorithm, graph);
+            testbenchTabContent = new JPanel(new BorderLayout());
             tabbedPane.addTab("Testbench", UIUtils.getIconFromResources("testbench.png"),
-                    testBenchSetupUI,
+                    testbenchTabContent,
                     DocumentTabPane.CloseMode.withoutCloseButton,
                     false);
         }
 
         add(tabbedPane, BorderLayout.CENTER);
 
+        tabbedPane.getTabbedPane().addChangeListener(e -> activateTestBenchIfNeeded(tabbedPane));
+
         initializeToolbar();
+    }
+
+    private void activateTestBenchIfNeeded(DocumentTabPane tabbedPane) {
+        if (testbenchTabContent != null && tabbedPane.getCurrentContent() == testbenchTabContent) {
+            if (testbenchTabContent.getComponentCount() == 0) {
+                ACAQTestBenchSetupUI testBenchSetupUI = new ACAQTestBenchSetupUI(getProjectWorkbench(), algorithm, graph);
+                testbenchTabContent.add(testBenchSetupUI, BorderLayout.CENTER);
+            }
+        }
     }
 
     private void initializeToolbar() {

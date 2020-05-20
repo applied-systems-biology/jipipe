@@ -208,6 +208,10 @@ public class DocumentTabPane extends JPanel {
         return addTab(title, icon, component, closeMode, false);
     }
 
+    public JTabbedPane getTabbedPane() {
+        return tabbedPane;
+    }
+
     /**
      * @return the number of managed tabs
      */
