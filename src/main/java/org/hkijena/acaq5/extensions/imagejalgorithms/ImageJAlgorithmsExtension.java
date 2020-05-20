@@ -6,6 +6,7 @@ import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.traits.ACAQJavaTraitDeclaration;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.analyze.FindParticles2D;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.background.RollingBallBackgroundEstimator2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.binary.DistanceTransformWatershed2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.binary.UltimateErodedPoints2DAlgorithm;
@@ -201,6 +202,7 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerAlgorithm("ij1-dimensions-stackinverter", StackInverterAlgorithm.class);
         registerAlgorithm("ij1-dimensions-zproject", ZProjectorAlgorithm.class);
 
+        registerAlgorithm("ij1-analyze-find-particles2d", FindParticles2D.class);
         registerAlgorithm("ij1-analyze-statistics-histogram", HistogramGenerator.class);
         registerAlgorithm("ij1-analyze-statistics-pixels-greyscale", GreyscalePixelsGenerator.class);
 

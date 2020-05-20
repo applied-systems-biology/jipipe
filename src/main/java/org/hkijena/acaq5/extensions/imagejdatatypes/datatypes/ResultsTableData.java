@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.extensions.imagejdatatypes.datatypes;
 
+import ij.macro.Variable;
 import ij.measure.ResultsTable;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.data.ACAQData;
@@ -11,9 +12,7 @@ import javax.swing.table.TableModel;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
 
 /**
  * Data containing a {@link ResultsTable}
@@ -235,6 +234,33 @@ public class ResultsTableData implements ACAQData, TableModel {
      */
     public void removeColumnAt(int col) {
         table.deleteColumn(getColumnName(col));
+        fireChangedEvent(new TableModelEvent(this));
+    }
+
+    /**
+     * Merges another results table into this one
+     * @param other the other data
+     */
+    public void mergeWith(ResultsTableData other) {
+        Map<String, Boolean> inputColumnsNumeric = new HashMap<>();
+        for (int col = 0; col < other.getColumnCount(); col++) {
+            inputColumnsNumeric.put(other.getColumnName(col), other.isNumeric(col));
+        }
+        int localRow = table.getCounter();
+        for (int row = 0; row < other.getRowCount(); row++) {
+            table.incrementCounter();
+            for (int col = 0; col < other.getColumnCount(); col++) {
+                String colName = other.getColumnName(col);
+                if(inputColumnsNumeric.get(colName)) {
+                    table.setValue(colName, localRow, other.getTable().getValueAsDouble(col, row));
+                }
+                else {
+                    table.setValue(colName, localRow, other.getTable().getStringValue(col, row));
+                }
+            }
+
+            ++localRow;
+        }
         fireChangedEvent(new TableModelEvent(this));
     }
 }
