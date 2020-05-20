@@ -3,6 +3,7 @@ package org.hkijena.acaq5.extensions.imagejalgorithms.ij1.features;
 import fiji.features.Frangi_;
 import fiji.features.MultiTaskProgress;
 import ij.ImagePlus;
+import ij.ImageStack;
 import ij.process.ImageProcessor;
 import mpicbg.imglib.type.numeric.real.FloatType;
 import org.hkijena.acaq5.api.ACAQDocumentation;
@@ -34,9 +35,9 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
 @AlgorithmOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output")
 public class FrangiVesselnessFeatures extends ImageJ1Algorithm {
 
-    private int numScales = 127;
-    private double minimumScale = 256;
-    private double maximumScale = 3.0f;
+    private int numScales = 1;
+    private double minimumScale = 3.0;
+    private double maximumScale = 3.0;
     private boolean invert = false;
     private SlicingMode slicingMode = SlicingMode.Unchanged;
 
@@ -79,7 +80,7 @@ public class FrangiVesselnessFeatures extends ImageJ1Algorithm {
         MultiTaskProgress multiTaskProgress = new MultiTaskProgress() {
             @Override
             public void updateProgress(double proportionDone, int taskIndex) {
-                algorithmProgress.accept(subProgress.resolve("Frangi vesselness " + (proportionDone * 100) + "%"));
+                algorithmProgress.accept(subProgress.resolve("Frangi vesselness " + (int)(proportionDone * 100) + "%"));
             }
 
             @Override
@@ -99,12 +100,8 @@ public class FrangiVesselnessFeatures extends ImageJ1Algorithm {
                     false,
                     multiTaskProgress);
         } else if (slicingMode == SlicingMode.ApplyPer2DSlice) {
-            if (img != inputData.getImage()) {
-                result = img;
-            } else {
-                result = img.duplicate();
-            }
-            ImageJUtils.forEachSlice(result, imp -> {
+            ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
+            ImageJUtils.forEachIndexedSlice(img, (imp, index) -> {
                 ImagePlus slice = new ImagePlus("slice", imp);
                 ImagePlus processedSlice = frangi.process(slice,
                         numScales,
@@ -114,8 +111,10 @@ public class FrangiVesselnessFeatures extends ImageJ1Algorithm {
                         false,
                         false,
                         multiTaskProgress);
-                imp.setPixels(processedSlice.getProcessor().getPixels());
+                stack.addSlice("slice" + index, processedSlice.getProcessor());
             });
+            result = new ImagePlus("Vesselness", stack);
+            result.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
         } else {
             throw new UnsupportedOperationException("Not implemented: " + slicingMode);
         }
@@ -132,7 +131,7 @@ public class FrangiVesselnessFeatures extends ImageJ1Algorithm {
     @ACAQParameter("num-scales")
     public void setNumScales(int numScales) {
         this.numScales = numScales;
-        getEventBus().post(new ParameterChangedEvent(this, "block-radius"));
+        getEventBus().post(new ParameterChangedEvent(this, "num-scales"));
     }
 
     @ACAQParameter("min-scale")
@@ -165,7 +164,7 @@ public class FrangiVesselnessFeatures extends ImageJ1Algorithm {
         report.checkIfWithin(this, maximumScale, 0, Double.POSITIVE_INFINITY, false, true);
     }
 
-    @ACAQDocumentation(name = "Invert colors", description = "Invert colors before applying the filter.")
+    @ACAQDocumentation(name = "Invert colors", description = "Invert colors before applying the filter. This is useful if you look for bright structures within a dark background.")
     @ACAQParameter("invert")
     public boolean isInvert() {
         return invert;
