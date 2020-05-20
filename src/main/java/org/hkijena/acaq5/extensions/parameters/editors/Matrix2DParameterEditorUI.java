@@ -8,6 +8,7 @@ import org.jdesktop.swingx.JXTable;
 import org.scijava.Context;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.Arrays;
 
@@ -27,6 +28,7 @@ public class Matrix2DParameterEditorUI extends ACAQParameterEditorUI {
     public Matrix2DParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
         super(context, parameterAccess);
         initialize();
+        reload();
     }
 
     private void initialize() {
@@ -53,16 +55,20 @@ public class Matrix2DParameterEditorUI extends ACAQParameterEditorUI {
 
         JButton removeRowButton = new JButton(UIUtils.getIconFromResources("remove-row.png"));
         removeRowButton.setToolTipText("Remove selected row");
-        removeRowButton.removeActionListener(e -> removeRow());
-        toolBar.remove(removeRowButton);
+        removeRowButton.addActionListener(e -> removeRow());
+        toolBar.add(removeRowButton);
 
         JButton removeColumnButton = new JButton(UIUtils.getIconFromResources("remove-column.png"));
         removeColumnButton.setToolTipText("Remove selected column");
-        removeColumnButton.removeActionListener(e -> removeColumn());
-        toolBar.remove(removeColumnButton);
+        removeColumnButton.addActionListener(e -> removeColumn());
+        toolBar.add(removeColumnButton);
+
+        add(toolBar, BorderLayout.NORTH);
 
         table = new JXTable();
         table.setCellSelectionEnabled(true);
+
+        add(table, BorderLayout.CENTER);
     }
 
     private void removeColumn() {
@@ -72,6 +78,7 @@ public class Matrix2DParameterEditorUI extends ACAQParameterEditorUI {
         for (int i = selectedColumns.length - 1; i >= 0; --i) {
             parameter.removeColumn(i);
         }
+        reload();
     }
 
     private void removeRow() {
@@ -81,6 +88,7 @@ public class Matrix2DParameterEditorUI extends ACAQParameterEditorUI {
         for (int i = selectedRows.length - 1; i >= 0; --i) {
             parameter.removeRow(i);
         }
+        reload();
     }
 
     @Override
@@ -91,6 +99,7 @@ public class Matrix2DParameterEditorUI extends ACAQParameterEditorUI {
     @Override
     public void reload() {
         Matrix2DParameter<?> parameter = getParameterAccess().get(Matrix2DParameter.class);
+        table.setModel(new DefaultTableModel());
         table.setModel(parameter);
     }
 }

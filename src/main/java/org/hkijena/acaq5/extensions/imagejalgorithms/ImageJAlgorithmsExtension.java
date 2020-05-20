@@ -16,6 +16,7 @@ import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.color.ArrangeChannelsAl
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.color.InvertColorsAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.color.MergeChannelsAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.contrast.CLAHEContrastEnhancer;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.convolve.Convolve2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions.StackInverterAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions.StackMergerAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions.StackSplitterAlgorithm;
@@ -212,6 +213,8 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
 
         registerAlgorithm("ij1-transform-flip2d", TransformFlip2DAlgorithm.class);
         registerAlgorithm("ij1-transform-rotate2d", TransformRotate2DAlgorithm.class);
+
+        registerAlgorithm("ij1-convolve-convolve2d", Convolve2DAlgorithm.class);
 
         // Register enum parameters
         registerEnumParameterType("ij1-background-rollingball2d:background-type", RollingBallBackgroundEstimator2DAlgorithm.BackgroundType.class,

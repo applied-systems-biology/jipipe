@@ -96,6 +96,7 @@ public class ROIData implements ACAQData {
 
     /**
      * Merges the ROI from another data into this one
+     *
      * @param other the other data
      */
     public void mergeWith(ROIData other) {

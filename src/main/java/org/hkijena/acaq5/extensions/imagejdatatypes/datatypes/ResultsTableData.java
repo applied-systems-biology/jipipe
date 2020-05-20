@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.extensions.imagejdatatypes.datatypes;
 
-import ij.macro.Variable;
 import ij.measure.ResultsTable;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.data.ACAQData;
@@ -239,6 +238,7 @@ public class ResultsTableData implements ACAQData, TableModel {
 
     /**
      * Merges another results table into this one
+     *
      * @param other the other data
      */
     public void mergeWith(ResultsTableData other) {
@@ -251,10 +251,9 @@ public class ResultsTableData implements ACAQData, TableModel {
             table.incrementCounter();
             for (int col = 0; col < other.getColumnCount(); col++) {
                 String colName = other.getColumnName(col);
-                if(inputColumnsNumeric.get(colName)) {
+                if (inputColumnsNumeric.get(colName)) {
                     table.setValue(colName, localRow, other.getTable().getValueAsDouble(col, row));
-                }
-                else {
+                } else {
                     table.setValue(colName, localRow, other.getTable().getStringValue(col, row));
                 }
             }
