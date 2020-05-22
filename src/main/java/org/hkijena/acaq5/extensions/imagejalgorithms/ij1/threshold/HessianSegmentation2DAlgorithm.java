@@ -104,7 +104,7 @@ public class HessianSegmentation2DAlgorithm extends ACAQIteratingAlgorithm {
 
         ImageJUtils.forEachIndexedSlice(img, (imp, index) -> {
             algorithmProgress.accept(subProgress.resolve("Slice " + index + "/" + img.getStackSize()));
-            ImagePlus slice = new ImagePlus("slice", imp);
+            ImagePlus slice = new ImagePlus("slice", imp.duplicate());
             // Apply hessian
             ImagePlus processedSlice = applyHessian(slice);
 
