@@ -13,11 +13,11 @@ to make the input inherit from `This`.
 
 ### Connecting slots
 
-To connect slots, click the ![](image://icons/chevron-up.png) or ![](image://icons/chevron-down.png) icon to open a menu of
+To connect slots, click the ![](image://icons/chevron-bottom.png) icon to open a menu of
 compatible source or target data slots. On creating a connection, a line will appear between
 the two affected slots to indicate a connection.
 
-To disconnect two slots, click ![](image://icons/chevron-up.png) or ![](image://icons/chevron-down.png) and select 
+To disconnect two slots, click ![](image://icons/chevron-bottom.png) and select 
 the ![](image://icons/remove.png) disconnect command.
 
 ### Multiple inheritance

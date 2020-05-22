@@ -36,6 +36,7 @@ public abstract class ListParameter<T> extends ArrayList<T> implements ACAQValid
 
     /**
      * Adds a new instance of the content class
+     * Override this method for types that cannot be default-constructed
      *
      * @return the instance
      */

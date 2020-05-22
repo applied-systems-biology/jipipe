@@ -25,6 +25,7 @@ import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions.ZProjectorAl
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.edge.SobelEdgeDetectorAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.features.FrangiVesselnessFeatures;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.features.LocalMaxima2DAlgorithm;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.features.MeijeringVesselness2DFeatures;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.fft.FFT2DForwardTransform;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.fft.FFT2DInverseTransform;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.fft.FFT2DSwapQuadrants;
@@ -162,6 +163,7 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerAlgorithm("ij1-contrast-clahe", CLAHEContrastEnhancer.class);
 
         registerAlgorithm("ij1-feature-vesselness-frangi", FrangiVesselnessFeatures.class);
+        registerAlgorithm("feature-vesselness-meijering2d", MeijeringVesselness2DFeatures.class);
         registerAlgorithm("ij1-feature-maxima-local-2d", LocalMaxima2DAlgorithm.class);
 
         registerAlgorithm("ij1-math-math2d", ApplyMath2DAlgorithm.class);

@@ -186,6 +186,24 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
 
         // Collection parameters
         registerParameterEditor(ListParameter.class, CollectionParameterEditorUI.class);
+        registerParameterType("integer-list", IntListParameter.class,
+                IntListParameter::new,
+                l -> new IntListParameter((IntListParameter) l),
+                "List of integers",
+                "A list of integers",
+                null);
+        registerParameterType("float-list", FloatListParameter.class,
+                FloatListParameter::new,
+                l -> new FloatListParameter((FloatListParameter) l),
+                "List of float",
+                "A list of float",
+                null);
+        registerParameterType("double-list", DoubleListParameter.class,
+                DoubleListParameter::new,
+                l -> new DoubleListParameter((DoubleListParameter) l),
+                "List of double",
+                "A list of double",
+                null);
         registerParameterType("path-filter-list", PathFilterListParameter.class,
                 PathFilterListParameter::new,
                 l -> new PathFilterListParameter((PathFilterListParameter) l),
