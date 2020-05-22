@@ -80,7 +80,7 @@ public class FrangiVesselnessFeatures extends ImageJ1Algorithm {
         MultiTaskProgress multiTaskProgress = new MultiTaskProgress() {
             @Override
             public void updateProgress(double proportionDone, int taskIndex) {
-                algorithmProgress.accept(subProgress.resolve("Frangi vesselness " + (int)(proportionDone * 100) + "%"));
+                algorithmProgress.accept(subProgress.resolve("Frangi vesselness " + (int) (proportionDone * 100) + "%"));
             }
 
             @Override

@@ -36,9 +36,7 @@ import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.noise.RemoveOutliersFil
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.sharpen.LaplacianSharpen2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.statistics.GreyscalePixelsGenerator;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.statistics.HistogramGenerator;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.threshold.AutoThreshold2DAlgorithm;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.threshold.ManualThreshold16U2DAlgorithm;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.threshold.ManualThreshold8U2DAlgorithm;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.threshold.*;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.transform.TransformFlip2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.transform.TransformRotate2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -199,6 +197,10 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerAlgorithm("ij1-threshold-manual2d-8u", ManualThreshold8U2DAlgorithm.class);
         registerAlgorithm("ij1-threshold-manual2d-16u", ManualThreshold16U2DAlgorithm.class);
         registerAlgorithm("ij1-threshold-auto2d", AutoThreshold2DAlgorithm.class);
+        registerAlgorithm("threshold-brightspots2d", BrightSpotsSegmentation2DAlgorithm.class);
+        registerAlgorithm("threshold-hessian2d", HessianSegmentation2DAlgorithm.class);
+        registerAlgorithm("threshold-hough2d", HoughSegmentation2DAlgorithm.class);
+        registerAlgorithm("threshold-internalgradient2d", InternalGradientSegmentation2DAlgorithm.class);
 
         registerAlgorithm("ij1-dimensions-stacksplitter", StackSplitterAlgorithm.class);
         registerAlgorithm("ij1-dimensions-stackmerger", StackMergerAlgorithm.class);

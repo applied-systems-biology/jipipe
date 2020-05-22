@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 /**
  * Applies Bright spots segmentation
  */
-@ACAQDocumentation(name = "Bright spots segmentation")
+@ACAQDocumentation(name = "Bright spots segmentation (deprecated)")
 @ACAQOrganization(menuPath = "Threshold", algorithmCategory = ACAQAlgorithmCategory.Processor)
 
 // Algorithm flow

@@ -1,7 +1,8 @@
-package org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.segmenters;
+package org.hkijena.acaq5.extensions.imagejalgorithms.ij1.threshold;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.ImageStack;
 import ij.WindowManager;
 import ij.measure.ResultsTable;
 import ij.plugin.filter.Analyzer;
@@ -10,26 +11,32 @@ import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.traits.GoodForTrait;
 import org.hkijena.acaq5.api.data.traits.RemovesTrait;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleData;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleMaskData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.acaq5.utils.Hough_Circle;
+import org.hkijena.acaq5.utils.ImageJUtils;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExtension.ADD_MASK_QUALIFIER;
+
 /**
  * Segments using a Hough circle transform
  */
-@ACAQDocumentation(name = "Hough segmentation (deprecated)")
+@ACAQDocumentation(name = "Hough segmentation 2D", description = "Finds circular 2D objects via a Hough transform. " +
+        "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ACAQOrganization(menuPath = "Threshold", algorithmCategory = ACAQAlgorithmCategory.Processor)
 
 // Algorithm flow
-@AlgorithmInputSlot(value = ImagePlus2DGreyscaleData.class, slotName = "Image", autoCreate = true)
-@AlgorithmOutputSlot(value = ImagePlus2DGreyscaleMaskData.class, slotName = "Mask", autoCreate = true)
+@AlgorithmInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")
+@AlgorithmOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
 
 // Trait matching
 @GoodForTrait("bioobject-morphology-round")
@@ -37,7 +44,7 @@ import java.util.function.Supplier;
 // Trait configuration
 @RemovesTrait("image-quality")
 @RemovesTrait("bioobject-count-cluster")
-public class HoughSegmenter extends ACAQIteratingAlgorithm {
+public class HoughSegmentation2DAlgorithm extends ACAQIteratingAlgorithm {
 
     private int minRadius = 7;
     private int maxRadius = 25;
@@ -53,8 +60,12 @@ public class HoughSegmenter extends ACAQIteratingAlgorithm {
     /**
      * @param declaration algorithm declaration
      */
-    public HoughSegmenter(ACAQAlgorithmDeclaration declaration) {
-        super(declaration);
+    public HoughSegmentation2DAlgorithm(ACAQAlgorithmDeclaration declaration) {
+        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale8UData.class)
+                .addOutputSlot("Output", ImagePlusGreyscaleMaskData.class, "Input", ADD_MASK_QUALIFIER)
+                .allowOutputSlotInheritance(true)
+                .seal()
+                .build());
     }
 
     /**
@@ -62,7 +73,7 @@ public class HoughSegmenter extends ACAQIteratingAlgorithm {
      *
      * @param other the original
      */
-    public HoughSegmenter(HoughSegmenter other) {
+    public HoughSegmentation2DAlgorithm(HoughSegmentation2DAlgorithm other) {
         super(other);
         this.minRadius = other.minRadius;
         this.maxRadius = other.maxRadius;
@@ -122,42 +133,49 @@ public class HoughSegmenter extends ACAQIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ImagePlus2DGreyscaleData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlus2DGreyscaleData.class);
-        ImagePlus img = inputData.getImage();
+        ImagePlus img = dataInterface.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class).getImage();
+        ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
 
-        // Apply Hough circle transform
-        Hough_Circle hough_circle = new Hough_Circle();
-        hough_circle.setParameters(minRadius,
-                maxRadius,
-                radiusIncrement,
-                minNumCircles,
-                maxNumCircles,
-                threshold,
-                resolution,
-                ratio,
-                bandwidth,
-                localRadius,
-                true,
-                false,
-                false,
-                false,
-                true,
-                false,
-                true,
-                false);
-        WindowManager.setTempCurrentImage(img);
-        hough_circle.startTransform();
-        WindowManager.setTempCurrentImage(null);
+        ImageJUtils.forEachIndexedSlice(img, (imp, index) -> {
+            algorithmProgress.accept(subProgress.resolve("Slice " + index + "/" + img.getStackSize()));
+            ImagePlus slice = new ImagePlus("slice", imp);
+            // Apply Hough circle transform
+            Hough_Circle hough_circle = new Hough_Circle();
+            hough_circle.setParameters(minRadius,
+                    maxRadius,
+                    radiusIncrement,
+                    minNumCircles,
+                    maxNumCircles,
+                    threshold,
+                    resolution,
+                    ratio,
+                    bandwidth,
+                    localRadius,
+                    true,
+                    false,
+                    false,
+                    false,
+                    true,
+                    false,
+                    true,
+                    false);
+            WindowManager.setTempCurrentImage(slice);
+            hough_circle.startTransform();
+            WindowManager.setTempCurrentImage(null);
 
-        // Draw the circles
-        ResultsTable resultsTable = Analyzer.getResultsTable();
-        ImagePlus result = drawCircleMask(img, resultsTable);
+            // Draw the circles
+            ResultsTable resultsTable = Analyzer.getResultsTable();
+            ImagePlus processedSlice = drawCircleMask(slice, resultsTable);
+            stack.addSlice("slice" + index, processedSlice.getProcessor());
+        });
+        ImagePlus result = new ImagePlus("Segmented Image", stack);
+        result.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
 
-        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlus2DGreyscaleMaskData(result));
+        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(result));
     }
 
     @ACAQParameter("min-radius")
-    @ACAQDocumentation(name = "Min radius")
+    @ACAQDocumentation(name = "Min radius", description = "Minimum radius to test")
     public int getMinRadius() {
         return minRadius;
     }
@@ -169,7 +187,7 @@ public class HoughSegmenter extends ACAQIteratingAlgorithm {
     }
 
     @ACAQParameter("max-radius")
-    @ACAQDocumentation(name = "Max radius")
+    @ACAQDocumentation(name = "Max radius", description = "Maximum radius to test")
     public int getMaxRadius() {
         return maxRadius;
     }
@@ -181,7 +199,7 @@ public class HoughSegmenter extends ACAQIteratingAlgorithm {
     }
 
     @ACAQParameter("radius-increment")
-    @ACAQDocumentation(name = "Radius increment")
+    @ACAQDocumentation(name = "Radius increment", description = "By which value the radius should be increased")
     public int getRadiusIncrement() {
         return radiusIncrement;
     }
@@ -193,7 +211,7 @@ public class HoughSegmenter extends ACAQIteratingAlgorithm {
     }
 
     @ACAQParameter("min-num-circles")
-    @ACAQDocumentation(name = "Min number of circles")
+    @ACAQDocumentation(name = "Min number of circles", description = "How many circles there should be at least")
     public int getMinNumCircles() {
         return minNumCircles;
     }
@@ -205,7 +223,7 @@ public class HoughSegmenter extends ACAQIteratingAlgorithm {
     }
 
     @ACAQParameter("max-num-circles")
-    @ACAQDocumentation(name = "Max number of circles")
+    @ACAQDocumentation(name = "Max number of circles", description = "How many circles there should be at most")
     public int getMaxNumCircles() {
         return maxNumCircles;
     }

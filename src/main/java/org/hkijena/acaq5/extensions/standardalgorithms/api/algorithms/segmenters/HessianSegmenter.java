@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 /**
  * Segments using a Hessian
  */
-@ACAQDocumentation(name = "Hessian segmenter")
+@ACAQDocumentation(name = "Hessian segmenter (deprecated)")
 @ACAQOrganization(menuPath = "Threshold", algorithmCategory = ACAQAlgorithmCategory.Processor)
 
 // Algorithm flow

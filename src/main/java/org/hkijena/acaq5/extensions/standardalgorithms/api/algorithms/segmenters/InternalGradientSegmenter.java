@@ -27,7 +27,7 @@ import java.util.function.Supplier;
 /**
  * Internal gradient segmenter
  */
-@ACAQDocumentation(name = "Internal gradient segmentation")
+@ACAQDocumentation(name = "Internal gradient segmentation (deprecated)")
 @ACAQOrganization(menuPath = "Threshold", algorithmCategory = ACAQAlgorithmCategory.Processor)
 
 // Algorithm flow
