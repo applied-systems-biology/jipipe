@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 /**
  * Applies illumination correction
  */
-@ACAQDocumentation(name = "Illumination correction enhancer")
+@ACAQDocumentation(name = "Illumination correction enhancer (deprecated)")
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Processor)
 
 // Algorithm flow
