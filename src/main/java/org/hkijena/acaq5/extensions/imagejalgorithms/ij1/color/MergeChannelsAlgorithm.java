@@ -13,6 +13,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.acaq5.extensions.parameters.collections.InputSlotMapParameterCollection;
 
@@ -82,7 +83,7 @@ public class MergeChannelsAlgorithm extends ImageJ1Algorithm {
             for (Map.Entry<String, ACAQParameterAccess> entry : channelColorAssignment.getParameters().entrySet()) {
                 ChannelColor entryColor = entry.getValue().get(ChannelColor.class);
                 if (entryColor == color) {
-                    channels[i] = dataInterface.getInputData(entry.getKey(), ImagePlusGreyscaleData.class).getImage();
+                    channels[i] = new ImagePlusGreyscale8UData(dataInterface.getInputData(entry.getKey(), ImagePlusGreyscaleData.class).getImage().duplicate()).getImage();
                 }
             }
         }

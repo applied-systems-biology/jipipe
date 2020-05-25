@@ -11,18 +11,19 @@ public class FloatListParameter extends ListParameter<Float> {
         super(Float.class);
     }
 
-    @Override
-    public Float addNewInstance() {
-        add(0.0f);
-        return 0.0f;
-    }
-
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public FloatListParameter(FloatListParameter other) {
         super(Float.class);
         addAll(other);
+    }
+
+    @Override
+    public Float addNewInstance() {
+        add(0.0f);
+        return 0.0f;
     }
 }

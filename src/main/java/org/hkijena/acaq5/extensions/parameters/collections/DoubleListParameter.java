@@ -11,18 +11,19 @@ public class DoubleListParameter extends ListParameter<Double> {
         super(Double.class);
     }
 
-    @Override
-    public Double addNewInstance() {
-        add(0.0);
-        return 0.0;
-    }
-
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public DoubleListParameter(DoubleListParameter other) {
         super(Double.class);
         addAll(other);
+    }
+
+    @Override
+    public Double addNewInstance() {
+        add(0.0);
+        return 0.0;
     }
 }

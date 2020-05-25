@@ -24,7 +24,6 @@ import org.hkijena.acaq5.extensions.parameters.collections.DoubleListParameter;
 import org.hkijena.acaq5.extensions.parameters.editors.NumberParameterSettings;
 import org.hkijena.acaq5.utils.ImageJUtils;
 
-import java.awt.image.ColorModel;
 import java.util.Vector;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -102,7 +101,7 @@ public class MeijeringVesselness2DFeatures extends ImageJ1Algorithm {
     private ImagePlus processSlice(ImagePlus slice) {
         // Implementation taken from Skimage
         ImageStack resultStack = new ImageStack(slice.getWidth(), slice.getHeight(), slice.getProcessor().getColorModel());
-        for(double sigma : scales) {
+        for (double sigma : scales) {
             FloatProcessor eigenValues = (FloatProcessor) getLargestEigenImage(slice, sigma).getProcessor();
 
             // Normalize the Eigen values.
@@ -117,7 +116,7 @@ public class MeijeringVesselness2DFeatures extends ImageJ1Algorithm {
                     minE = Math.min(e, minE);
                 }
             }
-            if(minE == 0) {
+            if (minE == 0) {
                 minE = 1e-10f; // Set to small non-zero value
             }
 
@@ -126,10 +125,9 @@ public class MeijeringVesselness2DFeatures extends ImageJ1Algorithm {
                 for (int x = 0; x < eigenValues.getWidth(); x++) {
                     float e = eigenValues.getf(x, y);
                     float filtered = e / minE;
-                    if(e < 0) {
+                    if (e < 0) {
                         eigenValues.setf(x, y, filtered);
-                    }
-                    else {
+                    } else {
                         eigenValues.setf(x, y, filtered);
                     }
                 }
@@ -145,8 +143,7 @@ public class MeijeringVesselness2DFeatures extends ImageJ1Algorithm {
     }
 
     /**
-     *
-     * @param input input image
+     * @param input     input image
      * @param smoothing sigma
      * @return largest eigenvalue by absolute
      */
@@ -161,7 +158,7 @@ public class MeijeringVesselness2DFeatures extends ImageJ1Algorithm {
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        if(scales.isEmpty()) {
+        if (scales.isEmpty()) {
             report.forCategory("Scales").reportIsInvalid("No scales provided!",
                     "You have to provide a list of scales to test",
                     "Please add at least one entry.",

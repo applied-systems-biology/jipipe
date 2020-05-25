@@ -2,6 +2,7 @@ package org.hkijena.acaq5.extensions.parameters;
 
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.api.algorithm.ACAQIteratingAlgorithm;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollectionVisibilities;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefList;
@@ -248,6 +249,7 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
         // Enums
         registerEnumParameterType("path-filter:mode", PathFilter.Mode.class, "Mode", "Available modes");
         registerEnumParameterType("string-filter:mode", StringFilter.Mode.class, "Mode", "Available modes");
+        registerEnumParameterType("acaq:iterating-algorithm:column-matching", ACAQIteratingAlgorithm.ColumnMatching.class, "Column matching strategy", "Determines how columns for dataset matching are selected");
 
         // Register generators
         registerParameterGenerator(byte.class, ByteRangeParameterGenerator.class, "Generate 8-bit integral number sequence", "Generates 8-bit integral numbers");

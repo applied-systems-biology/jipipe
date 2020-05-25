@@ -2,7 +2,6 @@ package org.hkijena.acaq5.api.algorithm;
 
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 
@@ -17,42 +16,79 @@ import java.util.Map;
  */
 public class ACAQDataInterface {
     private ACAQAlgorithm algorithm;
-    private Map<ACAQDataSlot, Integer> inputSlotRows;
-    private List<ACAQTrait> annotations;
+    private Map<ACAQDataSlot, Integer> inputSlotRows = new HashMap<>();
+    private Map<ACAQTraitDeclaration, ACAQTrait> annotations = new HashMap<>();
 
     /**
      * Creates a new interface
      *
-     * @param algorithm  The algorithm
-     * @param inputSlots Input slots that are considered during the calculation. The first one is used as reference
-     * @param row        the row this data interface is generated for
+     * @param algorithm The algorithm
      */
-    public ACAQDataInterface(ACAQAlgorithm algorithm, List<ACAQDataSlot> inputSlots, int row) {
+    public ACAQDataInterface(ACAQAlgorithm algorithm) {
         this.algorithm = algorithm;
         this.inputSlotRows = new HashMap<>();
-        initialize(inputSlots, row);
+//        initialize(inputSlots, row);
     }
 
-    private void initialize(List<ACAQDataSlot> inputSlots, int referenceInputSlotRow) {
-        ACAQDataSlot referenceInputSlot = inputSlots.get(0);
-        inputSlotRows.put(referenceInputSlot, referenceInputSlotRow);
-        annotations = referenceInputSlot.getAnnotations(referenceInputSlotRow);
-        for (ACAQDataSlot inputSlot : inputSlots) {
-            if (inputSlot != referenceInputSlot) {
-                int row = inputSlot.findRowWithTraits(annotations);
-                if (row == -1)
-                    throw new UserFriendlyRuntimeException("Could not find matching input slot for provided annotations!",
-                            "Unable to group input data!",
-                            "Algorithm '" + algorithm.getName() + "'", "The algorithm '" + algorithm.getName() + "' has multiple input data slots. Tho process it, ACAQ must find input data " +
-                            "that belongs to the same data set. It uses annotations for this purpose. If you have duplicate annotations, or missing columns, then " +
-                            "ACAQ is not able to find matching data.",
-                            "Run the testbench on each input data set and check that annotation columns with unique values are created. You can have " +
-                                    "multiple columns - all of them will be taken into consideration. If you do not have annotations, use nodes in the 'Annotation' " +
-                                    "category to add them early on during file processing.");
-                inputSlotRows.put(inputSlot, row);
+    /**
+     * Creates a copy
+     *
+     * @param other the original
+     */
+    public ACAQDataInterface(ACAQDataInterface other) {
+        this.algorithm = other.algorithm;
+        this.inputSlotRows = new HashMap<>(other.inputSlotRows);
+        this.annotations = new HashMap<>(other.annotations);
+    }
+
+    /**
+     * Sets the data row of a given slot. This should not be called after the interface was generated
+     *
+     * @param slot the data slot
+     * @param row  the row
+     */
+    public void setData(ACAQDataSlot slot, int row) {
+        inputSlotRows.put(slot, row);
+    }
+
+    /**
+     * Adds annotations to the global annotation storage of this interface.
+     * Global annotations are passed to all output slots.
+     *
+     * @param annotations the annotations
+     * @param overwrite   if true, annotations of the same type are overwritten
+     */
+    public void addGlobalAnnotations(List<ACAQTrait> annotations, boolean overwrite) {
+        for (ACAQTrait annotation : annotations) {
+            if (annotation != null) {
+                if (overwrite)
+                    this.annotations.put(annotation.getDeclaration(), annotation);
+                else
+                    this.annotations.putIfAbsent(annotation.getDeclaration(), annotation);
             }
         }
     }
+
+//    private void initialize(List<ACAQDataSlot> inputSlots, int referenceInputSlotRow) {
+//        ACAQDataSlot referenceInputSlot = inputSlots.get(0);
+//        inputSlotRows.put(referenceInputSlot, referenceInputSlotRow);
+//        annotations = referenceInputSlot.getAnnotations(referenceInputSlotRow);
+//        for (ACAQDataSlot inputSlot : inputSlots) {
+//            if (inputSlot != referenceInputSlot) {
+//                int row = inputSlot.findRowWithTraits(annotations);
+//                if (row == -1)
+//                    throw new UserFriendlyRuntimeException("Could not find matching input slot for provided annotations!",
+//                            "Unable to group input data!",
+//                            "Algorithm '" + algorithm.getName() + "'", "The algorithm '" + algorithm.getName() + "' has multiple input data slots. Tho process it, ACAQ must find input data " +
+//                            "that belongs to the same data set. It uses annotations for this purpose. If you have duplicate annotations, or missing columns, then " +
+//                            "ACAQ is not able to find matching data.",
+//                            "Run the testbench on each input data set and check that annotation columns with unique values are created. You can have " +
+//                                    "multiple columns - all of them will be taken into consideration. If you do not have annotations, use nodes in the 'Annotation' " +
+//                                    "category to add them early on during file processing.");
+//                inputSlotRows.put(inputSlot, row);
+//            }
+//        }
+//    }
 
     /**
      * Gets stored data from an input slot
@@ -87,29 +123,26 @@ public class ACAQDataInterface {
      *
      * @return list of annotations
      */
-    public List<ACAQTrait> getAnnotations() {
+    public Map<ACAQTraitDeclaration, ACAQTrait> getAnnotations() {
         return annotations;
     }
 
     /**
      * Adds an annotation to the annotation list
-     * If there is already existing an annotation of the sample type, it will be overwritten
      *
-     * @param trait added annotation
+     * @param trait added annotation. Cannot be null.
      */
     public void addGlobalAnnotation(ACAQTrait trait) {
-        removeGlobalAnnotation(trait.getDeclaration());
-        annotations.add(trait);
+        annotations.put(trait.getDeclaration(), trait);
     }
 
     /**
      * Removes an annotation of provided type
-     * Only the exact type is removed.
      *
      * @param declaration removed annotation
      */
     public void removeGlobalAnnotation(ACAQTraitDeclaration declaration) {
-        annotations.removeIf(a -> a.getDeclaration() == declaration);
+        annotations.remove(declaration);
     }
 
     /**
@@ -120,7 +153,7 @@ public class ACAQDataInterface {
      * @return null if it does not exist
      */
     public ACAQTrait getAnnotationOfType(ACAQTraitDeclaration declaration) {
-        return annotations.stream().filter(a -> a.getDeclaration() == declaration).findFirst().orElse(null);
+        return annotations.getOrDefault(declaration, null);
     }
 
     /**
@@ -158,7 +191,7 @@ public class ACAQDataInterface {
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isOutput())
             throw new IllegalArgumentException("Slot is not an output slot!");
-        slot.addData(data, annotations);
+        slot.addData(data, new ArrayList<>(annotations.values()));
     }
 
     /**
@@ -174,7 +207,7 @@ public class ACAQDataInterface {
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isOutput())
             throw new IllegalArgumentException("Slot is not an output slot!");
-        List<ACAQTrait> finalAnnotations = new ArrayList<>(annotations);
+        List<ACAQTrait> finalAnnotations = new ArrayList<>(annotations.values());
         finalAnnotations.addAll(additionalAnnotations);
         slot.addData(data, finalAnnotations);
     }

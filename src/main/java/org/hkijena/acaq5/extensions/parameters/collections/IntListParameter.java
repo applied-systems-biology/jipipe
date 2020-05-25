@@ -11,18 +11,19 @@ public class IntListParameter extends ListParameter<Integer> {
         super(Integer.class);
     }
 
-    @Override
-    public Integer addNewInstance() {
-        add(0);
-        return 0;
-    }
-
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public IntListParameter(IntListParameter other) {
         super(Integer.class);
         addAll(other);
+    }
+
+    @Override
+    public Integer addNewInstance() {
+        add(0);
+        return 0;
     }
 }

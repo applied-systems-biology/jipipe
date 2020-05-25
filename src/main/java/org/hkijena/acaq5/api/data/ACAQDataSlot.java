@@ -54,6 +54,10 @@ public class ACAQDataSlot implements TableModel {
         this.acceptedDataType = definition.getDataClass();
     }
 
+    public List<ACAQTraitDeclaration> getAnnotationColumns() {
+        return Collections.unmodifiableList(annotationColumns);
+    }
+
     /**
      * @return the slot's data type
      */

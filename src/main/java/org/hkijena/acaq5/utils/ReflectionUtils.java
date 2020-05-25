@@ -16,6 +16,10 @@ public class ReflectionUtils {
 
     private static final Map<Class<?>, Class<?>> primitiveWrapperMap = createPrimitveWrapperMap();
 
+    private ReflectionUtils() {
+
+    }
+
     private static Map<Class<?>, Class<?>> createPrimitveWrapperMap() {
         Map<Class<?>, Class<?>> result = new HashMap<>();
         result.put(boolean.class, Boolean.class);
@@ -29,15 +33,12 @@ public class ReflectionUtils {
         return result;
     }
 
-    private ReflectionUtils() {
-
-    }
-
     /**
      * Returns true if the class is a primitive wrapper
+     *
      * @param targetClass target class
-     * @param primitive primitive class
-     * @return  if the class is a primitive wrapper
+     * @param primitive   primitive class
+     * @return if the class is a primitive wrapper
      */
     public static boolean isPrimitiveWrapperOf(Class<?> targetClass, Class<?> primitive) {
         if (!primitive.isPrimitive()) {
@@ -49,8 +50,9 @@ public class ReflectionUtils {
     /**
      * More powerful variant of Class.isAssignableFrom that supports primitives.
      * Because Oracle cannot be bothered to update their ancient API.
+     *
      * @param from from class
-     * @param to to class
+     * @param to   to class
      * @return if to can be assigned from from
      */
     public static boolean isAssignableTo(Class<?> from, Class<?> to) {
