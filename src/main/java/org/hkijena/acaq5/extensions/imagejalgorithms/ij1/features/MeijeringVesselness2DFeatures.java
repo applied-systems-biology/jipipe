@@ -130,7 +130,7 @@ public class MeijeringVesselness2DFeatures extends ImageJ1Algorithm {
                         eigenValues.setf(x, y, filtered);
                     }
                     else {
-                        eigenValues.setf(x, y, 0);
+                        eigenValues.setf(x, y, filtered);
                     }
                 }
             }
@@ -154,7 +154,7 @@ public class MeijeringVesselness2DFeatures extends ImageJ1Algorithm {
         final Image image = Image.wrap(input);
         image.aspects(new Aspects());
         final Hessian hessian = new Hessian();
-        final Vector<Image> eigenimages = hessian.run(new FloatImage(image), smoothing, true);
+        final Vector<Image> eigenimages = hessian.run(new FloatImage(image), smoothing, false);
         Image largest = eigenimages.get(0);
         return largest.imageplus();
     }
