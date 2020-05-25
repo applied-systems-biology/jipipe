@@ -19,6 +19,7 @@ import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQAlgorithmDeclarationRef;
+import org.hkijena.acaq5.utils.ReflectionUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.*;
@@ -78,7 +79,7 @@ public class MultiParameterAlgorithm extends ACAQAlgorithm {
                 if (parameterAccess == null) {
                     throw new NullPointerException("Parameter with key '" + entry.getKey() + "' was no found in " + algorithmInstance);
                 }
-                if (!parameterAccess.getFieldClass().isAssignableFrom(entry.getValue().getClass())) {
+                if (!ReflectionUtils.isAssignableTo(entry.getValue().getClass(), parameterAccess.getFieldClass())) {
                     throw new UnsupportedOperationException("Cannot assign parameter '" + entry.getKey() +
                             "' and value '" + entry.getValue() + "' to " + algorithmInstance);
                 }
@@ -148,7 +149,7 @@ public class MultiParameterAlgorithm extends ACAQAlgorithm {
             if (parameterAccess == null) {
                 throw new NullPointerException("Parameter with key '" + entry.getKey() + "' was no found in " + algorithmInstance);
             }
-            if (!parameterAccess.getFieldClass().isAssignableFrom(entry.getValue().getClass())) {
+            if (!ReflectionUtils.isAssignableTo(entry.getValue().getClass(), parameterAccess.getFieldClass())) {
                 throw new UnsupportedOperationException("Cannot assign parameter '" + entry.getKey() +
                         "' and value '" + entry.getValue() + "' to " + algorithmInstance);
             }

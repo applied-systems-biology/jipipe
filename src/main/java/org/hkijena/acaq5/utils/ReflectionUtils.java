@@ -6,13 +6,64 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Utilities around reflection
  */
 public class ReflectionUtils {
+
+    private static final Map<Class<?>, Class<?>> primitiveWrapperMap = createPrimitveWrapperMap();
+
+    private static Map<Class<?>, Class<?>> createPrimitveWrapperMap() {
+        Map<Class<?>, Class<?>> result = new HashMap<>();
+        result.put(boolean.class, Boolean.class);
+        result.put(byte.class, Byte.class);
+        result.put(char.class, Character.class);
+        result.put(double.class, Double.class);
+        result.put(float.class, Float.class);
+        result.put(int.class, Integer.class);
+        result.put(long.class, Long.class);
+        result.put(short.class, Short.class);
+        return result;
+    }
+
     private ReflectionUtils() {
 
+    }
+
+    /**
+     * Returns true if the class is a primitive wrapper
+     * @param targetClass target class
+     * @param primitive primitive class
+     * @return  if the class is a primitive wrapper
+     */
+    public static boolean isPrimitiveWrapperOf(Class<?> targetClass, Class<?> primitive) {
+        if (!primitive.isPrimitive()) {
+            throw new IllegalArgumentException("First argument has to be primitive type");
+        }
+        return primitiveWrapperMap.get(primitive) == targetClass;
+    }
+
+    /**
+     * More powerful variant of Class.isAssignableFrom that supports primitives.
+     * Because Oracle cannot be bothered to update their ancient API.
+     * @param from from class
+     * @param to to class
+     * @return if to can be assigned from from
+     */
+    public static boolean isAssignableTo(Class<?> from, Class<?> to) {
+        if (to.isAssignableFrom(from)) {
+            return true;
+        }
+        if (from.isPrimitive()) {
+            return isPrimitiveWrapperOf(to, from);
+        }
+        if (to.isPrimitive()) {
+            return isPrimitiveWrapperOf(from, to);
+        }
+        return false;
     }
 
     /**
