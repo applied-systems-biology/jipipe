@@ -2,7 +2,7 @@ package org.hkijena.acaq5.ui.grapheditor;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
-import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
+import org.hkijena.acaq5.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
@@ -242,7 +242,7 @@ public abstract class ACAQDataSlotUI extends JPanel {
         if (hasCustomName) {
             return slot.getDefinition().getCustomName();
         }
-        if (slot.getAlgorithm() instanceof ACAQCompartmentOutput) {
+        if (slot.getAlgorithm() instanceof IOInterfaceAlgorithm) {
             if (slot.isOutput()) {
                 return slot.getName().substring("Output ".length());
             } else {

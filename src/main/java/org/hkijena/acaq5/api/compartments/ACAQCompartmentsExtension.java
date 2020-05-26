@@ -3,6 +3,7 @@ package org.hkijena.acaq5.api.compartments;
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
+import org.hkijena.acaq5.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.acaq5.api.compartments.datatypes.ACAQCompartmentOutputData;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.utils.ResourceUtils;
@@ -36,6 +37,7 @@ public class ACAQCompartmentsExtension extends ACAQPrepackagedDefaultJavaExtensi
 
     @Override
     public void register() {
+        registerAlgorithm("io-interface", IOInterfaceAlgorithm.class);
         registerAlgorithm("acaq:compartment-output", ACAQCompartmentOutput.class);
         registerAlgorithm("acaq:project-compartment", ACAQProjectCompartment.class);
 

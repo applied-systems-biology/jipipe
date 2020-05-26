@@ -1,22 +1,18 @@
 package org.hkijena.acaq5.api.compartments.algorithms;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
-import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
-import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.ACAQIOSlotConfiguration;
-import org.hkijena.acaq5.api.data.ACAQDataSlot;
-
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * A graph compartment output
  * Transfers data 1:1 from input to output
  */
 @ACAQDocumentation(name = "Compartment output", description = "Output of a compartment")
-public class ACAQCompartmentOutput extends ACAQAlgorithm {
+@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Internal)
+public class ACAQCompartmentOutput extends IOInterfaceAlgorithm {
 
     /**
      * Creates a new instance.
@@ -25,7 +21,7 @@ public class ACAQCompartmentOutput extends ACAQAlgorithm {
      * @param declaration The algorithm declaration
      */
     public ACAQCompartmentOutput(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, new ACAQIOSlotConfiguration());
+        super(declaration);
     }
 
     /**
@@ -35,18 +31,5 @@ public class ACAQCompartmentOutput extends ACAQAlgorithm {
      */
     public ACAQCompartmentOutput(ACAQCompartmentOutput other) {
         super(other);
-    }
-
-    @Override
-    public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        for (ACAQDataSlot inputSlot : getInputSlots()) {
-            ACAQDataSlot outputSlot = getSlots().get("Output " + inputSlot.getName());
-            outputSlot.copyFrom(inputSlot);
-        }
-    }
-
-    @Override
-    public void reportValidity(ACAQValidityReport report) {
-
     }
 }
