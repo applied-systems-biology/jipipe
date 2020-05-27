@@ -16,23 +16,23 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FileData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleData;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleMaskData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 
 import java.io.IOException;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExtension.ADD_MASK_QUALIFIER;
+
 /**
  * BioFormats importer wrapper
  */
 @ACAQDocumentation(name = "Bioformats importer", description = "Imports images via the Bioformats plugin")
-@AlgorithmInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
-@AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
-@AlgorithmOutputSlot(value = ImagePlus2DGreyscaleData.class)
-@AlgorithmOutputSlot(value = ImagePlus2DGreyscaleMaskData.class)
+@AlgorithmInputSlot(value = FileData.class, slotName = "Files")
+@AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Image")
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.DataSource)
-public class BioformatsImporter extends ACAQIteratingAlgorithm {
+public class BioFormatsImporter extends ACAQIteratingAlgorithm {
 
     private ColorMode colorMode = ColorMode.Default;
     private Order stackOrder = Order.XYCZT;
@@ -47,9 +47,12 @@ public class BioformatsImporter extends ACAQIteratingAlgorithm {
     /**
      * @param declaration the declaration
      */
-    public BioformatsImporter(ACAQAlgorithmDeclaration declaration) {
-        super(declaration);
-        ((ACAQMutableSlotConfiguration) getSlotConfiguration()).setOutputSealed(false);
+    public BioFormatsImporter(ACAQAlgorithmDeclaration declaration) {
+        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", FileData.class)
+                .addOutputSlot("Output", ImagePlusData.class, null)
+                .allowOutputSlotInheritance(true)
+                .seal()
+                .build());
     }
 
     /**
@@ -57,7 +60,7 @@ public class BioformatsImporter extends ACAQIteratingAlgorithm {
      *
      * @param other the original
      */
-    public BioformatsImporter(BioformatsImporter other) {
+    public BioFormatsImporter(BioFormatsImporter other) {
         super(other);
         this.colorMode = other.colorMode;
         this.stackOrder = other.stackOrder;
@@ -104,8 +107,6 @@ public class BioformatsImporter extends ACAQIteratingAlgorithm {
 
         ImportProcess process = new ImportProcess(options);
 
-        ImagePlus[] images;
-
         try {
             new ImporterPrompter(process);
             process.execute();
@@ -115,18 +116,16 @@ public class BioformatsImporter extends ACAQIteratingAlgorithm {
             displayHandler.displayOMEXML();
 
             ImagePlusReader reader = new ImagePlusReader(process);
-            images = reader.openImagePlus();
+            ImagePlus[] images = reader.openImagePlus();
+
+            for (ImagePlus image : images) {
+                dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusData(image));
+            }
 
             if (!process.getOptions().isVirtual())
                 process.getReader().close();
         } catch (FormatException | IOException e) {
             throw new RuntimeException(e);
-        }
-
-        for (int i = 0; i < Math.min(getOutputSlots().size(), images.length); ++i) {
-            ACAQDataSlot slot = getOutputSlots().get(i);
-            images[i].getProcessor().setLut(null);
-            dataInterface.addOutputData(slot, ACAQData.createInstance(slot.getAcceptedDataType(), images[i]));
         }
     }
 

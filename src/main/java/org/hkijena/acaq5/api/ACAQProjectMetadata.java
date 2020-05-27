@@ -190,5 +190,6 @@ public class ACAQProjectMetadata implements ACAQParameterCollection {
     @ACAQParameter("dependency-citations")
     public void setDependencyCitations(StringListParameter dependencyCitations) {
         this.dependencyCitations = dependencyCitations;
+        getEventBus().post(new ParameterChangedEvent(this, "dependency-citations"));
     }
 }

@@ -12,7 +12,7 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.compat.ResultsTableDataImage
 import org.hkijena.acaq5.extensions.imagejdatatypes.compat.importers.ImagePlusDataImporterUI;
 import org.hkijena.acaq5.extensions.imagejdatatypes.compat.importers.ROIDataImporterUI;
 import org.hkijena.acaq5.extensions.imagejdatatypes.compat.importers.ResultsTableDataImporterUI;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datasources.BioformatsImporter;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datasources.BioFormatsImporter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datasources.ImagePlusFromFileAlgorithmDeclaration;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datasources.ROIDataFromFile;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datasources.ResultsTableFromFile;
@@ -205,16 +205,16 @@ public class ImageJDataTypesExtension extends ACAQPrepackagedDefaultJavaExtensio
         // Register data sources
         registerAlgorithm("import-imagej-roi-from-file", ROIDataFromFile.class);
         registerAlgorithm("import-imagej-results-table-from-file", ResultsTableFromFile.class);
-        registerAlgorithm("import-imagej-bioformats", BioformatsImporter.class);
+        registerAlgorithm("import-imagej-bioformats", BioFormatsImporter.class);
 
         // Register algorithms
         registerAlgorithm("external-imagej-macro", MacroWrapperAlgorithm.class);
         registerAlgorithm("convert-imagej-image", ImageTypeConverter.class);
 
         // Register parameter editors
-        registerEnumParameterType("import-imagej-bioformats:color-mode", BioformatsImporter.ColorMode.class,
+        registerEnumParameterType("import-imagej-bioformats:color-mode", BioFormatsImporter.ColorMode.class,
                 "Color mode", "Available modes");
-        registerEnumParameterType("import-imagej-bioformats:order", BioformatsImporter.Order.class,
+        registerEnumParameterType("import-imagej-bioformats:order", BioFormatsImporter.Order.class,
                 "Order", "Available orders");
         registerParameterType("ij-macro-code",
                 MacroCode.class,
