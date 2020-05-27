@@ -34,38 +34,6 @@ public class StringUtils {
     }
 
     /**
-     * Parses a string of following format: [range];[range];... with range being an integer or [from]-[to]
-     * where from and to are inclusive. Returns the list of integers defined by the string. Empty ranges are ignored.
-     * Spaces are ignored.
-     *
-     * @param string the string
-     * @return List of integers defined by the string
-     * @throws NumberFormatException thrown if the string has a wrong format
-     */
-    public static List<Integer> stringToPositiveInts(String string) throws NumberFormatException {
-        string = string.replace(" ", "");
-        List<Integer> integers = new ArrayList<>();
-        for (String range : string.split(";")) {
-            if (StringUtils.isNullOrEmpty(range))
-                continue;
-            if (range.contains("-")) {
-                String[] borders = range.split("-");
-                if (borders.length != 2) {
-                    throw new NumberFormatException("Invalid range: " + range);
-                }
-                int from = Integer.parseInt(borders[0]);
-                int to = Integer.parseInt(borders[0]);
-                for (int i = from; i <= to; ++i) {
-                    integers.add(i);
-                }
-            } else {
-                integers.add(Integer.parseInt(range));
-            }
-        }
-        return integers;
-    }
-
-    /**
      * Creates an HTML table with an icon and text.
      * Contains root elements.
      *

@@ -62,6 +62,19 @@ import java.util.stream.Collectors;
 @Plugin(type = ACAQJavaExtension.class)
 public class ImageJDataTypesExtension extends ACAQPrepackagedDefaultJavaExtension {
 
+    public static final List<Class<? extends ACAQData>> IMAGE_TYPES = Arrays.asList(
+            ImagePlusData.class, ImagePlus2DData.class, ImagePlus3DData.class, ImagePlus4DData.class, ImagePlus5DData.class,
+            ImagePlusColorData.class, ImagePlusColor8UData.class, ImagePlusColorRGBData.class,
+            ImagePlus2DColorData.class, ImagePlus2DColor8UData.class, ImagePlus2DColorRGBData.class,
+            ImagePlus3DColorData.class, ImagePlus3DColor8UData.class, ImagePlus3DColorRGBData.class,
+            ImagePlus4DColorData.class, ImagePlus4DColor8UData.class, ImagePlus4DColorRGBData.class,
+            ImagePlus5DColorData.class, ImagePlus5DColor8UData.class, ImagePlus5DColorRGBData.class,
+            ImagePlusGreyscaleData.class, ImagePlusGreyscale32FData.class, ImagePlusGreyscaleMaskData.class, ImagePlusGreyscale8UData.class, ImagePlusGreyscale8UData.class, ImagePlusGreyscale16UData.class,
+            ImagePlus2DGreyscaleData.class, ImagePlus2DGreyscale32FData.class, ImagePlus2DGreyscaleMaskData.class, ImagePlus2DGreyscale8UData.class, ImagePlus2DGreyscale8UData.class, ImagePlus2DGreyscale16UData.class,
+            ImagePlus3DGreyscaleData.class, ImagePlus3DGreyscale32FData.class, ImagePlus3DGreyscaleMaskData.class, ImagePlus3DGreyscale8UData.class, ImagePlus3DGreyscale8UData.class, ImagePlus3DGreyscale16UData.class,
+            ImagePlus4DGreyscaleData.class, ImagePlus4DGreyscale32FData.class, ImagePlus4DGreyscaleMaskData.class, ImagePlus4DGreyscale8UData.class, ImagePlus4DGreyscale8UData.class, ImagePlus4DGreyscale16UData.class,
+            ImagePlus5DGreyscaleData.class, ImagePlus5DGreyscale32FData.class, ImagePlus5DGreyscaleMaskData.class, ImagePlus5DGreyscale8UData.class, ImagePlus5DGreyscale8UData.class, ImagePlus5DGreyscale16UData.class);
+
     public static final List<Class<? extends ACAQData>> IMAGE_TYPES_GREYSCALE = Arrays.asList(
             ImagePlusGreyscaleData.class, ImagePlusGreyscale32FData.class, ImagePlusGreyscaleMaskData.class, ImagePlusGreyscale8UData.class, ImagePlusGreyscale8UData.class, ImagePlusGreyscale16UData.class,
             ImagePlus2DGreyscaleData.class, ImagePlus2DGreyscale32FData.class, ImagePlus2DGreyscaleMaskData.class, ImagePlus2DGreyscale8UData.class, ImagePlus2DGreyscale8UData.class, ImagePlus2DGreyscale16UData.class,

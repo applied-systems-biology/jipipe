@@ -1,40 +1,48 @@
 package org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions;
 
 import ij.ImagePlus;
-import ij.process.ImageProcessor;
+import ij.ImageStack;
+import ij.plugin.ChannelArranger;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
-import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
+import org.hkijena.acaq5.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
-import org.hkijena.acaq5.extensions.parameters.editors.ACAQTraitParameterSettings;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
+import org.hkijena.acaq5.extensions.parameters.collections.OutputSlotMapParameterCollection;
+import org.hkijena.acaq5.extensions.parameters.generators.IntRangeStringParameter;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
-import org.hkijena.acaq5.utils.ImageJUtils;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-
-import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExtension.TO_2D_CONVERSION;
+import java.util.stream.Collectors;
 
 /**
- * Wrapper around {@link ImageProcessor}
+ * Wrapper around {@link ChannelArranger}
  */
-@ACAQDocumentation(name = "Split stack", description = "Splits high-dimensional image stacks into 2D planes")
+@ACAQDocumentation(name = "Reduce & split stacks", description = "Splits incoming stacks into a customizable amount of stacks based on stack indices. Add more output slots " +
+        "to create more groups.")
 @ACAQOrganization(menuPath = "Dimensions", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Input")
-@AlgorithmOutputSlot(value = ImagePlus2DData.class, slotName = "Output")
+@AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Output")
 public class StackSplitterAlgorithm extends ImageJ1Algorithm {
 
-    private boolean annotateSlices = true;
+    private OutputSlotMapParameterCollection stackAssignments;
+    private boolean ignoreMissingSlices = false;
+    private boolean sortedStackIds = true;
+    private boolean uniqueStackIds = true;
     private ACAQTraitDeclarationRef annotationType = new ACAQTraitDeclarationRef(ACAQTraitRegistry.getInstance().getDeclarationById("image-index"));
 
     /**
@@ -43,64 +51,139 @@ public class StackSplitterAlgorithm extends ImageJ1Algorithm {
      * @param declaration the declaration
      */
     public StackSplitterAlgorithm(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusData.class)
-                .addOutputSlot("Output", ImagePlus2DData.class, "Input", TO_2D_CONVERSION)
+        super(declaration, ACAQMutableSlotConfiguration.builder()
+                .addInputSlot("Input", ImagePlusData.class)
+                .restrictOutputTo(ImageJDataTypesExtension.IMAGE_TYPES)
                 .allowOutputSlotInheritance(true)
-                .seal()
+                .sealInput()
                 .build());
+        stackAssignments = new OutputSlotMapParameterCollection(IntRangeStringParameter.class,
+                this,
+                IntRangeStringParameter::new,
+                false);
+        stackAssignments.updateSlots();
+        registerSubParameter(stackAssignments);
     }
 
     /**
-     * Instantiates a new algorithm.
+     * Creates a copy
      *
      * @param other the other
      */
     public StackSplitterAlgorithm(StackSplitterAlgorithm other) {
         super(other);
-        this.annotateSlices = other.annotateSlices;
-        this.annotationType = new ACAQTraitDeclarationRef(other.annotationType);
+        stackAssignments = new OutputSlotMapParameterCollection(IntRangeStringParameter.class,
+                this,
+                IntRangeStringParameter::new,
+                false);
+        other.stackAssignments.copyTo(stackAssignments);
+        registerSubParameter(stackAssignments);
     }
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusData.class);
-        ImagePlus img = inputData.getImage().duplicate();
-        ImageJUtils.forEachIndexedSlice(img, (ip, index) -> {
-            if (annotateSlices) {
-                ACAQTrait trait = annotationType.getDeclaration().newInstance("slice=" + index);
-                dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlus2DData(new ImagePlus("slice=" + index, ip)), Collections.singletonList(trait));
+        ImagePlus img = dataInterface.getInputData(getFirstInputSlot(), ImagePlusColorData.class).getImage();
+        for (Map.Entry<String, ACAQParameterAccess> entry : stackAssignments.getParameters().entrySet()) {
+            IntRangeStringParameter sliceSelection = entry.getValue().get(IntRangeStringParameter.class);
+            List<Integer> sliceIndices = sliceSelection.getIntegers();
+            if (ignoreMissingSlices) {
+                sliceIndices.removeIf(i -> i >= img.getStackSize());
             } else {
-                dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlus2DData(new ImagePlus("slice=" + index, ip)));
+                for (Integer integer : sliceIndices) {
+                    if (integer >= img.getStackSize()) {
+                        throw new UserFriendlyRuntimeException("Data does not have slice: " + integer,
+                                "Invalid slice requested!",
+                                "Algorithm '" + getName() + "'",
+                                "The algorithm was set up to select slice " + integer + ", but this slice does not exist. The image only has " + img.getStackSize() + " slices.",
+                                "Please check if the incoming data has at least the amount of slices as requested. Please do not forget that the first slice index is zero. " +
+                                        "If you are sure what you do, enable 'Ignore missing slices' in the algorithm settings.");
+                    }
+                }
             }
-        });
-    }
+            if (sliceIndices.isEmpty()) {
+                throw new UserFriendlyRuntimeException("No slices selected!",
+                        "No slices selected!",
+                        "Algorithm '" + getName() + "'",
+                        "You have to select a valid set of slices from the data set.",
+                        "Please check if the incoming data has at least the amount of slices as requested.");
+            }
+            if (uniqueStackIds) {
+                sliceIndices = sliceIndices.stream().distinct().collect(Collectors.toList());
+            }
+            if (sortedStackIds) {
+                sliceIndices.sort(Integer::compareTo);
+            }
 
+            ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
+            for (Integer sliceIndex : sliceIndices) {
+                stack.addSlice("" + sliceIndex, img.getStack().getProcessor(sliceIndex + 1).duplicate());
+            }
+            ImagePlus result = new ImagePlus("Reduced stack", stack);
+            List<ACAQTrait> annotations = new ArrayList<>();
+            if (annotationType.getDeclaration() != null) {
+                String index = "slice=" + sliceIndices.stream().map(i -> "" + i).collect(Collectors.joining(","));
+                annotations.add(annotationType.getDeclaration().newInstance(index));
+            }
+            dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), annotations);
+        }
+    }
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        if (annotateSlices) {
-            if (annotationType != null) {
-                report.forCategory("Generated annotation").checkNonNull(annotationType.getDeclaration(), this);
-            } else {
-                report.forCategory("Generated annotation").checkNonNull(annotationType, this);
+        for (Map.Entry<String, ACAQParameterAccess> entry : stackAssignments.getParameters().entrySet()) {
+            IntRangeStringParameter sliceSelection = entry.getValue().get(IntRangeStringParameter.class);
+            try {
+                List<Integer> integers = sliceSelection.getIntegers();
+                if (integers.isEmpty()) {
+                    report.forCategory("Stack assignment").forCategory(entry.getKey()).reportIsInvalid("No slices selected!",
+                            "You have to select at least one slice.",
+                            "Please enter a valid selection (e.g. 10-15)",
+                            this);
+                }
+                for (Integer integer : integers) {
+                    if (integer < 0) {
+                        report.forCategory("Stack assignment").forCategory(entry.getKey()).reportIsInvalid("Slice indices cannot be negative!",
+                                "The first slice index is 0. Negative indices are not valid.",
+                                "Please enter a valid selection (e.g. 10-15)",
+                                this);
+                        break;
+                    }
+                }
+
+            } catch (NumberFormatException | NullPointerException e) {
+                report.forCategory("Stack assignment").forCategory(entry.getKey()).reportIsInvalid("Wrong slice index format!",
+                        "The slice indices must follow a specific pattern. " + "The format is: [range];[range];... where [range] is " +
+                                "either a number or a range of numbers notated as [from]-[to] (inclusive). Inverse ordered ranges are allowed." +
+                                " An example is 0-10;12;20-21. The first index is zero.",
+                        "Please enter a valid selection (e.g. 10-15)",
+                        this);
             }
         }
     }
 
-    @ACAQDocumentation(name = "Annotate slices", description = "Annotates each generated image slice.")
-    @ACAQParameter("annotate-slices")
-    public boolean isAnnotateSlices() {
-        return annotateSlices;
+    @ACAQDocumentation(name = "Ignore missing slices", description = "If enabled, slice indices outside of the image dimensions are ignored.")
+    @ACAQParameter("ignore-missing-slices")
+    public boolean isIgnoreMissingSlices() {
+        return ignoreMissingSlices;
     }
 
-    @ACAQParameter("annotate-slices")
-    public void setAnnotateSlices(boolean annotateSlices) {
-        this.annotateSlices = annotateSlices;
+    @ACAQParameter("ignore-missing-slices")
+    public void setIgnoreMissingSlices(boolean ignoreMissingSlices) {
+        this.ignoreMissingSlices = ignoreMissingSlices;
     }
 
-    @ACAQDocumentation(name = "Generated annotation", description = "Determines the generated annotation type.")
+    @ACAQDocumentation(name = "Stack assignment", description = "Each output slot is assigned to a set of stacks that is determined by the " +
+            "selection on the right-hand side. You have to input a valid number range (e.g. 0-10;15;22-23) " +
+            "that then will then generated as output of the corresponding data slot. Inverse ordered ranges (e.g. 10-5) are supported. " +
+            "The first slice is indexed with 0.")
+    @ACAQParameter("stack-assignments")
+    public OutputSlotMapParameterCollection getStackAssignments() {
+        return stackAssignments;
+    }
+
+    @ACAQDocumentation(name = "Generated annotation", description = "An optional annotation that is generated for each output to indicate from which slices the data was generated from. " +
+            "The format will be slice=[index0],[index1],...")
     @ACAQParameter("annotation-type")
-    @ACAQTraitParameterSettings(traitBaseClass = ACAQDiscriminator.class)
     public ACAQTraitDeclarationRef getAnnotationType() {
         return annotationType;
     }
@@ -108,5 +191,26 @@ public class StackSplitterAlgorithm extends ImageJ1Algorithm {
     @ACAQParameter("annotation-type")
     public void setAnnotationType(ACAQTraitDeclarationRef annotationType) {
         this.annotationType = annotationType;
+    }
+
+    @ACAQDocumentation(name = "Sort stack indices", description = "If enabled, stack indices are sorted before they are used to create an output.")
+    @ACAQParameter("sorted-stack-ids")
+    public boolean isSortedStackIds() {
+        return sortedStackIds;
+    }
+
+    @ACAQParameter("sorted-stack-ids")
+    public void setSortedStackIds(boolean sortedStackIds) {
+        this.sortedStackIds = sortedStackIds;
+    }
+
+    @ACAQDocumentation(name = "Unique stack indices", description = "If enabled, duplicate stack indices are removed before they are used to create an output.")
+    @ACAQParameter("sorted-stack-ids")
+    public boolean isUniqueStackIds() {
+        return uniqueStackIds;
+    }
+
+    public void setUniqueStackIds(boolean uniqueStackIds) {
+        this.uniqueStackIds = uniqueStackIds;
     }
 }

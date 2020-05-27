@@ -127,6 +127,18 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 "A filter for text values",
                 StringFilterParameterEditorUI.class);
 
+        // Generating parameters
+        registerParameterType("int-range-string",
+                IntRangeStringParameter.class,
+                IntRangeStringParameter::new,
+                f -> new IntRangeStringParameter((IntRangeStringParameter) f),
+                "Integer range string",
+                "Describes a range of whole numbers via a string. The string must have following format: " +
+                        "[range];[range];... with range being an integer or [from]-[to]. [from] and [to] are inclusive borders. Negative numbers must be " +
+                        "encased with (brackets). [from] and [to] can be in inverse order, generating numbers in inverse order. Spaces are ignored. " +
+                        "Example: 0-10;5;3-(-1)",
+                IntRangeStringParameterEditorUI.class);
+
         // Map-like parameters
         registerParameterEditor(KeyValuePairParameter.class, KeyValuePairParameterEditorUI.class);
         registerParameterType("string-renaming",

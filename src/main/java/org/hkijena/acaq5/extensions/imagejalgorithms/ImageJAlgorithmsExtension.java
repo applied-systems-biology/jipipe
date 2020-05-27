@@ -203,10 +203,10 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerAlgorithm("threshold-hough2d", HoughSegmentation2DAlgorithm.class);
         registerAlgorithm("threshold-internalgradient2d", InternalGradientSegmentation2DAlgorithm.class);
 
+        registerAlgorithm("ij1-dimensions-stack-to-2d", StackTo2DAlgorithm.class);
         registerAlgorithm("ij1-dimensions-stacksplitter", StackSplitterAlgorithm.class);
         registerAlgorithm("ij1-dimensions-stackmerger", StackMergerAlgorithm.class);
         registerAlgorithm("ij1-dimensions-stackinverter", StackInverterAlgorithm.class);
-        registerAlgorithm("ij1-dimensions-stackreducer", StackReducerAlgorithm.class);
         registerAlgorithm("ij1-dimensions-zproject", ZProjectorAlgorithm.class);
 
         registerAlgorithm("ij1-analyze-find-particles2d", FindParticles2D.class);
