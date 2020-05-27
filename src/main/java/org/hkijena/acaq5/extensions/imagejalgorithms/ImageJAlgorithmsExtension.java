@@ -18,10 +18,7 @@ import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.color.MergeChannelsAlgo
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.color.SplitChannelsAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.contrast.CLAHEContrastEnhancer;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.convolve.Convolve2DAlgorithm;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions.StackInverterAlgorithm;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions.StackMergerAlgorithm;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions.StackSplitterAlgorithm;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions.ZProjectorAlgorithm;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions.*;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.edge.SobelEdgeDetectorAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.features.FrangiVesselnessFeatures;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.features.LocalMaxima2DAlgorithm;
@@ -209,6 +206,7 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerAlgorithm("ij1-dimensions-stacksplitter", StackSplitterAlgorithm.class);
         registerAlgorithm("ij1-dimensions-stackmerger", StackMergerAlgorithm.class);
         registerAlgorithm("ij1-dimensions-stackinverter", StackInverterAlgorithm.class);
+        registerAlgorithm("ij1-dimensions-stackreducer", StackReducerAlgorithm.class);
         registerAlgorithm("ij1-dimensions-zproject", ZProjectorAlgorithm.class);
 
         registerAlgorithm("ij1-analyze-find-particles2d", FindParticles2D.class);
