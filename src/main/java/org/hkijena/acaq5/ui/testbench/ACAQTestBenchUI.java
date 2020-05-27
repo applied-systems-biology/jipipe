@@ -197,7 +197,7 @@ public class ACAQTestBenchUI extends ACAQProjectWorkbenchPanel {
 
         ParameterPanel parameters = new ParameterPanel(getProjectWorkbench(), testbench.getBenchedAlgorithm(),
                 MarkdownDocument.fromPluginResource("documentation/testbench.md"),
-                ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW);
+                ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SCROLLING);
         splitPane.setLeftComponent(parameters);
 
         ACAQResultUI resultUI = new ACAQResultUI(getProjectWorkbench(), testbench.getTestbenchRun());

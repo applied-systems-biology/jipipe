@@ -13,10 +13,17 @@ import org.hkijena.acaq5.api.algorithm.ACAQIteratingAlgorithm;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
+import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
+import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FileData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -28,6 +35,7 @@ import java.util.function.Supplier;
 public class ImagePlusFromFile extends ACAQIteratingAlgorithm {
 
     private Class<? extends ACAQData> dataClass;
+    private ACAQTraitDeclarationRef titleAnnotation = new ACAQTraitDeclarationRef(ACAQTraitRegistry.getInstance().getDeclarationById("image-title"));
 
     /**
      * @param declaration algorithm declaration
@@ -51,6 +59,7 @@ public class ImagePlusFromFile extends ACAQIteratingAlgorithm {
     public ImagePlusFromFile(ImagePlusFromFile other) {
         super(other);
         this.dataClass = other.dataClass;
+        this.titleAnnotation = new ACAQTraitDeclarationRef(other.titleAnnotation);
     }
 
     @Override
@@ -62,7 +71,25 @@ public class ImagePlusFromFile extends ACAQIteratingAlgorithm {
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         FileData fileData = dataInterface.getInputData(getFirstInputSlot(), FileData.class);
-        dataInterface.addOutputData(getFirstOutputSlot(), readImageFrom(fileData.getPath()));
+        ImagePlusData data = (ImagePlusData)readImageFrom(fileData.getPath());
+        List<ACAQTrait> traits = new ArrayList<>();
+        if(titleAnnotation.getDeclaration() != null) {
+            traits.add(titleAnnotation.getDeclaration().newInstance(data.getImage().getTitle()));
+        }
+        dataInterface.addOutputData(getFirstOutputSlot(), data);
+    }
+
+    @ACAQDocumentation(name = "Title annotation", description = "Optional annotation type where the image title is written.")
+    @ACAQParameter("title-annotation")
+    public ACAQTraitDeclarationRef getTitleAnnotation() {
+        if(titleAnnotation == null)
+            titleAnnotation = new ACAQTraitDeclarationRef();
+        return titleAnnotation;
+    }
+
+    @ACAQParameter("title-annotation")
+    public void setTitleAnnotation(ACAQTraitDeclarationRef titleAnnotation) {
+        this.titleAnnotation = titleAnnotation;
     }
 
     /**

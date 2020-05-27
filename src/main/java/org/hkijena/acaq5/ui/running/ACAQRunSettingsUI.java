@@ -106,7 +106,7 @@ public class ACAQRunSettingsUI extends ACAQProjectWorkbenchPanel {
         JPanel setupPanel = new JPanel(new BorderLayout());
         ParameterPanel formPanel = new ParameterPanel(getProjectWorkbench(), run.getConfiguration(),
                 MarkdownDocument.fromPluginResource("documentation/run.md"),
-                ParameterPanel.WITH_DOCUMENTATION);
+                ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING);
 
         setupPanel.add(formPanel, BorderLayout.CENTER);
 

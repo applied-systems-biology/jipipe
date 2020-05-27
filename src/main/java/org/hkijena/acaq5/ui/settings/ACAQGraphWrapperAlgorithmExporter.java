@@ -51,7 +51,7 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQProjectWorkbenchPanel
         parameterAccessUI = new ParameterPanel(getProjectWorkbench(),
                 algorithmDeclaration,
                 MarkdownDocument.fromPluginResource("documentation/exporting-algorithms.md"),
-                ParameterPanel.WITH_DOCUMENTATION);
+                ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING);
         add(parameterAccessUI, BorderLayout.CENTER);
 
         initializeToolBar();

@@ -35,7 +35,7 @@ public class GraphWrapperAlgorithmDeclarationUI extends ACAQJsonExtensionWorkben
         setLayout(new BorderLayout());
 
         ParameterPanel parameterAccessUI = new ParameterPanel(getExtensionWorkbenchUI(), declaration,
-                null, ParameterPanel.NONE);
+                null, ParameterPanel.WITH_SCROLLING);
         add(parameterAccessUI, BorderLayout.CENTER);
 
         JToolBar toolBar = new JToolBar();

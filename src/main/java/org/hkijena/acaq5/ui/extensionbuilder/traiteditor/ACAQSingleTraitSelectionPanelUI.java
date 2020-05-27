@@ -43,7 +43,7 @@ public class ACAQSingleTraitSelectionPanelUI extends ACAQJsonExtensionWorkbenchP
         ParameterPanel parametersUI = new ParameterPanel(getExtensionWorkbenchUI(),
                 node,
                 MarkdownDocument.fromPluginResource("documentation/trait-graph.md"),
-                ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW);
+                ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SCROLLING);
         tabbedPane.addTab("Parameters", UIUtils.getIconFromResources("cog.png"),
                 parametersUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,

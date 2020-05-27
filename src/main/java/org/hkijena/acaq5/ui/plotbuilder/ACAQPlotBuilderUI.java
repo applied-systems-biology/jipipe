@@ -77,7 +77,7 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
                 new ParameterPanel(getWorkbench().getContext(),
                         this,
                         null,
-                        ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW),
+                        ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SCROLLING),
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
         tabbedPane.addTab("Series", UIUtils.getIconFromResources("select-column.png"),

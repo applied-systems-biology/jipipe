@@ -24,7 +24,7 @@ public class ACAQProjectSettingsUI extends ACAQProjectWorkbenchPanel {
         ParameterPanel metadataUI = new ParameterPanel(getProjectWorkbench(),
                 getProject().getMetadata(),
                 MarkdownDocument.fromPluginResource("documentation/project-settings.md"),
-                ParameterPanel.WITH_DOCUMENTATION);
+                ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING);
         add(metadataUI, BorderLayout.CENTER);
     }
 }

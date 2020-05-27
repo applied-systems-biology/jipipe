@@ -52,7 +52,7 @@ public class ACAQSingleCompartmentSelectionPanelUI extends ACAQProjectWorkbenchP
         ParameterPanel parametersUI = new ParameterPanel(getProjectWorkbench(),
                 compartment,
                 MarkdownDocument.fromPluginResource("documentation/compartment-graph.md"),
-                ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW);
+                ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SCROLLING);
         tabbedPane.addTab("Parameters", UIUtils.getIconFromResources("cog.png"),
                 parametersUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,
@@ -167,7 +167,7 @@ public class ACAQSingleCompartmentSelectionPanelUI extends ACAQProjectWorkbenchP
         exportedCompartment.getMetadata().setDescription("An exported ACAQ5 compartment");
         ParameterPanel metadataEditor = new ParameterPanel(getProjectWorkbench(), exportedCompartment.getMetadata(),
                 null,
-                ParameterPanel.NONE);
+                ParameterPanel.WITH_SCROLLING);
 
         if (JOptionPane.showConfirmDialog(this, metadataEditor, "Export compartment",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION) {

@@ -143,6 +143,8 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
     public void register() {
         registerTrait(new ACAQJavaTraitDeclaration("image-index", ImageIndexDiscriminator.class),
                 ResourceUtils.getPluginResource("icons/traits/search-location-blue.png"));
+        registerTrait(new ACAQJavaTraitDeclaration("image-title", ImageTitleDiscriminator.class),
+                ResourceUtils.getPluginResource("icons/traits/search-location-blue.png"));
 
         registerAlgorithm("ij1-blur-gaussian2d", GaussianBlur2DAlgorithm.class);
         registerAlgorithm("ij1-blur-gaussian3d", GaussianBlur3DAlgorithm.class);
