@@ -6,6 +6,7 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
+import org.hkijena.acaq5.extensions.parameters.collections.StringListParameter;
 import org.hkijena.acaq5.extensions.parameters.editors.StringParameterSettings;
 
 /**
@@ -19,6 +20,7 @@ public class ACAQProjectMetadata implements ACAQParameterCollection {
     private String website = "";
     private String license = "";
     private String citation = "";
+    private StringListParameter dependencyCitations = new StringListParameter();
 
     /**
      * Creates new empty instance
@@ -38,6 +40,7 @@ public class ACAQProjectMetadata implements ACAQParameterCollection {
         this.website = other.website;
         this.license = other.license;
         this.citation = other.citation;
+        this.dependencyCitations = new StringListParameter(other.dependencyCitations);
     }
 
     /**
@@ -176,5 +179,16 @@ public class ACAQProjectMetadata implements ACAQParameterCollection {
     @Override
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    @ACAQDocumentation(name = "Dependency citations", description = "Use this field to cite external work.")
+    @ACAQParameter("dependency-citations")
+    public StringListParameter getDependencyCitations() {
+        return dependencyCitations;
+    }
+
+    @ACAQParameter("dependency-citations")
+    public void setDependencyCitations(StringListParameter dependencyCitations) {
+        this.dependencyCitations = dependencyCitations;
     }
 }
