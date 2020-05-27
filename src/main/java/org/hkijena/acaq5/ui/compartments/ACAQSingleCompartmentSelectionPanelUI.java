@@ -1,8 +1,11 @@
 package org.hkijena.acaq5.ui.compartments;
 
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.compartments.ACAQExportedCompartment;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
+import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.ColorIcon;
@@ -11,6 +14,7 @@ import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQSlotEditorUI;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
+import org.hkijena.acaq5.ui.settings.ACAQGraphWrapperAlgorithmExporter;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -19,6 +23,8 @@ import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * UI for a single {@link ACAQProjectCompartment}
@@ -94,7 +100,17 @@ public class ACAQSingleCompartmentSelectionPanelUI extends ACAQProjectWorkbenchP
         toolBar.add(openButton);
 
         JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("export.png"));
-        exportButton.addActionListener(e -> exportCompartment());
+
+        JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportButton);
+
+        JMenuItem exportToAlgorithmButton = new JMenuItem("As custom algorithm", UIUtils.getIconFromResources("cog.png"));
+        exportToAlgorithmButton.addActionListener(e -> exportCompartmentToAlgorithm());
+        exportMenu.add(exportToAlgorithmButton);
+
+        JMenuItem exportToFileButton = new JMenuItem("As JSON file", UIUtils.getIconFromResources("filetype-text.png"));
+        exportToFileButton.addActionListener(e -> exportCompartmentToJSON());
+        exportMenu.add(exportToFileButton);
+
         toolBar.add(exportButton);
 
         JButton deleteButton = new JButton(UIUtils.getIconFromResources("delete.png"));
@@ -105,7 +121,47 @@ public class ACAQSingleCompartmentSelectionPanelUI extends ACAQProjectWorkbenchP
         add(toolBar, BorderLayout.NORTH);
     }
 
-    private void exportCompartment() {
+    private void exportCompartmentToAlgorithm() {
+        final String compartmentId = compartment.getProjectCompartmentId();
+        ACAQValidityReport report = new ACAQValidityReport();
+        for (Map.Entry<String, ACAQAlgorithm> entry : getProject().getGraph().getAlgorithmNodes().entrySet()) {
+            if (Objects.equals(entry.getValue().getCompartment(), compartmentId)) {
+                report.forCategory(entry.getKey()).report(entry.getValue());
+            }
+        }
+        if (!report.isValid()) {
+            UIUtils.openValidityReportDialog(this, report, false);
+            return;
+        }
+
+        ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
+        for (Map.Entry<String, ACAQAlgorithm> entry : getProject().getGraph().getAlgorithmNodes().entrySet()) {
+            if (Objects.equals(entry.getValue().getCompartment(), compartmentId)) {
+                ACAQAlgorithm algorithm = entry.getValue().duplicate();
+                algorithm.setCompartment(ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
+                graph.insertNode(entry.getKey(), algorithm, compartmentId);
+            }
+        }
+        for (Map.Entry<ACAQDataSlot, ACAQDataSlot> edge : getProject().getGraph().getSlotEdges()) {
+            if (Objects.equals(edge.getKey().getAlgorithm().getCompartment(), compartmentId) &&
+                    Objects.equals(edge.getValue().getAlgorithm().getCompartment(), compartmentId)) {
+                ACAQDataSlot source = graph.getEquivalentSlot(edge.getKey());
+                ACAQDataSlot target = graph.getEquivalentSlot(edge.getValue());
+                graph.connect(source, target);
+            }
+        }
+
+        ACAQGraphWrapperAlgorithmExporter exporter = new ACAQGraphWrapperAlgorithmExporter(getProjectWorkbench(), graph);
+        exporter.getAlgorithmDeclaration().getMetadata().setName(compartment.getName());
+        exporter.getAlgorithmDeclaration().getMetadata().setDescription(compartment.getCustomDescription());
+        getProjectWorkbench().getDocumentTabPane().addTab("Export algorithm '" + compartment.getName() + "'",
+                UIUtils.getIconFromResources("export.png"),
+                exporter,
+                DocumentTabPane.CloseMode.withAskOnCloseButton);
+        getProjectWorkbench().getDocumentTabPane().switchToLastTab();
+    }
+
+    private void exportCompartmentToJSON() {
         ACAQExportedCompartment exportedCompartment = new ACAQExportedCompartment(compartment);
         exportedCompartment.getMetadata().setName(compartment.getName());
         exportedCompartment.getMetadata().setDescription("An exported ACAQ5 compartment");

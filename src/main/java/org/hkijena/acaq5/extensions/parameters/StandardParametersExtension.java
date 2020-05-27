@@ -205,6 +205,12 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 "List of double",
                 "A list of double",
                 null);
+        registerParameterType("string-ist", StringListParameter.class,
+                StringListParameter::new,
+                l -> new StringListParameter((StringListParameter) l),
+                "List of strings",
+                "A list of strings",
+                null);
         registerParameterType("path-filter-list", PathFilterListParameter.class,
                 PathFilterListParameter::new,
                 l -> new PathFilterListParameter((PathFilterListParameter) l),

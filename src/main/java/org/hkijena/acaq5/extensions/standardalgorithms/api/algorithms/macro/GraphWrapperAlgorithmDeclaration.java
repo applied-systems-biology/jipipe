@@ -21,6 +21,7 @@ import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefList;
+import org.hkijena.acaq5.extensions.parameters.collections.StringListParameter;
 import org.hkijena.acaq5.extensions.parameters.editors.ACAQTraitParameterSettings;
 import org.hkijena.acaq5.extensions.parameters.editors.StringParameterSettings;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
@@ -47,8 +48,8 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     private List<AlgorithmOutputSlot> outputSlots = new ArrayList<>();
     private ACAQParameterCollectionVisibilities parameterCollectionVisibilities = new ACAQParameterCollectionVisibilities();
     private ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
-    private String menuPath = "";
     private Map<ACAQDataSlot, String> exportedSlotNames = new HashMap<>();
+    private StringListParameter menuPath = new StringListParameter();
 
     /**
      * Creates a new declaration
@@ -57,8 +58,10 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
         graph.getEventBus().register(this);
     }
 
-    @ACAQDocumentation(name = "Algorithm ID", description = "An unique identifier for the algorithm")
-    @ACAQParameter("id")
+    @ACAQDocumentation(name = "Algorithm ID", description = "An unique identifier for the algorithm. " +
+            "We recommend to make the ID follow a structuring schema that makes it easy to create extensions or alternatives to this algorithm. " +
+            "For example filter-blur-gaussian2d")
+    @ACAQParameter(value = "id", uiOrder = -999)
     @JsonGetter("id")
     @StringParameterSettings(monospace = true)
     @Override
@@ -182,7 +185,7 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     }
 
     @ACAQDocumentation(name = "Preferred annotations", description = "Marks the algorithm as good for handling the specified annotations")
-    @ACAQParameter("preferred-traits")
+    @ACAQParameter(value = "preferred-traits", uiOrder = 100)
     @JsonGetter("preferred-traits")
     @ACAQTraitParameterSettings(showHidden = true)
     public ACAQTraitDeclarationRefList getPreferredTraitIds() {
@@ -200,7 +203,7 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     }
 
     @ACAQDocumentation(name = "Unwanted annotations", description = "Marks the algorithm as bad for handling the specified annotations")
-    @ACAQParameter("unwanted-traits")
+    @ACAQParameter(value = "unwanted-traits", uiOrder = 100)
     @JsonGetter("unwanted-traits")
     @ACAQTraitParameterSettings(showHidden = true)
     public ACAQTraitDeclarationRefList getUnwantedTraitIds() {
@@ -218,7 +221,7 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     }
 
     @ACAQDocumentation(name = "Added annotations", description = "Annotations that are added to the algorithm outputs")
-    @ACAQParameter("added-traits")
+    @ACAQParameter(value = "added-traits", uiOrder = 200)
     @JsonGetter("added-traits")
     @ACAQTraitParameterSettings(showHidden = true)
     public ACAQTraitDeclarationRefList getAddedTraitIds() {
@@ -243,7 +246,7 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
         return new ACAQTraitDeclarationRefList(removedTraits.stream().map(ACAQTraitDeclarationRef::new).collect(Collectors.toList()));
     }
 
-    @ACAQParameter("removed-traits")
+    @ACAQParameter(value = "removed-traits", uiOrder = 200)
     @JsonGetter("removed-traits")
     public void setRemovedTraitIds(ACAQTraitDeclarationRefList ids) {
         removedTraits.clear();
@@ -255,7 +258,7 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
 
     @JsonGetter("metadata")
     @ACAQParameter("metadata")
-    @ACAQDocumentation(name = "Algorithm metadata", description = "General metadata")
+    @ACAQDocumentation(name = "Algorithm metadata", description = "Use the following settings to provide some general metadata about the algorithm.")
     public ACAQProjectMetadata getMetadata() {
         return metadata;
     }
@@ -393,18 +396,30 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
         return eventBus;
     }
 
-    @ACAQParameter("menu-path")
-    @JsonGetter("menu-path")
-    @ACAQDocumentation(name = "Menu path", description = "Menu path where the algorithm is placed. Each new line corresponds to one menu item")
-    @StringParameterSettings(multiline = true)
+
     @Override
+    @JsonGetter("menu-path")
     public String getMenuPath() {
-        return menuPath;
+        return String.join("\n", menuPath);
+    }
+
+    @JsonSetter("menu-path")
+    public void setMenuPath(String value) {
+        menuPath.clear();
+        menuPath.addAll(Arrays.asList(StringUtils.getCleanedMenuPath(value).split("\n")));
     }
 
     @ACAQParameter("menu-path")
-    @JsonSetter("menu-path")
-    public void setMenuPath(String menuPath) {
-        this.menuPath = menuPath;
+    @ACAQDocumentation(name = "Menu path", description = "Menu path where the algorithm is placed. " +
+            "If you leave this empty, the menu item will be placed in the category's root menu.")
+    public StringListParameter getMenuPathList() {
+        return menuPath;
+    }
+
+
+    @ACAQParameter("menu-path")
+    public void setMenuPathList(StringListParameter value) {
+        this.menuPath = value;
+        getEventBus().post(new ParameterChangedEvent(this, "menu-path"));
     }
 }

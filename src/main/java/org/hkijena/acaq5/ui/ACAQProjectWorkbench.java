@@ -4,6 +4,9 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQGUICommand;
 import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.api.ACAQProject;
+import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.events.CompartmentRemovedEvent;
 import org.hkijena.acaq5.ui.compartments.ACAQCompartmentGraphUI;
@@ -16,6 +19,7 @@ import org.hkijena.acaq5.ui.extensions.ACAQPluginManagerUIPanel;
 import org.hkijena.acaq5.ui.extensions.ACAQPluginValidityCheckerPanel;
 import org.hkijena.acaq5.ui.running.ACAQRunSettingsUI;
 import org.hkijena.acaq5.ui.running.ACAQRunnerQueueUI;
+import org.hkijena.acaq5.ui.settings.ACAQGraphWrapperAlgorithmExporter;
 import org.hkijena.acaq5.ui.settings.ACAQProjectSettingsUI;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXStatusBar;
@@ -228,6 +232,11 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
         });
         projectMenu.add(saveProjectAsButton);
 
+        // "Export as algorithm" entry
+        JMenuItem exportProjectAsAlgorithmButton = new JMenuItem("Export as custom algorithm", UIUtils.getIconFromResources("export.png"));
+        exportProjectAsAlgorithmButton.setToolTipText("Exports the whole pipeline (all compartments) as custom algorithm");
+        exportProjectAsAlgorithmButton.addActionListener(e -> exportProjectAsAlgorithm());
+
         projectMenu.addSeparator();
 
         JMenuItem openProjectSettingsButton = new JMenuItem("Project settings", UIUtils.getIconFromResources("wrench.png"));
@@ -315,6 +324,30 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
         menu.add(helpMenu);
 
         add(menu, BorderLayout.NORTH);
+    }
+
+    /**
+     * Exports the whole graph as pipeline
+     */
+    private void exportProjectAsAlgorithm() {
+        ACAQValidityReport report = new ACAQValidityReport();
+        report.report(getProject().getGraph());
+        if (!report.isValid()) {
+            UIUtils.openValidityReportDialog(this, report, false);
+            return;
+        }
+        ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph(getProject().getGraph());
+        for (ACAQAlgorithm algorithm : graph.getAlgorithmNodes().values()) {
+            algorithm.setCompartment(ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
+        }
+        ACAQGraphWrapperAlgorithmExporter exporter = new ACAQGraphWrapperAlgorithmExporter(this, graph);
+        exporter.getAlgorithmDeclaration().getMetadata().setName("Custom algorithm");
+        exporter.getAlgorithmDeclaration().getMetadata().setDescription("A custom algorithm");
+        getDocumentTabPane().addTab("Export custom algorithm",
+                UIUtils.getIconFromResources("export.png"),
+                exporter,
+                DocumentTabPane.CloseMode.withAskOnCloseButton);
+        getDocumentTabPane().switchToLastTab();
     }
 
     /**
