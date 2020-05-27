@@ -13,7 +13,6 @@
 package org.hkijena.acaq5.utils;
 
 import com.google.common.html.HtmlEscapers;
-import gnu.trove.list.TIntList;
 import org.apache.commons.lang.WordUtils;
 
 import java.net.URL;
@@ -38,6 +37,7 @@ public class StringUtils {
      * Parses a string of following format: [range];[range];... with range being an integer or [from]-[to]
      * where from and to are inclusive. Returns the list of integers defined by the string. Empty ranges are ignored.
      * Spaces are ignored.
+     *
      * @param string the string
      * @return List of integers defined by the string
      * @throws NumberFormatException thrown if the string has a wrong format
@@ -46,11 +46,11 @@ public class StringUtils {
         string = string.replace(" ", "");
         List<Integer> integers = new ArrayList<>();
         for (String range : string.split(";")) {
-            if(StringUtils.isNullOrEmpty(range))
+            if (StringUtils.isNullOrEmpty(range))
                 continue;
-            if(range.contains("-")) {
+            if (range.contains("-")) {
                 String[] borders = range.split("-");
-                if(borders.length != 2) {
+                if (borders.length != 2) {
                     throw new NumberFormatException("Invalid range: " + range);
                 }
                 int from = Integer.parseInt(borders[0]);
@@ -58,8 +58,7 @@ public class StringUtils {
                 for (int i = from; i <= to; ++i) {
                     integers.add(i);
                 }
-            }
-            else {
+            } else {
                 integers.add(Integer.parseInt(range));
             }
         }

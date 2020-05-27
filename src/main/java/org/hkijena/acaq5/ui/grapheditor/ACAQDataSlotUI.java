@@ -8,6 +8,7 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
+import org.hkijena.acaq5.ui.components.EditAlgorithmSlotPanel;
 import org.hkijena.acaq5.ui.events.AlgorithmFinderSuccessEvent;
 import org.hkijena.acaq5.ui.grapheditor.algorithmfinder.ACAQAlgorithmFinderUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
@@ -102,6 +103,10 @@ public abstract class ACAQDataSlotUI extends JPanel {
                     JMenuItem deleteButton = new JMenuItem("Delete this slot", UIUtils.getIconFromResources("remove.png"));
                     deleteButton.addActionListener(e -> deleteSlot());
                     assignButtonMenu.add(deleteButton);
+
+                    JMenuItem editButton = new JMenuItem("Edit this slot", UIUtils.getIconFromResources("edit.png"));
+                    editButton.addActionListener(e -> editSlot());
+                    assignButtonMenu.add(editButton);
                 }
             }
             if (assignButtonMenu.getComponentCount() > 0)
@@ -153,9 +158,14 @@ public abstract class ACAQDataSlotUI extends JPanel {
                 if (slotConfiguration.canModifyOutputSlots()) {
                     if (assignButtonMenu.getComponentCount() > 0)
                         assignButtonMenu.addSeparator();
+
                     JMenuItem deleteButton = new JMenuItem("Delete this slot", UIUtils.getIconFromResources("remove.png"));
                     deleteButton.addActionListener(e -> deleteSlot());
                     assignButtonMenu.add(deleteButton);
+
+                    JMenuItem editButton = new JMenuItem("Edit this slot", UIUtils.getIconFromResources("edit.png"));
+                    editButton.addActionListener(e -> editSlot());
+                    assignButtonMenu.add(editButton);
                 }
             }
             if (assignButtonMenu.getComponentCount() > 0)
@@ -165,6 +175,10 @@ public abstract class ACAQDataSlotUI extends JPanel {
             relabelButton.addActionListener(e -> relabelSlot());
             assignButtonMenu.add(relabelButton);
         }
+    }
+
+    private void editSlot() {
+        EditAlgorithmSlotPanel.showDialog(this, slot);
     }
 
     private void relabelSlot() {

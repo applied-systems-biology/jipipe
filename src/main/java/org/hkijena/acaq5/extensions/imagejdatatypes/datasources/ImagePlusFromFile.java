@@ -71,9 +71,9 @@ public class ImagePlusFromFile extends ACAQIteratingAlgorithm {
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         FileData fileData = dataInterface.getInputData(getFirstInputSlot(), FileData.class);
-        ImagePlusData data = (ImagePlusData)readImageFrom(fileData.getPath());
+        ImagePlusData data = (ImagePlusData) readImageFrom(fileData.getPath());
         List<ACAQTrait> traits = new ArrayList<>();
-        if(titleAnnotation.getDeclaration() != null) {
+        if (titleAnnotation.getDeclaration() != null) {
             traits.add(titleAnnotation.getDeclaration().newInstance(data.getImage().getTitle()));
         }
         dataInterface.addOutputData(getFirstOutputSlot(), data);
@@ -82,7 +82,7 @@ public class ImagePlusFromFile extends ACAQIteratingAlgorithm {
     @ACAQDocumentation(name = "Title annotation", description = "Optional annotation type where the image title is written.")
     @ACAQParameter("title-annotation")
     public ACAQTraitDeclarationRef getTitleAnnotation() {
-        if(titleAnnotation == null)
+        if (titleAnnotation == null)
             titleAnnotation = new ACAQTraitDeclarationRef();
         return titleAnnotation;
     }

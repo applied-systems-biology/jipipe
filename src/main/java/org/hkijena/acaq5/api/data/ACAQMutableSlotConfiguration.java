@@ -59,6 +59,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
      * @param name       Unique slot name
      * @param definition Defines the slot
      * @param user       if the change was triggered by a user. If false, checks for slot sealing, types, etc. do not apply
+     * @return the slot definition of the added slot
      */
     public ACAQSlotDefinition addSlot(String name, ACAQSlotDefinition definition, boolean user) {
         if (!Objects.equals(name, definition.getName())) {
@@ -299,6 +300,56 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
             getEventBus().post(new SlotOrderChangedEvent(this));
         }
+    }
+
+    /**
+     * Sets the input slot order. Automatically ignores missing or invalid slots.
+     * Undefined slots are put at the end of the order.
+     *
+     * @param newOrder the order
+     */
+    public void trySetInputSlotOrder(List<String> newOrder) {
+        ImmutableList<String> before = ImmutableList.copyOf(this.inputSlotOrder);
+        this.inputSlotOrder.clear();
+        for (String s : newOrder) {
+            ACAQSlotDefinition slot = slots.getOrDefault(s, null);
+            if (slot.getSlotType() != ACAQDataSlot.SlotType.Input)
+                continue;
+            if (inputSlotOrder.contains(s))
+                continue;
+            inputSlotOrder.add(s);
+        }
+        for (String s : before) {
+            if (!inputSlotOrder.contains(s)) {
+                inputSlotOrder.add(s);
+            }
+        }
+        getEventBus().post(new SlotOrderChangedEvent(this));
+    }
+
+    /**
+     * Sets the output slot order. Automatically ignores missing or invalid slots.
+     * Undefined slots are put at the end of the order.
+     *
+     * @param newOrder the order
+     */
+    public void trySetOutputSlotOrder(List<String> newOrder) {
+        ImmutableList<String> before = ImmutableList.copyOf(this.outputSlotOrder);
+        this.outputSlotOrder.clear();
+        for (String s : newOrder) {
+            ACAQSlotDefinition slot = slots.getOrDefault(s, null);
+            if (slot.getSlotType() != ACAQDataSlot.SlotType.Output)
+                continue;
+            if (outputSlotOrder.contains(s))
+                continue;
+            outputSlotOrder.add(s);
+        }
+        for (String s : before) {
+            if (!outputSlotOrder.contains(s)) {
+                outputSlotOrder.add(s);
+            }
+        }
+        getEventBus().post(new SlotOrderChangedEvent(this));
     }
 
     /**

@@ -70,12 +70,11 @@ public class StackReducerAlgorithm extends ImageJ1Algorithm {
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusData.class);
         List<Integer> integers = StringUtils.stringToPositiveInts(sliceSelection);
-        if(ignoreMissingSlices) {
+        if (ignoreMissingSlices) {
             integers.removeIf(i -> i >= inputData.getImage().getStackSize());
-        }
-        else {
+        } else {
             for (Integer integer : integers) {
-                if(integer >= inputData.getImage().getStackSize()) {
+                if (integer >= inputData.getImage().getStackSize()) {
                     throw new UserFriendlyRuntimeException("Data does not have slice: " + integer,
                             "Invalid slice requested!",
                             "Algorithm '" + getName() + "'",
@@ -85,7 +84,7 @@ public class StackReducerAlgorithm extends ImageJ1Algorithm {
                 }
             }
         }
-        if(integers.isEmpty()) {
+        if (integers.isEmpty()) {
             throw new UserFriendlyRuntimeException("No slices selected!",
                     "No slices selected!",
                     "Algorithm '" + getName() + "'",
@@ -100,7 +99,7 @@ public class StackReducerAlgorithm extends ImageJ1Algorithm {
         }
         ImagePlus result = new ImagePlus("Reduced stack", stack);
         List<ACAQTrait> annotations = new ArrayList<>();
-        if(createAnnotation) {
+        if (createAnnotation) {
             String index = "slice=" + sliceIndices.stream().map(i -> "" + i).collect(Collectors.joining(","));
             annotations.add(annotationType.getDeclaration().newInstance(index));
         }
@@ -119,17 +118,16 @@ public class StackReducerAlgorithm extends ImageJ1Algorithm {
         }
         try {
             List<Integer> integers = StringUtils.stringToPositiveInts(sliceSelection);
-            if(integers.isEmpty()) {
+            if (integers.isEmpty()) {
                 report.forCategory("Slice indices").reportIsInvalid("No slices selected!",
                         "You have to select at least one slice.",
                         "Please enter a valid selection (e.g. 10-15)",
                         this);
             }
-        }
-        catch(NumberFormatException | NullPointerException e) {
+        } catch (NumberFormatException | NullPointerException e) {
             report.forCategory("Slice indices").reportIsInvalid("Wrong slice index format!",
                     "The slice indices must follow a specific pattern. " + "The format is: [range];[range];... where [range] is " +
-                         "either a number or a range of numbers notated as [from]-[to] (inclusive). An example is 0-10;12;20-21. The first index is zero.",
+                            "either a number or a range of numbers notated as [from]-[to] (inclusive). An example is 0-10;12;20-21. The first index is zero.",
                     "Please enter a valid selection (e.g. 10-15)",
                     this);
         }

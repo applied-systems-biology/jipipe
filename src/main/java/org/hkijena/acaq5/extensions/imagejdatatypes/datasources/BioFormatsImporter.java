@@ -8,8 +8,6 @@ import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.data.ACAQData;
-import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
@@ -18,8 +16,6 @@ import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FileData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 
 import java.io.IOException;
@@ -27,8 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-
-import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExtension.ADD_MASK_QUALIFIER;
 
 /**
  * BioFormats importer wrapper
@@ -127,7 +121,7 @@ public class BioFormatsImporter extends ACAQIteratingAlgorithm {
 
             for (ImagePlus image : images) {
                 List<ACAQTrait> traits = new ArrayList<>();
-                if(titleAnnotation.getDeclaration() != null) {
+                if (titleAnnotation.getDeclaration() != null) {
                     traits.add(titleAnnotation.getDeclaration().newInstance(image.getTitle()));
                 }
                 dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusData(image), traits);
@@ -256,7 +250,7 @@ public class BioFormatsImporter extends ACAQIteratingAlgorithm {
     @ACAQDocumentation(name = "Title annotation", description = "Optional annotation type where the image title is written.")
     @ACAQParameter("title-annotation")
     public ACAQTraitDeclarationRef getTitleAnnotation() {
-        if(titleAnnotation == null)
+        if (titleAnnotation == null)
             titleAnnotation = new ACAQTraitDeclarationRef();
         return titleAnnotation;
     }

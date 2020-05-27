@@ -7,6 +7,7 @@ import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.ui.components.AddAlgorithmSlotPanel;
+import org.hkijena.acaq5.ui.components.EditAlgorithmSlotPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -91,6 +92,14 @@ public class ACAQSlotEditorUI extends JPanel {
         toolBar.add(relabelButton);
 
         if (algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
+
+            if (canModifyInputSlots() || canModifyOutputSlots()) {
+                JButton editButton = new JButton(UIUtils.getIconFromResources("edit.png"));
+                editButton.setToolTipText("Edit selected slot");
+                editButton.addActionListener(e -> editSlot());
+                toolBar.add(editButton);
+            }
+
             JButton moveUpButton = new JButton(UIUtils.getIconFromResources("arrow-up.png"));
             moveUpButton.setToolTipText("Move up");
             moveUpButton.addActionListener(e -> moveSlotUp());
@@ -107,6 +116,17 @@ public class ACAQSlotEditorUI extends JPanel {
             removeButton.setToolTipText("Remove selected slots");
             removeButton.addActionListener(e -> removeSelectedSlots());
             toolBar.add(removeButton);
+        }
+    }
+
+    private void editSlot() {
+        ACAQDataSlot slot = getSelectedSlot();
+        if (slot != null) {
+            if (slot.getSlotType() == ACAQDataSlot.SlotType.Input && canModifyInputSlots()) {
+                EditAlgorithmSlotPanel.showDialog(this, slot);
+            } else if (slot.getSlotType() == ACAQDataSlot.SlotType.Output && canModifyOutputSlots()) {
+                EditAlgorithmSlotPanel.showDialog(this, slot);
+            }
         }
     }
 
