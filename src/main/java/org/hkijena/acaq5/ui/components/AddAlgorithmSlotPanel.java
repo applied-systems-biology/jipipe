@@ -27,6 +27,12 @@ import java.util.stream.Collectors;
  * UI that adds slots to an algorithm
  */
 public class AddAlgorithmSlotPanel extends JPanel {
+
+    /**
+     * Remember the type selected last for increased usability
+     */
+    private static ACAQDataDeclaration lastSelectedType = null;
+
     private ACAQAlgorithm algorithm;
     private ACAQDataSlot.SlotType slotType;
     private JXTextField searchField;
@@ -51,6 +57,11 @@ public class AddAlgorithmSlotPanel extends JPanel {
         initializeAvailableDeclarations();
         reloadTypeList();
         setInitialName();
+        if(lastSelectedType != null && availableTypes.contains(lastSelectedType)) {
+            datatypeList.setSelectedValue(lastSelectedType, true);
+            nameEditor.requestFocusInWindow();
+            nameEditor.selectAll();
+        }
         if (availableTypes.size() == 1) {
             nameEditor.requestFocusInWindow();
             nameEditor.selectAll();
@@ -184,6 +195,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
 
         slotDefinition.setInheritanceConversions(inheritanceConversions);
         slotConfiguration.addSlot(slotName, slotDefinition, true);
+        lastSelectedType = selectedDeclaration;
 
         if (dialog != null)
             dialog.setVisible(false);
