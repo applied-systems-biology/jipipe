@@ -236,6 +236,7 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
         JMenuItem exportProjectAsAlgorithmButton = new JMenuItem("Export as custom algorithm", UIUtils.getIconFromResources("export.png"));
         exportProjectAsAlgorithmButton.setToolTipText("Exports the whole pipeline (all compartments) as custom algorithm");
         exportProjectAsAlgorithmButton.addActionListener(e -> exportProjectAsAlgorithm());
+        projectMenu.add(exportProjectAsAlgorithmButton);
 
         projectMenu.addSeparator();
 
