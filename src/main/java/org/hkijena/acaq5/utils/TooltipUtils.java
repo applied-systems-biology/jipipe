@@ -125,16 +125,16 @@ public class TooltipUtils {
                     Class<? extends ACAQData> inputSlot = i < inputSlots.size() ? inputSlots.get(i).value() : null;
                     Class<? extends ACAQData> outputSlot = i < outputSlots.size() ? outputSlots.get(i).value() : null;
                     builder.append("<tr>");
+                    builder.append("<td>");
                     if (inputSlot != null) {
-                        builder.append("<td>");
                         builder.append(StringUtils.createIconTextHTMLTableElement(ACAQData.getNameOf(inputSlot), ACAQUIDatatypeRegistry.getInstance().getIconURLFor(inputSlot)));
-                        builder.append("</td>");
                     }
+                    builder.append("</td>");
+                    builder.append("<td>");
                     if (outputSlot != null) {
-                        builder.append("<td>");
                         builder.append(StringUtils.createRightIconTextHTMLTableElement(ACAQData.getNameOf(outputSlot), ACAQUIDatatypeRegistry.getInstance().getIconURLFor(outputSlot)));
-                        builder.append("</td>");
                     }
+                    builder.append("</td>");
                     builder.append("</tr>");
                 }
             }
@@ -168,6 +168,9 @@ public class TooltipUtils {
                     .append(HtmlEscapers.htmlEscaper().escape(source.getMetadata().getWebsite())).append("</a></td></tr>");
             builder.append("<tr><td><strong>Plugin citation</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(source.getMetadata().getCitation())).append("</td></tr>");
             builder.append("<tr><td><strong>Plugin license</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(source.getMetadata().getLicense())).append("</td></tr>");
+            for (String dependencyCitation : source.getMetadata().getDependencyCitations()) {
+                builder.append("<tr><td><strong>Additional citation</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(dependencyCitation)).append("</td></tr>");
+            }
             builder.append("</table>");
         }
 
