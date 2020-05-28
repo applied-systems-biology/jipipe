@@ -25,6 +25,7 @@ public class ACAQTraversedParameterCollection implements ACAQParameterCollection
     private Set<ACAQParameterCollection> registeredSources = new HashSet<>();
     private Map<ACAQParameterCollection, String> sourceKeys = new HashMap<>();
     private Map<ACAQParameterCollection, ACAQDocumentation> sourceDocumentation = new HashMap<>();
+    private Map<ACAQParameterCollection, ACAQParameterVisibility> sourceVisibilities = new HashMap<>();
     private BiMap<String, ACAQParameterAccess> parameters = HashBiMap.create();
     private PriorityQueue<ACAQParameterAccess> parametersByPriority = new PriorityQueue<>(ACAQParameterAccess::comparePriority);
     private Map<ACAQParameterCollection, Integer> sourceOrder = new HashMap<>();
@@ -78,6 +79,17 @@ public class ACAQTraversedParameterCollection implements ACAQParameterCollection
     }
 
     /**
+     * Gets the UI order of an {@link ACAQParameterCollection}
+     * This is only used for UI.
+     *
+     * @param source the collection
+     * @return the visibility. TransitiveVisible if none was defined.
+     */
+    public ACAQParameterVisibility getSourceVisibility(ACAQParameterCollection source) {
+        return sourceVisibilities.getOrDefault(source, ACAQParameterVisibility.Visible);
+    }
+
+    /**
      * Gets the parameters grouped by the source
      *
      * @return
@@ -100,6 +112,17 @@ public class ACAQTraversedParameterCollection implements ACAQParameterCollection
      */
     public void setSourceDocumentation(ACAQParameterCollection source, ACAQDocumentation documentation) {
         sourceDocumentation.put(source, documentation);
+    }
+
+    /**
+     * Sets the documentation of an {@link ACAQParameterCollection}
+     * This is queried by UI
+     *
+     * @param source     the collection
+     * @param visibility the visibility
+     */
+    public void setSourceVisibility(ACAQParameterCollection source, ACAQParameterVisibility visibility) {
+        sourceVisibilities.put(source, visibility);
     }
 
     /**
@@ -229,6 +252,7 @@ public class ACAQTraversedParameterCollection implements ACAQParameterCollection
                     setSourceDocumentation(subParameters, pair.getDocumentation());
                     setSourceKey(subParameters, entry.getKey());
                     setSourceUIOrder(subParameters, entry.getValue().getUIOrder());
+                    setSourceVisibility(subParameters, entry.getValue().getVisibility());
                     List<ACAQParameterCollection> subParameterHierarchy = new ArrayList<>(hierarchy);
                     subParameterHierarchy.add(subParameters);
                     add(subParameters, subParameterHierarchy);

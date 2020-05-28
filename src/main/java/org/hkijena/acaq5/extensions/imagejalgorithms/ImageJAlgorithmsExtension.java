@@ -17,6 +17,7 @@ import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.color.InvertColorsAlgor
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.color.MergeChannelsAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.color.SplitChannelsAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.contrast.CLAHEContrastEnhancer;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.contrast.IlluminationCorrection2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.convolve.Convolve2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.dimensions.*;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.edge.SobelEdgeDetectorAlgorithm;
@@ -160,6 +161,7 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerAlgorithm("ij1-edge-sobel", SobelEdgeDetectorAlgorithm.class);
 
         registerAlgorithm("ij1-contrast-clahe", CLAHEContrastEnhancer.class);
+        registerAlgorithm("ij1-contrast-illumination-correction2d", IlluminationCorrection2DAlgorithm.class);
 
         registerAlgorithm("ij1-feature-vesselness-frangi", FrangiVesselnessFeatures.class);
         registerAlgorithm("feature-vesselness-meijering2d", MeijeringVesselness2DFeatures.class);

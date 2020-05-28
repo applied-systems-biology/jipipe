@@ -1,12 +1,9 @@
 package org.hkijena.acaq5.extensions.parameters.editors;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.extensions.parameters.filters.StringFilter;
 import org.hkijena.acaq5.extensions.parameters.generators.IntRangeStringParameter;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
-import org.hkijena.acaq5.utils.StringUtils;
-import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Context;
 
 import javax.swing.*;
@@ -69,8 +66,7 @@ public class IntRangeStringParameterEditorUI extends ACAQParameterEditorUI {
             List<Integer> integers = rangeString.getIntegers();
             textField.setBorder(BorderFactory.createEtchedBorder());
             textField.setToolTipText("Valid!");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             textField.setBorder(BorderFactory.createLineBorder(Color.RED));
             textField.setToolTipText("Invalid: " + e.getMessage());
         }

@@ -5,7 +5,7 @@ import org.scijava.Context;
 /**
  * Generates {@link Float}
  */
-public class FloatRangeParameterGenerator extends NumberRangeParameterGenerator {
+public class FloatRangeParameterGenerator extends NumberRangeParameterGenerator<Float> {
 
     /**
      * Creates a new instance

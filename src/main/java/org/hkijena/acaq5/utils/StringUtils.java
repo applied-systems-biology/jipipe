@@ -16,9 +16,7 @@ import com.google.common.html.HtmlEscapers;
 import org.apache.commons.lang.WordUtils;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Predicate;
 
 /**

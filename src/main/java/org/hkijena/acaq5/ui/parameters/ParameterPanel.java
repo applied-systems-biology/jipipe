@@ -121,7 +121,12 @@ public class ParameterPanel extends FormPanel implements Contextual {
         }
 
         List<ACAQParameterEditorUI> uiList = new ArrayList<>();
+        ACAQParameterVisibility sourceVisibility = parameterCollection.getSourceVisibility(parameterHolder);
         for (ACAQParameterAccess parameterAccess : parameterAccesses) {
+            ACAQParameterVisibility visibility = parameterAccess.getVisibility();
+            if (!visibility.isVisibleIn(sourceVisibility))
+                continue;
+
             ACAQParameterEditorUI ui = ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getContext(), parameterAccess);
             uiList.add(ui);
         }

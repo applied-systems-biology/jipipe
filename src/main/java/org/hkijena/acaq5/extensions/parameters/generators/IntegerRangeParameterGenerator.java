@@ -5,7 +5,7 @@ import org.scijava.Context;
 /**
  * Generates {@link Integer}
  */
-public class IntegerRangeParameterGenerator extends NumberRangeParameterGenerator {
+public class IntegerRangeParameterGenerator extends NumberRangeParameterGenerator<Integer> {
 
     /**
      * Creates a new instance

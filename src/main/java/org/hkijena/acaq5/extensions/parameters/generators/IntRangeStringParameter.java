@@ -27,6 +27,7 @@ public class IntRangeStringParameter {
 
     /**
      * Creates a new instance and initializes it
+     *
      * @param value the value
      */
     public IntRangeStringParameter(String value) {
@@ -35,6 +36,7 @@ public class IntRangeStringParameter {
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public IntRangeStringParameter(IntRangeStringParameter other) {
@@ -51,19 +53,20 @@ public class IntRangeStringParameter {
 
     /**
      * Generates the list of integers based on the value. Throws no exceptions.
+     *
      * @return null if the format is wrong
      */
     public List<Integer> tryGetIntegers() {
         try {
             return getIntegers();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return null;
         }
     }
 
     /**
      * Generates the list of integers based on the value
+     *
      * @return
      * @throws NumberFormatException
      */
@@ -80,31 +83,27 @@ public class IntRangeStringParameter {
                 boolean writeToFrom = true;
                 for (int i = 0; i < range.length(); i++) {
                     char c = range.charAt(i);
-                    if(c == '(') {
-                        if(negative)
+                    if (c == '(') {
+                        if (negative)
                             throw new NumberFormatException("Cannot nest brackets!");
                         negative = true;
-                    }
-                    else if(c == ')') {
-                        if(!negative)
+                    } else if (c == ')') {
+                        if (!negative)
                             throw new NumberFormatException("Cannot end missing start bracket!");
                         negative = false;
-                    }
-                    else if(c == '-') {
-                        if(negative) {
-                            if(writeToFrom)
+                    } else if (c == '-') {
+                        if (negative) {
+                            if (writeToFrom)
                                 fromBuilder.append(c);
                             else
                                 toBuilder.append(c);
-                        }
-                        else {
-                            if(!writeToFrom)
+                        } else {
+                            if (!writeToFrom)
                                 throw new RuntimeException("Additional hyphen detected!");
                             writeToFrom = false;
                         }
-                    }
-                    else {
-                        if(writeToFrom)
+                    } else {
+                        if (writeToFrom)
                             fromBuilder.append(c);
                         else
                             toBuilder.append(c);
@@ -115,13 +114,12 @@ public class IntRangeStringParameter {
                 int from = Integer.parseInt(fromBuilder.toString());
                 int to = Integer.parseInt(toBuilder.toString());
 
-                if(from <= to) {
-                    for(int i = from; i <= to; ++i) {
+                if (from <= to) {
+                    for (int i = from; i <= to; ++i) {
                         integers.add(i);
                     }
-                }
-                else {
-                    for(int i = to; i >= to; --i) {
+                } else {
+                    for (int i = to; i >= to; --i) {
                         integers.add(i);
                     }
                 }

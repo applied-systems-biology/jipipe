@@ -24,6 +24,8 @@ public @interface ACAQParameter {
     /**
      * Sets if the parameter is visible to the user or only exported into JSON
      * Lower visibilities override higher visibilities.
+     * If used as visibility for a sub-parameter collection, this property determined a minimum visibility the
+     * sub-parameters must have to be shown in the UI.
      *
      * @return Parameter visibility
      */

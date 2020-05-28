@@ -12,6 +12,7 @@ import org.hkijena.acaq5.api.data.traits.ACAQTraitConfiguration;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefList;
@@ -274,7 +275,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
             "to data sets. This allows you to determine how interesting data annotation columns are extracted from the incoming data. " +
             "Union matches using the union of annotation columns. Intersection intersects the sets of available columns. You can also" +
             " customize which columns should be available.")
-    @ACAQParameter(value = "acaq:iterating-algorithm:column-matching", uiOrder = 999)
+    @ACAQParameter(value = "acaq:iterating-algorithm:column-matching", uiOrder = 999, visibility = ACAQParameterVisibility.Visible)
     public ColumnMatching getDataSetMatching() {
         return dataSetMatching;
     }
@@ -287,7 +288,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
 
     @ACAQDocumentation(name = "Allow duplicate data sets", description = "If disabled, there will be an error if duplicate data sets are detected. " +
             "Data sets are detected by grouping incoming data via their data annotations.")
-    @ACAQParameter(value = "acaq:iterating-algorithm:allow-duplicates", uiOrder = 999)
+    @ACAQParameter(value = "acaq:iterating-algorithm:allow-duplicates", uiOrder = 999, visibility = ACAQParameterVisibility.Visible)
     public boolean isAllowDuplicateDataSets() {
         return allowDuplicateDataSets;
     }
@@ -300,14 +301,14 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
 
     @ACAQDocumentation(name = "Data set matching annotations", description = "Only used if 'Data set matching strategy' is set to 'Custom'. " +
             "Determines which annotation columns are referred to match data sets.")
-    @ACAQParameter(value = "acaq:iterating-algorithm:custom-matched-columns", uiOrder = 999)
+    @ACAQParameter(value = "acaq:iterating-algorithm:custom-matched-columns", uiOrder = 999, visibility = ACAQParameterVisibility.Visible)
     public ACAQTraitDeclarationRefList getCustomColumns() {
         if (customColumns == null)
             customColumns = new ACAQTraitDeclarationRefList();
         return customColumns;
     }
 
-    @ACAQParameter("acaq:iterating-algorithm:custom-matched-columns")
+    @ACAQParameter(value = "acaq:iterating-algorithm:custom-matched-columns", visibility = ACAQParameterVisibility.Visible)
     public void setCustomColumns(ACAQTraitDeclarationRefList customColumns) {
         this.customColumns = customColumns;
         getEventBus().post(new ParameterChangedEvent(this, "acaq:iterating-algorithm:custom-matched-columns"));
@@ -315,7 +316,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
 
     @ACAQDocumentation(name = "Skip incomplete data sets", description = "If enabled, incomplete data sets are silently skipped. " +
             "Otherwise an error is displayed if such a configuration is detected.")
-    @ACAQParameter("acaq:iterating-algorithm:skip-incomplete")
+    @ACAQParameter(value = "acaq:iterating-algorithm:skip-incomplete", visibility = ACAQParameterVisibility.Visible)
     public boolean isSkipIncompleteDataSets() {
         return skipIncompleteDataSets;
     }

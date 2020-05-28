@@ -5,7 +5,7 @@ import org.scijava.Context;
 /**
  * Generates {@link Byte}
  */
-public class ByteRangeParameterGenerator extends NumberRangeParameterGenerator {
+public class ByteRangeParameterGenerator extends NumberRangeParameterGenerator<Byte> {
 
     /**
      * Creates a new instance
