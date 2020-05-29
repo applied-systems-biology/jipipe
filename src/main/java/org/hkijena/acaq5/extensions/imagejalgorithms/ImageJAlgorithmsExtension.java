@@ -269,6 +269,8 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
 
         registerEnumParameterType(AutoThresholder.Method.class.getCanonicalName(), AutoThresholder.Method.class,
                 "Auto threshold method", "Available methods");
+        registerEnumParameterType("threshold-hessian2d:eigenvalue-selection", HessianSegmentation2DAlgorithm.EigenvalueSelection.class,
+                "Eigenvalue selection", "Determines whether to choose the smallest or largest Eigenvalue");
     }
 
     @Override

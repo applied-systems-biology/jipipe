@@ -44,6 +44,8 @@ public class HessianSegmentation2DAlgorithm extends ACAQIteratingAlgorithm {
 
     private double smoothing = 1.0;
     private double gradientRadius = 1;
+    private boolean compareAbsolute = true;
+    private EigenvalueSelection eigenvalueSelection = EigenvalueSelection.Largest;
     private AutoThreshold2DAlgorithm autoThresholding;
 
     /**
@@ -67,6 +69,8 @@ public class HessianSegmentation2DAlgorithm extends ACAQIteratingAlgorithm {
         super(other);
         this.smoothing = other.smoothing;
         this.gradientRadius = other.gradientRadius;
+        this.eigenvalueSelection = other.eigenvalueSelection;
+        this.compareAbsolute = other.compareAbsolute;
         this.autoThresholding = (AutoThreshold2DAlgorithm) other.autoThresholding.getDeclaration().clone(other.autoThresholding);
     }
 
@@ -74,9 +78,11 @@ public class HessianSegmentation2DAlgorithm extends ACAQIteratingAlgorithm {
         final Image image = Image.wrap(input);
         image.aspects(new Aspects());
         final Hessian hessian = new Hessian();
-        final Vector<Image> eigenimages = hessian.run(new FloatImage(image), smoothing, true);
-        Image largest = eigenimages.get(0);
-        return largest.imageplus();
+        final Vector<Image> eigenimages = hessian.run(new FloatImage(image), smoothing, compareAbsolute);
+        if (eigenvalueSelection == EigenvalueSelection.Largest)
+            return eigenimages.get(0).imageplus();
+        else
+            return eigenimages.get(1).imageplus();
     }
 
     private void applyInternalGradient(ImagePlus img) {
@@ -164,5 +170,37 @@ public class HessianSegmentation2DAlgorithm extends ACAQIteratingAlgorithm {
         report.checkIfWithin(this, gradientRadius, 0, Double.POSITIVE_INFINITY, false, true);
         report.checkIfWithin(this, smoothing, 0, Double.POSITIVE_INFINITY, false, true);
         report.forCategory("Auto thresholding").report(autoThresholding);
+    }
+
+    @ACAQDocumentation(name = "Compare absolute", description = "Determines whether eigenvalues are compared in absolute sense")
+    @ACAQParameter("compare-absolute")
+    public boolean isCompareAbsolute() {
+        return compareAbsolute;
+    }
+
+    @ACAQParameter("compare-absolute")
+    public void setCompareAbsolute(boolean compareAbsolute) {
+        this.compareAbsolute = compareAbsolute;
+        getEventBus().post(new ParameterChangedEvent(this, "compare-absolute"));
+    }
+
+    @ACAQDocumentation(name = "Eigenvalue", description = "Allows you to choose whether the largest or smallest Eigenvalues are chosen")
+    @ACAQParameter("eigenvalue-selection")
+    public EigenvalueSelection getEigenvalueSelection() {
+        return eigenvalueSelection;
+    }
+
+    @ACAQParameter("eigenvalue-selection")
+    public void setEigenvalueSelection(EigenvalueSelection eigenvalueSelection) {
+        this.eigenvalueSelection = eigenvalueSelection;
+        getEventBus().post(new ParameterChangedEvent(this, "eigenvalue-selection"));
+    }
+
+    /**
+     * Available options to which Eigen value to select
+     */
+    public enum EigenvalueSelection {
+        Largest,
+        Smallest
     }
 }
