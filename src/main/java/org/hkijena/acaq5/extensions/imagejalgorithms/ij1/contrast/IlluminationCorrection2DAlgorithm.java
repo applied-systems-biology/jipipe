@@ -51,7 +51,8 @@ public class IlluminationCorrection2DAlgorithm extends ACAQIteratingAlgorithm {
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());
-        gaussianAlgorithm.setSigmaX(21);
+        gaussianAlgorithm.setSigmaX(20);
+        gaussianAlgorithm.setSigmaY(20);
     }
 
     /**
