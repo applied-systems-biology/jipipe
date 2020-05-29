@@ -41,7 +41,6 @@ public abstract class ACAQAlgorithmUI extends JPanel {
     private Color fillColor;
     private Color borderColor;
 
-    private boolean selected;
     private JPopupMenu contextMenu = new JPopupMenu();
     private JMenuItem cutContextMenuButton;
     private JMenuItem copyContextMenuButton;
@@ -300,37 +299,6 @@ public abstract class ACAQAlgorithmUI extends JPanel {
      */
     public EventBus getEventBus() {
         return eventBus;
-    }
-
-    /**
-     * Returns if the selected-flag was set. This does not mean that the algorithm is actually selected in the graph UI
-     *
-     * @return True if this algorithm is selected.
-     */
-    public boolean isSelected() {
-        return selected;
-    }
-
-    /**
-     * Sets the selected-flag and updates the UI
-     * This does not select the algorithm the graph UI
-     *
-     * @param selected if the algorithm is selected
-     */
-    public void setSelected(boolean selected) {
-        this.selected = selected;
-        updateBorder();
-    }
-
-    /**
-     * Updates the border around the component depending on if its selected
-     */
-    protected void updateBorder() {
-        if (selected) {
-            setBorder(BorderFactory.createLineBorder(borderColor, 2));
-        } else {
-            setBorder(BorderFactory.createLineBorder(borderColor));
-        }
     }
 
     /**

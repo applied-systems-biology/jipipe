@@ -39,7 +39,7 @@ public class ACAQHorizontalAlgorithmUI extends ACAQAlgorithmUI {
 
     private void initialize() {
         setBackground(getFillColor());
-        updateBorder();
+        setBorder(BorderFactory.createLineBorder(getBorderColor()));
         setSize(new Dimension(calculateWidth(), calculateHeight()));
         setLayout(new GridBagLayout());
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));

@@ -17,6 +17,7 @@ import org.hkijena.acaq5.extensions.settings.GraphEditorUISettings;
 import org.hkijena.acaq5.ui.components.PickAlgorithmDialog;
 import org.hkijena.acaq5.ui.events.AlgorithmEvent;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
+import org.hkijena.acaq5.ui.events.AlgorithmSelectionChangedEvent;
 import org.hkijena.acaq5.ui.events.DefaultUIActionRequestedEvent;
 import org.hkijena.acaq5.utils.PointRange;
 import org.hkijena.acaq5.utils.ScreenImage;
@@ -42,6 +43,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     private ACAQAlgorithmUI currentlyDragged;
     private Point currentlyDraggedOffset = new Point();
     private BiMap<ACAQAlgorithm, ACAQAlgorithmUI> nodeUIs = HashBiMap.create();
+    private Set<ACAQAlgorithmUI> selection = new HashSet<>();
     private EventBus eventBus = new EventBus();
     private int newEntryLocationX = ACAQAlgorithmUI.SLOT_UI_WIDTH * 4;
     private int newEntryLocationY = ACAQAlgorithmUI.SLOT_UI_HEIGHT;
@@ -121,8 +123,10 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             remove(ui);
         }
         nodeUIs.clear();
+        selection.clear();
         revalidate();
         repaint();
+        updateSelection();
     }
 
     /**
@@ -136,10 +140,12 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         }
         for (ACAQAlgorithm algorithm : toRemove) {
             ACAQAlgorithmUI ui = nodeUIs.get(algorithm);
+            selection.remove(ui);
             remove(ui);
             nodeUIs.remove(algorithm);
         }
         if (!toRemove.isEmpty()) {
+            updateSelection();
             revalidate();
             repaint();
         }
@@ -556,6 +562,18 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, drawer);
         }
 
+        // Draw selections
+        g.setStroke(new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0));
+        for (ACAQAlgorithmUI ui : selection) {
+            Rectangle bounds = ui.getBounds();
+            bounds.x -= 4;
+            bounds.y -= 4;
+            bounds.width += 8;
+            bounds.height += 8;
+            g.setColor(ui.getBorderColor());
+            g.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
+        }
+
         g.setStroke(new BasicStroke(1));
     }
 
@@ -941,6 +959,67 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
     public void setNewEntryLocationY(int newEntryLocationY) {
         this.newEntryLocationY = newEntryLocationY;
+    }
+
+    /**
+     * @return the list of selected algorithms
+     */
+    public Set<ACAQAlgorithmUI> getSelection() {
+        return Collections.unmodifiableSet(selection);
+    }
+
+    /**
+     * Clears the list of selected algorithms
+     */
+    public void clearSelection() {
+        selection.clear();
+        updateSelection();
+    }
+
+    private void updateSelection() {
+        repaint();
+        eventBus.post(new AlgorithmSelectionChangedEvent(this));
+    }
+
+    /**
+     * Selects only the specified algorithm
+     *
+     * @param ui The algorithm UI
+     */
+    public void selectOnly(ACAQAlgorithmUI ui) {
+        if (selection.isEmpty()) {
+            addToSelection(ui);
+        } else if (selection.size() == 1) {
+            if (selection.iterator().next() != ui) {
+                clearSelection();
+                addToSelection(ui);
+            }
+        } else {
+            clearSelection();
+            addToSelection(ui);
+        }
+    }
+
+    /**
+     * Removes an algorithm from the selection
+     *
+     * @param ui The algorithm UI
+     */
+    public void removeFromSelection(ACAQAlgorithmUI ui) {
+        if (selection.contains(ui)) {
+            selection.remove(ui);
+            updateSelection();
+        }
+    }
+
+    /**
+     * Adds an algorithm to the selection
+     *
+     * @param ui The algorithm UI
+     */
+    public void addToSelection(ACAQAlgorithmUI ui) {
+        selection.add(ui);
+        updateSelection();
     }
 
     /**

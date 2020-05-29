@@ -114,7 +114,7 @@ public class ACAQRunSettingsUI extends ACAQProjectWorkbenchPanel {
                 ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING);
 
         Set<ACAQAlgorithm> algorithmsWithMissingInput = getProjectWorkbench().getProject().getGraph().getAlgorithmsWithMissingInput();
-        if(!algorithmsWithMissingInput.isEmpty()) {
+        if (!algorithmsWithMissingInput.isEmpty()) {
             formPanel.removeLastRow();
             FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("Unexecuted algorithms", UIUtils.getIconFromResources("warning.png"));
             headerPanel.getDescriptionArea().setVisible(true);
@@ -124,7 +124,7 @@ public class ACAQRunSettingsUI extends ACAQProjectWorkbenchPanel {
             DefaultTableModel model = new DefaultTableModel();
             model.setColumnIdentifiers(new Object[]{"Compartment", "Algorithm name"});
             for (ACAQAlgorithm algorithm : algorithmsWithMissingInput.stream().sorted(Comparator.comparing(ACAQAlgorithm::getCompartment)).collect(Collectors.toList())) {
-                model.addRow(new Object[] {
+                model.addRow(new Object[]{
                         StringUtils.createIconTextHTMLTable(getProjectWorkbench().getProject().getCompartments().get(algorithm.getCompartment()).getName(),
                                 ResourceUtils.getPluginResource("icons/graph-compartment.png")),
                         algorithm.getName()

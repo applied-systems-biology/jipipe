@@ -229,7 +229,7 @@ public class FormPanel extends JPanel {
      * Removes the last row. Silently fails if there are no rows.
      */
     public void removeLastRow() {
-        if(forms.getComponentCount() > 0) {
+        if (forms.getComponentCount() > 0) {
             forms.remove(forms.getComponentCount() - 1);
             --numRows;
         }

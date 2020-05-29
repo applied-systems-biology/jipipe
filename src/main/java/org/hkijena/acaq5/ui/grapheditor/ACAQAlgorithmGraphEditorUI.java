@@ -13,6 +13,7 @@ import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.SearchComboBox;
 import org.hkijena.acaq5.ui.events.AlgorithmEvent;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
+import org.hkijena.acaq5.ui.events.AlgorithmSelectionChangedEvent;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -22,7 +23,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements MouseListener, MouseMotionListener {
 
     protected JMenuBar menuBar = new JMenuBar();
-    private ACAQAlgorithmGraphCanvasUI graphUI;
+    private ACAQAlgorithmGraphCanvasUI canvasUI;
     private ACAQAlgorithmGraph algorithmGraph;
     private String compartment;
 
@@ -46,8 +46,6 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
     private boolean isPanning = false;
     private JToggleButton switchPanningDirectionButton;
 
-
-    private Set<ACAQAlgorithmUI> selection = new HashSet<>();
     private Set<ACAQAlgorithmDeclaration> addableAlgorithms = new HashSet<>();
     private SearchComboBox<Object> navigator = new SearchComboBox<>();
     private JMenuItem cutContextMenuItem;
@@ -75,13 +73,13 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
      * You should not add new items, unless you always replace them
      */
     public void updateContextMenu() {
-        cutContextMenuItem.setEnabled(graphUI.getCopyPasteBehavior() != null && !selection.isEmpty());
-        copyContextMenuItem.setEnabled(graphUI.getCopyPasteBehavior() != null && !selection.isEmpty());
-        pasteContextMenuItem.setEnabled(graphUI.getCopyPasteBehavior() != null);
+        cutContextMenuItem.setEnabled(canvasUI.getCopyPasteBehavior() != null && !canvasUI.getSelection().isEmpty());
+        copyContextMenuItem.setEnabled(canvasUI.getCopyPasteBehavior() != null && !canvasUI.getSelection().isEmpty());
+        pasteContextMenuItem.setEnabled(canvasUI.getCopyPasteBehavior() != null);
     }
 
-    public ACAQAlgorithmGraphCanvasUI getGraphUI() {
-        return graphUI;
+    public ACAQAlgorithmGraphCanvasUI getCanvasUI() {
+        return canvasUI;
     }
 
     private void initialize() {
@@ -97,18 +95,18 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
             }
         });
 
-        graphUI = new ACAQAlgorithmGraphCanvasUI(algorithmGraph, compartment);
-        graphUI.getEventBus().register(this);
-        graphUI.addMouseListener(this);
-        graphUI.addMouseMotionListener(this);
-        scrollPane = new JScrollPane(graphUI);
+        canvasUI = new ACAQAlgorithmGraphCanvasUI(algorithmGraph, compartment);
+        canvasUI.getEventBus().register(this);
+        canvasUI.addMouseListener(this);
+        canvasUI.addMouseMotionListener(this);
+        scrollPane = new JScrollPane(canvasUI);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.getHorizontalScrollBar().addAdjustmentListener(e -> {
-            graphUI.setNewEntryLocationX(scrollPane.getHorizontalScrollBar().getValue());
+            canvasUI.setNewEntryLocationX(scrollPane.getHorizontalScrollBar().getValue());
         });
         scrollPane.getVerticalScrollBar().addAdjustmentListener(e -> {
-            graphUI.setNewEntryLocationY(scrollPane.getVerticalScrollBar().getValue());
+            canvasUI.setNewEntryLocationY(scrollPane.getVerticalScrollBar().getValue());
         });
         splitPane.setLeftComponent(scrollPane);
         splitPane.setRightComponent(new JPanel());
@@ -124,21 +122,21 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
     }
 
     private void initializeContextMenu() {
-        graphUI.getContextMenu().addSeparator();
+        canvasUI.getContextMenu().addSeparator();
 
         cutContextMenuItem = new JMenuItem("Cut", UIUtils.getIconFromResources("cut.png"));
-        cutContextMenuItem.addActionListener(e -> graphUI.getCopyPasteBehavior()
-                .cut(selection.stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet())));
-        graphUI.getContextMenu().add(cutContextMenuItem);
+        cutContextMenuItem.addActionListener(e -> canvasUI.getCopyPasteBehavior()
+                .cut(canvasUI.getSelection().stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet())));
+        canvasUI.getContextMenu().add(cutContextMenuItem);
 
         copyContextMenuItem = new JMenuItem("Copy", UIUtils.getIconFromResources("copy.png"));
-        copyContextMenuItem.addActionListener(e -> graphUI.getCopyPasteBehavior()
-                .copy(selection.stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet())));
-        graphUI.getContextMenu().add(copyContextMenuItem);
+        copyContextMenuItem.addActionListener(e -> canvasUI.getCopyPasteBehavior()
+                .copy(canvasUI.getSelection().stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet())));
+        canvasUI.getContextMenu().add(copyContextMenuItem);
 
         pasteContextMenuItem = new JMenuItem("Paste", UIUtils.getIconFromResources("paste.png"));
-        pasteContextMenuItem.addActionListener(e -> graphUI.getCopyPasteBehavior().paste());
-        graphUI.getContextMenu().add(pasteContextMenuItem);
+        pasteContextMenuItem.addActionListener(e -> canvasUI.getCopyPasteBehavior().paste());
+        canvasUI.getContextMenu().add(pasteContextMenuItem);
     }
 
     private void navigatorNavigate() {
@@ -154,7 +152,7 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
     }
 
     public Set<ACAQAlgorithmUI> getSelection() {
-        return Collections.unmodifiableSet(selection);
+        return canvasUI.getSelection();
     }
 
     /**
@@ -183,16 +181,16 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
         JToggleButton viewModeHorizontalButton = new JToggleButton(UIUtils.getIconFromResources("view-horizontal.png"));
         viewModeHorizontalButton.setToolTipText("Display nodes horizontally");
         UIUtils.makeFlat25x25(viewModeHorizontalButton);
-        viewModeHorizontalButton.setSelected(graphUI.getCurrentViewMode() == ACAQAlgorithmGraphCanvasUI.ViewMode.Horizontal);
-        viewModeHorizontalButton.addActionListener(e -> graphUI.setCurrentViewMode(ACAQAlgorithmGraphCanvasUI.ViewMode.Horizontal));
+        viewModeHorizontalButton.setSelected(canvasUI.getCurrentViewMode() == ACAQAlgorithmGraphCanvasUI.ViewMode.Horizontal);
+        viewModeHorizontalButton.addActionListener(e -> canvasUI.setCurrentViewMode(ACAQAlgorithmGraphCanvasUI.ViewMode.Horizontal));
         viewModeGroup.add(viewModeHorizontalButton);
         menuBar.add(viewModeHorizontalButton);
 
         JToggleButton viewModeVerticalButton = new JToggleButton(UIUtils.getIconFromResources("view-vertical.png"));
         viewModeVerticalButton.setToolTipText("Display nodes vertically");
         UIUtils.makeFlat25x25(viewModeVerticalButton);
-        viewModeVerticalButton.setSelected(graphUI.getCurrentViewMode() == ACAQAlgorithmGraphCanvasUI.ViewMode.Vertical);
-        viewModeVerticalButton.addActionListener(e -> graphUI.setCurrentViewMode(ACAQAlgorithmGraphCanvasUI.ViewMode.Vertical));
+        viewModeVerticalButton.setSelected(canvasUI.getCurrentViewMode() == ACAQAlgorithmGraphCanvasUI.ViewMode.Vertical);
+        viewModeVerticalButton.addActionListener(e -> canvasUI.setCurrentViewMode(ACAQAlgorithmGraphCanvasUI.ViewMode.Vertical));
         viewModeGroup.add(viewModeVerticalButton);
         menuBar.add(viewModeVerticalButton);
 
@@ -201,7 +199,7 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
         JButton autoLayoutButton = new JButton(UIUtils.getIconFromResources("auto-layout-all.png"));
         autoLayoutButton.setToolTipText("Auto-layout all nodes");
         UIUtils.makeFlat25x25(autoLayoutButton);
-        autoLayoutButton.addActionListener(e -> graphUI.autoLayoutAll());
+        autoLayoutButton.addActionListener(e -> canvasUI.autoLayoutAll());
         menuBar.add(autoLayoutButton);
 
         switchPanningDirectionButton = new JToggleButton(UIUtils.getIconFromResources("cursor-arrow.png"),
@@ -217,9 +215,9 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
                 GraphEditorUISettings.getInstance().isEnableLayoutHelper());
         UIUtils.makeFlat25x25(layoutHelperButton);
         layoutHelperButton.setToolTipText("Auto-layout layout on making data slot connections");
-        graphUI.setLayoutHelperEnabled(GraphEditorUISettings.getInstance().isEnableLayoutHelper());
+        canvasUI.setLayoutHelperEnabled(GraphEditorUISettings.getInstance().isEnableLayoutHelper());
         layoutHelperButton.addActionListener(e -> {
-            graphUI.setLayoutHelperEnabled(layoutHelperButton.isSelected());
+            canvasUI.setLayoutHelperEnabled(layoutHelperButton.isSelected());
             GraphEditorUISettings.getInstance().setEnableLayoutHelper(layoutHelperButton.isSelected());
         });
         menuBar.add(layoutHelperButton);
@@ -239,7 +237,7 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
     }
 
     private void createScreenshot() {
-        BufferedImage screenshot = graphUI.createScreenshot();
+        BufferedImage screenshot = canvasUI.createScreenshot();
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Export graph as *.png");
         if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
@@ -273,7 +271,7 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
     public void onAlgorithmSelected(AlgorithmSelectedEvent event) {
         if (event.getUi() != null) {
             if (event.isAddToSelection()) {
-                if (selection.contains(event.getUi())) {
+                if (canvasUI.getSelection().contains(event.getUi())) {
                     removeFromSelection(event.getUi());
                 } else {
                     addToSelection(event.getUi());
@@ -320,11 +318,7 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
      * Clears the algorithm selection
      */
     public void clearSelection() {
-        for (ACAQAlgorithmUI ui : selection) {
-            ui.setSelected(false);
-        }
-        selection.clear();
-        updateSelection();
+        canvasUI.clearSelection();
     }
 
     /**
@@ -333,17 +327,7 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
      * @param ui The algorithm UI
      */
     public void selectOnly(ACAQAlgorithmUI ui) {
-        if (selection.isEmpty()) {
-            addToSelection(ui);
-        } else if (selection.size() == 1) {
-            if (selection.iterator().next() != ui) {
-                clearSelection();
-                addToSelection(ui);
-            }
-        } else {
-            clearSelection();
-            addToSelection(ui);
-        }
+        canvasUI.selectOnly(ui);
         scrollToAlgorithm(ui);
     }
 
@@ -353,12 +337,7 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
      * @param ui The algorithm UI
      */
     public void removeFromSelection(ACAQAlgorithmUI ui) {
-        if (selection.contains(ui)) {
-            selection.remove(ui);
-            ui.setSelected(false);
-
-            updateSelection();
-        }
+        canvasUI.removeFromSelection(ui);
     }
 
     /**
@@ -385,9 +364,7 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
      * @param ui The algorithm UI
      */
     public void addToSelection(ACAQAlgorithmUI ui) {
-        selection.add(ui);
-        ui.setSelected(true);
-        updateSelection();
+        canvasUI.addToSelection(ui);
     }
 
     /**
@@ -397,10 +374,12 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
      */
     @Subscribe
     public void onGraphChanged(AlgorithmGraphChangedEvent event) {
-        if (selection.stream().anyMatch(ui -> !algorithmGraph.getAlgorithmNodes().containsValue(ui.getAlgorithm()))) {
-            clearSelection();
-        }
         updateNavigation();
+    }
+
+    @Subscribe
+    public void onSelectionChanged(AlgorithmSelectionChangedEvent event) {
+        updateSelection();
     }
 
     @Override
@@ -417,14 +396,14 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
             panningOffset = new Point(x, y);
             panningScrollbarOffset = new Point(scrollPane.getHorizontalScrollBar().getValue(),
                     scrollPane.getVerticalScrollBar().getValue());
-            graphUI.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+            canvasUI.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
         if (isPanning) {
-            graphUI.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            canvasUI.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
         isPanning = false;
     }
@@ -488,7 +467,7 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
     public void updateNavigation() {
         DefaultComboBoxModel<Object> model = (DefaultComboBoxModel<Object>) navigator.getModel();
         model.removeAllElements();
-        for (ACAQAlgorithmUI ui : graphUI.getNodeUIs().values().stream().sorted(Comparator.comparing(ui -> ui.getAlgorithm().getName())).collect(Collectors.toList())) {
+        for (ACAQAlgorithmUI ui : canvasUI.getNodeUIs().values().stream().sorted(Comparator.comparing(ui -> ui.getAlgorithm().getName())).collect(Collectors.toList())) {
             model.addElement(ui);
         }
         for (ACAQAlgorithmDeclaration declaration : addableAlgorithms.stream()

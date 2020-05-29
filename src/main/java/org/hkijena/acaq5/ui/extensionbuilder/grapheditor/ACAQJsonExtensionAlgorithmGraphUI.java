@@ -30,8 +30,8 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQAlgorithmGraphEditorU
         setPropertyPanel(documentationPanel);
 
         // Set D&D and Copy&Paste behavior
-        getGraphUI().setDragAndDropBehavior(new ACAQStandardDragAndDropBehavior());
-        getGraphUI().setCopyPasteBehavior(new ACAQStandardCopyPasteBehavior(this));
+        getCanvasUI().setDragAndDropBehavior(new ACAQStandardDragAndDropBehavior());
+        getCanvasUI().setCopyPasteBehavior(new ACAQStandardCopyPasteBehavior(this));
         updateContextMenu();
     }
 
@@ -55,9 +55,9 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQAlgorithmGraphEditorU
             setPropertyPanel(documentationPanel);
         } else if (getSelection().size() == 1) {
             setPropertyPanel(new ACAQJsonExtensionSingleAlgorithmSelectionPanelUI((ACAQJsonExtensionWorkbench) getWorkbench(),
-                    getGraphUI(), getSelection().iterator().next().getAlgorithm()));
+                    getCanvasUI(), getSelection().iterator().next().getAlgorithm()));
         } else {
-            setPropertyPanel(new ACAQJsonExtensionMultiAlgorithmSelectionPanelUI((ACAQJsonExtensionWorkbench) getWorkbench(), getGraphUI(),
+            setPropertyPanel(new ACAQJsonExtensionMultiAlgorithmSelectionPanelUI((ACAQJsonExtensionWorkbench) getWorkbench(), getCanvasUI(),
                     getSelection().stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet())));
         }
     }
