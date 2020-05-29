@@ -17,6 +17,7 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.EigenvalueSelection2D;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.acaq5.utils.ImageJUtils;
 
@@ -33,7 +34,7 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ACAQOrganization(menuPath = "Math", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")
-@AlgorithmOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output")
+@AlgorithmOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output")
 public class Hessian2DAlgorithm extends ImageJ1Algorithm {
 
     private EigenvalueSelection2D eigenvalueSelection = EigenvalueSelection2D.Largest;
@@ -47,7 +48,7 @@ public class Hessian2DAlgorithm extends ImageJ1Algorithm {
      */
     public Hessian2DAlgorithm(ACAQAlgorithmDeclaration declaration) {
         super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscaleData.class)
-                .addOutputSlot("Output", ImagePlusGreyscaleData.class, "Input", REMOVE_MASK_QUALIFIER)
+                .addOutputSlot("Output", ImagePlusGreyscale32FData.class, null)
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());
