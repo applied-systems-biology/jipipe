@@ -19,6 +19,7 @@ import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
+import org.hkijena.acaq5.extensions.settings.RuntimeSettings;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.cycle.CycleDetector;
@@ -738,6 +739,29 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     }
 
     /**
+     * Gets all algorithms and all dependent algorithms that are missing inputs.
+     *
+     * @return list of algorithms
+     */
+    public Set<ACAQAlgorithm> getAlgorithmsWithMissingInput() {
+        Set<ACAQAlgorithm> missing = new HashSet<>();
+        for (ACAQAlgorithm algorithm : traverseAlgorithms()) {
+            for (ACAQDataSlot inputSlot : algorithm.getInputSlots()) {
+                ACAQDataSlot sourceSlot = getSourceSlot(inputSlot);
+                if (sourceSlot == null) {
+                    missing.add(algorithm);
+                    break;
+                }
+                if (missing.contains(sourceSlot.getAlgorithm())) {
+                    missing.add(algorithm);
+                    break;
+                }
+            }
+        }
+        return missing;
+    }
+
+    /**
      * Traverses the graph in topological order.
      * The order guarantees that input is always available
      *
@@ -784,14 +808,16 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         for (Map.Entry<String, ACAQAlgorithm> entry : algorithms.entrySet()) {
             report.forCategory(entry.getValue().getCompartment()).forCategory(entry.getValue().getName()).report(entry.getValue());
         }
-        for (ACAQDataSlot slot : graph.vertexSet()) {
-            if (slot.isInput()) {
-                if (graph.incomingEdgesOf(slot).isEmpty()) {
-                    report.forCategory(slot.getAlgorithm().getCompartment()).forCategory(slot.getAlgorithm().getName())
-                            .forCategory("Slot: " + slot.getName()).reportIsInvalid("An input slot has no incoming data!",
-                            "Input slots must always be provided with input data.",
-                            "Please connect the slot to an output of another algorithm.",
-                            this);
+        if (!RuntimeSettings.getInstance().isAllowSkipAlgorithmsWithoutInput()) {
+            for (ACAQDataSlot slot : graph.vertexSet()) {
+                if (slot.isInput()) {
+                    if (graph.incomingEdgesOf(slot).isEmpty()) {
+                        report.forCategory(slot.getAlgorithm().getCompartment()).forCategory(slot.getAlgorithm().getName())
+                                .forCategory("Slot: " + slot.getName()).reportIsInvalid("An input slot has no incoming data!",
+                                "Input slots must always be provided with input data.",
+                                "Please connect the slot to an output of another algorithm.",
+                                this);
+                    }
                 }
             }
         }

@@ -9,6 +9,7 @@ import org.hkijena.acaq5.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataConverter;
 import org.hkijena.acaq5.api.parameters.ACAQDefaultParameterTypeDeclaration;
+import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameterTypeDeclaration;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistrationTask;
 import org.hkijena.acaq5.api.registries.ACAQJavaAlgorithmRegistrationTask;
@@ -312,6 +313,19 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
     public void registerImageJDataAdapter(ImageJDatatypeAdapter adapter, Class<? extends ImageJDatatypeImporterUI> importerUIClass) {
         registry.getImageJDataAdapterRegistry().register(adapter);
         registry.getUIImageJDatatypeAdapterRegistry().registerImporterFor(adapter.getImageJDatatype(), importerUIClass);
+    }
+
+    /**
+     * Registers a new settings sheet
+     *
+     * @param id                  unique ID
+     * @param name                sheet name
+     * @param category            sheet category (if null defaults to "General")
+     * @param categoryIcon        category icon (if null defaults to a predefined icon)
+     * @param parameterCollection the settings
+     */
+    public void registerSettingsSheet(String id, String name, String category, Icon categoryIcon, ACAQParameterCollection parameterCollection) {
+        registry.getSettingsRegistry().register(id, name, category, categoryIcon, parameterCollection);
     }
 
     @Override

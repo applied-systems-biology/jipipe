@@ -19,6 +19,7 @@ import org.hkijena.acaq5.ui.extensions.ACAQPluginManagerUIPanel;
 import org.hkijena.acaq5.ui.extensions.ACAQPluginValidityCheckerPanel;
 import org.hkijena.acaq5.ui.running.ACAQRunSettingsUI;
 import org.hkijena.acaq5.ui.running.ACAQRunnerQueueUI;
+import org.hkijena.acaq5.ui.settings.ACAQApplicationSettingsUI;
 import org.hkijena.acaq5.ui.settings.ACAQGraphWrapperAlgorithmExporter;
 import org.hkijena.acaq5.ui.settings.ACAQProjectSettingsUI;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -28,6 +29,7 @@ import org.scijava.Context;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -95,6 +97,11 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
                 "Project settings",
                 UIUtils.getIconFromResources("wrench.png"),
                 new ACAQProjectSettingsUI(this),
+                true);
+        documentTabPane.addSingletonTab("APPLICATION_SETTINGS",
+                "Application settings",
+                UIUtils.getIconFromResources("acaq5.png"),
+                new ACAQApplicationSettingsUI(this),
                 true);
         documentTabPane.addSingletonTab("PLUGIN_MANAGER",
                 "Plugin manager",
@@ -245,6 +252,17 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
         openProjectSettingsButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK + KeyEvent.ALT_DOWN_MASK));
         openProjectSettingsButton.addActionListener(e -> documentTabPane.selectSingletonTab("PROJECT_SETTINGS"));
         projectMenu.add(openProjectSettingsButton);
+
+        JMenuItem openApplicationSettingsButton = new JMenuItem("Application settings", UIUtils.getIconFromResources("acaq5.png"));
+        openApplicationSettingsButton.setToolTipText("Opens the application settings");
+        openApplicationSettingsButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.CTRL_DOWN_MASK + KeyEvent.ALT_DOWN_MASK));
+        openApplicationSettingsButton.addActionListener(e -> documentTabPane.selectSingletonTab("APPLICATION_SETTINGS"));
+        projectMenu.add(openApplicationSettingsButton);
+
+        projectMenu.addSeparator();
+        JMenuItem exitButton = new JMenuItem("Exit", UIUtils.getIconFromResources("remove.png"));
+        exitButton.addActionListener(e -> getWindow().dispatchEvent(new WindowEvent(getWindow(), WindowEvent.WINDOW_CLOSING)));
+        projectMenu.add(exitButton);
 
         menu.add(projectMenu);
 

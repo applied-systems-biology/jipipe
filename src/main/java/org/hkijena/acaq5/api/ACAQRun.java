@@ -119,6 +119,7 @@ public class ACAQRun implements ACAQRunnable {
     @Override
     public void run(Consumer<ACAQRunnerStatus> onProgress, Supplier<Boolean> isCancelled) {
         prepare();
+        Set<ACAQAlgorithm> unExecutableAlgorithms = algorithmGraph.getAlgorithmsWithMissingInput();
         Set<ACAQAlgorithm> executedAlgorithms = new HashSet<>();
         List<ACAQDataSlot> traversedSlots = algorithmGraph.traverse();
 
@@ -146,6 +147,10 @@ public class ACAQRun implements ACAQRunnable {
                         "Do not click 'Cancel' if you do not want to cancel the execution.");
             ACAQDataSlot slot = traversedSlots.get(index);
             onProgress.accept(new ACAQRunnerStatus(index, algorithmGraph.getSlotCount(), slot.getNameWithAlgorithmName()));
+
+            // If an algorithm cannot be executed, skip it automatically
+            if (unExecutableAlgorithms.contains(slot.getAlgorithm()))
+                continue;
 
             // Let algorithms provide sub-progress
             String statusMessage = "Algorithm: " + slot.getAlgorithm().getName();

@@ -79,6 +79,8 @@ public interface ACAQRegistry extends Service, ACAQValidatable {
      */
     ACAQUIMenuServiceRegistry getUIMenuServiceRegistry();
 
+    ACAQSettingsRegistry getSettingsRegistry();
+
     /**
      * @return Registered extension IDs
      */

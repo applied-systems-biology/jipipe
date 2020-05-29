@@ -37,14 +37,20 @@ public class ParameterPanel extends FormPanel implements Contextual {
      */
     public static final int NO_EMPTY_GROUP_HEADERS = 128;
 
+    /**
+     * With this flag, the parameter collection is always traversed, even if the provided parameter collection was already traversed
+     */
+    public static final int FORCE_TRAVERSE = 256;
+
     private Context context;
     private ACAQParameterCollection parameterCollection;
     private boolean noGroupHeaders;
     private boolean noEmptyGroupHeaders;
+    private boolean forceTraverse;
 
     /**
      * @param context             SciJava context
-     * @param parameterCollection Object containing the parameters
+     * @param parameterCollection Object containing the parameters. If the object is an {@link ACAQTraversedParameterCollection} and FORCE_TRAVERSE is not set, it will be used directly.
      * @param documentation       Optional documentation
      * @param flags               Flags
      */
@@ -52,6 +58,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
         super(documentation, flags);
         this.noGroupHeaders = (flags & NO_GROUP_HEADERS) == NO_GROUP_HEADERS;
         this.noEmptyGroupHeaders = (flags & NO_EMPTY_GROUP_HEADERS) == NO_EMPTY_GROUP_HEADERS;
+        this.forceTraverse = (flags & FORCE_TRAVERSE) == FORCE_TRAVERSE;
         this.context = context;
         this.parameterCollection = parameterCollection;
         reloadForm();
@@ -73,36 +80,40 @@ public class ParameterPanel extends FormPanel implements Contextual {
      */
     public void reloadForm() {
         clear();
-        ACAQTraversedParameterCollection parameterCollection = new ACAQTraversedParameterCollection(getParameterCollection());
+        ACAQTraversedParameterCollection traversed;
+        if (forceTraverse || !(getParameterCollection() instanceof ACAQTraversedParameterCollection))
+            traversed = new ACAQTraversedParameterCollection(getParameterCollection());
+        else
+            traversed = (ACAQTraversedParameterCollection) getParameterCollection();
 
-        Map<ACAQParameterCollection, List<ACAQParameterAccess>> groupedBySource = parameterCollection.getGroupedBySource();
+        Map<ACAQParameterCollection, List<ACAQParameterAccess>> groupedBySource = traversed.getGroupedBySource();
         if (groupedBySource.containsKey(this.parameterCollection)) {
-            addToForm(parameterCollection, this.parameterCollection, groupedBySource.get(this.parameterCollection));
+            addToForm(traversed, this.parameterCollection, groupedBySource.get(this.parameterCollection));
         }
 
         for (ACAQParameterCollection collection : groupedBySource.keySet().stream().sorted(
-                Comparator.comparing(parameterCollection::getSourceUIOrder).thenComparing(
-                        Comparator.nullsFirst(Comparator.comparing(parameterCollection::getSourceDocumentationName))))
+                Comparator.comparing(traversed::getSourceUIOrder).thenComparing(
+                        Comparator.nullsFirst(Comparator.comparing(traversed::getSourceDocumentationName))))
                 .collect(Collectors.toList())) {
             if (collection == this.parameterCollection)
                 continue;
-            addToForm(parameterCollection, collection, groupedBySource.get(collection));
+            addToForm(traversed, collection, groupedBySource.get(collection));
         }
         addVerticalGlue();
     }
 
-    private void addToForm(ACAQTraversedParameterCollection parameterCollection, ACAQParameterCollection parameterHolder, List<ACAQParameterAccess> parameterAccesses) {
+    private void addToForm(ACAQTraversedParameterCollection traversed, ACAQParameterCollection parameterHolder, List<ACAQParameterAccess> parameterAccesses) {
         boolean isModifiable = parameterHolder instanceof ACAQDynamicParameterCollection && ((ACAQDynamicParameterCollection) parameterHolder).isAllowUserModification();
 
         if (!isModifiable && parameterAccesses.isEmpty())
             return;
 
         if (!noGroupHeaders) {
-            ACAQDocumentation documentation = parameterCollection.getSourceDocumentation(parameterHolder);
+            ACAQDocumentation documentation = traversed.getSourceDocumentation(parameterHolder);
             boolean documentationIsEmpty = documentation == null || (org.scijava.util.StringUtils.isNullOrEmpty(documentation.name()) && org.scijava.util.StringUtils.isNullOrEmpty(documentation.description()));
 
             if (!noEmptyGroupHeaders || (!documentationIsEmpty && !isModifiable)) {
-                GroupHeaderPanel groupHeaderPanel = addGroupHeader(parameterCollection.getSourceDocumentationName(parameterHolder),
+                GroupHeaderPanel groupHeaderPanel = addGroupHeader(traversed.getSourceDocumentationName(parameterHolder),
                         UIUtils.getIconFromResources("cog.png"));
 
                 if (documentation != null && !StringUtils.isNullOrEmpty(documentation.description())) {
@@ -121,7 +132,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
         }
 
         List<ACAQParameterEditorUI> uiList = new ArrayList<>();
-        ACAQParameterVisibility sourceVisibility = parameterCollection.getSourceVisibility(parameterHolder);
+        ACAQParameterVisibility sourceVisibility = traversed.getSourceVisibility(parameterHolder);
         for (ACAQParameterAccess parameterAccess : parameterAccesses) {
             ACAQParameterVisibility visibility = parameterAccess.getVisibility();
             if (!visibility.isVisibleIn(sourceVisibility))

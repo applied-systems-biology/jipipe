@@ -54,6 +54,10 @@ public class PathCollectionParameterEditorUI extends ACAQParameterEditorUI {
         toolBar.setFloatable(false);
         add(toolBar, BorderLayout.NORTH);
 
+        toolBar.add(new JLabel(getParameterAccess().getName()));
+
+        toolBar.add(Box.createHorizontalGlue());
+
         JButton addButton = new JButton("Add", UIUtils.getIconFromResources("add.png"));
         addButton.addActionListener(e -> addEntry());
         toolBar.add(addButton);
@@ -115,7 +119,7 @@ public class PathCollectionParameterEditorUI extends ACAQParameterEditorUI {
 
     @Override
     public boolean isUILabelEnabled() {
-        return true;
+        return false;
     }
 
 

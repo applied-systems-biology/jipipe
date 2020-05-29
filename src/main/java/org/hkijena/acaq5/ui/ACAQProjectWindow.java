@@ -5,10 +5,10 @@ import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.ACAQGUICommand;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.ACAQRun;
+import org.hkijena.acaq5.extensions.settings.RecentProjectsUISettings;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.project.UnsatisfiedDependenciesDialog;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultUI;
-import org.hkijena.acaq5.ui.settings.ACAQApplicationSettings;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -111,7 +111,7 @@ public class ACAQProjectWindow extends JFrame {
                 window.projectSavePath = path;
                 window.getProjectUI().sendStatusBarText("Opened project from " + window.projectSavePath);
                 window.setTitle(window.projectSavePath.toString());
-                ACAQApplicationSettings.getInstance().addRecentProject(path);
+                RecentProjectsUISettings.getInstance().addRecentProject(path);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -141,7 +141,7 @@ public class ACAQProjectWindow extends JFrame {
                         new ACAQResultUI(window.projectUI, run),
                         DocumentTabPane.CloseMode.withAskOnCloseButton,
                         true);
-                ACAQApplicationSettings.getInstance().addRecentProject(path);
+                RecentProjectsUISettings.getInstance().addRecentProject(path);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -198,7 +198,7 @@ public class ACAQProjectWindow extends JFrame {
             setTitle(savePath.toString());
             projectSavePath = savePath;
             projectUI.sendStatusBarText("Saved project to " + savePath);
-            ACAQApplicationSettings.getInstance().addRecentProject(savePath);
+            RecentProjectsUISettings.getInstance().addRecentProject(savePath);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

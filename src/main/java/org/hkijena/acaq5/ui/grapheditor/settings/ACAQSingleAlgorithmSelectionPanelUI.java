@@ -83,7 +83,7 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPan
     private void activateTestBenchIfNeeded(DocumentTabPane tabbedPane) {
         if (testbenchTabContent != null && tabbedPane.getCurrentContent() == testbenchTabContent) {
             if (testbenchTabContent.getComponentCount() == 0) {
-                ACAQTestBenchSetupUI testBenchSetupUI = new ACAQTestBenchSetupUI(getProjectWorkbench(), algorithm, graph);
+                ACAQTestBenchSetupUI testBenchSetupUI = new ACAQTestBenchSetupUI(getProjectWorkbench(), algorithm);
                 testbenchTabContent.add(testBenchSetupUI, BorderLayout.CENTER);
             }
         }

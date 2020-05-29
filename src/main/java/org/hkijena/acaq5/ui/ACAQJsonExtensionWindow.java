@@ -7,8 +7,8 @@ import org.hkijena.acaq5.ACAQGUICommand;
 import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.extensions.jsonextensionloader.JsonExtensionLoaderExtension;
+import org.hkijena.acaq5.extensions.settings.RecentProjectsUISettings;
 import org.hkijena.acaq5.ui.project.UnsatisfiedDependenciesDialog;
-import org.hkijena.acaq5.ui.settings.ACAQApplicationSettings;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -116,7 +116,7 @@ public class ACAQJsonExtensionWindow extends JFrame {
             window.projectSavePath = path;
             window.getProjectUI().sendStatusBarText("Opened ACAQ5 JSON extension from " + window.projectSavePath);
             window.setTitle(window.projectSavePath.toString());
-            ACAQApplicationSettings.getInstance().addRecentJsonExtension(path);
+            RecentProjectsUISettings.getInstance().addRecentJsonExtension(path);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -160,7 +160,7 @@ public class ACAQJsonExtensionWindow extends JFrame {
             setTitle(savePath.toString());
             projectSavePath = savePath;
             projectUI.sendStatusBarText("Saved ACAQ5 JSON extension to " + savePath);
-            ACAQApplicationSettings.getInstance().addRecentJsonExtension(savePath);
+            RecentProjectsUISettings.getInstance().addRecentJsonExtension(savePath);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

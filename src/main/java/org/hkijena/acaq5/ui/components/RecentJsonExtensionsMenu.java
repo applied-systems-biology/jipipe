@@ -2,8 +2,8 @@ package org.hkijena.acaq5.ui.components;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
+import org.hkijena.acaq5.extensions.settings.RecentProjectsUISettings;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWindow;
-import org.hkijena.acaq5.ui.settings.ACAQApplicationSettings;
 
 import javax.swing.*;
 import java.nio.file.Path;
@@ -25,17 +25,17 @@ public class RecentJsonExtensionsMenu extends JMenu {
         this.setIcon(icon);
         this.workbenchWindow = workbenchWindow;
         reload();
-        ACAQApplicationSettings.getInstance().getEventBus().register(this);
+        RecentProjectsUISettings.getInstance().getEventBus().register(this);
     }
 
     private void reload() {
         removeAll();
-        if (ACAQApplicationSettings.getInstance().getRecentJsonExtensions().isEmpty()) {
+        if (RecentProjectsUISettings.getInstance().getRecentJsonExtensionProjects().isEmpty()) {
             JMenuItem noProject = new JMenuItem("No recent extensions");
             noProject.setEnabled(false);
             add(noProject);
         } else {
-            for (Path path : ACAQApplicationSettings.getInstance().getRecentJsonExtensions()) {
+            for (Path path : RecentProjectsUISettings.getInstance().getRecentJsonExtensionProjects()) {
                 JMenuItem openProjectItem = new JMenuItem(path.toString());
                 openProjectItem.addActionListener(e -> openProject(path));
                 add(openProjectItem);
@@ -54,7 +54,7 @@ public class RecentJsonExtensionsMenu extends JMenu {
      */
     @Subscribe
     public void onApplicationSettingsChanged(ParameterChangedEvent event) {
-        if ("recent-json-extensions".equals(event.getKey())) {
+        if ("recent-json-extension-projects".equals(event.getKey())) {
             reload();
         }
     }

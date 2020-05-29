@@ -3,7 +3,6 @@ package org.hkijena.acaq5.ui.grapheditor.settings;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.testbench.ACAQTestbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
@@ -20,6 +19,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Set;
 
 /**
  * UI for generating {@link ACAQTestbench}
@@ -27,7 +27,6 @@ import java.nio.file.Path;
 public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
 
     private ACAQAlgorithm algorithm;
-    private ACAQAlgorithmGraph graph;
     private JPanel setupPanel;
     private JPanel validationReportPanel;
     private ACAQValidityReportUI validationReportUI;
@@ -36,12 +35,10 @@ public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
     /**
      * @param workbenchUI the workbench
      * @param algorithm   the target algorithm
-     * @param graph       the graph
      */
-    public ACAQTestBenchSetupUI(ACAQProjectWorkbench workbenchUI, ACAQAlgorithm algorithm, ACAQAlgorithmGraph graph) {
+    public ACAQTestBenchSetupUI(ACAQProjectWorkbench workbenchUI, ACAQAlgorithm algorithm) {
         super(workbenchUI);
         this.algorithm = algorithm;
-        this.graph = graph;
 
         setLayout(new BorderLayout());
         this.validationReportUI = new ACAQValidityReportUI(false);
@@ -109,6 +106,18 @@ public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
     private void tryShowSetupPanel() {
         ACAQValidityReport report = new ACAQValidityReport();
         getProject().reportValidity(report);
+
+        Set<ACAQAlgorithm> algorithmsWithMissingInput = getProject().getGraph().getAlgorithmsWithMissingInput();
+        if (algorithmsWithMissingInput.contains(algorithm)) {
+            report.forCategory("Testbench").reportIsInvalid(
+                    "Selected algorithm is missing inputs!",
+                    "The selected algorithm would not be executed, as it is missing input data. " +
+                            "You have to ensure that all input slots are assigned for the selected algorithm and its dependencies.",
+                    "Please check if all input slots are assigned. Also check all dependency algorithms.",
+                    algorithm
+            );
+        }
+
         removeAll();
         if (report.isValid()) {
             add(setupPanel, BorderLayout.CENTER);

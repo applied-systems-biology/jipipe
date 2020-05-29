@@ -6,6 +6,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.AlgorithmRegisteredEvent;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
+import org.hkijena.acaq5.extensions.settings.GraphEditorUISettings;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.ColorIcon;
@@ -203,18 +204,24 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
         autoLayoutButton.addActionListener(e -> graphUI.autoLayoutAll());
         menuBar.add(autoLayoutButton);
 
-        switchPanningDirectionButton = new JToggleButton(UIUtils.getIconFromResources("cursor-arrow.png"));
+        switchPanningDirectionButton = new JToggleButton(UIUtils.getIconFromResources("cursor-arrow.png"),
+                GraphEditorUISettings.getInstance().isSwitchPanningDirection());
         switchPanningDirectionButton.setToolTipText("Reverse panning direction");
         UIUtils.makeFlat25x25(switchPanningDirectionButton);
         switchPanningDirectionButton.setToolTipText("Changes the direction how panning (middle mouse button) affects the view.");
+        switchPanningDirectionButton.addActionListener(e -> GraphEditorUISettings.getInstance().setSwitchPanningDirection(switchPanningDirectionButton.isSelected()));
         menuBar.add(switchPanningDirectionButton);
 
         JToggleButton layoutHelperButton;
-        layoutHelperButton = new JToggleButton(UIUtils.getIconFromResources("auto-layout-connections.png"), true);
+        layoutHelperButton = new JToggleButton(UIUtils.getIconFromResources("auto-layout-connections.png"),
+                GraphEditorUISettings.getInstance().isEnableLayoutHelper());
         UIUtils.makeFlat25x25(layoutHelperButton);
         layoutHelperButton.setToolTipText("Auto-layout layout on making data slot connections");
-        graphUI.setLayoutHelperEnabled(true);
-        layoutHelperButton.addActionListener(e -> graphUI.setLayoutHelperEnabled(layoutHelperButton.isSelected()));
+        graphUI.setLayoutHelperEnabled(GraphEditorUISettings.getInstance().isEnableLayoutHelper());
+        layoutHelperButton.addActionListener(e -> {
+            graphUI.setLayoutHelperEnabled(layoutHelperButton.isSelected());
+            GraphEditorUISettings.getInstance().setEnableLayoutHelper(layoutHelperButton.isSelected());
+        });
         menuBar.add(layoutHelperButton);
 
         JButton createScreenshotButton = new JButton(UIUtils.getIconFromResources("filetype-image.png"));

@@ -13,11 +13,11 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.AlgorithmGraphConnectedEvent;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
+import org.hkijena.acaq5.extensions.settings.GraphEditorUISettings;
 import org.hkijena.acaq5.ui.components.PickAlgorithmDialog;
 import org.hkijena.acaq5.ui.events.AlgorithmEvent;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.acaq5.ui.events.DefaultUIActionRequestedEvent;
-import org.hkijena.acaq5.ui.settings.ACAQApplicationSettings;
 import org.hkijena.acaq5.utils.PointRange;
 import org.hkijena.acaq5.utils.ScreenImage;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -48,7 +48,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     private boolean layoutHelperEnabled;
     private String compartment;
     private JPopupMenu contextMenu;
-    private ViewMode currentViewMode = ACAQApplicationSettings.getInstance().getViewMode();
+    private ViewMode currentViewMode = GraphEditorUISettings.getInstance().getDefaultViewMode();
     private ACAQAlgorithmGraphDragAndDropBehavior dragAndDropBehavior;
     private ACAQAlgorithmGraphCopyPasteBehavior copyPasteBehavior;
 

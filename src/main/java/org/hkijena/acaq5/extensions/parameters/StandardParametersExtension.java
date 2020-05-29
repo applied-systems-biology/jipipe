@@ -19,6 +19,7 @@ import org.hkijena.acaq5.extensions.parameters.references.ACAQAlgorithmDeclarati
 import org.hkijena.acaq5.extensions.parameters.references.ACAQDataDeclarationRef;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitIconRef;
+import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
@@ -268,6 +269,7 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
         registerEnumParameterType("path-filter:mode", PathFilter.Mode.class, "Mode", "Available modes");
         registerEnumParameterType("string-filter:mode", StringFilter.Mode.class, "Mode", "Available modes");
         registerEnumParameterType("acaq:iterating-algorithm:column-matching", ACAQIteratingAlgorithm.ColumnMatching.class, "Column matching strategy", "Determines how columns for dataset matching are selected");
+        registerEnumParameterType("acaq:ui:graph-editor-view-mode", ACAQAlgorithmGraphCanvasUI.ViewMode.class, "Graph editor view mode", "Determines how the graphs are displayed");
 
         // Register generators
         registerParameterGenerator(byte.class, ByteRangeParameterGenerator.class, "Generate 8-bit integral number sequence", "Generates 8-bit integral numbers");

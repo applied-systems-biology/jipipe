@@ -42,6 +42,7 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
     private ACAQUIImageJDatatypeAdapterRegistry uiImageJDatatypeAdapterRegistry = new ACAQUIImageJDatatypeAdapterRegistry();
     private ACAQUIMenuServiceRegistry uiMenuServiceRegistry = new ACAQUIMenuServiceRegistry();
     private ACAQParameterTypeRegistry parameterTypeRegistry = new ACAQParameterTypeRegistry();
+    private ACAQSettingsRegistry settingsRegistry = new ACAQSettingsRegistry();
 
     @Parameter
     private PluginService pluginService;
@@ -71,6 +72,7 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
         uiImageJDatatypeAdapterRegistry = new ACAQUIImageJDatatypeAdapterRegistry();
         uiMenuServiceRegistry = new ACAQUIMenuServiceRegistry();
         parameterTypeRegistry = new ACAQParameterTypeRegistry();
+        settingsRegistry = new ACAQSettingsRegistry();
         discover();
     }
 
@@ -122,6 +124,9 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
                 }
             }
         }
+
+        // Reload settings
+        settingsRegistry.reload();
 
     }
 
@@ -229,6 +234,11 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
     @Override
     public ACAQParameterTypeRegistry getParameterTypeRegistry() {
         return parameterTypeRegistry;
+    }
+
+    @Override
+    public ACAQSettingsRegistry getSettingsRegistry() {
+        return settingsRegistry;
     }
 
     /**
