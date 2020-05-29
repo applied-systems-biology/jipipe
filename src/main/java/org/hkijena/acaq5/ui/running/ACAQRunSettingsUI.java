@@ -4,22 +4,27 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQMutableRunConfiguration;
 import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
-import org.hkijena.acaq5.ui.components.ACAQValidityReportUI;
-import org.hkijena.acaq5.ui.components.MarkdownDocument;
-import org.hkijena.acaq5.ui.components.MarkdownReader;
-import org.hkijena.acaq5.ui.components.UserFriendlyErrorUI;
+import org.hkijena.acaq5.ui.components.*;
 import org.hkijena.acaq5.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.acaq5.ui.events.RunUIWorkerInterruptedEvent;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultUI;
+import org.hkijena.acaq5.utils.ResourceUtils;
+import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
+import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.Comparator;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Settings UI for {@link org.hkijena.acaq5.api.ACAQRunConfiguration}
@@ -107,6 +112,35 @@ public class ACAQRunSettingsUI extends ACAQProjectWorkbenchPanel {
         ParameterPanel formPanel = new ParameterPanel(getProjectWorkbench(), run.getConfiguration(),
                 MarkdownDocument.fromPluginResource("documentation/run.md"),
                 ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING);
+
+        Set<ACAQAlgorithm> algorithmsWithMissingInput = getProjectWorkbench().getProject().getGraph().getAlgorithmsWithMissingInput();
+        if(!algorithmsWithMissingInput.isEmpty()) {
+            formPanel.removeLastRow();
+            FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("Unexecuted algorithms", UIUtils.getIconFromResources("warning.png"));
+            headerPanel.getDescriptionArea().setVisible(true);
+            headerPanel.getDescriptionArea().setText("There are algorithms that will not be executed, as they are missing input data. " +
+                    "If this is not intended, please check if the listed algorithms have all input slots connected.");
+
+            DefaultTableModel model = new DefaultTableModel();
+            model.setColumnIdentifiers(new Object[]{"Compartment", "Algorithm name"});
+            for (ACAQAlgorithm algorithm : algorithmsWithMissingInput.stream().sorted(Comparator.comparing(ACAQAlgorithm::getCompartment)).collect(Collectors.toList())) {
+                model.addRow(new Object[] {
+                        StringUtils.createIconTextHTMLTable(getProjectWorkbench().getProject().getCompartments().get(algorithm.getCompartment()).getName(),
+                                ResourceUtils.getPluginResource("icons/graph-compartment.png")),
+                        algorithm.getName()
+                });
+            }
+            JXTable table = new JXTable(model);
+            table.packAll();
+            table.setSortOrder(0, SortOrder.ASCENDING);
+            UIUtils.fitRowHeights(table);
+            JPanel panel = new JPanel(new BorderLayout());
+            panel.add(table, BorderLayout.CENTER);
+            panel.add(table.getTableHeader(), BorderLayout.NORTH);
+            formPanel.addWideToForm(panel, null);
+
+            formPanel.addVerticalGlue();
+        }
 
         setupPanel.add(formPanel, BorderLayout.CENTER);
 
