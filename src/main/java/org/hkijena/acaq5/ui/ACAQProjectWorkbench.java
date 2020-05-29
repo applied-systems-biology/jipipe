@@ -9,6 +9,8 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.events.CompartmentRemovedEvent;
+import org.hkijena.acaq5.extensions.settings.GeneralUISettings;
+import org.hkijena.acaq5.extensions.settings.ProjectsSettings;
 import org.hkijena.acaq5.ui.compartments.ACAQCompartmentGraphUI;
 import org.hkijena.acaq5.ui.compartments.ACAQCompartmentUI;
 import org.hkijena.acaq5.ui.compendium.ACAQAlgorithmCompendiumUI;
@@ -69,14 +71,19 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
 
     private void initializeDefaultProject() {
         if (project.getCompartments().isEmpty()) {
-            ACAQProjectCompartment preprocessing = project.addCompartment("Preprocessing");
-            ACAQProjectCompartment analysis = project.addCompartment("Analysis");
-            ACAQProjectCompartment postprocessing = project.addCompartment("Postprocessing");
-            project.connectCompartments(preprocessing, analysis);
-            project.connectCompartments(analysis, postprocessing);
-            openCompartmentGraph(preprocessing, false);
-            openCompartmentGraph(analysis, false);
-            openCompartmentGraph(postprocessing, false);
+            if (ProjectsSettings.getInstance().getStarterProject() == ProjectsSettings.StarterProject.PreprocessingAnalysisPostprocessing) {
+                ACAQProjectCompartment preprocessing = project.addCompartment("Preprocessing");
+                ACAQProjectCompartment analysis = project.addCompartment("Analysis");
+                ACAQProjectCompartment postprocessing = project.addCompartment("Postprocessing");
+                project.connectCompartments(preprocessing, analysis);
+                project.connectCompartments(analysis, postprocessing);
+                openCompartmentGraph(preprocessing, false);
+                openCompartmentGraph(analysis, false);
+                openCompartmentGraph(postprocessing, false);
+            } else {
+                ACAQProjectCompartment analysis = project.addCompartment("Analysis");
+                openCompartmentGraph(analysis, false);
+            }
         }
     }
 
@@ -88,7 +95,7 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
                 "Introduction",
                 UIUtils.getIconFromResources("info.png"),
                 new ACAQInfoUI(this),
-                false);
+                !GeneralUISettings.getInstance().isShowIntroduction());
         documentTabPane.addSingletonTab("COMPARTMENT_EDITOR",
                 "Compartments",
                 UIUtils.getIconFromResources("connect.png"),
@@ -121,7 +128,10 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
                 UIUtils.getIconFromResources("module.png"),
                 pluginValidityCheckerPanel,
                 true);
-        documentTabPane.selectSingletonTab("INTRODUCTION");
+        if (GeneralUISettings.getInstance().isShowIntroduction())
+            documentTabPane.selectSingletonTab("INTRODUCTION");
+        else
+            documentTabPane.selectSingletonTab("COMPARTMENT_EDITOR");
         add(documentTabPane, BorderLayout.CENTER);
 
         initializeMenu();

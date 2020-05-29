@@ -2,7 +2,7 @@ package org.hkijena.acaq5.ui.components;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
-import org.hkijena.acaq5.extensions.settings.RecentProjectsUISettings;
+import org.hkijena.acaq5.extensions.settings.ProjectsSettings;
 import org.hkijena.acaq5.ui.ACAQProjectWindow;
 
 import javax.swing.*;
@@ -25,17 +25,17 @@ public class RecentProjectsMenu extends JMenu {
         this.setIcon(icon);
         this.workbenchWindow = workbenchWindow;
         reload();
-        RecentProjectsUISettings.getInstance().getEventBus().register(this);
+        ProjectsSettings.getInstance().getEventBus().register(this);
     }
 
     private void reload() {
         removeAll();
-        if (RecentProjectsUISettings.getInstance().getRecentProjects().isEmpty()) {
+        if (ProjectsSettings.getInstance().getRecentProjects().isEmpty()) {
             JMenuItem noProject = new JMenuItem("No recent projects");
             noProject.setEnabled(false);
             add(noProject);
         } else {
-            for (Path path : RecentProjectsUISettings.getInstance().getRecentProjects()) {
+            for (Path path : ProjectsSettings.getInstance().getRecentProjects()) {
                 JMenuItem openProjectItem = new JMenuItem(path.toString());
                 openProjectItem.addActionListener(e -> openProject(path));
                 add(openProjectItem);

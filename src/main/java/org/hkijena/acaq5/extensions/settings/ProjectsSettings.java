@@ -13,13 +13,14 @@ import java.nio.file.Path;
 /**
  * Remembers the last projects
  */
-public class RecentProjectsUISettings implements ACAQParameterCollection {
+public class ProjectsSettings implements ACAQParameterCollection {
 
-    public static String ID = "recent-projects-ui";
+    public static String ID = "projects";
 
     private EventBus eventBus = new EventBus();
     private PathListParameter recentProjects = new PathListParameter();
     private PathListParameter recentJsonExtensionProjects = new PathListParameter();
+    private StarterProject starterProject = StarterProject.PreprocessingAnalysisPostprocessing;
 
     @Override
     public EventBus getEventBus() {
@@ -84,7 +85,27 @@ public class RecentProjectsUISettings implements ACAQParameterCollection {
         }
     }
 
-    public static RecentProjectsUISettings getInstance() {
-        return ACAQDefaultRegistry.getInstance().getSettingsRegistry().getSettings(ID, RecentProjectsUISettings.class);
+    @ACAQDocumentation(name = "Empty project configuration", description = "Determines how empty projects are created")
+    @ACAQParameter("starter-project")
+    public StarterProject getStarterProject() {
+        return starterProject;
+    }
+
+    @ACAQParameter("starter-project")
+    public void setStarterProject(StarterProject starterProject) {
+        this.starterProject = starterProject;
+        eventBus.post(new ParameterChangedEvent(this, "starter-project"));
+    }
+
+    public static ProjectsSettings getInstance() {
+        return ACAQDefaultRegistry.getInstance().getSettingsRegistry().getSettings(ID, ProjectsSettings.class);
+    }
+
+    /**
+     * Defines available starter projects
+     */
+    public enum StarterProject {
+        SingleCompartment,
+        PreprocessingAnalysisPostprocessing
     }
 }

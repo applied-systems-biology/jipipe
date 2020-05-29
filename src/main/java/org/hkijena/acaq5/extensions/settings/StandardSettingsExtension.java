@@ -32,8 +32,14 @@ public class StandardSettingsExtension extends ACAQPrepackagedDefaultJavaExtensi
     @Override
     public void register() {
         registerSettingsSheet(RuntimeSettings.ID, "Runtime", null, null, new RuntimeSettings());
-        registerSettingsSheet(RecentProjectsUISettings.ID, "Recent projects", null, null, new RecentProjectsUISettings());
+        registerSettingsSheet(ProjectsSettings.ID, "Recent projects", null, null, new ProjectsSettings());
+        registerSettingsSheet(GeneralUISettings.ID, "General", "UI", null, new GeneralUISettings());
         registerSettingsSheet(GraphEditorUISettings.ID, "Graph editor", "UI", null, new GraphEditorUISettings());
+
+        registerEnumParameterType("acaq:settings:projects:starter-project",
+                ProjectsSettings.StarterProject.class,
+                "Empty project configuration",
+                "Available ways how an empty project is initialized");
     }
 
 }
