@@ -30,7 +30,7 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
 /**
  * Wrapper around {@link EDM}
  */
-@ACAQDocumentation(name = "Hessian 2D", description = "Applies a euclidean distance transform on binary images." +
+@ACAQDocumentation(name = "Hessian 2D", description = "Computes Hessian eigenimages of images." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ACAQOrganization(menuPath = "Math", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")
