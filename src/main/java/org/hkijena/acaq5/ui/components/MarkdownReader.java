@@ -100,6 +100,7 @@ public class MarkdownReader extends JPanel {
 
         if (withToolbar) {
             JToolBar toolBar = new JToolBar();
+            toolBar.setFloatable(false);
 
             JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("save.png"));
             JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportButton);

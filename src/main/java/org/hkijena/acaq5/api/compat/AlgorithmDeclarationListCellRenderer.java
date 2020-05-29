@@ -1,7 +1,9 @@
 package org.hkijena.acaq5.api.compat;
 
+import com.google.common.html.HtmlEscapers;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.ui.components.ColorIcon;
+import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -12,11 +14,14 @@ import java.awt.*;
  */
 public class AlgorithmDeclarationListCellRenderer extends JLabel implements ListCellRenderer<ACAQAlgorithmDeclaration> {
 
+    private ColorIcon icon = new ColorIcon(16, 32);
+
     /**
      * Creates a new renderer
      */
     public AlgorithmDeclarationListCellRenderer() {
         setOpaque(true);
+        setIcon(icon);
         setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
         setVerticalAlignment(TOP);
     }
@@ -27,10 +32,12 @@ public class AlgorithmDeclarationListCellRenderer extends JLabel implements List
         setFont(list.getFont());
 
         if (value != null) {
-            setIcon(new ColorIcon(16, 16, UIUtils.getFillColorFor(value)));
-            setText(value.getName());
-//            setText("<html><table cellpadding=\"0\"><tr><td>" + HtmlEscapers.htmlEscaper().escape(value.getName()) + "</td>" +
-//                    "<tr><td><i>" + HtmlEscapers.htmlEscaper().escape(value.getDescription()) + "</td></tr></table></html>");
+            icon.setFillColor(UIUtils.getFillColorFor(value));
+            String menuPath = value.getCategory().toString();
+            menuPath += "\n" + value.getMenuPath();
+            menuPath = StringUtils.getCleanedMenuPath(menuPath).replace("\n", " > ");
+            setText("<html><table cellpadding=\"0\"><tr><td>" + HtmlEscapers.htmlEscaper().escape(value.getName()) + "</td>" +
+                    "<tr><td><i>" + HtmlEscapers.htmlEscaper().escape(menuPath) + "</td></tr></table></html>");
         } else {
             setText("<Null>");
         }

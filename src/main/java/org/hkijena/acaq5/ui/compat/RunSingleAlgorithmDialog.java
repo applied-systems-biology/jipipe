@@ -107,12 +107,12 @@ public class RunSingleAlgorithmDialog extends JDialog {
 
     private void reloadAlgorithmList() {
         List<ACAQAlgorithmDeclaration> declarations = getFilteredAndSortedDeclarations();
-        DefaultListModel<ACAQAlgorithmDeclaration> model = (DefaultListModel<ACAQAlgorithmDeclaration>) algorithmList.getModel();
-        model.clear();
+        DefaultListModel<ACAQAlgorithmDeclaration> model = new DefaultListModel<>();
         for (ACAQAlgorithmDeclaration declaration : declarations) {
             if (SingleImageJAlgorithmRun.isCompatible(declaration))
                 model.addElement(declaration);
         }
+        algorithmList.setModel(model);
 
         if (!model.isEmpty())
             algorithmList.setSelectedIndex(0);
@@ -125,7 +125,7 @@ public class RunSingleAlgorithmDialog extends JDialog {
         Predicate<ACAQAlgorithmDeclaration> filterFunction = declaration -> {
             if (searchStrings != null && searchStrings.length > 0) {
                 boolean matches = true;
-                String name = declaration.getName();
+                String name = declaration.getName() + " " + declaration.getDescription() + " " + declaration.getMenuPath();
                 for (String searchString : searchStrings) {
                     if (!name.toLowerCase().contains(searchString.toLowerCase())) {
                         matches = false;

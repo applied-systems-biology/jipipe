@@ -4,8 +4,10 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
+import org.hkijena.acaq5.ui.compendium.ACAQAlgorithmCompendiumUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
@@ -122,6 +124,22 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPan
         deleteButton.setEnabled(graph.canUserDelete(algorithm));
         deleteButton.addActionListener(e -> deleteAlgorithm());
         toolBar.add(deleteButton);
+
+        if (ACAQAlgorithmRegistry.getInstance().getRegisteredAlgorithms().values().contains(algorithm.getDeclaration())) {
+            JButton openCompendiumButton = new JButton(UIUtils.getIconFromResources("help.png"));
+            openCompendiumButton.setToolTipText("Open in algorithm compendium");
+            openCompendiumButton.addActionListener(e -> {
+                ACAQAlgorithmCompendiumUI compendiumUI = new ACAQAlgorithmCompendiumUI();
+                compendiumUI.selectAlgorithmDeclaration(algorithm.getDeclaration());
+                getWorkbench().getDocumentTabPane().addTab("Algorithm compendium",
+                        UIUtils.getIconFromResources("help.png"),
+                        compendiumUI,
+                        DocumentTabPane.CloseMode.withSilentCloseButton,
+                        true);
+                getWorkbench().getDocumentTabPane().switchToLastTab();
+            });
+            toolBar.add(openCompendiumButton);
+        }
 
         add(toolBar, BorderLayout.NORTH);
     }

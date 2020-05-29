@@ -122,7 +122,7 @@ public class HessianSegmentation2DAlgorithm extends ACAQIteratingAlgorithm {
             ImagePlus processedSlice = applyHessian(slice);
 
             // Apply morphological filters
-            if(applyInternalGradient)
+            if (applyInternalGradient)
                 applyInternalGradient(processedSlice);
 
             // Convert to mask
@@ -132,7 +132,7 @@ public class HessianSegmentation2DAlgorithm extends ACAQIteratingAlgorithm {
             processedSlice = autoThresholding.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
 
             // Despeckle x2
-            if(applyDespeckle)
+            if (applyDespeckle)
                 applyDespeckle(processedSlice, despeckleIterations);
             stack.addSlice("slice" + index, processedSlice.getProcessor());
         });

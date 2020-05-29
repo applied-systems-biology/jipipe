@@ -25,8 +25,6 @@ import java.util.Vector;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExtension.REMOVE_MASK_QUALIFIER;
-
 /**
  * Wrapper around {@link EDM}
  */

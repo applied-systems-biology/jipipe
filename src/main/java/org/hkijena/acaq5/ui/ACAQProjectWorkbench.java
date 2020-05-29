@@ -11,6 +11,7 @@ import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.events.CompartmentRemovedEvent;
 import org.hkijena.acaq5.ui.compartments.ACAQCompartmentGraphUI;
 import org.hkijena.acaq5.ui.compartments.ACAQCompartmentUI;
+import org.hkijena.acaq5.ui.compendium.ACAQAlgorithmCompendiumUI;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.RecentProjectsMenu;
 import org.hkijena.acaq5.ui.components.ReloadableValidityChecker;
@@ -337,9 +338,22 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
         // "Help" entry
         JMenu helpMenu = new JMenu();
         helpMenu.setIcon(UIUtils.getIconFromResources("help.png"));
+
         JMenuItem quickHelp = new JMenuItem("Quick introduction", UIUtils.getIconFromResources("quickload.png"));
         quickHelp.addActionListener(e -> documentTabPane.selectSingletonTab("INTRODUCTION"));
         helpMenu.add(quickHelp);
+
+        JMenuItem algorithmCompendiumButton = new JMenuItem("Open algorithm compendium", UIUtils.getIconFromResources("cog.png"));
+        algorithmCompendiumButton.addActionListener(e -> {
+            getDocumentTabPane().addTab("Algorithm compendium",
+                    UIUtils.getIconFromResources("help.png"),
+                    new ACAQAlgorithmCompendiumUI(),
+                    DocumentTabPane.CloseMode.withSilentCloseButton,
+                    true);
+            getDocumentTabPane().switchToLastTab();
+        });
+        helpMenu.add(algorithmCompendiumButton);
+
         menu.add(helpMenu);
 
         add(menu, BorderLayout.NORTH);
