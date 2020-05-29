@@ -18,6 +18,7 @@ import org.hkijena.acaq5.api.data.traits.RemovesTrait;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.EigenvalueSelection2D;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
@@ -45,8 +46,11 @@ public class HessianSegmentation2DAlgorithm extends ACAQIteratingAlgorithm {
     private double smoothing = 1.0;
     private double gradientRadius = 1;
     private boolean compareAbsolute = true;
-    private EigenvalueSelection eigenvalueSelection = EigenvalueSelection.Largest;
+    private EigenvalueSelection2D eigenvalueSelection = EigenvalueSelection2D.Largest;
     private AutoThreshold2DAlgorithm autoThresholding;
+    private boolean applyInternalGradient = true;
+    private boolean applyDespeckle = true;
+    private int despeckleIterations = 2;
 
     /**
      * @param declaration the algorithm declaration
@@ -72,6 +76,9 @@ public class HessianSegmentation2DAlgorithm extends ACAQIteratingAlgorithm {
         this.eigenvalueSelection = other.eigenvalueSelection;
         this.compareAbsolute = other.compareAbsolute;
         this.autoThresholding = (AutoThreshold2DAlgorithm) other.autoThresholding.getDeclaration().clone(other.autoThresholding);
+        this.applyInternalGradient = other.applyInternalGradient;
+        this.applyDespeckle = other.applyDespeckle;
+        this.despeckleIterations = other.despeckleIterations;
     }
 
     private ImagePlus applyHessian(ImagePlus input) {
@@ -79,7 +86,7 @@ public class HessianSegmentation2DAlgorithm extends ACAQIteratingAlgorithm {
         image.aspects(new Aspects());
         final Hessian hessian = new Hessian();
         final Vector<Image> eigenimages = hessian.run(new FloatImage(image), smoothing, compareAbsolute);
-        if (eigenvalueSelection == EigenvalueSelection.Largest)
+        if (eigenvalueSelection == EigenvalueSelection2D.Largest)
             return eigenimages.get(0).imageplus();
         else
             return eigenimages.get(1).imageplus();
@@ -115,7 +122,8 @@ public class HessianSegmentation2DAlgorithm extends ACAQIteratingAlgorithm {
             ImagePlus processedSlice = applyHessian(slice);
 
             // Apply morphological filters
-            applyInternalGradient(processedSlice);
+            if(applyInternalGradient)
+                applyInternalGradient(processedSlice);
 
             // Convert to mask
             autoThresholding.clearSlotData();
@@ -124,7 +132,8 @@ public class HessianSegmentation2DAlgorithm extends ACAQIteratingAlgorithm {
             processedSlice = autoThresholding.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
 
             // Despeckle x2
-            applyDespeckle(processedSlice, 2);
+            if(applyDespeckle)
+                applyDespeckle(processedSlice, despeckleIterations);
             stack.addSlice("slice" + index, processedSlice.getProcessor());
         });
         ImagePlus result = new ImagePlus("Segmented Image", stack);
@@ -186,21 +195,47 @@ public class HessianSegmentation2DAlgorithm extends ACAQIteratingAlgorithm {
 
     @ACAQDocumentation(name = "Eigenvalue", description = "Allows you to choose whether the largest or smallest Eigenvalues are chosen")
     @ACAQParameter("eigenvalue-selection")
-    public EigenvalueSelection getEigenvalueSelection() {
+    public EigenvalueSelection2D getEigenvalueSelection() {
         return eigenvalueSelection;
     }
 
     @ACAQParameter("eigenvalue-selection")
-    public void setEigenvalueSelection(EigenvalueSelection eigenvalueSelection) {
+    public void setEigenvalueSelection(EigenvalueSelection2D eigenvalueSelection) {
         this.eigenvalueSelection = eigenvalueSelection;
         getEventBus().post(new ParameterChangedEvent(this, "eigenvalue-selection"));
     }
 
-    /**
-     * Available options to which Eigen value to select
-     */
-    public enum EigenvalueSelection {
-        Largest,
-        Smallest
+    @ACAQDocumentation(name = "Apply internal gradient filter", description = "If enabled, an internal gradient filter is applied to the hessian image.")
+    @ACAQParameter("apply-internal-gradient")
+    public boolean isApplyInternalGradient() {
+        return applyInternalGradient;
     }
+
+    @ACAQParameter("apply-internal-gradient")
+    public void setApplyInternalGradient(boolean applyInternalGradient) {
+        this.applyInternalGradient = applyInternalGradient;
+    }
+
+    @ACAQDocumentation(name = "Apply despeckle", description = "If enabled, a median filter is applied to the thresholded images.")
+    @ACAQParameter("apply-despeckle")
+    public boolean isApplyDespeckle() {
+        return applyDespeckle;
+    }
+
+    @ACAQParameter("apply-despeckle")
+    public void setApplyDespeckle(boolean applyDespeckle) {
+        this.applyDespeckle = applyDespeckle;
+    }
+
+    @ACAQDocumentation(name = "Despeckle iterations", description = "How many times the despeckle is applied.")
+    @ACAQParameter("despeckle-iterations")
+    public int getDespeckleIterations() {
+        return despeckleIterations;
+    }
+
+    @ACAQParameter("despeckle-iterations")
+    public void setDespeckleIterations(int despeckleIterations) {
+        this.despeckleIterations = despeckleIterations;
+    }
+
 }

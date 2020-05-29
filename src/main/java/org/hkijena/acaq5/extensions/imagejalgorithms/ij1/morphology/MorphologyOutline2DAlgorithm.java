@@ -19,7 +19,7 @@ import java.util.function.Supplier;
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@ACAQDocumentation(name = "Morphological outline", description = "Applies a morphological outline operation (gradient) to binary images." +
+@ACAQDocumentation(name = "Morphological outline 2D", description = "Applies a morphological outline operation (gradient) to binary images." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ACAQOrganization(menuPath = "Morphology", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input")

@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@ACAQDocumentation(name = "Morphological operation (greyscale)", description = "Applies a morphological operation to greyscale images. " +
+@ACAQDocumentation(name = "Morphological operation (greyscale) 2D", description = "Applies a morphological operation to greyscale images. " +
         "If a multi-channel image is provided, the operation is applied to each channel. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ACAQOrganization(menuPath = "Morphology", algorithmCategory = ACAQAlgorithmCategory.Processor)

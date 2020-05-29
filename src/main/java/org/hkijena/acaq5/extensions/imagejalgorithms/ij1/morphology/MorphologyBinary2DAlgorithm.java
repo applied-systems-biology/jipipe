@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@ACAQDocumentation(name = "Morphological operation (binary)", description = "Applies a morphological operation to binary images." +
+@ACAQDocumentation(name = "Morphological operation (binary) 2D", description = "Applies a morphological operation to binary images." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ACAQOrganization(menuPath = "Morphology", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input")

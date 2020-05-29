@@ -6,6 +6,7 @@ import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.traits.ACAQJavaTraitDeclaration;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.EigenvalueSelection2D;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.analyze.FindParticles2D;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.background.RollingBallBackgroundEstimator2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.binary.DistanceTransformWatershed2DAlgorithm;
@@ -178,12 +179,14 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerAlgorithm("ij1-math-local-minimum3d", LocalMinimumFilter3DAlgorithm.class);
         registerAlgorithm("ij1-math-replace-nan-by-median2d", RemoveNaNFilter2DAlgorithm.class);
         registerAlgorithm("ij1-math-imagecalculator2d", ImageCalculator2DAlgorithm.class);
+        registerAlgorithm("ij1-math-hessian2d", Hessian2DAlgorithm.class);
 
         registerAlgorithm("ij1-morph-binary-operation2d", MorphologyBinary2DAlgorithm.class);
         registerAlgorithm("ij1-morph-greyscale-operation2d", MorphologyGreyscale2DAlgorithm.class);
         registerAlgorithm("ij1-morph-binary-fillholes2d", MorphologyFillHoles2DAlgorithm.class);
         registerAlgorithm("ij1-morph-binary-outline2d", MorphologyOutline2DAlgorithm.class);
         registerAlgorithm("ij1-morph-binary-skeletonize2d", MorphologySkeletonize2DAlgorithm.class);
+        registerAlgorithm("ij1-morph-greyscale-internalgradient2d", MorphologyInternalGradient2DAlgorithm.class);
 
         registerAlgorithm("ij1-binary-dtwatershed2d", DistanceTransformWatershed2DAlgorithm.class);
         registerAlgorithm("ij1-binary-voronoi2d", Voronoi2DAlgorithm.class);
@@ -269,8 +272,8 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
 
         registerEnumParameterType(AutoThresholder.Method.class.getCanonicalName(), AutoThresholder.Method.class,
                 "Auto threshold method", "Available methods");
-        registerEnumParameterType("threshold-hessian2d:eigenvalue-selection", HessianSegmentation2DAlgorithm.EigenvalueSelection.class,
-                "Eigenvalue selection", "Determines whether to choose the smallest or largest Eigenvalue");
+        registerEnumParameterType("ij1:eigenvalue-selection-2d", EigenvalueSelection2D.class,
+                "Eigenvalue selection (2D)", "Determines whether to choose the smallest or largest Eigenvalue");
     }
 
     @Override
