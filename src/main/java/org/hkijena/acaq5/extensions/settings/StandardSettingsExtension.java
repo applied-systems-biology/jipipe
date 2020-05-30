@@ -40,6 +40,10 @@ public class StandardSettingsExtension extends ACAQPrepackagedDefaultJavaExtensi
                 ProjectsSettings.StarterProject.class,
                 "Empty project configuration",
                 "Available ways how an empty project is initialized");
+        registerEnumParameterType("acaq:settings:ui:look-and-feel",
+                GeneralUISettings.LookAndFeel.class,
+                "Theme",
+                "Available themes");
     }
 
 }

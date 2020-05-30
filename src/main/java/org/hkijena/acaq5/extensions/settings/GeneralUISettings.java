@@ -16,6 +16,7 @@ public class GeneralUISettings implements ACAQParameterCollection {
 
     private EventBus eventBus = new EventBus();
     private boolean showIntroduction = true;
+    private LookAndFeel lookAndFeel = LookAndFeel.Metal;
 
     @Override
     public EventBus getEventBus() {
@@ -35,7 +36,27 @@ public class GeneralUISettings implements ACAQParameterCollection {
         getEventBus().post(new ParameterChangedEvent(this, "show-introduction"));
     }
 
+    @ACAQDocumentation(name = "Theme", description = "Allows you to select a theme (Restart ImageJ to apply changes)")
+    @ACAQParameter("look-and-feel")
+    public LookAndFeel getLookAndFeel() {
+        return lookAndFeel;
+    }
+
+    @ACAQParameter("look-and-feel")
+    public void setLookAndFeel(LookAndFeel lookAndFeel) {
+        this.lookAndFeel = lookAndFeel;
+        getEventBus().post(new ParameterChangedEvent(this, "look-and-feel"));
+    }
+
     public static GeneralUISettings getInstance() {
         return ACAQDefaultRegistry.getInstance().getSettingsRegistry().getSettings(ID, GeneralUISettings.class);
+    }
+
+    /**
+     * Available designs
+     */
+    public enum LookAndFeel {
+        Metal,
+        FlatIntelliJLaf
     }
 }
