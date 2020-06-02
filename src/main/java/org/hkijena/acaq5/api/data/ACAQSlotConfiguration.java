@@ -71,7 +71,7 @@ public abstract class ACAQSlotConfiguration {
     /**
      * Returns the maximum of number(input slot) and number(output slots)
      *
-     * @return
+     * @return maximum number of rows
      */
     public int getRows() {
         return Math.max(getInputSlots().size(), getOutputSlots().size());
@@ -80,7 +80,7 @@ public abstract class ACAQSlotConfiguration {
     /**
      * Makes this slot configuration equivalent to the provided one
      *
-     * @param configuration
+     * @param configuration the configuration
      */
     public abstract void setTo(ACAQSlotConfiguration configuration);
 

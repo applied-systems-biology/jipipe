@@ -13,6 +13,13 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: edu.berkeley:Hough_Circle_Transform:1.0.0-RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: net.imagej:imagej-legacy:0.35.0" level="project" />
+    <orderEntry type="library" name="Maven: net.imagej:ij1-patcher:1.0.0" level="project" />
+    <orderEntry type="library" name="Maven: sc.fiji:Feature_Detection:2.0.2" level="project" />
+    <orderEntry type="library" name="Maven: sc.fiji:legacy-imglib1:1.1.9" level="project" />
+    <orderEntry type="library" name="Maven: org.scijava:vecmath:1.6.0-scijava-2" level="project" />
+    <orderEntry type="library" name="Maven: mpicbg:mpicbg:1.3.0" level="project" />
+    <orderEntry type="library" name="Maven: com.formdev:flatlaf:0.35" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej:2.0.0-rc-72" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-common:0.31.0" level="project" />
     <orderEntry type="library" name="Maven: edu.ucar:udunits:4.3.18" level="project" />

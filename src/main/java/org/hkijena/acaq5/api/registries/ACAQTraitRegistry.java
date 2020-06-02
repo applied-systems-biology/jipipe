@@ -88,7 +88,7 @@ public class ACAQTraitRegistry implements ACAQValidatable {
     /**
      * Returns all registered traits
      *
-     * @return
+     * @return all registered traits
      */
     public Map<String, ACAQTraitDeclaration> getRegisteredTraits() {
         return Collections.unmodifiableMap(registeredTraits);

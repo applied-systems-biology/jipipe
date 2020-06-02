@@ -49,7 +49,7 @@ public interface TableColumn extends ACAQData {
     /**
      * Label of this column
      *
-     * @return
+     * @return the label
      */
     String getLabel();
 

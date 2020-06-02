@@ -26,14 +26,14 @@ public interface ImageJDatatypeAdapter {
     /**
      * Gets the corresponding ImageJ data type
      *
-     * @return
+     * @return the data type
      */
     Class<?> getImageJDatatype();
 
     /**
      * Gets the corresponding ACAQ5 data type
      *
-     * @return
+     * @return the data type
      */
     Class<? extends ACAQData> getACAQDatatype();
 

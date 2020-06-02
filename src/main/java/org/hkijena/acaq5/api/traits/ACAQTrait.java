@@ -27,7 +27,7 @@ public interface ACAQTrait {
     /**
      * Returns the declaration of this trait
      *
-     * @return
+     * @return the declaration
      */
     ACAQTraitDeclaration getDeclaration();
 

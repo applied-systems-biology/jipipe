@@ -14,14 +14,14 @@ public interface ACAQTraitConfiguration {
     /**
      * Returns a map from slot name to modification task
      *
-     * @return
+     * @return list of tasks
      */
     Map<String, ACAQDataSlotTraitConfiguration> getModificationTasks();
 
     /**
      * Returns all transfer tasks
      *
-     * @return
+     * @return list of tasks
      */
     List<ACAQTraitTransferTask> getTransferTasks();
 
@@ -33,7 +33,7 @@ public interface ACAQTraitConfiguration {
     /**
      * Returns the Event bus of this trait configuration
      *
-     * @return
+     * @return the event bus
      */
     EventBus getEventBus();
 }

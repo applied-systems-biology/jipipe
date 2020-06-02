@@ -67,8 +67,8 @@ public class IntRangeStringParameter {
     /**
      * Generates the list of integers based on the value
      *
-     * @return
-     * @throws NumberFormatException
+     * @return the generated integers
+     * @throws NumberFormatException if the format is wrong
      */
     public List<Integer> getIntegers() throws NumberFormatException {
         String string = value.replace(" ", "");

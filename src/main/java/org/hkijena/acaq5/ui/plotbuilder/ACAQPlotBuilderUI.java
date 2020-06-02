@@ -341,7 +341,7 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
     /**
      * Contains single-column series that will be later spliced together depending on the user's settings
      *
-     * @return
+     * @return the list of avilable data
      */
     public Map<String, TableColumn> getAvailableData() {
         return Collections.unmodifiableMap(availableData);

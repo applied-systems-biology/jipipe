@@ -12,14 +12,14 @@ public interface ACAQTraitDeclaration {
     /**
      * Generates an Id for this declaration
      *
-     * @return
+     * @return the ID
      */
     String getId();
 
     /**
      * Gets the class of the generated trait
      *
-     * @return
+     * @return the trait class
      */
     Class<? extends ACAQTrait> getTraitClass();
 
@@ -42,42 +42,42 @@ public interface ACAQTraitDeclaration {
     /**
      * Returns true if this trait is a discriminator
      *
-     * @return
+     * @return if this trait is a discriminator
      */
     boolean isDiscriminator();
 
     /**
      * Returns true if the trait should be hidden from the user
      *
-     * @return
+     * @return if the trait should be hidden from the user
      */
     boolean isHidden();
 
     /**
-     * Returns the algorithm name
+     * Returns the name
      *
-     * @return
+     * @return the name
      */
     String getName();
 
     /**
-     * Returns the algorithm description
+     * Returns the description
      *
-     * @return
+     * @return the description
      */
     String getDescription();
 
     /**
      * Returns all declarations that are parents of this declaration
      *
-     * @return
+     * @return inherited trait types
      */
     Set<ACAQTraitDeclaration> getInherited();
 
     /**
      * Returns all dependencies
      *
-     * @return
+     * @return dependencies
      */
     Set<ACAQDependency> getDependencies();
 }

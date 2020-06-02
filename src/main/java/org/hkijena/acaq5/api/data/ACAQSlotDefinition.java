@@ -129,7 +129,7 @@ public class ACAQSlotDefinition implements ACAQParameterCollection {
      * If null or empty, this slot does not inherit
      * If it equals '*', the first available input slot is chosen
      *
-     * @return
+     * @return the slot name or '*' to pick the first slot or null
      */
     public String getInheritedSlot() {
         return inheritedSlot;

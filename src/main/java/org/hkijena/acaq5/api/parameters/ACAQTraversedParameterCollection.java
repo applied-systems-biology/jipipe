@@ -92,7 +92,7 @@ public class ACAQTraversedParameterCollection implements ACAQParameterCollection
     /**
      * Gets the parameters grouped by the source
      *
-     * @return
+     * @return all parameters grouped by source
      */
     public Map<ACAQParameterCollection, List<ACAQParameterAccess>> getGroupedBySource() {
         Map<ACAQParameterCollection, List<ACAQParameterAccess>> result = parameters.values().stream().collect(Collectors.groupingBy(ACAQParameterAccess::getSource));

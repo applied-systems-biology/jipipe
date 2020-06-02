@@ -336,7 +336,7 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     /**
      * Gets the available parameters in the graph
      *
-     * @return
+     * @return the parameters
      */
     public Map<String, ACAQParameterAccess> getAvailableParameters() {
         Map<String, ACAQParameterAccess> parameterAccessMap = new HashMap<>();
