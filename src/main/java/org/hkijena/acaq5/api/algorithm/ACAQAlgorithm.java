@@ -151,6 +151,7 @@ public abstract class ACAQAlgorithm implements ACAQValidatable, ACAQParameterCol
         this.compartment = other.compartment;
         this.visibleCompartments = new HashSet<>(other.visibleCompartments);
         this.customName = other.customName;
+        this.customDescription = other.customDescription;
         slotConfiguration.getEventBus().register(this);
         traitConfiguration.getEventBus().register(this);
         initialize();
