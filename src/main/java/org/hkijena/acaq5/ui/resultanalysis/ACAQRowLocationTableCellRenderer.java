@@ -4,7 +4,8 @@ import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
 import java.nio.file.Path;
 
 /**

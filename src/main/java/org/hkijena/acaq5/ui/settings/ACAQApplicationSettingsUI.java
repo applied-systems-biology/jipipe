@@ -10,7 +10,7 @@ import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;

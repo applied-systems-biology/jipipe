@@ -17,7 +17,8 @@ import org.hkijena.acaq5.ui.components.FileSelection;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 
 /**
  * Dialog to import a table

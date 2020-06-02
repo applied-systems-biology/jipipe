@@ -16,7 +16,7 @@ import org.hkijena.acaq5.utils.PathUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Frame;
 import java.nio.file.Files;
 import java.nio.file.Path;
 

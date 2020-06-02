@@ -8,7 +8,8 @@ import org.scijava.Context;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.text.JTextComponent;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Font;
 
 /**
  * Parameter editor for {@link String}

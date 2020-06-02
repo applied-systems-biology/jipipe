@@ -7,7 +7,11 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
-import org.hkijena.acaq5.ui.components.*;
+import org.hkijena.acaq5.ui.components.ACAQValidityReportUI;
+import org.hkijena.acaq5.ui.components.FormPanel;
+import org.hkijena.acaq5.ui.components.MarkdownDocument;
+import org.hkijena.acaq5.ui.components.MarkdownReader;
+import org.hkijena.acaq5.ui.components.UserFriendlyErrorUI;
 import org.hkijena.acaq5.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.acaq5.ui.events.RunUIWorkerInterruptedEvent;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
@@ -19,9 +23,12 @@ import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Desktop;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -163,7 +170,7 @@ public class ACAQRunSettingsUI extends ACAQProjectWorkbenchPanel {
     private void runNow() {
         removeAll();
         ACAQRunExecuterUI executerUI = new ACAQRunExecuterUI(run);
-        add(executerUI, BorderLayout.SOUTH);
+        add(executerUI, BorderLayout.CENTER);
         revalidate();
         repaint();
         executerUI.startRun();
@@ -198,7 +205,37 @@ public class ACAQRunSettingsUI extends ACAQProjectWorkbenchPanel {
         errorUI.displayErrors(exception);
         errorUI.addVerticalGlue();
         add(errorUI, BorderLayout.CENTER);
+
+        JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
+        JButton openFolderButton = new JButton("Open output folder", UIUtils.getIconFromResources("open.png"));
+        openFolderButton.addActionListener(e -> openOutputFolder());
+        toolBar.add(openFolderButton);
+        if (Files.isRegularFile(run.getConfiguration().getOutputPath().resolve("log.txt"))) {
+            JButton openLogButton = new JButton("Open log", UIUtils.getIconFromResources("search.png"));
+            openLogButton.addActionListener(e -> openLog());
+            toolBar.add(openLogButton);
+        }
+        add(toolBar, BorderLayout.NORTH);
+
         revalidate();
+        repaint();
+    }
+
+    private void openLog() {
+        try {
+            Desktop.getDesktop().open(run.getConfiguration().getOutputPath().resolve("log.txt").toFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void openOutputFolder() {
+        try {
+            Desktop.getDesktop().open(run.getConfiguration().getOutputPath().toFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void openResults() {

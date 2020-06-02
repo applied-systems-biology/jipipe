@@ -21,7 +21,9 @@ import org.hkijena.acaq5.ui.events.AlgorithmSelectionChangedEvent;
 import org.hkijena.acaq5.ui.events.DefaultUIActionRequestedEvent;
 import org.hkijena.acaq5.utils.PointRange;
 import org.hkijena.acaq5.utils.ScreenImage;
+import org.hkijena.acaq5.utils.ScreenImageSVG;
 import org.hkijena.acaq5.utils.UIUtils;
+import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.TopologicalOrderIterator;
@@ -29,7 +31,11 @@ import org.jgrapht.traverse.TopologicalOrderIterator;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.dnd.DropTarget;
-import java.awt.event.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
 import java.util.List;
@@ -485,10 +491,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         super.paintComponent(graphics);
 
         Graphics2D g = (Graphics2D) graphics;
-        RenderingHints rh = new RenderingHints(
-                RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setRenderingHints(rh);
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         NonCollidingRectangularLineDrawer drawer = new NonCollidingRectangularLineDrawer();
 
@@ -502,7 +505,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
                 Point sourcePoint = new Point();
                 Point targetPoint = new Point();
                 if (currentViewMode == ViewMode.Horizontal) {
-                    if (compartment.equals(ui.getAlgorithm().getCompartment())) {
+                    if (compartment == null || compartment.equals(ui.getAlgorithm().getCompartment())) {
                         sourcePoint.x = ui.getX() + ui.getWidth();
                         sourcePoint.y = ui.getY() + ACAQAlgorithmUI.SLOT_UI_HEIGHT / 2;
                         targetPoint.x = getWidth();
@@ -514,7 +517,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
                         targetPoint.y = sourcePoint.y;
                     }
                 } else {
-                    if (compartment.equals(ui.getAlgorithm().getCompartment())) {
+                    if (compartment == null || compartment.equals(ui.getAlgorithm().getCompartment())) {
                         sourcePoint.x = ui.getX() + ui.getWidth() / 2;
                         sourcePoint.y = ui.getY() + ui.getHeight();
                         targetPoint.x = sourcePoint.x;
@@ -720,8 +723,17 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
      *
      * @return The screenshot image
      */
-    public BufferedImage createScreenshot() {
+    public BufferedImage createScreenshotPNG() {
         return ScreenImage.createImage(this);
+    }
+
+    /**
+     * Creates a screenshot of the whole graph compartment
+     *
+     * @return The screenshot image
+     */
+    public SVGGraphics2D createScreenshotSVG() {
+        return ScreenImageSVG.createImage(this);
     }
 
     /**

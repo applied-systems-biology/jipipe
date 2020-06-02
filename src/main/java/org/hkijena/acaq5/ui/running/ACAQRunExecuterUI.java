@@ -7,7 +7,8 @@ import org.hkijena.acaq5.ui.events.RunUIWorkerProgressEvent;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Font;
 
 /**
  * UI that executes an {@link ACAQRunnable}
@@ -16,6 +17,8 @@ public class ACAQRunExecuterUI extends JPanel {
     private ACAQRunnable run;
     private JProgressBar progressBar;
     private JButton cancelButton;
+    private JScrollPane logScrollPane;
+    private JTextArea log;
 
     /**
      * @param run The runnable
@@ -28,6 +31,12 @@ public class ACAQRunExecuterUI extends JPanel {
 
     private void initialize() {
         setLayout(new BorderLayout(8, 8));
+
+        log = new JTextArea();
+        log.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        log.setEditable(false);
+        logScrollPane = new JScrollPane(log);
+        add(logScrollPane, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 8, 8, 8));
@@ -43,7 +52,7 @@ public class ACAQRunExecuterUI extends JPanel {
         cancelButton.addActionListener(e -> requestCancelRun());
         buttonPanel.add(cancelButton);
 
-        add(buttonPanel, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.SOUTH);
     }
 
     /**
@@ -105,6 +114,7 @@ public class ACAQRunExecuterUI extends JPanel {
             progressBar.setMaximum(event.getStatus().getMaxProgress());
             progressBar.setValue(event.getStatus().getProgress());
             progressBar.setString("(" + progressBar.getValue() + "/" + progressBar.getMaximum() + ") " + event.getStatus().getMessage());
+            log.append("[" + event.getStatus().getProgress() + "/" + event.getStatus().getMaxProgress() + "] " + event.getStatus().getMessage() + "\n");
         }
     }
 

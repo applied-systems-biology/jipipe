@@ -3,7 +3,8 @@ package org.hkijena.acaq5.ui.components;
 import org.hkijena.acaq5.utils.ResourceUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
 
 /**
  * Renders entries in {@link ACAQIconPickerDialog}

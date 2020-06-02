@@ -6,6 +6,7 @@ import net.imagej.ImageJ;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.extensions.settings.GeneralUISettings;
 import org.hkijena.acaq5.ui.ACAQProjectWindow;
+import org.hkijena.acaq5.ui.components.SplashScreen;
 import org.scijava.Context;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
@@ -13,7 +14,8 @@ import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Insets;
 
 /**
  * Command that runs the GUI
@@ -29,6 +31,9 @@ public class ACAQGUICommand implements Command {
 
     @Override
     public void run() {
+        if(!ACAQDefaultRegistry.isInstantiated()) {
+            SwingUtilities.invokeLater(() -> SplashScreen.getInstance().showSplash());
+        }
         ACAQDefaultRegistry.instantiate(context);
         SwingUtilities.invokeLater(() -> {
             if (GeneralUISettings.getInstance().getLookAndFeel() == GeneralUISettings.LookAndFeel.FlatIntelliJLaf) {

@@ -10,7 +10,7 @@ import org.hkijena.acaq5.utils.PathUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;

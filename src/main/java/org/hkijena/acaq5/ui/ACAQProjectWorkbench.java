@@ -17,6 +17,7 @@ import org.hkijena.acaq5.ui.compendium.ACAQAlgorithmCompendiumUI;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.RecentProjectsMenu;
 import org.hkijena.acaq5.ui.components.ReloadableValidityChecker;
+import org.hkijena.acaq5.ui.components.SplashScreen;
 import org.hkijena.acaq5.ui.extension.MenuTarget;
 import org.hkijena.acaq5.ui.extensions.ACAQPluginManagerUIPanel;
 import org.hkijena.acaq5.ui.extensions.ACAQPluginValidityCheckerPanel;
@@ -30,7 +31,7 @@ import org.jdesktop.swingx.JXStatusBar;
 import org.scijava.Context;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.time.LocalDateTime;
@@ -67,6 +68,7 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
         project.getEventBus().register(this);
 
         validatePlugins(true);
+        SplashScreen.getInstance().hideSplash();
     }
 
     private void initializeDefaultProject() {

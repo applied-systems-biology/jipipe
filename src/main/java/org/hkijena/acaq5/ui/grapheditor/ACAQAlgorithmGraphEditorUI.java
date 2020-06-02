@@ -16,11 +16,22 @@ import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectionChangedEvent;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
+import org.jfree.graphics2d.svg.SVGGraphics2D;
+import org.jfree.graphics2d.svg.SVGUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Font;
+import java.awt.Point;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Comparator;
@@ -222,11 +233,20 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
         });
         menuBar.add(layoutHelperButton);
 
-        JButton createScreenshotButton = new JButton(UIUtils.getIconFromResources("filetype-image.png"));
-        createScreenshotButton.setToolTipText("Export graph as *.png");
-        UIUtils.makeFlat25x25(createScreenshotButton);
-        createScreenshotButton.addActionListener(e -> createScreenshot());
-        menuBar.add(createScreenshotButton);
+        JButton exportButton = new JButton(UIUtils.getIconFromResources("export.png"));
+        exportButton.setToolTipText("Export graph");
+        UIUtils.makeFlat25x25(exportButton);
+
+        JPopupMenu exportAsImageMenu = UIUtils.addPopupMenuToComponent(exportButton);
+
+        JMenuItem exportAsPngItem = new JMenuItem("as *.png", UIUtils.getIconFromResources("filetype-image.png"));
+        exportAsPngItem.addActionListener(e -> createScreenshotPNG());
+        exportAsImageMenu.add(exportAsPngItem);
+        JMenuItem exportAsSvgItem = new JMenuItem("as *.svg", UIUtils.getIconFromResources("filetype-image.png"));
+        exportAsSvgItem.addActionListener(e -> createScreenshotSVG());
+        exportAsImageMenu.add(exportAsSvgItem);
+
+        menuBar.add(exportButton);
     }
 
     /**
@@ -236,8 +256,23 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
         return algorithmGraph;
     }
 
-    private void createScreenshot() {
-        BufferedImage screenshot = canvasUI.createScreenshot();
+
+    private void createScreenshotSVG() {
+        SVGGraphics2D screenshot = canvasUI.createScreenshotSVG();
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Export graph as *.png");
+        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            try {
+                SVGUtils.writeToSVG(fileChooser.getSelectedFile(), screenshot.getSVGElement());
+                getWorkbench().sendStatusBarText("Exported graph as " + fileChooser.getSelectedFile());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private void createScreenshotPNG() {
+        BufferedImage screenshot = canvasUI.createScreenshotPNG();
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Export graph as *.png");
         if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {

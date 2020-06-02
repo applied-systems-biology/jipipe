@@ -1,5 +1,7 @@
 package org.hkijena.acaq5.api;
 
+import com.google.common.base.Charsets;
+import ij.IJ;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
@@ -25,6 +27,7 @@ public class ACAQRun implements ACAQRunnable {
     ACAQAlgorithmGraph algorithmGraph;
     private ACAQProject project;
     private ACAQRunConfiguration configuration;
+    private StringBuilder log = new StringBuilder();
 
     /**
      * @param project       The project
@@ -119,6 +122,38 @@ public class ACAQRun implements ACAQRunnable {
     @Override
     public void run(Consumer<ACAQRunnerStatus> onProgress, Supplier<Boolean> isCancelled) {
         prepare();
+        try {
+            runAnalysis(onProgress, isCancelled);
+        } catch (Exception e) {
+            try {
+                if (configuration.getOutputPath() != null)
+                    Files.write(configuration.getOutputPath().resolve("log.txt"), log.toString().getBytes(Charsets.UTF_8));
+            } catch (IOException ex) {
+                IJ.handleException(ex);
+            }
+            throw e;
+        }
+
+        // Postprocessing
+        try {
+            if (configuration.getOutputPath() != null && configuration.isFlushingEnabled())
+                project.saveProject(configuration.getOutputPath().resolve("parameters.json"));
+        } catch (IOException e) {
+            throw new UserFriendlyRuntimeException(e, "Could not save project to '" + configuration.getOutputPath().resolve("parameters.json") + "'!",
+                    "Pipeline run", "Either the path is invalid, or you have no permission to write to the disk, or the disk space is full",
+                    "Check if you can write to the output directory.");
+        }
+        try {
+            if (configuration.getOutputPath() != null)
+                Files.write(configuration.getOutputPath().resolve("log.txt"), log.toString().getBytes(Charsets.UTF_8));
+        } catch (IOException e) {
+            throw new UserFriendlyRuntimeException(e, "Could not write log '" + configuration.getOutputPath().resolve("log.txt") + "'!",
+                    "Pipeline run", "Either the path is invalid, or you have no permission to write to the disk, or the disk space is full",
+                    "Check if you can write to the output directory.");
+        }
+    }
+
+    private void runAnalysis(Consumer<ACAQRunnerStatus> onProgress, Supplier<Boolean> isCancelled) {
         Set<ACAQAlgorithm> unExecutableAlgorithms = algorithmGraph.getAlgorithmsWithMissingInput();
         Set<ACAQAlgorithm> executedAlgorithms = new HashSet<>();
         List<ACAQDataSlot> traversedSlots = algorithmGraph.traverse();
@@ -146,7 +181,7 @@ public class ACAQRun implements ACAQRunnable {
                         "Pipeline run", "You clicked 'Cancel'.",
                         "Do not click 'Cancel' if you do not want to cancel the execution.");
             ACAQDataSlot slot = traversedSlots.get(index);
-            onProgress.accept(new ACAQRunnerStatus(index, algorithmGraph.getSlotCount(), slot.getNameWithAlgorithmName()));
+            logStatus(onProgress, new ACAQRunnerStatus(index, algorithmGraph.getSlotCount(), slot.getNameWithAlgorithmName()));
 
             // If an algorithm cannot be executed, skip it automatically
             if (unExecutableAlgorithms.contains(slot.getAlgorithm()))
@@ -155,7 +190,7 @@ public class ACAQRun implements ACAQRunnable {
             // Let algorithms provide sub-progress
             String statusMessage = "Algorithm: " + slot.getAlgorithm().getName();
             int traversionIndex = index;
-            Consumer<ACAQRunnerSubStatus> algorithmProgress = s -> onProgress.accept(new ACAQRunnerStatus(traversionIndex, traversedSlots.size(),
+            Consumer<ACAQRunnerSubStatus> algorithmProgress = s -> logStatus(onProgress, new ACAQRunnerStatus(traversionIndex, traversedSlots.size(),
                     statusMessage + " | " + s));
 
             if (slot.isInput()) {
@@ -186,16 +221,11 @@ public class ACAQRun implements ACAQRunnable {
                 flushFinishedSlots(traversedSlots, executedAlgorithms, index, slot);
             }
         }
+    }
 
-        // Postprocessing
-        try {
-            if (configuration.getOutputPath() != null && configuration.isFlushingEnabled())
-                project.saveProject(configuration.getOutputPath().resolve("parameters.json"));
-        } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Could not save project to '" + configuration.getOutputPath().resolve("parameters.json") + "'!",
-                    "Pipeline run", "Either the path is invalid, or you have no permission to write to the disk, or the disk space is full",
-                    "Check if you can write to the output directory.");
-        }
+    private void logStatus(Consumer<ACAQRunnerStatus> onProgress, ACAQRunnerStatus status) {
+        onProgress.accept(status);
+        log.append("[").append(status.getProgress()).append("/").append(status.getMaxProgress()).append("] ").append(status.getMessage()).append("\n");
     }
 
     private void forceFlushAlgorithms(Set<ACAQAlgorithm> algorithms) {
@@ -207,6 +237,10 @@ public class ACAQRun implements ACAQRunnable {
                     outputSlot.flush();
             }
         }
+    }
+
+    public StringBuilder getLog() {
+        return log;
     }
 
     /**

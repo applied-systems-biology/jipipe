@@ -6,7 +6,13 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.testbench.ACAQTestbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
-import org.hkijena.acaq5.ui.components.*;
+import org.hkijena.acaq5.ui.components.ACAQValidityReportUI;
+import org.hkijena.acaq5.ui.components.DocumentTabPane;
+import org.hkijena.acaq5.ui.components.DocumentedComponent;
+import org.hkijena.acaq5.ui.components.FileSelection;
+import org.hkijena.acaq5.ui.components.FormPanel;
+import org.hkijena.acaq5.ui.components.MarkdownDocument;
+import org.hkijena.acaq5.ui.components.UserFriendlyErrorUI;
 import org.hkijena.acaq5.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.acaq5.ui.events.RunUIWorkerInterruptedEvent;
 import org.hkijena.acaq5.ui.running.ACAQRunExecuterUI;
@@ -15,7 +21,7 @@ import org.hkijena.acaq5.ui.testbench.ACAQTestBenchUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -166,7 +172,7 @@ public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
 
         removeAll();
         ACAQRunExecuterUI executerUI = new ACAQRunExecuterUI(currentTestBench);
-        add(executerUI, BorderLayout.SOUTH);
+        add(executerUI, BorderLayout.CENTER);
         revalidate();
         repaint();
         executerUI.startRun();

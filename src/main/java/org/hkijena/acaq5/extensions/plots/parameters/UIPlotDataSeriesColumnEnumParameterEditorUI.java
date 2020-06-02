@@ -9,7 +9,7 @@ import org.hkijena.acaq5.ui.plotbuilder.PlotDataSeriesColumnListCellRenderer;
 import org.scijava.Context;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 
 /**
  * Works for {@link TableColumn}.

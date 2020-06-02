@@ -4,7 +4,7 @@ import org.hkijena.acaq5.api.compat.ImageJDatatypeImporter;
 import org.hkijena.acaq5.ui.compat.ImageJDatatypeImporterUI;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 
 /**
  * Importer around {@link org.hkijena.acaq5.extensions.imagejdatatypes.compat.ROIDataImageJAdapter}

@@ -6,7 +6,7 @@ import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
-import java.awt.*;
+import java.awt.Component;
 
 /**
  * Renders additional {@link ACAQTraitDeclaration} columns in a table

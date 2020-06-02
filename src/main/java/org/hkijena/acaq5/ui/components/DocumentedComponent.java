@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.ui.components;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 

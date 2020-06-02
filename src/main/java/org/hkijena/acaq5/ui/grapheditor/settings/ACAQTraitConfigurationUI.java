@@ -9,7 +9,7 @@ import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.ui.components.ACAQTraitPicker;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 

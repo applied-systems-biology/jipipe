@@ -21,7 +21,7 @@ public class StandardSettingsExtension extends ACAQPrepackagedDefaultJavaExtensi
 
     @Override
     public String getDependencyId() {
-        return "standard-settings";
+        return "org.hkijena.acaq5:settings";
     }
 
     @Override

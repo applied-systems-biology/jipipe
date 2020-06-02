@@ -9,7 +9,11 @@ import org.hkijena.acaq5.ui.parameters.ACAQParameterGeneratorUI;
 import org.scijava.Context;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Registry for parameter types

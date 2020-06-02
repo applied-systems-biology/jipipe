@@ -5,7 +5,12 @@ import org.hkijena.acaq5.ACAQGUICommand;
 import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.events.ExtensionContentRemovedEvent;
-import org.hkijena.acaq5.ui.components.*;
+import org.hkijena.acaq5.ui.components.DocumentTabPane;
+import org.hkijena.acaq5.ui.components.MarkdownDocument;
+import org.hkijena.acaq5.ui.components.MarkdownReader;
+import org.hkijena.acaq5.ui.components.RecentJsonExtensionsMenu;
+import org.hkijena.acaq5.ui.components.ReloadableValidityChecker;
+import org.hkijena.acaq5.ui.components.SplashScreen;
 import org.hkijena.acaq5.ui.extension.MenuTarget;
 import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonExtensionContentListUI;
 import org.hkijena.acaq5.ui.extensionbuilder.grapheditor.ACAQJsonExtensionAlgorithmGraphUI;
@@ -16,7 +21,7 @@ import org.jdesktop.swingx.JXStatusBar;
 import org.scijava.Context;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -46,6 +51,7 @@ public class ACAQJsonExtensionWorkbench extends JPanel implements ACAQWorkbench 
         initialize();
 
         this.project.getEventBus().register(this);
+        SplashScreen.getInstance().hideSplash();
     }
 
     private void initialize() {

@@ -15,7 +15,11 @@ import org.hkijena.acaq5.api.events.DatatypeRegisteredEvent;
 import org.hkijena.acaq5.api.events.TraitRegisteredEvent;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**

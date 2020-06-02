@@ -13,7 +13,11 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.DatatypeRegisteredEvent;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Contains known {@link ACAQData} types, and associates them to their respective {@link ACAQDataSlot}.
