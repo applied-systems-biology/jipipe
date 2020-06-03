@@ -37,15 +37,11 @@ import org.scijava.Priority;
 
 import javax.swing.*;
 import javax.swing.table.TableModel;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * User interface for displaying and creating plots

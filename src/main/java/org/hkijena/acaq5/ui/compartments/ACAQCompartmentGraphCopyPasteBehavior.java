@@ -12,7 +12,7 @@ import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCopyPasteBehavior;
 import org.hkijena.acaq5.utils.JsonUtils;
 
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;

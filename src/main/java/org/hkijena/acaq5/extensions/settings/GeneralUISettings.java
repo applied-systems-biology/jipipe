@@ -17,6 +17,7 @@ public class GeneralUISettings implements ACAQParameterCollection {
     private EventBus eventBus = new EventBus();
     private boolean showIntroduction = true;
     private LookAndFeel lookAndFeel = LookAndFeel.Metal;
+    private boolean showParameterSearchBar = true;
 
     @Override
     public EventBus getEventBus() {
@@ -46,6 +47,18 @@ public class GeneralUISettings implements ACAQParameterCollection {
     public void setLookAndFeel(LookAndFeel lookAndFeel) {
         this.lookAndFeel = lookAndFeel;
         getEventBus().post(new ParameterChangedEvent(this, "look-and-feel"));
+    }
+
+    @ACAQDocumentation(name = "Show parameter search bar", description = "If enabled, you can search parameters (Re-open parameters to apply changes)")
+    @ACAQParameter("show-parameter-search-bar")
+    public boolean isShowParameterSearchBar() {
+        return showParameterSearchBar;
+    }
+
+    @ACAQParameter("show-parameter-search-bar")
+    public void setShowParameterSearchBar(boolean showParameterSearchBar) {
+        this.showParameterSearchBar = showParameterSearchBar;
+        getEventBus().post(new ParameterChangedEvent(this, "show-parameter-search-bar"));
     }
 
     public static GeneralUISettings getInstance() {

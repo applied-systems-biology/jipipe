@@ -4,10 +4,7 @@ import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.jfree.graphics2d.svg.SVGHints;
 
 import javax.swing.*;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Rectangle;
+import java.awt.*;
 
 /*
  Code provided by Rob Camick

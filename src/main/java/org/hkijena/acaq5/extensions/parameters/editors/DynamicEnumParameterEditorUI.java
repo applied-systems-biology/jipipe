@@ -7,7 +7,7 @@ import org.hkijena.acaq5.utils.ReflectionUtils;
 import org.scijava.Context;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.List;
 import java.util.function.Supplier;
 

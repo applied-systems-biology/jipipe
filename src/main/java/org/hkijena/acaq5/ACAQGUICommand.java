@@ -14,8 +14,7 @@ import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Insets;
+import java.awt.*;
 
 /**
  * Command that runs the GUI
@@ -31,7 +30,7 @@ public class ACAQGUICommand implements Command {
 
     @Override
     public void run() {
-        if(!ACAQDefaultRegistry.isInstantiated()) {
+        if (!ACAQDefaultRegistry.isInstantiated()) {
             SwingUtilities.invokeLater(() -> SplashScreen.getInstance().showSplash());
         }
         ACAQDefaultRegistry.instantiate(context);

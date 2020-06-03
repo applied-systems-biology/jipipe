@@ -7,11 +7,7 @@ import org.hkijena.acaq5.api.ACAQHidden;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**

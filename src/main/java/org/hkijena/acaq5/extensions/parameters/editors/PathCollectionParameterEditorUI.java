@@ -8,7 +8,7 @@ import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Context;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Arrays;

@@ -9,7 +9,7 @@ import org.scijava.Context;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import java.awt.Font;
+import java.awt.*;
 
 /**
  * Editor for {@link StringFilter}

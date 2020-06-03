@@ -5,7 +5,7 @@ import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 
 /**
  * UI around the metadata of an {@link org.hkijena.acaq5.api.ACAQProject}

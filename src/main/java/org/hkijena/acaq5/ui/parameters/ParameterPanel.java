@@ -4,32 +4,25 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
-import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
-import org.hkijena.acaq5.api.parameters.ACAQMutableParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
-import org.hkijena.acaq5.api.parameters.ACAQParameterTypeDeclaration;
-import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
-import org.hkijena.acaq5.api.parameters.ACAQTraversedParameterCollection;
+import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.api.registries.ACAQParameterTypeRegistry;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
+import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.UIUtils;
+import org.jdesktop.swingx.JXTextField;
 import org.scijava.Context;
 import org.scijava.Contextual;
 import org.scijava.util.StringUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
+import javax.swing.event.DocumentEvent;
+import java.awt.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -52,11 +45,20 @@ public class ParameterPanel extends FormPanel implements Contextual {
      */
     public static final int FORCE_TRAVERSE = 256;
 
+    /**
+     * With this flag, there will be a search bar for parameters.
+     * {@link org.hkijena.acaq5.extensions.settings.GeneralUISettings}.isShowParameterSearchBar() will override this setting
+     */
+    public static final int WITH_SEARCH_BAR = 512;
+
     private Context context;
     private ACAQParameterCollection parameterCollection;
     private boolean noGroupHeaders;
     private boolean noEmptyGroupHeaders;
     private boolean forceTraverse;
+    private boolean withSearchBar;
+    private ACAQTraversedParameterCollection traversed;
+    private JXTextField searchField;
 
     /**
      * @param context             SciJava context
@@ -69,8 +71,10 @@ public class ParameterPanel extends FormPanel implements Contextual {
         this.noGroupHeaders = (flags & NO_GROUP_HEADERS) == NO_GROUP_HEADERS;
         this.noEmptyGroupHeaders = (flags & NO_EMPTY_GROUP_HEADERS) == NO_EMPTY_GROUP_HEADERS;
         this.forceTraverse = (flags & FORCE_TRAVERSE) == FORCE_TRAVERSE;
+        this.withSearchBar = (flags & WITH_SEARCH_BAR) == WITH_SEARCH_BAR;
         this.context = context;
         this.parameterCollection = parameterCollection;
+        initialize();
         reloadForm();
         this.parameterCollection.getEventBus().register(this);
     }
@@ -85,17 +89,45 @@ public class ParameterPanel extends FormPanel implements Contextual {
         this(workbench.getContext(), parameterCollection, documentation, flags);
     }
 
+    private void initialize() {
+        if (withSearchBar) {
+            JToolBar toolBar = new JToolBar();
+            toolBar.setFloatable(false);
+
+            searchField = new JXTextField("Search ...");
+            searchField.getDocument().addDocumentListener(new DocumentChangeListener() {
+                @Override
+                public void changed(DocumentEvent documentEvent) {
+                    refreshForm();
+                }
+            });
+            toolBar.add(searchField);
+
+            JButton clearSearchButton = new JButton(UIUtils.getIconFromResources("clear.png"));
+            clearSearchButton.addActionListener(e -> searchField.setText(null));
+            toolBar.add(clearSearchButton);
+
+            add(toolBar, BorderLayout.NORTH);
+        }
+    }
+
     /**
-     * Reloads the form
+     * Reloads the form. This re-traverses the parameters and recreates the UI elements
      */
     public void reloadForm() {
-        clear();
-        ACAQTraversedParameterCollection traversed;
         if (forceTraverse || !(getParameterCollection() instanceof ACAQTraversedParameterCollection))
             traversed = new ACAQTraversedParameterCollection(getParameterCollection());
         else
             traversed = (ACAQTraversedParameterCollection) getParameterCollection();
 
+        refreshForm();
+    }
+
+    /**
+     * Recreates the UI elements. Does not re-traverse the parameters, meaning that the parameter structure is not updated
+     */
+    public void refreshForm() {
+        clear();
         Map<ACAQParameterCollection, List<ACAQParameterAccess>> groupedBySource = traversed.getGroupedBySource();
         if (groupedBySource.containsKey(this.parameterCollection)) {
             addToForm(traversed, this.parameterCollection, groupedBySource.get(this.parameterCollection));
@@ -141,11 +173,15 @@ public class ParameterPanel extends FormPanel implements Contextual {
             }
         }
 
+        String[] searchStrings = getSearchStrings();
+
         List<ACAQParameterEditorUI> uiList = new ArrayList<>();
         ACAQParameterVisibility sourceVisibility = traversed.getSourceVisibility(parameterHolder);
         for (ACAQParameterAccess parameterAccess : parameterAccesses) {
             ACAQParameterVisibility visibility = parameterAccess.getVisibility();
             if (!visibility.isVisibleIn(sourceVisibility))
+                continue;
+            if (!searchStringsMatches(parameterAccess, searchStrings))
                 continue;
 
             ACAQParameterEditorUI ui = ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getContext(), parameterAccess);
@@ -189,6 +225,32 @@ public class ParameterPanel extends FormPanel implements Contextual {
             markdownString.append("No description provided.");
         }
         return new MarkdownDocument(markdownString.toString());
+    }
+
+    private boolean searchStringsMatches(ACAQParameterAccess access, String[] strings) {
+        if (access == null)
+            return true;
+        if (strings == null)
+            return true;
+        String haystack = access.getName() + " " + access.getDescription();
+        for (String str : strings) {
+            if (haystack.toLowerCase().contains(str.toLowerCase()))
+                return true;
+        }
+        return false;
+    }
+
+    private String[] getSearchStrings() {
+        if (searchField == null)
+            return null;
+        String[] searchStrings = null;
+        if (searchField.getText() != null) {
+            String str = searchField.getText().trim();
+            if (!str.isEmpty()) {
+                searchStrings = str.split(" ");
+            }
+        }
+        return searchStrings;
     }
 
     private void removeDynamicParameter(String key, ACAQDynamicParameterCollection parameterHolder) {

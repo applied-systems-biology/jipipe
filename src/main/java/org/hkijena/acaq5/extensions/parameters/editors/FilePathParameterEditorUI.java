@@ -5,7 +5,7 @@ import org.hkijena.acaq5.ui.components.FileSelection;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.scijava.Context;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.nio.file.Path;
 
 /**

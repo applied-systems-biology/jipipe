@@ -10,7 +10,7 @@ import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Context;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;

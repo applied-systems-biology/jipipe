@@ -13,8 +13,7 @@ import org.scijava.Context;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.BorderLayout;
-import java.awt.Point;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;

@@ -16,7 +16,7 @@ package org.hkijena.acaq5.ui.tableanalyzer;
 import org.hkijena.acaq5.ACAQDefaultRegistry;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 
 /**
  * UI for {@link ACAQTableVectorOperation}

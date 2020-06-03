@@ -17,9 +17,7 @@ import org.scijava.Context;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.*;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;

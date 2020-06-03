@@ -10,7 +10,7 @@ import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +49,7 @@ public class ACAQApplicationSettingsUI extends ACAQWorkbenchPanel {
             ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),
                     traversedParameterCollection,
                     MarkdownDocument.fromPluginResource("documentation/application-settings.md"),
-                    ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION);
+                    ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SEARCH_BAR);
             documentTabPane.addTab(category,
                     categoryIcon,
                     parameterPanel,

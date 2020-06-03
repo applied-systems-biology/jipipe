@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.api.algorithm;
 
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * Available algorithm categories

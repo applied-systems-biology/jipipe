@@ -5,11 +5,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCompartmentUI;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphEditorUI;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
-import org.hkijena.acaq5.ui.grapheditor.ACAQStandardCopyPasteBehavior;
-import org.hkijena.acaq5.ui.grapheditor.ACAQStandardDragAndDropBehavior;
+import org.hkijena.acaq5.ui.grapheditor.*;
 
 import java.util.stream.Collectors;
 

@@ -5,7 +5,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 
 /**
  * Panel that encapsulates a {@link ACAQValidityReportUI} and an {@link ACAQValidatable}.
