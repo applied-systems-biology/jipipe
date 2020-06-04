@@ -115,13 +115,13 @@ public class ACAQRunSettingsUI extends ACAQProjectWorkbenchPanel {
                 MarkdownDocument.fromPluginResource("documentation/run.md"),
                 ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING);
 
-        Set<ACAQGraphNode> algorithmsWithMissingInput = getProjectWorkbench().getProject().getGraph().getAlgorithmsWithMissingInput();
+        Set<ACAQGraphNode> algorithmsWithMissingInput = getProjectWorkbench().getProject().getGraph().getDeactivatedAlgorithms();
         if (!algorithmsWithMissingInput.isEmpty()) {
             formPanel.removeLastRow();
             FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("Unexecuted algorithms", UIUtils.getIconFromResources("warning.png"));
             headerPanel.getDescriptionArea().setVisible(true);
-            headerPanel.getDescriptionArea().setText("There are algorithms that will not be executed, as they are missing input data. " +
-                    "If this is not intended, please check if the listed algorithms have all input slots connected.");
+            headerPanel.getDescriptionArea().setText("There are algorithms that will not be executed, as they are missing input data or are deactivated. " +
+                    "If this is not intended, please check if the listed algorithms have all input slots connected and the affected algorithms are activated.");
 
             DefaultTableModel model = new DefaultTableModel();
             model.setColumnIdentifiers(new Object[]{"Compartment", "Algorithm name"});

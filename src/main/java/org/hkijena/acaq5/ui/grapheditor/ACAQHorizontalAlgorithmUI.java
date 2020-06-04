@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.ui.grapheditor;
 
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
@@ -262,6 +263,22 @@ public class ACAQHorizontalAlgorithmUI extends ACAQAlgorithmUI {
     @Override
     protected void updateName() {
         nameLabel.setText(getAlgorithm().getName());
+    }
+
+    @Override
+    protected void updateActivationStatus() {
+        if (getAlgorithm() instanceof ACAQAlgorithm) {
+            if (((ACAQAlgorithm) getAlgorithm()).isEnabled()) {
+                setBackground(getFillColor());
+                nameLabel.setForeground(Color.BLACK);
+            } else {
+                setBackground(Color.LIGHT_GRAY);
+                nameLabel.setForeground(Color.GRAY);
+            }
+        } else {
+            setBackground(getFillColor());
+            nameLabel.setForeground(Color.BLACK);
+        }
     }
 
     @Override

@@ -4,7 +4,9 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQTraitConfiguration;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
 
 /**
  * An {@link ACAQGraphNode} that contains a non-empty workload.
@@ -57,7 +59,7 @@ public abstract class ACAQAlgorithm extends ACAQGraphNode {
 
     @ACAQDocumentation(name = "Enabled", description = "If disabled, this algorithm will be skipped in a run. " +
             "Please note that this will also disable all algorithms dependent on this algorithm.")
-    @ACAQParameter("acaq:algorithm:enabled")
+    @ACAQParameter(value = "acaq:algorithm:enabled", visibility = ACAQParameterVisibility.Visible)
     public boolean isEnabled() {
         return enabled;
     }
@@ -65,5 +67,6 @@ public abstract class ACAQAlgorithm extends ACAQGraphNode {
     @ACAQParameter("acaq:algorithm:enabled")
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+        getEventBus().post(new ParameterChangedEvent(this, "acaq:algorithm:enabled"));
     }
 }

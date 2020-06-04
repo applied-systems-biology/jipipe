@@ -107,13 +107,13 @@ public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
         ACAQValidityReport report = new ACAQValidityReport();
         getProject().reportValidity(report);
 
-        Set<ACAQGraphNode> algorithmsWithMissingInput = getProject().getGraph().getAlgorithmsWithMissingInput();
+        Set<ACAQGraphNode> algorithmsWithMissingInput = getProject().getGraph().getDeactivatedAlgorithms();
         if (algorithmsWithMissingInput.contains(algorithm)) {
             report.forCategory("Testbench").reportIsInvalid(
-                    "Selected algorithm is missing inputs!",
-                    "The selected algorithm would not be executed, as it is missing input data. " +
+                    "Selected algorithm is deafctivated or missing inputs!",
+                    "The selected algorithm would not be executed, as it is deactivated or missing input data. " +
                             "You have to ensure that all input slots are assigned for the selected algorithm and its dependencies.",
-                    "Please check if all input slots are assigned. Also check all dependency algorithms.",
+                    "Please check if the parameter 'Enabled' is checked. Please check if all input slots are assigned. Also check all dependency algorithms.",
                     algorithm
             );
         }

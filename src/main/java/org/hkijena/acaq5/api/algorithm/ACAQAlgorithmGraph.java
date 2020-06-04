@@ -739,13 +739,19 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     }
 
     /**
-     * Gets all algorithms and all dependent algorithms that are missing inputs.
+     * Gets all algorithms and all dependent algorithms that are missing inputs or are deactivated by the user
      *
      * @return list of algorithms
      */
-    public Set<ACAQGraphNode> getAlgorithmsWithMissingInput() {
+    public Set<ACAQGraphNode> getDeactivatedAlgorithms() {
         Set<ACAQGraphNode> missing = new HashSet<>();
         for (ACAQGraphNode algorithm : traverseAlgorithms()) {
+            if (algorithm instanceof ACAQAlgorithm) {
+                if (!((ACAQAlgorithm) algorithm).isEnabled()) {
+                    missing.add(algorithm);
+                    continue;
+                }
+            }
             for (ACAQDataSlot inputSlot : algorithm.getInputSlots()) {
                 ACAQDataSlot sourceSlot = getSourceSlot(inputSlot);
                 if (sourceSlot == null) {

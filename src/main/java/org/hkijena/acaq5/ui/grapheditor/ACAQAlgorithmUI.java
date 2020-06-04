@@ -2,6 +2,7 @@ package org.hkijena.acaq5.ui.grapheditor;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
@@ -102,6 +103,21 @@ public abstract class ACAQAlgorithmUI extends JPanel {
 
         contextMenu.addSeparator();
 
+        if (algorithm instanceof ACAQAlgorithm) {
+            ACAQAlgorithm a = (ACAQAlgorithm) algorithm;
+            if (a.isEnabled()) {
+                JMenuItem deactivateButton = new JMenuItem("Disable algorithm", UIUtils.getIconFromResources("eye-slash.png"));
+                deactivateButton.setToolTipText("Excludes the algorithm from the run.");
+                deactivateButton.addActionListener(e -> a.setEnabled(false));
+                contextMenu.add(deactivateButton);
+            } else {
+                JMenuItem activateButton = new JMenuItem("Enable algorithm", UIUtils.getIconFromResources("eye.png"));
+                activateButton.setToolTipText("Includes the algorithm into the run.");
+                activateButton.addActionListener(e -> a.setEnabled(true));
+                contextMenu.add(activateButton);
+            }
+        }
+
         if (algorithm instanceof ACAQProjectCompartment) {
             JMenuItem deleteButton = new JMenuItem("Delete compartment", UIUtils.getIconFromResources("delete.png"));
             deleteButton.addActionListener(e -> removeCompartment());
@@ -150,6 +166,12 @@ public abstract class ACAQAlgorithmUI extends JPanel {
         return algorithm;
     }
 
+    /**
+     * Function that creates the "Add slot" button
+     *
+     * @param slotType slot type
+     * @return the button
+     */
     protected JButton createAddSlotButton(ACAQDataSlot.SlotType slotType) {
         JButton button = new JButton(UIUtils.getIconFromResources("add.png"));
         button.setPreferredSize(new Dimension(25, SLOT_UI_HEIGHT));
@@ -269,6 +291,9 @@ public abstract class ACAQAlgorithmUI extends JPanel {
             updateName();
             revalidate();
             repaint();
+        } else if (event.getSource() == algorithm && "acaq:algorithm:enabled".equals(event.getKey())) {
+            updateActivationStatus();
+            updateContextMenu();
         }
     }
 
@@ -276,6 +301,11 @@ public abstract class ACAQAlgorithmUI extends JPanel {
      * Called when the algorithm name was updated
      */
     protected abstract void updateName();
+
+    /**
+     * Called when the algorithm was enabled/disabled
+     */
+    protected abstract void updateActivationStatus();
 
     /**
      * Recalculates the UI size

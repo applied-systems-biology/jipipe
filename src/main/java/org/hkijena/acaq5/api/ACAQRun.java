@@ -154,7 +154,7 @@ public class ACAQRun implements ACAQRunnable {
     }
 
     private void runAnalysis(Consumer<ACAQRunnerStatus> onProgress, Supplier<Boolean> isCancelled) {
-        Set<ACAQGraphNode> unExecutableAlgorithms = algorithmGraph.getAlgorithmsWithMissingInput();
+        Set<ACAQGraphNode> unExecutableAlgorithms = algorithmGraph.getDeactivatedAlgorithms();
         Set<ACAQGraphNode> executedAlgorithms = new HashSet<>();
         List<ACAQDataSlot> traversedSlots = algorithmGraph.traverse();
 
