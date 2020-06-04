@@ -45,6 +45,7 @@ public abstract class ACAQAlgorithmUI extends JPanel {
     private JPopupMenu contextMenu = new JPopupMenu();
     private JMenuItem cutContextMenuButton;
     private JMenuItem copyContextMenuButton;
+    private JMenuItem enableDisableContextMenuButton;
 
     /**
      * Creates a new UI
@@ -73,10 +74,19 @@ public abstract class ACAQAlgorithmUI extends JPanel {
      * You should not add new items, unless you always replace them
      */
     public void updateContextMenu() {
-        if (cutContextMenuButton == null || copyContextMenuButton == null)
-            return;
-        cutContextMenuButton.setEnabled(algorithm.canUserDelete() && graphUI.getCopyPasteBehavior() != null);
-        copyContextMenuButton.setEnabled(algorithm.canUserDelete() && graphUI.getCopyPasteBehavior() != null);
+        if (algorithm instanceof ACAQAlgorithm && enableDisableContextMenuButton != null) {
+            ACAQAlgorithm a = (ACAQAlgorithm) algorithm;
+            if(a.isEnabled()) {
+                enableDisableContextMenuButton.setText("Disable algorithm");
+            }
+            else {
+                enableDisableContextMenuButton.setText("Enable algorithm");
+            }
+        }
+        if(cutContextMenuButton != null)
+            cutContextMenuButton.setEnabled(algorithm.canUserDelete() && graphUI.getCopyPasteBehavior() != null);
+        if(copyContextMenuButton != null)
+            copyContextMenuButton.setEnabled(algorithm.canUserDelete() && graphUI.getCopyPasteBehavior() != null);
     }
 
     /**
@@ -105,17 +115,9 @@ public abstract class ACAQAlgorithmUI extends JPanel {
 
         if (algorithm instanceof ACAQAlgorithm) {
             ACAQAlgorithm a = (ACAQAlgorithm) algorithm;
-            if (a.isEnabled()) {
-                JMenuItem deactivateButton = new JMenuItem("Disable algorithm", UIUtils.getIconFromResources("eye-slash.png"));
-                deactivateButton.setToolTipText("Excludes the algorithm from the run.");
-                deactivateButton.addActionListener(e -> a.setEnabled(false));
-                contextMenu.add(deactivateButton);
-            } else {
-                JMenuItem activateButton = new JMenuItem("Enable algorithm", UIUtils.getIconFromResources("eye.png"));
-                activateButton.setToolTipText("Includes the algorithm into the run.");
-                activateButton.addActionListener(e -> a.setEnabled(true));
-                contextMenu.add(activateButton);
-            }
+            enableDisableContextMenuButton = new JMenuItem("Enable/Disable algorithm", UIUtils.getIconFromResources("eye.png"));
+            enableDisableContextMenuButton.addActionListener(e -> a.setEnabled(!a.isEnabled()));
+            contextMenu.add(enableDisableContextMenuButton);
         }
 
         if (algorithm instanceof ACAQProjectCompartment) {
