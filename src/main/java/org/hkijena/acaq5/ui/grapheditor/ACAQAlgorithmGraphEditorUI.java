@@ -10,7 +10,7 @@ import org.hkijena.acaq5.extensions.settings.GraphEditorUISettings;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.ColorIcon;
-import org.hkijena.acaq5.ui.components.SearchComboBox;
+import org.hkijena.acaq5.ui.components.SearchBox;
 import org.hkijena.acaq5.ui.events.AlgorithmEvent;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectionChangedEvent;
@@ -49,7 +49,7 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
     private JToggleButton switchPanningDirectionButton;
 
     private Set<ACAQAlgorithmDeclaration> addableAlgorithms = new HashSet<>();
-    private SearchComboBox<Object> navigator = new SearchComboBox<>();
+    private SearchBox<Object> navigator = new SearchBox<>();
     private JMenuItem cutContextMenuItem;
     private JMenuItem copyContextMenuItem;
     private JMenuItem pasteContextMenuItem;
@@ -170,12 +170,10 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
      */
     protected void initializeCommonActions() {
         menuBar.add(Box.createHorizontalGlue());
+        menuBar.add(Box.createHorizontalStrut(8));
 
+        navigator.getComboBox().setMaximumSize(new Dimension(200, 32));
         menuBar.add(navigator);
-        JButton clearNavigator = new JButton(UIUtils.getIconFromResources("clear.png"));
-        UIUtils.makeFlat25x25(clearNavigator);
-        clearNavigator.addActionListener(e -> navigator.clearSearch());
-        menuBar.add(clearNavigator);
         menuBar.add(Box.createHorizontalStrut(8));
 
         ButtonGroup viewModeGroup = new ButtonGroup();

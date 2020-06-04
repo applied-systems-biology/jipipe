@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.ui.components;
 
+import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
@@ -7,6 +8,9 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
@@ -16,34 +20,75 @@ import java.util.function.BiPredicate;
  *
  * @param <T>
  */
-public class SearchComboBox<T> extends JComboBox<T> {
+public class SearchBox<T> extends JPanel {
 
     private BiPredicate<T, String> filterFunction = (x, s) -> true;
     private FilteringModel<T> filteringModel;
+    private JComboBox<T> comboBox = new JComboBox<>();
 
     /**
      * Creates a new instance
      */
-    public SearchComboBox() {
-        setEditable(true);
-        setEditor(new Editor());
-        JXTextField textField = (JXTextField) getEditor().getEditorComponent();
+    public SearchBox() {
+        initialize();
+    }
+
+    public JComboBox<T> getComboBox() {
+        return comboBox;
+    }
+
+    private void initialize() {
+        setLayout(new BorderLayout());
+        setBackground(Color.WHITE);
+        setBorder(BorderFactory.createEtchedBorder());
+
+        comboBox.setEditable(true);
+        comboBox.setEditor(new Editor());
+        JXTextField textField = (JXTextField) comboBox.getEditor().getEditorComponent();
         textField.getDocument().addDocumentListener(new DocumentChangeListener() {
             @Override
             public void changed(DocumentEvent documentEvent) {
                 SwingUtilities.invokeLater(() -> {
-                    setPopupVisible(false);
+                    comboBox.setPopupVisible(false);
                     filteringModel.updateFilter();
-                    setPopupVisible(true);
+                    comboBox.setPopupVisible(true);
                 });
             }
         });
-        addItemListener(e -> setPopupVisible(false));
+        textField.setBorder(null);
+        comboBox.addItemListener(e -> comboBox.setPopupVisible(false));
+        add(comboBox, BorderLayout.CENTER);
+
+        for (int i = 0; i < comboBox.getComponentCount(); i++) {
+            Component component = comboBox.getComponent(i);
+            if (component instanceof AbstractButton) {
+                UIUtils.makeFlat((AbstractButton) component);
+                ((AbstractButton) component).setBorder(null);
+                ((AbstractButton) component).setOpaque(true);
+                component.setBackground(Color.WHITE);
+                break;
+            }
+        }
+
+        JButton clearButton = new JButton(UIUtils.getIconFromResources("clear.png"));
+        clearButton.setOpaque(false);
+        clearButton.setToolTipText("Clear");
+        clearButton.addActionListener(e -> clearSearch());
+        UIUtils.makeFlat25x25(clearButton);
+        clearButton.setBorder(null);
+        add(clearButton, BorderLayout.EAST);
+
+        textField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                comboBox.setPopupVisible(true);
+            }
+        });
     }
 
     @Override
     public Dimension getPreferredSize() {
-        return getEditor().getEditorComponent().getPreferredSize();
+        return comboBox.getEditor().getEditorComponent().getPreferredSize();
     }
 
     public BiPredicate<T, String> getFilterFunction() {
@@ -58,19 +103,38 @@ public class SearchComboBox<T> extends JComboBox<T> {
      * Clears the search field
      */
     public void clearSearch() {
-        JXTextField textField = (JXTextField) getEditor().getEditorComponent();
+        JXTextField textField = (JXTextField) comboBox.getEditor().getEditorComponent();
         textField.setText(null);
     }
 
-    @Override
     public ComboBoxModel<T> getModel() {
         return filteringModel.unfilteredModel;
     }
 
-    @Override
     public void setModel(ComboBoxModel<T> aModel) {
         filteringModel = new FilteringModel<>(aModel, this);
-        super.setModel(filteringModel);
+        comboBox.setModel(filteringModel);
+    }
+
+    public void setRenderer(ListCellRenderer<T> renderer) {
+        comboBox.setRenderer(renderer);
+    }
+
+    /**
+     * Adds an item listener
+     *
+     * @param listener the listener
+     */
+    public void addItemListener(ItemListener listener) {
+        comboBox.addItemListener(listener);
+    }
+
+    public T getSelectedItem() {
+        return (T) comboBox.getSelectedItem();
+    }
+
+    public void setSelectedItem(T item) {
+        comboBox.setSelectedItem(item);
     }
 
     /**
@@ -80,13 +144,13 @@ public class SearchComboBox<T> extends JComboBox<T> {
      */
     private static class FilteringModel<T> extends AbstractListModel<T> implements ComboBoxModel<T>, ListDataListener {
         private ComboBoxModel<T> unfilteredModel;
-        private SearchComboBox<T> parent;
+        private SearchBox<T> parent;
         private List<T> data = new ArrayList<>();
         private Object selectedItem;
         private boolean isLoading = false;
         private List<ListDataListener> listDataListeners = new ArrayList<>();
 
-        private FilteringModel(ComboBoxModel<T> unfilteredModel, SearchComboBox<T> parent) {
+        private FilteringModel(ComboBoxModel<T> unfilteredModel, SearchBox<T> parent) {
             this.unfilteredModel = unfilteredModel;
             this.parent = parent;
 
@@ -110,7 +174,7 @@ public class SearchComboBox<T> extends JComboBox<T> {
 
         private String[] getSearchStrings() {
             String[] searchStrings = null;
-            JXTextField editor = (JXTextField) parent.getEditor().getEditorComponent();
+            JXTextField editor = (JXTextField) parent.comboBox.getEditor().getEditorComponent();
             if (editor.getText() != null) {
                 String str = editor.getText().trim().toLowerCase();
                 if (!str.isEmpty()) {
