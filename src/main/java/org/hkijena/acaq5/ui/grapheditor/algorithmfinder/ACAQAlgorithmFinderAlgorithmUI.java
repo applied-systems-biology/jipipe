@@ -2,9 +2,9 @@ package org.hkijena.acaq5.ui.grapheditor.algorithmfinder;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
@@ -24,7 +24,7 @@ import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_HEIGHT;
 public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
     private ACAQDataSlot outputSlot;
     private ACAQAlgorithmGraph graph;
-    private ACAQAlgorithm algorithm;
+    private ACAQGraphNode algorithm;
     private int score;
     private int maxScore;
     private boolean isExistingInstance;
@@ -64,7 +64,7 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
      * @param score       Score of the target algorithm
      * @param maxScore    Maximum score that was possible
      */
-    public ACAQAlgorithmFinderAlgorithmUI(ACAQDataSlot outputSlot, ACAQAlgorithmGraph graph, String compartment, ACAQAlgorithm algorithm, int score, int maxScore) {
+    public ACAQAlgorithmFinderAlgorithmUI(ACAQDataSlot outputSlot, ACAQAlgorithmGraph graph, String compartment, ACAQGraphNode algorithm, int score, int maxScore) {
         this.outputSlot = outputSlot;
         this.graph = graph;
         this.compartment = compartment;

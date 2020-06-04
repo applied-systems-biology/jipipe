@@ -29,7 +29,7 @@ import java.util.function.Supplier;
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Processor, menuPath = "Tables")
 @AlgorithmInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
-public class GenerateColumnAlgorithm extends ACAQIteratingAlgorithm {
+public class GenerateColumnAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     private ACAQDynamicParameterCollection columns = new ACAQDynamicParameterCollection(true, TableColumnGeneratorParameter.class);
     private boolean replaceIfExists = false;

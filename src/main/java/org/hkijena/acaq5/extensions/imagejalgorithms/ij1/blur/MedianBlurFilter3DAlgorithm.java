@@ -12,7 +12,6 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
 import java.util.function.Consumer;
@@ -28,7 +27,7 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
 @ACAQOrganization(menuPath = "Blur", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Input")
 @AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Output")
-public class MedianBlurFilter3DAlgorithm extends ImageJ1Algorithm {
+public class MedianBlurFilter3DAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     private float radiusX = 2;
     private float radiusY = -1;

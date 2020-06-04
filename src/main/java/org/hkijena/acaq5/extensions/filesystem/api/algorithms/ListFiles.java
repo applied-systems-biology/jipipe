@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @AlgorithmOutputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
 
 // Traits
-public class ListFiles extends ACAQIteratingAlgorithm {
+public class ListFiles extends ACAQSimpleIteratingAlgorithm {
 
     private PathFilterListParameter filters = new PathFilterListParameter();
     private boolean filterOnlyFileNames = true;

@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.ui.resultanalysis;
 
 import org.hkijena.acaq5.api.ACAQRun;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
@@ -62,8 +62,8 @@ public class ACAQResultUI extends ACAQProjectWorkbenchPanel {
                     showDataSlot((ACAQDataSlot) userObject);
                 } else if (userObject instanceof ACAQProjectCompartment) {
                     showDataSlotsOfCompartment((ACAQProjectCompartment) userObject);
-                } else if (userObject instanceof ACAQAlgorithm) {
-                    showDataSlotsOfAlgorithm((ACAQAlgorithm) userObject);
+                } else if (userObject instanceof ACAQGraphNode) {
+                    showDataSlotsOfAlgorithm((ACAQGraphNode) userObject);
                 } else {
                     showAllDataSlots();
                 }
@@ -75,7 +75,7 @@ public class ACAQResultUI extends ACAQProjectWorkbenchPanel {
 
     private void showAllDataSlots() {
         List<ACAQDataSlot> result = new ArrayList<>();
-        for (ACAQAlgorithm algorithm : run.getGraph().getAlgorithmNodes().values()) {
+        for (ACAQGraphNode algorithm : run.getGraph().getAlgorithmNodes().values()) {
             for (ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
                 if (Files.exists(outputSlot.getStoragePath().resolve("data-table.json"))) {
                     result.add(outputSlot);
@@ -85,7 +85,7 @@ public class ACAQResultUI extends ACAQProjectWorkbenchPanel {
         showDataSlots(result);
     }
 
-    private void showDataSlotsOfAlgorithm(ACAQAlgorithm algorithm) {
+    private void showDataSlotsOfAlgorithm(ACAQGraphNode algorithm) {
         List<ACAQDataSlot> result = new ArrayList<>();
         for (ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
             if (Files.exists(outputSlot.getStoragePath().resolve("data-table.json"))) {
@@ -97,7 +97,7 @@ public class ACAQResultUI extends ACAQProjectWorkbenchPanel {
 
     private void showDataSlotsOfCompartment(ACAQProjectCompartment compartment) {
         List<ACAQDataSlot> result = new ArrayList<>();
-        for (ACAQAlgorithm algorithm : run.getGraph().getAlgorithmNodes().values()) {
+        for (ACAQGraphNode algorithm : run.getGraph().getAlgorithmNodes().values()) {
             if (algorithm.getCompartment().equals(compartment.getProjectCompartmentId())) {
                 for (ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
                     if (Files.exists(outputSlot.getStoragePath().resolve("data-table.json"))) {

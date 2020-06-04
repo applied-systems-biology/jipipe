@@ -4,10 +4,7 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.ACAQIOSlotConfiguration;
+import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 
 import java.util.function.Consumer;
@@ -22,7 +19,7 @@ public class IOInterfaceAlgorithm extends ACAQAlgorithm {
 
     /**
      * Creates a new instance.
-     * Please do not use this constructor manually, but instead use {@link ACAQAlgorithm}'s newInstance() method
+     * Please do not use this constructor manually, but instead use {@link ACAQGraphNode}'s newInstance() method
      *
      * @param declaration The algorithm declaration
      */

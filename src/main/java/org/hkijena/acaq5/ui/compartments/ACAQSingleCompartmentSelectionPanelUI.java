@@ -1,8 +1,8 @@
 package org.hkijena.acaq5.ui.compartments;
 
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.ACAQExportedCompartment;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
@@ -124,7 +124,7 @@ public class ACAQSingleCompartmentSelectionPanelUI extends ACAQProjectWorkbenchP
     private void exportCompartmentToAlgorithm() {
         final String compartmentId = compartment.getProjectCompartmentId();
         ACAQValidityReport report = new ACAQValidityReport();
-        for (Map.Entry<String, ACAQAlgorithm> entry : getProject().getGraph().getAlgorithmNodes().entrySet()) {
+        for (Map.Entry<String, ACAQGraphNode> entry : getProject().getGraph().getAlgorithmNodes().entrySet()) {
             if (Objects.equals(entry.getValue().getCompartment(), compartmentId)) {
                 report.forCategory(entry.getKey()).report(entry.getValue());
             }
@@ -135,9 +135,9 @@ public class ACAQSingleCompartmentSelectionPanelUI extends ACAQProjectWorkbenchP
         }
 
         ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
-        for (Map.Entry<String, ACAQAlgorithm> entry : getProject().getGraph().getAlgorithmNodes().entrySet()) {
+        for (Map.Entry<String, ACAQGraphNode> entry : getProject().getGraph().getAlgorithmNodes().entrySet()) {
             if (Objects.equals(entry.getValue().getCompartment(), compartmentId)) {
-                ACAQAlgorithm algorithm = entry.getValue().duplicate();
+                ACAQGraphNode algorithm = entry.getValue().duplicate();
                 algorithm.setCompartment(ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
                 graph.insertNode(entry.getKey(), algorithm, compartmentId);
             }
@@ -200,7 +200,7 @@ public class ACAQSingleCompartmentSelectionPanelUI extends ACAQProjectWorkbenchP
     /**
      * @return the compartment
      */
-    public ACAQAlgorithm getCompartment() {
+    public ACAQGraphNode getCompartment() {
         return compartment;
     }
 }

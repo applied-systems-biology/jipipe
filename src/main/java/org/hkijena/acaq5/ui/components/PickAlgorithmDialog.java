@@ -1,11 +1,9 @@
 package org.hkijena.acaq5.ui.components;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.utils.UIUtils;
-import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -19,10 +17,10 @@ import java.util.stream.Collectors;
  * UI that adds slots to an algorithm
  */
 public class PickAlgorithmDialog extends JDialog {
-    private Set<ACAQAlgorithm> algorithms;
+    private Set<ACAQGraphNode> algorithms;
     private SearchTextField searchField;
-    private JList<ACAQAlgorithm> algorithmList;
-    private ACAQAlgorithm selectedAlgorithm;
+    private JList<ACAQGraphNode> algorithmList;
+    private ACAQGraphNode selectedAlgorithm;
     private JButton confirmButton;
     private boolean canceled = true;
 
@@ -30,7 +28,7 @@ public class PickAlgorithmDialog extends JDialog {
      * @param parent     parent window
      * @param algorithms the available algorithms
      */
-    public PickAlgorithmDialog(Window parent, Set<ACAQAlgorithm> algorithms) {
+    public PickAlgorithmDialog(Window parent, Set<ACAQGraphNode> algorithms) {
         super(parent);
         this.algorithms = algorithms;
         initialize();
@@ -102,9 +100,9 @@ public class PickAlgorithmDialog extends JDialog {
         add(toolBar, BorderLayout.NORTH);
     }
 
-    private List<ACAQAlgorithm> getFilteredAndSortedDeclarations() {
+    private List<ACAQGraphNode> getFilteredAndSortedDeclarations() {
         String[] searchStrings = searchField.getSearchStrings();
-        Predicate<ACAQAlgorithm> filterFunction = declaration -> {
+        Predicate<ACAQGraphNode> filterFunction = declaration -> {
             if (searchStrings != null && searchStrings.length > 0) {
                 boolean matches = true;
                 String name = declaration.getName();
@@ -120,14 +118,14 @@ public class PickAlgorithmDialog extends JDialog {
             }
         };
 
-        return algorithms.stream().filter(filterFunction).sorted(Comparator.comparing(ACAQAlgorithm::getName)).collect(Collectors.toList());
+        return algorithms.stream().filter(filterFunction).sorted(Comparator.comparing(ACAQGraphNode::getName)).collect(Collectors.toList());
     }
 
     private void reloadTypeList() {
         setSelectedAlgorithm(null);
-        List<ACAQAlgorithm> available = getFilteredAndSortedDeclarations();
-        DefaultListModel<ACAQAlgorithm> listModel = new DefaultListModel<>();
-        for (ACAQAlgorithm type : available) {
+        List<ACAQGraphNode> available = getFilteredAndSortedDeclarations();
+        DefaultListModel<ACAQGraphNode> listModel = new DefaultListModel<>();
+        for (ACAQGraphNode type : available) {
             listModel.addElement(type);
         }
         algorithmList.setModel(listModel);
@@ -136,11 +134,11 @@ public class PickAlgorithmDialog extends JDialog {
         }
     }
 
-    public ACAQAlgorithm getSelectedAlgorithm() {
+    public ACAQGraphNode getSelectedAlgorithm() {
         return selectedAlgorithm;
     }
 
-    public void setSelectedAlgorithm(ACAQAlgorithm selectedAlgorithm) {
+    public void setSelectedAlgorithm(ACAQGraphNode selectedAlgorithm) {
         this.selectedAlgorithm = selectedAlgorithm;
     }
 
@@ -152,7 +150,7 @@ public class PickAlgorithmDialog extends JDialog {
      * @param title      the dialog title
      * @return the selected  algorithm or null of none was selected
      */
-    public static ACAQAlgorithm showDialog(Component parent, Set<ACAQAlgorithm> algorithms, String title) {
+    public static ACAQGraphNode showDialog(Component parent, Set<ACAQGraphNode> algorithms, String title) {
         PickAlgorithmDialog dialog = new PickAlgorithmDialog(SwingUtilities.getWindowAncestor(parent), algorithms);
         dialog.setTitle(title);
         dialog.setModal(true);

@@ -39,7 +39,7 @@ import java.util.function.Supplier;
 
 // Trait configuration
 @RemovesTrait("image-quality")
-public class InternalGradientSegmenter extends ACAQIteratingAlgorithm {
+public class InternalGradientSegmenter extends ACAQSimpleIteratingAlgorithm {
 
     private double gaussSigma = 3;
     private int internalGradientRadius = 25;

@@ -31,7 +31,7 @@ import java.util.function.Supplier;
 @AlgorithmInputSlot(value = FileData.class, slotName = "Files")
 @AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Image")
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.DataSource)
-public class BioFormatsImporter extends ACAQIteratingAlgorithm {
+public class BioFormatsImporter extends ACAQSimpleIteratingAlgorithm {
 
     private ColorMode colorMode = ColorMode.Default;
     private Order stackOrder = Order.XYCZT;

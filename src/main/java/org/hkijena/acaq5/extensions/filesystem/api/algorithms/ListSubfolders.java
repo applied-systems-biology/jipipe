@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @AlgorithmOutputSlot(value = FolderData.class, slotName = "Subfolders", autoCreate = true)
 
 // Traits
-public class ListSubfolders extends ACAQIteratingAlgorithm {
+public class ListSubfolders extends ACAQSimpleIteratingAlgorithm {
 
     private PathFilterListParameter filters = new PathFilterListParameter();
     private boolean filterOnlyFolderNames = true;

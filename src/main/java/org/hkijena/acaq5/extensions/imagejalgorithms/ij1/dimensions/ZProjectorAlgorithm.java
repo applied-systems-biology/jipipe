@@ -11,7 +11,6 @@ import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
 import java.util.function.Consumer;
@@ -27,7 +26,7 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
 @ACAQOrganization(menuPath = "Dimensions", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Input")
 @AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Output")
-public class ZProjectorAlgorithm extends ImageJ1Algorithm {
+public class ZProjectorAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     private Method method = Method.MaxIntensity;
     private int startSlice = 0;

@@ -8,7 +8,6 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
@@ -25,7 +24,7 @@ import java.util.function.Supplier;
 @ACAQOrganization(menuPath = "Math", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input")
 @AlgorithmOutputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Output")
-public class ApplyDistanceTransform2DAlgorithm extends ImageJ1Algorithm {
+public class ApplyDistanceTransform2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     /**
      * Instantiates a new algorithm.

@@ -5,7 +5,6 @@ import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -41,6 +40,7 @@ public class SearchTextField extends JPanel {
 
     /**
      * Returns the search strings according to the current text
+     *
      * @return the search strings
      */
     public String[] getSearchStrings() {
@@ -54,12 +54,12 @@ public class SearchTextField extends JPanel {
         return searchStrings;
     }
 
-    public void setText(String text) {
-        textField.setText(text);
-    }
-
     public String getText() {
         return textField.getText();
+    }
+
+    public void setText(String text) {
+        textField.setText(text);
     }
 
     public JXTextField getTextField() {
@@ -68,6 +68,7 @@ public class SearchTextField extends JPanel {
 
     /**
      * Adds a listener for when the search text changes
+     *
      * @param listener the listener
      */
     public void addActionListener(ActionListener listener) {

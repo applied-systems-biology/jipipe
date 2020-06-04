@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 @AlgorithmOutputSlot(value = FolderData.class, slotName = "Annotated folders", autoCreate = true)
 
 // Traits
-public class FolderAnnotationGenerator extends ACAQIteratingAlgorithm {
+public class FolderAnnotationGenerator extends ACAQSimpleIteratingAlgorithm {
 
     private ACAQTraitDeclarationRef generatedAnnotation = new ACAQTraitDeclarationRef();
 

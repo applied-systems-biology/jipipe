@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.ui.extensionbuilder.traiteditor;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
@@ -41,7 +41,7 @@ public class ACAQMultiTraitSelectionPanelUI extends ACAQJsonExtensionWorkbenchPa
         add(content, BorderLayout.CENTER);
 
         StringBuilder markdownContent = new StringBuilder();
-        for (ACAQTraitNode node : algorithms.stream().sorted(Comparator.comparing(ACAQAlgorithm::getName)).collect(Collectors.toList())) {
+        for (ACAQTraitNode node : algorithms.stream().sorted(Comparator.comparing(ACAQGraphNode::getName)).collect(Collectors.toList())) {
             markdownContent.append(TooltipUtils.getTraitTooltip(node.getTraitDeclaration())
                     .replace("<html>", "<div style=\"border: 1px solid gray; border-radius: 4px; margin: 4px; padding: 4px;\">")
                     .replace("</html>", "</div>"));

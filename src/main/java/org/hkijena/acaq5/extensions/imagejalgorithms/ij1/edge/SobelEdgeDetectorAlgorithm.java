@@ -8,7 +8,6 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.utils.ImageJUtils;
 
@@ -25,7 +24,7 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
 @ACAQOrganization(menuPath = "Edges", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Input")
 @AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Output")
-public class SobelEdgeDetectorAlgorithm extends ImageJ1Algorithm {
+public class SobelEdgeDetectorAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     /**
      * Instantiates a new algorithm.

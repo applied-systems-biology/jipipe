@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 @AlgorithmOutputSlot(value = FolderData.class, slotName = "Filtered folders", autoCreate = true)
 
 // Traits
-public class FilterFolders extends ACAQIteratingAlgorithm {
+public class FilterFolders extends ACAQSimpleIteratingAlgorithm {
 
     private PathFilterListParameter filters = new PathFilterListParameter();
     private boolean filterOnlyFolderNames = true;

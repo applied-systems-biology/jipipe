@@ -33,7 +33,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Manages multiple {@link ACAQAlgorithm} instances as graph
+ * Manages multiple {@link ACAQGraphNode} instances as graph
  */
 @JsonSerialize(using = ACAQAlgorithmGraph.Serializer.class)
 @JsonDeserialize(using = ACAQAlgorithmGraph.Deserializer.class)
@@ -42,8 +42,8 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     public static final String COMPARTMENT_DEFAULT = "DEFAULT";
 
     private DefaultDirectedGraph<ACAQDataSlot, ACAQAlgorithmGraphEdge> graph = new DefaultDirectedGraph<>(ACAQAlgorithmGraphEdge.class);
-    private BiMap<String, ACAQAlgorithm> algorithms = HashBiMap.create();
-    private Map<ACAQAlgorithm, String> compartments = new HashMap<>();
+    private BiMap<String, ACAQGraphNode> algorithms = HashBiMap.create();
+    private Map<ACAQGraphNode, String> compartments = new HashMap<>();
     private EventBus eventBus = new EventBus();
     private boolean isUpdatingSlotTraits = false;
 
@@ -61,8 +61,8 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      */
     public ACAQAlgorithmGraph(ACAQAlgorithmGraph other) {
         // Copy nodes
-        for (Map.Entry<String, ACAQAlgorithm> kv : other.algorithms.entrySet()) {
-            ACAQAlgorithm algorithm = kv.getValue().getDeclaration().clone(kv.getValue());
+        for (Map.Entry<String, ACAQGraphNode> kv : other.algorithms.entrySet()) {
+            ACAQGraphNode algorithm = kv.getValue().getDeclaration().clone(kv.getValue());
             algorithms.put(kv.getKey(), algorithm);
             algorithm.setGraph(this);
             algorithm.getEventBus().register(this);
@@ -73,8 +73,8 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         for (Map.Entry<ACAQDataSlot, ACAQDataSlot> edge : other.getSlotEdges()) {
             String sourceAlgorithmName = other.algorithms.inverse().get(edge.getKey().getAlgorithm());
             String targetAlgorithmName = other.algorithms.inverse().get(edge.getValue().getAlgorithm());
-            ACAQAlgorithm sourceAlgorithm = algorithms.get(sourceAlgorithmName);
-            ACAQAlgorithm targetAlgorithm = algorithms.get(targetAlgorithmName);
+            ACAQGraphNode sourceAlgorithm = algorithms.get(sourceAlgorithmName);
+            ACAQGraphNode targetAlgorithm = algorithms.get(targetAlgorithmName);
             connect(sourceAlgorithm.getSlots().get(edge.getKey().getName()),
                     targetAlgorithm.getSlots().get(edge.getValue().getName()));
         }
@@ -87,7 +87,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * @param algorithm   The algorithm
      * @param compartment The compartment where the algorithm will be placed
      */
-    public void insertNode(String key, ACAQAlgorithm algorithm, String compartment) {
+    public void insertNode(String key, ACAQGraphNode algorithm, String compartment) {
         if (compartment == null)
             throw new NullPointerException("Compartment should not be null!");
         if (algorithms.containsKey(key))
@@ -117,7 +117,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * @param algorithm   The algorithm
      * @param compartment The compartment where the algorithm will be placed
      */
-    public void insertNode(ACAQAlgorithm algorithm, String compartment) {
+    public void insertNode(ACAQGraphNode algorithm, String compartment) {
         String uniqueName = StringUtils.makeUniqueString(StringUtils.jsonify(compartment + "-" + algorithm.getName()), " ", algorithms.keySet());
         insertNode(uniqueName, algorithm, compartment);
     }
@@ -128,7 +128,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * @param algorithm The algorithm
      * @return True if the user can delete the algorithm
      */
-    public boolean canUserDelete(ACAQAlgorithm algorithm) {
+    public boolean canUserDelete(ACAQGraphNode algorithm) {
         return algorithm.getCategory() != ACAQAlgorithmCategory.Internal || algorithm instanceof ACAQProjectCompartment;
     }
 
@@ -169,7 +169,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * @param newCompartment New compartment ID
      */
     public void renameCompartment(String compartment, String newCompartment) {
-        for (ACAQAlgorithm algorithm : algorithms.values().stream().filter(a -> compartment.equals(compartments.get(a))).collect(Collectors.toSet())) {
+        for (ACAQGraphNode algorithm : algorithms.values().stream().filter(a -> compartment.equals(compartments.get(a))).collect(Collectors.toSet())) {
             compartments.put(algorithm, newCompartment);
         }
         getEventBus().post(new AlgorithmGraphChangedEvent(this));
@@ -181,7 +181,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      *
      * @param algorithm The algorithm
      */
-    public void removeNode(ACAQAlgorithm algorithm) {
+    public void removeNode(ACAQGraphNode algorithm) {
         // Do regular disconnect
         for (ACAQDataSlot slot : algorithm.getInputSlots()) {
             disconnectAll(slot, false);
@@ -281,7 +281,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
         // Remove deleted slots from the graph
         Set<ACAQDataSlot> toRemove = new HashSet<>();
-        for (ACAQAlgorithm algorithm : algorithms.values()) {
+        for (ACAQGraphNode algorithm : algorithms.values()) {
             for (ACAQDataSlot slot : graph.vertexSet()) {
                 if (slot.getAlgorithm() == algorithm && !algorithm.getInputSlots().contains(slot) &&
                         !algorithm.getOutputSlots().contains(slot)) {
@@ -294,7 +294,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         toRemove.forEach(graph::removeVertex);
 
         // Add missing slots
-        for (ACAQAlgorithm algorithm : algorithms.values()) {
+        for (ACAQGraphNode algorithm : algorithms.values()) {
 
             // Add vertices
             for (ACAQDataSlot inputSlot : algorithm.getInputSlots()) {
@@ -475,7 +475,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     }
 
     /**
-     * Should be triggered when an {@link ACAQAlgorithm}'s slots are changed.
+     * Should be triggered when an {@link ACAQGraphNode}'s slots are changed.
      * Triggers a graph repair
      *
      * @param event The generated event
@@ -486,7 +486,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     }
 
     /**
-     * Should be triggered when an {@link ACAQAlgorithm}'s traits are changed
+     * Should be triggered when an {@link ACAQGraphNode}'s traits are changed
      * Updates the traits
      *
      * @param event Generated event
@@ -498,7 +498,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     }
 
     /**
-     * Should be triggered when an {@link ACAQAlgorithm}'s parameter structure is changed.
+     * Should be triggered when an {@link ACAQGraphNode}'s parameter structure is changed.
      * This event is re-triggered into getEventBus()
      *
      * @param event Generated event
@@ -514,8 +514,8 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      */
     public void updateDataSlotTraits() {
         isUpdatingSlotTraits = true;
-        List<ACAQAlgorithm> algorithmList = traverseAlgorithms();
-        for (ACAQAlgorithm algorithm : algorithmList) {
+        List<ACAQGraphNode> algorithmList = traverseAlgorithms();
+        for (ACAQGraphNode algorithm : algorithmList) {
             for (ACAQDataSlot inputSlot : algorithm.getInputSlots()) {
                 inputSlot.getAlgorithm().getTraitConfiguration().apply();
             }
@@ -562,7 +562,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      */
     public Set<ACAQDependency> getDependencies() {
         Set<ACAQDependency> result = new HashSet<>();
-        for (ACAQAlgorithm algorithm : algorithms.values()) {
+        for (ACAQGraphNode algorithm : algorithms.values()) {
             result.addAll(algorithm.getDependencies());
         }
         return result;
@@ -582,7 +582,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      *
      * @return Map from algorithm instance ID to algorithm instance
      */
-    public BiMap<String, ACAQAlgorithm> getAlgorithmNodes() {
+    public BiMap<String, ACAQGraphNode> getAlgorithmNodes() {
         return ImmutableBiMap.copyOf(algorithms);
     }
 
@@ -592,7 +592,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * @param algorithm The algorithm instance
      * @return True if the algorithm is part of this graph
      */
-    public boolean containsNode(ACAQAlgorithm algorithm) {
+    public boolean containsNode(ACAQGraphNode algorithm) {
         return algorithms.containsValue(algorithm);
     }
 
@@ -626,7 +626,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
             if (!algorithms.containsKey(kv.getKey())) {
                 String declarationInfo = kv.getValue().get("acaq:algorithm-type").asText();
                 ACAQAlgorithmDeclaration declaration = ACAQAlgorithmRegistry.getInstance().getDeclarationById(declarationInfo);
-                ACAQAlgorithm algorithm = declaration.newInstance();
+                ACAQGraphNode algorithm = declaration.newInstance();
                 algorithm.fromJson(kv.getValue());
                 insertNode(StringUtils.jsonify(kv.getKey()), algorithm, algorithm.getCompartment());
             }
@@ -634,8 +634,8 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
         // Load edges
         for (JsonNode edgeNode : ImmutableList.copyOf(node.get("edges").elements())) {
-            ACAQAlgorithm sourceAlgorithm = algorithms.get(StringUtils.jsonify(edgeNode.get("source-algorithm").asText()));
-            ACAQAlgorithm targetAlgorithm = algorithms.get(StringUtils.jsonify(edgeNode.get("target-algorithm").asText()));
+            ACAQGraphNode sourceAlgorithm = algorithms.get(StringUtils.jsonify(edgeNode.get("source-algorithm").asText()));
+            ACAQGraphNode targetAlgorithm = algorithms.get(StringUtils.jsonify(edgeNode.get("target-algorithm").asText()));
             ACAQDataSlot source = sourceAlgorithm.getSlots().get(StringUtils.makeFilesystemCompatible(edgeNode.get("source-slot").asText()));
             ACAQDataSlot target = targetAlgorithm.getSlots().get(StringUtils.makeFilesystemCompatible(edgeNode.get("target-slot").asText()));
             if (!graph.containsEdge(source, target) && graph.inDegreeOf(target) > 0) {
@@ -654,16 +654,16 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * @param otherGraph The other graph
      * @return A map from ID in source graph to algorithm in target graph
      */
-    public Map<String, ACAQAlgorithm> mergeWith(ACAQAlgorithmGraph otherGraph) {
-        Map<String, ACAQAlgorithm> copies = new HashMap<>();
-        for (ACAQAlgorithm algorithm : otherGraph.getAlgorithmNodes().values()) {
-            ACAQAlgorithm copy = algorithm.getDeclaration().clone(algorithm);
+    public Map<String, ACAQGraphNode> mergeWith(ACAQAlgorithmGraph otherGraph) {
+        Map<String, ACAQGraphNode> copies = new HashMap<>();
+        for (ACAQGraphNode algorithm : otherGraph.getAlgorithmNodes().values()) {
+            ACAQGraphNode copy = algorithm.getDeclaration().clone(algorithm);
             insertNode(copy, copy.getCompartment());
             copies.put(algorithm.getIdInGraph(), copy);
         }
         for (Map.Entry<ACAQDataSlot, ACAQDataSlot> edge : otherGraph.getSlotEdges()) {
-            ACAQAlgorithm copySource = copies.get(edge.getKey().getAlgorithm().getIdInGraph());
-            ACAQAlgorithm copyTarget = copies.get(edge.getValue().getAlgorithm().getIdInGraph());
+            ACAQGraphNode copySource = copies.get(edge.getKey().getAlgorithm().getIdInGraph());
+            ACAQGraphNode copyTarget = copies.get(edge.getValue().getAlgorithm().getIdInGraph());
             connect(copySource.getSlots().get(edge.getKey().getName()), copyTarget.getSlots().get(edge.getValue().getName()));
         }
         return copies;
@@ -719,9 +719,9 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      *
      * @return Sorted list of algorithms
      */
-    public List<ACAQAlgorithm> traverseAlgorithmsDepthFirst() {
-        Set<ACAQAlgorithm> visited = new HashSet<>();
-        List<ACAQAlgorithm> result = new ArrayList<>();
+    public List<ACAQGraphNode> traverseAlgorithmsDepthFirst() {
+        Set<ACAQGraphNode> visited = new HashSet<>();
+        List<ACAQGraphNode> result = new ArrayList<>();
         for (ACAQDataSlot slot : traverseDepthFirst()) {
             if (slot.isOutput()) {
                 if (!visited.contains(slot.getAlgorithm())) {
@@ -730,7 +730,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
                 }
             }
         }
-        for (ACAQAlgorithm missing : algorithms.values()) {
+        for (ACAQGraphNode missing : algorithms.values()) {
             if (!visited.contains(missing)) {
                 result.add(missing);
             }
@@ -743,9 +743,9 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      *
      * @return list of algorithms
      */
-    public Set<ACAQAlgorithm> getAlgorithmsWithMissingInput() {
-        Set<ACAQAlgorithm> missing = new HashSet<>();
-        for (ACAQAlgorithm algorithm : traverseAlgorithms()) {
+    public Set<ACAQGraphNode> getAlgorithmsWithMissingInput() {
+        Set<ACAQGraphNode> missing = new HashSet<>();
+        for (ACAQGraphNode algorithm : traverseAlgorithms()) {
             for (ACAQDataSlot inputSlot : algorithm.getInputSlots()) {
                 ACAQDataSlot sourceSlot = getSourceSlot(inputSlot);
                 if (sourceSlot == null) {
@@ -767,9 +767,9 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      *
      * @return Sorted list of algorithms
      */
-    public List<ACAQAlgorithm> traverseAlgorithms() {
-        Set<ACAQAlgorithm> visited = new HashSet<>();
-        List<ACAQAlgorithm> result = new ArrayList<>();
+    public List<ACAQGraphNode> traverseAlgorithms() {
+        Set<ACAQGraphNode> visited = new HashSet<>();
+        List<ACAQGraphNode> result = new ArrayList<>();
         for (ACAQDataSlot slot : traverse()) {
             if (slot.isOutput()) {
                 if (!visited.contains(slot.getAlgorithm())) {
@@ -778,7 +778,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
                 }
             }
         }
-        for (ACAQAlgorithm missing : algorithms.values()) {
+        for (ACAQGraphNode missing : algorithms.values()) {
             if (!visited.contains(missing)) {
                 result.add(missing);
             }
@@ -805,7 +805,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        for (Map.Entry<String, ACAQAlgorithm> entry : algorithms.entrySet()) {
+        for (Map.Entry<String, ACAQGraphNode> entry : algorithms.entrySet()) {
             report.forCategory(entry.getValue().getCompartment()).forCategory(entry.getValue().getName()).report(entry.getValue());
         }
         if (!RuntimeSettings.getInstance().isAllowSkipAlgorithmsWithoutInput()) {
@@ -834,7 +834,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * Clears this graph
      */
     public void clear() {
-        for (ACAQAlgorithm algorithm : ImmutableSet.copyOf(algorithms.values())) {
+        for (ACAQGraphNode algorithm : ImmutableSet.copyOf(algorithms.values())) {
             removeNode(algorithm);
         }
     }
@@ -846,7 +846,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * @param algorithm The algorithm
      * @return The ID of this algorithm within the graph.
      */
-    public String getIdOf(ACAQAlgorithm algorithm) {
+    public String getIdOf(ACAQGraphNode algorithm) {
         return algorithms.inverse().get(algorithm);
     }
 
@@ -857,7 +857,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * @param foreignGraph Graph that contains the foreign algorithm
      * @return True if this graph contains an equivalent algorithm (with the same ID)
      */
-    public boolean containsEquivalentOf(ACAQAlgorithm foreign, ACAQAlgorithmGraph foreignGraph) {
+    public boolean containsEquivalentOf(ACAQGraphNode foreign, ACAQAlgorithmGraph foreignGraph) {
         return getAlgorithmNodes().containsKey(foreignGraph.getIdOf(foreign));
     }
 
@@ -867,7 +867,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * @param foreign An algorithm
      * @return Equivalent algorithm within this graph
      */
-    public ACAQAlgorithm getEquivalentAlgorithm(ACAQAlgorithm foreign) {
+    public ACAQGraphNode getEquivalentAlgorithm(ACAQGraphNode foreign) {
         return getAlgorithmNodes().get(foreign.getIdInGraph());
     }
 
@@ -888,7 +888,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * @param algorithm An algorithm
      * @return The compartment ID
      */
-    public String getCompartmentOf(ACAQAlgorithm algorithm) {
+    public String getCompartmentOf(ACAQGraphNode algorithm) {
         return compartments.get(algorithm);
     }
 
@@ -916,9 +916,9 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * @param compartmentId The compartment ID
      * @return Algorithms that have the specified compartment ID. Empty set if the compartment does not exist.
      */
-    public Set<ACAQAlgorithm> getAlgorithmsWithCompartment(String compartmentId) {
-        Set<ACAQAlgorithm> result = new HashSet<>();
-        for (ACAQAlgorithm algorithm : algorithms.values()) {
+    public Set<ACAQGraphNode> getAlgorithmsWithCompartment(String compartmentId) {
+        Set<ACAQGraphNode> result = new HashSet<>();
+        for (ACAQGraphNode algorithm : algorithms.values()) {
             if (algorithm.getCompartment().equals(compartmentId))
                 result.add(algorithm);
         }
@@ -938,9 +938,9 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * @param ignoreInternal if true, internal nodes are ignored
      * @return The isolated graph
      */
-    public static ACAQAlgorithmGraph getIsolatedGraph(ACAQAlgorithmGraph sourceGraph, Set<ACAQAlgorithm> algorithms, boolean ignoreInternal) {
+    public static ACAQAlgorithmGraph getIsolatedGraph(ACAQAlgorithmGraph sourceGraph, Set<ACAQGraphNode> algorithms, boolean ignoreInternal) {
         ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
-        for (ACAQAlgorithm algorithm : algorithms) {
+        for (ACAQGraphNode algorithm : algorithms) {
             if (ignoreInternal && algorithm.getCategory() == ACAQAlgorithmCategory.Internal)
                 continue;
             graph.insertNode(algorithm.getIdInGraph(), algorithm.duplicate(), ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
@@ -977,7 +977,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         }
 
         private void serializeNodes(ACAQAlgorithmGraph algorithmGraph, JsonGenerator jsonGenerator) throws IOException {
-            for (Map.Entry<String, ACAQAlgorithm> kv : algorithmGraph.algorithms.entrySet()) {
+            for (Map.Entry<String, ACAQGraphNode> kv : algorithmGraph.algorithms.entrySet()) {
                 jsonGenerator.writeObjectField(StringUtils.jsonify(kv.getKey()), kv.getValue());
             }
         }

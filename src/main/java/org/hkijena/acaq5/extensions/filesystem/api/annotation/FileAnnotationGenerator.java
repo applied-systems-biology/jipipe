@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 @AlgorithmOutputSlot(value = FileData.class, slotName = "Annotated files", autoCreate = true)
 
 // Traits
-public class FileAnnotationGenerator extends ACAQIteratingAlgorithm {
+public class FileAnnotationGenerator extends ACAQSimpleIteratingAlgorithm {
 
     private ACAQTraitDeclarationRef generatedAnnotation = new ACAQTraitDeclarationRef();
 

@@ -35,7 +35,7 @@ import java.util.function.Supplier;
 // Trait configuration
 @RemovesTrait("image-quality-brightness-low")
 @RemovesTrait("image-quality-brightness-nonuniform")
-public class CLAHEImageEnhancer extends ACAQIteratingAlgorithm {
+public class CLAHEImageEnhancer extends ACAQSimpleIteratingAlgorithm {
 
     private int blocks = 127;
     private int bins = 256;

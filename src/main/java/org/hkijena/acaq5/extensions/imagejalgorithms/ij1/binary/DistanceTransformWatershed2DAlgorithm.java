@@ -11,7 +11,6 @@ import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.traits.BadForTrait;
 import org.hkijena.acaq5.api.data.traits.GoodForTrait;
 import org.hkijena.acaq5.api.data.traits.RemovesTrait;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.acaq5.utils.ImageJUtils;
@@ -32,7 +31,7 @@ import java.util.function.Supplier;
 @BadForTrait("bioobject-preparations-labeling-unlabeled")
 @GoodForTrait("bioobject-count-cluster")
 @RemovesTrait("bioobject-count-cluster")
-public class DistanceTransformWatershed2DAlgorithm extends ImageJ1Algorithm {
+public class DistanceTransformWatershed2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     /**
      * Instantiates a new algorithm.

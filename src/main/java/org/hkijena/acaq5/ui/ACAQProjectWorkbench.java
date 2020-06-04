@@ -5,8 +5,8 @@ import org.hkijena.acaq5.ACAQGUICommand;
 import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.events.CompartmentRemovedEvent;
 import org.hkijena.acaq5.extensions.settings.GeneralUISettings;
@@ -382,7 +382,7 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
             return;
         }
         ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph(getProject().getGraph());
-        for (ACAQAlgorithm algorithm : graph.getAlgorithmNodes().values()) {
+        for (ACAQGraphNode algorithm : graph.getAlgorithmNodes().values()) {
             algorithm.setCompartment(ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
         }
         ACAQGraphWrapperAlgorithmExporter exporter = new ACAQGraphWrapperAlgorithmExporter(this, graph);

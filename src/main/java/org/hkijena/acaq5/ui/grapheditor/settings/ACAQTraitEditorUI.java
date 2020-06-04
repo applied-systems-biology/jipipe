@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.ui.grapheditor.settings;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
@@ -18,7 +18,7 @@ import java.util.ArrayList;
  * Also supports just viewing the traits
  */
 public class ACAQTraitEditorUI extends JPanel {
-    private ACAQAlgorithm algorithm;
+    private ACAQGraphNode algorithm;
     private JComboBox<ACAQDataSlot> slotSelection;
     private MarkdownReader helpPanel;
     private JSplitPane splitPane;
@@ -26,7 +26,7 @@ public class ACAQTraitEditorUI extends JPanel {
     /**
      * @param algorithm the algorithm
      */
-    public ACAQTraitEditorUI(ACAQAlgorithm algorithm) {
+    public ACAQTraitEditorUI(ACAQGraphNode algorithm) {
         this.algorithm = algorithm;
         initialize();
         reloadList();

@@ -2,9 +2,9 @@ package org.hkijena.acaq5.extensions.multiparameters;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQJavaExtension;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.events.AlgorithmRegisteredEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQTraversedParameterCollection;
@@ -71,7 +71,7 @@ public class MultiParametersExtension extends ACAQPrepackagedDefaultJavaExtensio
     private void registerParameterTraits(ACAQAlgorithmDeclaration declaration) {
         if (declaration.getCategory() == ACAQAlgorithmCategory.Internal)
             return;
-        ACAQAlgorithm instance = declaration.newInstance();
+        ACAQGraphNode instance = declaration.newInstance();
         Map<String, ACAQParameterAccess> parameters = ACAQTraversedParameterCollection.getParameters(instance);
 
         for (ACAQParameterAccess parameterAccess : parameters.values()) {

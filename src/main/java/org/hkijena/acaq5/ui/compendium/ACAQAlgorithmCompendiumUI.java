@@ -3,8 +3,8 @@ package org.hkijena.acaq5.ui.compendium;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.ACAQDocumentation;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.compat.AlgorithmDeclarationListCellRenderer;
@@ -13,18 +13,14 @@ import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQParameterTypeRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
-import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.components.SearchTextField;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.StringUtils;
-import org.hkijena.acaq5.utils.UIUtils;
-import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -207,7 +203,7 @@ public class ACAQAlgorithmCompendiumUI extends JPanel {
 
         // Write parameter documentation
         builder.append("# Parameters").append("\nIn the following section, you will find a description of all parameters.\n\n");
-        ACAQAlgorithm algorithm = declaration.newInstance();
+        ACAQGraphNode algorithm = declaration.newInstance();
         ACAQTraversedParameterCollection traversed = new ACAQTraversedParameterCollection(algorithm);
         Map<ACAQParameterCollection, List<ACAQParameterAccess>> groupedBySource =
                 traversed.getParameters().values().stream().collect(Collectors.groupingBy(ACAQParameterAccess::getSource));

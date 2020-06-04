@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.extensions.parameters.collections;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQMutableParameterAccess;
@@ -15,7 +15,7 @@ import java.util.function.Supplier;
  * Parameter that holds a value for each data slot
  */
 public class SlotMapParameterCollection extends ACAQDynamicParameterCollection {
-    private ACAQAlgorithm algorithm;
+    private ACAQGraphNode algorithm;
     private Class<?> dataClass;
     private Supplier<Object> newInstanceGenerator;
 
@@ -27,7 +27,7 @@ public class SlotMapParameterCollection extends ACAQDynamicParameterCollection {
      * @param newInstanceGenerator optional method that generated new instances. Can be null
      * @param initialize           If true, update the slots on creation
      */
-    public SlotMapParameterCollection(Class<?> dataClass, ACAQAlgorithm algorithm, Supplier<Object> newInstanceGenerator, boolean initialize) {
+    public SlotMapParameterCollection(Class<?> dataClass, ACAQGraphNode algorithm, Supplier<Object> newInstanceGenerator, boolean initialize) {
         this.dataClass = dataClass;
         this.algorithm = algorithm;
         this.newInstanceGenerator = newInstanceGenerator;
@@ -37,7 +37,7 @@ public class SlotMapParameterCollection extends ACAQDynamicParameterCollection {
         this.algorithm.getEventBus().register(this);
     }
 
-    public ACAQAlgorithm getAlgorithm() {
+    public ACAQGraphNode getAlgorithm() {
         return algorithm;
     }
 

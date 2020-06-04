@@ -1,9 +1,9 @@
 package org.hkijena.acaq5.ui.grapheditor.settings;
 
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
@@ -21,12 +21,12 @@ import java.awt.*;
 import java.util.Collections;
 
 /**
- * UI for a single {@link ACAQAlgorithm}
+ * UI for a single {@link ACAQGraphNode}
  */
 public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPanel {
     private ACAQAlgorithmGraph graph;
     private ACAQAlgorithmGraphCanvasUI canvas;
-    private ACAQAlgorithm algorithm;
+    private ACAQGraphNode algorithm;
     private JPanel testbenchTabContent;
 
     /**
@@ -34,7 +34,7 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPan
      * @param canvas      the graph
      * @param algorithm   the algorithm
      */
-    public ACAQSingleAlgorithmSelectionPanelUI(ACAQProjectWorkbench workbenchUI, ACAQAlgorithmGraphCanvasUI canvas, ACAQAlgorithm algorithm) {
+    public ACAQSingleAlgorithmSelectionPanelUI(ACAQProjectWorkbench workbenchUI, ACAQAlgorithmGraphCanvasUI canvas, ACAQGraphNode algorithm) {
         super(workbenchUI);
         this.graph = canvas.getAlgorithmGraph();
         this.canvas = canvas;
@@ -175,7 +175,7 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPan
     /**
      * @return the algorithm
      */
-    public ACAQAlgorithm getAlgorithm() {
+    public ACAQGraphNode getAlgorithm() {
         return algorithm;
     }
 }

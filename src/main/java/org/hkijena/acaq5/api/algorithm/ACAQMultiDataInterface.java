@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  * Unlike {@link ACAQDataInterface}, this class does not assume uniqueness.
  */
 public class ACAQMultiDataInterface {
-    private ACAQAlgorithm algorithm;
+    private ACAQGraphNode algorithm;
     private Map<ACAQDataSlot, List<Integer>> inputSlotRows;
 
     /**
@@ -24,7 +24,7 @@ public class ACAQMultiDataInterface {
      * @param referenceTraits Annotation types considered as reference. If empty, all traits are used as reference
      * @param row             the row this data interface is generated for
      */
-    public ACAQMultiDataInterface(ACAQAlgorithm algorithm, List<ACAQDataSlot> inputSlots, Set<ACAQTraitDeclaration> referenceTraits, int row) {
+    public ACAQMultiDataInterface(ACAQGraphNode algorithm, List<ACAQDataSlot> inputSlots, Set<ACAQTraitDeclaration> referenceTraits, int row) {
         this.algorithm = algorithm;
         this.inputSlotRows = new HashMap<>();
         initialize(inputSlots, row, referenceTraits);

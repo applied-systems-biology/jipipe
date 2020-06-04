@@ -1,13 +1,13 @@
 package org.hkijena.acaq5.api.data.traits;
 
 import com.google.common.eventbus.EventBus;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * Processes algorithm traits of an {@link ACAQAlgorithm}
+ * Processes algorithm traits of an {@link ACAQGraphNode}
  */
 public interface ACAQTraitConfiguration {
 

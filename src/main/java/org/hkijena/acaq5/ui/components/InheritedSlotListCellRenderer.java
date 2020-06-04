@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.ui.components;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -13,12 +13,12 @@ import java.awt.*;
  */
 public class InheritedSlotListCellRenderer extends JLabel implements ListCellRenderer<String> {
 
-    private ACAQAlgorithm algorithm;
+    private ACAQGraphNode algorithm;
 
     /**
      * @param algorithm the algorithm that contains the input slots
      */
-    public InheritedSlotListCellRenderer(ACAQAlgorithm algorithm) {
+    public InheritedSlotListCellRenderer(ACAQGraphNode algorithm) {
         this.algorithm = algorithm;
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));

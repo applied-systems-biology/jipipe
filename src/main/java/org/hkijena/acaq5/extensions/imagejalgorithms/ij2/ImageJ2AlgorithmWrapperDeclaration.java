@@ -112,17 +112,17 @@ public class ImageJ2AlgorithmWrapperDeclaration implements ACAQAlgorithmDeclarat
     }
 
     @Override
-    public Class<? extends ACAQAlgorithm> getAlgorithmClass() {
+    public Class<? extends ACAQGraphNode> getAlgorithmClass() {
         return ImageJ2AlgorithmWrapper.class;
     }
 
     @Override
-    public ACAQAlgorithm newInstance() {
+    public ACAQGraphNode newInstance() {
         return new ImageJ2AlgorithmWrapper(this);
     }
 
     @Override
-    public ACAQAlgorithm clone(ACAQAlgorithm algorithm) {
+    public ACAQGraphNode clone(ACAQGraphNode algorithm) {
         return new ImageJ2AlgorithmWrapper((ImageJ2AlgorithmWrapper) algorithm);
     }
 

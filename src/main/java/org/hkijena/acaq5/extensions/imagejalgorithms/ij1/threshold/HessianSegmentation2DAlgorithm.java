@@ -41,7 +41,7 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
 @AlgorithmInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")
 @AlgorithmOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
 @RemovesTrait("image-quality")
-public class HessianSegmentation2DAlgorithm extends ACAQIteratingAlgorithm {
+public class HessianSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     private double smoothing = 1.0;
     private double gradientRadius = 1;

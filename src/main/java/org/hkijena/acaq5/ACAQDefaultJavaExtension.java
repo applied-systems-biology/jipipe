@@ -3,8 +3,8 @@ package org.hkijena.acaq5;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.ACAQProjectMetadata;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataConverter;
@@ -190,7 +190,7 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
      * @param id             Algorithm ID
      * @param algorithmClass Algorithm class
      */
-    public void registerAlgorithm(String id, Class<? extends ACAQAlgorithm> algorithmClass) {
+    public void registerAlgorithm(String id, Class<? extends ACAQGraphNode> algorithmClass) {
         registerAlgorithm(new ACAQJavaAlgorithmRegistrationTask(id, algorithmClass, this));
     }
 

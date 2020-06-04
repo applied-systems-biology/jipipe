@@ -2,8 +2,8 @@ package org.hkijena.acaq5.api;
 
 import com.google.common.base.Charsets;
 import ij.IJ;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.utils.GraphUtils;
@@ -42,13 +42,13 @@ public class ACAQRun implements ACAQRunnable {
     }
 
     private void initializeRelativeDirectories() {
-        for (ACAQAlgorithm algorithm : algorithmGraph.getAlgorithmNodes().values()) {
+        for (ACAQGraphNode algorithm : algorithmGraph.getAlgorithmNodes().values()) {
             algorithm.setWorkDirectory(null);
         }
     }
 
     private void initializeInternalStoragePaths() {
-        for (ACAQAlgorithm algorithm : algorithmGraph.getAlgorithmNodes().values()) {
+        for (ACAQGraphNode algorithm : algorithmGraph.getAlgorithmNodes().values()) {
             algorithm.setInternalStoragePath(Paths.get(StringUtils.jsonify(algorithm.getCompartment())).resolve(StringUtils.jsonify(algorithmGraph.getIdOf(algorithm))));
         }
     }
@@ -98,7 +98,7 @@ public class ACAQRun implements ACAQRunnable {
         }
     }
 
-    private void flushFinishedSlots(List<ACAQDataSlot> traversedSlots, Set<ACAQAlgorithm> executedAlgorithms, int currentIndex, ACAQDataSlot outputSlot) {
+    private void flushFinishedSlots(List<ACAQDataSlot> traversedSlots, Set<ACAQGraphNode> executedAlgorithms, int currentIndex, ACAQDataSlot outputSlot) {
         if (!executedAlgorithms.contains(outputSlot.getAlgorithm()))
             return;
         if (configuration.isFlushingEnabled()) {
@@ -154,14 +154,14 @@ public class ACAQRun implements ACAQRunnable {
     }
 
     private void runAnalysis(Consumer<ACAQRunnerStatus> onProgress, Supplier<Boolean> isCancelled) {
-        Set<ACAQAlgorithm> unExecutableAlgorithms = algorithmGraph.getAlgorithmsWithMissingInput();
-        Set<ACAQAlgorithm> executedAlgorithms = new HashSet<>();
+        Set<ACAQGraphNode> unExecutableAlgorithms = algorithmGraph.getAlgorithmsWithMissingInput();
+        Set<ACAQGraphNode> executedAlgorithms = new HashSet<>();
         List<ACAQDataSlot> traversedSlots = algorithmGraph.traverse();
 
         // Update algorithm limits that may be used by
-        Set<ACAQAlgorithm> algorithmLimits = new HashSet<>();
+        Set<ACAQGraphNode> algorithmLimits = new HashSet<>();
         if (configuration.getEndAlgorithmId() != null) {
-            ACAQAlgorithm endAlgorithm = algorithmGraph.getAlgorithmNodes().get(configuration.getEndAlgorithmId());
+            ACAQGraphNode endAlgorithm = algorithmGraph.getAlgorithmNodes().get(configuration.getEndAlgorithmId());
             if (configuration.isOnlyRunningEndAlgorithm())
                 algorithmLimits.add(endAlgorithm);
             else {
@@ -228,8 +228,8 @@ public class ACAQRun implements ACAQRunnable {
         log.append("[").append(status.getProgress()).append("/").append(status.getMaxProgress()).append("] ").append(status.getMessage()).append("\n");
     }
 
-    private void forceFlushAlgorithms(Set<ACAQAlgorithm> algorithms) {
-        for (ACAQAlgorithm algorithm : algorithms) {
+    private void forceFlushAlgorithms(Set<ACAQGraphNode> algorithms) {
+        for (ACAQGraphNode algorithm : algorithms) {
             for (ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
                 if (configuration.isFlushingKeepsDataEnabled())
                     outputSlot.save();

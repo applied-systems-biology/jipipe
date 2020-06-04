@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.extensions.multiparameters.algorithms;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public class MultiParameterAlgorithmSlotConfiguration extends ACAQMutableSlotConfiguration {
 
-    private ACAQAlgorithm algorithmInstance;
+    private ACAQGraphNode algorithmInstance;
     private boolean isLoading = false;
 
     /**
@@ -81,11 +81,11 @@ public class MultiParameterAlgorithmSlotConfiguration extends ACAQMutableSlotCon
         isLoading = false;
     }
 
-    public ACAQAlgorithm getAlgorithmInstance() {
+    public ACAQGraphNode getAlgorithmInstance() {
         return algorithmInstance;
     }
 
-    public void setAlgorithmInstance(ACAQAlgorithm algorithmInstance) {
+    public void setAlgorithmInstance(ACAQGraphNode algorithmInstance) {
         this.algorithmInstance = algorithmInstance;
         updateConfiguration();
     }

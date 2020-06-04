@@ -2,7 +2,7 @@ package org.hkijena.acaq5.ui.grapheditor;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
@@ -19,7 +19,7 @@ import java.awt.*;
 import java.util.Collections;
 
 /**
- * UI around an {@link ACAQAlgorithm} instance
+ * UI around an {@link ACAQGraphNode} instance
  */
 public abstract class ACAQAlgorithmUI extends JPanel {
 
@@ -34,7 +34,7 @@ public abstract class ACAQAlgorithmUI extends JPanel {
     public static final int SLOT_UI_WIDTH = 25;
 
     private ACAQAlgorithmGraphCanvasUI graphUI;
-    private ACAQAlgorithm algorithm;
+    private ACAQGraphNode algorithm;
     private ACAQAlgorithmGraphCanvasUI.ViewMode viewMode;
     private EventBus eventBus = new EventBus();
 
@@ -52,7 +52,7 @@ public abstract class ACAQAlgorithmUI extends JPanel {
      * @param algorithm The algorithm
      * @param viewMode  Directionality of the canvas UI
      */
-    public ACAQAlgorithmUI(ACAQAlgorithmGraphCanvasUI graphUI, ACAQAlgorithm algorithm, ACAQAlgorithmGraphCanvasUI.ViewMode viewMode) {
+    public ACAQAlgorithmUI(ACAQAlgorithmGraphCanvasUI graphUI, ACAQGraphNode algorithm, ACAQAlgorithmGraphCanvasUI.ViewMode viewMode) {
         this.graphUI = graphUI;
         this.algorithm = algorithm;
         this.viewMode = viewMode;
@@ -146,7 +146,7 @@ public abstract class ACAQAlgorithmUI extends JPanel {
     /**
      * @return The displayed algorithm
      */
-    public ACAQAlgorithm getAlgorithm() {
+    public ACAQGraphNode getAlgorithm() {
         return algorithm;
     }
 
@@ -264,7 +264,7 @@ public abstract class ACAQAlgorithmUI extends JPanel {
      */
     @Subscribe
     public void onAlgorithmParametersChanged(ParameterChangedEvent event) {
-        if (event.getSource() == algorithm && "name".equals(event.getKey())) {
+        if (event.getSource() == algorithm && "acaq:node:name".equals(event.getKey())) {
             updateSize();
             updateName();
             revalidate();

@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.api.data;
 
 import org.hkijena.acaq5.api.ACAQProject;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
@@ -18,7 +18,7 @@ import java.util.List;
 public class ACAQMergedExportedDataTable implements TableModel {
 
     private ArrayList<ACAQProjectCompartment> compartmentList = new ArrayList<>();
-    private ArrayList<ACAQAlgorithm> algorithmList = new ArrayList<>();
+    private ArrayList<ACAQGraphNode> algorithmList = new ArrayList<>();
     private ArrayList<ACAQExportedDataTable.Row> rowList = new ArrayList<>();
     private List<ACAQTraitDeclaration> traitColumns = new ArrayList<>();
     private ArrayList<ACAQDataSlot> slotList = new ArrayList<>();
@@ -37,7 +37,7 @@ public class ACAQMergedExportedDataTable implements TableModel {
         }
         String compartmentName = dataSlot.getAlgorithm().getCompartment();
         ACAQProjectCompartment compartment = project.getCompartments().get(compartmentName);
-        ACAQAlgorithm algorithm = dataSlot.getAlgorithm();
+        ACAQGraphNode algorithm = dataSlot.getAlgorithm();
 
         for (ACAQExportedDataTable.Row row : table.getRowList()) {
             slotList.add(dataSlot);
@@ -76,7 +76,7 @@ public class ACAQMergedExportedDataTable implements TableModel {
         if (columnIndex == 0)
             return ACAQProjectCompartment.class;
         else if (columnIndex == 1)
-            return ACAQAlgorithm.class;
+            return ACAQGraphNode.class;
         if (columnIndex == 2)
             return Path.class;
         else if (columnIndex == 3)

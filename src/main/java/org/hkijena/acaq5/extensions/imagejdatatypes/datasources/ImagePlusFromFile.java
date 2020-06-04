@@ -9,7 +9,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQDataInterface;
-import org.hkijena.acaq5.api.algorithm.ACAQIteratingAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQSimpleIteratingAlgorithm;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
@@ -32,7 +32,7 @@ import java.util.function.Supplier;
  */
 @ACAQDocumentation(name = "Import 2D image")
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.DataSource)
-public class ImagePlusFromFile extends ACAQIteratingAlgorithm {
+public class ImagePlusFromFile extends ACAQSimpleIteratingAlgorithm {
 
     private Class<? extends ACAQData> dataClass;
     private ACAQTraitDeclarationRef titleAnnotation = new ACAQTraitDeclarationRef(ACAQTraitRegistry.getInstance().getDeclarationById("image-title"));

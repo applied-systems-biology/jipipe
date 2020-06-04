@@ -37,7 +37,7 @@ import java.util.function.Supplier;
 // Trait configuration
 @RemovesTrait("image-quality")
 @RemovesTrait("bioobject-count-cluster")
-public class HoughSegmenter extends ACAQIteratingAlgorithm {
+public class HoughSegmenter extends ACAQSimpleIteratingAlgorithm {
 
     private int minRadius = 7;
     private int maxRadius = 25;

@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.api.data;
 
 import com.google.common.eventbus.EventBus;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.traits.ACAQMutableTraitConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
 import org.hkijena.acaq5.api.events.SlotAnnotationsChanged;
@@ -22,10 +22,10 @@ import java.util.stream.Collectors;
 
 /**
  * A data slot holds an {@link ACAQData} instance.
- * Slots are part of an {@link ACAQAlgorithm}
+ * Slots are part of an {@link ACAQGraphNode}
  */
 public class ACAQDataSlot implements TableModel {
-    private ACAQAlgorithm algorithm;
+    private ACAQGraphNode algorithm;
     private ACAQSlotDefinition definition;
     private String name;
     private Class<? extends ACAQData> acceptedDataType;
@@ -46,7 +46,7 @@ public class ACAQDataSlot implements TableModel {
      * @param definition
      * @param algorithm  The algorithm that contains the slot
      */
-    public ACAQDataSlot(ACAQSlotDefinition definition, ACAQAlgorithm algorithm) {
+    public ACAQDataSlot(ACAQSlotDefinition definition, ACAQGraphNode algorithm) {
         this.definition = definition;
         this.algorithm = algorithm;
         this.name = definition.getName();
@@ -282,7 +282,7 @@ public class ACAQDataSlot implements TableModel {
     /**
      * @return The algorithm that contains the slot
      */
-    public ACAQAlgorithm getAlgorithm() {
+    public ACAQGraphNode getAlgorithm() {
         return algorithm;
     }
 

@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.ui.components;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.algorithm.ACAQIOSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQDataDeclaration;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
@@ -33,7 +33,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
      */
     private static ACAQDataDeclaration lastSelectedType = null;
 
-    private ACAQAlgorithm algorithm;
+    private ACAQGraphNode algorithm;
     private ACAQDataSlot.SlotType slotType;
     private SearchTextField searchField;
     private JList<ACAQDataDeclaration> datatypeList;
@@ -50,7 +50,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
      * @param algorithm the target algorithm
      * @param slotType  the slot type to be created
      */
-    public AddAlgorithmSlotPanel(ACAQAlgorithm algorithm, ACAQDataSlot.SlotType slotType) {
+    public AddAlgorithmSlotPanel(ACAQGraphNode algorithm, ACAQDataSlot.SlotType slotType) {
         this.algorithm = algorithm;
         this.slotType = slotType;
         initialize();
@@ -319,7 +319,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
      * @param algorithm target algorithm
      * @param slotType  slot type to be created
      */
-    public static void showDialog(Component parent, ACAQAlgorithm algorithm, ACAQDataSlot.SlotType slotType) {
+    public static void showDialog(Component parent, ACAQGraphNode algorithm, ACAQDataSlot.SlotType slotType) {
         JDialog dialog = new JDialog();
         AddAlgorithmSlotPanel panel = new AddAlgorithmSlotPanel(algorithm, slotType);
         panel.setDialog(dialog);

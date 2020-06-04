@@ -13,7 +13,6 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
 import org.hkijena.acaq5.extensions.parameters.collections.IntegerRenamingList;
 import org.hkijena.acaq5.extensions.parameters.filters.IntegerRenaming;
@@ -29,7 +28,7 @@ import java.util.function.Supplier;
 @ACAQOrganization(menuPath = "Colors", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlusColorData.class, slotName = "Input")
 @AlgorithmOutputSlot(value = ImagePlusColorData.class, slotName = "Output")
-public class ArrangeChannelsAlgorithm extends ImageJ1Algorithm {
+public class ArrangeChannelsAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     private IntegerRenamingList channelReordering = new IntegerRenamingList();
     private boolean keepSameChannelCount = true;

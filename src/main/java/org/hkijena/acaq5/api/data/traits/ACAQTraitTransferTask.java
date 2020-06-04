@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
@@ -44,7 +44,7 @@ public class ACAQTraitTransferTask {
      *
      * @param algorithm the algorithm
      */
-    public void applyTo(ACAQAlgorithm algorithm) {
+    public void applyTo(ACAQGraphNode algorithm) {
         ACAQDataSlot sourceSlot = algorithm.getInputSlot(getInputSlotName());
         ACAQDataSlot targetSlot = algorithm.getOutputSlot(getOutputSlotName());
         for (ACAQTraitDeclaration slotAnnotation : sourceSlot.getSlotAnnotations()) {

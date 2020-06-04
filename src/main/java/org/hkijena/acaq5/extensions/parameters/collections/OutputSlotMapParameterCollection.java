@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.extensions.parameters.collections;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.parameters.ACAQMutableParameterAccess;
 import org.hkijena.acaq5.utils.ReflectionUtils;
@@ -21,7 +21,7 @@ public class OutputSlotMapParameterCollection extends SlotMapParameterCollection
      * @param newInstanceGenerator optional method that generated new instances. Can be null
      * @param initialize           If true, update the slots on creation
      */
-    public OutputSlotMapParameterCollection(Class<?> dataClass, ACAQAlgorithm algorithm, Supplier<Object> newInstanceGenerator, boolean initialize) {
+    public OutputSlotMapParameterCollection(Class<?> dataClass, ACAQGraphNode algorithm, Supplier<Object> newInstanceGenerator, boolean initialize) {
         super(dataClass, algorithm, newInstanceGenerator, initialize);
     }
 

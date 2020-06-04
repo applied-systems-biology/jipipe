@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.api.testbench;
 
 import org.hkijena.acaq5.api.ACAQMutableRunConfiguration;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQTraversedParameterCollection;
@@ -19,7 +19,7 @@ public class ACAQTestbenchSnapshot {
     private Path outputFolderBackup;
     private LocalDateTime timestamp;
     private String label;
-    private Map<ACAQAlgorithm, AlgorithmBackup> algorithmBackups = new HashMap<>();
+    private Map<ACAQGraphNode, AlgorithmBackup> algorithmBackups = new HashMap<>();
 
     /**
      * @param testbench the testbench
@@ -28,7 +28,7 @@ public class ACAQTestbenchSnapshot {
         this.testbench = testbench;
         this.outputFolderBackup = testbench.getTestbenchRun().getConfiguration().getOutputPath();
         timestamp = LocalDateTime.now();
-        for (ACAQAlgorithm algorithm : testbench.getTestbenchRun().getGraph().traverseAlgorithms()) {
+        for (ACAQGraphNode algorithm : testbench.getTestbenchRun().getGraph().traverseAlgorithms()) {
             algorithmBackups.put(algorithm, new AlgorithmBackup(algorithm));
         }
     }
@@ -41,7 +41,7 @@ public class ACAQTestbenchSnapshot {
         restore(testbench.getBenchedAlgorithm());
         ACAQTestbenchSnapshot initial = testbench.getInitialBackup();
         if (this != initial) {
-            for (Map.Entry<ACAQAlgorithm, AlgorithmBackup> entry : initial.algorithmBackups.entrySet()) {
+            for (Map.Entry<ACAQGraphNode, AlgorithmBackup> entry : initial.algorithmBackups.entrySet()) {
                 if (entry.getKey() != testbench.getBenchedAlgorithm())
                     entry.getValue().restore();
             }
@@ -53,7 +53,7 @@ public class ACAQTestbenchSnapshot {
      *
      * @param algorithm the target algorithm
      */
-    public void restore(ACAQAlgorithm algorithm) {
+    public void restore(ACAQGraphNode algorithm) {
         algorithmBackups.get(algorithm).restore();
     }
 
@@ -61,7 +61,7 @@ public class ACAQTestbenchSnapshot {
      * @param runAlgorithm algorithm in the {@link org.hkijena.acaq5.api.ACAQRun}
      * @return Backup for the algorithm
      */
-    public AlgorithmBackup getAlgorithmBackup(ACAQAlgorithm runAlgorithm) {
+    public AlgorithmBackup getAlgorithmBackup(ACAQGraphNode runAlgorithm) {
         return algorithmBackups.get(runAlgorithm);
     }
 
@@ -81,14 +81,14 @@ public class ACAQTestbenchSnapshot {
      * Backups parameters and storage paths
      */
     public static class AlgorithmBackup {
-        private ACAQAlgorithm algorithm;
+        private ACAQGraphNode algorithm;
         private Map<String, Object> parameterBackups = new HashMap<>();
         private Map<String, Path> storagePathBackups = new HashMap<>();
 
         /**
          * @param algorithm the algorithm the backup is created from
          */
-        public AlgorithmBackup(ACAQAlgorithm algorithm) {
+        public AlgorithmBackup(ACAQGraphNode algorithm) {
             this.algorithm = algorithm;
             backupData();
             backupParameters();
@@ -122,7 +122,7 @@ public class ACAQTestbenchSnapshot {
          *
          * @param targetAlgorithm the target algorithm
          */
-        public void restoreParameters(ACAQAlgorithm targetAlgorithm) {
+        public void restoreParameters(ACAQGraphNode targetAlgorithm) {
             Map<String, ACAQParameterAccess> parameters = ACAQTraversedParameterCollection.getParameters(targetAlgorithm);
             for (Map.Entry<String, ACAQParameterAccess> entry : parameters.entrySet()) {
                 entry.getValue().set(parameterBackups.get(entry.getKey()));

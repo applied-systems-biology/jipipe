@@ -8,8 +8,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.ACAQProjectMetadata;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
@@ -47,18 +47,18 @@ public class ACAQExportedCompartment {
 
     private void initializeGraphFromProject(ACAQProjectCompartment compartment) {
         ACAQAlgorithmGraph sourceGraph = compartment.getProject().getGraph();
-        Map<String, ACAQAlgorithm> copies = new HashMap<>();
+        Map<String, ACAQGraphNode> copies = new HashMap<>();
         String compartmentId = compartment.getProjectCompartmentId();
-        for (ACAQAlgorithm algorithm : sourceGraph.getAlgorithmNodes().values()) {
+        for (ACAQGraphNode algorithm : sourceGraph.getAlgorithmNodes().values()) {
             if (!algorithm.getCompartment().equals(compartmentId))
                 continue;
-            ACAQAlgorithm copy = algorithm.getDeclaration().clone(algorithm);
+            ACAQGraphNode copy = algorithm.getDeclaration().clone(algorithm);
             graph.insertNode(copy, copy.getCompartment());
             copies.put(algorithm.getIdInGraph(), copy);
         }
         for (Map.Entry<ACAQDataSlot, ACAQDataSlot> edge : sourceGraph.getSlotEdges()) {
-            ACAQAlgorithm copySource = copies.get(edge.getKey().getAlgorithm().getIdInGraph());
-            ACAQAlgorithm copyTarget = copies.get(edge.getValue().getAlgorithm().getIdInGraph());
+            ACAQGraphNode copySource = copies.get(edge.getKey().getAlgorithm().getIdInGraph());
+            ACAQGraphNode copyTarget = copies.get(edge.getValue().getAlgorithm().getIdInGraph());
             if (!copySource.getCompartment().equals(compartmentId))
                 continue;
             if (!copyTarget.getCompartment().equals(compartmentId))
@@ -93,26 +93,26 @@ public class ACAQExportedCompartment {
         compartmentName = compartment.getProjectCompartmentId();
         ACAQCompartmentOutput projectOutputNode = compartment.getOutputNode();
 
-        for (ACAQAlgorithm algorithm : graph.getAlgorithmNodes().values()) {
+        for (ACAQGraphNode algorithm : graph.getAlgorithmNodes().values()) {
             algorithm.setCompartment(compartmentName);
         }
 
-        Map<String, ACAQAlgorithm> copies = new HashMap<>();
-        for (ACAQAlgorithm algorithm : graph.getAlgorithmNodes().values()) {
+        Map<String, ACAQGraphNode> copies = new HashMap<>();
+        for (ACAQGraphNode algorithm : graph.getAlgorithmNodes().values()) {
             if (algorithm instanceof ACAQCompartmentOutput) {
                 copies.put(algorithm.getIdInGraph(), projectOutputNode);
 
                 // Copy the slot configuration over
                 projectOutputNode.getSlotConfiguration().setTo(algorithm.getSlotConfiguration());
             } else {
-                ACAQAlgorithm copy = algorithm.getDeclaration().clone(algorithm);
+                ACAQGraphNode copy = algorithm.getDeclaration().clone(algorithm);
                 project.getGraph().insertNode(copy, copy.getCompartment());
                 copies.put(algorithm.getIdInGraph(), copy);
             }
         }
         for (Map.Entry<ACAQDataSlot, ACAQDataSlot> edge : graph.getSlotEdges()) {
-            ACAQAlgorithm copySource = copies.get(edge.getKey().getAlgorithm().getIdInGraph());
-            ACAQAlgorithm copyTarget = copies.get(edge.getValue().getAlgorithm().getIdInGraph());
+            ACAQGraphNode copySource = copies.get(edge.getKey().getAlgorithm().getIdInGraph());
+            ACAQGraphNode copyTarget = copies.get(edge.getValue().getAlgorithm().getIdInGraph());
             project.getGraph().connect(copySource.getSlots().get(edge.getKey().getName()), copyTarget.getSlots().get(edge.getValue().getName()));
         }
     }

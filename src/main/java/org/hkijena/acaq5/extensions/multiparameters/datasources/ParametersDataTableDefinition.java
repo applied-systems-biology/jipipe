@@ -4,10 +4,7 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
@@ -85,7 +82,7 @@ public class ParametersDataTableDefinition extends ACAQAlgorithm {
                     data.getParameterData().put(column.getKey(), parameterTable.getValueAt(row, col));
                 }
 
-                ACAQAlgorithm algorithm = targetAlgorithm.getDeclaration().newInstance();
+                ACAQGraphNode algorithm = targetAlgorithm.getDeclaration().newInstance();
                 Map<String, ACAQParameterAccess> parameters = ACAQTraversedParameterCollection.getParameters(algorithm);
                 for (Map.Entry<String, Object> entry : data.getParameterData().entrySet()) {
                     parameters.get(entry.getKey()).set(entry.getValue());
@@ -114,7 +111,7 @@ public class ParametersDataTableDefinition extends ACAQAlgorithm {
         if (parameterTable == null || targetAlgorithm == null || targetAlgorithm.getDeclaration() == null)
             return;
         parameterTable.setRowGenerator(() -> {
-            ACAQAlgorithm instance = targetAlgorithm.getDeclaration().newInstance();
+            ACAQGraphNode instance = targetAlgorithm.getDeclaration().newInstance();
             Map<String, ACAQParameterAccess> parameters = ACAQTraversedParameterCollection.getParameters(instance);
             List<Object> row = new ArrayList<>();
             for (int col = 0; col < parameterTable.getColumnCount(); ++col) {
@@ -140,7 +137,7 @@ public class ParametersDataTableDefinition extends ACAQAlgorithm {
     private void recreateParameterTable() {
         this.parameterTable = new ParameterTable();
         if (targetAlgorithm != null && targetAlgorithm.getDeclaration() != null) {
-            ACAQAlgorithm instance = targetAlgorithm.getDeclaration().newInstance();
+            ACAQGraphNode instance = targetAlgorithm.getDeclaration().newInstance();
             Map<String, ACAQParameterAccess> parameters = ACAQTraversedParameterCollection.getParameters(instance);
             for (Map.Entry<String, ACAQParameterAccess> entry : parameters.entrySet()) {
                 ACAQParameterAccess access = entry.getValue();

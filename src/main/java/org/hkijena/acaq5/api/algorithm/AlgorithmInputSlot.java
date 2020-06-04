@@ -5,7 +5,7 @@ import org.hkijena.acaq5.api.data.ACAQData;
 import java.lang.annotation.*;
 
 /**
- * Annotates an {@link ACAQAlgorithm} with an input slot.
+ * Annotates an {@link ACAQGraphNode} with an input slot.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
@@ -26,7 +26,7 @@ public @interface AlgorithmInputSlot {
     String slotName() default "";
 
     /**
-     * If true, {@link ACAQAlgorithm} automatically configures its slots based on annotations (unless a custom {@link org.hkijena.acaq5.api.data.ACAQSlotConfiguration}
+     * If true, {@link ACAQGraphNode} automatically configures its slots based on annotations (unless a custom {@link org.hkijena.acaq5.api.data.ACAQSlotConfiguration}
      * is provided.
      *
      * @return if auto-configuration is enabled

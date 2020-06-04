@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.ui.extensionbuilder.grapheditor;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
@@ -22,14 +22,14 @@ import java.util.stream.Collectors;
 public class ACAQJsonExtensionMultiAlgorithmSelectionPanelUI extends ACAQJsonExtensionWorkbenchPanel {
     private ACAQAlgorithmGraph graph;
     private ACAQAlgorithmGraphCanvasUI canvas;
-    private Set<ACAQAlgorithm> algorithms;
+    private Set<ACAQGraphNode> algorithms;
 
     /**
      * @param workbenchUI Workbench UI
      * @param canvas      The graph
      * @param algorithms  Selected algorithms
      */
-    public ACAQJsonExtensionMultiAlgorithmSelectionPanelUI(ACAQJsonExtensionWorkbench workbenchUI, ACAQAlgorithmGraphCanvasUI canvas, Set<ACAQAlgorithm> algorithms) {
+    public ACAQJsonExtensionMultiAlgorithmSelectionPanelUI(ACAQJsonExtensionWorkbench workbenchUI, ACAQAlgorithmGraphCanvasUI canvas, Set<ACAQGraphNode> algorithms) {
         super(workbenchUI);
         this.graph = canvas.getAlgorithmGraph();
         this.canvas = canvas;
@@ -43,7 +43,7 @@ public class ACAQJsonExtensionMultiAlgorithmSelectionPanelUI extends ACAQJsonExt
         add(content, BorderLayout.CENTER);
 
         StringBuilder markdownContent = new StringBuilder();
-        for (ACAQAlgorithm algorithm : algorithms.stream().sorted(Comparator.comparing(ACAQAlgorithm::getName)).collect(Collectors.toList())) {
+        for (ACAQGraphNode algorithm : algorithms.stream().sorted(Comparator.comparing(ACAQGraphNode::getName)).collect(Collectors.toList())) {
             markdownContent.append(TooltipUtils.getAlgorithmTooltip(algorithm.getDeclaration())
                     .replace("<html>", "<div style=\"border: 1px solid gray; border-radius: 4px; margin: 4px; padding: 4px;\">")
                     .replace("</html>", "</div>"));
@@ -89,7 +89,7 @@ public class ACAQJsonExtensionMultiAlgorithmSelectionPanelUI extends ACAQJsonExt
                         algorithms.stream().map(a -> "'" + a.getName() + "'").collect(Collectors.joining(", "))
                         + "?", "Delete algorithm",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            for (ACAQAlgorithm algorithm : algorithms) {
+            for (ACAQGraphNode algorithm : algorithms) {
                 graph.removeNode(algorithm);
             }
         }

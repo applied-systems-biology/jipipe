@@ -44,7 +44,7 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
 // Trait configuration
 @RemovesTrait("image-quality")
 @RemovesTrait("bioobject-count-cluster")
-public class HoughSegmentation2DAlgorithm extends ACAQIteratingAlgorithm {
+public class HoughSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     private int minRadius = 7;
     private int maxRadius = 25;

@@ -16,7 +16,6 @@ import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.EigenvalueSelection2D;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.acaq5.utils.ImageJUtils;
@@ -33,7 +32,7 @@ import java.util.function.Supplier;
 @ACAQOrganization(menuPath = "Math", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")
 @AlgorithmOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output")
-public class Hessian2DAlgorithm extends ImageJ1Algorithm {
+public class Hessian2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     private EigenvalueSelection2D eigenvalueSelection = EigenvalueSelection2D.Largest;
     private double smoothing = 1.0;

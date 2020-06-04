@@ -33,17 +33,17 @@ public class MultiParameterAlgorithmDeclaration implements ACAQAlgorithmDeclarat
     }
 
     @Override
-    public Class<? extends ACAQAlgorithm> getAlgorithmClass() {
+    public Class<? extends ACAQGraphNode> getAlgorithmClass() {
         return MultiParameterAlgorithm.class;
     }
 
     @Override
-    public ACAQAlgorithm newInstance() {
+    public ACAQGraphNode newInstance() {
         return new MultiParameterAlgorithm(this);
     }
 
     @Override
-    public ACAQAlgorithm clone(ACAQAlgorithm algorithm) {
+    public ACAQGraphNode clone(ACAQGraphNode algorithm) {
         return new MultiParameterAlgorithm((MultiParameterAlgorithm) algorithm);
     }
 

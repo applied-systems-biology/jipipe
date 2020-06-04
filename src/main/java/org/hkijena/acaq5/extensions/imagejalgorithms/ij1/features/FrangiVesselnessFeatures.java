@@ -14,7 +14,6 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.acaq5.utils.ImageJUtils;
@@ -33,7 +32,7 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
 // Algorithm flow
 @AlgorithmInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input")
 @AlgorithmOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output")
-public class FrangiVesselnessFeatures extends ImageJ1Algorithm {
+public class FrangiVesselnessFeatures extends ACAQSimpleIteratingAlgorithm {
 
     private int numScales = 1;
     private double minimumScale = 3.0;

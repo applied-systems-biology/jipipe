@@ -40,7 +40,7 @@ public class TooltipUtils {
         builder.append("<u><strong>").append(compartment.getName()).append("</strong></u><br/>");
         builder.append("Contains ").append(projectGraph.getAlgorithmsWithCompartment(compartment.getProjectCompartmentId()).size()).append(" algorithms<br/>");
         builder.append("<table>");
-        for (ACAQAlgorithm algorithm : projectGraph.getAlgorithmsWithCompartment(compartment.getProjectCompartmentId())) {
+        for (ACAQGraphNode algorithm : projectGraph.getAlgorithmsWithCompartment(compartment.getProjectCompartmentId())) {
             builder.append("<tr>");
             builder.append("<td>").append("<img src=\"")
                     .append(ACAQUIDatatypeRegistry.getInstance().getIconURLFor(algorithm.getCategory()))

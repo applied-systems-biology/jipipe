@@ -17,7 +17,6 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.acaq5.extensions.parameters.collections.DoubleListParameter;
@@ -41,7 +40,7 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
 // Algorithm flow
 @AlgorithmInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input")
 @AlgorithmOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output")
-public class MeijeringVesselness2DFeatures extends ImageJ1Algorithm {
+public class MeijeringVesselness2DFeatures extends ACAQSimpleIteratingAlgorithm {
 
     private DoubleListParameter scales = new DoubleListParameter();
     private boolean invert = false;

@@ -8,7 +8,6 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.acaq5.utils.ImageJUtils;
@@ -24,7 +23,7 @@ import java.util.function.Supplier;
 @ACAQOrganization(menuPath = "Morphology", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input")
 @AlgorithmOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
-public class MorphologyOutline2DAlgorithm extends ImageJ1Algorithm {
+public class MorphologyOutline2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     /**
      * Instantiates a new algorithm.

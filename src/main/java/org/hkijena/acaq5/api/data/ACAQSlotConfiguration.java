@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.eventbus.EventBus;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A slot configuration determines which slots an {@link org.hkijena.acaq5.api.algorithm.ACAQAlgorithm} should have.
+ * A slot configuration determines which slots an {@link ACAQGraphNode} should have.
  * The algorithm then instantiates {@link ACAQDataSlot} instances to match the configuration.
  * This is required to allow multiple algorithms to share their slots.
  */

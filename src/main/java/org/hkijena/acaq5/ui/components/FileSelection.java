@@ -64,6 +64,7 @@ public class FileSelection extends JPanel {
         setLayout(new GridBagLayout());
 
         pathEdit = new JTextField();
+        pathEdit.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         pathEdit.setBorder(null);
         add(pathEdit, new GridBagConstraints() {
             {

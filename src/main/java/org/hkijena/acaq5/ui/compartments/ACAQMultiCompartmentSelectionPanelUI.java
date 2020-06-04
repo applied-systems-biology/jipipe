@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.ui.compartments;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
@@ -42,7 +42,7 @@ public class ACAQMultiCompartmentSelectionPanelUI extends ACAQProjectWorkbenchPa
         add(content, BorderLayout.CENTER);
 
         StringBuilder markdownContent = new StringBuilder();
-        for (ACAQProjectCompartment compartment : compartments.stream().sorted(Comparator.comparing(ACAQAlgorithm::getName)).collect(Collectors.toList())) {
+        for (ACAQProjectCompartment compartment : compartments.stream().sorted(Comparator.comparing(ACAQGraphNode::getName)).collect(Collectors.toList())) {
             markdownContent.append(TooltipUtils.getProjectCompartmentTooltip(compartment, getProject().getGraph())
                     .replace("<html>", "<div style=\"border: 1px solid gray; border-radius: 4px; margin: 4px; padding: 4px;\">")
                     .replace("</html>", "</div>"));

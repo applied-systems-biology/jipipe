@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.ui.resultanalysis;
 
 import org.hkijena.acaq5.api.ACAQRun;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
@@ -42,7 +42,7 @@ public class ACAQResultAlgorithmTree extends ACAQProjectWorkbenchPanel {
         for (ACAQProjectCompartment compartment : run.getProject().getCompartmentGraph().traverseAlgorithms()
                 .stream().map(a -> (ACAQProjectCompartment) a).collect(Collectors.toList())) {
             DefaultMutableTreeNode compartmentNode = new DefaultMutableTreeNode(compartment);
-            for (ACAQAlgorithm algorithm : run.getGraph().traverseAlgorithms()) {
+            for (ACAQGraphNode algorithm : run.getGraph().traverseAlgorithms()) {
                 if (algorithm.getCompartment().equals(compartment.getProjectCompartmentId())) {
                     DefaultMutableTreeNode algorithmNode = new DefaultMutableTreeNode(algorithm);
                     for (ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {

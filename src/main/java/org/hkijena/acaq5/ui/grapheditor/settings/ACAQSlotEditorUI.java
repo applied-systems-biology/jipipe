@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.ui.grapheditor.settings;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
@@ -26,14 +26,14 @@ import java.util.Set;
  * An extended slot editor that is more powerful than the "in-place" slot editor
  */
 public class ACAQSlotEditorUI extends JPanel {
-    private ACAQAlgorithm algorithm;
+    private ACAQGraphNode algorithm;
     private JTree slotTree;
     private MarkdownReader helpPanel;
 
     /**
      * @param algorithm The algorithm
      */
-    public ACAQSlotEditorUI(ACAQAlgorithm algorithm) {
+    public ACAQSlotEditorUI(ACAQGraphNode algorithm) {
         this.algorithm = algorithm;
         initialize();
         reloadList();

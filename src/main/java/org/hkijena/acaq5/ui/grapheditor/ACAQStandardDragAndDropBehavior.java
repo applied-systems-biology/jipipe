@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.ui.grapheditor;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.extensions.filesystem.api.datasources.FileDataSource;
 import org.hkijena.acaq5.extensions.filesystem.api.datasources.FileListDataSource;
 import org.hkijena.acaq5.extensions.filesystem.api.datasources.FolderDataSource;
@@ -74,11 +74,11 @@ public class ACAQStandardDragAndDropBehavior implements ACAQAlgorithmGraphDragAn
         if (files.size() == 1) {
             File selected = files.get(0);
             if (selected.isDirectory()) {
-                FolderDataSource dataSource = ACAQAlgorithm.newInstance("import-folder");
+                FolderDataSource dataSource = ACAQGraphNode.newInstance("import-folder");
                 dataSource.setFolderPath(selected.toPath());
                 graph.insertNode(dataSource, compartment);
             } else {
-                FileDataSource dataSource = ACAQAlgorithm.newInstance("import-file");
+                FileDataSource dataSource = ACAQGraphNode.newInstance("import-file");
                 dataSource.setFileName(selected.toPath());
                 graph.insertNode(dataSource, compartment);
             }
@@ -86,13 +86,13 @@ public class ACAQStandardDragAndDropBehavior implements ACAQAlgorithmGraphDragAn
             Map<Boolean, List<File>> groupedByType = files.stream().collect(Collectors.groupingBy(File::isDirectory));
             for (Map.Entry<Boolean, List<File>> entry : groupedByType.entrySet()) {
                 if (entry.getKey()) {
-                    FolderListDataSource dataSource = ACAQAlgorithm.newInstance("import-folder-list");
+                    FolderListDataSource dataSource = ACAQGraphNode.newInstance("import-folder-list");
                     for (File file : entry.getValue()) {
                         dataSource.getFolderPaths().add(file.toPath());
                     }
                     graph.insertNode(dataSource, compartment);
                 } else {
-                    FileListDataSource dataSource = ACAQAlgorithm.newInstance("import-file-list");
+                    FileListDataSource dataSource = ACAQGraphNode.newInstance("import-file-list");
                     for (File file : entry.getValue()) {
                         dataSource.getFileNames().add(file.toPath());
                     }

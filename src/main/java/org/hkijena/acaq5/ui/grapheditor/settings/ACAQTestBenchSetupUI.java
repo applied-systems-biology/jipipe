@@ -2,7 +2,7 @@ package org.hkijena.acaq5.ui.grapheditor.settings;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.testbench.ACAQTestbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
@@ -26,7 +26,7 @@ import java.util.Set;
  */
 public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
 
-    private ACAQAlgorithm algorithm;
+    private ACAQGraphNode algorithm;
     private JPanel setupPanel;
     private JPanel validationReportPanel;
     private ACAQValidityReportUI validationReportUI;
@@ -36,7 +36,7 @@ public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
      * @param workbenchUI the workbench
      * @param algorithm   the target algorithm
      */
-    public ACAQTestBenchSetupUI(ACAQProjectWorkbench workbenchUI, ACAQAlgorithm algorithm) {
+    public ACAQTestBenchSetupUI(ACAQProjectWorkbench workbenchUI, ACAQGraphNode algorithm) {
         super(workbenchUI);
         this.algorithm = algorithm;
 
@@ -107,7 +107,7 @@ public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
         ACAQValidityReport report = new ACAQValidityReport();
         getProject().reportValidity(report);
 
-        Set<ACAQAlgorithm> algorithmsWithMissingInput = getProject().getGraph().getAlgorithmsWithMissingInput();
+        Set<ACAQGraphNode> algorithmsWithMissingInput = getProject().getGraph().getAlgorithmsWithMissingInput();
         if (algorithmsWithMissingInput.contains(algorithm)) {
             report.forCategory("Testbench").reportIsInvalid(
                     "Selected algorithm is missing inputs!",

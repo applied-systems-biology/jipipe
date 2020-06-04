@@ -9,7 +9,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Describes an {@link ACAQAlgorithm}
+ * Describes an {@link ACAQGraphNode}
  */
 public interface ACAQAlgorithmDeclaration {
 
@@ -25,14 +25,14 @@ public interface ACAQAlgorithmDeclaration {
      *
      * @return The algorithm class
      */
-    Class<? extends ACAQAlgorithm> getAlgorithmClass();
+    Class<? extends ACAQGraphNode> getAlgorithmClass();
 
     /**
      * Creates a new algorithm instance
      *
      * @return Algorithm instance
      */
-    ACAQAlgorithm newInstance();
+    ACAQGraphNode newInstance();
 
     /**
      * Copies an existing algorithm instance
@@ -40,7 +40,7 @@ public interface ACAQAlgorithmDeclaration {
      * @param algorithm Original algorithm instance
      * @return Copied algorithm instance
      */
-    ACAQAlgorithm clone(ACAQAlgorithm algorithm);
+    ACAQGraphNode clone(ACAQGraphNode algorithm);
 
     /**
      * Returns the algorithm name

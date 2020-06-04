@@ -39,7 +39,7 @@ import java.util.function.Supplier;
 @AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Measurements")
 
 // Algorithm traits
-public class FindParticles2D extends ACAQIteratingAlgorithm {
+public class FindParticles2D extends ACAQSimpleIteratingAlgorithm {
     private double minParticleSize = 0;
     private double maxParticleSize = Double.POSITIVE_INFINITY;
     private double minParticleCircularity = 0;

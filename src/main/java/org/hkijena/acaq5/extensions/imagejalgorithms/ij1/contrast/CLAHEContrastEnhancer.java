@@ -12,7 +12,6 @@ import org.hkijena.acaq5.api.data.traits.GoodForTrait;
 import org.hkijena.acaq5.api.data.traits.RemovesTrait;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
 import java.util.function.Consumer;
@@ -40,7 +39,7 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
 // Trait configuration
 @RemovesTrait("image-quality-brightness-low")
 @RemovesTrait("image-quality-brightness-nonuniform")
-public class CLAHEContrastEnhancer extends ImageJ1Algorithm {
+public class CLAHEContrastEnhancer extends ACAQSimpleIteratingAlgorithm {
 
     private int blockRadius = 127;
     private int bins = 256;

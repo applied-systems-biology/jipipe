@@ -38,9 +38,9 @@ import java.util.function.Supplier;
 
 // Trait configuration
 @RemovesTrait("image-quality-brightness-nonuniform")
-public class IlluminationCorrection2DAlgorithm extends ACAQIteratingAlgorithm {
+public class IlluminationCorrection2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
-    private GaussianBlur2DAlgorithm gaussianAlgorithm = ACAQAlgorithm.newInstance("ij1-blur-gaussian2d");
+    private GaussianBlur2DAlgorithm gaussianAlgorithm = ACAQGraphNode.newInstance("ij1-blur-gaussian2d");
 
     /**
      * @param declaration the algorithm declaration

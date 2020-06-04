@@ -13,7 +13,6 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
@@ -33,7 +32,7 @@ import java.util.function.Supplier;
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Analysis, menuPath = "Statistics")
 @AlgorithmInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
 @AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
-public class GreyscalePixelsGenerator extends ImageJ1Algorithm {
+public class GreyscalePixelsGenerator extends ACAQSimpleIteratingAlgorithm {
 
     private boolean applyPerSlice = false;
     private ACAQTraitDeclarationRef sliceAnnotation = new ACAQTraitDeclarationRef(ACAQTraitRegistry.getInstance().getDeclarationById("image-index"));

@@ -40,17 +40,17 @@ public class ImagePlusFromFileAlgorithmDeclaration implements ACAQAlgorithmDecla
     }
 
     @Override
-    public Class<? extends ACAQAlgorithm> getAlgorithmClass() {
+    public Class<? extends ACAQGraphNode> getAlgorithmClass() {
         return ImagePlusFromFile.class;
     }
 
     @Override
-    public ACAQAlgorithm newInstance() {
+    public ACAQGraphNode newInstance() {
         return new ImagePlusFromFile(this, dataClass);
     }
 
     @Override
-    public ACAQAlgorithm clone(ACAQAlgorithm algorithm) {
+    public ACAQGraphNode clone(ACAQGraphNode algorithm) {
         return new ImagePlusFromFile((ImagePlusFromFile) algorithm);
     }
 

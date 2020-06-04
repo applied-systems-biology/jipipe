@@ -4,8 +4,8 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.compartments.datatypes.ACAQCompartmentOutputData;
@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 @ACAQDocumentation(name = "Graph compartment", description = "A compartment in the analysis graph")
 @AlgorithmInputSlot(ACAQCompartmentOutputData.class)
 @AlgorithmOutputSlot(ACAQCompartmentOutputData.class)
-public class ACAQProjectCompartment extends ACAQAlgorithm {
+public class ACAQProjectCompartment extends ACAQGraphNode {
 
     private ACAQProject project;
     private ACAQCompartmentOutput outputNode;
@@ -61,7 +61,7 @@ public class ACAQProjectCompartment extends ACAQAlgorithm {
     }
 
     @Override
-    @ACAQParameter("name")
+    @ACAQParameter("acaq:node:name")
     public void setCustomName(String customName) {
         super.setCustomName(customName);
         if (outputNode != null) {

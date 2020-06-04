@@ -14,7 +14,6 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
@@ -35,7 +34,7 @@ import java.util.function.Supplier;
 @ACAQOrganization(menuPath = "Colors", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlusColorData.class, slotName = "Input")
 @AlgorithmOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output")
-public class SplitChannelsAlgorithm extends ImageJ1Algorithm {
+public class SplitChannelsAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     private OutputSlotMapParameterCollection channelToSlotAssignment;
     private boolean ignoreMissingChannels = false;

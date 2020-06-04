@@ -5,8 +5,8 @@ import ij.IJ;
 import net.imagej.ImageJ;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compat.SingleImageJAlgorithmRun;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
@@ -45,7 +45,7 @@ public class ACAQRunAlgorithmCommand extends DynamicCommand implements Initializ
     @Override
     public void run() {
         ACAQDefaultRegistry.instantiate(getContext());
-        ACAQAlgorithm algorithm;
+        ACAQGraphNode algorithm;
         SingleImageJAlgorithmRun settings;
         if (StringUtils.isNullOrEmpty(algorithmId) || StringUtils.isNullOrEmpty(algorithmParameters)) {
             RunSingleAlgorithmDialog dialog = new RunSingleAlgorithmDialog(getContext());

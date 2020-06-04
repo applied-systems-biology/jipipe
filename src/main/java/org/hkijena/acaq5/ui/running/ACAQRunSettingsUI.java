@@ -4,7 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQMutableRunConfiguration;
 import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.*;
@@ -115,7 +115,7 @@ public class ACAQRunSettingsUI extends ACAQProjectWorkbenchPanel {
                 MarkdownDocument.fromPluginResource("documentation/run.md"),
                 ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING);
 
-        Set<ACAQAlgorithm> algorithmsWithMissingInput = getProjectWorkbench().getProject().getGraph().getAlgorithmsWithMissingInput();
+        Set<ACAQGraphNode> algorithmsWithMissingInput = getProjectWorkbench().getProject().getGraph().getAlgorithmsWithMissingInput();
         if (!algorithmsWithMissingInput.isEmpty()) {
             formPanel.removeLastRow();
             FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("Unexecuted algorithms", UIUtils.getIconFromResources("warning.png"));
@@ -125,7 +125,7 @@ public class ACAQRunSettingsUI extends ACAQProjectWorkbenchPanel {
 
             DefaultTableModel model = new DefaultTableModel();
             model.setColumnIdentifiers(new Object[]{"Compartment", "Algorithm name"});
-            for (ACAQAlgorithm algorithm : algorithmsWithMissingInput.stream().sorted(Comparator.comparing(ACAQAlgorithm::getCompartment)).collect(Collectors.toList())) {
+            for (ACAQGraphNode algorithm : algorithmsWithMissingInput.stream().sorted(Comparator.comparing(ACAQGraphNode::getCompartment)).collect(Collectors.toList())) {
                 model.addRow(new Object[]{
                         StringUtils.createIconTextHTMLTable(getProjectWorkbench().getProject().getCompartments().get(algorithm.getCompartment()).getName(),
                                 ResourceUtils.getPluginResource("icons/graph-compartment.png")),

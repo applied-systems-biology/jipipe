@@ -15,7 +15,7 @@ import java.util.Map;
  * This can be used for convenience
  */
 public class ACAQDataInterface {
-    private ACAQAlgorithm algorithm;
+    private ACAQGraphNode algorithm;
     private Map<ACAQDataSlot, Integer> inputSlotRows = new HashMap<>();
     private Map<ACAQTraitDeclaration, ACAQTrait> annotations = new HashMap<>();
 
@@ -24,7 +24,7 @@ public class ACAQDataInterface {
      *
      * @param algorithm The algorithm
      */
-    public ACAQDataInterface(ACAQAlgorithm algorithm) {
+    public ACAQDataInterface(ACAQGraphNode algorithm) {
         this.algorithm = algorithm;
         this.inputSlotRows = new HashMap<>();
 //        initialize(inputSlots, row);

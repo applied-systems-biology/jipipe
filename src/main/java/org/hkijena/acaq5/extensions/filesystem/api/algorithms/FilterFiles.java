@@ -28,7 +28,7 @@ import java.util.function.Supplier;
 @AlgorithmOutputSlot(value = FileData.class, slotName = "Filtered files", autoCreate = true)
 
 // Traits
-public class FilterFiles extends ACAQIteratingAlgorithm {
+public class FilterFiles extends ACAQSimpleIteratingAlgorithm {
 
     //    private PathFilter filter = new PathFilter();
     private PathFilterListParameter filters = new PathFilterListParameter();

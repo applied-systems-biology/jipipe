@@ -15,9 +15,9 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.ACAQMutableDependency;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraphEdge;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.compartments.datatypes.ACAQCompartmentOutputData;
@@ -99,7 +99,7 @@ public class ACAQProject implements ACAQValidatable {
      * @return The compartment
      */
     public ACAQProjectCompartment addCompartment(String name) {
-        ACAQProjectCompartment compartment = ACAQAlgorithm.newInstance("acaq:project-compartment");
+        ACAQProjectCompartment compartment = ACAQGraphNode.newInstance("acaq:project-compartment");
         compartment.setProject(this);
         compartment.setCustomName(name);
         compartmentGraph.insertNode(compartment, ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
@@ -129,13 +129,13 @@ public class ACAQProject implements ACAQValidatable {
     private void initializeCompartment(ACAQProjectCompartment compartment) {
         compartment.setProject(this);
         ACAQCompartmentOutput compartmentOutput = null;
-        for (ACAQAlgorithm algorithm : graph.getAlgorithmNodes().values()) {
+        for (ACAQGraphNode algorithm : graph.getAlgorithmNodes().values()) {
             if (algorithm instanceof ACAQCompartmentOutput && algorithm.getCompartment().equals(compartment.getProjectCompartmentId())) {
                 compartmentOutput = (ACAQCompartmentOutput) algorithm;
             }
         }
         if (compartmentOutput == null) {
-            compartmentOutput = ACAQAlgorithm.newInstance("acaq:compartment-output");
+            compartmentOutput = ACAQGraphNode.newInstance("acaq:compartment-output");
             compartmentOutput.setCustomName(compartment.getName() + " output");
             compartmentOutput.setCompartment(compartment.getProjectCompartmentId());
             graph.insertNode(compartmentOutput, compartment.getProjectCompartmentId());
@@ -177,7 +177,7 @@ public class ACAQProject implements ACAQValidatable {
     @Subscribe
     public void onCompartmentGraphChanged(AlgorithmGraphChangedEvent event) {
         if (event.getAlgorithmGraph() == compartmentGraph) {
-            for (ACAQAlgorithm algorithm : compartmentGraph.getAlgorithmNodes().values()) {
+            for (ACAQGraphNode algorithm : compartmentGraph.getAlgorithmNodes().values()) {
                 ACAQProjectCompartment compartment = (ACAQProjectCompartment) algorithm;
                 if (!compartment.isInitialized()) {
                     compartments.put(compartment.getProjectCompartmentId(), compartment);
@@ -237,7 +237,7 @@ public class ACAQProject implements ACAQValidatable {
      */
     public void setWorkDirectory(Path workDirectory) {
         this.workDirectory = workDirectory;
-        for (ACAQAlgorithm algorithm : graph.getAlgorithmNodes().values()) {
+        for (ACAQGraphNode algorithm : graph.getAlgorithmNodes().values()) {
             algorithm.setWorkDirectory(workDirectory);
         }
         eventBus.post(new WorkDirectoryChangedEvent(workDirectory));
@@ -337,7 +337,7 @@ public class ACAQProject implements ACAQValidatable {
 
             // read compartments
             project.compartmentGraph.fromJson(node.get("compartments").get("compartment-graph"));
-            for (ACAQAlgorithm algorithm : project.compartmentGraph.getAlgorithmNodes().values()) {
+            for (ACAQGraphNode algorithm : project.compartmentGraph.getAlgorithmNodes().values()) {
                 ACAQProjectCompartment compartment = (ACAQProjectCompartment) algorithm;
                 compartment.setProject(project);
                 project.compartments.put(compartment.getProjectCompartmentId(), compartment);

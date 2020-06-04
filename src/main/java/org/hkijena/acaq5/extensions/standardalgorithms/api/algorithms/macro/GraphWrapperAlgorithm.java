@@ -3,10 +3,7 @@ package org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro;
 import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
-import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
@@ -63,7 +60,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
         parameterCollection.add(this, Collections.emptyList());
         parameterAccessMap.putAll(parameterCollection.getParameters());
 
-        for (ACAQAlgorithm algorithm : wrappedGraph.traverseAlgorithms()) {
+        for (ACAQGraphNode algorithm : wrappedGraph.traverseAlgorithms()) {
             for (Map.Entry<String, ACAQParameterAccess> entry : ACAQTraversedParameterCollection.getParameters(algorithm).entrySet()) {
 
                 ACAQParameterAccess parameterAccess = entry.getValue();
@@ -84,7 +81,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
     private void initializeSlots() {
         graphSlots.clear();
         for (Map.Entry<ACAQDataSlot, String> entry : ((GraphWrapperAlgorithmDeclaration) getDeclaration()).getExportedSlotNames().entrySet()) {
-            ACAQAlgorithm localAlgorithm = wrappedGraph.getEquivalentAlgorithm(entry.getKey().getAlgorithm());
+            ACAQGraphNode localAlgorithm = wrappedGraph.getEquivalentAlgorithm(entry.getKey().getAlgorithm());
             ACAQDataSlot localSlot = localAlgorithm.getSlots().get(entry.getKey().getName());
             graphSlots.put(entry.getValue(), localSlot);
         }
@@ -111,7 +108,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
             // Pass the input type to the graph inputs
             // Then propagate the change
             // Then change the data type back
-            Set<ACAQAlgorithm> graphInputAlgorithms = new HashSet<>();
+            Set<ACAQGraphNode> graphInputAlgorithms = new HashSet<>();
             for (Map.Entry<String, ACAQDataSlot> entry : graphSlots.entrySet()) {
                 if (entry.getValue().isInput()) {
                     graphInputAlgorithms.add(entry.getValue().getAlgorithm());
@@ -124,7 +121,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
                     entry.getValue().setAcceptedDataType(dataClass);
                 }
             }
-            for (ACAQAlgorithm graphInputAlgorithm : graphInputAlgorithms) {
+            for (ACAQGraphNode graphInputAlgorithm : graphInputAlgorithms) {
                 graphInputAlgorithm.updateSlotInheritance();
             }
             for (Map.Entry<String, ACAQDataSlot> entry : graphSlots.entrySet()) {
@@ -149,13 +146,13 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
                 }
             }
             if (modified) {
-                Set<ACAQAlgorithm> algorithms = new HashSet<>();
+                Set<ACAQGraphNode> algorithms = new HashSet<>();
                 for (ACAQDataSlot slot : getOutputSlots()) {
                     for (ACAQDataSlot targetSlot : getGraph().getTargetSlots(slot)) {
                         algorithms.add(targetSlot.getAlgorithm());
                     }
                 }
-                for (ACAQAlgorithm algorithm : algorithms) {
+                for (ACAQGraphNode algorithm : algorithms) {
                     algorithm.updateSlotInheritance();
                 }
             }
@@ -167,7 +164,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm implements ACAQCustomPa
         transferInputData();
 
         List<ACAQDataSlot> traversedSlots = wrappedGraph.traverse();
-        Set<ACAQAlgorithm> executedAlgorithms = new HashSet<>();
+        Set<ACAQGraphNode> executedAlgorithms = new HashSet<>();
 
         for (int i = 0; i < traversedSlots.size(); ++i) {
             ACAQDataSlot slot = traversedSlots.get(i);

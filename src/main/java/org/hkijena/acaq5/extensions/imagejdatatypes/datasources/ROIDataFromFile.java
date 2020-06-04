@@ -20,7 +20,7 @@ import java.util.function.Supplier;
 @AlgorithmInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
 @AlgorithmOutputSlot(value = ROIData.class, slotName = "Mask", autoCreate = true)
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.DataSource)
-public class ROIDataFromFile extends ACAQIteratingAlgorithm {
+public class ROIDataFromFile extends ACAQSimpleIteratingAlgorithm {
 
     /**
      * @param declaration the algorithm declaration

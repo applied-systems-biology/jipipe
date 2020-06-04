@@ -2,8 +2,8 @@ package org.hkijena.acaq5.ui.grapheditor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableSet;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.awt.*;
@@ -29,7 +29,7 @@ public class ACAQStandardCopyPasteBehavior implements ACAQAlgorithmGraphCopyPast
     }
 
     @Override
-    public void copy(Set<ACAQAlgorithm> algorithms) {
+    public void copy(Set<ACAQGraphNode> algorithms) {
         ACAQAlgorithmGraph graph = ACAQAlgorithmGraph.getIsolatedGraph(editorUI.getAlgorithmGraph(), algorithms, true);
         try {
             String json = JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(graph);
@@ -42,9 +42,9 @@ public class ACAQStandardCopyPasteBehavior implements ACAQAlgorithmGraphCopyPast
     }
 
     @Override
-    public void cut(Set<ACAQAlgorithm> algorithms) {
+    public void cut(Set<ACAQGraphNode> algorithms) {
         copy(algorithms);
-        for (ACAQAlgorithm algorithm : ImmutableSet.copyOf(algorithms)) {
+        for (ACAQGraphNode algorithm : ImmutableSet.copyOf(algorithms)) {
             editorUI.getAlgorithmGraph().removeNode(algorithm);
         }
     }
@@ -56,7 +56,7 @@ public class ACAQStandardCopyPasteBehavior implements ACAQAlgorithmGraphCopyPast
             if (json != null) {
                 ACAQAlgorithmGraph graph = JsonUtils.getObjectMapper().readValue(json, ACAQAlgorithmGraph.class);
                 String compartment = editorUI.getCompartment();
-                for (ACAQAlgorithm algorithm : graph.getAlgorithmNodes().values()) {
+                for (ACAQGraphNode algorithm : graph.getAlgorithmNodes().values()) {
                     algorithm.setCompartment(compartment);
                 }
                 editorUI.getAlgorithmGraph().mergeWith(graph);

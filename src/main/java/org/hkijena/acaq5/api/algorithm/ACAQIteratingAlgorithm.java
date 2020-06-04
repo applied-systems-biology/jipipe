@@ -23,8 +23,11 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
- * An {@link ACAQAlgorithm} that iterates through each data row
- * This algorithm type makes sure that input slots are always matched, otherwise errors are thrown
+ * An {@link ACAQAlgorithm} that iterates through each data row.
+ * This algorithm utilizes the {@link ACAQDataInterface} class to iterate through input data sets.
+ * It offers various parameters that control how data sets are matched.
+ * If your algorithm only has one input and will never have more than one input slot, we recommend using {@link ACAQSimpleIteratingAlgorithm}
+ * instead that comes without the additional data set matching strategies
  */
 public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
 

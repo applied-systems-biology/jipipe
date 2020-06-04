@@ -5,6 +5,7 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
  */
 public class MultiParameterAlgorithm extends ACAQAlgorithm {
 
-    private ACAQAlgorithm algorithmInstance;
+    private ACAQGraphNode algorithmInstance;
 
     /**
      * Creates a new instance
@@ -206,7 +207,7 @@ public class MultiParameterAlgorithm extends ACAQAlgorithm {
     }
 
     @ACAQParameter("algorithm-parameters")
-    public ACAQAlgorithm getAlgorithmInstance() {
+    public ACAQGraphNode getAlgorithmInstance() {
         return algorithmInstance;
     }
 

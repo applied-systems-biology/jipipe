@@ -16,7 +16,7 @@ import java.util.Set;
 
 /**
  * An empty algorithm declaration.
- * Use this when you initialize an {@link ACAQAlgorithm} manually within another algorithm.
+ * Use this when you initialize an {@link ACAQGraphNode} manually within another algorithm.
  * Warning: May break the algorithm.
  */
 @JsonSerialize(using = ACAQEmptyAlgorithmDeclaration.Serializer.class)
@@ -27,17 +27,17 @@ public class ACAQEmptyAlgorithmDeclaration implements ACAQAlgorithmDeclaration {
     }
 
     @Override
-    public Class<? extends ACAQAlgorithm> getAlgorithmClass() {
+    public Class<? extends ACAQGraphNode> getAlgorithmClass() {
         return null;
     }
 
     @Override
-    public ACAQAlgorithm newInstance() {
+    public ACAQGraphNode newInstance() {
         return null;
     }
 
     @Override
-    public ACAQAlgorithm clone(ACAQAlgorithm algorithm) {
+    public ACAQGraphNode clone(ACAQGraphNode algorithm) {
         return null;
     }
 

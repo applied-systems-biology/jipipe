@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.ui.resultanalysis;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -8,7 +8,7 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
 /**
- * Renders {@link ACAQAlgorithm} instances in a table cell
+ * Renders {@link ACAQGraphNode} instances in a table cell
  */
 public class ACAQAlgorithmTableCellRenderer extends JLabel implements TableCellRenderer {
 
@@ -23,8 +23,8 @@ public class ACAQAlgorithmTableCellRenderer extends JLabel implements TableCellR
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 
-        if (value instanceof ACAQAlgorithm) {
-            ACAQAlgorithm algorithm = (ACAQAlgorithm) value;
+        if (value instanceof ACAQGraphNode) {
+            ACAQGraphNode algorithm = (ACAQGraphNode) value;
             setIcon(UIUtils.getIconFromColor(UIUtils.getFillColorFor(algorithm.getDeclaration())));
             setText(algorithm.getName());
         }

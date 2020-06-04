@@ -2,8 +2,8 @@ package org.hkijena.acaq5.ui.settings;
 
 import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro.GraphWrapperAlgorithmDeclaration;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWindow;
@@ -38,7 +38,7 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQProjectWorkbenchPanel
         algorithmDeclaration.setGraph(wrappedGraph);
         algorithmDeclaration.getMetadata().setName("My algorithm");
         algorithmDeclaration.getMetadata().setDescription("An ACAQ5 algorithm");
-        for (ACAQAlgorithm algorithm : wrappedGraph.getAlgorithmNodes().values()) {
+        for (ACAQGraphNode algorithm : wrappedGraph.getAlgorithmNodes().values()) {
             algorithm.clearLocations();
         }
 

@@ -77,17 +77,17 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     }
 
     @Override
-    public Class<? extends ACAQAlgorithm> getAlgorithmClass() {
+    public Class<? extends ACAQGraphNode> getAlgorithmClass() {
         return GraphWrapperAlgorithm.class;
     }
 
     @Override
-    public ACAQAlgorithm newInstance() {
+    public ACAQGraphNode newInstance() {
         return new GraphWrapperAlgorithm(this);
     }
 
     @Override
-    public ACAQAlgorithm clone(ACAQAlgorithm algorithm) {
+    public ACAQGraphNode clone(ACAQGraphNode algorithm) {
         return new GraphWrapperAlgorithm((GraphWrapperAlgorithm) algorithm);
     }
 
@@ -314,9 +314,9 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
         outputSlots.clear();
 
         Set<String> existingSlots = new HashSet<>();
-        Map<ACAQAlgorithm, List<ACAQDataSlot>> groupedByAlgorithm = graph.getUnconnectedSlots().stream().collect(Collectors.groupingBy(ACAQDataSlot::getAlgorithm));
+        Map<ACAQGraphNode, List<ACAQDataSlot>> groupedByAlgorithm = graph.getUnconnectedSlots().stream().collect(Collectors.groupingBy(ACAQDataSlot::getAlgorithm));
         exportedSlotNames.clear();
-        for (Map.Entry<ACAQAlgorithm, List<ACAQDataSlot>> entry : groupedByAlgorithm.entrySet()) {
+        for (Map.Entry<ACAQGraphNode, List<ACAQDataSlot>> entry : groupedByAlgorithm.entrySet()) {
             for (ACAQDataSlot slot : entry.getValue()) {
                 if (slot.isInput()) {
                     String name = StringUtils.makeUniqueString(slot.getName(), " ", existingSlots::contains);
@@ -340,7 +340,7 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
      */
     public Map<String, ACAQParameterAccess> getAvailableParameters() {
         Map<String, ACAQParameterAccess> parameterAccessMap = new HashMap<>();
-        for (ACAQAlgorithm algorithm : graph.traverseAlgorithms()) {
+        for (ACAQGraphNode algorithm : graph.traverseAlgorithms()) {
             for (Map.Entry<String, ACAQParameterAccess> entry : ACAQTraversedParameterCollection.getParameters(algorithm).entrySet()) {
                 String newId = algorithm.getIdInGraph() + "/" + entry.getKey();
                 parameterAccessMap.put(newId, entry.getValue());

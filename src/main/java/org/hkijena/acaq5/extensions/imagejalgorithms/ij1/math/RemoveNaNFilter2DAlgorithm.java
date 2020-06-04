@@ -10,7 +10,6 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.acaq5.utils.ImageJUtils;
@@ -27,7 +26,7 @@ import java.util.function.Supplier;
 @ACAQOrganization(menuPath = "Math", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input")
 @AlgorithmOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output")
-public class RemoveNaNFilter2DAlgorithm extends ImageJ1Algorithm {
+public class RemoveNaNFilter2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     private double radius = 1;
 

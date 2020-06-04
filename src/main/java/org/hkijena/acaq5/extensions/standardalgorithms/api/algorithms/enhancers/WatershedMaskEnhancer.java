@@ -36,7 +36,7 @@ import java.util.function.Supplier;
 
 // Trait configuration
 @RemovesTrait("bioobject-count-cluster")
-public class WatershedMaskEnhancer extends ACAQIteratingAlgorithm {
+public class WatershedMaskEnhancer extends ACAQSimpleIteratingAlgorithm {
 
     private int erosionIterations = 0;
 

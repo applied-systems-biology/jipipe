@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.ui.grapheditor;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 
 import java.util.Set;
 
@@ -13,14 +13,14 @@ public interface ACAQAlgorithmGraphCopyPasteBehavior {
      *
      * @param algorithms set of algorithms
      */
-    void copy(Set<ACAQAlgorithm> algorithms);
+    void copy(Set<ACAQGraphNode> algorithms);
 
     /**
      * Copies the set of algorithms into clipboard and removes them
      *
      * @param algorithms set of algorithms
      */
-    void cut(Set<ACAQAlgorithm> algorithms);
+    void cut(Set<ACAQGraphNode> algorithms);
 
     /**
      * Pastes algorithms from clipboard

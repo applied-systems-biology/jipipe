@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.ui.components;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQDataDeclaration;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
@@ -157,7 +157,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
         if (!settingsAreValid())
             return;
         String slotName = nameEditor.getText().trim();
-        ACAQAlgorithm algorithm = existingSlot.getAlgorithm();
+        ACAQGraphNode algorithm = existingSlot.getAlgorithm();
         ACAQDataSlot.SlotType slotType = existingSlot.getSlotType();
         ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
         ACAQSlotDefinition slotDefinition;
@@ -242,7 +242,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        ACAQAlgorithm algorithm = existingSlot.getAlgorithm();
+        ACAQGraphNode algorithm = existingSlot.getAlgorithm();
         JLabel algorithmNameLabel = new JLabel(algorithm.getName(),
                 new ColorIcon(16, 16, UIUtils.getFillColorFor(algorithm.getDeclaration())), JLabel.LEFT);
         algorithmNameLabel.setToolTipText(TooltipUtils.getAlgorithmTooltip(algorithm.getDeclaration()));
@@ -268,7 +268,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
     }
 
     private void initializeAvailableDeclarations() {
-        ACAQAlgorithm algorithm = existingSlot.getAlgorithm();
+        ACAQGraphNode algorithm = existingSlot.getAlgorithm();
         ACAQDataSlot.SlotType slotType = existingSlot.getSlotType();
         ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
         if (slotType == ACAQDataSlot.SlotType.Input) {

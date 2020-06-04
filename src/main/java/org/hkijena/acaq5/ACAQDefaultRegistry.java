@@ -3,8 +3,8 @@ package org.hkijena.acaq5;
 import com.google.common.eventbus.EventBus;
 import ij.IJ;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.events.ExtensionRegisteredEvent;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
@@ -111,7 +111,7 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
 
         // Check for errors
         for (ACAQAlgorithmDeclaration declaration : algorithmRegistry.getRegisteredAlgorithms().values()) {
-            ACAQAlgorithm algorithm = declaration.newInstance();
+            ACAQGraphNode algorithm = declaration.newInstance();
             ACAQTraversedParameterCollection collection = new ACAQTraversedParameterCollection(algorithm);
             for (Map.Entry<String, ACAQParameterAccess> entry : collection.getParameters().entrySet()) {
                 if (ACAQParameterTypeRegistry.getInstance().getDeclarationByFieldClass(entry.getValue().getFieldClass()) == null) {

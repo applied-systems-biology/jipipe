@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Instantiates {@link ACAQAlgorithm} instances
+ * Instantiates {@link ACAQGraphNode} instances
  */
 public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDeclaration {
 
-    private Class<? extends ACAQAlgorithm> algorithmClass;
+    private Class<? extends ACAQGraphNode> algorithmClass;
     private String id;
     private String name;
     private String description;
@@ -26,7 +26,7 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
     private String menuPath;
 
     @Override
-    public Class<? extends ACAQAlgorithm> getAlgorithmClass() {
+    public Class<? extends ACAQGraphNode> getAlgorithmClass() {
         return algorithmClass;
     }
 
@@ -35,7 +35,7 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
      *
      * @param algorithmClass The algorithm class
      */
-    public void setAlgorithmClass(Class<? extends ACAQAlgorithm> algorithmClass) {
+    public void setAlgorithmClass(Class<? extends ACAQGraphNode> algorithmClass) {
         this.algorithmClass = algorithmClass;
     }
 

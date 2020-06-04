@@ -1,8 +1,8 @@
 package org.hkijena.acaq5.ui.extensionbuilder.grapheditor;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.ColorIcon;
@@ -24,14 +24,14 @@ import java.util.Collections;
 public class ACAQJsonExtensionSingleAlgorithmSelectionPanelUI extends ACAQJsonExtensionWorkbenchPanel {
     private ACAQAlgorithmGraph graph;
     private ACAQAlgorithmGraphCanvasUI canvas;
-    private ACAQAlgorithm algorithm;
+    private ACAQGraphNode algorithm;
 
     /**
      * @param workbenchUI The workbench UI
      * @param canvas      The algorithm graph
      * @param algorithm   The algorithm
      */
-    public ACAQJsonExtensionSingleAlgorithmSelectionPanelUI(ACAQJsonExtensionWorkbench workbenchUI, ACAQAlgorithmGraphCanvasUI canvas, ACAQAlgorithm algorithm) {
+    public ACAQJsonExtensionSingleAlgorithmSelectionPanelUI(ACAQJsonExtensionWorkbench workbenchUI, ACAQAlgorithmGraphCanvasUI canvas, ACAQGraphNode algorithm) {
         super(workbenchUI);
         this.graph = canvas.getAlgorithmGraph();
         this.canvas = canvas;
@@ -111,7 +111,7 @@ public class ACAQJsonExtensionSingleAlgorithmSelectionPanelUI extends ACAQJsonEx
     /**
      * @return The algorithm
      */
-    public ACAQAlgorithm getAlgorithm() {
+    public ACAQGraphNode getAlgorithm() {
         return algorithm;
     }
 }

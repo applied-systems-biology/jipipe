@@ -46,7 +46,7 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
 // Trait configuration
 @RemovesTrait("image-quality")
 @AddsTrait("bioobject-count-cluster")
-public class BrightSpotsSegmentation2DAlgorithm extends ACAQIteratingAlgorithm {
+public class BrightSpotsSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     private int rollingBallRadius = 20;
     private int dilationErodeSteps = 2;

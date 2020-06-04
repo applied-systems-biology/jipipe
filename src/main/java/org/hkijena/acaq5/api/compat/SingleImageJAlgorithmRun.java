@@ -11,8 +11,8 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.*;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
@@ -36,13 +36,13 @@ import java.util.Objects;
 public class SingleImageJAlgorithmRun implements ACAQValidatable {
 
     private EventBus eventBus = new EventBus();
-    private ACAQAlgorithm algorithm;
+    private ACAQGraphNode algorithm;
     private Map<String, ImageJDatatypeImporter> inputSlotImporters = new HashMap<>();
 
     /**
      * @param algorithm the algorithm to be run
      */
-    public SingleImageJAlgorithmRun(ACAQAlgorithm algorithm) {
+    public SingleImageJAlgorithmRun(ACAQGraphNode algorithm) {
         this.algorithm = algorithm;
         updateSlots();
         algorithm.getEventBus().register(this);
@@ -58,7 +58,7 @@ public class SingleImageJAlgorithmRun implements ACAQValidatable {
         }
     }
 
-    public ACAQAlgorithm getAlgorithm() {
+    public ACAQGraphNode getAlgorithm() {
         return algorithm;
     }
 
@@ -178,7 +178,7 @@ public class SingleImageJAlgorithmRun implements ACAQValidatable {
             case Annotation:
                 return false;
         }
-        ACAQAlgorithm algorithm = declaration.newInstance();
+        ACAQGraphNode algorithm = declaration.newInstance();
         for (ACAQDataSlot inputSlot : algorithm.getInputSlots()) {
             if (!ACAQImageJAdapterRegistry.getInstance().supportsACAQData(inputSlot.getAcceptedDataType()))
                 return false;
@@ -198,7 +198,7 @@ public class SingleImageJAlgorithmRun implements ACAQValidatable {
         @Override
         public void serialize(SingleImageJAlgorithmRun run, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             // Instantiate an unchanged algorithm to reduce the output
-            ACAQAlgorithm comparison = run.getAlgorithm().getDeclaration().newInstance();
+            ACAQGraphNode comparison = run.getAlgorithm().getDeclaration().newInstance();
             jsonGenerator.writeStartObject();
 
             serializeParameters(run, comparison, jsonGenerator);
@@ -221,7 +221,7 @@ public class SingleImageJAlgorithmRun implements ACAQValidatable {
             }
         }
 
-        private void serializeOutputSlotConfiguration(SingleImageJAlgorithmRun run, ACAQAlgorithm comparison, JsonGenerator jsonGenerator) throws IOException {
+        private void serializeOutputSlotConfiguration(SingleImageJAlgorithmRun run, ACAQGraphNode comparison, JsonGenerator jsonGenerator) throws IOException {
             Map<String, String> serializedSlots = new HashMap<>();
             for (ACAQDataSlot outputSlot : run.getAlgorithm().getOutputSlots()) {
                 ACAQDataSlot existingSlot = comparison.getSlots().getOrDefault(outputSlot.getName(), null);
@@ -234,7 +234,7 @@ public class SingleImageJAlgorithmRun implements ACAQValidatable {
             }
         }
 
-        private void serializeInputSlotConfiguration(SingleImageJAlgorithmRun run, ACAQAlgorithm comparison, JsonGenerator jsonGenerator) throws IOException {
+        private void serializeInputSlotConfiguration(SingleImageJAlgorithmRun run, ACAQGraphNode comparison, JsonGenerator jsonGenerator) throws IOException {
             Map<String, String> serializedSlots = new HashMap<>();
             for (ACAQDataSlot inputSlot : run.getAlgorithm().getInputSlots()) {
                 ACAQDataSlot existingSlot = comparison.getSlots().getOrDefault(inputSlot.getName(), null);

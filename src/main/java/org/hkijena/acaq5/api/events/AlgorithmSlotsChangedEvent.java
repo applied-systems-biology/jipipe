@@ -1,21 +1,21 @@
 package org.hkijena.acaq5.api.events;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 
 /**
  * Triggered when an algorithm's slots change
  */
 public class AlgorithmSlotsChangedEvent {
-    private ACAQAlgorithm algorithm;
+    private ACAQGraphNode algorithm;
 
     /**
      * @param algorithm the algorithm
      */
-    public AlgorithmSlotsChangedEvent(ACAQAlgorithm algorithm) {
+    public AlgorithmSlotsChangedEvent(ACAQGraphNode algorithm) {
         this.algorithm = algorithm;
     }
 
-    public ACAQAlgorithm getAlgorithm() {
+    public ACAQGraphNode getAlgorithm() {
         return algorithm;
     }
 }

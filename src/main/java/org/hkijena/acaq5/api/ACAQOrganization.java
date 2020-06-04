@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.api;
 
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.ui.extension.MenuExtension;
 import org.hkijena.acaq5.ui.extension.MenuTarget;
 
@@ -14,7 +15,7 @@ import java.lang.annotation.RetentionPolicy;
 public @interface ACAQOrganization {
     /**
      * A submenu where the entry should be located.
-     * This is valid for {@link org.hkijena.acaq5.api.algorithm.ACAQAlgorithm} and {@link org.hkijena.acaq5.api.data.ACAQData}
+     * This is valid for {@link ACAQGraphNode} and {@link org.hkijena.acaq5.api.data.ACAQData}
      * Menu entries are separated via newlines.
      *
      * @return The menu path

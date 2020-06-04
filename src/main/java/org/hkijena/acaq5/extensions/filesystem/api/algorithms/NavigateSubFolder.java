@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 @AlgorithmOutputSlot(value = FolderData.class, slotName = "Subfolders", autoCreate = true)
 
 // Traits
-public class NavigateSubFolder extends ACAQIteratingAlgorithm {
+public class NavigateSubFolder extends ACAQSimpleIteratingAlgorithm {
 
     private String subFolder;
 

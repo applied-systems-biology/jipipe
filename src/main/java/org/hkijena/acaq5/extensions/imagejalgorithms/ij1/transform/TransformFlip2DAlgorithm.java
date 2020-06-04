@@ -10,7 +10,6 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.utils.ImageJUtils;
 
@@ -26,7 +25,7 @@ import java.util.function.Supplier;
 @ACAQOrganization(menuPath = "Transform", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Input")
 @AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Output")
-public class TransformFlip2DAlgorithm extends ImageJ1Algorithm {
+public class TransformFlip2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     private FlipMode flipMode = FlipMode.Horizontal;
 

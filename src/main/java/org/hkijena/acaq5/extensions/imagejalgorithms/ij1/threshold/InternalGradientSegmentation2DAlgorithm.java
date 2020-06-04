@@ -45,7 +45,7 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
 
 // Trait configuration
 @RemovesTrait("image-quality")
-public class InternalGradientSegmentation2DAlgorithm extends ACAQIteratingAlgorithm {
+public class InternalGradientSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     private double gaussSigma = 3;
     private int internalGradientRadius = 25;

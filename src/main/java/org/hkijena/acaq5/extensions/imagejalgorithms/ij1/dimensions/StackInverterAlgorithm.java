@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 @ACAQOrganization(menuPath = "Dimensions", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlus3DData.class, slotName = "Input")
 @AlgorithmOutputSlot(value = ImagePlus3DData.class, slotName = "Output")
-public class StackInverterAlgorithm extends ACAQIteratingAlgorithm {
+public class StackInverterAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     /**
      * Instantiates a new algorithm.

@@ -2,8 +2,8 @@ package org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api;
 
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
@@ -17,7 +17,7 @@ import java.util.function.Supplier;
 /**
  * Structural node that encapsulates an {@link ACAQTraitDeclaration}
  */
-public class ACAQTraitNode extends ACAQAlgorithm {
+public class ACAQTraitNode extends ACAQGraphNode {
 
     private ACAQTraitDeclaration traitDeclaration;
 

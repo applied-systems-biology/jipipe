@@ -1,15 +1,15 @@
 package org.hkijena.acaq5.ui.components;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
 
 /**
- * Renders {@link ACAQAlgorithm}
+ * Renders {@link ACAQGraphNode}
  */
-public class ACAQAlgorithmListCellRenderer extends JLabel implements ListCellRenderer<ACAQAlgorithm> {
+public class ACAQAlgorithmListCellRenderer extends JLabel implements ListCellRenderer<ACAQGraphNode> {
 
     /**
      * Creates a new renderer
@@ -20,7 +20,7 @@ public class ACAQAlgorithmListCellRenderer extends JLabel implements ListCellRen
     }
 
     @Override
-    public Component getListCellRendererComponent(JList<? extends ACAQAlgorithm> list, ACAQAlgorithm value, int index, boolean isSelected, boolean cellHasFocus) {
+    public Component getListCellRendererComponent(JList<? extends ACAQGraphNode> list, ACAQGraphNode value, int index, boolean isSelected, boolean cellHasFocus) {
         if (list.getFont() != null) {
             setFont(list.getFont());
         }

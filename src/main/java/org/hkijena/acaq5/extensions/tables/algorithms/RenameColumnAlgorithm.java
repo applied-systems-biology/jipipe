@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Processor, menuPath = "Tables")
 @AlgorithmInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
-public class RenameColumnAlgorithm extends ACAQIteratingAlgorithm {
+public class RenameColumnAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     private StringRenamingList renamingEntries = new StringRenamingList();
 

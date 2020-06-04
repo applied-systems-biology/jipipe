@@ -34,7 +34,7 @@ import java.util.function.Supplier;
 
 // Trait configuration
 @RemovesTrait("image-quality-brightness-nonuniform")
-public class IlluminationCorrectionEnhancer extends ACAQIteratingAlgorithm {
+public class IlluminationCorrectionEnhancer extends ACAQSimpleIteratingAlgorithm {
 
     private int gaussianSigma = 21;
 

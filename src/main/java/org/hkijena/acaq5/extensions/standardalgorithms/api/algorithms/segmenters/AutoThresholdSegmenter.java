@@ -39,7 +39,7 @@ import java.util.function.Supplier;
 // Trait configuration
 @RemovesTrait("image-quality")
 @AddsTrait("bioobject-count-cluster")
-public class AutoThresholdSegmenter extends ACAQIteratingAlgorithm {
+public class AutoThresholdSegmenter extends ACAQSimpleIteratingAlgorithm {
 
     private AutoThresholder.Method method = AutoThresholder.Method.Default;
 

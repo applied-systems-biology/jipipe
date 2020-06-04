@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.eventbus.EventBus;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.TraitConfigurationChangedEvent;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
@@ -27,7 +27,7 @@ import java.util.*;
 public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitConfiguration {
 
     private EventBus eventBus = new EventBus();
-    private ACAQAlgorithm algorithm;
+    private ACAQGraphNode algorithm;
     private Map<String, ACAQDataSlotTraitConfiguration> slotTraitModificationTasks = new HashMap<>();
     private ACAQDataSlotTraitConfiguration globalTraitModificationTasks = new ACAQDataSlotTraitConfiguration();
     private List<ACAQTraitTransferTask> transferTasks = new ArrayList<>();
@@ -41,7 +41,7 @@ public class ACAQDefaultMutableTraitConfiguration implements ACAQMutableTraitCon
      *
      * @param algorithm The algorithm
      */
-    public ACAQDefaultMutableTraitConfiguration(ACAQAlgorithm algorithm) {
+    public ACAQDefaultMutableTraitConfiguration(ACAQGraphNode algorithm) {
         this.algorithm = algorithm;
     }
 

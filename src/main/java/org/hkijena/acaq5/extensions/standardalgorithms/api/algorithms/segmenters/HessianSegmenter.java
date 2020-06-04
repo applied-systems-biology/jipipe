@@ -35,7 +35,7 @@ import java.util.function.Supplier;
 
 // Traits
 @RemovesTrait("image-quality")
-public class HessianSegmenter extends ACAQIteratingAlgorithm {
+public class HessianSegmenter extends ACAQSimpleIteratingAlgorithm {
 
     private double smoothing = 1.0;
     private double gradientRadius = 1;

@@ -3,8 +3,8 @@ package org.hkijena.acaq5.ui.compat;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compat.AlgorithmDeclarationListCellRenderer;
 import org.hkijena.acaq5.api.compat.ImageJDatatypeImporter;
 import org.hkijena.acaq5.api.compat.SingleImageJAlgorithmRun;
@@ -13,7 +13,6 @@ import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.ui.components.AddAlgorithmSlotPanel;
-import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.components.SearchTextField;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
@@ -23,11 +22,9 @@ import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.MacroUtils;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
-import org.jdesktop.swingx.JXTextField;
 import org.scijava.Context;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
@@ -340,7 +337,7 @@ public class RunSingleAlgorithmDialog extends JDialog {
         }
     }
 
-    public ACAQAlgorithm getAlgorithm() {
+    public ACAQGraphNode getAlgorithm() {
         return runSettings.getAlgorithm();
     }
 

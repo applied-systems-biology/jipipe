@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.api.testbench;
 
 import org.hkijena.acaq5.api.*;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 
 import java.nio.file.Files;
@@ -16,11 +16,11 @@ import java.util.function.Supplier;
  */
 public class ACAQTestbench implements ACAQRunnable, ACAQValidatable {
     private ACAQProject project;
-    private ACAQAlgorithm targetAlgorithm;
+    private ACAQGraphNode targetAlgorithm;
     private Path workDirectory;
 
     private ACAQRun testbenchRun;
-    private ACAQAlgorithm benchedAlgorithm;
+    private ACAQGraphNode benchedAlgorithm;
     private volatile ACAQTestbenchSnapshot initialBackup;
 
     private List<ACAQTestbenchSnapshot> backupList = new ArrayList<>();
@@ -30,7 +30,7 @@ public class ACAQTestbench implements ACAQRunnable, ACAQValidatable {
      * @param targetAlgorithm The tested algorithm
      * @param workDirectory   A temporary work directory
      */
-    public ACAQTestbench(ACAQProject project, ACAQAlgorithm targetAlgorithm, Path workDirectory) {
+    public ACAQTestbench(ACAQProject project, ACAQGraphNode targetAlgorithm, Path workDirectory) {
         this.project = project;
         this.targetAlgorithm = targetAlgorithm;
         this.workDirectory = workDirectory;
@@ -78,7 +78,7 @@ public class ACAQTestbench implements ACAQRunnable, ACAQValidatable {
     /**
      * @return the algorithm that is targeted. This algorithm is part of the project.
      */
-    public ACAQAlgorithm getTargetAlgorithm() {
+    public ACAQGraphNode getTargetAlgorithm() {
         return targetAlgorithm;
     }
 
@@ -99,7 +99,7 @@ public class ACAQTestbench implements ACAQRunnable, ACAQValidatable {
     /**
      * @return the target algorithm. This algorithm is a copy of the project algorithm.
      */
-    public ACAQAlgorithm getBenchedAlgorithm() {
+    public ACAQGraphNode getBenchedAlgorithm() {
         return benchedAlgorithm;
     }
 

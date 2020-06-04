@@ -14,7 +14,6 @@ import org.hkijena.acaq5.api.data.traits.GoodForTrait;
 import org.hkijena.acaq5.api.data.traits.RemovesTrait;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
@@ -37,7 +36,7 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
 @BadForTrait("image-quality-brightness-nonuniform")
 @RemovesTrait("image-quality")
 @AddsTrait("bioobject-count-cluster")
-public class AutoThreshold2DAlgorithm extends ImageJ1Algorithm {
+public class AutoThreshold2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     private AutoThresholder.Method method = AutoThresholder.Method.Default;
     private boolean darkBackground = true;

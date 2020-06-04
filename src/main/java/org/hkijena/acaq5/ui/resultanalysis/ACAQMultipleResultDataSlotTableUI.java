@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.ui.resultanalysis;
 
 import org.hkijena.acaq5.api.ACAQRun;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
@@ -54,7 +54,7 @@ public class ACAQMultipleResultDataSlotTableUI extends ACAQProjectWorkbenchPanel
         table = new JXTable();
         table.setRowHeight(25);
         table.setDefaultRenderer(Path.class, new ACAQRowLocationTableCellRenderer());
-        table.setDefaultRenderer(ACAQAlgorithm.class, new ACAQAlgorithmTableCellRenderer());
+        table.setDefaultRenderer(ACAQGraphNode.class, new ACAQAlgorithmTableCellRenderer());
         table.setDefaultRenderer(ACAQProjectCompartment.class, new ACAQProjectCompartmentTableCellRenderer());
         table.setDefaultRenderer(ACAQExportedDataTable.Row.class, new ACAQRowDataMergedTableCellRenderer(getProjectWorkbench()));
         table.setDefaultRenderer(ACAQTrait.class, new ACAQTraitTableCellRenderer());

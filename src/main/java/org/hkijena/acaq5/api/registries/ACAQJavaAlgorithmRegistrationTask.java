@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.api.registries;
 
 import org.hkijena.acaq5.ACAQDependency;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.algorithm.ACAQJavaAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
@@ -17,7 +17,7 @@ public class ACAQJavaAlgorithmRegistrationTask extends ACAQDefaultAlgorithmRegis
 
     private ACAQDependency source;
     private String id;
-    private Class<? extends ACAQAlgorithm> algorithmClass;
+    private Class<? extends ACAQGraphNode> algorithmClass;
     private boolean alreadyRegistered = false;
 
     /**
@@ -27,7 +27,7 @@ public class ACAQJavaAlgorithmRegistrationTask extends ACAQDefaultAlgorithmRegis
      * @param algorithmClass The algorithm class
      * @param source         The dependency the registers the algorithm
      */
-    public ACAQJavaAlgorithmRegistrationTask(String id, Class<? extends ACAQAlgorithm> algorithmClass, ACAQDependency source) {
+    public ACAQJavaAlgorithmRegistrationTask(String id, Class<? extends ACAQGraphNode> algorithmClass, ACAQDependency source) {
         this.source = source;
         this.id = id;
         this.algorithmClass = algorithmClass;

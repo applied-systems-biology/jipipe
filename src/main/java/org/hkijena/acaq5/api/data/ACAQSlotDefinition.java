@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
@@ -23,7 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Defines an {@link org.hkijena.acaq5.api.algorithm.ACAQAlgorithm} data slot.
+ * Defines an {@link ACAQGraphNode} data slot.
  * This class is used within {@link ACAQSlotConfiguration}
  */
 @JsonSerialize(using = ACAQSlotDefinition.Serializer.class)

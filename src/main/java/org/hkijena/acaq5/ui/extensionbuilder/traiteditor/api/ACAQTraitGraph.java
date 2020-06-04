@@ -4,8 +4,8 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQJsonExtension;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
@@ -94,7 +94,7 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
     }
 
     @Override
-    public void insertNode(String key, ACAQAlgorithm algorithm, String compartment) {
+    public void insertNode(String key, ACAQGraphNode algorithm, String compartment) {
         super.insertNode(key, algorithm, compartment);
         if (initialized && algorithm instanceof ACAQNewTraitNode) {
             ACAQNewTraitNode traitNode = (ACAQNewTraitNode) algorithm;
@@ -108,7 +108,7 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
     }
 
     @Override
-    public void removeNode(ACAQAlgorithm algorithm) {
+    public void removeNode(ACAQGraphNode algorithm) {
         super.removeNode(algorithm);
         if (algorithm instanceof ACAQNewTraitNode) {
             // Workaround for registration bug
@@ -177,7 +177,7 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
     }
 
     private ACAQNewTraitNode addNewTraitNode(ACAQJsonTraitDeclaration declaration) {
-        ACAQNewTraitNode node = ACAQAlgorithm.newInstance("acaq:new-trait-node");
+        ACAQNewTraitNode node = ACAQGraphNode.newInstance("acaq:new-trait-node");
         node.setTraitDeclaration(declaration);
         traitNodes.put(declaration, node);
         insertNode(node, COMPARTMENT_DEFAULT);
@@ -246,7 +246,7 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
      * @return node representing the trait
      */
     public ACAQExistingTraitNode addExternalTrait(ACAQTraitDeclaration declaration) {
-        ACAQExistingTraitNode node = ACAQAlgorithm.newInstance("acaq:existing-trait-node");
+        ACAQExistingTraitNode node = ACAQGraphNode.newInstance("acaq:existing-trait-node");
         node.setTraitDeclaration(declaration);
         insertNode(node, COMPARTMENT_DEFAULT);
         traitNodes.put(declaration, node);

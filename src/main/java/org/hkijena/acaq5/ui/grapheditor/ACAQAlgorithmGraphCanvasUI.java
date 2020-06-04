@@ -6,9 +6,9 @@ import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraphEdge;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.AlgorithmGraphConnectedEvent;
@@ -44,7 +44,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     private ACAQAlgorithmGraph algorithmGraph;
     private ACAQAlgorithmUI currentlyDragged;
     private Point currentlyDraggedOffset = new Point();
-    private BiMap<ACAQAlgorithm, ACAQAlgorithmUI> nodeUIs = HashBiMap.create();
+    private BiMap<ACAQGraphNode, ACAQAlgorithmUI> nodeUIs = HashBiMap.create();
     private Set<ACAQAlgorithmUI> selection = new HashSet<>();
     private EventBus eventBus = new EventBus();
     private int newEntryLocationX = ACAQAlgorithmUI.SLOT_UI_WIDTH * 4;
@@ -99,7 +99,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     private void moveNodeHere() {
         Point mouseLocation = MouseInfo.getPointerInfo().getLocation();
         SwingUtilities.convertPointFromScreen(mouseLocation, this);
-        ACAQAlgorithm algorithm = PickAlgorithmDialog.showDialog(this, nodeUIs.keySet(), "Move node");
+        ACAQGraphNode algorithm = PickAlgorithmDialog.showDialog(this, nodeUIs.keySet(), "Move node");
         if (algorithm != null) {
             ACAQAlgorithmUI ui = nodeUIs.getOrDefault(algorithm, null);
             if (ui != null) {
@@ -135,12 +135,12 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
      * Removes node UIs that are not valid anymore
      */
     private void removeOldNodes() {
-        Set<ACAQAlgorithm> toRemove = new HashSet<>();
-        for (Map.Entry<ACAQAlgorithm, ACAQAlgorithmUI> kv : nodeUIs.entrySet()) {
+        Set<ACAQGraphNode> toRemove = new HashSet<>();
+        for (Map.Entry<ACAQGraphNode, ACAQAlgorithmUI> kv : nodeUIs.entrySet()) {
             if (!algorithmGraph.containsNode(kv.getKey()) || !kv.getKey().isVisibleIn(compartment))
                 toRemove.add(kv.getKey());
         }
-        for (ACAQAlgorithm algorithm : toRemove) {
+        for (ACAQGraphNode algorithm : toRemove) {
             ACAQAlgorithmUI ui = nodeUIs.get(algorithm);
             selection.remove(ui);
             remove(ui);
@@ -159,7 +159,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     private void addNewNodes() {
         int newlyPlacedAlgorithms = 0;
         ACAQAlgorithmUI ui = null;
-        for (ACAQAlgorithm algorithm : algorithmGraph.traverseAlgorithms()) {
+        for (ACAQGraphNode algorithm : algorithmGraph.traverseAlgorithms()) {
             if (!algorithm.isVisibleIn(compartment))
                 continue;
             if (nodeUIs.containsKey(algorithm))
@@ -207,10 +207,10 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
      * Auto-places components when an overlap was detected
      */
     private void removeComponentOverlaps() {
-        List<ACAQAlgorithm> traversed = algorithmGraph.traverseAlgorithms();
+        List<ACAQGraphNode> traversed = algorithmGraph.traverseAlgorithms();
         boolean detected = false;
         for (int i = traversed.size() - 1; i >= 0; --i) {
-            ACAQAlgorithm algorithm = traversed.get(i);
+            ACAQGraphNode algorithm = traversed.get(i);
             if (!algorithm.isVisibleIn(compartment))
                 continue;
             ACAQAlgorithmUI ui = nodeUIs.getOrDefault(algorithm, null);
@@ -221,7 +221,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
                 }
             }
         }
-        if(detected) {
+        if (detected) {
             repaint();
         }
     }
@@ -245,7 +245,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     }
 
     private void autoPlaceAlgorithm(ACAQAlgorithmUI ui) {
-        ACAQAlgorithm targetAlgorithm = ui.getAlgorithm();
+        ACAQGraphNode targetAlgorithm = ui.getAlgorithm();
 
         if (currentViewMode == ViewMode.Horizontal) {
             // Find the source algorithm that is right-most
@@ -939,7 +939,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         }
     }
 
-    public BiMap<ACAQAlgorithm, ACAQAlgorithmUI> getNodeUIs() {
+    public BiMap<ACAQGraphNode, ACAQAlgorithmUI> getNodeUIs() {
         return ImmutableBiMap.copyOf(nodeUIs);
     }
 

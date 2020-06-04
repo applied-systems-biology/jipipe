@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
@@ -18,7 +19,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Serializable description of how annotations transfer through an {@link org.hkijena.acaq5.api.algorithm.ACAQAlgorithm}
+ * Serializable description of how annotations transfer through an {@link ACAQGraphNode}
  * Annotations are either added, removed, or ignored.
  * Ignoring means that existing traits are transferred to the output.
  */

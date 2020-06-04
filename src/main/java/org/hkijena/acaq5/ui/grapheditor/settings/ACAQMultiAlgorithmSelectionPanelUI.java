@@ -1,9 +1,9 @@
 package org.hkijena.acaq5.ui.grapheditor.settings;
 
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
@@ -28,14 +28,14 @@ import java.util.stream.Collectors;
 public class ACAQMultiAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPanel {
     private ACAQAlgorithmGraph graph;
     private ACAQAlgorithmGraphCanvasUI canvas;
-    private Set<ACAQAlgorithm> algorithms;
+    private Set<ACAQGraphNode> algorithms;
 
     /**
      * @param workbenchUI The workbench
      * @param canvas      The algorithm graph
      * @param algorithms  The algorithm selection
      */
-    public ACAQMultiAlgorithmSelectionPanelUI(ACAQProjectWorkbench workbenchUI, ACAQAlgorithmGraphCanvasUI canvas, Set<ACAQAlgorithm> algorithms) {
+    public ACAQMultiAlgorithmSelectionPanelUI(ACAQProjectWorkbench workbenchUI, ACAQAlgorithmGraphCanvasUI canvas, Set<ACAQGraphNode> algorithms) {
         super(workbenchUI);
         this.graph = canvas.getAlgorithmGraph();
         this.canvas = canvas;
@@ -49,7 +49,7 @@ public class ACAQMultiAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPane
         add(content, BorderLayout.CENTER);
 
         StringBuilder markdownContent = new StringBuilder();
-        for (ACAQAlgorithm algorithm : algorithms.stream().sorted(Comparator.comparing(ACAQAlgorithm::getName)).collect(Collectors.toList())) {
+        for (ACAQGraphNode algorithm : algorithms.stream().sorted(Comparator.comparing(ACAQGraphNode::getName)).collect(Collectors.toList())) {
             markdownContent.append(TooltipUtils.getAlgorithmTooltip(algorithm.getDeclaration())
                     .replace("<html>", "<div style=\"border: 1px solid gray; border-radius: 4px; margin: 4px; padding: 4px;\">")
                     .replace("</html>", "</div>"));
@@ -97,7 +97,7 @@ public class ACAQMultiAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPane
 
     private void exportAlgorithms() {
         ACAQValidityReport report = new ACAQValidityReport();
-        for (ACAQAlgorithm algorithm : algorithms) {
+        for (ACAQGraphNode algorithm : algorithms) {
             algorithm.reportValidity(report.forCategory(algorithm.getName()));
         }
         if (!report.isValid()) {
@@ -106,7 +106,7 @@ public class ACAQMultiAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPane
         }
 
         ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
-        for (ACAQAlgorithm algorithm : algorithms) {
+        for (ACAQGraphNode algorithm : algorithms) {
             if (algorithm.getCategory() == ACAQAlgorithmCategory.Internal)
                 continue;
             graph.insertNode(algorithm.getIdInGraph(), algorithm.getDeclaration().clone(algorithm), ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
@@ -135,7 +135,7 @@ public class ACAQMultiAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPane
                         algorithms.stream().map(a -> "'" + a.getName() + "'").collect(Collectors.joining(", "))
                         + "?", "Delete algorithm",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            for (ACAQAlgorithm algorithm : algorithms) {
+            for (ACAQGraphNode algorithm : algorithms) {
                 graph.removeNode(algorithm);
             }
         }

@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.ui.grapheditor;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
@@ -30,7 +30,7 @@ public class ACAQVerticalAlgorithmUI extends ACAQAlgorithmUI {
      * @param graphUI   The graph UI that contains this UI
      * @param algorithm The algorithm
      */
-    public ACAQVerticalAlgorithmUI(ACAQAlgorithmGraphCanvasUI graphUI, ACAQAlgorithm algorithm) {
+    public ACAQVerticalAlgorithmUI(ACAQAlgorithmGraphCanvasUI graphUI, ACAQGraphNode algorithm) {
         super(graphUI, algorithm, ACAQAlgorithmGraphCanvasUI.ViewMode.Vertical);
         initialize();
         initializeContextMenu();

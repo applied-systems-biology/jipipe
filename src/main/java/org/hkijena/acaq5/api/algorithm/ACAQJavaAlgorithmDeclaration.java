@@ -31,7 +31,7 @@ public class ACAQJavaAlgorithmDeclaration extends ACAQMutableAlgorithmDeclaratio
      * @param id             Algorithm ID
      * @param algorithmClass Algorithm class
      */
-    public ACAQJavaAlgorithmDeclaration(String id, Class<? extends ACAQAlgorithm> algorithmClass) {
+    public ACAQJavaAlgorithmDeclaration(String id, Class<? extends ACAQGraphNode> algorithmClass) {
         setAlgorithmClass(algorithmClass);
         setId(id);
         setName(getNameOf(algorithmClass));
@@ -73,7 +73,7 @@ public class ACAQJavaAlgorithmDeclaration extends ACAQMutableAlgorithmDeclaratio
     }
 
     @Override
-    public ACAQAlgorithm clone(ACAQAlgorithm algorithm) {
+    public ACAQGraphNode clone(ACAQGraphNode algorithm) {
         try {
             return ConstructorUtils.getMatchingAccessibleConstructor(getAlgorithmClass(), algorithm.getClass()).newInstance(algorithm);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
@@ -89,7 +89,7 @@ public class ACAQJavaAlgorithmDeclaration extends ACAQMutableAlgorithmDeclaratio
     }
 
     @Override
-    public ACAQAlgorithm newInstance() {
+    public ACAQGraphNode newInstance() {
         try {
             return getAlgorithmClass().getConstructor(ACAQAlgorithmDeclaration.class).newInstance(this);
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
@@ -105,7 +105,7 @@ public class ACAQJavaAlgorithmDeclaration extends ACAQMutableAlgorithmDeclaratio
      * @param klass Algorithm class
      * @return The name
      */
-    public static String getNameOf(Class<? extends ACAQAlgorithm> klass) {
+    public static String getNameOf(Class<? extends ACAQGraphNode> klass) {
         ACAQDocumentation[] annotations = klass.getAnnotationsByType(ACAQDocumentation.class);
         if (annotations.length > 0) {
             return annotations[0].name();
@@ -120,7 +120,7 @@ public class ACAQJavaAlgorithmDeclaration extends ACAQMutableAlgorithmDeclaratio
      * @param klass The algorithm class
      * @return The name
      */
-    public static String getDescriptionOf(Class<? extends ACAQAlgorithm> klass) {
+    public static String getDescriptionOf(Class<? extends ACAQGraphNode> klass) {
         ACAQDocumentation[] annotations = klass.getAnnotationsByType(ACAQDocumentation.class);
         if (annotations.length > 0) {
             return annotations[0].description();
@@ -135,7 +135,7 @@ public class ACAQJavaAlgorithmDeclaration extends ACAQMutableAlgorithmDeclaratio
      * @param klass The algorithm class
      * @return The category
      */
-    public static ACAQAlgorithmCategory getCategoryOf(Class<? extends ACAQAlgorithm> klass) {
+    public static ACAQAlgorithmCategory getCategoryOf(Class<? extends ACAQGraphNode> klass) {
         ACAQOrganization[] annotations = klass.getAnnotationsByType(ACAQOrganization.class);
         if (annotations.length > 0) {
             return annotations[0].algorithmCategory();
@@ -150,7 +150,7 @@ public class ACAQJavaAlgorithmDeclaration extends ACAQMutableAlgorithmDeclaratio
      * @param klass The algorithm class
      * @return The menu path
      */
-    static String getMenuPathOf(Class<? extends ACAQAlgorithm> klass) {
+    static String getMenuPathOf(Class<? extends ACAQGraphNode> klass) {
         ACAQOrganization[] annotations = klass.getAnnotationsByType(ACAQOrganization.class);
         if (annotations.length > 0) {
             return annotations[0].menuPath();

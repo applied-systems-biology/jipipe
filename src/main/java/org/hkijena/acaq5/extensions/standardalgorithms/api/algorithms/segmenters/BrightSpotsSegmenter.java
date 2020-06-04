@@ -37,7 +37,7 @@ import java.util.function.Supplier;
 // Trait configuration
 @RemovesTrait("image-quality")
 @AddsTrait("bioobject-count-cluster")
-public class BrightSpotsSegmenter extends ACAQIteratingAlgorithm {
+public class BrightSpotsSegmenter extends ACAQSimpleIteratingAlgorithm {
 
     private int rollingBallRadius = 20;
     private int dilationErodeSteps = 2;

@@ -3,8 +3,8 @@ package org.hkijena.acaq5.ui.compartments;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableSet;
 import org.hkijena.acaq5.api.ACAQProject;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
@@ -37,17 +37,17 @@ public class ACAQCompartmentGraphCopyPasteBehavior implements ACAQAlgorithmGraph
     }
 
     @Override
-    public void copy(Set<ACAQAlgorithm> compartmentNodes) {
+    public void copy(Set<ACAQGraphNode> compartmentNodes) {
         // This copy action converts the selection of ACAQProjectCompartment into one large graph
         Set<String> compartments = new HashSet<>();
-        for (ACAQAlgorithm compartmentNode : compartmentNodes) {
+        for (ACAQGraphNode compartmentNode : compartmentNodes) {
             compartments.add(((ACAQProjectCompartment) compartmentNode).getProjectCompartmentId());
         }
 
         // Create isolated graph
-        Set<ACAQAlgorithm> algorithms = new HashSet<>();
+        Set<ACAQGraphNode> algorithms = new HashSet<>();
         ACAQAlgorithmGraph sourceGraph = null;
-        for (ACAQAlgorithm algorithm : ((ACAQProjectWorkbench) editorUI.getWorkbench()).getProject().getGraph().getAlgorithmNodes().values()) {
+        for (ACAQGraphNode algorithm : ((ACAQProjectWorkbench) editorUI.getWorkbench()).getProject().getGraph().getAlgorithmNodes().values()) {
             if (compartments.contains(algorithm.getCompartment())) {
                 algorithms.add(algorithm);
                 sourceGraph = algorithm.getGraph();
@@ -69,9 +69,9 @@ public class ACAQCompartmentGraphCopyPasteBehavior implements ACAQAlgorithmGraph
     }
 
     @Override
-    public void cut(Set<ACAQAlgorithm> algorithms) {
+    public void cut(Set<ACAQGraphNode> algorithms) {
         copy(algorithms);
-        for (ACAQAlgorithm algorithm : ImmutableSet.copyOf(algorithms)) {
+        for (ACAQGraphNode algorithm : ImmutableSet.copyOf(algorithms)) {
             editorUI.getAlgorithmGraph().removeNode(algorithm);
         }
     }
@@ -86,7 +86,7 @@ public class ACAQCompartmentGraphCopyPasteBehavior implements ACAQAlgorithmGraph
 
                 // Collect all compartments
                 Set<String> compartments = new HashSet<>();
-                for (ACAQAlgorithm algorithm : sourceGraph.getAlgorithmNodes().values()) {
+                for (ACAQGraphNode algorithm : sourceGraph.getAlgorithmNodes().values()) {
                     compartments.add(algorithm.getCompartment());
                 }
 
@@ -99,7 +99,7 @@ public class ACAQCompartmentGraphCopyPasteBehavior implements ACAQAlgorithmGraph
 
                 // Add nodes
                 ACAQAlgorithmGraph targetGraph = project.getGraph();
-                for (ACAQAlgorithm algorithm : sourceGraph.getAlgorithmNodes().values()) {
+                for (ACAQGraphNode algorithm : sourceGraph.getAlgorithmNodes().values()) {
                     String sourceCompartment = algorithm.getCompartment();
                     String targetCompartment = compartmentNodeMap.get(sourceCompartment).getProjectCompartmentId();
 

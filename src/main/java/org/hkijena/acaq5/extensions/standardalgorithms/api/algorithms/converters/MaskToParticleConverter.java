@@ -31,7 +31,7 @@ import java.util.function.Supplier;
 @AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Measurements", autoCreate = true)
 
 // Algorithm traits
-public class MaskToParticleConverter extends ACAQIteratingAlgorithm {
+public class MaskToParticleConverter extends ACAQSimpleIteratingAlgorithm {
     private double minParticleSize = 0;
     private double maxParticleSize = Double.MAX_VALUE;
     private double minParticleCircularity = 0;

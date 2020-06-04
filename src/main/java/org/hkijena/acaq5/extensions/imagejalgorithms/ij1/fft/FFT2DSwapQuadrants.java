@@ -9,7 +9,6 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.ImageJ1Algorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.fft.ImagePlusFFT2DData;
 import org.hkijena.acaq5.utils.ImageJUtils;
 
@@ -23,7 +22,7 @@ import java.util.function.Supplier;
 @ACAQOrganization(menuPath = "FFT", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(ImagePlusFFT2DData.class)
 @AlgorithmOutputSlot(ImagePlusFFT2DData.class)
-public class FFT2DSwapQuadrants extends ImageJ1Algorithm {
+public class FFT2DSwapQuadrants extends ACAQSimpleIteratingAlgorithm {
 
     /**
      * Creates a new instance
@@ -43,7 +42,7 @@ public class FFT2DSwapQuadrants extends ImageJ1Algorithm {
      *
      * @param other the original
      */
-    public FFT2DSwapQuadrants(ImageJ1Algorithm other) {
+    public FFT2DSwapQuadrants(FFT2DSwapQuadrants other) {
         super(other);
     }
 

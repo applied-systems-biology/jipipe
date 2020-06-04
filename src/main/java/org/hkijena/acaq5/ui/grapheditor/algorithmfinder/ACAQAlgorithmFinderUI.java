@@ -10,17 +10,14 @@ import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.ui.components.ColorIcon;
-import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.components.SearchTextField;
 import org.hkijena.acaq5.ui.events.AlgorithmFinderSuccessEvent;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
-import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.util.List;
 import java.util.*;
@@ -32,7 +29,7 @@ import java.util.stream.Collectors;
  */
 public class ACAQAlgorithmFinderUI extends JPanel {
     private ACAQDataSlot outputSlot;
-    private ACAQAlgorithm algorithm;
+    private ACAQGraphNode algorithm;
     private ACAQAlgorithmGraph graph;
     private String compartment;
     private SearchTextField searchField;
@@ -93,10 +90,10 @@ public class ACAQAlgorithmFinderUI extends JPanel {
         List<ACAQAlgorithmDeclaration> algorithms = getFilteredAndSortedCompatibleTargetAlgorithms();
 
         // Add open slots
-        Set<ACAQAlgorithm> knownTargetAlgorithms = graph.getTargetSlots(outputSlot).stream().map(ACAQDataSlot::getAlgorithm).collect(Collectors.toSet());
+        Set<ACAQGraphNode> knownTargetAlgorithms = graph.getTargetSlots(outputSlot).stream().map(ACAQDataSlot::getAlgorithm).collect(Collectors.toSet());
 
         // Add algorithms that allow adding slots of given type
-        for (ACAQAlgorithm algorithm : graph.getAlgorithmNodes().values()) {
+        for (ACAQGraphNode algorithm : graph.getAlgorithmNodes().values()) {
             if (algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
                 ACAQMutableSlotConfiguration configuration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
                 if (configuration.canCreateCompatibleInputSlot(outputSlot.getAcceptedDataType())) {
@@ -122,7 +119,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
                 }
 
                 // Add existing instances
-                for (ACAQAlgorithm existing : graph.getAlgorithmNodes().values().stream().filter(a -> a.getDeclaration() == targetAlgorithm).collect(Collectors.toList())) {
+                for (ACAQGraphNode existing : graph.getAlgorithmNodes().values().stream().filter(a -> a.getDeclaration() == targetAlgorithm).collect(Collectors.toList())) {
                     if (existing == outputSlot.getAlgorithm())
                         continue;
                     if (!algorithm.isVisibleIn(compartment))
