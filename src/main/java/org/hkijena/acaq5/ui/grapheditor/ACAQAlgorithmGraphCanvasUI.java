@@ -96,6 +96,23 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         }
     }
 
+    /**
+     * Attempts to move the node to the mouse position
+     *
+     * @param node the node
+     */
+    public void tryMoveNodeToMouse(ACAQGraphNode node) {
+        Point mouseLocation = MouseInfo.getPointerInfo().getLocation();
+        SwingUtilities.convertPointFromScreen(mouseLocation, this);
+        ACAQAlgorithmUI ui = nodeUIs.getOrDefault(node, null);
+        if (ui != null) {
+            System.out.println("try_move");
+            ui.trySetLocationInGrid(mouseLocation.x, mouseLocation.y);
+            repaint();
+            getEventBus().post(new AlgorithmEvent(ui));
+        }
+    }
+
     private void moveNodeHere() {
         Point mouseLocation = MouseInfo.getPointerInfo().getLocation();
         SwingUtilities.convertPointFromScreen(mouseLocation, this);

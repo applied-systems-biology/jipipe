@@ -11,6 +11,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -59,7 +60,12 @@ public class ACAQStandardCopyPasteBehavior implements ACAQAlgorithmGraphCopyPast
                 for (ACAQGraphNode algorithm : graph.getAlgorithmNodes().values()) {
                     algorithm.setCompartment(compartment);
                 }
-                editorUI.getAlgorithmGraph().mergeWith(graph);
+                Map<String, ACAQGraphNode> idMap = editorUI.getAlgorithmGraph().mergeWith(graph);
+
+                // Try to move copied algorithm to the mouse position
+                if (idMap.size() == 1) {
+                    editorUI.getCanvasUI().tryMoveNodeToMouse(idMap.values().iterator().next());
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
