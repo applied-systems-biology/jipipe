@@ -12,7 +12,7 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FileData;
 import org.hkijena.acaq5.extensions.parameters.editors.FilePathParameterSettings;
-import org.hkijena.acaq5.ui.components.FileSelection;
+import org.hkijena.acaq5.ui.components.PathEditor;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -60,7 +60,7 @@ public class FileDataSource extends ACAQAlgorithm {
      */
     @ACAQParameter("file-name")
     @ACAQDocumentation(name = "File name")
-    @FilePathParameterSettings(ioMode = FileSelection.IOMode.Open, pathMode = FileSelection.PathMode.FilesOnly)
+    @FilePathParameterSettings(ioMode = PathEditor.IOMode.Open, pathMode = PathEditor.PathMode.FilesOnly)
     public Path getFileName() {
         return fileName;
     }

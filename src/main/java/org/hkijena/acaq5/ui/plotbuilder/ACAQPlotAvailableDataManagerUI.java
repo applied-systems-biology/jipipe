@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import ij.measure.ResultsTable;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotDataSeries;
+import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
@@ -18,6 +19,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -109,12 +111,11 @@ public class ACAQPlotAvailableDataManagerUI extends ACAQWorkbenchPanel {
     }
 
     private void importFromCSV() {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Import *.csv");
-        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            String fileName = fileChooser.getSelectedFile().getName();
+        Path selectedPath = FileChooserSettings.openFile(this, FileChooserSettings.KEY_PROJECT, "Import CSV table (*.csv)");
+        if (selectedPath != null) {
+            String fileName = selectedPath.getFileName().toString();
             try {
-                ResultsTable table = ResultsTable.open(fileChooser.getSelectedFile().toString());
+                ResultsTable table = ResultsTable.open(selectedPath.toString());
                 PlotDataSeries series = new PlotDataSeries(table);
                 series.setName(fileName);
                 plotBuilderUI.importData(series);

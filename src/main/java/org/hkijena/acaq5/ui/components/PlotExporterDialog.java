@@ -28,7 +28,7 @@ import java.io.IOException;
 public class PlotExporterDialog extends JDialog {
 
     private JFreeChart chart;
-    private FileSelection fileSelection;
+    private PathEditor pathEditor;
     private JComboBox<FileFormat> plotExportFormat;
     private JSpinner plotWidth;
     private JSpinner plotHeight;
@@ -54,8 +54,8 @@ public class PlotExporterDialog extends JDialog {
                     insets = UIUtils.UI_PADDING;
                 }
             });
-            fileSelection = new FileSelection(FileSelection.IOMode.Save, FileSelection.PathMode.FilesOnly);
-            add(fileSelection, new GridBagConstraints() {
+            pathEditor = new PathEditor(PathEditor.IOMode.Save, PathEditor.PathMode.FilesOnly);
+            add(pathEditor, new GridBagConstraints() {
                 {
                     gridx = 1;
                     gridy = 0;
@@ -153,12 +153,12 @@ public class PlotExporterDialog extends JDialog {
     }
 
     private void exportPlot() {
-        if (fileSelection.getPath() == null)
+        if (pathEditor.getPath() == null)
             return;
         switch ((FileFormat) plotExportFormat.getSelectedItem()) {
             case PNG:
                 try {
-                    ChartUtils.saveChartAsPNG(fileSelection.getPath().toFile(),
+                    ChartUtils.saveChartAsPNG(pathEditor.getPath().toFile(),
                             chart,
                             ((Number) plotWidth.getValue()).intValue(),
                             ((Number) plotHeight.getValue()).intValue());
@@ -168,7 +168,7 @@ public class PlotExporterDialog extends JDialog {
                 break;
             case JPEG:
                 try {
-                    ChartUtils.saveChartAsJPEG(fileSelection.getPath().toFile(),
+                    ChartUtils.saveChartAsJPEG(pathEditor.getPath().toFile(),
                             chart,
                             ((Number) plotWidth.getValue()).intValue(),
                             ((Number) plotHeight.getValue()).intValue());
@@ -183,7 +183,7 @@ public class PlotExporterDialog extends JDialog {
                 Rectangle r = new Rectangle(0, 0, w, h);
                 chart.draw(g2, r);
                 try {
-                    SVGUtils.writeToSVG(fileSelection.getPath().toFile(), g2.getSVGElement());
+                    SVGUtils.writeToSVG(pathEditor.getPath().toFile(), g2.getSVGElement());
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

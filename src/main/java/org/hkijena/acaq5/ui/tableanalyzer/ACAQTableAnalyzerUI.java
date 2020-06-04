@@ -16,6 +16,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.primitives.Ints;
 import org.hkijena.acaq5.ACAQDefaultRegistry;
+import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
@@ -614,10 +615,9 @@ public class ACAQTableAnalyzerUI extends ACAQProjectWorkbenchPanel {
     }
 
     private void exportTableAsCSV() {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Export table");
-        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-            try (BufferedOutputStream writer = new BufferedOutputStream(new FileOutputStream(fileChooser.getSelectedFile()))) {
+        Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Export CSV table (*.csv)");
+        if (selectedPath != null) {
+            try (BufferedOutputStream writer = new BufferedOutputStream(new FileOutputStream(selectedPath.toFile()))) {
                 String[] rowBuffer = new String[tableModel.getColumnCount()];
 
                 for (int column = 0; column < tableModel.getColumnCount(); ++column) {

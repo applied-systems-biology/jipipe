@@ -33,6 +33,7 @@ public class FilterFiles extends ACAQSimpleIteratingAlgorithm {
     //    private PathFilter filter = new PathFilter();
     private PathFilterListParameter filters = new PathFilterListParameter();
     private boolean filterOnlyFileNames = true;
+    private boolean invert = false;
 
     /**
      * Instantiates the algorithm
@@ -56,6 +57,7 @@ public class FilterFiles extends ACAQSimpleIteratingAlgorithm {
             this.filters.add(new PathFilter(filter));
         }
         this.filterOnlyFileNames = other.filterOnlyFileNames;
+        this.invert = other.invert;
     }
 
     @Override
@@ -71,11 +73,23 @@ public class FilterFiles extends ACAQSimpleIteratingAlgorithm {
             }
         }
         if (!filters.isEmpty()) {
-            for (PathFilter filter : filters) {
-                if (filter.test(inputPath)) {
-                    dataInterface.addOutputData(firstOutputSlot, inputData);
-                    break;
+            if (!invert) {
+                for (PathFilter filter : filters) {
+                    if (filter.test(inputPath)) {
+                        dataInterface.addOutputData(firstOutputSlot, inputData);
+                        break;
+                    }
                 }
+            } else {
+                boolean canPass = true;
+                for (PathFilter filter : filters) {
+                    if (filter.test(inputPath)) {
+                        canPass = false;
+                        break;
+                    }
+                }
+                if (canPass)
+                    dataInterface.addOutputData(firstOutputSlot, inputData);
             }
         } else {
             dataInterface.addOutputData(firstOutputSlot, inputData);
@@ -111,5 +125,18 @@ public class FilterFiles extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("only-filenames")
     public void setFilterOnlyFileNames(boolean filterOnlyFileNames) {
         this.filterOnlyFileNames = filterOnlyFileNames;
+        getEventBus().post(new ParameterChangedEvent(this, "only-filenames"));
+    }
+
+    @ACAQParameter("invert")
+    @ACAQDocumentation(name = "Invert filter", description = "If true, the filter is inverted")
+    public boolean isInvert() {
+        return invert;
+    }
+
+    @ACAQParameter("invert")
+    public void setInvert(boolean invert) {
+        this.invert = invert;
+        getEventBus().post(new ParameterChangedEvent(this, "invert"));
     }
 }

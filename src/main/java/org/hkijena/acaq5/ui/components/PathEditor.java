@@ -12,6 +12,7 @@
 
 package org.hkijena.acaq5.ui.components;
 
+import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -29,9 +30,8 @@ import java.util.Set;
 /**
  * Text field with a file selection
  */
-public class FileSelection extends JPanel {
+public class PathEditor extends JPanel {
 
-    private JFileChooser fileChooser = new JFileChooser();
     private JTextField pathEdit;
     private IOMode ioMode;
     private PathMode pathMode;
@@ -41,7 +41,7 @@ public class FileSelection extends JPanel {
     /**
      * Creates a new file selection that opens a file
      */
-    public FileSelection() {
+    public PathEditor() {
         setPathMode(PathMode.FilesOnly);
         initialize();
         setIoMode(IOMode.Open);
@@ -51,7 +51,7 @@ public class FileSelection extends JPanel {
      * @param ioMode   If a path is opened or saved
      * @param pathMode If the path is a file, directory or anything
      */
-    public FileSelection(IOMode ioMode, PathMode pathMode) {
+    public PathEditor(IOMode ioMode, PathMode pathMode) {
         setPathMode(pathMode);
         initialize();
         setIoMode(ioMode);
@@ -103,7 +103,7 @@ public class FileSelection extends JPanel {
             }
         });
 
-        selectButton.addActionListener(e -> showFileChooser());
+        selectButton.addActionListener(e -> choosePath());
 
         pathEdit.getDocument().addDocumentListener(new DocumentChangeListener() {
             @Override
@@ -116,16 +116,14 @@ public class FileSelection extends JPanel {
     /**
      * Opens the file chooser
      */
-    public void showFileChooser() {
-        if (ioMode == IOMode.Open) {
-            if (getFileChooser().showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-                pathEdit.setText(getFileChooser().getSelectedFile().toString());
-            }
-        } else {
-            if (getFileChooser().showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-                pathEdit.setText(getFileChooser().getSelectedFile().toString());
-            }
-        }
+    public void choosePath() {
+        Path selected = FileChooserSettings.selectSingle(this,
+                FileChooserSettings.KEY_PARAMETER,
+                "Change current value",
+                ioMode,
+                pathMode);
+        if (selected != null)
+            pathEdit.setText(selected.toString());
     }
 
     private void generateRandom() {
@@ -149,10 +147,6 @@ public class FileSelection extends JPanel {
             pathEdit.setText(path.toString());
         else
             pathEdit.setText("");
-    }
-
-    public JFileChooser getFileChooser() {
-        return fileChooser;
     }
 
     private void postAction() {
@@ -192,17 +186,6 @@ public class FileSelection extends JPanel {
 
     public void setPathMode(PathMode pathMode) {
         this.pathMode = pathMode;
-        switch (pathMode) {
-            case FilesOnly:
-                fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-                break;
-            case DirectoriesOnly:
-                fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                break;
-            case FilesAndDirectories:
-                fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-                break;
-        }
     }
 
     /**

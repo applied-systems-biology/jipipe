@@ -2,16 +2,17 @@ package org.hkijena.acaq5.extensions.parameters.editors;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.extensions.parameters.collections.PathListParameter;
-import org.hkijena.acaq5.ui.components.FileSelection;
+import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
+import org.hkijena.acaq5.ui.components.PathEditor;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Context;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Editor for {@link PathListParameter}
@@ -19,9 +20,8 @@ import java.util.Arrays;
 public class PathCollectionParameterEditorUI extends ACAQParameterEditorUI {
 
     private JList<String> listPanel;
-    private FileSelection.IOMode ioMode = FileSelection.IOMode.Open;
-    private FileSelection.PathMode pathMode = FileSelection.PathMode.FilesOnly;
-    private JFileChooser fileChooser = new JFileChooser();
+    private PathEditor.IOMode ioMode = PathEditor.IOMode.Open;
+    private PathEditor.PathMode pathMode = PathEditor.PathMode.FilesOnly;
 
     /**
      * @param context         SciJava context
@@ -40,7 +40,6 @@ public class PathCollectionParameterEditorUI extends ACAQParameterEditorUI {
             ioMode = settings.ioMode();
             pathMode = settings.pathMode();
         }
-        fileChooser.setMultiSelectionEnabled(true);
     }
 
     private void initialize() {
@@ -83,37 +82,14 @@ public class PathCollectionParameterEditorUI extends ACAQParameterEditorUI {
     }
 
     private void addEntry() {
-        switch (pathMode) {
-            case FilesOnly:
-                fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-                break;
-            case DirectoriesOnly:
-                fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                break;
-            case FilesAndDirectories:
-                fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-                break;
-        }
         PathListParameter parameter = getParameterAccess().get(PathListParameter.class);
         if (parameter == null) {
             parameter = new PathListParameter();
             getParameterAccess().set(parameter);
         }
-        if (ioMode == FileSelection.IOMode.Open) {
-            if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-                for (File selectedFile : fileChooser.getSelectedFiles()) {
-                    parameter.add(selectedFile.toPath());
-                }
-                reload();
-            }
-        } else {
-            if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-                for (File selectedFile : fileChooser.getSelectedFiles()) {
-                    parameter.add(selectedFile.toPath());
-                }
-                reload();
-            }
-        }
+        List<Path> paths = FileChooserSettings.selectMulti(this, FileChooserSettings.KEY_PARAMETER, "Add path", ioMode, pathMode);
+        parameter.addAll(paths);
+        getParameterAccess().set(parameter);
     }
 
 
@@ -121,7 +97,6 @@ public class PathCollectionParameterEditorUI extends ACAQParameterEditorUI {
     public boolean isUILabelEnabled() {
         return false;
     }
-
 
     @Override
     public void reload() {

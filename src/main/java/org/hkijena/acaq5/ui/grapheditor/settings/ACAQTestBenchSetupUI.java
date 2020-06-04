@@ -80,9 +80,9 @@ public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
         setupPanel.add(formPanel, BorderLayout.CENTER);
 
         // Let the user choose where temporary data is saved
-        FileSelection outputFolderSelection = new FileSelection();
-        outputFolderSelection.setIoMode(FileSelection.IOMode.Open);
-        outputFolderSelection.setPathMode(FileSelection.PathMode.DirectoriesOnly);
+        PathEditor outputFolderSelection = new PathEditor();
+        outputFolderSelection.setIoMode(PathEditor.IOMode.Open);
+        outputFolderSelection.setPathMode(PathEditor.PathMode.DirectoriesOnly);
         try {
             outputFolderSelection.setPath(Files.createTempDirectory("ACAQ5"));
         } catch (IOException e) {

@@ -13,7 +13,7 @@
 package org.hkijena.acaq5.ui.tableanalyzer;
 
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
-import org.hkijena.acaq5.ui.components.FileSelection;
+import org.hkijena.acaq5.ui.components.PathEditor;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -25,7 +25,7 @@ import java.awt.*;
 public class ACAQTableImporterDialog extends JDialog {
 
     private ACAQProjectWorkbench workbench;
-    private FileSelection fileSelection;
+    private PathEditor pathEditor;
     private JComboBox<FileFormat> importFormat;
 
     /**
@@ -49,8 +49,8 @@ public class ACAQTableImporterDialog extends JDialog {
                     insets = UIUtils.UI_PADDING;
                 }
             });
-            fileSelection = new FileSelection(FileSelection.IOMode.Open, FileSelection.PathMode.FilesOnly);
-            add(fileSelection, new GridBagConstraints() {
+            pathEditor = new PathEditor(PathEditor.IOMode.Open, PathEditor.PathMode.FilesOnly);
+            add(pathEditor, new GridBagConstraints() {
                 {
                     gridx = 1;
                     gridy = 0;
@@ -95,8 +95,8 @@ public class ACAQTableImporterDialog extends JDialog {
         exportButton.setDefaultCapable(true);
         exportButton.addActionListener(e -> {
             if (importFormat.getSelectedItem() == FileFormat.CSV) {
-                if (fileSelection.getPath() != null) {
-                    ACAQTableAnalyzerUI.importTableFromCSV(fileSelection.getPath(), workbench);
+                if (pathEditor.getPath() != null) {
+                    ACAQTableAnalyzerUI.importTableFromCSV(pathEditor.getPath(), workbench);
                 }
             }
 //            else if(importFormat.getSelectedItem() == FileFormat.XLSX) {

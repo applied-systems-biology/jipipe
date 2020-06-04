@@ -76,16 +76,15 @@ public abstract class ACAQAlgorithmUI extends JPanel {
     public void updateContextMenu() {
         if (algorithm instanceof ACAQAlgorithm && enableDisableContextMenuButton != null) {
             ACAQAlgorithm a = (ACAQAlgorithm) algorithm;
-            if(a.isEnabled()) {
+            if (a.isEnabled()) {
                 enableDisableContextMenuButton.setText("Disable algorithm");
-            }
-            else {
+            } else {
                 enableDisableContextMenuButton.setText("Enable algorithm");
             }
         }
-        if(cutContextMenuButton != null)
+        if (cutContextMenuButton != null)
             cutContextMenuButton.setEnabled(algorithm.canUserDelete() && graphUI.getCopyPasteBehavior() != null);
-        if(copyContextMenuButton != null)
+        if (copyContextMenuButton != null)
             copyContextMenuButton.setEnabled(algorithm.canUserDelete() && graphUI.getCopyPasteBehavior() != null);
     }
 

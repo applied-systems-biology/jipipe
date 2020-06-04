@@ -20,6 +20,7 @@ import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.pdf.converter.PdfConverterExtension;
 import com.vladsch.flexmark.util.options.MutableDataHolder;
 import com.vladsch.flexmark.util.options.MutableDataSet;
+import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -32,6 +33,7 @@ import javax.swing.text.html.StyleSheet;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 /**
@@ -107,11 +109,10 @@ public class MarkdownReader extends JPanel {
 
             JMenuItem saveMarkdown = new JMenuItem("as Markdown (*.md)", UIUtils.getIconFromResources("filetype-markdown.png"));
             saveMarkdown.addActionListener(e -> {
-                JFileChooser fileChooser = new JFileChooser();
-                fileChooser.setDialogTitle("Save as Markdown");
-                if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+                Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as Markdown (*.md)");
+                if (selectedPath != null) {
                     try {
-                        Files.write(fileChooser.getSelectedFile().toPath(), document.getMarkdown().getBytes(Charsets.UTF_8));
+                        Files.write(selectedPath, document.getMarkdown().getBytes(Charsets.UTF_8));
                     } catch (IOException e1) {
                         throw new RuntimeException(e1);
                     }
@@ -121,11 +122,10 @@ public class MarkdownReader extends JPanel {
 
             JMenuItem saveHTML = new JMenuItem("as HTML (*.html)", UIUtils.getIconFromResources("filetype-html.png"));
             saveHTML.addActionListener(e -> {
-                JFileChooser fileChooser = new JFileChooser();
-                fileChooser.setDialogTitle("Save as HTML");
-                if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+                Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as HTML (*.html)");
+                if (selectedPath != null) {
                     try {
-                        Files.write(fileChooser.getSelectedFile().toPath(), toHTML().getBytes(Charsets.UTF_8));
+                        Files.write(selectedPath, toHTML().getBytes(Charsets.UTF_8));
                     } catch (IOException e1) {
                         throw new RuntimeException(e1);
                     }
@@ -135,10 +135,9 @@ public class MarkdownReader extends JPanel {
 
             JMenuItem savePDF = new JMenuItem("as PDF (*.pdf)", UIUtils.getIconFromResources("filetype-pdf.png"));
             savePDF.addActionListener(e -> {
-                JFileChooser fileChooser = new JFileChooser();
-                fileChooser.setDialogTitle("Save as PDF");
-                if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-                    PdfConverterExtension.exportToPdf(fileChooser.getSelectedFile().toString(), toHTML(), "", OPTIONS);
+                Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as Portable Document Format (*.pdf)");
+                if (selectedPath != null) {
+                    PdfConverterExtension.exportToPdf(selectedPath.toString(), toHTML(), "", OPTIONS);
                 }
             });
             exportMenu.add(savePDF);

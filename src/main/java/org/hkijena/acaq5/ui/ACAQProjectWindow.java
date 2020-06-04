@@ -5,6 +5,7 @@ import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.ACAQGUICommand;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.ACAQRun;
+import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
 import org.hkijena.acaq5.extensions.settings.ProjectsSettings;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.project.UnsatisfiedDependenciesDialog;
@@ -152,11 +153,9 @@ public class ACAQProjectWindow extends JFrame {
      * Opens a file chooser where the user can select a project file
      */
     public void openProject() {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fileChooser.setDialogTitle("Open project (*.json)");
-        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            openProject(fileChooser.getSelectedFile().toPath());
+        Path file = FileChooserSettings.openFile(this, FileChooserSettings.KEY_PROJECT, "Open ACAQ5 project (*.json)");
+        if (file != null) {
+            openProject(file);
         }
     }
 
@@ -164,11 +163,9 @@ public class ACAQProjectWindow extends JFrame {
      * Opens a file chooser where the user can select a result folder
      */
     public void openProjectAndOutput() {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        fileChooser.setDialogTitle("Open project output folder");
-        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            openProject(fileChooser.getSelectedFile().toPath());
+        Path file = FileChooserSettings.openDirectory(this, FileChooserSettings.KEY_PROJECT, "Open ACAQ5 output folder");
+        if (file != null) {
+            openProject(file);
         }
     }
 
@@ -182,14 +179,9 @@ public class ACAQProjectWindow extends JFrame {
         if (avoidDialog && projectSavePath != null)
             savePath = projectSavePath;
         if (savePath == null) {
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            fileChooser.setDialogTitle("Save project (*.json)");
-            if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-                savePath = fileChooser.getSelectedFile().toPath();
-            } else {
+            savePath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save ACAQ5 project (*.json)");
+            if (savePath == null)
                 return;
-            }
         }
 
         try {

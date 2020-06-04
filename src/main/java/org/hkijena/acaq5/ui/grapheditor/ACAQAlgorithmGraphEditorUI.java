@@ -6,6 +6,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.AlgorithmRegisteredEvent;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
+import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
 import org.hkijena.acaq5.extensions.settings.GraphEditorUISettings;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
@@ -25,6 +26,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
@@ -248,12 +250,11 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
 
     private void createScreenshotSVG() {
         SVGGraphics2D screenshot = canvasUI.createScreenshotSVG();
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Export graph as *.png");
-        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+        Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Export graph as SVG (*.svg)");
+        if (selectedPath != null) {
             try {
-                SVGUtils.writeToSVG(fileChooser.getSelectedFile(), screenshot.getSVGElement());
-                getWorkbench().sendStatusBarText("Exported graph as " + fileChooser.getSelectedFile());
+                SVGUtils.writeToSVG(selectedPath.toFile(), screenshot.getSVGElement());
+                getWorkbench().sendStatusBarText("Exported graph as " + selectedPath);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -262,12 +263,11 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
 
     private void createScreenshotPNG() {
         BufferedImage screenshot = canvasUI.createScreenshotPNG();
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Export graph as *.png");
-        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+        Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Export graph as PNG (*.png)");
+        if (selectedPath != null) {
             try {
-                ImageIO.write(screenshot, "PNG", fileChooser.getSelectedFile());
-                getWorkbench().sendStatusBarText("Exported graph as " + fileChooser.getSelectedFile());
+                ImageIO.write(screenshot, "PNG", selectedPath.toFile());
+                getWorkbench().sendStatusBarText("Exported graph as " + selectedPath);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

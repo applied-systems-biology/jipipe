@@ -30,6 +30,7 @@ public class FilterFolders extends ACAQSimpleIteratingAlgorithm {
 
     private PathFilterListParameter filters = new PathFilterListParameter();
     private boolean filterOnlyFolderNames = true;
+    private boolean invert = false;
 
     /**
      * Initializes the algorithm
@@ -49,6 +50,7 @@ public class FilterFolders extends ACAQSimpleIteratingAlgorithm {
     public FilterFolders(FilterFolders other) {
         super(other);
         this.filterOnlyFolderNames = other.filterOnlyFolderNames;
+        this.invert = other.invert;
         this.filters.clear();
         for (PathFilter filter : other.filters) {
             this.filters.add(new PathFilter(filter));
@@ -60,11 +62,23 @@ public class FilterFolders extends ACAQSimpleIteratingAlgorithm {
         FolderData inputData = dataInterface.getInputData("Folders", FolderData.class);
         ACAQDataSlot firstOutputSlot = getFirstOutputSlot();
         if (!filters.isEmpty()) {
-            for (PathFilter filter : filters) {
-                if (filter.test(inputData.getPath())) {
-                    dataInterface.addOutputData(firstOutputSlot, inputData);
-                    break;
+            if (!invert) {
+                for (PathFilter filter : filters) {
+                    if (filter.test(inputData.getPath())) {
+                        dataInterface.addOutputData(firstOutputSlot, inputData);
+                        break;
+                    }
                 }
+            } else {
+                boolean canPass = true;
+                for (PathFilter filter : filters) {
+                    if (filter.test(inputData.getPath())) {
+                        canPass = false;
+                        break;
+                    }
+                }
+                if (canPass)
+                    dataInterface.addOutputData(firstOutputSlot, inputData);
             }
         } else {
             dataInterface.addOutputData(firstOutputSlot, inputData);
@@ -100,5 +114,17 @@ public class FilterFolders extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("only-filenames")
     public void setFilterOnlyFolderNames(boolean filterOnlyFolderNames) {
         this.filterOnlyFolderNames = filterOnlyFolderNames;
+    }
+
+    @ACAQParameter("invert")
+    @ACAQDocumentation(name = "Invert filter", description = "If true, the filter is inverted")
+    public boolean isInvert() {
+        return invert;
+    }
+
+    @ACAQParameter("invert")
+    public void setInvert(boolean invert) {
+        this.invert = invert;
+        getEventBus().post(new ParameterChangedEvent(this, "invert"));
     }
 }

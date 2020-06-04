@@ -35,6 +35,7 @@ public class StandardSettingsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerSettingsSheet(ProjectsSettings.ID, "Recent projects", null, null, new ProjectsSettings());
         registerSettingsSheet(GeneralUISettings.ID, "General", "UI", null, new GeneralUISettings());
         registerSettingsSheet(GraphEditorUISettings.ID, "Graph editor", "UI", null, new GraphEditorUISettings());
+        registerSettingsSheet(FileChooserSettings.ID, "File chooser", "UI", null, new FileChooserSettings());
 
         registerEnumParameterType("acaq:settings:projects:starter-project",
                 ProjectsSettings.StarterProject.class,

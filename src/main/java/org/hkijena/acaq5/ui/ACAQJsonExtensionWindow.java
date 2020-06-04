@@ -7,6 +7,7 @@ import org.hkijena.acaq5.ACAQGUICommand;
 import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.extensions.jsonextensionloader.JsonExtensionLoaderExtension;
+import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
 import org.hkijena.acaq5.extensions.settings.ProjectsSettings;
 import org.hkijena.acaq5.ui.project.UnsatisfiedDependenciesDialog;
 import org.hkijena.acaq5.utils.JsonUtils;
@@ -15,12 +16,12 @@ import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -127,11 +128,9 @@ public class ACAQJsonExtensionWindow extends JFrame {
      * Asks the user if it should be opened in this or a new window.
      */
     public void openProject() {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fileChooser.setDialogTitle("Open ACAQ5 JSON extension (*.json)");
-        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            openProject(fileChooser.getSelectedFile().toPath());
+        Path file = FileChooserSettings.openFile(this, FileChooserSettings.KEY_PROJECT, "Open ACAQ5 JSON extension (*.json)");
+        if (file != null) {
+            openProject(file);
         }
     }
 
@@ -145,14 +144,9 @@ public class ACAQJsonExtensionWindow extends JFrame {
         if (avoidDialog && projectSavePath != null)
             savePath = projectSavePath;
         if (savePath == null) {
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            fileChooser.setDialogTitle("Save ACAQ5 JSON extension (*.json)");
-            if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-                savePath = fileChooser.getSelectedFile().toPath();
-            } else {
+            savePath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save ACAQ5 JSON extension (*.json)");
+            if (savePath == null)
                 return;
-            }
         }
 
         try {
@@ -234,13 +228,9 @@ public class ACAQJsonExtensionWindow extends JFrame {
      * @param parent The parent component
      */
     public static void installExtensions(Component parent) {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Install extensions");
-        fileChooser.setMultiSelectionEnabled(true);
-        if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
-            for (File selectedFile : fileChooser.getSelectedFiles()) {
-                installExtensionFromFile(parent, selectedFile.toPath());
-            }
+        List<Path> files = FileChooserSettings.openFiles(parent, FileChooserSettings.KEY_PROJECT, "Open ACAQ5 JSON extension (*.json)");
+        for (Path selectedFile : files) {
+            installExtensionFromFile(parent, selectedFile);
         }
     }
 

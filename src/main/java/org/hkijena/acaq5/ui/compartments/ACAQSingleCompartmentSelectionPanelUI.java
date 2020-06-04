@@ -6,6 +6,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.ACAQExportedCompartment;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.ColorIcon;
@@ -171,14 +172,11 @@ public class ACAQSingleCompartmentSelectionPanelUI extends ACAQProjectWorkbenchP
 
         if (JOptionPane.showConfirmDialog(this, metadataEditor, "Export compartment",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION) {
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            fileChooser.setDialogTitle("Save compartment (*.json)");
-            if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-                Path savePath = fileChooser.getSelectedFile().toPath();
+            Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save ACAQ5 graph compartment (*.json)");
+            if (selectedPath != null) {
                 try {
-                    exportedCompartment.saveToJson(savePath);
-                    getProjectWorkbench().sendStatusBarText("Exported compartment '" + compartment.getName() + "' to " + savePath);
+                    exportedCompartment.saveToJson(selectedPath);
+                    getProjectWorkbench().sendStatusBarText("Exported compartment '" + compartment.getName() + "' to " + selectedPath);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

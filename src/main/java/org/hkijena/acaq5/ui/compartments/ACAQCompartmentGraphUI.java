@@ -7,6 +7,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.compartments.ACAQExportedCompartment;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
+import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
@@ -18,6 +19,7 @@ import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.stream.Collectors;
 
 import static org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph.COMPARTMENT_DEFAULT;
@@ -85,12 +87,11 @@ public class ACAQCompartmentGraphUI extends ACAQAlgorithmGraphEditorUI {
     }
 
     private void importCompartment() {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Import compartment *.json");
-        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+        Path selectedPath = FileChooserSettings.openFile(this, FileChooserSettings.KEY_PROJECT, "Open ACAQ5 graph compartment (*.json)");
+        if (selectedPath != null) {
             try {
                 ObjectMapper objectMapper = JsonUtils.getObjectMapper();
-                ACAQExportedCompartment exportedCompartment = objectMapper.readerFor(ACAQExportedCompartment.class).readValue(fileChooser.getSelectedFile());
+                ACAQExportedCompartment exportedCompartment = objectMapper.readerFor(ACAQExportedCompartment.class).readValue(selectedPath.toFile());
 
                 String name = UIUtils.getUniqueStringByDialog(this, "Please enter the name of the new compartment:",
                         exportedCompartment.getSuggestedName(), s -> getProject().getCompartments().containsKey(s));

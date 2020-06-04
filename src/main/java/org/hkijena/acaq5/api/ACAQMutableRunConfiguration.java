@@ -4,7 +4,7 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.parameters.editors.FilePathParameterSettings;
-import org.hkijena.acaq5.ui.components.FileSelection;
+import org.hkijena.acaq5.ui.components.PathEditor;
 
 import java.nio.file.Path;
 
@@ -22,7 +22,7 @@ public class ACAQMutableRunConfiguration implements ACAQRunConfiguration {
     @Override
     @ACAQParameter("output-path")
     @ACAQDocumentation(name = "Output folder")
-    @FilePathParameterSettings(ioMode = FileSelection.IOMode.Save, pathMode = FileSelection.PathMode.DirectoriesOnly)
+    @FilePathParameterSettings(ioMode = PathEditor.IOMode.Save, pathMode = PathEditor.PathMode.DirectoriesOnly)
     public Path getOutputPath() {
         return outputPath;
     }

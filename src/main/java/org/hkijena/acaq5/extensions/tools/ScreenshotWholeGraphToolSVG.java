@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.extensions.tools;
 
 import org.hkijena.acaq5.api.ACAQOrganization;
+import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.extension.MenuExtension;
@@ -10,8 +11,8 @@ import org.hkijena.acaq5.utils.UIUtils;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.jfree.graphics2d.svg.SVGUtils;
 
-import javax.swing.*;
 import java.io.IOException;
+import java.nio.file.Path;
 
 @ACAQOrganization(menuExtensionTarget = MenuTarget.ProjectToolsMenu, menuPath = "Export full graph")
 public class ScreenshotWholeGraphToolSVG extends MenuExtension {
@@ -34,12 +35,11 @@ public class ScreenshotWholeGraphToolSVG extends MenuExtension {
         ACAQAlgorithmGraphCanvasUI canvasUI = new ACAQAlgorithmGraphCanvasUI(workbench.getProject().getGraph(), null);
         canvasUI.autoLayoutAll();
         SVGGraphics2D screenshot = canvasUI.createScreenshotSVG();
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Export full graph as *.svg");
-        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+        Path file = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PARAMETER, "Export full graph as *.png");
+        if (file != null) {
             try {
-                SVGUtils.writeToSVG(fileChooser.getSelectedFile(), screenshot.getSVGElement());
-                getWorkbench().sendStatusBarText("Exported full graph as " + fileChooser.getSelectedFile());
+                SVGUtils.writeToSVG(file.toFile(), screenshot.getSVGElement());
+                getWorkbench().sendStatusBarText("Exported full graph as " + file);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
