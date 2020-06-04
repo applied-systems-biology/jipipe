@@ -71,12 +71,14 @@ public class ACAQCompartmentGraphUI extends ACAQAlgorithmGraphEditorUI {
 
         JButton addItem = new JButton("Add new compartment", UIUtils.getIconFromResources("add.png"));
         UIUtils.makeFlatH25(addItem);
+        addItem.setBorder(BorderFactory.createEmptyBorder(0,2,0,2));
         addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
         addItem.addActionListener(e -> addCompartment());
         menuBar.add(addItem);
 
         JButton importItem = new JButton("Import compartment", UIUtils.getIconFromResources("open.png"));
         UIUtils.makeFlatH25(importItem);
+        importItem.setBorder(BorderFactory.createEmptyBorder(0,2,0,2));
         importItem.setToolTipText("Imports a compartment from a *.json file");
         importItem.addActionListener(e -> importCompartment());
         menuBar.add(importItem);
