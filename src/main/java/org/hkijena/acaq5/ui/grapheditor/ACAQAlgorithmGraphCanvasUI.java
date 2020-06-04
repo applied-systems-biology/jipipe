@@ -41,6 +41,7 @@ import java.util.*;
  * UI that displays an {@link ACAQAlgorithmGraph}
  */
 public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionListener, MouseListener {
+    private final ImageIcon cursorImage = UIUtils.getIconFromResources("target.png");
     private ACAQAlgorithmGraph algorithmGraph;
     private ACAQAlgorithmUI currentlyDragged;
     private Point currentlyDraggedOffset = new Point();
@@ -55,6 +56,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     private ViewMode currentViewMode = GraphEditorUISettings.getInstance().getDefaultViewMode();
     private ACAQAlgorithmGraphDragAndDropBehavior dragAndDropBehavior;
     private ACAQAlgorithmGraphCopyPasteBehavior copyPasteBehavior;
+    private Point cursor;
 
     /**
      * Creates a new UI
@@ -106,7 +108,6 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         SwingUtilities.convertPointFromScreen(mouseLocation, this);
         ACAQAlgorithmUI ui = nodeUIs.getOrDefault(node, null);
         if (ui != null) {
-            System.out.println("try_move");
             ui.trySetLocationInGrid(mouseLocation.x, mouseLocation.y);
             repaint();
             getEventBus().post(new AlgorithmEvent(ui));
@@ -287,6 +288,11 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
             int minY = Math.max(ui.getY(), 2 * ACAQAlgorithmUI.SLOT_UI_HEIGHT);
 
+            if (cursor != null && cursor.x >= 0 && cursor.y >= 0) {
+                minX = (int) (cursor.x * 1.0 / ACAQAlgorithmUI.SLOT_UI_WIDTH) * ACAQAlgorithmUI.SLOT_UI_WIDTH;
+                minY = (int) (cursor.y * 1.0 / ACAQAlgorithmUI.SLOT_UI_HEIGHT) * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+            }
+
             if (ui.getX() < minX || ui.isOverlapping()) {
                 if (!ui.trySetLocationNoGrid(minX, minY)) {
                     // Place anywhere
@@ -320,6 +326,11 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             }
 
             int minX = Math.max(ui.getX(), 2 * ACAQAlgorithmUI.SLOT_UI_HEIGHT);
+
+            if (cursor != null && cursor.x >= 0 && cursor.y >= 0) {
+                minX = (int) (cursor.x * 1.0 / ACAQAlgorithmUI.SLOT_UI_WIDTH) * ACAQAlgorithmUI.SLOT_UI_WIDTH;
+                minY = (int) (cursor.y * 1.0 / ACAQAlgorithmUI.SLOT_UI_HEIGHT) * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+            }
 
             if (ui.getY() < minY || ui.isOverlapping()) {
                 if (!ui.trySetLocationNoGrid(minX, minY)) {
@@ -389,6 +400,9 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             ACAQAlgorithmUI ui = pickComponent(mouseEvent);
             if (ui != null)
                 eventBus.post(new DefaultUIActionRequestedEvent(ui));
+        } else if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
+            cursor = new Point(mouseEvent.getX(), mouseEvent.getY());
+            repaint();
         } else if (SwingUtilities.isRightMouseButton(mouseEvent)) {
             ACAQAlgorithmUI ui = pickComponent(mouseEvent);
             if (ui != null) {
@@ -596,6 +610,13 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         }
 
         g.setStroke(new BasicStroke(1));
+
+        if (cursor != null) {
+            g.drawImage(cursorImage.getImage(),
+                    cursor.x - cursorImage.getIconWidth() / 2,
+                    cursor.y - cursorImage.getIconHeight() / 2,
+                    null);
+        }
     }
 
     /**

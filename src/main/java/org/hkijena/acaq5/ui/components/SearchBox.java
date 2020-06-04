@@ -56,7 +56,10 @@ public class SearchBox<T> extends JPanel {
             }
         });
         textField.setBorder(null);
-        comboBox.addItemListener(e -> comboBox.setPopupVisible(false));
+        comboBox.addItemListener(e -> {
+            comboBox.setPopupVisible(false);
+            getRootPane().requestFocusInWindow();
+        });
         add(comboBox, BorderLayout.CENTER);
 
         for (int i = 0; i < comboBox.getComponentCount(); i++) {
