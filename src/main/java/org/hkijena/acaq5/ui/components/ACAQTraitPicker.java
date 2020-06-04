@@ -24,7 +24,7 @@ public class ACAQTraitPicker extends JPanel {
     boolean reloading = false;
     private Mode mode;
     private EventBus eventBus = new EventBus();
-    private JXTextField searchField;
+    private SearchTextField searchField;
     private JList<ACAQTraitDeclaration> traitList;
     private Set<ACAQTraitDeclaration> hiddenTraits = new HashSet<>();
     private List<ACAQTraitDeclaration> availableTraits;
@@ -47,18 +47,9 @@ public class ACAQTraitPicker extends JPanel {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        searchField = new JXTextField("Search ...");
-        searchField.getDocument().addDocumentListener(new DocumentChangeListener() {
-            @Override
-            public void changed(DocumentEvent documentEvent) {
-                refreshTraitList();
-            }
-        });
+        searchField = new SearchTextField();
+        searchField.addActionListener(e -> refreshTraitList());
         toolBar.add(searchField);
-
-        JButton clearSearchButton = new JButton(UIUtils.getIconFromResources("clear.png"));
-        clearSearchButton.addActionListener(e -> searchField.setText(null));
-        toolBar.add(clearSearchButton);
 
         add(toolBar, BorderLayout.NORTH);
 
@@ -115,7 +106,7 @@ public class ACAQTraitPicker extends JPanel {
         DefaultListModel<ACAQTraitDeclaration> model = (DefaultListModel<ACAQTraitDeclaration>) traitList.getModel();
         hiddenTraits.clear();
         model.clear();
-        String[] searchStrings = getSearchStrings();
+        String[] searchStrings = searchField.getSearchStrings();
         List<Integer> selectedIndices = new ArrayList<>();
 
         for (ACAQTraitDeclaration trait : availableTraits) {
@@ -144,17 +135,6 @@ public class ACAQTraitPicker extends JPanel {
                 return true;
         }
         return false;
-    }
-
-    private String[] getSearchStrings() {
-        String[] searchStrings = null;
-        if (searchField.getText() != null) {
-            String str = searchField.getText().trim();
-            if (!str.isEmpty()) {
-                searchStrings = str.split(" ");
-            }
-        }
-        return searchStrings;
     }
 
     public EventBus getEventBus() {

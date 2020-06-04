@@ -20,7 +20,7 @@ public class ACAQIconPickerDialog extends JDialog implements MouseListener {
     private String selectedIcon;
     private String prefix;
     private List<String> availableIcons;
-    private JXTextField searchField;
+    private SearchTextField searchField;
     private JList<String> iconList;
 
     /**
@@ -55,18 +55,9 @@ public class ACAQIconPickerDialog extends JDialog implements MouseListener {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        searchField = new JXTextField("Search ...");
-        searchField.getDocument().addDocumentListener(new DocumentChangeListener() {
-            @Override
-            public void changed(DocumentEvent documentEvent) {
-                reloadIconList();
-            }
-        });
+        searchField = new SearchTextField();
+        searchField.addActionListener(e -> reloadIconList());
         toolBar.add(searchField);
-
-        JButton clearSearchButton = new JButton(UIUtils.getIconFromResources("clear.png"));
-        clearSearchButton.addActionListener(e -> searchField.setText(null));
-        toolBar.add(clearSearchButton);
 
         add(toolBar, BorderLayout.NORTH);
     }
@@ -93,7 +84,7 @@ public class ACAQIconPickerDialog extends JDialog implements MouseListener {
     private void reloadIconList() {
         DefaultListModel<String> model = (DefaultListModel<String>) iconList.getModel();
         model.clear();
-        String[] searchStrings = getSearchStrings();
+        String[] searchStrings = searchField.getSearchStrings();
         for (String icon : availableIcons) {
             boolean matches = true;
             if (searchStrings != null) {
@@ -108,17 +99,6 @@ public class ACAQIconPickerDialog extends JDialog implements MouseListener {
                 model.addElement(icon);
             }
         }
-    }
-
-    private String[] getSearchStrings() {
-        String[] searchStrings = null;
-        if (searchField.getText() != null) {
-            String str = searchField.getText().trim().toLowerCase();
-            if (!str.isEmpty()) {
-                searchStrings = str.split(" ");
-            }
-        }
-        return searchStrings;
     }
 
     /**

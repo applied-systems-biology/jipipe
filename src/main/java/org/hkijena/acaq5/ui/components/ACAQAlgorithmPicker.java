@@ -24,7 +24,7 @@ public class ACAQAlgorithmPicker extends JPanel {
     boolean reloading = false;
     private Mode mode;
     private EventBus eventBus = new EventBus();
-    private JXTextField searchField;
+    private SearchTextField searchField;
     private JList<ACAQAlgorithmDeclaration> declarationList;
     private Set<ACAQAlgorithmDeclaration> hiddenItems = new HashSet<>();
     private List<ACAQAlgorithmDeclaration> availableDeclarations;
@@ -51,18 +51,9 @@ public class ACAQAlgorithmPicker extends JPanel {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        searchField = new JXTextField("Search ...");
-        searchField.getDocument().addDocumentListener(new DocumentChangeListener() {
-            @Override
-            public void changed(DocumentEvent documentEvent) {
-                refreshTraitList();
-            }
-        });
+        searchField = new SearchTextField();
+        searchField.addActionListener(e -> refreshTraitList());
         toolBar.add(searchField);
-
-        JButton clearSearchButton = new JButton(UIUtils.getIconFromResources("clear.png"));
-        clearSearchButton.addActionListener(e -> searchField.setText(null));
-        toolBar.add(clearSearchButton);
 
         add(toolBar, BorderLayout.NORTH);
 

@@ -15,6 +15,7 @@ import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.components.FormPanel;
+import org.hkijena.acaq5.ui.components.SearchTextField;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.ui.registries.ACAQUIImageJDatatypeAdapterRegistry;
@@ -46,7 +47,7 @@ public class RunSingleAlgorithmDialog extends JDialog {
     private boolean canceled = true;
     private SingleImageJAlgorithmRun runSettings;
     private JList<ACAQAlgorithmDeclaration> algorithmList;
-    private JXTextField searchField;
+    private SearchTextField searchField;
     private JSplitPane splitPane;
     private FormPanel formPanel;
 
@@ -87,18 +88,9 @@ public class RunSingleAlgorithmDialog extends JDialog {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        searchField = new JXTextField("Search ...");
-        searchField.getDocument().addDocumentListener(new DocumentChangeListener() {
-            @Override
-            public void changed(DocumentEvent documentEvent) {
-                reloadAlgorithmList();
-            }
-        });
+        searchField = new SearchTextField();
+        searchField.addActionListener(e -> reloadAlgorithmList());
         toolBar.add(searchField);
-
-        JButton clearSearchButton = new JButton(UIUtils.getIconFromResources("clear.png"));
-        clearSearchButton.addActionListener(e -> searchField.setText(null));
-        toolBar.add(clearSearchButton);
 
         add(toolBar, BorderLayout.NORTH);
 
@@ -121,7 +113,7 @@ public class RunSingleAlgorithmDialog extends JDialog {
     }
 
     private List<ACAQAlgorithmDeclaration> getFilteredAndSortedDeclarations() {
-        String[] searchStrings = getSearchStrings();
+        String[] searchStrings = searchField.getSearchStrings();
         Predicate<ACAQAlgorithmDeclaration> filterFunction = declaration -> {
             if (searchStrings != null && searchStrings.length > 0) {
                 boolean matches = true;
@@ -141,18 +133,6 @@ public class RunSingleAlgorithmDialog extends JDialog {
         return ACAQAlgorithmRegistry.getInstance().getRegisteredAlgorithms().values().stream().filter(filterFunction)
                 .sorted(Comparator.comparing(ACAQAlgorithmDeclaration::getName)).collect(Collectors.toList());
     }
-
-    private String[] getSearchStrings() {
-        String[] searchStrings = null;
-        if (searchField.getText() != null) {
-            String str = searchField.getText().trim();
-            if (!str.isEmpty()) {
-                searchStrings = str.split(" ");
-            }
-        }
-        return searchStrings;
-    }
-
 
     private void initializeList(JPanel listPanel) {
         algorithmList = new JList<>();

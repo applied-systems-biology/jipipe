@@ -12,6 +12,7 @@ import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.components.FormPanel;
+import org.hkijena.acaq5.ui.components.SearchTextField;
 import org.hkijena.acaq5.ui.events.AlgorithmFinderSuccessEvent;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.TooltipUtils;
@@ -34,7 +35,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
     private ACAQAlgorithm algorithm;
     private ACAQAlgorithmGraph graph;
     private String compartment;
-    private JXTextField searchField;
+    private SearchTextField searchField;
     private FormPanel formPanel;
     private EventBus eventBus = new EventBus();
 
@@ -78,18 +79,9 @@ public class ACAQAlgorithmFinderUI extends JPanel {
 
         toolBar.add(Box.createHorizontalGlue());
         toolBar.add(Box.createHorizontalStrut(16));
-        searchField = new JXTextField("Search ...");
-        searchField.getDocument().addDocumentListener(new DocumentChangeListener() {
-            @Override
-            public void changed(DocumentEvent documentEvent) {
-                reloadAlgorithmList();
-            }
-        });
+        searchField = new SearchTextField();
+        searchField.addActionListener(e -> reloadAlgorithmList());
         toolBar.add(searchField);
-
-        JButton clearSearchButton = new JButton(UIUtils.getIconFromResources("clear.png"));
-        clearSearchButton.addActionListener(e -> searchField.setText(null));
-        toolBar.add(clearSearchButton);
 
         add(toolBar, BorderLayout.NORTH);
     }
@@ -155,7 +147,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
     }
 
     private List<ACAQAlgorithmDeclaration> getFilteredAndSortedCompatibleTargetAlgorithms() {
-        String[] searchStrings = getSearchStrings();
+        String[] searchStrings = searchField.getSearchStrings();
         Predicate<ACAQAlgorithmDeclaration> filterFunction = declaration -> {
             if (searchStrings != null && searchStrings.length > 0) {
                 boolean matches = true;
@@ -177,17 +169,6 @@ public class ACAQAlgorithmFinderUI extends JPanel {
     private int compareAlgorithmScore(ACAQAlgorithmDeclaration algorithmClass, ACAQAlgorithmDeclaration algorithmClass2) {
         return -Integer.compare(scoreAlgorithmForOutputSlot(algorithmClass, outputSlot, graph),
                 scoreAlgorithmForOutputSlot(algorithmClass2, outputSlot, graph));
-    }
-
-    private String[] getSearchStrings() {
-        String[] searchStrings = null;
-        if (searchField.getText() != null) {
-            String str = searchField.getText().trim();
-            if (!str.isEmpty()) {
-                searchStrings = str.split(" ");
-            }
-        }
-        return searchStrings;
     }
 
     /**

@@ -10,6 +10,7 @@ import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
+import org.hkijena.acaq5.ui.components.SearchTextField;
 import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -58,7 +59,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
     private boolean forceTraverse;
     private boolean withSearchBar;
     private ACAQTraversedParameterCollection traversed;
-    private JXTextField searchField;
+    private SearchTextField searchField = new SearchTextField();
 
     /**
      * @param context             SciJava context
@@ -94,18 +95,8 @@ public class ParameterPanel extends FormPanel implements Contextual {
             JToolBar toolBar = new JToolBar();
             toolBar.setFloatable(false);
 
-            searchField = new JXTextField("Search ...");
-            searchField.getDocument().addDocumentListener(new DocumentChangeListener() {
-                @Override
-                public void changed(DocumentEvent documentEvent) {
-                    refreshForm();
-                }
-            });
+            searchField.addActionListener(e -> refreshForm());
             toolBar.add(searchField);
-
-            JButton clearSearchButton = new JButton(UIUtils.getIconFromResources("clear.png"));
-            clearSearchButton.addActionListener(e -> searchField.setText(null));
-            toolBar.add(clearSearchButton);
 
             add(toolBar, BorderLayout.NORTH);
         }
@@ -173,7 +164,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
             }
         }
 
-        String[] searchStrings = getSearchStrings();
+        String[] searchStrings = searchField.getSearchStrings();
 
         List<ACAQParameterEditorUI> uiList = new ArrayList<>();
         ACAQParameterVisibility sourceVisibility = traversed.getSourceVisibility(parameterHolder);
@@ -238,19 +229,6 @@ public class ParameterPanel extends FormPanel implements Contextual {
                 return true;
         }
         return false;
-    }
-
-    private String[] getSearchStrings() {
-        if (searchField == null)
-            return null;
-        String[] searchStrings = null;
-        if (searchField.getText() != null) {
-            String str = searchField.getText().trim();
-            if (!str.isEmpty()) {
-                searchStrings = str.split(" ");
-            }
-        }
-        return searchStrings;
     }
 
     private void removeDynamicParameter(String key, ACAQDynamicParameterCollection parameterHolder) {

@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public class EditAlgorithmSlotPanel extends JPanel {
 
     private ACAQDataSlot existingSlot;
-    private JXTextField searchField;
+    private SearchTextField searchField;
     private JList<ACAQDataDeclaration> datatypeList;
     private JComboBox<String> inheritedSlotList;
     private JTextField nameEditor;
@@ -251,13 +251,8 @@ public class EditAlgorithmSlotPanel extends JPanel {
 
         toolBar.add(Box.createHorizontalGlue());
         toolBar.add(Box.createHorizontalStrut(16));
-        searchField = new JXTextField("Search ...");
-        searchField.getDocument().addDocumentListener(new DocumentChangeListener() {
-            @Override
-            public void changed(DocumentEvent documentEvent) {
-                reloadTypeList();
-            }
-        });
+        searchField = new SearchTextField();
+        searchField.addActionListener(e -> reloadTypeList());
         searchField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
@@ -268,10 +263,6 @@ public class EditAlgorithmSlotPanel extends JPanel {
             }
         });
         toolBar.add(searchField);
-
-        JButton clearSearchButton = new JButton(UIUtils.getIconFromResources("clear.png"));
-        clearSearchButton.addActionListener(e -> searchField.setText(null));
-        toolBar.add(clearSearchButton);
 
         add(toolBar, BorderLayout.NORTH);
     }
@@ -292,7 +283,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
     }
 
     private List<ACAQDataDeclaration> getFilteredAndSortedDeclarations() {
-        String[] searchStrings = getSearchStrings();
+        String[] searchStrings = searchField.getSearchStrings();
         Predicate<ACAQDataDeclaration> filterFunction = declaration -> {
             if (searchStrings != null && searchStrings.length > 0) {
                 boolean matches = true;
@@ -323,17 +314,6 @@ public class EditAlgorithmSlotPanel extends JPanel {
         if (!listModel.isEmpty()) {
             datatypeList.setSelectedIndex(0);
         }
-    }
-
-    private String[] getSearchStrings() {
-        String[] searchStrings = null;
-        if (searchField.getText() != null) {
-            String str = searchField.getText().trim();
-            if (!str.isEmpty()) {
-                searchStrings = str.split(" ");
-            }
-        }
-        return searchStrings;
     }
 
     public ACAQDataDeclaration getSelectedDeclaration() {

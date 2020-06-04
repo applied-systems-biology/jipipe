@@ -59,9 +59,12 @@ public class FileSelection extends JPanel {
 
     private void initialize() {
         // Setup the GUI
+        setBackground(Color.WHITE);
+        setBorder(BorderFactory.createEtchedBorder());
         setLayout(new GridBagLayout());
 
         pathEdit = new JTextField();
+        pathEdit.setBorder(null);
         add(pathEdit, new GridBagConstraints() {
             {
                 gridx = 0;
@@ -77,6 +80,7 @@ public class FileSelection extends JPanel {
         generateRandomButton = new JButton(UIUtils.getIconFromResources("random.png"));
         generateRandomButton.setToolTipText("Generate random file or folder");
         UIUtils.makeFlat25x25(generateRandomButton);
+        generateRandomButton.setBorder(null);
         generateRandomButton.addActionListener(e -> generateRandom());
         add(generateRandomButton, new GridBagConstraints() {
             {
@@ -89,6 +93,7 @@ public class FileSelection extends JPanel {
         JButton selectButton = new JButton(UIUtils.getIconFromResources("open.png"));
         selectButton.setToolTipText("Select from filesystem");
         UIUtils.makeFlat25x25(selectButton);
+        selectButton.setBorder(null);
         add(selectButton, new GridBagConstraints() {
             {
                 anchor = GridBagConstraints.PAGE_START;

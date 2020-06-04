@@ -16,6 +16,7 @@ import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
+import org.hkijena.acaq5.ui.components.SearchTextField;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.StringUtils;
@@ -39,7 +40,7 @@ import static org.hkijena.acaq5.utils.TooltipUtils.insertOpposingTraitTableConte
  */
 public class ACAQAlgorithmCompendiumUI extends JPanel {
     private JList<ACAQAlgorithmDeclaration> algorithmList;
-    private JXTextField searchField;
+    private SearchTextField searchField;
     private JSplitPane splitPane;
     private MarkdownReader markdownReader;
     private Map<ACAQAlgorithmDeclaration, MarkdownDocument> compediumCache = new HashMap<>();
@@ -79,18 +80,9 @@ public class ACAQAlgorithmCompendiumUI extends JPanel {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        searchField = new JXTextField("Search ...");
-        searchField.getDocument().addDocumentListener(new DocumentChangeListener() {
-            @Override
-            public void changed(DocumentEvent documentEvent) {
-                reloadAlgorithmList();
-            }
-        });
+        searchField = new SearchTextField();
+        searchField.addActionListener(e -> reloadAlgorithmList());
         toolBar.add(searchField);
-
-        JButton clearSearchButton = new JButton(UIUtils.getIconFromResources("clear.png"));
-        clearSearchButton.addActionListener(e -> searchField.setText(null));
-        toolBar.add(clearSearchButton);
 
         add(toolBar, BorderLayout.NORTH);
 
@@ -112,7 +104,7 @@ public class ACAQAlgorithmCompendiumUI extends JPanel {
     }
 
     private List<ACAQAlgorithmDeclaration> getFilteredAndSortedDeclarations() {
-        String[] searchStrings = getSearchStrings();
+        String[] searchStrings = searchField.getSearchStrings();
         Predicate<ACAQAlgorithmDeclaration> filterFunction = declaration -> {
             if (searchStrings != null && searchStrings.length > 0) {
                 boolean matches = true;
@@ -132,18 +124,6 @@ public class ACAQAlgorithmCompendiumUI extends JPanel {
         return ACAQAlgorithmRegistry.getInstance().getRegisteredAlgorithms().values().stream().filter(filterFunction)
                 .sorted(Comparator.comparing(ACAQAlgorithmDeclaration::getName)).collect(Collectors.toList());
     }
-
-    private String[] getSearchStrings() {
-        String[] searchStrings = null;
-        if (searchField.getText() != null) {
-            String str = searchField.getText().trim();
-            if (!str.isEmpty()) {
-                searchStrings = str.split(" ");
-            }
-        }
-        return searchStrings;
-    }
-
 
     private void initializeList(JPanel listPanel) {
         algorithmList = new JList<>();

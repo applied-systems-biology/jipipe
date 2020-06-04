@@ -208,6 +208,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
      */
     private void removeComponentOverlaps() {
         List<ACAQAlgorithm> traversed = algorithmGraph.traverseAlgorithms();
+        boolean detected = false;
         for (int i = traversed.size() - 1; i >= 0; --i) {
             ACAQAlgorithm algorithm = traversed.get(i);
             if (!algorithm.isVisibleIn(compartment))
@@ -216,8 +217,12 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             if (ui != null) {
                 if (ui.isOverlapping()) {
                     autoPlaceAlgorithm(ui);
+                    detected = true;
                 }
             }
+        }
+        if(detected) {
+            repaint();
         }
     }
 

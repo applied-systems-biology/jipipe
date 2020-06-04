@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  */
 public class PickAlgorithmDialog extends JDialog {
     private Set<ACAQAlgorithm> algorithms;
-    private JXTextField searchField;
+    private SearchTextField searchField;
     private JList<ACAQAlgorithm> algorithmList;
     private ACAQAlgorithm selectedAlgorithm;
     private JButton confirmButton;
@@ -87,13 +87,8 @@ public class PickAlgorithmDialog extends JDialog {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        searchField = new JXTextField("Search ...");
-        searchField.getDocument().addDocumentListener(new DocumentChangeListener() {
-            @Override
-            public void changed(DocumentEvent documentEvent) {
-                reloadTypeList();
-            }
-        });
+        searchField = new SearchTextField();
+        searchField.addActionListener(e -> reloadTypeList());
         searchField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
@@ -104,15 +99,11 @@ public class PickAlgorithmDialog extends JDialog {
         });
         toolBar.add(searchField);
 
-        JButton clearSearchButton = new JButton(UIUtils.getIconFromResources("clear.png"));
-        clearSearchButton.addActionListener(e -> searchField.setText(null));
-        toolBar.add(clearSearchButton);
-
         add(toolBar, BorderLayout.NORTH);
     }
 
     private List<ACAQAlgorithm> getFilteredAndSortedDeclarations() {
-        String[] searchStrings = getSearchStrings();
+        String[] searchStrings = searchField.getSearchStrings();
         Predicate<ACAQAlgorithm> filterFunction = declaration -> {
             if (searchStrings != null && searchStrings.length > 0) {
                 boolean matches = true;
@@ -143,17 +134,6 @@ public class PickAlgorithmDialog extends JDialog {
         if (!listModel.isEmpty()) {
             algorithmList.setSelectedIndex(0);
         }
-    }
-
-    private String[] getSearchStrings() {
-        String[] searchStrings = null;
-        if (searchField.getText() != null) {
-            String str = searchField.getText().trim();
-            if (!str.isEmpty()) {
-                searchStrings = str.split(" ");
-            }
-        }
-        return searchStrings;
     }
 
     public ACAQAlgorithm getSelectedAlgorithm() {
