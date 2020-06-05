@@ -402,6 +402,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
                 eventBus.post(new DefaultUIActionRequestedEvent(ui));
         } else if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
             cursor = new Point(mouseEvent.getX(), mouseEvent.getY());
+            requestFocusInWindow();
             repaint();
         } else if (SwingUtilities.isRightMouseButton(mouseEvent)) {
             ACAQAlgorithmUI ui = pickComponent(mouseEvent);
