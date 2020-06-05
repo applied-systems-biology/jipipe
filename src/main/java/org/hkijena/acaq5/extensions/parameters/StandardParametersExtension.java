@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.extensions.parameters;
 
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQIteratingAlgorithm;
@@ -20,9 +21,11 @@ import org.hkijena.acaq5.extensions.parameters.references.ACAQDataDeclarationRef
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitIconRef;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
+import org.hkijena.acaq5.utils.JsonUtils;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
+import java.awt.*;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -79,6 +82,8 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
         registerParameterType("string", String.class, () -> "", s -> s, "String", "A text value", StringParameterEditorUI.class);
         registerParameterType("path", Path.class, () -> Paths.get(""), p -> p, "Filesystem path", "A path", FilePathParameterEditorUI.class);
         registerParameterType("file", File.class, () -> new File(""), f -> f, "Filesystem path", "A path", FileParameterEditorUI.class);
+        registerParameterType("color", Color.class, () -> Color.WHITE, c -> c, "Color", "A color", ColorParameterEditorUI.class);
+        registerColorJsonSerializer();
 
         // ACAQ5 registry reference types
         registerParameterType("trait-type",
@@ -284,5 +289,13 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
         registerParameterGenerator(Long.class, LongRangeParameterGenerator.class, "Generate 64-bit integral number sequence", "Generates 64-bit integral numbers");
         registerParameterGenerator(Float.class, FloatRangeParameterGenerator.class, "Generate single precision floating point number sequence", "Generates 32-bit floating point numbers");
         registerParameterGenerator(Double.class, DoubleRangeParameterGenerator.class, "Generate double precision floating point number sequence", "Generates 64-bit floating point numbers");
+    }
+
+    private void registerColorJsonSerializer() {
+        // Serializer for color type
+        SimpleModule module = new SimpleModule();
+        module.addSerializer(Color.class, new ColorSerializer());
+        module.addDeserializer(Color.class, new ColorDeserializer());
+        JsonUtils.getObjectMapper().registerModule(module);
     }
 }
