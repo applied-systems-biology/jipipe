@@ -36,6 +36,7 @@ import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.morphology.*;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.noise.AddNoise2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.noise.DespeckleFilter2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.noise.RemoveOutliersFilter2DAlgorithm;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.roi.SplitRoiAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.sharpen.LaplacianSharpen2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.statistics.GreyscalePixelsGenerator;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.statistics.HistogramGenerator;
@@ -237,6 +238,8 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerAlgorithm("ij1-transform-scale3d", TransformScale3DAlgorithm.class);
 
         registerAlgorithm("ij1-convolve-convolve2d", Convolve2DAlgorithm.class);
+
+        registerAlgorithm("ij1-roi-split", SplitRoiAlgorithm.class);
 
         // Register enum parameters
         registerEnumParameterType("ij1-interpolation-method", InterpolationMethod.class,

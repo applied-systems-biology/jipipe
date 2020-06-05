@@ -2,6 +2,8 @@ package org.hkijena.acaq5.extensions.imagejdatatypes.datatypes;
 
 import com.google.common.collect.ImmutableList;
 import ij.gui.Roi;
+import ij.gui.RoiListener;
+import ij.gui.ShapeRoi;
 import ij.io.RoiDecoder;
 import ij.io.RoiEncoder;
 import ij.plugin.frame.RoiManager;
@@ -12,9 +14,7 @@ import org.hkijena.acaq5.utils.PathUtils;
 
 import java.io.*;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -24,6 +24,12 @@ import java.util.zip.ZipOutputStream;
  */
 @ACAQDocumentation(name = "ROI list", description = "Collection of ROI")
 public class ROIListData extends ArrayList<Roi> implements ACAQData {
+
+    /**
+     * Creates an empty set of ROI
+     */
+    public ROIListData() {
+    }
 
     /**
      * Loads {@link Roi} from a path that contains a zip file
@@ -93,9 +99,10 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
     }
 
     /**
-     * Merges the ROI from another data into this one
+     * Merges the ROI from another data into this one.
+     * Creates copies of the merged {@link Roi}
      *
-     * @param other the other data
+     * @param other the other data. The entries are copied.
      */
     public void mergeWith(ROIListData other) {
         for (Roi item : other) {
@@ -104,27 +111,59 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
     }
 
     /**
-     * Applies a logical OR operation.
-     * This operation is different from mergeWith and implements the same functionality as the {@link RoiManager}
-     *
-     * @param other the other ROI data
+     * Splits all {@link ij.gui.ShapeRoi} that consist of multiple sub-Roi into their individual sub-Roi.
+     * The original {@link ShapeRoi} is removed.
      */
-    public void logicalOR(ROIListData other) {
-        if (other.isEmpty())
-            return;
-        if (isEmpty()) {
-            // Trivial merge
-            mergeWith(other);
-        } else {
-            if (other.containsOnlyRoisOfType(Roi.POINT) && containsOnlyRoisOfType(Roi.POINT)) {
-                for (Roi target : ImmutableList.copyOf(this)) {
-                    FloatPolygon fp = new FloatPolygon();
+    public void splitAll() {
+        for (Roi target : ImmutableList.copyOf(this)) {
+            if(target instanceof ShapeRoi) {
+                ShapeRoi shapeRoi = (ShapeRoi)target;
+                if(shapeRoi.getRois().length > 1) {
+                    remove(shapeRoi);
+                    this.addAll(Arrays.asList(shapeRoi.getRois()));
                 }
-            } else {
-
             }
         }
     }
+
+    /**
+     * Splits the two {@link ROIListData} into sets of operands. No copies are created.
+     * @param lhs the left operands
+     * @param rhs the right operands
+     * @param perLhs if true, lhs is split into single-component {@link ROIListData}
+     * @param perRhs if true, rhs is split into single-component {@link ROIListData}
+     * @return List of operands. The key is the left operand and the value is the right operand
+     */
+    public static List<Map.Entry<ROIListData, ROIListData>> createOperands(ROIListData lhs, ROIListData rhs, boolean perLhs, boolean perRhs) {
+        List<Map.Entry<ROIListData, ROIListData>> result = new ArrayList<>();
+        List<ROIListData> leftOperands = new ArrayList<>();
+        if(perLhs) {
+            for (Roi lh : lhs) {
+                ROIListData data = new ROIListData();
+                data.add(lh);
+                leftOperands.add(data);
+            }
+        }
+        else {
+            leftOperands.add(lhs);
+        }
+        if(perRhs) {
+            for (Roi rh : rhs) {
+                ROIListData data = new ROIListData();
+                data.add(rh);
+                for (ROIListData leftOperand : leftOperands) {
+                    result.add(new AbstractMap.SimpleEntry<>(leftOperand, data));
+                }
+            }
+        }
+        else {
+            for (ROIListData leftOperand : leftOperands) {
+                result.add(new AbstractMap.SimpleEntry<>(leftOperand, rhs));
+            }
+        }
+        return result;
+    }
+
 
     /**
      * Returns if this ROI list only contains ROI of given type

@@ -13,6 +13,7 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.util.ImageStatisticsParameters;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
@@ -47,6 +48,7 @@ public class FindParticles2D extends ACAQSimpleIteratingAlgorithm {
     private boolean excludeEdges = false;
     private boolean splitSlices = true;
     private ACAQTraitDeclarationRef annotationType = new ACAQTraitDeclarationRef(ACAQTraitRegistry.getInstance().getDeclarationById("image-index"));
+    private ImageStatisticsParameters statisticsParameters = new ImageStatisticsParameters();
 
     /**
      * @param declaration algorithm declaration
@@ -74,11 +76,23 @@ public class FindParticles2D extends ACAQSimpleIteratingAlgorithm {
         this.excludeEdges = other.excludeEdges;
         this.splitSlices = other.splitSlices;
         this.annotationType = new ACAQTraitDeclarationRef(other.annotationType);
+        this.statisticsParameters = new ImageStatisticsParameters(other.statisticsParameters);
+    }
+
+    @ACAQDocumentation(name = "Extracted measurements", description = "Please select which measurements should be extracted. " +
+            "Each measurement will be assigned to one or multiple output table columns. Please refer to the " +
+            "individual measurement documentations for the column names.")
+    @ACAQParameter("measurements")
+    public ImageStatisticsParameters getStatisticsParameters() {
+        return statisticsParameters;
     }
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlusGreyscaleMaskData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class);
+
+        // Update the analyzer to extract the measurements we want
+        statisticsParameters.apply();
 
         if (splitSlices) {
             ImageJUtils.forEachIndexedSlice(inputData.getImage(), (ip, index) -> {
