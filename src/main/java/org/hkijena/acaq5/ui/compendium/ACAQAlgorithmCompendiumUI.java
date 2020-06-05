@@ -187,7 +187,7 @@ public class ACAQAlgorithmCompendiumUI extends JPanel {
         // Write description
         String description = declaration.getDescription();
         if (description != null && !description.isEmpty())
-            builder.append(StringUtils.wordWrappedHTMLElement(description, 50)).append("</br>");
+            builder.append(HtmlEscapers.htmlEscaper().escape(description)).append("</br>");
 
         Set<ACAQTraitDeclaration> preferredTraits = declaration.getPreferredTraits();
         Set<ACAQTraitDeclaration> unwantedTraits = declaration.getUnwantedTraits();
