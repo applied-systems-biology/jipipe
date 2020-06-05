@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.data.ACAQDataDeclaration;
+import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -21,6 +22,14 @@ import java.util.Objects;
 public class ACAQDataDeclarationRef implements ACAQValidatable {
 
     private ACAQDataDeclaration declaration;
+
+    /**
+     * Initializes from data ID
+     * @param id data id
+     */
+    public ACAQDataDeclarationRef(String id) {
+        this(ACAQDataDeclaration.getInstance(id));
+    }
 
     /**
      * @param declaration The referenced declaration
