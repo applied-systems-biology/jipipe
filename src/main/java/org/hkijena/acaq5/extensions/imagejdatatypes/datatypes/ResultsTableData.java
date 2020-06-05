@@ -132,7 +132,7 @@ public class ResultsTableData implements ACAQData, TableModel {
     @Override
     public Class<?> getColumnClass(int columnIndex) {
         Hashtable<Integer, ArrayList<Object>> stringColumnsTable = getStringColumnsTable();
-        if (stringColumnsTable.containsKey(columnIndex)) {
+        if (stringColumnsTable != null && stringColumnsTable.containsKey(columnIndex)) {
             return String.class;
         } else {
             return Double.class;
@@ -246,11 +246,17 @@ public class ResultsTableData implements ACAQData, TableModel {
         for (int col = 0; col < other.getColumnCount(); col++) {
             inputColumnsNumeric.put(other.getColumnName(col), other.isNumeric(col));
         }
+
+        // For some reason ImageJ can create tables with missing columns
+        Set<String> allowedColumns = new HashSet<>(Arrays.asList(other.getTable().getHeadings()));
+
         int localRow = table.getCounter();
         for (int row = 0; row < other.getRowCount(); row++) {
             table.incrementCounter();
             for (int col = 0; col < other.getColumnCount(); col++) {
                 String colName = other.getColumnName(col);
+                if(!allowedColumns.contains(colName))
+                    continue;
                 if (inputColumnsNumeric.get(colName)) {
                     table.setValue(colName, localRow, other.getTable().getValueAsDouble(col, row));
                 } else {

@@ -18,6 +18,7 @@ public class GeneralUISettings implements ACAQParameterCollection {
     private boolean showIntroduction = true;
     private LookAndFeel lookAndFeel = LookAndFeel.Metal;
     private boolean showParameterSearchBar = true;
+    private boolean neverAskOnClosingTabs = false;
 
     @Override
     public EventBus getEventBus() {
@@ -59,6 +60,18 @@ public class GeneralUISettings implements ACAQParameterCollection {
     public void setShowParameterSearchBar(boolean showParameterSearchBar) {
         this.showParameterSearchBar = showParameterSearchBar;
         getEventBus().post(new ParameterChangedEvent(this, "show-parameter-search-bar"));
+    }
+
+    @ACAQDocumentation(name = "Never ask on closing tabs", description = "If enabled, you do not need to confirm when closing tabs like the testbench, plots, and results.")
+    @ACAQParameter("never-ask-on-closing-tabs")
+    public boolean isNeverAskOnClosingTabs() {
+        return neverAskOnClosingTabs;
+    }
+
+    @ACAQParameter("never-ask-on-closing-tabs")
+    public void setNeverAskOnClosingTabs(boolean neverAskOnClosingTabs) {
+        this.neverAskOnClosingTabs = neverAskOnClosingTabs;
+        getEventBus().post(new ParameterChangedEvent(this, "never-ask-on-closing-tabs"));
     }
 
     public static GeneralUISettings getInstance() {

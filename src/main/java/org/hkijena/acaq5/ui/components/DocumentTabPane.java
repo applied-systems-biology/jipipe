@@ -184,7 +184,7 @@ public class DocumentTabPane extends JPanel {
      * @param tab the tab
      */
     public void closeTab(DocumentTab tab) {
-        if (tab.closeMode == CloseMode.withAskOnCloseButton) {
+        if (!GeneralUISettings.getInstance().isNeverAskOnClosingTabs() && tab.closeMode == CloseMode.withAskOnCloseButton) {
             if (JOptionPane.showConfirmDialog(tab.getContent(), "Do you really want to close this?",
                     "Close tab", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
                 forceCloseTab(tab);

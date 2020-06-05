@@ -96,19 +96,25 @@ public class FindParticles2D extends ACAQSimpleIteratingAlgorithm {
 
         if (splitSlices) {
             ImageJUtils.forEachIndexedSlice(inputData.getImage(), (ip, index) -> {
-                ResultsTable resultsTable = new ResultsTable();
                 RoiManager manager = new RoiManager(true);
                 ResultsTable table = new ResultsTable();
                 ParticleAnalyzer.setRoiManager(manager);
                 ParticleAnalyzer.setResultsTable(table);
                 ParticleAnalyzer analyzer = new ParticleAnalyzer(0,
                         0,
-                        resultsTable,
+                        table,
                         minParticleSize,
                         maxParticleSize,
                         minParticleCircularity,
                         maxParticleCircularity);
                 analyzer.analyze(inputData.getImage(), ip);
+
+                // Override for "Slice"
+                if(statisticsParameters.isOutputStackPosition()) {
+                    for (int i = 0; i < table.getCounter(); i++) {
+                        table.setValue("Slice", i,index + 1);
+                    }
+                }
 
                 List<ACAQTrait> traits = new ArrayList<>();
                 if (annotationType.getDeclaration() != null) {
@@ -122,23 +128,29 @@ public class FindParticles2D extends ACAQSimpleIteratingAlgorithm {
             ResultsTableData mergedResultsTable = new ResultsTableData(new ResultsTable());
             ROIListData mergedROI = new ROIListData(new ArrayList<>());
 
-            ImageJUtils.forEachSlice(inputData.getImage(), ip -> {
-                ResultsTable resultsTable = new ResultsTable();
+            ImageJUtils.forEachIndexedSlice(inputData.getImage(), (ip, index) -> {
                 RoiManager manager = new RoiManager(true);
                 ResultsTable table = new ResultsTable();
                 ParticleAnalyzer.setRoiManager(manager);
                 ParticleAnalyzer.setResultsTable(table);
                 ParticleAnalyzer analyzer = new ParticleAnalyzer(0,
                         0,
-                        resultsTable,
+                        table,
                         minParticleSize,
                         maxParticleSize,
                         minParticleCircularity,
                         maxParticleCircularity);
                 analyzer.analyze(inputData.getImage(), ip);
 
+                // Override for "Slice"
+                if(statisticsParameters.isOutputStackPosition()) {
+                    for (int i = 0; i < table.getCounter(); i++) {
+                        table.setValue("Slice", i,index + 1);
+                    }
+                }
+
                 // Merge into one result
-                mergedResultsTable.mergeWith(new ResultsTableData(resultsTable));
+                mergedResultsTable.mergeWith(new ResultsTableData(table));
                 mergedROI.mergeWith(new ROIListData(manager));
             });
 
