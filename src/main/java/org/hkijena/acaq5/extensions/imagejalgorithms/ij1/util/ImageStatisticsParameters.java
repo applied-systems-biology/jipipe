@@ -42,6 +42,7 @@ public class ImageStatisticsParameters implements ACAQParameterCollection {
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public ImageStatisticsParameters(ImageStatisticsParameters other) {
@@ -76,45 +77,46 @@ public class ImageStatisticsParameters implements ACAQParameterCollection {
     /**
      * Converts the settings into the equivalent used by {@link ij.plugin.filter.Analyzer}
      * See {@link ij.measure.Measurements} for the list of measurements.
+     *
      * @return settings used by {@link ij.plugin.filter.Analyzer}
      */
     public int getNativeValue() {
         int result = 0;
-        if(measureArea)
+        if (measureArea)
             result |= Measurements.AREA;
-        if(measurePixelValueMean)
+        if (measurePixelValueMean)
             result |= Measurements.MEAN;
-        if(measurePixelValueStandardDeviation)
+        if (measurePixelValueStandardDeviation)
             result |= Measurements.STD_DEV;
-        if(measurePixelValueModal)
+        if (measurePixelValueModal)
             result |= Measurements.MODE;
-        if(measurePixelValueMinMax)
+        if (measurePixelValueMinMax)
             result |= Measurements.MIN_MAX;
-        if(measureCentroid)
+        if (measureCentroid)
             result |= Measurements.CENTROID;
-        if(measureCenterOfMass)
+        if (measureCenterOfMass)
             result |= Measurements.CENTER_OF_MASS;
-        if(measurePerimeter)
+        if (measurePerimeter)
             result |= Measurements.PERIMETER;
-        if(measureBoundingRectangle)
+        if (measureBoundingRectangle)
             result |= Measurements.RECT;
-        if(fitEllipse)
+        if (fitEllipse)
             result |= Measurements.ELLIPSE;
-        if(measureShapeDescriptors)
+        if (measureShapeDescriptors)
             result |= Measurements.SHAPE_DESCRIPTORS;
-        if(measureFeretDiameter)
+        if (measureFeretDiameter)
             result |= Measurements.FERET;
-        if(measureIntegratedDensity)
+        if (measureIntegratedDensity)
             result |= Measurements.INTEGRATED_DENSITY;
-        if(measurePixelValueMedian)
+        if (measurePixelValueMedian)
             result |= Measurements.MEDIAN;
-        if(measurePixelValueSkewness)
+        if (measurePixelValueSkewness)
             result |= Measurements.SKEWNESS;
-        if(measurePixelValueKurtosis)
+        if (measurePixelValueKurtosis)
             result |= Measurements.KURTOSIS;
-        if(measureAreaFraction)
+        if (measureAreaFraction)
             result |= Measurements.AREA_FRACTION;
-        if(outputStackPosition)
+        if (outputStackPosition)
             result |= Measurements.STACK_POSITION;
         return result;
     }
@@ -185,6 +187,7 @@ public class ImageStatisticsParameters implements ACAQParameterCollection {
     public void setMeasureBoundingRectangle(boolean measureBoundingRectangle) {
         this.measureBoundingRectangle = measureBoundingRectangle;
     }
+
     @ACAQDocumentation(name = "Measure shape descriptors",
             description = "Measures the following shape descriptors:<br/>" +
                     "<ul><li>Circ. (circularity): 4π*area/perimeter^2. A value of 1.0 indicates a perfect circle. As the value approaches 0.0, it indicates an increasingly elongated shape. Values may not be valid for very small particles.</li>" +

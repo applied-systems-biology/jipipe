@@ -20,6 +20,8 @@ import org.hkijena.acaq5.extensions.parameters.references.ACAQAlgorithmDeclarati
 import org.hkijena.acaq5.extensions.parameters.references.ACAQDataDeclarationRef;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitIconRef;
+import org.hkijena.acaq5.extensions.parameters.roi.IntModificationParameter;
+import org.hkijena.acaq5.extensions.parameters.roi.RectangleROIDefinitionParameter;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.scijava.Priority;
@@ -208,7 +210,13 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 "Integer modification",
                 "Modifies an integer",
                 IntModificationParameterEditorUI.class);
-
+        registerParameterType("rectangle-roi",
+                RectangleROIDefinitionParameter.class,
+                RectangleROIDefinitionParameter::new,
+                r -> new RectangleROIDefinitionParameter((RectangleROIDefinitionParameter) r),
+                "Rectangle ROI",
+                "Defines a rectangular area within a region",
+                RectangleROIDefinitionParameterEditorUI.class);
 
         // Collection parameters
         registerParameterEditor(ListParameter.class, CollectionParameterEditorUI.class);
@@ -278,6 +286,7 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 null);
 
         // Enums
+        registerEnumParameterType("rectangle-roi:anchor", RectangleROIDefinitionParameter.Anchor.class, "Anchor", "Available rectangle anchors");
         registerEnumParameterType("path-filter:mode", PathFilter.Mode.class, "Mode", "Available modes");
         registerEnumParameterType("string-filter:mode", StringFilter.Mode.class, "Mode", "Available modes");
         registerEnumParameterType("acaq:iterating-algorithm:column-matching", ACAQIteratingAlgorithm.ColumnMatching.class, "Column matching strategy", "Determines how columns for dataset matching are selected");

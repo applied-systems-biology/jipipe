@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.parameters;
+package org.hkijena.acaq5.extensions.parameters.roi;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;

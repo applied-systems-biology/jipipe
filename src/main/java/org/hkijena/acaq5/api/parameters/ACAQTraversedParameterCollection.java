@@ -222,7 +222,8 @@ public class ACAQTraversedParameterCollection implements ACAQParameterCollection
         // Add parameters of this source. Sub-parameters are excluded
         for (Map.Entry<String, GetterSetterPair> entry : getterSetterPairs.entrySet()) {
             GetterSetterPair pair = entry.getValue();
-            if (pair.getFieldClass() != null && !ACAQParameterCollection.class.isAssignableFrom(pair.getFieldClass())) {
+            boolean isSubParameter = ACAQParameterCollection.class.isAssignableFrom(pair.getFieldClass()) && pair.setter == null;
+            if (pair.getFieldClass() != null && !isSubParameter) {
                 if (pair.getter == null || pair.setter == null)
                     throw new RuntimeException("Invalid parameter definition: Getter or setter could not be found for key '" + entry.getKey() + "' in " + source);
 
@@ -244,7 +245,8 @@ public class ACAQTraversedParameterCollection implements ACAQParameterCollection
         // Add sub-parameters
         for (Map.Entry<String, GetterSetterPair> entry : getterSetterPairs.entrySet()) {
             GetterSetterPair pair = entry.getValue();
-            if (pair.getFieldClass() != null && ACAQParameterCollection.class.isAssignableFrom(pair.getFieldClass())) {
+            boolean isSubParameter = ACAQParameterCollection.class.isAssignableFrom(pair.getFieldClass()) && pair.setter == null;
+            if (pair.getFieldClass() != null && isSubParameter) {
                 try {
                     ACAQParameterCollection subParameters = (ACAQParameterCollection) pair.getter.invoke(source);
                     if (subParameters == null)
@@ -273,9 +275,12 @@ public class ACAQTraversedParameterCollection implements ACAQParameterCollection
         sourceOrder.put(collection, uiOrder);
     }
 
+    /**
+     * @return Modifiable map of parameters
+     */
     @Override
     public Map<String, ACAQParameterAccess> getParameters() {
-        return Collections.unmodifiableMap(parameters);
+        return parameters;
     }
 
     /**

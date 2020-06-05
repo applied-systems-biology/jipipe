@@ -41,10 +41,7 @@ import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.sharpen.LaplacianSharpe
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.statistics.GreyscalePixelsGenerator;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.statistics.HistogramGenerator;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.threshold.*;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.transform.TransformFlip2DAlgorithm;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.transform.TransformRotate2DAlgorithm;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.transform.TransformScale2DAlgorithm;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.transform.TransformScale3DAlgorithm;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.transform.*;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColor8UData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
@@ -236,6 +233,7 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerAlgorithm("ij1-transform-rotate2d", TransformRotate2DAlgorithm.class);
         registerAlgorithm("ij1-transform-scale2d", TransformScale2DAlgorithm.class);
         registerAlgorithm("ij1-transform-scale3d", TransformScale3DAlgorithm.class);
+        registerAlgorithm("ij1-transform-crop2d", TransformCrop2DAlgorithm.class);
 
         registerAlgorithm("ij1-convolve-convolve2d", Convolve2DAlgorithm.class);
 

@@ -12,7 +12,7 @@ import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.InterpolationMethod;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.acaq5.extensions.parameters.IntModificationParameter;
+import org.hkijena.acaq5.extensions.parameters.roi.IntModificationParameter;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;

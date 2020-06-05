@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.extensions.parameters.editors;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.extensions.parameters.IntModificationParameter;
+import org.hkijena.acaq5.extensions.parameters.roi.IntModificationParameter;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Context;
@@ -10,7 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Editor for {@link org.hkijena.acaq5.extensions.parameters.IntModificationParameter}
+ * Editor for {@link IntModificationParameter}
  */
 public class IntModificationParameterEditorUI extends ACAQParameterEditorUI {
 

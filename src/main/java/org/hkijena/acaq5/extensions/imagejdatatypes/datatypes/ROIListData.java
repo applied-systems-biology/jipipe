@@ -2,12 +2,10 @@ package org.hkijena.acaq5.extensions.imagejdatatypes.datatypes;
 
 import com.google.common.collect.ImmutableList;
 import ij.gui.Roi;
-import ij.gui.RoiListener;
 import ij.gui.ShapeRoi;
 import ij.io.RoiDecoder;
 import ij.io.RoiEncoder;
 import ij.plugin.frame.RoiManager;
-import ij.process.FloatPolygon;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.utils.PathUtils;
@@ -116,54 +114,15 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
      */
     public void splitAll() {
         for (Roi target : ImmutableList.copyOf(this)) {
-            if(target instanceof ShapeRoi) {
-                ShapeRoi shapeRoi = (ShapeRoi)target;
-                if(shapeRoi.getRois().length > 1) {
+            if (target instanceof ShapeRoi) {
+                ShapeRoi shapeRoi = (ShapeRoi) target;
+                if (shapeRoi.getRois().length > 1) {
                     remove(shapeRoi);
                     this.addAll(Arrays.asList(shapeRoi.getRois()));
                 }
             }
         }
     }
-
-    /**
-     * Splits the two {@link ROIListData} into sets of operands. No copies are created.
-     * @param lhs the left operands
-     * @param rhs the right operands
-     * @param perLhs if true, lhs is split into single-component {@link ROIListData}
-     * @param perRhs if true, rhs is split into single-component {@link ROIListData}
-     * @return List of operands. The key is the left operand and the value is the right operand
-     */
-    public static List<Map.Entry<ROIListData, ROIListData>> createOperands(ROIListData lhs, ROIListData rhs, boolean perLhs, boolean perRhs) {
-        List<Map.Entry<ROIListData, ROIListData>> result = new ArrayList<>();
-        List<ROIListData> leftOperands = new ArrayList<>();
-        if(perLhs) {
-            for (Roi lh : lhs) {
-                ROIListData data = new ROIListData();
-                data.add(lh);
-                leftOperands.add(data);
-            }
-        }
-        else {
-            leftOperands.add(lhs);
-        }
-        if(perRhs) {
-            for (Roi rh : rhs) {
-                ROIListData data = new ROIListData();
-                data.add(rh);
-                for (ROIListData leftOperand : leftOperands) {
-                    result.add(new AbstractMap.SimpleEntry<>(leftOperand, data));
-                }
-            }
-        }
-        else {
-            for (ROIListData leftOperand : leftOperands) {
-                result.add(new AbstractMap.SimpleEntry<>(leftOperand, rhs));
-            }
-        }
-        return result;
-    }
-
 
     /**
      * Returns if this ROI list only contains ROI of given type
@@ -187,6 +146,43 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
             if (roi.getType() == type)
                 nPointRois++;
         return nPointRois;
+    }
+
+    /**
+     * Splits the two {@link ROIListData} into sets of operands. No copies are created.
+     *
+     * @param lhs    the left operands
+     * @param rhs    the right operands
+     * @param perLhs if true, lhs is split into single-component {@link ROIListData}
+     * @param perRhs if true, rhs is split into single-component {@link ROIListData}
+     * @return List of operands. The key is the left operand and the value is the right operand
+     */
+    public static List<Map.Entry<ROIListData, ROIListData>> createOperands(ROIListData lhs, ROIListData rhs, boolean perLhs, boolean perRhs) {
+        List<Map.Entry<ROIListData, ROIListData>> result = new ArrayList<>();
+        List<ROIListData> leftOperands = new ArrayList<>();
+        if (perLhs) {
+            for (Roi lh : lhs) {
+                ROIListData data = new ROIListData();
+                data.add(lh);
+                leftOperands.add(data);
+            }
+        } else {
+            leftOperands.add(lhs);
+        }
+        if (perRhs) {
+            for (Roi rh : rhs) {
+                ROIListData data = new ROIListData();
+                data.add(rh);
+                for (ROIListData leftOperand : leftOperands) {
+                    result.add(new AbstractMap.SimpleEntry<>(leftOperand, data));
+                }
+            }
+        } else {
+            for (ROIListData leftOperand : leftOperands) {
+                result.add(new AbstractMap.SimpleEntry<>(leftOperand, rhs));
+            }
+        }
+        return result;
     }
 
     /**

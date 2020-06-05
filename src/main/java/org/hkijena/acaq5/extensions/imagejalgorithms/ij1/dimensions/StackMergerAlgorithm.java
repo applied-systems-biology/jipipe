@@ -93,11 +93,12 @@ public class StackMergerAlgorithm extends ACAQAlgorithm {
             }
             if (counterAnnotation != null && counterAnnotation.getDeclaration() != null) {
                 Map<ImagePlus2DData, ACAQTrait> counterAssignment = new HashMap<>();
+                ACAQTrait defaultCounter = counterAnnotation.getDeclaration().newInstance("");
                 for (int i = 0; i < slices.size(); ++i) {
                     counterAssignment.put(slices.get(i), getFirstInputSlot().getAnnotations(i).stream()
-                            .filter(t -> t != null && t.getDeclaration() == counterAnnotation.getDeclaration()).findFirst().orElse(null));
+                            .filter(t -> t != null && t.getDeclaration() == counterAnnotation.getDeclaration()).findFirst().orElse(defaultCounter));
                 }
-                slices.sort(Comparator.nullsFirst(Comparator.comparing(slice -> (ACAQDiscriminator) counterAssignment.get(slice))));
+                slices.sort(Comparator.nullsFirst(Comparator.comparing(slice -> (ACAQDiscriminator) counterAssignment.getOrDefault(slice, defaultCounter))));
             }
             // Add slices
             ImagePlus firstSlice = slices.get(0).getImage();

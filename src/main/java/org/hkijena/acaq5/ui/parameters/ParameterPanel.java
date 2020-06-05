@@ -50,7 +50,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
     public static final int WITH_SEARCH_BAR = 512;
 
     private Context context;
-    private ACAQParameterCollection parameterCollection;
+    private ACAQParameterCollection displayedParameters;
     private boolean noGroupHeaders;
     private boolean noEmptyGroupHeaders;
     private boolean forceTraverse;
@@ -60,31 +60,43 @@ public class ParameterPanel extends FormPanel implements Contextual {
 
     /**
      * @param context             SciJava context
-     * @param parameterCollection Object containing the parameters. If the object is an {@link ACAQTraversedParameterCollection} and FORCE_TRAVERSE is not set, it will be used directly.
+     * @param displayedParameters Object containing the parameters. If the object is an {@link ACAQTraversedParameterCollection} and FORCE_TRAVERSE is not set, it will be used directly. Can be null.
      * @param documentation       Optional documentation
      * @param flags               Flags
      */
-    public ParameterPanel(Context context, ACAQParameterCollection parameterCollection, MarkdownDocument documentation, int flags) {
+    public ParameterPanel(Context context, ACAQParameterCollection displayedParameters, MarkdownDocument documentation, int flags) {
         super(documentation, flags);
         this.noGroupHeaders = (flags & NO_GROUP_HEADERS) == NO_GROUP_HEADERS;
         this.noEmptyGroupHeaders = (flags & NO_EMPTY_GROUP_HEADERS) == NO_EMPTY_GROUP_HEADERS;
         this.forceTraverse = (flags & FORCE_TRAVERSE) == FORCE_TRAVERSE;
         this.withSearchBar = (flags & WITH_SEARCH_BAR) == WITH_SEARCH_BAR;
         this.context = context;
-        this.parameterCollection = parameterCollection;
+        this.displayedParameters = displayedParameters;
         initialize();
-        reloadForm();
-        this.parameterCollection.getEventBus().register(this);
+
+        if(displayedParameters != null) {
+            reloadForm();
+            this.displayedParameters.getEventBus().register(this);
+        }
     }
 
     /**
      * @param workbench           a workbench that contains a SciJava context
-     * @param parameterCollection Object containing the parameters
+     * @param displayedParameters Object containing the parameters
      * @param documentation       Optional documentation
      * @param flags               Flags
      */
-    public ParameterPanel(ACAQWorkbench workbench, ACAQParameterCollection parameterCollection, MarkdownDocument documentation, int flags) {
-        this(workbench.getContext(), parameterCollection, documentation, flags);
+    public ParameterPanel(ACAQWorkbench workbench, ACAQParameterCollection displayedParameters, MarkdownDocument documentation, int flags) {
+        this(workbench.getContext(), displayedParameters, documentation, flags);
+    }
+
+    public void setDisplayedParameters(ACAQParameterCollection displayedParameters) {
+        if(this.displayedParameters != null) {
+            this.displayedParameters.getEventBus().unregister(this);
+        }
+        this.displayedParameters = displayedParameters;
+        this.displayedParameters.getEventBus().register(this);
+        reloadForm();
     }
 
     private void initialize() {
@@ -103,10 +115,10 @@ public class ParameterPanel extends FormPanel implements Contextual {
      * Reloads the form. This re-traverses the parameters and recreates the UI elements
      */
     public void reloadForm() {
-        if (forceTraverse || !(getParameterCollection() instanceof ACAQTraversedParameterCollection))
-            traversed = new ACAQTraversedParameterCollection(getParameterCollection());
+        if (forceTraverse || !(getDisplayedParameters() instanceof ACAQTraversedParameterCollection))
+            traversed = new ACAQTraversedParameterCollection(getDisplayedParameters());
         else
-            traversed = (ACAQTraversedParameterCollection) getParameterCollection();
+            traversed = (ACAQTraversedParameterCollection) getDisplayedParameters();
 
         refreshForm();
     }
@@ -117,15 +129,15 @@ public class ParameterPanel extends FormPanel implements Contextual {
     public void refreshForm() {
         clear();
         Map<ACAQParameterCollection, List<ACAQParameterAccess>> groupedBySource = traversed.getGroupedBySource();
-        if (groupedBySource.containsKey(this.parameterCollection)) {
-            addToForm(traversed, this.parameterCollection, groupedBySource.get(this.parameterCollection));
+        if (groupedBySource.containsKey(this.displayedParameters)) {
+            addToForm(traversed, this.displayedParameters, groupedBySource.get(this.displayedParameters));
         }
 
         for (ACAQParameterCollection collection : groupedBySource.keySet().stream().sorted(
                 Comparator.comparing(traversed::getSourceUIOrder).thenComparing(
                         Comparator.nullsFirst(Comparator.comparing(traversed::getSourceDocumentationName))))
                 .collect(Collectors.toList())) {
-            if (collection == this.parameterCollection)
+            if (collection == this.displayedParameters)
                 continue;
             addToForm(traversed, collection, groupedBySource.get(collection));
         }
@@ -278,8 +290,8 @@ public class ParameterPanel extends FormPanel implements Contextual {
     /**
      * @return The parameterized object
      */
-    public ACAQParameterCollection getParameterCollection() {
-        return parameterCollection;
+    public ACAQParameterCollection getDisplayedParameters() {
+        return displayedParameters;
     }
 
     @Override
