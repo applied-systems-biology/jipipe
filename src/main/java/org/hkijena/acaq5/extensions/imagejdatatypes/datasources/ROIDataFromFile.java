@@ -7,7 +7,7 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FileData;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  */
 @ACAQDocumentation(name = "ROI from file")
 @AlgorithmInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
-@AlgorithmOutputSlot(value = ROIData.class, slotName = "Mask", autoCreate = true)
+@AlgorithmOutputSlot(value = ROIListData.class, slotName = "Mask", autoCreate = true)
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.DataSource)
 public class ROIDataFromFile extends ACAQSimpleIteratingAlgorithm {
 
@@ -41,8 +41,8 @@ public class ROIDataFromFile extends ACAQSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         FileData fileData = dataInterface.getInputData(getFirstInputSlot(), FileData.class);
-        List<Roi> rois = ROIData.loadRoiListFromFile(fileData.getPath());
-        dataInterface.addOutputData(getFirstOutputSlot(), new ROIData(rois));
+        List<Roi> rois = ROIListData.loadRoiListFromFile(fileData.getPath());
+        dataInterface.addOutputData(getFirstOutputSlot(), new ROIListData(rois));
     }
 
     @Override

@@ -21,7 +21,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.registries.ACAQImageJAdapterRegistry;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.utils.MacroUtils;
 
@@ -40,10 +40,10 @@ import java.util.function.Supplier;
 @ACAQDocumentation(name = "ImageJ Macro", description = "Runs a custom ImageJ macro")
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(ImagePlusData.class)
-@AlgorithmInputSlot(ROIData.class)
+@AlgorithmInputSlot(ROIListData.class)
 @AlgorithmInputSlot(ResultsTableData.class)
 @AlgorithmOutputSlot(ImagePlusData.class)
-@AlgorithmOutputSlot(ROIData.class)
+@AlgorithmOutputSlot(ROIListData.class)
 @AlgorithmOutputSlot(ResultsTableData.class)
 @ConfigTraits(allowModify = true)
 public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
@@ -206,8 +206,8 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
     public void reportValidity(ACAQValidityReport report) {
         long imageInputSlotCount = getInputSlots().stream().filter(slot -> ImagePlusData.class.isAssignableFrom(slot.getAcceptedDataType())).count();
         long imageOutputSlotCount = getOutputSlots().stream().filter(slot -> ImagePlusData.class.isAssignableFrom(slot.getAcceptedDataType())).count();
-        long roiInputSlotCount = getInputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ROIData.class).count();
-        long roiOutputSlotCount = getOutputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ROIData.class).count();
+        long roiInputSlotCount = getInputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ROIListData.class).count();
+        long roiOutputSlotCount = getOutputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ROIListData.class).count();
         long resultsTableInputSlotCount = getInputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ResultsTableData.class).count();
         long resultsTableOutputSlotCount = getOutputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ResultsTableData.class).count();
         if (batchMode && imageInputSlotCount != 1) {

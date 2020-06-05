@@ -13,7 +13,7 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
@@ -35,7 +35,7 @@ import java.util.function.Supplier;
 
 // Algorithm data flow
 @AlgorithmInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask")
-@AlgorithmOutputSlot(value = ROIData.class, slotName = "ROI")
+@AlgorithmOutputSlot(value = ROIListData.class, slotName = "ROI")
 @AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Measurements")
 
 // Algorithm traits
@@ -54,7 +54,7 @@ public class FindParticles2D extends ACAQSimpleIteratingAlgorithm {
     public FindParticles2D(ACAQAlgorithmDeclaration declaration) {
         super(declaration,
                 ACAQMutableSlotConfiguration.builder().addInputSlot("Mask", ImagePlusGreyscaleMaskData.class)
-                        .addOutputSlot("ROI", ROIData.class, null)
+                        .addOutputSlot("ROI", ROIListData.class, null)
                         .addOutputSlot("Measurements", ResultsTableData.class, null)
                         .seal()
                         .build());
@@ -101,12 +101,12 @@ public class FindParticles2D extends ACAQSimpleIteratingAlgorithm {
                     traits.add(annotationType.getDeclaration().newInstance("slice=" + index));
                 }
 
-                dataInterface.addOutputData("ROI", new ROIData(Arrays.asList(manager.getRoisAsArray())), traits);
+                dataInterface.addOutputData("ROI", new ROIListData(Arrays.asList(manager.getRoisAsArray())), traits);
                 dataInterface.addOutputData("Measurements", new ResultsTableData(table), traits);
             });
         } else {
             ResultsTableData mergedResultsTable = new ResultsTableData(new ResultsTable());
-            ROIData mergedROI = new ROIData(new ArrayList<>());
+            ROIListData mergedROI = new ROIListData(new ArrayList<>());
 
             ImageJUtils.forEachSlice(inputData.getImage(), ip -> {
                 ResultsTable resultsTable = new ResultsTable();
@@ -125,7 +125,7 @@ public class FindParticles2D extends ACAQSimpleIteratingAlgorithm {
 
                 // Merge into one result
                 mergedResultsTable.mergeWith(new ResultsTableData(resultsTable));
-                mergedROI.mergeWith(new ROIData(manager));
+                mergedROI.mergeWith(new ROIListData(manager));
             });
 
             dataInterface.addOutputData("ROI", mergedROI);

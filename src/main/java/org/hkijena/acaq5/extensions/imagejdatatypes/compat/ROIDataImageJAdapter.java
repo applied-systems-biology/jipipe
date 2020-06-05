@@ -3,10 +3,10 @@ package org.hkijena.acaq5.extensions.imagejdatatypes.compat;
 import ij.plugin.frame.RoiManager;
 import org.hkijena.acaq5.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.acaq5.api.data.ACAQData;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
 
 /**
- * Adapter between {@link RoiManager} and {@link ROIData}
+ * Adapter between {@link RoiManager} and {@link ROIListData}
  */
 public class ROIDataImageJAdapter implements ImageJDatatypeAdapter {
     @Override
@@ -16,7 +16,7 @@ public class ROIDataImageJAdapter implements ImageJDatatypeAdapter {
 
     @Override
     public boolean canConvertACAQToImageJ(ACAQData acaqData) {
-        return acaqData instanceof ROIData;
+        return acaqData instanceof ROIListData;
     }
 
     @Override
@@ -26,11 +26,11 @@ public class ROIDataImageJAdapter implements ImageJDatatypeAdapter {
 
     @Override
     public Class<? extends ACAQData> getACAQDatatype() {
-        return ROIData.class;
+        return ROIListData.class;
     }
 
     /**
-     * Converts a {@link RoiManager} to {@link ROIData}.
+     * Converts a {@link RoiManager} to {@link ROIListData}.
      * If imageJData is null, the currently active {@link RoiManager} is used.
      *
      * @param imageJData The ImageJ data
@@ -39,26 +39,26 @@ public class ROIDataImageJAdapter implements ImageJDatatypeAdapter {
     @Override
     public ACAQData convertImageJToACAQ(Object imageJData) {
         if (imageJData instanceof RoiManager)
-            return new ROIData((RoiManager) imageJData);
+            return new ROIListData((RoiManager) imageJData);
         else
-            return new ROIData(RoiManager.getRoiManager());
+            return new ROIListData(RoiManager.getRoiManager());
     }
 
     @Override
     public Object convertACAQToImageJ(ACAQData acaqData, boolean activate, boolean noWindow, String windowName) {
         if (activate) {
             RoiManager roiManager = new RoiManager();
-            ((ROIData) acaqData).addToRoiManager(roiManager);
+            ((ROIListData) acaqData).addToRoiManager(roiManager);
             return roiManager;
         } else {
             RoiManager roiManager = new RoiManager(false);
-            ((ROIData) acaqData).addToRoiManager(roiManager);
+            ((ROIListData) acaqData).addToRoiManager(roiManager);
             return roiManager;
         }
     }
 
     @Override
     public ACAQData importFromImageJ(String windowName) {
-        return new ROIData(RoiManager.getRoiManager());
+        return new ROIListData(RoiManager.getRoiManager());
     }
 }

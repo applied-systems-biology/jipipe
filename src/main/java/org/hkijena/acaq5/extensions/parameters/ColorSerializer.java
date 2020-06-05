@@ -14,10 +14,9 @@ import java.io.IOException;
 public class ColorSerializer extends JsonSerializer<Color> {
     @Override
     public void serialize(Color value, JsonGenerator gen, SerializerProvider serializers) throws IOException, JsonProcessingException {
-        if(value.getAlpha() == 255) {
+        if (value.getAlpha() == 255) {
             gen.writeString("#" + Integer.toHexString(value.getRGB()).toUpperCase());
-        }
-        else {
+        } else {
             gen.writeString("#" + Integer.toHexString(value.getRGB()).toUpperCase() + Integer.toHexString(value.getAlpha()).toUpperCase());
         }
     }

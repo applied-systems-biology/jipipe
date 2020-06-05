@@ -9,6 +9,7 @@ import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.traits.ACAQJavaTraitDeclaration;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.EigenvalueSelection2D;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.InterpolationMethod;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.analyze.FindParticles2D;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.background.RollingBallBackgroundEstimator2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.binary.DistanceTransformWatershed2DAlgorithm;
@@ -41,6 +42,8 @@ import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.statistics.HistogramGen
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.threshold.*;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.transform.TransformFlip2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.transform.TransformRotate2DAlgorithm;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.transform.TransformScale2DAlgorithm;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.transform.TransformScale3DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColor8UData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
@@ -230,10 +233,15 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
 
         registerAlgorithm("ij1-transform-flip2d", TransformFlip2DAlgorithm.class);
         registerAlgorithm("ij1-transform-rotate2d", TransformRotate2DAlgorithm.class);
+        registerAlgorithm("ij1-transform-scale2d", TransformScale2DAlgorithm.class);
+        registerAlgorithm("ij1-transform-scale3d", TransformScale3DAlgorithm.class);
 
         registerAlgorithm("ij1-convolve-convolve2d", Convolve2DAlgorithm.class);
 
         // Register enum parameters
+        registerEnumParameterType("ij1-interpolation-method", InterpolationMethod.class,
+                "Interpolation method", "Available interpolation methods");
+
         registerEnumParameterType("ij1-background-rollingball2d:background-type", RollingBallBackgroundEstimator2DAlgorithm.BackgroundType.class,
                 "Background type", "Available background types");
         registerEnumParameterType("ij1-background-rollingball2d:background-method", RollingBallBackgroundEstimator2DAlgorithm.Method.class,

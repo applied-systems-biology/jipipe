@@ -1,9 +1,11 @@
 package org.hkijena.acaq5.extensions.imagejdatatypes.datatypes;
 
+import com.google.common.collect.ImmutableList;
 import ij.gui.Roi;
 import ij.io.RoiDecoder;
 import ij.io.RoiEncoder;
 import ij.plugin.frame.RoiManager;
+import ij.process.FloatPolygon;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.utils.PathUtils;
@@ -20,26 +22,27 @@ import java.util.zip.ZipOutputStream;
 /**
  * Contains {@link Roi}
  */
-@ACAQDocumentation(name = "ROI", description = "Collection of ROI")
-public class ROIData implements ACAQData {
-    private List<Roi> roi;
+@ACAQDocumentation(name = "ROI list", description = "Collection of ROI")
+public class ROIListData extends ArrayList<Roi> implements ACAQData {
 
     /**
      * Loads {@link Roi} from a path that contains a zip file
      *
      * @param storageFilePath path that contains a zip file
      */
-    public ROIData(Path storageFilePath) {
-        this.roi = loadRoiListFromFile(PathUtils.findFileByExtensionIn(storageFilePath, ".zip"));
+    public ROIListData(Path storageFilePath) {
+        addAll(loadRoiListFromFile(PathUtils.findFileByExtensionIn(storageFilePath, ".zip")));
     }
 
     /**
-     * Initialize from a list of {@link Roi}
+     * Creates a deep copy
      *
-     * @param roi ROI list
+     * @param other the original
      */
-    public ROIData(List<Roi> roi) {
-        this.roi = roi;
+    public ROIListData(List<Roi> other) {
+        for (Roi roi : other) {
+            add((Roi) roi.clone());
+        }
     }
 
     /**
@@ -47,13 +50,8 @@ public class ROIData implements ACAQData {
      *
      * @param roiManager the ROI manager
      */
-    public ROIData(RoiManager roiManager) {
-        this.roi = new ArrayList<>();
-        this.roi.addAll(Arrays.asList(roiManager.getRoisAsArray()));
-    }
-
-    public List<Roi> getROI() {
-        return roi;
+    public ROIListData(RoiManager roiManager) {
+        this.addAll(Arrays.asList(roiManager.getRoisAsArray()));
     }
 
     @Override
@@ -63,9 +61,9 @@ public class ROIData implements ACAQData {
             ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(storageFilePath.resolve(name + ".zip").toFile())));
             DataOutputStream out = new DataOutputStream(new BufferedOutputStream(zos));
             RoiEncoder re = new RoiEncoder(out);
-            for (int i = 0; i < this.roi.size(); i++) {
+            for (int i = 0; i < this.size(); i++) {
                 String label = name + "-" + i;
-                Roi roi = this.roi.get(i);
+                Roi roi = this.get(i);
                 if (roi == null) continue;
                 if (!label.endsWith(".roi")) label += ".roi";
                 zos.putNextEntry(new ZipEntry(label));
@@ -80,7 +78,7 @@ public class ROIData implements ACAQData {
 
     @Override
     public ACAQData duplicate() {
-        return new ROIData(new ArrayList<>(roi));
+        return new ROIListData(this);
     }
 
     /**
@@ -89,7 +87,7 @@ public class ROIData implements ACAQData {
      * @param roiManager the ROI manager
      */
     public void addToRoiManager(RoiManager roiManager) {
-        for (Roi roi : getROI()) {
+        for (Roi roi : this) {
             roiManager.add(roi, -1);
         }
     }
@@ -99,8 +97,57 @@ public class ROIData implements ACAQData {
      *
      * @param other the other data
      */
-    public void mergeWith(ROIData other) {
-        roi.addAll(other.getROI());
+    public void mergeWith(ROIListData other) {
+        for (Roi item : other) {
+            add((Roi) item.clone());
+        }
+    }
+
+    /**
+     * Applies a logical OR operation.
+     * This operation is different from mergeWith and implements the same functionality as the {@link RoiManager}
+     *
+     * @param other the other ROI data
+     */
+    public void logicalOR(ROIListData other) {
+        if (other.isEmpty())
+            return;
+        if (isEmpty()) {
+            // Trivial merge
+            mergeWith(other);
+        } else {
+            if (other.containsOnlyRoisOfType(Roi.POINT) && containsOnlyRoisOfType(Roi.POINT)) {
+                for (Roi target : ImmutableList.copyOf(this)) {
+                    FloatPolygon fp = new FloatPolygon();
+                }
+            } else {
+
+            }
+        }
+    }
+
+    /**
+     * Returns if this ROI list only contains ROI of given type
+     *
+     * @param type the ROI type. Can be RECTANGLE=0, OVAL=1, POLYGON=2, FREEROI=3, TRACED_ROI=4, LINE=5, POLYLINE=6, FREELINE=7, ANGLE=8, COMPOSITE=9, or POINT=10
+     * @return if this ROI list only contains ROI of given type
+     */
+    public boolean containsOnlyRoisOfType(int type) {
+        return size() == countRoisOfType(type);
+    }
+
+    /**
+     * Counts all ROIs of given type
+     *
+     * @param type the ROI type. Can be RECTANGLE=0, OVAL=1, POLYGON=2, FREEROI=3, TRACED_ROI=4, LINE=5, POLYLINE=6, FREELINE=7, ANGLE=8, COMPOSITE=9, or POINT=10
+     * @return number of ROI with type Roi.POINT
+     */
+    public int countRoisOfType(int type) {
+        int nPointRois = 0;
+        for (Roi roi : this)
+            if (roi.getType() == type)
+                nPointRois++;
+        return nPointRois;
     }
 
     /**

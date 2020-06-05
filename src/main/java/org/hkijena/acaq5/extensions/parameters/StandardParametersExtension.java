@@ -201,6 +201,13 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 "Path list",
                 "A list of file or folder paths",
                 PathCollectionParameterEditorUI.class);
+        registerParameterType("int-modification",
+                IntModificationParameter.class,
+                IntModificationParameter::new,
+                t -> new IntModificationParameter((IntModificationParameter) t),
+                "Integer modification",
+                "Modifies an integer",
+                IntModificationParameterEditorUI.class);
 
 
         // Collection parameters

@@ -9,7 +9,7 @@ import ij.macro.Interpreter;
 import ij.plugin.frame.RoiManager;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultResultDataSlotRowUI;
 import org.hkijena.acaq5.utils.PathUtils;
@@ -21,7 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * Result UI for {@link ROIData}
+ * Result UI for {@link ROIListData}
  */
 public class ROIDataSlotRowUI extends ACAQDefaultResultDataSlotRowUI {
 
@@ -76,7 +76,7 @@ public class ROIDataSlotRowUI extends ACAQDefaultResultDataSlotRowUI {
                 roiManager = (RoiManager) frame;
             }
         }
-        for (Roi roi : ROIData.loadRoiListFromFile(roiFile)) {
+        for (Roi roi : ROIListData.loadRoiListFromFile(roiFile)) {
             if (imp.getStackSize() > 1) {
                 int n = imp.getCurrentSlice();
                 if (imp.isHyperStack()) {

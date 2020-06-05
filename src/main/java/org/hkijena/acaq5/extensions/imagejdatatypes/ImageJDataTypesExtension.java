@@ -17,7 +17,7 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datasources.ImagePlusFromFil
 import org.hkijena.acaq5.extensions.imagejdatatypes.datasources.ROIDataFromFile;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datasources.ResultsTableFromFile;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColor8UData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
@@ -201,7 +201,7 @@ public class ImageJDataTypesExtension extends ACAQPrepackagedDefaultJavaExtensio
         registerImageDataType("imagej-imgplus-5d-color-8u", ImagePlus5DColor8UData.class, "icons/data-types/imgplus-5d-color-8u.png");
         registerConverters();
 
-        registerDatatype("imagej-roi", ROIData.class, ResourceUtils.getPluginResource("icons/data-types/roi.png"),
+        registerDatatype("imagej-roi", ROIListData.class, ResourceUtils.getPluginResource("icons/data-types/roi.png"),
                 ROIDataSlotRowUI.class, null);
         registerImageJDataAdapter(new ROIDataImageJAdapter(), ROIDataImporterUI.class);
         registerDatatype("imagej-results-table", ResultsTableData.class, ResourceUtils.getPluginResource("icons/data-types/results-table.png"),
