@@ -1,18 +1,23 @@
 package org.hkijena.acaq5.extensions.imagejdatatypes.datatypes;
 
 import com.google.common.collect.ImmutableList;
+import ij.IJ;
+import ij.gui.PointRoi;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import ij.io.RoiDecoder;
 import ij.io.RoiEncoder;
 import ij.plugin.frame.RoiManager;
+import ij.process.FloatPolygon;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.utils.PathUtils;
 
+import java.awt.*;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -125,6 +130,153 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
     }
 
     /**
+     * Returns the bounds of area described by the {@link Roi}
+     * @return the bounds. if no {@link Roi} are present, a Rectangle with zero size is returned
+     */
+    public Rectangle getBounds() {
+        if(isEmpty())
+            return new Rectangle(0,0,0,0);
+        FloatPolygon fp = new FloatPolygon();
+        for (Roi roi : this) {
+            FloatPolygon fpi = roi.getFloatPolygon();
+            for (int i=0; i<fpi.npoints; i++)
+                fp.addPoint(fpi.xpoints[i], fpi.ypoints[i]);
+        }
+        float x0 = Float.POSITIVE_INFINITY;
+        float x1 = Float.NEGATIVE_INFINITY;
+        float y0 = Float.POSITIVE_INFINITY;
+        float y1 = Float.NEGATIVE_INFINITY;
+
+        for (int i = 0; i < fp.npoints; i++) {
+            float x = fp.xpoints[i];
+            float y = fp.ypoints[i];
+            x0 = Math.min(x, x0);
+            x1 = Math.max(x, x1);
+            y0 = Math.min(y, y0);
+            y1 = Math.max(y, y1);
+        }
+        return new Rectangle((int)x0, (int)y0, (int)(x1 - x0), (int)(y1 - y0));
+    }
+
+    /**
+     * Applies a logical OR operation to all {@link Roi} in this list. This means that all {@link Roi} are combined into a single {@link Roi}
+     */
+    public void logicalOr() {
+        if (containsOnlyRoisOfType(Roi.POINT)) {
+            FloatPolygon fp = new FloatPolygon();
+            for (Roi roi : this) {
+                FloatPolygon fpi = roi.getFloatPolygon();
+                for (int i=0; i<fpi.npoints; i++)
+                    fp.addPoint(fpi.xpoints[i], fpi.ypoints[i]);
+            }
+            clear();
+            add(new PointRoi(fp));
+        }
+        else {
+            ShapeRoi s1=null, s2=null;
+            for (Roi roi : this) {
+                if (!roi.isArea() && roi.getType()!=Roi.POINT)
+                    roi = roi.convertToPolygon();
+                if (s1==null) {
+                    if (roi instanceof ShapeRoi)
+                        s1 = (ShapeRoi)roi;
+                    else
+                        s1 = new ShapeRoi(roi);
+                    if (s1==null) return;
+                } else {
+                    if (roi instanceof ShapeRoi)
+                        s2 = (ShapeRoi)roi;
+                    else
+                        s2 = new ShapeRoi(roi);
+                    if (s2==null) continue;
+                    s1.or(s2);
+                }
+            }
+            if(s1 != null) {
+                s1.trySimplify();
+                clear();
+                add(s1);
+            }
+        }
+    }
+
+    /**
+     * Applies a logical AND operation to all {@link Roi} in this list. This means that the output is one {@link Roi} containing the intersection.
+     */
+    public void logicalAnd() {
+        int nPointRois = countRoisOfType(Roi.POINT);
+        ShapeRoi s1=null;
+        PointRoi pointRoi = null;
+        for (Roi roi : this) {
+            if (roi==null)
+                continue;
+            if (s1==null) {
+                if (nPointRois==1 && roi.getType() == Roi.POINT) {
+                    pointRoi = (PointRoi)roi;
+                    continue;  //PointRoi will be handled at the end
+                }
+                if (roi instanceof ShapeRoi)
+                    s1 = (ShapeRoi)roi.clone();
+                else
+                    s1 = new ShapeRoi(roi);
+                if (s1==null) continue;
+            } else {
+                if (nPointRois==1 && roi.getType()==Roi.POINT) {
+                    pointRoi = (PointRoi)roi;
+                    continue;  //PointRoi will be handled at the end
+                }
+                ShapeRoi s2 = null;
+                if (roi instanceof ShapeRoi)
+                    s2 = (ShapeRoi)roi.clone();
+                else
+                    s2 = new ShapeRoi(roi);
+                if (s2==null) continue;
+                s1.and(s2);
+            }
+        }
+        if (s1==null) return;
+        if (pointRoi!=null) {
+            clear();
+            add(pointRoi.containedPoints(s1));
+        }
+        else {
+            s1.trySimplify();
+            clear();
+            add(s1);
+        }
+    }
+
+    /**
+     * Applies a logical XOR operation on the list of {@link Roi}.
+     */
+    public void logicalXor() {
+        ShapeRoi s1=null, s2=null;
+        for (Roi roi : this) {
+            if (roi==null)
+                continue;
+            if (s1==null) {
+                if (roi instanceof ShapeRoi)
+                    s1 = (ShapeRoi)roi.clone();
+                else
+                    s1 = new ShapeRoi(roi);
+                if (s1==null) return;
+            } else {
+                if (roi instanceof ShapeRoi)
+                    s2 = (ShapeRoi)roi.clone();
+                else
+                    s2 = new ShapeRoi(roi);
+                if (s2==null) continue;
+                s1.xor(s2);
+            }
+        }
+        if (s1!=null) {
+            s1.trySimplify();
+            clear();
+            add(s1);
+        }
+    }
+
+    /**
      * Returns if this ROI list only contains ROI of given type
      *
      * @param type the ROI type. Can be RECTANGLE=0, OVAL=1, POLYGON=2, FREEROI=3, TRACED_ROI=4, LINE=5, POLYLINE=6, FREELINE=7, ANGLE=8, COMPOSITE=9, or POINT=10
@@ -146,43 +298,6 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
             if (roi.getType() == type)
                 nPointRois++;
         return nPointRois;
-    }
-
-    /**
-     * Splits the two {@link ROIListData} into sets of operands. No copies are created.
-     *
-     * @param lhs    the left operands
-     * @param rhs    the right operands
-     * @param perLhs if true, lhs is split into single-component {@link ROIListData}
-     * @param perRhs if true, rhs is split into single-component {@link ROIListData}
-     * @return List of operands. The key is the left operand and the value is the right operand
-     */
-    public static List<Map.Entry<ROIListData, ROIListData>> createOperands(ROIListData lhs, ROIListData rhs, boolean perLhs, boolean perRhs) {
-        List<Map.Entry<ROIListData, ROIListData>> result = new ArrayList<>();
-        List<ROIListData> leftOperands = new ArrayList<>();
-        if (perLhs) {
-            for (Roi lh : lhs) {
-                ROIListData data = new ROIListData();
-                data.add(lh);
-                leftOperands.add(data);
-            }
-        } else {
-            leftOperands.add(lhs);
-        }
-        if (perRhs) {
-            for (Roi rh : rhs) {
-                ROIListData data = new ROIListData();
-                data.add(rh);
-                for (ROIListData leftOperand : leftOperands) {
-                    result.add(new AbstractMap.SimpleEntry<>(leftOperand, data));
-                }
-            }
-        } else {
-            for (ROIListData leftOperand : leftOperands) {
-                result.add(new AbstractMap.SimpleEntry<>(leftOperand, rhs));
-            }
-        }
-        return result;
     }
 
     /**

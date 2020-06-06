@@ -10,10 +10,7 @@ import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefList;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.parameters.collections.*;
 import org.hkijena.acaq5.extensions.parameters.editors.*;
-import org.hkijena.acaq5.extensions.parameters.filters.IntegerRenaming;
-import org.hkijena.acaq5.extensions.parameters.filters.PathFilter;
-import org.hkijena.acaq5.extensions.parameters.filters.StringFilter;
-import org.hkijena.acaq5.extensions.parameters.filters.StringRenaming;
+import org.hkijena.acaq5.extensions.parameters.filters.*;
 import org.hkijena.acaq5.extensions.parameters.generators.*;
 import org.hkijena.acaq5.extensions.parameters.primitives.*;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQAlgorithmDeclarationRef;
@@ -134,6 +131,13 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 "String filter",
                 "A filter for text values",
                 StringFilterParameterEditorUI.class);
+        registerParameterType("double-filter",
+                DoubleFilter.class,
+                DoubleFilter::new,
+                f -> new DoubleFilter((DoubleFilter) f),
+                "Double filter",
+                "A filter for numbers",
+                DoubleFilterParameterEditorUI.class);
 
         // Generating parameters
         registerParameterType("int-range-string",

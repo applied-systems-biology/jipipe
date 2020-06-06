@@ -8,6 +8,7 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleMaskData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -15,12 +16,12 @@ import java.util.function.Supplier;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@ACAQDocumentation(name = "ROI to mask", description = "Converts ROI to masks")
+@ACAQDocumentation(name = "ROI to mask", description = "Converts ROI lists to masks. If you do not a a source of reference images, " +
+        "an image containing all ROI is created.")
 @ACAQOrganization(menuPath = "ROI", algorithmCategory = ACAQAlgorithmCategory.Converter)
 @AlgorithmInputSlot(value = ROIListData.class, slotName = "Input")
-@AlgorithmOutputSlot(value = ImagePlus2DGreyscaleMaskData.class, slotName = "Output")
-@Deprecated
-public class RoiToMaskAlgorithm extends ACAQSimpleIteratingAlgorithm {
+@AlgorithmOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
+public class RoiToMaskAlgorithm extends ACAQIteratingAlgorithm {
 
     /**
      * Instantiates a new algorithm.
@@ -30,7 +31,7 @@ public class RoiToMaskAlgorithm extends ACAQSimpleIteratingAlgorithm {
     public RoiToMaskAlgorithm(ACAQAlgorithmDeclaration declaration) {
         super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ROIListData.class)
                 .addOutputSlot("Output", ImagePlus2DGreyscaleMaskData.class, null)
-                .seal()
+                .sealOutput()
                 .build());
     }
 

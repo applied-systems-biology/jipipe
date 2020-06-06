@@ -32,10 +32,12 @@ import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.fft.FFT2DForwardTransfo
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.fft.FFT2DInverseTransform;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.fft.FFT2DSwapQuadrants;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.math.*;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure.Measurement;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.morphology.*;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.noise.AddNoise2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.noise.DespeckleFilter2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.noise.RemoveOutliersFilter2DAlgorithm;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.roi.RoiCalculatorAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.roi.SplitRoiAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.sharpen.LaplacianSharpen2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.statistics.GreyscalePixelsGenerator;
@@ -238,10 +240,13 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerAlgorithm("ij1-convolve-convolve2d", Convolve2DAlgorithm.class);
 
         registerAlgorithm("ij1-roi-split", SplitRoiAlgorithm.class);
+        registerAlgorithm("ij1-roi-calculator", RoiCalculatorAlgorithm.class);
 
         // Register enum parameters
         registerEnumParameterType("ij1-interpolation-method", InterpolationMethod.class,
                 "Interpolation method", "Available interpolation methods");
+        registerEnumParameterType("ij1-measurement", Measurement.class,
+                "Measurement", "Available measurements");
 
         registerEnumParameterType("ij1-background-rollingball2d:background-type", RollingBallBackgroundEstimator2DAlgorithm.BackgroundType.class,
                 "Background type", "Available background types");
@@ -289,6 +294,9 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
                 "Auto threshold method", "Available methods");
         registerEnumParameterType("ij1:eigenvalue-selection-2d", EigenvalueSelection2D.class,
                 "Eigenvalue selection (2D)", "Determines whether to choose the smallest or largest Eigenvalue");
+
+        registerEnumParameterType("ij1-roi-calculator:operation", RoiCalculatorAlgorithm.Operation.class,
+                "Operation", "Available ROI calculator operations");
 
 //        registerIJ2Algorithms();
     }

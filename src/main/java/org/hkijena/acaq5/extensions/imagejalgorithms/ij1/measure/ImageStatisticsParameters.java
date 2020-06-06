@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.imagejalgorithms.ij1.util;
+package org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure;
 
 import com.google.common.eventbus.EventBus;
 import ij.measure.Measurements;
