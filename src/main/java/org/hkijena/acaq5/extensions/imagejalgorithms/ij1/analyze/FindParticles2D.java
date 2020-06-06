@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.extensions.imagejalgorithms.ij1.analyze;
 
+import ij.gui.Roi;
 import ij.measure.ResultsTable;
 import ij.plugin.filter.ParticleAnalyzer;
 import ij.plugin.frame.RoiManager;
@@ -120,8 +121,12 @@ public class FindParticles2D extends ACAQSimpleIteratingAlgorithm {
                 if (annotationType.getDeclaration() != null) {
                     traits.add(annotationType.getDeclaration().newInstance("slice=" + index));
                 }
+                ROIListData rois = new ROIListData(Arrays.asList(manager.getRoisAsArray()));
+                for (Roi roi : rois) {
+                    roi.setPosition(index + 1);
+                }
 
-                dataInterface.addOutputData("ROI", new ROIListData(Arrays.asList(manager.getRoisAsArray())), traits);
+                dataInterface.addOutputData("ROI", rois, traits);
                 dataInterface.addOutputData("Measurements", new ResultsTableData(table), traits);
             });
         } else {
@@ -148,10 +153,14 @@ public class FindParticles2D extends ACAQSimpleIteratingAlgorithm {
                         table.setValue("Slice", i,index + 1);
                     }
                 }
+                ROIListData rois = new ROIListData(Arrays.asList(manager.getRoisAsArray()));
+                for (Roi roi : rois) {
+                    roi.setPosition(index + 1);
+                }
 
                 // Merge into one result
                 mergedResultsTable.mergeWith(new ResultsTableData(table));
-                mergedROI.mergeWith(new ROIListData(manager));
+                mergedROI.mergeWith(rois);
             });
 
             dataInterface.addOutputData("ROI", mergedROI);
