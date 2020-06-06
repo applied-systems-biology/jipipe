@@ -77,14 +77,14 @@ public class ROIDataSlotRowUI extends ACAQDefaultResultDataSlotRowUI {
             }
         }
         for (Roi roi : ROIListData.loadRoiListFromFile(roiFile)) {
-            if (imp.getStackSize() > 1) {
-                int n = imp.getCurrentSlice();
-                if (imp.isHyperStack()) {
-                    int[] pos = imp.convertIndexToPosition(n);
-                    roi.setPosition(pos[0], pos[1], pos[2]);
-                } else
-                    roi.setPosition(n);
-            }
+//            if (imp.getStackSize() > 1) {
+//                int n = imp.getCurrentSlice();
+//                if (imp.isHyperStack()) {
+//                    int[] pos = imp.convertIndexToPosition(n);
+//                    roi.setPosition(pos[0], pos[1], pos[2]);
+//                } else
+//                    roi.setPosition(n);
+//            }
             roiManager.add(imp, roi, -1);
         }
         roiManager.runCommand("show all with labels");
