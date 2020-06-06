@@ -3,6 +3,7 @@ package org.hkijena.acaq5.extensions.imagejdatatypes.datatypes;
 import com.google.common.collect.ImmutableList;
 import ij.IJ;
 import ij.gui.PointRoi;
+import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import ij.io.RoiDecoder;
@@ -11,6 +12,7 @@ import ij.plugin.frame.RoiManager;
 import ij.process.FloatPolygon;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.roi.RoiOutline;
 import org.hkijena.acaq5.utils.PathUtils;
 
 import java.awt.*;
@@ -114,6 +116,48 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
     }
 
     /**
+     * Outlines all {@link Roi} in this list by the specified algorithm.
+     * All {@link Roi} are replaced by their outline.
+     * @param outline the method
+     */
+    public void outline(RoiOutline outline) {
+        ImmutableList<Roi> input = ImmutableList.copyOf(this);
+        clear();
+        for (Roi roi : input) {
+            Roi outlined;
+            switch (outline) {
+                case Polygon:
+                    outlined = new PolygonRoi(roi.getFloatPolygon(), Roi.POLYGON);
+                    break;
+                case ClosedPolygon:
+                    outlined = new PolygonRoi(roi.getFloatPolygon("close"), Roi.POLYGON);
+                    break;
+                case ConvexHull:
+                    outlined = new PolygonRoi(roi.getConvexHull(), Roi.POLYGON);
+                    break;
+                case BoundingRectangle: {
+                    Rectangle b = roi.getBounds();
+                    outlined = new PolygonRoi(new int[] { b.x, b.x + b.width, b.x + b.width, b.x },
+                            new int[] { b.y, b.y, b.y + b.height, b.y + b.height },
+                            4,
+                            Roi.POLYGON);
+                    }
+                    break;
+                default:
+                    throw new UnsupportedOperationException("Unsupported: " + outline);
+            }
+
+            // Restore information
+            outlined.copyAttributes(roi);
+            outlined.setPosition(roi.getPosition());
+            outlined.setPosition(roi.getCPosition(), roi.getZPosition(), roi.getTPosition());
+
+            // Add to list
+            add(outlined);
+        }
+    }
+
+    /**
      * Splits all {@link ij.gui.ShapeRoi} that consist of multiple sub-Roi into their individual sub-Roi.
      * The original {@link ShapeRoi} is removed.
      */
@@ -136,24 +180,19 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
     public Rectangle getBounds() {
         if(isEmpty())
             return new Rectangle(0,0,0,0);
-        FloatPolygon fp = new FloatPolygon();
+        double x0 = Double.POSITIVE_INFINITY;
+        double x1 = Double.NEGATIVE_INFINITY;
+        double y0 = Double.POSITIVE_INFINITY;
+        double y1 = Double.NEGATIVE_INFINITY;
         for (Roi roi : this) {
-            FloatPolygon fpi = roi.getFloatPolygon();
-            for (int i=0; i<fpi.npoints; i++)
-                fp.addPoint(fpi.xpoints[i], fpi.ypoints[i]);
-        }
-        float x0 = Float.POSITIVE_INFINITY;
-        float x1 = Float.NEGATIVE_INFINITY;
-        float y0 = Float.POSITIVE_INFINITY;
-        float y1 = Float.NEGATIVE_INFINITY;
-
-        for (int i = 0; i < fp.npoints; i++) {
-            float x = fp.xpoints[i];
-            float y = fp.ypoints[i];
+            double x = roi.getXBase();
+            double y = roi.getYBase();
+            double w = roi.getFloatWidth();
+            double h = roi.getFloatHeight();
             x0 = Math.min(x, x0);
-            x1 = Math.max(x, x1);
+            x1 = Math.max(x + w, x1);
             y0 = Math.min(y, y0);
-            y1 = Math.max(y, y1);
+            y1 = Math.max(y + h, y1);
         }
         return new Rectangle((int)x0, (int)y0, (int)(x1 - x0), (int)(y1 - y0));
     }

@@ -37,8 +37,7 @@ import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.morphology.*;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.noise.AddNoise2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.noise.DespeckleFilter2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.noise.RemoveOutliersFilter2DAlgorithm;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.roi.RoiCalculatorAlgorithm;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.roi.SplitRoiAlgorithm;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.roi.*;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.sharpen.LaplacianSharpen2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.statistics.GreyscalePixelsGenerator;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.statistics.HistogramGenerator;
@@ -151,6 +150,8 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
     public void register() {
         registerTrait(new ACAQJavaTraitDeclaration("image-index", ImageIndexDiscriminator.class),
                 ResourceUtils.getPluginResource("icons/traits/search-location-blue.png"));
+        registerTrait(new ACAQJavaTraitDeclaration("roi-index", ROIIndexDiscriminator.class),
+                ResourceUtils.getPluginResource("icons/traits/search-location-blue.png"));
         registerTrait(new ACAQJavaTraitDeclaration("image-title", ImageTitleDiscriminator.class),
                 ResourceUtils.getPluginResource("icons/traits/search-location-blue.png"));
 
@@ -241,6 +242,10 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
 
         registerAlgorithm("ij1-roi-split", SplitRoiAlgorithm.class);
         registerAlgorithm("ij1-roi-calculator", RoiCalculatorAlgorithm.class);
+        registerAlgorithm("ij1-roi-to-mask-unreferenced", UnreferencedRoiToMaskAlgorithm.class);
+        registerAlgorithm("ij1-roi-to-mask", RoiToMaskAlgorithm.class);
+        registerAlgorithm("ij1-roi-outline", OutlineRoiAlgorithm.class);
+        registerAlgorithm("ij1-roi-remove-bordering", RemoveBorderRoisAlgorithm.class);
 
         // Register enum parameters
         registerEnumParameterType("ij1-interpolation-method", InterpolationMethod.class,
@@ -294,6 +299,8 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
                 "Auto threshold method", "Available methods");
         registerEnumParameterType("ij1:eigenvalue-selection-2d", EigenvalueSelection2D.class,
                 "Eigenvalue selection (2D)", "Determines whether to choose the smallest or largest Eigenvalue");
+        registerEnumParameterType("ij1:roi-outline", RoiOutline.class,
+                "ROI outline", "Available ways to outline a ROI");
 
         registerEnumParameterType("ij1-roi-calculator:operation", RoiCalculatorAlgorithm.Operation.class,
                 "Operation", "Available ROI calculator operations");

@@ -26,14 +26,14 @@ import java.util.stream.Collectors;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@ACAQDocumentation(name = "ROI to mask", description = "Converts ROI lists to masks. " +
-        "This algorithm needs a reference image that provides the output sizes. If you do not have a reference image, you can use the unreferenced variant.")
+@ACAQDocumentation(name = "ROI to mask (unreferenced)", description = "Converts ROI lists to masks. " +
+        "This algorithm does not need a reference image that determines the output size.")
 @ACAQOrganization(menuPath = "ROI", algorithmCategory = ACAQAlgorithmCategory.Converter)
-@AlgorithmInputSlot(value = ROIListData.class, slotName = "ROI")
-@AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Image")
+@AlgorithmInputSlot(value = ROIListData.class, slotName = "Input")
 @AlgorithmOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
-public class RoiToMaskAlgorithm extends ACAQIteratingAlgorithm {
+public class UnreferencedRoiToMaskAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
+    private RectangleROIDefinitionParameter imageArea = new RectangleROIDefinitionParameter();
     private boolean drawOutline = false;
     private boolean drawFilledOutline = true;
     private int lineThickness = 1;
@@ -43,12 +43,13 @@ public class RoiToMaskAlgorithm extends ACAQIteratingAlgorithm {
      *
      * @param declaration the declaration
      */
-    public RoiToMaskAlgorithm(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("ROI", ROIListData.class)
-                .addInputSlot("Image", ImagePlusData.class)
+    public UnreferencedRoiToMaskAlgorithm(ACAQAlgorithmDeclaration declaration) {
+        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ROIListData.class)
                 .addOutputSlot("Output", ImagePlusGreyscaleMaskData.class, null)
                 .seal()
                 .build());
+        imageArea.getWidth().setUseExactValue(false);
+        imageArea.getHeight().setUseExactValue(false);
     }
 
     /**
@@ -56,8 +57,9 @@ public class RoiToMaskAlgorithm extends ACAQIteratingAlgorithm {
      *
      * @param other the other
      */
-    public RoiToMaskAlgorithm(RoiToMaskAlgorithm other) {
+    public UnreferencedRoiToMaskAlgorithm(UnreferencedRoiToMaskAlgorithm other) {
         super(other);
+        this.imageArea = new RectangleROIDefinitionParameter(other.imageArea);
         this.drawOutline = other.drawOutline;
         this.drawFilledOutline = other.drawFilledOutline;
         this.lineThickness = other.lineThickness;
@@ -65,15 +67,23 @@ public class RoiToMaskAlgorithm extends ACAQIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ROIListData inputData = (ROIListData) dataInterface.getInputData("ROI", ROIListData.class).duplicate();
-        ImagePlus reference = dataInterface.getInputData("Image", ImagePlusData.class).getImage();
+        ROIListData inputData = (ROIListData) dataInterface.getInputData(getFirstInputSlot(), ROIListData.class).duplicate();
 
         // Find the bounds and future stack position
-        int sx = reference.getWidth();
-        int sy = reference.getHeight();
-        int sz = reference.getNSlices();
-        int sc = reference.getNChannels();
-        int st = reference.getNFrames();
+        Rectangle bounds = imageArea.apply(inputData.getBounds());
+        int sx = bounds.width + bounds.x;
+        int sy = bounds.height + bounds.y;
+        int sz = 1;
+        int sc = 1;
+        int st = 1;
+        for (Roi roi : inputData) {
+            int z = roi.getZPosition();
+            int c = roi.getCPosition();
+            int t = roi.getTPosition();
+            sz = Math.max(sz, z);
+            sc = Math.max(sc, c);
+            st = Math.max(st, t);
+        }
 
         ImagePlus result = IJ.createImage("ROIs", "8-bit", sx, sy, sc, sz, st);
         Map<Integer, List<Roi>> groupedByStackIndex =
@@ -96,6 +106,17 @@ public class RoiToMaskAlgorithm extends ACAQIteratingAlgorithm {
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
+    }
+
+    @ACAQDocumentation(name = "Image area", description = "Allows modification of the output image width and height.")
+    @ACAQParameter("image-area")
+    public RectangleROIDefinitionParameter getImageArea() {
+        return imageArea;
+    }
+
+    @ACAQParameter("image-area")
+    public void setImageArea(RectangleROIDefinitionParameter imageArea) {
+        this.imageArea = imageArea;
     }
 
     @ACAQDocumentation(name = "Draw outline", description = "If enabled, draw a white outline of the ROI")
