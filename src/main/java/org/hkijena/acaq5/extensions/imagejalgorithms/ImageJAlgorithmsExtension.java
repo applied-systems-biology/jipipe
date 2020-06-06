@@ -241,6 +241,7 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerAlgorithm("ij1-convolve-convolve2d", Convolve2DAlgorithm.class);
 
         registerAlgorithm("ij1-roi-split", SplitRoiAlgorithm.class);
+        registerAlgorithm("ij1-roi-merge", MergeRoiListsAlgorithm.class);
         registerAlgorithm("ij1-roi-calculator", RoiCalculatorAlgorithm.class);
         registerAlgorithm("ij1-roi-to-mask-unreferenced", UnreferencedRoiToMaskAlgorithm.class);
         registerAlgorithm("ij1-roi-to-mask", RoiToMaskAlgorithm.class);

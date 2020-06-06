@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public class ACAQDataInterface {
     private ACAQGraphNode algorithm;
-    private Map<ACAQDataSlot, Integer> inputSlotRows = new HashMap<>();
+    private Map<ACAQDataSlot, Integer> inputSlotRows;
     private Map<ACAQTraitDeclaration, ACAQTrait> annotations = new HashMap<>();
 
     /**

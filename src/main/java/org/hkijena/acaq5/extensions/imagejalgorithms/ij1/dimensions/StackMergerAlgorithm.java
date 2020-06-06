@@ -12,6 +12,7 @@ import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.*;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
@@ -26,15 +27,15 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
 /**
  * Wrapper around {@link ImageProcessor}
  */
-@ACAQDocumentation(name = "Create 3D stack", description = "Merges 2D image planes into a 3D stack")
+@ACAQDocumentation(name = "Create 3D stack", description = "Merges 2D image planes into a 3D stack. Data annotations are used to put " +
+        "images into groups. All images in a group are then merged into a 3D stack. The order of the stack slices is determined by the 'Slice index annotation' " +
+        "that is ignored while defining the groups.")
 @ACAQOrganization(menuPath = "Dimensions", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlus2DData.class, slotName = "Input")
 @AlgorithmOutputSlot(value = ImagePlus3DData.class, slotName = "Output")
-public class StackMergerAlgorithm extends ACAQAlgorithm {
+public class StackMergerAlgorithm extends ACAQMergingAlgorithm {
 
-    private ACAQTraitDeclarationRefList referenceAnnotations = new ACAQTraitDeclarationRefList();
     private ACAQTraitDeclarationRef counterAnnotation = new ACAQTraitDeclarationRef(ACAQTraitRegistry.getInstance().getDeclarationById("image-index"));
-    private boolean overrideReferenceAnnotations = false;
 
     /**
      * Instantiates a new algorithm.
@@ -56,116 +57,44 @@ public class StackMergerAlgorithm extends ACAQAlgorithm {
      */
     public StackMergerAlgorithm(StackMergerAlgorithm other) {
         super(other);
-        this.referenceAnnotations = new ACAQTraitDeclarationRefList(other.referenceAnnotations);
         this.counterAnnotation = new ACAQTraitDeclarationRef(other.counterAnnotation);
-        this.overrideReferenceAnnotations = other.overrideReferenceAnnotations;
+    }
+
+
+    @Override
+    protected Set<ACAQTraitDeclaration> getIgnoredTraitColumns() {
+        if(counterAnnotation.getDeclaration() == null)
+            return super.getIgnoredTraitColumns();
+        else
+            return Collections.singleton(counterAnnotation.getDeclaration());
     }
 
     @Override
-    public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        Set<ACAQTraitDeclaration> currentReferenceAnnotations;
-        if (!overrideReferenceAnnotations) {
-            // Try to figure out annotations
-            ACAQTraitMerger mergedAnnotations = new ACAQTraitMerger();
-            for (int row = 0; row < getFirstInputSlot().getRowCount(); ++row) {
-                mergedAnnotations.addAll(getFirstInputSlot().getAnnotations(row));
-            }
-            if (counterAnnotation != null && counterAnnotation.getDeclaration() != null) {
-                mergedAnnotations.removeAnnotationType(counterAnnotation.getDeclaration());
-            }
-            currentReferenceAnnotations = mergedAnnotations.getAnnotationTypes();
-        } else {
-            currentReferenceAnnotations = referenceAnnotations.stream()
-                    .map(ACAQTraitDeclarationRef::getDeclaration).collect(Collectors.toSet());
+    protected void runIteration(ACAQMultiDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        Set<Integer> inputRows = dataInterface.getInputRows(getFirstInputSlot());
+        List<Integer> sortedInputRows;
+        if(counterAnnotation.getDeclaration() != null) {
+            ACAQDiscriminator defaultCounter = (ACAQDiscriminator) counterAnnotation.getDeclaration().newInstance("");
+            sortedInputRows = inputRows.stream().sorted(Comparator.comparing(row ->
+                    (ACAQDiscriminator)(getFirstInputSlot().getAnnotationOr(row, counterAnnotation.getDeclaration(), defaultCounter)))).collect(Collectors.toList());
+            dataInterface.removeGlobalAnnotation(counterAnnotation.getDeclaration());
+        }
+        else {
+            sortedInputRows = new ArrayList<>(inputRows);
         }
 
-        if (currentReferenceAnnotations.isEmpty()) {
-            ACAQTraitMerger mergedAnnotations = new ACAQTraitMerger();
-            for (int row = 0; row < getFirstInputSlot().getRowCount(); ++row) {
-                mergedAnnotations.addAll(getFirstInputSlot().getAnnotations(row));
-            }
-            if (counterAnnotation != null && counterAnnotation.getDeclaration() != null) {
-                mergedAnnotations.removeAnnotationType(counterAnnotation.getDeclaration());
-            }
-            List<ImagePlus2DData> slices = new ArrayList<>();
-            for (int row = 0; row < getFirstInputSlot().getRowCount(); ++row) {
-                slices.add(getFirstInputSlot().getData(row, ImagePlus2DData.class));
-            }
-            if (counterAnnotation != null && counterAnnotation.getDeclaration() != null) {
-                Map<ImagePlus2DData, ACAQTrait> counterAssignment = new HashMap<>();
-                ACAQTrait defaultCounter = counterAnnotation.getDeclaration().newInstance("");
-                for (int i = 0; i < slices.size(); ++i) {
-                    counterAssignment.put(slices.get(i), getFirstInputSlot().getAnnotations(i).stream()
-                            .filter(t -> t != null && t.getDeclaration() == counterAnnotation.getDeclaration()).findFirst().orElse(defaultCounter));
-                }
-                slices.sort(Comparator.nullsFirst(Comparator.comparing(slice -> (ACAQDiscriminator) counterAssignment.getOrDefault(slice, defaultCounter))));
-            }
-            // Add slices
-            ImagePlus firstSlice = slices.get(0).getImage();
-            ImageStack stack = new ImageStack(firstSlice.getWidth(), firstSlice.getHeight(), slices.size());
-            for (int i = 0; i < slices.size(); ++i) {
-                ImagePlus copy = slices.get(i).getImage();
-                stack.setProcessor(copy.getProcessor(), i + 1);
-                stack.setSliceLabel("slice=" + i, i + 1);
-            }
+        if(sortedInputRows.isEmpty())
+            return;
 
-            getFirstOutputSlot().addData(new ImagePlus3DData(new ImagePlus("Output", stack)), mergedAnnotations.getResult());
-        } else {
-            // Find rows to do
-            Set<Integer> rowsTodo = new HashSet<>();
-            for (int i = 0; i < getFirstInputSlot().getRowCount(); ++i) {
-                rowsTodo.add(i);
-            }
-
-            // Iterate through interfaces
-            for (int row = 0; row < getFirstInputSlot().getRowCount(); ++row) {
-                if (!rowsTodo.contains(row))
-                    continue;
-                algorithmProgress.accept(subProgress.resolve("Data row " + (row + 1) + " / " + getFirstInputSlot().getRowCount()));
-                ACAQMultiDataInterface dataInterface = new ACAQMultiDataInterface(this,
-                        Arrays.asList(getFirstInputSlot()),
-                        currentReferenceAnnotations,
-                        row);
-                rowsTodo.removeAll(dataInterface.getRows(getFirstInputSlot()));
-
-                // Merge slices
-                List<ImagePlus2DData> slices = dataInterface.getInputData(getFirstInputSlot(), ImagePlus2DData.class);
-                if (slices.isEmpty())
-                    continue;
-
-                // Collect annotations
-                List<List<ACAQTrait>> sliceAnnotations = dataInterface.getAnnotations(getFirstInputSlot());
-                ACAQTraitMerger mergedAnnotations = new ACAQTraitMerger();
-                for (List<ACAQTrait> annotation : sliceAnnotations) {
-                    mergedAnnotations.addAll(annotation);
-                }
-                if (counterAnnotation != null && counterAnnotation.getDeclaration() != null) {
-                    mergedAnnotations.removeAnnotationType(counterAnnotation.getDeclaration());
-                }
-
-                // Apply sorting
-                if (counterAnnotation != null && counterAnnotation.getDeclaration() != null) {
-                    ACAQTrait defaultCounter = counterAnnotation.getDeclaration().newInstance("");
-                    Map<ImagePlus2DData, ACAQTrait> counterAssignment = new HashMap<>();
-                    for (int i = 0; i < slices.size(); ++i) {
-                        counterAssignment.put(slices.get(i), sliceAnnotations.get(i).stream()
-                                .filter(t -> t != null && t.getDeclaration() == counterAnnotation.getDeclaration()).findFirst().orElse(defaultCounter));
-                    }
-                    slices.sort(Comparator.nullsFirst(Comparator.comparing(slice -> (ACAQDiscriminator) counterAssignment.get(slice))));
-                }
-
-                // Add slices
-                ImagePlus firstSlice = slices.get(0).getImage();
-                ImageStack stack = new ImageStack(firstSlice.getWidth(), firstSlice.getHeight(), slices.size());
-                for (int i = 0; i < slices.size(); ++i) {
-                    ImagePlus copy = slices.get(i).getImage();
-                    stack.setProcessor(copy.getProcessor(), i + 1);
-                    stack.setSliceLabel("slice=" + i, i + 1);
-                }
-
-                getFirstOutputSlot().addData(new ImagePlus3DData(new ImagePlus("Output", stack)), mergedAnnotations.getResult());
-            }
+        ImagePlus firstSlice = getFirstInputSlot().getData(sortedInputRows.get(0), ImagePlus2DData.class).getImage();
+        ImageStack stack = new ImageStack(firstSlice.getWidth(), firstSlice.getHeight(), sortedInputRows.size());
+        for (int i = 0; i < sortedInputRows.size(); ++i) {
+            ImagePlus copy = getFirstInputSlot().getData(sortedInputRows.get(i), ImagePlus2DData.class).getImage();
+            stack.setProcessor(copy.getProcessor(), i + 1);
+            stack.setSliceLabel("slice=" + i, i + 1);
         }
+
+        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Stack", stack)));
     }
 
     @Override
@@ -182,28 +111,5 @@ public class StackMergerAlgorithm extends ACAQAlgorithm {
     @ACAQParameter("counter-annotation-type")
     public void setCounterAnnotation(ACAQTraitDeclarationRef counterAnnotation) {
         this.counterAnnotation = counterAnnotation;
-    }
-
-    @ACAQDocumentation(name = "Reference annotations",
-            description = "Data annotation types that are used as reference to group slices.")
-    @ACAQParameter("reference-annotation-types")
-    public ACAQTraitDeclarationRefList getReferenceAnnotations() {
-        return referenceAnnotations;
-    }
-
-    @ACAQParameter("reference-annotation-types")
-    public void setReferenceAnnotations(ACAQTraitDeclarationRefList referenceAnnotations) {
-        this.referenceAnnotations = referenceAnnotations;
-    }
-
-    @ACAQDocumentation(name = "Custom reference annotation", description = "If true, you can change which annotations are referenced when determining the source of slices.")
-    @ACAQParameter("override-reference-annotations")
-    public boolean isOverrideReferenceAnnotations() {
-        return overrideReferenceAnnotations;
-    }
-
-    @ACAQParameter("override-reference-annotations")
-    public void setOverrideReferenceAnnotations(boolean overrideReferenceAnnotations) {
-        this.overrideReferenceAnnotations = overrideReferenceAnnotations;
     }
 }

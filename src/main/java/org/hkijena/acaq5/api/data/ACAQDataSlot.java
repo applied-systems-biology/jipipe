@@ -117,6 +117,17 @@ public class ACAQDataSlot implements TableModel {
     }
 
     /**
+     * Returns the annotation of specified type or the alternative value.
+     * @param row data row
+     * @param type annotation type
+     * @param orElse alternative value
+     * @return annotation of type 'type' or 'orElse'
+     */
+    public ACAQTrait getAnnotationOr(int row, ACAQTraitDeclaration type, ACAQTrait orElse) {
+        return getAnnotations(row).stream().filter(a -> a != null && a.getDeclaration() == type).findFirst().orElse(orElse);
+    }
+
+    /**
      * Gets the annotation column for the trait declaration or creates it
      * Ensures that the output size is equal to getRowCount()
      *
