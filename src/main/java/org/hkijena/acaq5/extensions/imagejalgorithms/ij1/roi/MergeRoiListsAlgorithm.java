@@ -35,15 +35,6 @@ public class MergeRoiListsAlgorithm extends ACAQMergingAlgorithm {
                 .build());
     }
 
-    @Override
-    protected void runIteration(ACAQMultiDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ROIListData result = new ROIListData();
-        for (ROIListData rois : dataInterface.getInputData(getFirstInputSlot(), ROIListData.class)) {
-            result.mergeWith(rois);
-        }
-        dataInterface.addOutputData(getFirstOutputSlot(), result);
-    }
-
     /**
      * Instantiates a new algorithm.
      *
@@ -51,6 +42,15 @@ public class MergeRoiListsAlgorithm extends ACAQMergingAlgorithm {
      */
     public MergeRoiListsAlgorithm(MergeRoiListsAlgorithm other) {
         super(other);
+    }
+
+    @Override
+    protected void runIteration(ACAQMultiDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        ROIListData result = new ROIListData();
+        for (ROIListData rois : dataInterface.getInputData(getFirstInputSlot(), ROIListData.class)) {
+            result.mergeWith(rois);
+        }
+        dataInterface.addOutputData(getFirstOutputSlot(), result);
     }
 
     @Override

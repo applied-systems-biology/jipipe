@@ -247,6 +247,8 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerAlgorithm("ij1-roi-to-mask", RoiToMaskAlgorithm.class);
         registerAlgorithm("ij1-roi-outline", OutlineRoiAlgorithm.class);
         registerAlgorithm("ij1-roi-remove-bordering", RemoveBorderRoisAlgorithm.class);
+        registerAlgorithm("ij1-roi-statistics-unreferenced", UnreferencedRoiStatisticsAlgorithm.class);
+        registerAlgorithm("ij1-roi-statistics", RoiStatisticsAlgorithm.class);
 
         // Register enum parameters
         registerEnumParameterType("ij1-interpolation-method", InterpolationMethod.class,

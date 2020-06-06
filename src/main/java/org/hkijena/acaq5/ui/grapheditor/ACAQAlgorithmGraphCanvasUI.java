@@ -501,8 +501,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             try {
                 this.cursor = null;
                 autoPlaceTargetAdjacent(sourceNode, event.getSource(), targetNode, event.getTarget());
-            }
-            finally {
+            } finally {
                 this.cursor = cursorBackup;
             }
         }

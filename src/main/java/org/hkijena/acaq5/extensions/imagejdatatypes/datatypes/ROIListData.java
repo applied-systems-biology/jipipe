@@ -1,25 +1,32 @@
 package org.hkijena.acaq5.extensions.imagejdatatypes.datatypes;
 
 import com.google.common.collect.ImmutableList;
-import ij.IJ;
+import ij.ImagePlus;
 import ij.gui.PointRoi;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import ij.io.RoiDecoder;
 import ij.io.RoiEncoder;
+import ij.measure.ResultsTable;
+import ij.plugin.filter.Analyzer;
 import ij.plugin.frame.RoiManager;
 import ij.process.FloatPolygon;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.extensions.imagejalgorithms.SliceIndex;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure.ImageStatisticsParameters;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.roi.RoiOutline;
 import org.hkijena.acaq5.utils.PathUtils;
 
 import java.awt.*;
 import java.io.*;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -63,6 +70,27 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
      */
     public ROIListData(RoiManager roiManager) {
         this.addAll(Arrays.asList(roiManager.getRoisAsArray()));
+    }
+
+    /**
+     * Groups the ROI by their image positions
+     *
+     * @param perSlice   group per slice
+     * @param perChannel group per channel
+     * @param perFrame   group per frame
+     * @return groups
+     */
+    public Map<SliceIndex, List<Roi>> groupByPosition(boolean perSlice, boolean perChannel, boolean perFrame) {
+        return this.stream().collect(Collectors.groupingBy(roi -> {
+            SliceIndex index = new SliceIndex();
+            if (perSlice)
+                index.setZ(roi.getZPosition() - 1);
+            if (perFrame)
+                index.setT(roi.getTPosition() - 1);
+            if (perChannel)
+                index.setC(roi.getCPosition() - 1);
+            return index;
+        }));
     }
 
     @Override
@@ -118,6 +146,7 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
     /**
      * Outlines all {@link Roi} in this list by the specified algorithm.
      * All {@link Roi} are replaced by their outline.
+     *
      * @param outline the method
      */
     public void outline(RoiOutline outline) {
@@ -137,12 +166,12 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
                     break;
                 case BoundingRectangle: {
                     Rectangle b = roi.getBounds();
-                    outlined = new PolygonRoi(new int[] { b.x, b.x + b.width, b.x + b.width, b.x },
-                            new int[] { b.y, b.y, b.y + b.height, b.y + b.height },
+                    outlined = new PolygonRoi(new int[]{b.x, b.x + b.width, b.x + b.width, b.x},
+                            new int[]{b.y, b.y, b.y + b.height, b.y + b.height},
                             4,
                             Roi.POLYGON);
-                    }
-                    break;
+                }
+                break;
                 default:
                     throw new UnsupportedOperationException("Unsupported: " + outline);
             }
@@ -175,11 +204,12 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
 
     /**
      * Returns the bounds of area described by the {@link Roi}
+     *
      * @return the bounds. if no {@link Roi} are present, a Rectangle with zero size is returned
      */
     public Rectangle getBounds() {
-        if(isEmpty())
-            return new Rectangle(0,0,0,0);
+        if (isEmpty())
+            return new Rectangle(0, 0, 0, 0);
         double x0 = Double.POSITIVE_INFINITY;
         double x1 = Double.NEGATIVE_INFINITY;
         double y0 = Double.POSITIVE_INFINITY;
@@ -194,7 +224,7 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
             y0 = Math.min(y, y0);
             y1 = Math.max(y + h, y1);
         }
-        return new Rectangle((int)x0, (int)y0, (int)(x1 - x0), (int)(y1 - y0));
+        return new Rectangle((int) x0, (int) y0, (int) (x1 - x0), (int) (y1 - y0));
     }
 
     /**
@@ -205,33 +235,32 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
             FloatPolygon fp = new FloatPolygon();
             for (Roi roi : this) {
                 FloatPolygon fpi = roi.getFloatPolygon();
-                for (int i=0; i<fpi.npoints; i++)
+                for (int i = 0; i < fpi.npoints; i++)
                     fp.addPoint(fpi.xpoints[i], fpi.ypoints[i]);
             }
             clear();
             add(new PointRoi(fp));
-        }
-        else {
-            ShapeRoi s1=null, s2=null;
+        } else {
+            ShapeRoi s1 = null, s2 = null;
             for (Roi roi : this) {
-                if (!roi.isArea() && roi.getType()!=Roi.POINT)
+                if (!roi.isArea() && roi.getType() != Roi.POINT)
                     roi = roi.convertToPolygon();
-                if (s1==null) {
+                if (s1 == null) {
                     if (roi instanceof ShapeRoi)
-                        s1 = (ShapeRoi)roi;
+                        s1 = (ShapeRoi) roi;
                     else
                         s1 = new ShapeRoi(roi);
-                    if (s1==null) return;
+                    if (s1 == null) return;
                 } else {
                     if (roi instanceof ShapeRoi)
-                        s2 = (ShapeRoi)roi;
+                        s2 = (ShapeRoi) roi;
                     else
                         s2 = new ShapeRoi(roi);
-                    if (s2==null) continue;
+                    if (s2 == null) continue;
                     s1.or(s2);
                 }
             }
-            if(s1 != null) {
+            if (s1 != null) {
                 s1.trySimplify();
                 clear();
                 add(s1);
@@ -244,41 +273,40 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
      */
     public void logicalAnd() {
         int nPointRois = countRoisOfType(Roi.POINT);
-        ShapeRoi s1=null;
+        ShapeRoi s1 = null;
         PointRoi pointRoi = null;
         for (Roi roi : this) {
-            if (roi==null)
+            if (roi == null)
                 continue;
-            if (s1==null) {
-                if (nPointRois==1 && roi.getType() == Roi.POINT) {
-                    pointRoi = (PointRoi)roi;
+            if (s1 == null) {
+                if (nPointRois == 1 && roi.getType() == Roi.POINT) {
+                    pointRoi = (PointRoi) roi;
                     continue;  //PointRoi will be handled at the end
                 }
                 if (roi instanceof ShapeRoi)
-                    s1 = (ShapeRoi)roi.clone();
+                    s1 = (ShapeRoi) roi.clone();
                 else
                     s1 = new ShapeRoi(roi);
-                if (s1==null) continue;
+                if (s1 == null) continue;
             } else {
-                if (nPointRois==1 && roi.getType()==Roi.POINT) {
-                    pointRoi = (PointRoi)roi;
+                if (nPointRois == 1 && roi.getType() == Roi.POINT) {
+                    pointRoi = (PointRoi) roi;
                     continue;  //PointRoi will be handled at the end
                 }
                 ShapeRoi s2 = null;
                 if (roi instanceof ShapeRoi)
-                    s2 = (ShapeRoi)roi.clone();
+                    s2 = (ShapeRoi) roi.clone();
                 else
                     s2 = new ShapeRoi(roi);
-                if (s2==null) continue;
+                if (s2 == null) continue;
                 s1.and(s2);
             }
         }
-        if (s1==null) return;
-        if (pointRoi!=null) {
+        if (s1 == null) return;
+        if (pointRoi != null) {
             clear();
             add(pointRoi.containedPoints(s1));
-        }
-        else {
+        } else {
             s1.trySimplify();
             clear();
             add(s1);
@@ -289,26 +317,26 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
      * Applies a logical XOR operation on the list of {@link Roi}.
      */
     public void logicalXor() {
-        ShapeRoi s1=null, s2=null;
+        ShapeRoi s1 = null, s2 = null;
         for (Roi roi : this) {
-            if (roi==null)
+            if (roi == null)
                 continue;
-            if (s1==null) {
+            if (s1 == null) {
                 if (roi instanceof ShapeRoi)
-                    s1 = (ShapeRoi)roi.clone();
+                    s1 = (ShapeRoi) roi.clone();
                 else
                     s1 = new ShapeRoi(roi);
-                if (s1==null) return;
+                if (s1 == null) return;
             } else {
                 if (roi instanceof ShapeRoi)
-                    s2 = (ShapeRoi)roi.clone();
+                    s2 = (ShapeRoi) roi.clone();
                 else
                     s2 = new ShapeRoi(roi);
-                if (s2==null) continue;
+                if (s2 == null) continue;
                 s1.xor(s2);
             }
         }
-        if (s1!=null) {
+        if (s1 != null) {
             s1.trySimplify();
             clear();
             add(s1);
@@ -337,6 +365,35 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
             if (roi.getType() == type)
                 nPointRois++;
         return nPointRois;
+    }
+
+    /**
+     * Generates ROI statistics
+     *
+     * @param imp          the reference image
+     * @param measurements which measurements to extract
+     * @return the measurements
+     */
+    public ResultsTableData measure(ImagePlus imp, ImageStatisticsParameters measurements) {
+        int nSlices = imp.getStackSize();
+        measurements.updateAnalyzer();
+        Analyzer aSys = new Analyzer(imp); // System Analyzer
+        ResultsTable rtSys = Analyzer.getResultsTable();
+        ResultsTableData result = new ResultsTableData(new ResultsTable());
+        rtSys.reset();
+        int currentSlice = imp.getCurrentSlice();
+        for (int slice = 1; slice <= nSlices; slice++) {
+            int sliceUse = slice;
+            if (nSlices == 1) sliceUse = currentSlice;
+            imp.setSliceWithoutUpdate(sliceUse);
+            for (Roi roi0 : this) {
+                imp.setRoi(roi0);
+                aSys.measure();
+                ResultsTableData forRoi = new ResultsTableData(rtSys);
+                result.mergeWith(forRoi);
+            }
+        }
+        return result;
     }
 
     /**

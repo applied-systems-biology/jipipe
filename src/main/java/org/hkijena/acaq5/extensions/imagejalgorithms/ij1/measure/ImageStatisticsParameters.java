@@ -70,7 +70,7 @@ public class ImageStatisticsParameters implements ACAQParameterCollection {
     /**
      * Sends the settings to {@link ij.plugin.filter.Analyzer}
      */
-    public void apply() {
+    public void updateAnalyzer() {
         Analyzer.setMeasurements(getNativeValue());
     }
 

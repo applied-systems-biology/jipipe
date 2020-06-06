@@ -26,7 +26,7 @@ public class DoubleFilter implements Predicate<Double>, ACAQValidatable {
     /**
      * Initializes a new filter
      *
-     * @param mode         filter mode
+     * @param mode      filter mode
      * @param reference reference value
      */
     public DoubleFilter(Mode mode, double reference) {

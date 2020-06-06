@@ -74,7 +74,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
         this.displayedParameters = displayedParameters;
         initialize();
 
-        if(displayedParameters != null) {
+        if (displayedParameters != null) {
             reloadForm();
             this.displayedParameters.getEventBus().register(this);
         }
@@ -88,15 +88,6 @@ public class ParameterPanel extends FormPanel implements Contextual {
      */
     public ParameterPanel(ACAQWorkbench workbench, ACAQParameterCollection displayedParameters, MarkdownDocument documentation, int flags) {
         this(workbench.getContext(), displayedParameters, documentation, flags);
-    }
-
-    public void setDisplayedParameters(ACAQParameterCollection displayedParameters) {
-        if(this.displayedParameters != null) {
-            this.displayedParameters.getEventBus().unregister(this);
-        }
-        this.displayedParameters = displayedParameters;
-        this.displayedParameters.getEventBus().register(this);
-        reloadForm();
     }
 
     private void initialize() {
@@ -292,6 +283,15 @@ public class ParameterPanel extends FormPanel implements Contextual {
      */
     public ACAQParameterCollection getDisplayedParameters() {
         return displayedParameters;
+    }
+
+    public void setDisplayedParameters(ACAQParameterCollection displayedParameters) {
+        if (this.displayedParameters != null) {
+            this.displayedParameters.getEventBus().unregister(this);
+        }
+        this.displayedParameters = displayedParameters;
+        this.displayedParameters.getEventBus().register(this);
+        reloadForm();
     }
 
     @Override

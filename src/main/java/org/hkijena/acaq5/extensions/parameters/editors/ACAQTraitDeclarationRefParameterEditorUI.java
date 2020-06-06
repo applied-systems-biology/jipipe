@@ -127,6 +127,8 @@ public class ACAQTraitDeclarationRefParameterEditorUI extends ACAQParameterEdito
     public void onTraitSelected(ACAQTraitPicker.SelectedTraitsChangedEvent event) {
         if (pickerDialog.isVisible()) {
             ACAQTraitDeclarationRef declarationRef = getParameterAccess().get(ACAQTraitDeclarationRef.class);
+            if (declarationRef == null)
+                declarationRef = new ACAQTraitDeclarationRef();
             declarationRef.setDeclaration(picker.getSelectedTraits().isEmpty() ? null : picker.getSelectedTraits().iterator().next());
             getParameterAccess().set(declarationRef);
             reload();

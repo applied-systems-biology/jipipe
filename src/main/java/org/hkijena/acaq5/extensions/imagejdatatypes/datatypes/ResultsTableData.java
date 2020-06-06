@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Data containing a {@link ResultsTable}
@@ -257,7 +256,7 @@ public class ResultsTableData implements ACAQData, TableModel {
             table.incrementCounter();
             for (int col = 0; col < other.getColumnCount(); col++) {
                 String colName = other.getColumnName(col);
-                if(!allowedColumns.contains(colName))
+                if (!allowedColumns.contains(colName))
                     continue;
                 if (inputColumnsNumeric.get(colName)) {
                     table.setValue(colName, localRow, other.getTable().getValueAsDouble(col, row));
@@ -273,6 +272,7 @@ public class ResultsTableData implements ACAQData, TableModel {
 
     /**
      * Splits this table into multiple tables according to an internal or external column
+     *
      * @param externalColumn the column
      * @return output table map. The map key contains the group.
      */
@@ -282,20 +282,19 @@ public class ResultsTableData implements ACAQData, TableModel {
         Map<String, ResultsTableData> result = new HashMap<>();
         for (int row = 0; row < getRowCount(); row++) {
             String group = groupColumn[row];
-            if(group == null)
+            if (group == null)
                 group = "";
             ResultsTableData target = result.getOrDefault(group, null);
-            if(target == null) {
+            if (target == null) {
                 target = new ResultsTableData(new ResultsTable());
                 result.put(group, target);
             }
 
             for (int col = 0; col < getColumnCount(); col++) {
                 target.getTable().incrementCounter();
-                if(isNumeric(col)) {
+                if (isNumeric(col)) {
                     target.getTable().setValue(getColumnName(col), row, table.getStringValue(col, row));
-                }
-                else {
+                } else {
                     target.getTable().setValue(getColumnName(col), row, table.getValueAsDouble(col, row));
                 }
             }

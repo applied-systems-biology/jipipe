@@ -118,8 +118,9 @@ public class ACAQDataSlot implements TableModel {
 
     /**
      * Returns the annotation of specified type or the alternative value.
-     * @param row data row
-     * @param type annotation type
+     *
+     * @param row    data row
+     * @param type   annotation type
      * @param orElse alternative value
      * @return annotation of type 'type' or 'orElse'
      */

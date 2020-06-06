@@ -93,7 +93,7 @@ public class FindParticles2D extends ACAQSimpleIteratingAlgorithm {
         ImagePlusGreyscaleMaskData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class);
 
         // Update the analyzer to extract the measurements we want
-        statisticsParameters.apply();
+        statisticsParameters.updateAnalyzer();
 
         if (splitSlices) {
             ImageJUtils.forEachIndexedSlice(inputData.getImage(), (ip, index) -> {
@@ -111,9 +111,9 @@ public class FindParticles2D extends ACAQSimpleIteratingAlgorithm {
                 analyzer.analyze(inputData.getImage(), ip);
 
                 // Override for "Slice"
-                if(statisticsParameters.isOutputStackPosition()) {
+                if (statisticsParameters.isOutputStackPosition()) {
                     for (int i = 0; i < table.getCounter(); i++) {
-                        table.setValue("Slice", i,index + 1);
+                        table.setValue("Slice", i, index + 1);
                     }
                 }
 
@@ -148,9 +148,9 @@ public class FindParticles2D extends ACAQSimpleIteratingAlgorithm {
                 analyzer.analyze(inputData.getImage(), ip);
 
                 // Override for "Slice"
-                if(statisticsParameters.isOutputStackPosition()) {
+                if (statisticsParameters.isOutputStackPosition()) {
                     for (int i = 0; i < table.getCounter(); i++) {
-                        table.setValue("Slice", i,index + 1);
+                        table.setValue("Slice", i, index + 1);
                     }
                 }
                 ROIListData rois = new ROIListData(Arrays.asList(manager.getRoisAsArray()));

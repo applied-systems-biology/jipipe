@@ -93,9 +93,9 @@ public class UnreferencedRoiToMaskAlgorithm extends ACAQSimpleIteratingAlgorithm
             processor.setLineWidth(lineThickness);
             processor.setColor(255);
             for (Roi roi : entry.getValue()) {
-                if(drawFilledOutline)
+                if (drawFilledOutline)
                     processor.fill(roi);
-                if(drawOutline)
+                if (drawOutline)
                     roi.drawPixels(processor);
             }
         }

@@ -61,12 +61,12 @@ public class RemoveBorderRoisAlgorithm extends ACAQIteratingAlgorithm {
         ROIListData data = (ROIListData) dataInterface.getInputData("ROI", ROIListData.class).duplicate();
         data.outline(outline);
         ImagePlus reference = dataInterface.getInputData("Image", ImagePlusData.class).getImage();
-        Rectangle inside = borderDefinition.apply(new Rectangle(0,0,reference.getWidth(), reference.getHeight()));
+        Rectangle inside = borderDefinition.apply(new Rectangle(0, 0, reference.getWidth(), reference.getHeight()));
 
         data.removeIf(roi -> {
             FloatPolygon fp = roi.getFloatPolygon();
             for (int i = 0; i < fp.npoints; i++) {
-                if(!inside.contains((int)fp.xpoints[i], (int)fp.ypoints[i])) {
+                if (!inside.contains((int) fp.xpoints[i], (int) fp.ypoints[i])) {
                     return true;
                 }
             }

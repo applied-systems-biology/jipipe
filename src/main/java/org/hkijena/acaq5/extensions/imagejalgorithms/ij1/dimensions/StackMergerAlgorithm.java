@@ -11,7 +11,8 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
-import org.hkijena.acaq5.api.traits.*;
+import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
+import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
@@ -63,7 +64,7 @@ public class StackMergerAlgorithm extends ACAQMergingAlgorithm {
 
     @Override
     protected Set<ACAQTraitDeclaration> getIgnoredTraitColumns() {
-        if(counterAnnotation.getDeclaration() == null)
+        if (counterAnnotation.getDeclaration() == null)
             return super.getIgnoredTraitColumns();
         else
             return Collections.singleton(counterAnnotation.getDeclaration());
@@ -73,17 +74,16 @@ public class StackMergerAlgorithm extends ACAQMergingAlgorithm {
     protected void runIteration(ACAQMultiDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         Set<Integer> inputRows = dataInterface.getInputRows(getFirstInputSlot());
         List<Integer> sortedInputRows;
-        if(counterAnnotation.getDeclaration() != null) {
+        if (counterAnnotation.getDeclaration() != null) {
             ACAQDiscriminator defaultCounter = (ACAQDiscriminator) counterAnnotation.getDeclaration().newInstance("");
             sortedInputRows = inputRows.stream().sorted(Comparator.comparing(row ->
-                    (ACAQDiscriminator)(getFirstInputSlot().getAnnotationOr(row, counterAnnotation.getDeclaration(), defaultCounter)))).collect(Collectors.toList());
+                    (ACAQDiscriminator) (getFirstInputSlot().getAnnotationOr(row, counterAnnotation.getDeclaration(), defaultCounter)))).collect(Collectors.toList());
             dataInterface.removeGlobalAnnotation(counterAnnotation.getDeclaration());
-        }
-        else {
+        } else {
             sortedInputRows = new ArrayList<>(inputRows);
         }
 
-        if(sortedInputRows.isEmpty())
+        if (sortedInputRows.isEmpty())
             return;
 
         ImagePlus firstSlice = getFirstInputSlot().getData(sortedInputRows.get(0), ImagePlus2DData.class).getImage();

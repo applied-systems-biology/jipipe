@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.extensions.imagejalgorithms.ij1.roi;
 
+import ij.ImagePlus;
 import ij.gui.Roi;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
@@ -8,9 +9,15 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.extensions.imagejalgorithms.SliceIndex;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure.ImageStatisticsParameters;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
+import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -19,28 +26,28 @@ import java.util.function.Supplier;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@ACAQDocumentation(name = "ROI calculator", description = "Applies logical operations to the input ROI list. The logical operations are applied to " +
-        "the whole list, meaning that an AND operation will create the intersection of all ROI in the list. If you want to apply the operation only to a sub-set of ROI," +
-        " preprocess using a ROI splitter algorithm.")
-@ACAQOrganization(menuPath = "ROI", algorithmCategory = ACAQAlgorithmCategory.Processor)
-@AlgorithmInputSlot(value = ROIListData.class, slotName = "Input")
-@AlgorithmOutputSlot(value = ROIListData.class, slotName = "Output")
-public class RoiCalculatorAlgorithm extends ACAQSimpleIteratingAlgorithm {
+@ACAQDocumentation(name = "Extract ROI statistics", description = "Generates a results table containing ROI statistics.")
+@ACAQOrganization(menuPath = "ROI", algorithmCategory = ACAQAlgorithmCategory.Analysis)
+@AlgorithmInputSlot(value = ROIListData.class, slotName = "ROI")
+@AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Image")
+@AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Measurements")
+public class RoiStatisticsAlgorithm extends ACAQIteratingAlgorithm {
 
-    private Operation operation = Operation.LogicalAnd;
+    private ImageStatisticsParameters measurements = new ImageStatisticsParameters();
     private boolean applyPerSlice = false;
     private boolean applyPerChannel = false;
     private boolean applyPerFrame = false;
-    private boolean splitAfterwards = true;
+    private ACAQTraitDeclarationRef indexAnnotation = new ACAQTraitDeclarationRef();
 
     /**
      * Instantiates a new algorithm.
      *
      * @param declaration the declaration
      */
-    public RoiCalculatorAlgorithm(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ROIListData.class)
-                .addOutputSlot("Output", ROIListData.class, null)
+    public RoiStatisticsAlgorithm(ACAQAlgorithmDeclaration declaration) {
+        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("ROI", ROIListData.class)
+                .addInputSlot("Image", ImagePlusData.class)
+                .addOutputSlot("Measurements", ResultsTableData.class, null)
                 .seal()
                 .build());
     }
@@ -50,45 +57,35 @@ public class RoiCalculatorAlgorithm extends ACAQSimpleIteratingAlgorithm {
      *
      * @param other the other
      */
-    public RoiCalculatorAlgorithm(RoiCalculatorAlgorithm other) {
+    public RoiStatisticsAlgorithm(RoiStatisticsAlgorithm other) {
         super(other);
-        this.operation = other.operation;
-        this.splitAfterwards = other.splitAfterwards;
+        this.measurements = new ImageStatisticsParameters(other.measurements);
         this.applyPerChannel = other.applyPerChannel;
         this.applyPerFrame = other.applyPerFrame;
         this.applyPerSlice = other.applyPerSlice;
+        this.indexAnnotation = new ACAQTraitDeclarationRef(other.indexAnnotation);
+
     }
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ROIListData inputData = dataInterface.getInputData(getFirstInputSlot(), ROIListData.class);
+        ROIListData inputData = dataInterface.getInputData("ROI", ROIListData.class);
         Map<SliceIndex, List<Roi>> grouped = inputData.groupByPosition(applyPerSlice, applyPerChannel, applyPerFrame);
-        ROIListData outputData = new ROIListData();
+
         for (Map.Entry<SliceIndex, List<Roi>> entry : grouped.entrySet()) {
             ROIListData data = new ROIListData(entry.getValue());
-            switch (operation) {
-                case LogicalAnd:
-                    data.logicalAnd();
-                    break;
-                case LogicalOr:
-                    data.logicalOr();
-                    break;
-                case LogicalXor:
-                    data.logicalXor();
-                    break;
-                default:
-                    throw new UnsupportedOperationException("Unsupported: " + operation);
+
+            // Generate reference image
+            ImagePlus reference = dataInterface.getInputData("Image", ImagePlusData.class).getImage();
+
+            ResultsTableData result = data.measure(reference, measurements);
+            List<ACAQTrait> annotations = new ArrayList<>();
+            if (indexAnnotation.getDeclaration() != null) {
+                annotations.add(indexAnnotation.getDeclaration().newInstance(entry.getKey().toString()));
             }
-            if (splitAfterwards)
-                data.splitAll();
-            for (Roi roi : data) {
-                roi.setPosition(entry.getKey().getC() + 1,
-                        entry.getKey().getZ() + 1,
-                        entry.getKey().getT() + 1);
-            }
-            outputData.addAll(data);
+
+            dataInterface.addOutputData(getFirstOutputSlot(), result, annotations);
         }
-        dataInterface.addOutputData(getFirstOutputSlot(), outputData);
     }
 
 
@@ -96,27 +93,24 @@ public class RoiCalculatorAlgorithm extends ACAQSimpleIteratingAlgorithm {
     public void reportValidity(ACAQValidityReport report) {
     }
 
-    @ACAQDocumentation(name = "Operation", description = "The operation to apply on the list of ROI")
-    @ACAQParameter("operation")
-    public Operation getOperation() {
-        return operation;
+    @ACAQDocumentation(name = "Extracted measurements", description = "Please select which measurements should be extracted. " +
+            "Each measurement will be assigned to one or multiple output table columns. Please refer to the " +
+            "individual measurement documentations for the column names.")
+    @ACAQParameter("measurements")
+    public ImageStatisticsParameters getMeasurements() {
+        return measurements;
     }
 
-    @ACAQParameter("operation")
-    public void setOperation(Operation operation) {
-        this.operation = operation;
+    @ACAQDocumentation(name = "Generated annotation", description = "Optional. The annotation will contain the image slice position that was " +
+            "used to generate the statistics.")
+    @ACAQParameter("index-annotation")
+    public ACAQTraitDeclarationRef getIndexAnnotation() {
+        return indexAnnotation;
     }
 
-    @ACAQDocumentation(name = "Split after operation", description = "If enabled, ROI are split into connected components after the operation is applied. " +
-            "This is useful as some operations create only one ROI output with multiple unconnected components.")
-    @ACAQParameter("split-afterwards")
-    public boolean isSplitAfterwards() {
-        return splitAfterwards;
-    }
-
-    @ACAQParameter("split-afterwards")
-    public void setSplitAfterwards(boolean splitAfterwards) {
-        this.splitAfterwards = splitAfterwards;
+    @ACAQParameter("index-annotation")
+    public void setIndexAnnotation(ACAQTraitDeclarationRef indexAnnotation) {
+        this.indexAnnotation = indexAnnotation;
     }
 
     @ACAQDocumentation(name = "Apply per slice", description = "If true, the operation is applied for each Z-slice separately. If false, all Z-slices are put together.")
@@ -151,14 +145,5 @@ public class RoiCalculatorAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("apply-per-frame")
     public void setApplyPerFrame(boolean applyPerFrame) {
         this.applyPerFrame = applyPerFrame;
-    }
-
-    /**
-     * Available operations
-     */
-    public enum Operation {
-        LogicalOr,
-        LogicalAnd,
-        LogicalXor
     }
 }

@@ -46,7 +46,7 @@ public class ACAQMultiDataInterface {
      */
     public void addData(ACAQDataSlot slot, int row) {
         Set<Integer> rows = inputSlotRows.getOrDefault(slot, null);
-        if(rows == null) {
+        if (rows == null) {
             rows = new HashSet<>();
             inputSlotRows.put(slot, rows);
         }
@@ -105,6 +105,7 @@ public class ACAQMultiDataInterface {
 
     /**
      * Returns the row indices that belong to this data interface
+     *
      * @param slot slot name
      * @return the row indices that belong to this data interface
      */
@@ -114,6 +115,7 @@ public class ACAQMultiDataInterface {
 
     /**
      * Returns the row indices that belong to this data interface
+     *
      * @param slot slot
      * @return the row indices that belong to this data interface
      */

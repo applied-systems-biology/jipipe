@@ -2,7 +2,6 @@ package org.hkijena.acaq5.extensions.parameters.editors;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.extensions.parameters.filters.DoubleFilter;
-import org.hkijena.acaq5.extensions.parameters.filters.StringFilter;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Context;
@@ -35,9 +34,9 @@ public class DoubleFilterParameterEditorUI extends ACAQParameterEditorUI {
 
     @Override
     public void reload() {
-        if(isReloading)
+        if (isReloading)
             return;
-        if(skipNextReload) {
+        if (skipNextReload) {
             skipNextReload = false;
             return;
         }

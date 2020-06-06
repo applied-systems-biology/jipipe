@@ -14,9 +14,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
-import org.hkijena.acaq5.extensions.parameters.roi.RectangleROIDefinitionParameter;
 
-import java.awt.*;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -83,9 +81,9 @@ public class RoiToMaskAlgorithm extends ACAQIteratingAlgorithm {
             processor.setLineWidth(lineThickness);
             processor.setColor(255);
             for (Roi roi : entry.getValue()) {
-                if(drawFilledOutline)
+                if (drawFilledOutline)
                     processor.fill(roi);
-                if(drawOutline)
+                if (drawOutline)
                     roi.drawPixels(processor);
             }
         }

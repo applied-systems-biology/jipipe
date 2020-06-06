@@ -16,6 +16,7 @@ public class SliceIndex {
 
     /**
      * Initializes a slice index
+     *
      * @param z Z-index
      * @param c channel
      * @param t frame
@@ -34,6 +35,7 @@ public class SliceIndex {
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public SliceIndex(SliceIndex other) {
@@ -85,5 +87,10 @@ public class SliceIndex {
     @Override
     public int hashCode() {
         return Objects.hash(z, c, t);
+    }
+
+    @Override
+    public String toString() {
+        return "z=" + z + ",c=" + c + ",t=" + t;
     }
 }

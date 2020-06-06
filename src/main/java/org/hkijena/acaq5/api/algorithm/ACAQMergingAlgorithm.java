@@ -79,6 +79,7 @@ public abstract class ACAQMergingAlgorithm extends ACAQAlgorithm {
     /**
      * Returns annotation types that should be ignored by the internal logic.
      * Use this if you have some counting/sorting annotation that should not be included into the set of annotations used to match data.
+     *
      * @return annotation types that should be ignored by the internal logic
      */
     protected Set<ACAQTraitDeclaration> getIgnoredTraitColumns() {
