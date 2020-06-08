@@ -4,6 +4,7 @@ import com.google.common.eventbus.EventBus;
 import ij.measure.Measurements;
 import ij.plugin.filter.Analyzer;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 
@@ -121,6 +122,32 @@ public class ImageStatisticsParameters implements ACAQParameterCollection {
         return result;
     }
 
+    /**
+     * Converts a native value used by {@link ij.plugin.filter.Analyzer} to the settings
+     *
+     * @param nativeValue native value
+     */
+    public void setNativeValue(int nativeValue) {
+        setMeasureArea((nativeValue & Measurements.AREA) == Measurements.AREA);
+        setMeasurePixelValueMean((nativeValue & Measurements.MEAN) == Measurements.MEAN);
+        setMeasurePixelValueStandardDeviation((nativeValue & Measurements.STD_DEV) == Measurements.STD_DEV);
+        setMeasurePixelValueModal((nativeValue & Measurements.MODE) == Measurements.MODE);
+        setMeasurePixelValueMinMax((nativeValue & Measurements.MIN_MAX) == Measurements.MIN_MAX);
+        setMeasureCentroid((nativeValue & Measurements.CENTROID) == Measurements.CENTROID);
+        setMeasureCenterOfMass((nativeValue & Measurements.CENTER_OF_MASS) == Measurements.CENTER_OF_MASS);
+        setMeasurePerimeter((nativeValue & Measurements.PERIMETER) == Measurements.PERIMETER);
+        setMeasureBoundingRectangle((nativeValue & Measurements.RECT) == Measurements.RECT);
+        setFitEllipse((nativeValue & Measurements.ELLIPSE) == Measurements.ELLIPSE);
+        setMeasureShapeDescriptors((nativeValue & Measurements.SHAPE_DESCRIPTORS) == Measurements.SHAPE_DESCRIPTORS);
+        setMeasureFeretDiameter((nativeValue & Measurements.FERET) == Measurements.FERET);
+        setMeasureIntegratedDensity((nativeValue & Measurements.INTEGRATED_DENSITY) == Measurements.INTEGRATED_DENSITY);
+        setMeasurePixelValueMedian((nativeValue & Measurements.MEDIAN) == Measurements.MEDIAN);
+        setMeasurePixelValueSkewness((nativeValue & Measurements.SKEWNESS) == Measurements.SKEWNESS);
+        setMeasurePixelValueKurtosis((nativeValue & Measurements.KURTOSIS) == Measurements.KURTOSIS);
+        setMeasureAreaFraction((nativeValue & Measurements.AREA_FRACTION) == Measurements.AREA_FRACTION);
+        setOutputStackPosition((nativeValue & Measurements.STACK_POSITION) == Measurements.STACK_POSITION);
+    }
+
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -136,6 +163,7 @@ public class ImageStatisticsParameters implements ACAQParameterCollection {
     @ACAQParameter("measure-area")
     public void setMeasureArea(boolean measureArea) {
         this.measureArea = measureArea;
+        eventBus.post(new ParameterChangedEvent(this, "measure-area"));
     }
 
     @ACAQDocumentation(name = "Measure pixel values standard deviation",
@@ -148,6 +176,7 @@ public class ImageStatisticsParameters implements ACAQParameterCollection {
     @ACAQParameter("measure-pixel-stdev")
     public void setMeasurePixelValueStandardDeviation(boolean measurePixelValueStandardDeviation) {
         this.measurePixelValueStandardDeviation = measurePixelValueStandardDeviation;
+        eventBus.post(new ParameterChangedEvent(this, "measure-pixel-stdev"));
     }
 
     @ACAQDocumentation(name = "Measure min & max pixel values",
@@ -160,6 +189,7 @@ public class ImageStatisticsParameters implements ACAQParameterCollection {
     @ACAQParameter("measure-pixel-minmax")
     public void setMeasurePixelValueMinMax(boolean measurePixelValueMinMax) {
         this.measurePixelValueMinMax = measurePixelValueMinMax;
+        eventBus.post(new ParameterChangedEvent(this, "measure-pixel-minmax"));
     }
 
     @ACAQDocumentation(name = "Measure center of mass",
@@ -173,6 +203,7 @@ public class ImageStatisticsParameters implements ACAQParameterCollection {
     @ACAQParameter("measure-center-of-mass")
     public void setMeasureCenterOfMass(boolean measureCenterOfMass) {
         this.measureCenterOfMass = measureCenterOfMass;
+        eventBus.post(new ParameterChangedEvent(this, "measure-center-of-mass"));
     }
 
     @ACAQDocumentation(name = "Measure bounding rectangle",
@@ -186,6 +217,7 @@ public class ImageStatisticsParameters implements ACAQParameterCollection {
     @ACAQParameter("measure-bounding-rectangle")
     public void setMeasureBoundingRectangle(boolean measureBoundingRectangle) {
         this.measureBoundingRectangle = measureBoundingRectangle;
+        eventBus.post(new ParameterChangedEvent(this, "measure-bounding-rectangle"));
     }
 
     @ACAQDocumentation(name = "Measure shape descriptors",
@@ -202,6 +234,7 @@ public class ImageStatisticsParameters implements ACAQParameterCollection {
     @ACAQParameter("measure-shape-descriptors")
     public void setMeasureShapeDescriptors(boolean measureShapeDescriptors) {
         this.measureShapeDescriptors = measureShapeDescriptors;
+        eventBus.post(new ParameterChangedEvent(this, "measure-shape-descriptors"));
     }
 
     @ACAQDocumentation(name = "Measure integrated density",
@@ -214,6 +247,7 @@ public class ImageStatisticsParameters implements ACAQParameterCollection {
     @ACAQParameter("measure-integrated-density")
     public void setMeasureIntegratedDensity(boolean measureIntegratedDensity) {
         this.measureIntegratedDensity = measureIntegratedDensity;
+        eventBus.post(new ParameterChangedEvent(this, "measure-integrated-density"));
     }
 
     @ACAQDocumentation(name = "Measure pixel values skewness",
@@ -226,6 +260,7 @@ public class ImageStatisticsParameters implements ACAQParameterCollection {
     @ACAQParameter("measure-pixel-skewness")
     public void setMeasurePixelValueSkewness(boolean measurePixelValueSkewness) {
         this.measurePixelValueSkewness = measurePixelValueSkewness;
+        eventBus.post(new ParameterChangedEvent(this, "measure-pixel-skewness"));
     }
 
     @ACAQDocumentation(name = "Measure area fraction",
@@ -238,6 +273,7 @@ public class ImageStatisticsParameters implements ACAQParameterCollection {
     @ACAQParameter("measure-area-fraction")
     public void setMeasureAreaFraction(boolean measureAreaFraction) {
         this.measureAreaFraction = measureAreaFraction;
+        eventBus.post(new ParameterChangedEvent(this, "measure-area-fraction"));
     }
 
     @ACAQDocumentation(name = "Measure pixel values mean",
@@ -250,6 +286,7 @@ public class ImageStatisticsParameters implements ACAQParameterCollection {
     @ACAQParameter("measure-pixel-mean")
     public void setMeasurePixelValueMean(boolean measurePixelValueMean) {
         this.measurePixelValueMean = measurePixelValueMean;
+        eventBus.post(new ParameterChangedEvent(this, "measure-pixel-mean"));
     }
 
     @ACAQDocumentation(name = "Measure pixel values modal",
@@ -262,6 +299,7 @@ public class ImageStatisticsParameters implements ACAQParameterCollection {
     @ACAQParameter("measure-pixel-modal")
     public void setMeasurePixelValueModal(boolean measurePixelValueModal) {
         this.measurePixelValueModal = measurePixelValueModal;
+        eventBus.post(new ParameterChangedEvent(this, "measure-pixel-modal"));
     }
 
     @ACAQDocumentation(name = "Measure centroid",
@@ -275,6 +313,7 @@ public class ImageStatisticsParameters implements ACAQParameterCollection {
     @ACAQParameter("measure-centroid")
     public void setMeasureCentroid(boolean measureCentroid) {
         this.measureCentroid = measureCentroid;
+        eventBus.post(new ParameterChangedEvent(this, "measure-centroid"));
     }
 
     @ACAQDocumentation(name = "Measure perimeter",
@@ -288,6 +327,7 @@ public class ImageStatisticsParameters implements ACAQParameterCollection {
     @ACAQParameter("measure-perimeter")
     public void setMeasurePerimeter(boolean measurePerimeter) {
         this.measurePerimeter = measurePerimeter;
+        eventBus.post(new ParameterChangedEvent(this, "measure-perimeter"));
     }
 
     @ACAQDocumentation(name = "Fit ellipse",
@@ -304,6 +344,7 @@ public class ImageStatisticsParameters implements ACAQParameterCollection {
     @ACAQParameter("fit-ellipse")
     public void setFitEllipse(boolean fitEllipse) {
         this.fitEllipse = fitEllipse;
+        eventBus.post(new ParameterChangedEvent(this, "fit-ellipse"));
     }
 
     @ACAQDocumentation(name = "Measure Feret's diameter",
@@ -319,6 +360,7 @@ public class ImageStatisticsParameters implements ACAQParameterCollection {
     @ACAQParameter("measure-feret")
     public void setMeasureFeretDiameter(boolean measureFeretDiameter) {
         this.measureFeretDiameter = measureFeretDiameter;
+        eventBus.post(new ParameterChangedEvent(this, "measure-feret"));
     }
 
     @ACAQDocumentation(name = "Measure pixel value median",
@@ -332,6 +374,7 @@ public class ImageStatisticsParameters implements ACAQParameterCollection {
     @ACAQParameter("measure-pixel-median")
     public void setMeasurePixelValueMedian(boolean measurePixelValueMedian) {
         this.measurePixelValueMedian = measurePixelValueMedian;
+        eventBus.post(new ParameterChangedEvent(this, "measure-pixel-median"));
     }
 
     @ACAQDocumentation(name = "Measure pixel value kurtosis",
@@ -345,6 +388,7 @@ public class ImageStatisticsParameters implements ACAQParameterCollection {
     @ACAQParameter("measure-pixel-kurtosis")
     public void setMeasurePixelValueKurtosis(boolean measurePixelValueKurtosis) {
         this.measurePixelValueKurtosis = measurePixelValueKurtosis;
+        eventBus.post(new ParameterChangedEvent(this, "measure-pixel-kurtosis"));
     }
 
     @ACAQDocumentation(name = "Output stack position",
@@ -359,5 +403,6 @@ public class ImageStatisticsParameters implements ACAQParameterCollection {
     @ACAQParameter("output-stack-position")
     public void setOutputStackPosition(boolean outputStackPosition) {
         this.outputStackPosition = outputStackPosition;
+        eventBus.post(new ParameterChangedEvent(this, "output-stack-position"));
     }
 }

@@ -9,6 +9,7 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejalgorithms.SliceIndex;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.LogicalOperation;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
 
 import java.util.List;
@@ -27,7 +28,7 @@ import java.util.function.Supplier;
 @AlgorithmOutputSlot(value = ROIListData.class, slotName = "Output")
 public class RoiCalculatorAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
-    private Operation operation = Operation.LogicalAnd;
+    private LogicalOperation operation = LogicalOperation.LogicalAnd;
     private boolean applyPerSlice = false;
     private boolean applyPerChannel = false;
     private boolean applyPerFrame = false;
@@ -98,12 +99,12 @@ public class RoiCalculatorAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     @ACAQDocumentation(name = "Operation", description = "The operation to apply on the list of ROI")
     @ACAQParameter("operation")
-    public Operation getOperation() {
+    public LogicalOperation getOperation() {
         return operation;
     }
 
     @ACAQParameter("operation")
-    public void setOperation(Operation operation) {
+    public void setOperation(LogicalOperation operation) {
         this.operation = operation;
     }
 
@@ -153,12 +154,4 @@ public class RoiCalculatorAlgorithm extends ACAQSimpleIteratingAlgorithm {
         this.applyPerFrame = applyPerFrame;
     }
 
-    /**
-     * Available operations
-     */
-    public enum Operation {
-        LogicalOr,
-        LogicalAnd,
-        LogicalXor
-    }
 }

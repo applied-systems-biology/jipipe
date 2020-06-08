@@ -10,6 +10,7 @@ import org.hkijena.acaq5.api.traits.ACAQJavaTraitDeclaration;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.EigenvalueSelection2D;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.InterpolationMethod;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.LogicalOperation;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.analyze.FindParticles2D;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.background.RollingBallBackgroundEstimator2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.binary.DistanceTransformWatershed2DAlgorithm;
@@ -33,6 +34,9 @@ import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.fft.FFT2DInverseTransfo
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.fft.FFT2DSwapQuadrants;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.math.*;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure.Measurement;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure.MeasurementColumn;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure.MeasurementFilter;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure.MeasurementFilterList;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.morphology.*;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.noise.AddNoise2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.noise.DespeckleFilter2DAlgorithm;
@@ -249,12 +253,16 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerAlgorithm("ij1-roi-remove-bordering", RemoveBorderRoisAlgorithm.class);
         registerAlgorithm("ij1-roi-statistics-unreferenced", UnreferencedRoiStatisticsAlgorithm.class);
         registerAlgorithm("ij1-roi-statistics", RoiStatisticsAlgorithm.class);
+        registerAlgorithm("ij1-roi-filter-statistics-unreferenced", UnreferencedFilterRoiByStatisticsAlgorithm.class);
+        registerAlgorithm("ij1-roi-filter-statistics", FilterRoiByStatisticsAlgorithm.class);
 
         // Register enum parameters
         registerEnumParameterType("ij1-interpolation-method", InterpolationMethod.class,
                 "Interpolation method", "Available interpolation methods");
         registerEnumParameterType("ij1-measurement", Measurement.class,
                 "Measurement", "Available measurements");
+        registerEnumParameterType("ij1-measurement-column", MeasurementColumn.class,
+                "Measurement column", "Available measurement columns");
 
         registerEnumParameterType("ij1-background-rollingball2d:background-type", RollingBallBackgroundEstimator2DAlgorithm.BackgroundType.class,
                 "Background type", "Available background types");
@@ -305,8 +313,24 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerEnumParameterType("ij1:roi-outline", RoiOutline.class,
                 "ROI outline", "Available ways to outline a ROI");
 
-        registerEnumParameterType("ij1-roi-calculator:operation", RoiCalculatorAlgorithm.Operation.class,
-                "Operation", "Available ROI calculator operations");
+        registerEnumParameterType("ij1:logical-operation", LogicalOperation.class,
+                "Logical operation", "Available logical operations");
+
+        // Register other parameters
+        registerParameterType("ij1:measurement-filter",
+                MeasurementFilter.class,
+                MeasurementFilter::new,
+                o -> new MeasurementFilter((MeasurementFilter) o),
+                "Measurement filter",
+                "Models filtering of measurements",
+                null);
+        registerParameterType("ij1:measurement-filter-list",
+                MeasurementFilterList.class,
+                MeasurementFilterList::new,
+                o -> new MeasurementFilterList((MeasurementFilterList) o),
+                "Measurement filter list",
+                "Models filtering of measurements",
+                null);
 
 //        registerIJ2Algorithms();
     }

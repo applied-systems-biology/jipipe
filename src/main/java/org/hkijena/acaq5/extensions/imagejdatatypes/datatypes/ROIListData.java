@@ -375,24 +375,42 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
      * @return the measurements
      */
     public ResultsTableData measure(ImagePlus imp, ImageStatisticsParameters measurements) {
-        int nSlices = imp.getStackSize();
         measurements.updateAnalyzer();
         Analyzer aSys = new Analyzer(imp); // System Analyzer
         ResultsTable rtSys = Analyzer.getResultsTable();
         ResultsTableData result = new ResultsTableData(new ResultsTable());
         rtSys.reset();
-        int currentSlice = imp.getCurrentSlice();
-        for (int slice = 1; slice <= nSlices; slice++) {
-            int sliceUse = slice;
-            if (nSlices == 1) sliceUse = currentSlice;
-            imp.setSliceWithoutUpdate(sliceUse);
-            for (Roi roi0 : this) {
-                imp.setRoi(roi0);
-                aSys.measure();
-                ResultsTableData forRoi = new ResultsTableData(rtSys);
-                result.mergeWith(forRoi);
+
+        for (int z = 0; z < imp.getNSlices(); z++) {
+            for (int c = 0; c < imp.getNChannels(); c++) {
+                for (int t = 0; t < imp.getNFrames(); t++) {
+                    imp.setSliceWithoutUpdate(imp.getStackIndex(c + 1, z + 1, t + 1));
+                    for (Roi roi : this) {
+                        if ((roi.getZPosition() == 0 || roi.getZPosition() == z + 1) &&
+                                (roi.getCPosition() == 0 || roi.getCPosition() == c + 1) &&
+                                (roi.getTPosition() == 0 || roi.getTPosition() == t + 1)) {
+                            imp.setRoi(roi);
+                            aSys.measure();
+                            ResultsTableData forRoi = new ResultsTableData(rtSys);
+                            result.mergeWith(forRoi);
+                        }
+                    }
+                }
             }
         }
+
+//        int currentSlice = imp.getCurrentSlice();
+//        for (int slice = 1; slice <= nSlices; slice++) {
+//            int sliceUse = slice;
+//            if (nSlices == 1) sliceUse = currentSlice;
+//            imp.setSliceWithoutUpdate(sliceUse);
+//            for (Roi roi0 : this) {
+//                imp.setRoi(roi0);
+//                aSys.measure();
+//                ResultsTableData forRoi = new ResultsTableData(rtSys);
+//                result.mergeWith(forRoi);
+//            }
+//        }
         return result;
     }
 
