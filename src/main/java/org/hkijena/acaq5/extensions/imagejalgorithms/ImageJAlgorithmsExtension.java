@@ -235,11 +235,9 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerAlgorithm("ij1-roi-to-mask", RoiToMaskAlgorithm.class);
         registerAlgorithm("ij1-roi-outline", OutlineRoiAlgorithm.class);
         registerAlgorithm("ij1-roi-remove-bordering", RemoveBorderRoisAlgorithm.class);
-        registerAlgorithm("ij1-roi-statistics-unreferenced", UnreferencedRoiStatisticsAlgorithm.class);
         registerAlgorithm("ij1-roi-statistics", RoiStatisticsAlgorithm.class);
-        registerAlgorithm("ij1-roi-filter-statistics-unreferenced", UnreferencedFilterRoiByStatisticsAlgorithm.class);
         registerAlgorithm("ij1-roi-filter-statistics", FilterRoiByStatisticsAlgorithm.class);
-        registerAlgorithm("ij1-roi-sort-and-extract-statistics-unreferenced", UnreferencedSortAndExtractRoiByStatisticsAlgorithm.class);
+        registerAlgorithm("ij1-roi-color-statistics", ColorRoiByStatisticsAlgorithm.class);
         registerAlgorithm("ij1-roi-sort-and-extract-statistics", SortAndExtractRoiByStatisticsAlgorithm.class);
         registerAlgorithm("ij1-roi-set-properties", ChangeRoiPropertiesAlgorithm.class);
         registerAlgorithm("ij1-roi-to-rgb-unreferenced", UnreferencedRoiToRGBAlgorithm.class);

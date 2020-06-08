@@ -44,8 +44,8 @@ public class ColorMapIcon implements Icon {
     }
 
     /**
-     * @param width       icon width
-     * @param height      icon height
+     * @param width    icon width
+     * @param height   icon height
      * @param colorMap the color map
      */
     public ColorMapIcon(int width, int height, ColorMap colorMap) {

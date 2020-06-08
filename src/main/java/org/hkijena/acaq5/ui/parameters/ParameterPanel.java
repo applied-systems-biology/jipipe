@@ -133,6 +133,10 @@ public class ParameterPanel extends FormPanel implements Contextual {
             addToForm(traversed, collection, groupedBySource.get(collection));
         }
         addVerticalGlue();
+
+        if(getScrollPane() != null) {
+            getScrollPane().getVerticalScrollBar().setValue(0);
+        }
     }
 
     private void addToForm(ACAQTraversedParameterCollection traversed, ACAQParameterCollection parameterHolder, List<ACAQParameterAccess> parameterAccesses) {

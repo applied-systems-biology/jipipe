@@ -40,6 +40,7 @@ public class FormPanel extends JPanel {
     private int numRows = 0;
     private JPanel forms = new JPanel();
     private MarkdownReader parameterHelp;
+    private JScrollPane scrollPane;
 
     /**
      * Creates a new instance
@@ -57,8 +58,10 @@ public class FormPanel extends JPanel {
         helpPanel.add(parameterHelp, BorderLayout.CENTER);
 
         Component content;
-        if ((flags & WITH_SCROLLING) == WITH_SCROLLING)
-            content = new JScrollPane(forms);
+        if ((flags & WITH_SCROLLING) == WITH_SCROLLING) {
+            scrollPane = new JScrollPane(forms);
+            content = scrollPane;
+        }
         else
             content = forms;
 
@@ -80,6 +83,9 @@ public class FormPanel extends JPanel {
         }
     }
 
+    public JScrollPane getScrollPane() {
+        return scrollPane;
+    }
 
     @Override
     protected void finalize() throws Throwable {

@@ -10,6 +10,7 @@ import java.lang.annotation.RetentionPolicy;
 public @interface EnumParameterSettings {
     /**
      * Provides information on how the enum item is rendered
+     *
      * @return information on how the enum item is rendered
      */
     Class<? extends EnumItemInfo> itemInfo() default DefaultEnumItemInfo.class;

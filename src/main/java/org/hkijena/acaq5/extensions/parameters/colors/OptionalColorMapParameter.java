@@ -20,7 +20,7 @@ public class OptionalColorMapParameter extends OptionalParameter<ColorMap> {
      * @param other the original
      */
     public OptionalColorMapParameter(OptionalColorMapParameter other) {
-        super(ColorMap.class);
+        super(other);
         this.setContent(other.getContent());
     }
 

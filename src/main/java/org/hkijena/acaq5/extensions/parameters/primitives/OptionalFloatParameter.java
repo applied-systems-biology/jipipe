@@ -20,7 +20,7 @@ public class OptionalFloatParameter extends OptionalParameter<Float> {
      * @param other the original
      */
     public OptionalFloatParameter(OptionalFloatParameter other) {
-        super(Float.class);
+        super(other);
         this.setContent(other.getContent());
     }
 

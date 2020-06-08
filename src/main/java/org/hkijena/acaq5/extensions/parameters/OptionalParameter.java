@@ -32,6 +32,17 @@ public abstract class OptionalParameter<T> {
     }
 
     /**
+     * Produces a shallow copy
+     * You have to implement deep content copying yourself
+     * @param other the original
+     */
+    public OptionalParameter(OptionalParameter<T> other) {
+        this.contentClass = other.contentClass;
+        this.enabled = other.enabled;
+        this.content = other.content;
+    }
+
+    /**
      * Adds a new instance of the content class
      * Override this method for types that cannot be default-constructed
      *

@@ -8,9 +8,9 @@ import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure.MeasurementColumn;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.extensions.parameters.colors.ColorMapEnumItemInfo;
@@ -23,15 +23,15 @@ import java.util.function.Supplier;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@ACAQDocumentation(name = "Color ROI by statistics (unreferenced)", description = "Sets the ROI item colors by measurements. " +
-        "This algorithm does not require a  reference image and will instead use the output of the unreferenced 'ROI to Mask' algorithm as reference.")
+@ACAQDocumentation(name = "Color ROI by statistics", description = "Sets the ROI item colors by measurements.")
 @ACAQOrganization(menuPath = "ROI", algorithmCategory = ACAQAlgorithmCategory.Processor)
-@AlgorithmInputSlot(value = ROIListData.class, slotName = "Input")
+@AlgorithmInputSlot(value = ROIListData.class, slotName = "ROI")
+@AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Reference")
 @AlgorithmOutputSlot(value = ROIListData.class, slotName = "Output")
-public class UnreferencedColorRoiByStatisticsAlgorithm extends ACAQSimpleIteratingAlgorithm {
+public class ColorRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
 
     private MeasurementColumn measurement = MeasurementColumn.Area;
-    private UnreferencedRoiStatisticsAlgorithm roiStatisticsAlgorithm = ACAQAlgorithm.newInstance("ij1-roi-statistics-unreferenced");
+    private RoiStatisticsAlgorithm roiStatisticsAlgorithm = ACAQAlgorithm.newInstance("ij1-roi-statistics");
     private OptionalColorMapParameter mapFillColor = new OptionalColorMapParameter();
     private OptionalColorMapParameter mapLineColor = new OptionalColorMapParameter();
 
@@ -40,11 +40,8 @@ public class UnreferencedColorRoiByStatisticsAlgorithm extends ACAQSimpleIterati
      *
      * @param declaration the declaration
      */
-    public UnreferencedColorRoiByStatisticsAlgorithm(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ROIListData.class)
-                .addOutputSlot("Output", ROIListData.class, null)
-                .seal()
-                .build());
+    public ColorRoiByStatisticsAlgorithm(ACAQAlgorithmDeclaration declaration) {
+        super(declaration, ROIListData.class, "Output");
         this.mapFillColor.setEnabled(true);
     }
 
@@ -53,7 +50,7 @@ public class UnreferencedColorRoiByStatisticsAlgorithm extends ACAQSimpleIterati
      *
      * @param other the other
      */
-    public UnreferencedColorRoiByStatisticsAlgorithm(UnreferencedColorRoiByStatisticsAlgorithm other) {
+    public ColorRoiByStatisticsAlgorithm(ColorRoiByStatisticsAlgorithm other) {
         super(other);
         this.mapFillColor = new OptionalColorMapParameter(other.mapFillColor);
         this.mapLineColor = new OptionalColorMapParameter(other.mapLineColor);
@@ -71,11 +68,13 @@ public class UnreferencedColorRoiByStatisticsAlgorithm extends ACAQSimpleIterati
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ROIListData data = (ROIListData) dataInterface.getInputData(getFirstInputSlot(), ROIListData.class).duplicate();
+        ROIListData data = (ROIListData) dataInterface.getInputData("ROI", ROIListData.class).duplicate();
+        ImagePlusData referenceImageData = new ImagePlusData(getReferenceImage(dataInterface, subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled));
 
         // Obtain statistics
         roiStatisticsAlgorithm.clearSlotData();
-        roiStatisticsAlgorithm.getFirstInputSlot().addData(data);
+        roiStatisticsAlgorithm.getInputSlot("ROI").addData(data);
+        roiStatisticsAlgorithm.getInputSlot("Reference").addData(referenceImageData);
         roiStatisticsAlgorithm.run(subProgress.resolve("ROI statistics"), algorithmProgress, isCancelled);
         ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class);
 

@@ -22,7 +22,7 @@ public class OptionalColorParameter extends OptionalParameter<Color> {
      * @param other the original
      */
     public OptionalColorParameter(OptionalColorParameter other) {
-        super(Color.class);
+        super(other);
         this.setContent(new Color(other.getContent().getRed(),
                 other.getContent().getGreen(),
                 other.getContent().getBlue(),

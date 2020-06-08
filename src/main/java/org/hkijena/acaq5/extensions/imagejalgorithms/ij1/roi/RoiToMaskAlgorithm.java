@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@ACAQDocumentation(name = "ROI to mask", description = "Converts ROI lists to masks. " +
+@ACAQDocumentation(name = "Convert ROI to mask", description = "Converts ROI lists to masks. " +
         "This algorithm needs a reference image that provides the output sizes. If you do not have a reference image, you can use the unreferenced variant.")
 @ACAQOrganization(menuPath = "ROI", algorithmCategory = ACAQAlgorithmCategory.Converter)
 @AlgorithmInputSlot(value = ROIListData.class, slotName = "ROI")

@@ -20,7 +20,7 @@ public class OptionalDoubleParameter extends OptionalParameter<Double> {
      * @param other the original
      */
     public OptionalDoubleParameter(OptionalDoubleParameter other) {
-        super(Double.class);
+        super(other);
         this.setContent(other.getContent());
     }
 

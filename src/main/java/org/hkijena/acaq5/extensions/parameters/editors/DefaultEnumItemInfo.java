@@ -13,10 +13,9 @@ public class DefaultEnumItemInfo implements EnumItemInfo {
 
     @Override
     public String getLabel(Object value) {
-        if(value instanceof Enum) {
+        if (value instanceof Enum) {
             return ((Enum<?>) value).name();
-        }
-        else {
+        } else {
             return "<None selected>";
         }
     }

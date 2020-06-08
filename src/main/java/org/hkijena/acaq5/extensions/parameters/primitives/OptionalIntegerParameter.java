@@ -20,7 +20,7 @@ public class OptionalIntegerParameter extends OptionalParameter<Integer> {
      * @param other the original
      */
     public OptionalIntegerParameter(OptionalIntegerParameter other) {
-        super(Integer.class);
+        super(other);
         this.setContent(other.getContent());
     }
 

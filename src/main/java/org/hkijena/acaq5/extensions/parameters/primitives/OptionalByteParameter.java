@@ -20,7 +20,7 @@ public class OptionalByteParameter extends OptionalParameter<Byte> {
      * @param other the original
      */
     public OptionalByteParameter(OptionalByteParameter other) {
-        super(Byte.class);
+        super(other);
         this.setContent(other.getContent());
     }
 

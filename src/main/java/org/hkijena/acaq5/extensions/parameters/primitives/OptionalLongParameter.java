@@ -20,7 +20,7 @@ public class OptionalLongParameter extends OptionalParameter<Long> {
      * @param other the original
      */
     public OptionalLongParameter(OptionalLongParameter other) {
-        super(Long.class);
+        super(other);
         this.setContent(other.getContent());
     }
 

@@ -20,7 +20,7 @@ public class OptionalBooleanParameter extends OptionalParameter<Boolean> {
      * @param other the original
      */
     public OptionalBooleanParameter(OptionalBooleanParameter other) {
-        super(Boolean.class);
+        super(other);
         this.setContent(other.getContent());
     }
 

@@ -7,7 +7,6 @@ import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.extensions.imagejalgorithms.SliceIndex;
@@ -29,9 +28,9 @@ import java.util.function.Supplier;
 @ACAQDocumentation(name = "Extract ROI statistics", description = "Generates a results table containing ROI statistics.")
 @ACAQOrganization(menuPath = "ROI", algorithmCategory = ACAQAlgorithmCategory.Analysis)
 @AlgorithmInputSlot(value = ROIListData.class, slotName = "ROI")
-@AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Image")
+@AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Reference")
 @AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Measurements")
-public class RoiStatisticsAlgorithm extends ACAQIteratingAlgorithm {
+public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
 
     private ImageStatisticsParameters measurements = new ImageStatisticsParameters();
     private boolean applyPerSlice = false;
@@ -45,11 +44,7 @@ public class RoiStatisticsAlgorithm extends ACAQIteratingAlgorithm {
      * @param declaration the declaration
      */
     public RoiStatisticsAlgorithm(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("ROI", ROIListData.class)
-                .addInputSlot("Image", ImagePlusData.class)
-                .addOutputSlot("Measurements", ResultsTableData.class, null)
-                .seal()
-                .build());
+        super(declaration, ResultsTableData.class, "Measurements");
     }
 
     /**
@@ -71,12 +66,10 @@ public class RoiStatisticsAlgorithm extends ACAQIteratingAlgorithm {
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ROIListData inputData = dataInterface.getInputData("ROI", ROIListData.class);
         Map<SliceIndex, List<Roi>> grouped = inputData.groupByPosition(applyPerSlice, applyPerChannel, applyPerFrame);
+        ImagePlus reference = getReferenceImage(dataInterface, subProgress.resolve("Generate refence image"), algorithmProgress, isCancelled);
 
         for (Map.Entry<SliceIndex, List<Roi>> entry : grouped.entrySet()) {
             ROIListData data = new ROIListData(entry.getValue());
-
-            // Generate reference image
-            ImagePlus reference = dataInterface.getInputData("Image", ImagePlusData.class).getImage();
 
             ResultsTableData result = data.measure(reference, measurements);
             List<ACAQTrait> annotations = new ArrayList<>();

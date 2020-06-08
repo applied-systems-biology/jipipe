@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.extensions.parameters.colors;
 
-import net.imagej.legacy.LegacyCommandline;
 import org.hkijena.acaq5.utils.ResourceUtils;
 
 import javax.imageio.ImageIO;
@@ -83,11 +82,12 @@ public enum ColorMap {
 
     /**
      * Generates a color according to the color map
+     *
      * @param value the value. should be between 0 and 1 for reasonable output. Automatically clamped to 0 and 1.
      * @return the color
      */
     public Color apply(double value) {
-        int pixel = Math.max(0, Math.min(511,(int)(value * 512) )) ;
+        int pixel = Math.max(0, Math.min(511, (int) (value * 512)));
         return new Color(mapImage.getRGB(pixel, 0));
     }
 }

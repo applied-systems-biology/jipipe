@@ -20,7 +20,7 @@ public class OptionalShortParameter extends OptionalParameter<Short> {
      * @param other the original
      */
     public OptionalShortParameter(OptionalShortParameter other) {
-        super(Short.class);
+        super(other);
         this.setContent(other.getContent());
     }
 

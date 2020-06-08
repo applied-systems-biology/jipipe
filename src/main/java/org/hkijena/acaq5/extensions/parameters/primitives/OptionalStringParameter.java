@@ -20,7 +20,7 @@ public class OptionalStringParameter extends OptionalParameter<String> {
      * @param other the original
      */
     public OptionalStringParameter(OptionalStringParameter other) {
-        super(String.class);
+        super(other);
         this.setContent(other.getContent());
     }
 

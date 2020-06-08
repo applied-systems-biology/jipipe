@@ -9,6 +9,7 @@ public interface EnumItemInfo {
 
     /**
      * Extracts an icon for the enum value
+     *
      * @param value the enum value
      * @return the icon of the enum value
      */
@@ -16,6 +17,7 @@ public interface EnumItemInfo {
 
     /**
      * Extracts a custom label for the enum value
+     *
      * @param value the enum value
      * @return custom label
      */

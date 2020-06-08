@@ -59,10 +59,9 @@ public class EnumParameterEditorUI extends ACAQParameterEditorUI {
         });
         EnumParameterSettings settings = getParameterAccess().getAnnotationOfType(EnumParameterSettings.class);
         EnumItemInfo info;
-        if(settings != null) {
+        if (settings != null) {
             info = (EnumItemInfo) ReflectionUtils.newInstance(settings.itemInfo());
-        }
-        else {
+        } else {
             info = new DefaultEnumItemInfo();
         }
         comboBox.setRenderer(new Renderer(info));

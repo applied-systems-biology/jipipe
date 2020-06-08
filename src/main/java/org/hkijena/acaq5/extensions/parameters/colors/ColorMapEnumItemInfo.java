@@ -2,7 +2,6 @@ package org.hkijena.acaq5.extensions.parameters.colors;
 
 import org.apache.commons.lang.WordUtils;
 import org.hkijena.acaq5.extensions.parameters.editors.EnumItemInfo;
-import org.hkijena.acaq5.utils.StringUtils;
 
 import javax.swing.*;
 import java.util.HashMap;
@@ -31,6 +30,6 @@ public class ColorMapEnumItemInfo implements EnumItemInfo {
 
     @Override
     public String getLabel(Object value) {
-        return WordUtils.capitalize( "" + value);
+        return WordUtils.capitalize("" + value);
     }
 }

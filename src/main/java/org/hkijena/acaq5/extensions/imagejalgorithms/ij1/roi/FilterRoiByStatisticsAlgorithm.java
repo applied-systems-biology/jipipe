@@ -7,7 +7,6 @@ import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.LogicalOperation;
@@ -31,7 +30,7 @@ import java.util.function.Supplier;
 @AlgorithmInputSlot(value = ROIListData.class, slotName = "ROI")
 @AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Image")
 @AlgorithmOutputSlot(value = ROIListData.class, slotName = "Output")
-public class FilterRoiByStatisticsAlgorithm extends ACAQIteratingAlgorithm {
+public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
 
     private MeasurementFilterList measurementFilters = new MeasurementFilterList();
     private boolean invert = false;
@@ -45,11 +44,8 @@ public class FilterRoiByStatisticsAlgorithm extends ACAQIteratingAlgorithm {
      * @param declaration the declaration
      */
     public FilterRoiByStatisticsAlgorithm(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("ROI", ROIListData.class)
-                .addInputSlot("Image", ImagePlusData.class)
-                .addOutputSlot("Output", ROIListData.class, null)
-                .seal()
-                .build());
+        super(declaration, ROIListData.class, "Output");
+        measurementFilters.addNewInstance();
     }
 
     /**
@@ -78,12 +74,12 @@ public class FilterRoiByStatisticsAlgorithm extends ACAQIteratingAlgorithm {
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ROIListData inputData = dataInterface.getInputData("ROI", ROIListData.class);
-        ImagePlusData referenceImageData = dataInterface.getInputData("Image", ImagePlusData.class);
+        ImagePlusData referenceImageData = new ImagePlusData(getReferenceImage(dataInterface, subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled));
 
         // Obtain statistics
         roiStatisticsAlgorithm.clearSlotData();
         roiStatisticsAlgorithm.getInputSlot("ROI").addData(inputData);
-        roiStatisticsAlgorithm.getInputSlot("Image").addData(referenceImageData);
+        roiStatisticsAlgorithm.getInputSlot("Reference").addData(referenceImageData);
         roiStatisticsAlgorithm.run(subProgress.resolve("ROI statistics"), algorithmProgress, isCancelled);
         ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class);
 
