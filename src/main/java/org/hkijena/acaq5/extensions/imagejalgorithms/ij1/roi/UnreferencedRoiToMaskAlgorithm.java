@@ -14,7 +14,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
-import org.hkijena.acaq5.extensions.parameters.roi.RectangleROIDefinitionParameter;
+import org.hkijena.acaq5.extensions.parameters.roi.Margin;
 
 import java.awt.*;
 import java.util.List;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 @AlgorithmOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
 public class UnreferencedRoiToMaskAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
-    private RectangleROIDefinitionParameter imageArea = new RectangleROIDefinitionParameter();
+    private Margin imageArea = new Margin();
     private boolean drawOutline = false;
     private boolean drawFilledOutline = true;
     private int lineThickness = 1;
@@ -59,7 +59,7 @@ public class UnreferencedRoiToMaskAlgorithm extends ACAQSimpleIteratingAlgorithm
      */
     public UnreferencedRoiToMaskAlgorithm(UnreferencedRoiToMaskAlgorithm other) {
         super(other);
-        this.imageArea = new RectangleROIDefinitionParameter(other.imageArea);
+        this.imageArea = new Margin(other.imageArea);
         this.drawOutline = other.drawOutline;
         this.drawFilledOutline = other.drawFilledOutline;
         this.lineThickness = other.lineThickness;
@@ -110,12 +110,12 @@ public class UnreferencedRoiToMaskAlgorithm extends ACAQSimpleIteratingAlgorithm
 
     @ACAQDocumentation(name = "Image area", description = "Allows modification of the output image width and height.")
     @ACAQParameter("image-area")
-    public RectangleROIDefinitionParameter getImageArea() {
+    public Margin getImageArea() {
         return imageArea;
     }
 
     @ACAQParameter("image-area")
-    public void setImageArea(RectangleROIDefinitionParameter imageArea) {
+    public void setImageArea(Margin imageArea) {
         this.imageArea = imageArea;
     }
 

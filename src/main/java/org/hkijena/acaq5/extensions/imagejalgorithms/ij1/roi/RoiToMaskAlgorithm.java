@@ -13,7 +13,6 @@ import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 
 import java.util.List;
@@ -77,11 +76,10 @@ public class RoiToMaskAlgorithm extends ACAQIteratingAlgorithm {
         int st = reference.getNFrames();
 
         ImagePlus result;
-        if(drawOver) {
+        if (drawOver) {
             result = ImagePlusGreyscaleMaskData.convertIfNeeded(reference.duplicate());
             result.setTitle("Reference+ROIs");
-        }
-        else {
+        } else {
             result = IJ.createImage("ROIs", "8-bit", sx, sy, sc, sz, st);
         }
         Map<Integer, List<Roi>> groupedByStackIndex =

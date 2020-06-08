@@ -144,6 +144,26 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
     }
 
     /**
+     * Adds a rectangular ROI
+     *
+     * @param rectangle the rectangle
+     * @param close     if thew polygon should be closed
+     */
+    public void addRectangle(Rectangle rectangle, boolean close) {
+        if (close) {
+            add(new PolygonRoi(new int[]{rectangle.x, rectangle.x + rectangle.width, rectangle.x + rectangle.width, rectangle.x, rectangle.x},
+                    new int[]{rectangle.y, rectangle.y, rectangle.y + rectangle.height, rectangle.y + rectangle.height, rectangle.y},
+                    5,
+                    Roi.POLYGON));
+        } else {
+            add(new PolygonRoi(new int[]{rectangle.x, rectangle.x + rectangle.width, rectangle.x + rectangle.width, rectangle.x},
+                    new int[]{rectangle.y, rectangle.y, rectangle.y + rectangle.height, rectangle.y + rectangle.height},
+                    4,
+                    Roi.POLYGON));
+        }
+    }
+
+    /**
      * Outlines all {@link Roi} in this list by the specified algorithm.
      * All {@link Roi} are replaced by their outline.
      *

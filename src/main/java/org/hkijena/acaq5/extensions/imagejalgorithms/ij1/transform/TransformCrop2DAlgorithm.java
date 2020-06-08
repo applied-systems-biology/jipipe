@@ -13,7 +13,7 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.acaq5.extensions.parameters.roi.RectangleROIDefinitionParameter;
+import org.hkijena.acaq5.extensions.parameters.roi.Margin;
 import org.hkijena.acaq5.utils.ImageJUtils;
 
 import java.awt.*;
@@ -30,7 +30,7 @@ import java.util.function.Supplier;
 @AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Output")
 public class TransformCrop2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
-    private RectangleROIDefinitionParameter roi = new RectangleROIDefinitionParameter();
+    private Margin roi = new Margin();
 
     /**
      * Instantiates a new algorithm.
@@ -52,7 +52,7 @@ public class TransformCrop2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
      */
     public TransformCrop2DAlgorithm(TransformCrop2DAlgorithm other) {
         super(other);
-        this.roi = new RectangleROIDefinitionParameter(other.roi);
+        this.roi = new Margin(other.roi);
     }
 
     @Override
@@ -104,12 +104,12 @@ public class TransformCrop2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     @ACAQDocumentation(name = "ROI", description = "Defines the area to crop.")
     @ACAQParameter("roi")
-    public RectangleROIDefinitionParameter getRoi() {
+    public Margin getRoi() {
         return roi;
     }
 
     @ACAQParameter("roi")
-    public void setRoi(RectangleROIDefinitionParameter roi) {
+    public void setRoi(Margin roi) {
         this.roi = roi;
         getEventBus().post(new ParameterChangedEvent(this, "roi"));
     }

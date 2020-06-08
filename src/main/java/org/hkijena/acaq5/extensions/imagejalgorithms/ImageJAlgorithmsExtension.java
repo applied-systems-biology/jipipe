@@ -223,6 +223,10 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
     }
 
     private void registerROIAlgorithms() {
+        registerAlgorithm("ij1-roi-from-rectangles", DefineRectangularRoiAlgorithm.class);
+        registerAlgorithm("ij1-roi-from-rectangles-referenced", ReferencedDefineRectangularRoiAlgorithm.class);
+        registerAlgorithm("ij1-roi-append-rectangles", AppendRectangularRoiAlgorithm.class);
+        registerAlgorithm("ij1-roi-append-rectangles-referenced", ReferencedAppendRectangularRoiAlgorithm.class);
         registerAlgorithm("ij1-roi-split", SplitRoiAlgorithm.class);
         registerAlgorithm("ij1-roi-merge", MergeRoiListsAlgorithm.class);
         registerAlgorithm("ij1-roi-calculator", RoiCalculatorAlgorithm.class);

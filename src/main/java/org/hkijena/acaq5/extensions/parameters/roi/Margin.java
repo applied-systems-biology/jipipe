@@ -16,7 +16,7 @@ import java.util.function.Function;
  * Parameter that allows users to define a rectangle ROI.
  * Users can define a rectangle the classical way (x, y, width, height), but also other ways.
  */
-public class RectangleROIDefinitionParameter implements Function<Rectangle, Rectangle>, ACAQParameterCollection {
+public class Margin implements Function<Rectangle, Rectangle>, ACAQParameterCollection {
     private static final int PARAM_LEFT = 1;
     private static final int PARAM_TOP = 2;
     private static final int PARAM_RIGHT = 4;
@@ -35,7 +35,7 @@ public class RectangleROIDefinitionParameter implements Function<Rectangle, Rect
     /**
      * Creates a new instance
      */
-    public RectangleROIDefinitionParameter() {
+    public Margin() {
         this.left.setUseExactValue(true);
         this.top.setUseExactValue(true);
         this.right.setUseExactValue(true);
@@ -49,7 +49,7 @@ public class RectangleROIDefinitionParameter implements Function<Rectangle, Rect
      *
      * @param other the original
      */
-    public RectangleROIDefinitionParameter(RectangleROIDefinitionParameter other) {
+    public Margin(Margin other) {
         this.left = new IntModificationParameter(other.left);
         this.top = new IntModificationParameter(other.top);
         this.right = new IntModificationParameter(other.right);

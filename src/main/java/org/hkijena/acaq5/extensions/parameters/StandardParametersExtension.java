@@ -18,7 +18,9 @@ import org.hkijena.acaq5.extensions.parameters.references.ACAQDataDeclarationRef
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitIconRef;
 import org.hkijena.acaq5.extensions.parameters.roi.IntModificationParameter;
-import org.hkijena.acaq5.extensions.parameters.roi.RectangleROIDefinitionParameter;
+import org.hkijena.acaq5.extensions.parameters.roi.Margin;
+import org.hkijena.acaq5.extensions.parameters.roi.RectangleDeserializer;
+import org.hkijena.acaq5.extensions.parameters.roi.RectangleSerializer;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.scijava.Priority;
@@ -162,6 +164,18 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 "List of integer replacement operations",
                 "A list of operations that replace integers",
                 null);
+        registerParameterType("rectangle-list", RectangleList.class,
+                RectangleList::new,
+                l -> new RectangleList((RectangleList) l),
+                "Rectangle list",
+                "A list of rectangles",
+                null);
+        registerParameterType("margin-list", MarginList.class,
+                MarginList::new,
+                l -> new MarginList((MarginList) l),
+                "Margin list",
+                "A list of margins",
+                null);
     }
 
     private void registerMiscParameters() {
@@ -201,13 +215,13 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 "Integer modification",
                 "Modifies an integer",
                 IntModificationParameterEditorUI.class);
-        registerParameterType("rectangle-roi",
-                RectangleROIDefinitionParameter.class,
-                RectangleROIDefinitionParameter::new,
-                r -> new RectangleROIDefinitionParameter((RectangleROIDefinitionParameter) r),
-                "Rectangle ROI",
+        registerParameterType("margin",
+                Margin.class,
+                Margin::new,
+                r -> new Margin((Margin) r),
+                "Margin",
                 "Defines a rectangular area within a region",
-                RectangleROIDefinitionParameterEditorUI.class);
+                MarginParameterEditorUI.class);
     }
 
     private void registerOptionalParameters() {
@@ -290,7 +304,7 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 null);
 
         // Enums
-        registerEnumParameterType("rectangle-roi:anchor", RectangleROIDefinitionParameter.Anchor.class, "Anchor", "Available rectangle anchors");
+        registerEnumParameterType("rectangle-roi:anchor", Margin.Anchor.class, "Anchor", "Available rectangle anchors");
         registerEnumParameterType("path-filter:mode", PathFilter.Mode.class, "Mode", "Available modes");
         registerEnumParameterType("string-filter:mode", StringFilter.Mode.class, "Mode", "Available modes");
         registerEnumParameterType("acaq:iterating-algorithm:column-matching", ACAQIteratingAlgorithm.ColumnMatching.class, "Column matching strategy", "Determines how columns for dataset matching are selected");
@@ -397,7 +411,9 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
         registerParameterType("path", Path.class, () -> Paths.get(""), p -> p, "Filesystem path", "A path", FilePathParameterEditorUI.class);
         registerParameterType("file", File.class, () -> new File(""), f -> f, "Filesystem path", "A path", FileParameterEditorUI.class);
         registerParameterType("color", Color.class, () -> Color.WHITE, c -> c, "Color", "A color", ColorParameterEditorUI.class);
+        registerParameterType("rectangle", Rectangle.class, Rectangle::new, o -> new Rectangle((Rectangle) o), "Rectangle", "A rectangle", RectangleParameterEditorUI.class);
         registerColorJsonSerializer();
+        registerRectangleJsonSerializer();
     }
 
     private void registerPrimitives() {
@@ -425,6 +441,14 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
         SimpleModule module = new SimpleModule();
         module.addSerializer(Color.class, new ColorSerializer());
         module.addDeserializer(Color.class, new ColorDeserializer());
+        JsonUtils.getObjectMapper().registerModule(module);
+    }
+
+    private void registerRectangleJsonSerializer() {
+        // Serializer for color type
+        SimpleModule module = new SimpleModule();
+        module.addSerializer(Rectangle.class, new RectangleSerializer());
+        module.addDeserializer(Rectangle.class, new RectangleDeserializer());
         JsonUtils.getObjectMapper().registerModule(module);
     }
 }

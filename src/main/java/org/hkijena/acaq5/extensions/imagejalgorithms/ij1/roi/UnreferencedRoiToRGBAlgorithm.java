@@ -16,7 +16,7 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.acaq5.extensions.parameters.OptionalColorParameter;
 import org.hkijena.acaq5.extensions.parameters.primitives.OptionalDoubleParameter;
-import org.hkijena.acaq5.extensions.parameters.roi.RectangleROIDefinitionParameter;
+import org.hkijena.acaq5.extensions.parameters.roi.Margin;
 
 import java.awt.*;
 import java.util.List;
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 @AlgorithmOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output")
 public class UnreferencedRoiToRGBAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
-    private RectangleROIDefinitionParameter imageArea = new RectangleROIDefinitionParameter();
+    private Margin imageArea = new Margin();
     private boolean drawOutline = false;
     private boolean drawFilledOutline = true;
     private OptionalColorParameter overrideFillColor = new OptionalColorParameter();
@@ -65,7 +65,7 @@ public class UnreferencedRoiToRGBAlgorithm extends ACAQSimpleIteratingAlgorithm 
      */
     public UnreferencedRoiToRGBAlgorithm(UnreferencedRoiToRGBAlgorithm other) {
         super(other);
-        this.imageArea = new RectangleROIDefinitionParameter(other.imageArea);
+        this.imageArea = new Margin(other.imageArea);
         this.drawOutline = other.drawOutline;
         this.drawFilledOutline = other.drawFilledOutline;
         this.overrideFillColor = new OptionalColorParameter(other.overrideFillColor);
@@ -106,7 +106,7 @@ public class UnreferencedRoiToRGBAlgorithm extends ACAQSimpleIteratingAlgorithm 
                 }
                 if (drawOutline) {
                     Color color = (overrideLineColor.isEnabled() || roi.getStrokeColor() == null) ? overrideLineColor.getContent() : roi.getStrokeColor();
-                    int width = (overrideLineWidth.isEnabled() || roi.getStrokeWidth() <= 0) ? (int)(double)(overrideLineWidth.getContent()) : (int)roi.getStrokeWidth();
+                    int width = (overrideLineWidth.isEnabled() || roi.getStrokeWidth() <= 0) ? (int) (double) (overrideLineWidth.getContent()) : (int) roi.getStrokeWidth();
                     processor.setLineWidth(width);
                     processor.setColor(color);
                     roi.drawPixels(processor);
@@ -124,12 +124,12 @@ public class UnreferencedRoiToRGBAlgorithm extends ACAQSimpleIteratingAlgorithm 
 
     @ACAQDocumentation(name = "Image area", description = "Allows modification of the output image width and height.")
     @ACAQParameter("image-area")
-    public RectangleROIDefinitionParameter getImageArea() {
+    public Margin getImageArea() {
         return imageArea;
     }
 
     @ACAQParameter("image-area")
-    public void setImageArea(RectangleROIDefinitionParameter imageArea) {
+    public void setImageArea(Margin imageArea) {
         this.imageArea = imageArea;
     }
 

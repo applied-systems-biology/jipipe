@@ -11,7 +11,7 @@ import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.acaq5.extensions.parameters.roi.RectangleROIDefinitionParameter;
+import org.hkijena.acaq5.extensions.parameters.roi.Margin;
 
 import java.awt.*;
 import java.util.function.Consumer;
@@ -28,7 +28,7 @@ import java.util.function.Supplier;
 @AlgorithmOutputSlot(value = ROIListData.class, slotName = "Cleaned ROI")
 public class RemoveBorderRoisAlgorithm extends ACAQIteratingAlgorithm {
 
-    private RectangleROIDefinitionParameter borderDefinition = new RectangleROIDefinitionParameter();
+    private Margin borderDefinition = new Margin();
     private RoiOutline outline = RoiOutline.ClosedPolygon;
 
     /**
@@ -42,7 +42,7 @@ public class RemoveBorderRoisAlgorithm extends ACAQIteratingAlgorithm {
                 .addOutputSlot("Cleaned ROI", ROIListData.class, null)
                 .seal()
                 .build());
-        borderDefinition.setAnchor(RectangleROIDefinitionParameter.Anchor.CenterCenter);
+        borderDefinition.setAnchor(Margin.Anchor.CenterCenter);
     }
 
     /**
@@ -52,7 +52,7 @@ public class RemoveBorderRoisAlgorithm extends ACAQIteratingAlgorithm {
      */
     public RemoveBorderRoisAlgorithm(RemoveBorderRoisAlgorithm other) {
         super(other);
-        this.borderDefinition = new RectangleROIDefinitionParameter(other.borderDefinition);
+        this.borderDefinition = new Margin(other.borderDefinition);
         this.outline = other.outline;
     }
 
@@ -84,12 +84,12 @@ public class RemoveBorderRoisAlgorithm extends ACAQIteratingAlgorithm {
     @ACAQDocumentation(name = "Border", description = "Defines the rectangle that is created within the image boundaries separate inside and outside. " +
             "If a ROI intersects with the outside area (meaning that it is not contained within the rectangle), it is removed.")
     @ACAQParameter("border-definition")
-    public RectangleROIDefinitionParameter getBorderDefinition() {
+    public Margin getBorderDefinition() {
         return borderDefinition;
     }
 
     @ACAQParameter("border-definition")
-    public void setBorderDefinition(RectangleROIDefinitionParameter borderDefinition) {
+    public void setBorderDefinition(Margin borderDefinition) {
         this.borderDefinition = borderDefinition;
     }
 

@@ -14,7 +14,6 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.acaq5.extensions.parameters.OptionalColorParameter;
 import org.hkijena.acaq5.extensions.parameters.primitives.OptionalDoubleParameter;
 
@@ -86,11 +85,10 @@ public class RoiToRGBAlgorithm extends ACAQIteratingAlgorithm {
         int st = reference.getNFrames();
 
         ImagePlus result;
-        if(drawOver) {
+        if (drawOver) {
             result = ImagePlusColorRGBData.convertIfNeeded(reference.duplicate());
             result.setTitle("Reference+ROIs");
-        }
-        else {
+        } else {
             result = IJ.createImage("ROIs", "RGB", sx, sy, sc, sz, st);
         }
         Map<Integer, List<Roi>> groupedByStackIndex =
@@ -105,7 +103,7 @@ public class RoiToRGBAlgorithm extends ACAQIteratingAlgorithm {
                 }
                 if (drawOutline) {
                     Color color = (overrideLineColor.isEnabled() || roi.getStrokeColor() == null) ? overrideLineColor.getContent() : roi.getStrokeColor();
-                    int width = (overrideLineWidth.isEnabled() || roi.getStrokeWidth() <= 0) ? (int)(double)(overrideLineWidth.getContent()) : (int)roi.getStrokeWidth();
+                    int width = (overrideLineWidth.isEnabled() || roi.getStrokeWidth() <= 0) ? (int) (double) (overrideLineWidth.getContent()) : (int) roi.getStrokeWidth();
                     processor.setLineWidth(width);
                     processor.setColor(color);
                     roi.drawPixels(processor);
