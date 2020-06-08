@@ -14,7 +14,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
-import org.hkijena.acaq5.extensions.parameters.OptionalColorParameter;
+import org.hkijena.acaq5.extensions.parameters.colors.OptionalColorParameter;
 import org.hkijena.acaq5.extensions.parameters.primitives.OptionalDoubleParameter;
 import org.hkijena.acaq5.extensions.parameters.roi.Margin;
 

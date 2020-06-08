@@ -1,4 +1,6 @@
-package org.hkijena.acaq5.extensions.parameters;
+package org.hkijena.acaq5.extensions.parameters.colors;
+
+import org.hkijena.acaq5.extensions.parameters.OptionalParameter;
 
 import java.awt.*;
 

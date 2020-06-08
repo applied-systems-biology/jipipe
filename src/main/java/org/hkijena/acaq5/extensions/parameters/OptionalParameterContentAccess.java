@@ -51,7 +51,7 @@ public class OptionalParameterContentAccess<T> implements ACAQParameterAccess {
 
     @Override
     public <U extends Annotation> U getAnnotationOfType(Class<U> klass) {
-        return null;
+        return parent.getAnnotationOfType(klass);
     }
 
     @Override

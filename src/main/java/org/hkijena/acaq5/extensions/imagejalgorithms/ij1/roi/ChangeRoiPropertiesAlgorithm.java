@@ -9,7 +9,7 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.acaq5.extensions.parameters.OptionalColorParameter;
+import org.hkijena.acaq5.extensions.parameters.colors.OptionalColorParameter;
 import org.hkijena.acaq5.extensions.parameters.primitives.OptionalDoubleParameter;
 import org.hkijena.acaq5.extensions.parameters.primitives.OptionalIntegerParameter;
 import org.hkijena.acaq5.extensions.parameters.primitives.OptionalStringParameter;

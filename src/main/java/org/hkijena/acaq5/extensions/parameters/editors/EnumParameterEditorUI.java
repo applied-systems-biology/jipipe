@@ -2,6 +2,7 @@ package org.hkijena.acaq5.extensions.parameters.editors;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
+import org.hkijena.acaq5.utils.ReflectionUtils;
 import org.scijava.Context;
 
 import javax.swing.*;
@@ -56,6 +57,37 @@ public class EnumParameterEditorUI extends ACAQParameterEditorUI {
                 }
             }
         });
+        EnumParameterSettings settings = getParameterAccess().getAnnotationOfType(EnumParameterSettings.class);
+        EnumItemInfo info;
+        if(settings != null) {
+            info = (EnumItemInfo) ReflectionUtils.newInstance(settings.itemInfo());
+        }
+        else {
+            info = new DefaultEnumItemInfo();
+        }
+        comboBox.setRenderer(new Renderer(info));
+
         add(comboBox, BorderLayout.CENTER);
+    }
+
+    /**
+     * Renders items in enum parameters
+     */
+    private static class Renderer extends JLabel implements ListCellRenderer<Object> {
+
+        private EnumItemInfo info;
+
+        public Renderer(EnumItemInfo info) {
+            this.info = info;
+            setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+            setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
+        }
+
+        @Override
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            setIcon(info.getIcon(value));
+            setText(info.getLabel(value));
+            return this;
+        }
     }
 }

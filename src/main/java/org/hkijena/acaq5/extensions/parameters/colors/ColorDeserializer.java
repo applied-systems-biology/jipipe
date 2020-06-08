@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.parameters;
+package org.hkijena.acaq5.extensions.parameters.colors;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;

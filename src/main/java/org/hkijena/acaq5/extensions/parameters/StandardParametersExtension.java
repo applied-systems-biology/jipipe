@@ -9,6 +9,7 @@ import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefList;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.parameters.collections.*;
+import org.hkijena.acaq5.extensions.parameters.colors.*;
 import org.hkijena.acaq5.extensions.parameters.editors.*;
 import org.hkijena.acaq5.extensions.parameters.filters.*;
 import org.hkijena.acaq5.extensions.parameters.generators.*;
@@ -290,6 +291,13 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 "Optional color",
                 "An optional color value",
                 null);
+        registerParameterType("optional-color-map",
+                OptionalColorMapParameter.class,
+                OptionalColorMapParameter::new,
+                o -> new OptionalColorMapParameter((OptionalColorMapParameter) o),
+                "Optional color map",
+                "An optional color map",
+                null);
     }
 
     private void registerEnumParameters() {
@@ -304,6 +312,7 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 null);
 
         // Enums
+        registerEnumParameterType("color-map", ColorMap.class, "Color map", "Available color maps that convert a scalar to a color");
         registerEnumParameterType("rectangle-roi:anchor", Margin.Anchor.class, "Anchor", "Available rectangle anchors");
         registerEnumParameterType("path-filter:mode", PathFilter.Mode.class, "Mode", "Available modes");
         registerEnumParameterType("string-filter:mode", StringFilter.Mode.class, "Mode", "Available modes");
