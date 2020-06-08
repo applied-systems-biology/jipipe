@@ -12,6 +12,7 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.acaq5.extensions.parameters.OptionalColorParameter;
 import org.hkijena.acaq5.extensions.parameters.primitives.OptionalDoubleParameter;
 import org.hkijena.acaq5.extensions.parameters.primitives.OptionalIntegerParameter;
+import org.hkijena.acaq5.extensions.parameters.primitives.OptionalStringParameter;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -25,6 +26,7 @@ import java.util.function.Supplier;
 @AlgorithmOutputSlot(value = ROIListData.class, slotName = "Output")
 public class ChangeRoiPropertiesAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
+    private OptionalStringParameter roiName = new OptionalStringParameter();
     private OptionalIntegerParameter positionZ = new OptionalIntegerParameter();
     private OptionalIntegerParameter positionC = new OptionalIntegerParameter();
     private OptionalIntegerParameter positionT = new OptionalIntegerParameter();
@@ -58,6 +60,7 @@ public class ChangeRoiPropertiesAlgorithm extends ACAQSimpleIteratingAlgorithm {
         this.fillColor = new OptionalColorParameter(other.fillColor);
         this.lineColor = new OptionalColorParameter(other.lineColor);
         this.lineWidth = new OptionalDoubleParameter(other.lineWidth);
+        this.roiName = new OptionalStringParameter(other.roiName);
     }
 
     @Override
@@ -82,6 +85,8 @@ public class ChangeRoiPropertiesAlgorithm extends ACAQSimpleIteratingAlgorithm {
                 roi.setStrokeColor(lineColor.getContent());
             if (lineWidth.isEnabled())
                 roi.setStrokeWidth(lineWidth.getContent());
+            if (roiName.isEnabled())
+                roi.setName(roiName.getContent());
         }
 
         dataInterface.addOutputData(getFirstOutputSlot(), data);
@@ -157,5 +162,16 @@ public class ChangeRoiPropertiesAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("line-width")
     public void setLineWidth(OptionalDoubleParameter lineWidth) {
         this.lineWidth = lineWidth;
+    }
+
+    @ACAQDocumentation(name = "ROI name", description = "Allows to change the ROI name")
+    @ACAQParameter("roi-name")
+    public OptionalStringParameter getRoiName() {
+        return roiName;
+    }
+
+    @ACAQParameter("roi-name")
+    public void setRoiName(OptionalStringParameter roiName) {
+        this.roiName = roiName;
     }
 }
