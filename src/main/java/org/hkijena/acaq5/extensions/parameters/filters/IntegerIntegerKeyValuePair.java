@@ -1,21 +1,21 @@
 package org.hkijena.acaq5.extensions.parameters.filters;
 
 import org.hkijena.acaq5.extensions.parameters.collections.KeyValuePairParameter;
-import org.hkijena.acaq5.extensions.parameters.generators.IntRangeStringParameter;
 
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
  * A parameter that renames an integer into another integer
  */
-public class IntegerRenaming extends KeyValuePairParameter<IntRangeStringParameter, Integer> implements Predicate<Integer>, Function<Integer, Integer> {
+public class IntegerIntegerKeyValuePair extends KeyValuePairParameter<Integer, Integer> implements Predicate<Integer>, Function<Integer, Integer> {
 
     /**
      * Creates a new instance
      */
-    public IntegerRenaming() {
-        super(IntRangeStringParameter.class, Integer.class);
+    public IntegerIntegerKeyValuePair() {
+        super(Integer.class, Integer.class);
     }
 
     /**
@@ -23,7 +23,7 @@ public class IntegerRenaming extends KeyValuePairParameter<IntRangeStringParamet
      *
      * @param other the original
      */
-    public IntegerRenaming(IntegerRenaming other) {
+    public IntegerIntegerKeyValuePair(IntegerIntegerKeyValuePair other) {
         super(other);
     }
 
@@ -38,6 +38,6 @@ public class IntegerRenaming extends KeyValuePairParameter<IntRangeStringParamet
 
     @Override
     public boolean test(Integer s) {
-        return getKey().getIntegers().contains(s);
+        return Objects.equals(getKey(), s);
     }
 }

@@ -14,8 +14,8 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
-import org.hkijena.acaq5.extensions.parameters.collections.IntegerRenamingList;
-import org.hkijena.acaq5.extensions.parameters.filters.IntegerRenaming;
+import org.hkijena.acaq5.extensions.parameters.collections.IntegerIntegerKeyValuePairList;
+import org.hkijena.acaq5.extensions.parameters.filters.IntegerIntegerKeyValuePair;
 
 import java.util.Comparator;
 import java.util.function.Consumer;
@@ -30,7 +30,7 @@ import java.util.function.Supplier;
 @AlgorithmOutputSlot(value = ImagePlusColorData.class, slotName = "Output")
 public class ArrangeChannelsAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
-    private IntegerRenamingList channelReordering = new IntegerRenamingList();
+    private IntegerIntegerKeyValuePairList channelReordering = new IntegerIntegerKeyValuePairList();
     private boolean keepSameChannelCount = true;
 
     /**
@@ -54,7 +54,7 @@ public class ArrangeChannelsAlgorithm extends ACAQSimpleIteratingAlgorithm {
      */
     public ArrangeChannelsAlgorithm(ArrangeChannelsAlgorithm other) {
         super(other);
-        this.channelReordering = new IntegerRenamingList(other.channelReordering);
+        this.channelReordering = new IntegerIntegerKeyValuePairList(other.channelReordering);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class ArrangeChannelsAlgorithm extends ACAQSimpleIteratingAlgorithm {
         if (keepSameChannelCount) {
             nChannels = image.getNChannels();
         } else {
-            IntegerRenaming max = channelReordering.stream().max(Comparator.comparing(IntegerRenaming::getKey)).orElse(null);
+            IntegerIntegerKeyValuePair max = channelReordering.stream().max(Comparator.comparing(IntegerIntegerKeyValuePair::getKey)).orElse(null);
             if (max != null) {
                 nChannels = max.getValue() + 1;
             } else {
@@ -75,7 +75,7 @@ public class ArrangeChannelsAlgorithm extends ACAQSimpleIteratingAlgorithm {
         }
         int[] order = new int[nChannels]; // Info: Order starts with 1. Map from Array index <- Source channel
         TIntIntMap targetToSourceAssignment = new TIntIntHashMap();
-        for (IntegerRenaming renaming : channelReordering) {
+        for (IntegerIntegerKeyValuePair renaming : channelReordering) {
             targetToSourceAssignment.put(renaming.getValue(), renaming.getKey());
         }
 
@@ -102,14 +102,14 @@ public class ArrangeChannelsAlgorithm extends ACAQSimpleIteratingAlgorithm {
     public void reportValidity(ACAQValidityReport report) {
         if (channelReordering.size() > 1) {
             TIntSet generatedTargets = new TIntHashSet();
-            IntegerRenaming max = channelReordering.stream().max(Comparator.comparing(IntegerRenaming::getKey)).get();
+            IntegerIntegerKeyValuePair max = channelReordering.stream().max(Comparator.comparing(IntegerIntegerKeyValuePair::getKey)).get();
 
             for (int i = 0; i <= max.getValue(); i++) {
-                for (IntegerRenaming integerRenaming : channelReordering) {
-                    if (integerRenaming.getValue() == i) {
+                for (IntegerIntegerKeyValuePair integerIntegerKeyValuePair : channelReordering) {
+                    if (integerIntegerKeyValuePair.getValue() == i) {
                         if (generatedTargets.contains(i)) {
                             report.forCategory("Channel reordering").reportIsInvalid("Duplicate reordering targets!",
-                                    "The channel " + integerRenaming.getKey() + " is assigned to channel " + i + ", but it is already assigned.",
+                                    "The channel " + integerIntegerKeyValuePair.getKey() + " is assigned to channel " + i + ", but it is already assigned.",
                                     "Please check if you have duplicate targets. If you don't have duplicate targets, please note that " +
                                             "channels without instructions are automatically assigned an identity transform. In this case, " +
                                             "you also have to specify where this channel is assigned to.",
@@ -121,7 +121,7 @@ public class ArrangeChannelsAlgorithm extends ACAQSimpleIteratingAlgorithm {
                 generatedTargets.add(i);
             }
         }
-        for (IntegerRenaming renaming : channelReordering) {
+        for (IntegerIntegerKeyValuePair renaming : channelReordering) {
             if (renaming.getKey() < 0 | renaming.getValue() < 0) {
                 report.forCategory("Channel reordering").reportIsInvalid("Invalid channel index!",
                         "A channel index cannot be negative. The first channel index is 0.",
@@ -136,12 +136,12 @@ public class ArrangeChannelsAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQDocumentation(name = "Channel reordering", description = "The channel with index on the left hand side is assigned to the channel with the index on the right hand side. " +
             "The first index is 0. Channels left out of this assignment stay at the same index after transformation.")
     @ACAQParameter("channel-reordering")
-    public IntegerRenamingList getChannelReordering() {
+    public IntegerIntegerKeyValuePairList getChannelReordering() {
         return channelReordering;
     }
 
     @ACAQParameter("channel-reordering")
-    public void setChannelReordering(IntegerRenamingList channelReordering) {
+    public void setChannelReordering(IntegerIntegerKeyValuePairList channelReordering) {
         this.channelReordering = channelReordering;
     }
 

@@ -32,7 +32,7 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends ACAQIteratingAlgorit
 
     private MeasurementColumnSortOrderList sortOrderList = new MeasurementColumnSortOrderList();
     private IntModificationParameter selection = new IntModificationParameter();
-    private UnreferencedRoiStatisticsAlgorithm roiStatisticsAlgorithm = ACAQAlgorithm.newInstance("ij1-roi-statistics");
+    private RoiStatisticsAlgorithm roiStatisticsAlgorithm = ACAQAlgorithm.newInstance("ij1-roi-statistics");
     private boolean autoClamp = true;
 
     /**

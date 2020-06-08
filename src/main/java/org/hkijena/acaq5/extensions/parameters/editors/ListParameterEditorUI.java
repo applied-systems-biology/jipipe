@@ -15,7 +15,7 @@ import java.awt.*;
 /**
  * Generic parameter for {@link ListParameter}
  */
-public class CollectionParameterEditorUI extends ACAQParameterEditorUI {
+public class ListParameterEditorUI extends ACAQParameterEditorUI {
     private FormPanel formPanel;
 
     /**
@@ -24,7 +24,7 @@ public class CollectionParameterEditorUI extends ACAQParameterEditorUI {
      * @param context         SciJava context
      * @param parameterAccess Parameter
      */
-    public CollectionParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
+    public ListParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
         super(context, parameterAccess);
         initialize();
         reload();

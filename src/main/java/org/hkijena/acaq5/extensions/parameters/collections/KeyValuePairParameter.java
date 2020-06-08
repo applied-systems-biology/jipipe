@@ -84,6 +84,11 @@ public abstract class KeyValuePairParameter<K, V> implements ACAQValidatable, Ma
         return keyClass;
     }
 
+    @Override
+    public String toString() {
+        return getKey() + " -> " + getValue();
+    }
+
     /**
      * Serializes the parameter
      */

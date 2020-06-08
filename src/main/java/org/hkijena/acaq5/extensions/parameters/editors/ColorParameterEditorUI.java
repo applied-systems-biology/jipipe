@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.extensions.parameters.editors;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Context;
@@ -15,6 +16,7 @@ public class ColorParameterEditorUI extends ACAQParameterEditorUI {
 
     private boolean isReloading = false;
     private JButton currentlyDisplayed;
+    private ColorIcon icon = new ColorIcon();
 
 
     /**
@@ -29,7 +31,7 @@ public class ColorParameterEditorUI extends ACAQParameterEditorUI {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        currentlyDisplayed = new JButton();
+        currentlyDisplayed = new JButton(icon);
         currentlyDisplayed.addActionListener(e -> pickColor());
         UIUtils.makeFlat(currentlyDisplayed);
         add(currentlyDisplayed, BorderLayout.CENTER);
@@ -67,11 +69,11 @@ public class ColorParameterEditorUI extends ACAQParameterEditorUI {
         if (value == null) {
             value = Color.WHITE;
         }
-        currentlyDisplayed.setBackground(value);
+        icon.setFillColor(value);
         if (value.getAlpha() != 255) {
-            currentlyDisplayed.setText("#" + Integer.toHexString(value.getRGB()) + Integer.toHexString(value.getAlpha()));
+            currentlyDisplayed.setText("#" + Integer.toHexString(value.getRGB()).toUpperCase() + Integer.toHexString(value.getAlpha()).toUpperCase());
         } else {
-            currentlyDisplayed.setText("#" + Integer.toHexString(value.getRGB()));
+            currentlyDisplayed.setText("#" + Integer.toHexString(value.getRGB()).toUpperCase());
         }
         isReloading = false;
     }
