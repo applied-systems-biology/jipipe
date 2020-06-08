@@ -26,8 +26,8 @@ import java.util.function.Supplier;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@ACAQDocumentation(name = "Sort and extract ROI by statistics (unreferenced)", description = "Sorts the ROI list elements via statistics and allows to you extract the n top values. This algorithm does not require a " +
-        "reference image and will instead use the output of the unreferenced 'ROI to Mask' algorithm as reference.")
+@ACAQDocumentation(name = "Sort and extract ROI by statistics", description = "Sorts the ROI list elements via statistics and allows to you extract the n top values. " +
+        "Optionally, line and fill colors of the output rows can be colored according to the output order. ")
 @ACAQOrganization(menuPath = "ROI", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ROIListData.class, slotName = "ROI")
 @AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Image")
