@@ -122,10 +122,10 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends ACAQIteratingAlgorit
         ROIListData outputData = new ROIListData();
         for (int i = 0; i < topN; i++) {
             Roi roi = data.get(i);
-            if(mapFillColor.isEnabled()) {
+            if (mapFillColor.isEnabled()) {
                 roi.setFillColor(mapFillColor.getContent().apply(i * 1.0 / topN));
             }
-            if(mapLineColor.isEnabled()) {
+            if (mapLineColor.isEnabled()) {
                 roi.setStrokeColor(mapLineColor.getContent().apply(i * 1.0 / topN));
             }
             outputData.add(roi);
