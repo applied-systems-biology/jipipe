@@ -97,7 +97,8 @@ public class ChangeRoiPropertiesAlgorithm extends ACAQSimpleIteratingAlgorithm {
     public void reportValidity(ACAQValidityReport report) {
     }
 
-    @ACAQDocumentation(name = "Slice position (Z)", description = "Allows to relocate the ROI to a different Z-position")
+    @ACAQDocumentation(name = "Slice position (Z)", description = "Allows to relocate the ROI to a different Z-position. " +
+            "The first index is 1. If set to zero, the ROI is located on all slices.")
     @ACAQParameter("position-z")
     public OptionalIntegerParameter getPositionZ() {
         return positionZ;
@@ -109,7 +110,8 @@ public class ChangeRoiPropertiesAlgorithm extends ACAQSimpleIteratingAlgorithm {
     }
 
     @ACAQDocumentation(name = "Slice position (Channel)", description = "Allows to relocate the ROI to a different channel-position. Please note " +
-            "that 'Channel' refers to an image slice and not to a pixel channel.")
+            "that 'Channel' refers to an image slice and not to a pixel channel. " +
+            "The first index is 1. If set to zero, the ROI is located on all channels.")
     @ACAQParameter("position-c")
     public OptionalIntegerParameter getPositionC() {
         return positionC;
@@ -120,7 +122,8 @@ public class ChangeRoiPropertiesAlgorithm extends ACAQSimpleIteratingAlgorithm {
         this.positionC = positionC;
     }
 
-    @ACAQDocumentation(name = "Slice position (Frame)", description = "Allows to relocate the ROI to a different frame/time-position")
+    @ACAQDocumentation(name = "Slice position (Frame)", description = "Allows to relocate the ROI to a different frame/time-position. " +
+            "The first index is 1. If set to zero, the ROI is located on all frames.")
     @ACAQParameter("position-t")
     public OptionalIntegerParameter getPositionT() {
         return positionT;

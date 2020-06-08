@@ -30,7 +30,8 @@ import java.util.function.Supplier;
 @AlgorithmOutputSlot(value = ROIListData.class, slotName = "Output")
 public class ColorRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
 
-    private MeasurementColumn measurement = MeasurementColumn.Area;
+    private MeasurementColumn fillMeasurement = MeasurementColumn.Area;
+    private MeasurementColumn lineMeasurement = MeasurementColumn.Area;
     private RoiStatisticsAlgorithm roiStatisticsAlgorithm = ACAQAlgorithm.newInstance("ij1-roi-statistics");
     private OptionalColorMapParameter mapFillColor = new OptionalColorMapParameter();
     private OptionalColorMapParameter mapLineColor = new OptionalColorMapParameter();
@@ -52,6 +53,8 @@ public class ColorRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
      */
     public ColorRoiByStatisticsAlgorithm(ColorRoiByStatisticsAlgorithm other) {
         super(other);
+        this.fillMeasurement = other.fillMeasurement;
+        this.lineMeasurement = other.lineMeasurement;
         this.mapFillColor = new OptionalColorMapParameter(other.mapFillColor);
         this.mapLineColor = new OptionalColorMapParameter(other.mapLineColor);
     }
@@ -59,7 +62,7 @@ public class ColorRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     @Override
     public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         // Set parameters of ROI statistics algorithm
-        roiStatisticsAlgorithm.getMeasurements().setNativeValue(measurement.getNativeValue());
+        roiStatisticsAlgorithm.getMeasurements().setNativeValue(fillMeasurement.getNativeValue() | lineMeasurement.getNativeValue());
 
         // Continue with run
         super.run(subProgress, algorithmProgress, isCancelled);
@@ -79,24 +82,35 @@ public class ColorRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
         ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class);
 
         // Apply color map
-        double min = Double.POSITIVE_INFINITY;
-        double max = Double.NEGATIVE_INFINITY;
-        TDoubleList values = new TDoubleArrayList();
+        double fillMin = Double.POSITIVE_INFINITY;
+        double fillMax = Double.NEGATIVE_INFINITY;
+        double lineMin = Double.POSITIVE_INFINITY;
+        double lineMax = Double.NEGATIVE_INFINITY;
+        TDoubleList fillValues = new TDoubleArrayList();
+        TDoubleList lineValues = new TDoubleArrayList();
         for (int row = 0; row < data.size(); row++) {
-            double value = statistics.getTable().getValue(measurement.getColumnName(), row);
-            values.add(value);
-            min = Math.min(value, min);
-            max = Math.max(value, max);
+            double fillValue = statistics.getTable().getValue(fillMeasurement.getColumnName(), row);
+            double lineValue = statistics.getTable().getValue(fillMeasurement.getColumnName(), row);
+            
+            fillValues.add(fillValue);
+            fillMin = Math.min(fillValue, fillMin);
+            fillMax = Math.max(fillValue, fillMax);
+
+            lineValues.add(lineValue);
+            lineMin = Math.min(lineValue, lineMin);
+            lineMax = Math.max(lineValue, lineMax);
         }
         for (int row = 0; row < data.size(); row++) {
-            double value = values.get(row);
-            double relative = (value - min) / (max - min);
+            double fillValue = fillValues.get(row);
+            double relativeFill = (fillValue - fillMin) / (fillMax - fillMin);
+            double lineValue = lineValues.get(row);
+            double relativeLine = (lineValue - lineMin) / (lineMax - lineMin);
             Roi roi = data.get(row);
             if (mapFillColor.isEnabled()) {
-                roi.setFillColor(mapFillColor.getContent().apply(relative));
+                roi.setFillColor(mapFillColor.getContent().apply(relativeFill));
             }
             if (mapLineColor.isEnabled()) {
-                roi.setFillColor(mapLineColor.getContent().apply(relative));
+                roi.setStrokeColor(mapLineColor.getContent().apply(relativeLine));
             }
         }
 
@@ -134,14 +148,25 @@ public class ColorRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
         this.mapLineColor = mapLineColor;
     }
 
-    @ACAQDocumentation(name = "Measurement", description = "The measurement to extract.")
-    @ACAQParameter("measurement")
-    public MeasurementColumn getMeasurement() {
-        return measurement;
+    @ACAQDocumentation(name = "Fill measurement", description = "The measurement to extract for the filling color.")
+    @ACAQParameter("fill-measurement")
+    public MeasurementColumn getFillMeasurement() {
+        return fillMeasurement;
     }
 
-    @ACAQParameter("measurement")
-    public void setMeasurement(MeasurementColumn measurement) {
-        this.measurement = measurement;
+    @ACAQParameter("fill-measurement")
+    public void setFillMeasurement(MeasurementColumn fillMeasurement) {
+        this.fillMeasurement = fillMeasurement;
+    }
+
+    @ACAQDocumentation(name = "Line measurement", description = "The measurement to extract for the line color.")
+    @ACAQParameter("line-measurement")
+    public MeasurementColumn getLineMeasurement() {
+        return lineMeasurement;
+    }
+    
+    @ACAQParameter("line-measurement")
+    public void setLineMeasurement(MeasurementColumn lineMeasurement) {
+        this.lineMeasurement = lineMeasurement;
     }
 }
