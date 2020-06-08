@@ -33,10 +33,7 @@ import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.fft.FFT2DForwardTransfo
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.fft.FFT2DInverseTransform;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.fft.FFT2DSwapQuadrants;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.math.*;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure.Measurement;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure.MeasurementColumn;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure.MeasurementFilter;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure.MeasurementFilterList;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure.*;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.morphology.*;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.noise.AddNoise2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.noise.DespeckleFilter2DAlgorithm;
@@ -255,6 +252,8 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerAlgorithm("ij1-roi-statistics", RoiStatisticsAlgorithm.class);
         registerAlgorithm("ij1-roi-filter-statistics-unreferenced", UnreferencedFilterRoiByStatisticsAlgorithm.class);
         registerAlgorithm("ij1-roi-filter-statistics", FilterRoiByStatisticsAlgorithm.class);
+        registerAlgorithm("ij1-roi-sort-and-extract-statistics-unreferenced", UnreferencedSortAndExtractRoiByStatisticsAlgorithm.class);
+        registerAlgorithm("ij1-roi-sort-and-extract-statistics", SortAndExtractRoiByStatisticsAlgorithm.class);
 
         // Register enum parameters
         registerEnumParameterType("ij1-interpolation-method", InterpolationMethod.class,
@@ -263,6 +262,8 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
                 "Measurement", "Available measurements");
         registerEnumParameterType("ij1-measurement-column", MeasurementColumn.class,
                 "Measurement column", "Available measurement columns");
+        registerEnumParameterType("ij1-sort-order", SortOrder.class,
+                "Sort order", "Available sort orders");
 
         registerEnumParameterType("ij1-background-rollingball2d:background-type", RollingBallBackgroundEstimator2DAlgorithm.BackgroundType.class,
                 "Background type", "Available background types");
@@ -330,6 +331,20 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
                 o -> new MeasurementFilterList((MeasurementFilterList) o),
                 "Measurement filter list",
                 "Models filtering of measurements",
+                null);
+        registerParameterType("ij1:measurement-column-sort-order",
+                MeasurementColumnSortOrder.class,
+                MeasurementColumnSortOrder::new,
+                o -> new MeasurementColumnSortOrder((MeasurementColumnSortOrder) o),
+                "Measurement column sort order",
+                "Describes how a data is sorted by a measurement column",
+                null);
+        registerParameterType("ij1:measurement-column-sort-order-list",
+                MeasurementColumnSortOrderList.class,
+                MeasurementColumnSortOrderList::new,
+                o -> new MeasurementColumnSortOrderList((MeasurementColumnSortOrderList) o),
+                "Measurement column sort order list",
+                "List of measurement column sort orders",
                 null);
 
 //        registerIJ2Algorithms();
