@@ -149,176 +149,36 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
 
     @Override
     public void register() {
-        registerTrait(new ACAQJavaTraitDeclaration("image-index", ImageIndexDiscriminator.class),
-                ResourceUtils.getPluginResource("icons/traits/search-location-blue.png"));
-        registerTrait(new ACAQJavaTraitDeclaration("roi-index", ROIIndexDiscriminator.class),
-                ResourceUtils.getPluginResource("icons/traits/search-location-blue.png"));
-        registerTrait(new ACAQJavaTraitDeclaration("image-title", ImageTitleDiscriminator.class),
-                ResourceUtils.getPluginResource("icons/traits/search-location-blue.png"));
-
-        registerAlgorithm("ij1-blur-gaussian2d", GaussianBlur2DAlgorithm.class);
-        registerAlgorithm("ij1-blur-gaussian3d", GaussianBlur3DAlgorithm.class);
-        registerAlgorithm("ij1-blur-box2d", BoxFilter2DAlgorithm.class);
-        registerAlgorithm("ij1-blur-box3d", BoxFilter3DAlgorithm.class);
-        registerAlgorithm("ij1-blur-median2d-8u", MedianBlurGreyscale8U2DAlgorithm.class);
-        registerAlgorithm("ij1-blur-median2d-rgb", MedianBlurRGB2DAlgorithm.class);
-        registerAlgorithm("ij1-blur-median2d", MedianBlurFilter2DAlgorithm.class);
-        registerAlgorithm("ij1-blur-median3d", MedianBlurFilter3DAlgorithm.class);
-
-        registerAlgorithm("ij1-color-invert", InvertColorsAlgorithm.class);
-        registerAlgorithm("ij1-color-merge-channels", MergeChannelsAlgorithm.class);
-        registerAlgorithm("ij1-color-arrange-channels", ArrangeChannelsAlgorithm.class);
-        registerAlgorithm("ij1-color-split-channels", SplitChannelsAlgorithm.class);
-
-        registerAlgorithm("ij1-edge-sobel", SobelEdgeDetectorAlgorithm.class);
-
-        registerAlgorithm("ij1-contrast-clahe", CLAHEContrastEnhancer.class);
-        registerAlgorithm("ij1-contrast-illumination-correction2d", IlluminationCorrection2DAlgorithm.class);
-
-        registerAlgorithm("ij1-feature-vesselness-frangi", FrangiVesselnessFeatures.class);
-        registerAlgorithm("feature-vesselness-meijering2d", MeijeringVesselness2DFeatures.class);
-        registerAlgorithm("ij1-feature-maxima-local-2d", LocalMaxima2DAlgorithm.class);
-
-        registerAlgorithm("ij1-math-math2d", ApplyMath2DAlgorithm.class);
-        registerAlgorithm("ij1-math-transform2d", ApplyTransform2DAlgorithm.class);
-        registerAlgorithm("ij1-math-edt2d", ApplyDistanceTransform2DAlgorithm.class);
-        registerAlgorithm("ij1-math-local-variance2d", LocalVarianceFilter2DAlgorithm.class);
-        registerAlgorithm("ij1-math-local-maximum2d", LocalMaximumFilter2DAlgorithm.class);
-        registerAlgorithm("ij1-math-local-minimum2d", LocalMinimumFilter2DAlgorithm.class);
-        registerAlgorithm("ij1-math-local-variance3d", LocalVarianceFilter2DAlgorithm.class);
-        registerAlgorithm("ij1-math-local-maximum3d", LocalMaximumFilter3DAlgorithm.class);
-        registerAlgorithm("ij1-math-local-minimum3d", LocalMinimumFilter3DAlgorithm.class);
-        registerAlgorithm("ij1-math-replace-nan-by-median2d", RemoveNaNFilter2DAlgorithm.class);
-        registerAlgorithm("ij1-math-imagecalculator2d", ImageCalculator2DAlgorithm.class);
-        registerAlgorithm("ij1-math-hessian2d", Hessian2DAlgorithm.class);
-
-        registerAlgorithm("ij1-morph-binary-operation2d", MorphologyBinary2DAlgorithm.class);
-        registerAlgorithm("ij1-morph-greyscale-operation2d", MorphologyGreyscale2DAlgorithm.class);
-        registerAlgorithm("ij1-morph-binary-fillholes2d", MorphologyFillHoles2DAlgorithm.class);
-        registerAlgorithm("ij1-morph-binary-outline2d", MorphologyOutline2DAlgorithm.class);
-        registerAlgorithm("ij1-morph-binary-skeletonize2d", MorphologySkeletonize2DAlgorithm.class);
-        registerAlgorithm("ij1-morph-greyscale-internalgradient2d", MorphologyInternalGradient2DAlgorithm.class);
-
-        registerAlgorithm("ij1-binary-dtwatershed2d", DistanceTransformWatershed2DAlgorithm.class);
-        registerAlgorithm("ij1-binary-voronoi2d", Voronoi2DAlgorithm.class);
-        registerAlgorithm("ij1-binary-uep2d", UltimateErodedPoints2DAlgorithm.class);
-
-        registerAlgorithm("ij1-noise-addnormalnoise2d", AddNoise2DAlgorithm.class);
-        registerAlgorithm("ij1-noise-despeckle2d", DespeckleFilter2DAlgorithm.class);
-        registerAlgorithm("ij1-noise-removeoutliers2d", RemoveOutliersFilter2DAlgorithm.class);
-
-        registerAlgorithm("ij1-background-rollingball2d", RollingBallBackgroundEstimator2DAlgorithm.class);
-
-        registerAlgorithm("ij1-sharpen-laplacian2d", LaplacianSharpen2DAlgorithm.class);
-
-        registerAlgorithm("ij1-threshold-manual2d-8u", ManualThreshold8U2DAlgorithm.class);
-        registerAlgorithm("ij1-threshold-manual2d-16u", ManualThreshold16U2DAlgorithm.class);
-        registerAlgorithm("ij1-threshold-auto2d", AutoThreshold2DAlgorithm.class);
-        registerAlgorithm("threshold-brightspots2d", BrightSpotsSegmentation2DAlgorithm.class);
-        registerAlgorithm("threshold-hessian2d", HessianSegmentation2DAlgorithm.class);
-        registerAlgorithm("threshold-hough2d", HoughSegmentation2DAlgorithm.class);
-        registerAlgorithm("threshold-internalgradient2d", InternalGradientSegmentation2DAlgorithm.class);
-
-        registerAlgorithm("ij1-dimensions-stack-to-2d", StackTo2DAlgorithm.class);
-        registerAlgorithm("ij1-dimensions-stacksplitter", StackSplitterAlgorithm.class);
-        registerAlgorithm("ij1-dimensions-stackmerger", StackMergerAlgorithm.class);
-        registerAlgorithm("ij1-dimensions-stackinverter", StackInverterAlgorithm.class);
-        registerAlgorithm("ij1-dimensions-zproject", ZProjectorAlgorithm.class);
-
-        registerAlgorithm("ij1-analyze-find-particles2d", FindParticles2D.class);
-        registerAlgorithm("ij1-analyze-statistics-histogram", HistogramGenerator.class);
-        registerAlgorithm("ij1-analyze-statistics-pixels-greyscale", GreyscalePixelsGenerator.class);
-
-        registerAlgorithm("ij1-fft-forward2d", FFT2DForwardTransform.class);
-        registerAlgorithm("ij1-fft-inverse2d", FFT2DInverseTransform.class);
-        registerAlgorithm("ij1-fft-swap2d", FFT2DSwapQuadrants.class);
-
-        registerAlgorithm("ij1-transform-flip2d", TransformFlip2DAlgorithm.class);
-        registerAlgorithm("ij1-transform-rotate2d", TransformRotate2DAlgorithm.class);
-        registerAlgorithm("ij1-transform-scale2d", TransformScale2DAlgorithm.class);
-        registerAlgorithm("ij1-transform-scale3d", TransformScale3DAlgorithm.class);
-        registerAlgorithm("ij1-transform-crop2d", TransformCrop2DAlgorithm.class);
-
-        registerAlgorithm("ij1-convolve-convolve2d", Convolve2DAlgorithm.class);
-
-        registerAlgorithm("ij1-roi-split", SplitRoiAlgorithm.class);
-        registerAlgorithm("ij1-roi-merge", MergeRoiListsAlgorithm.class);
-        registerAlgorithm("ij1-roi-calculator", RoiCalculatorAlgorithm.class);
-        registerAlgorithm("ij1-roi-to-mask-unreferenced", UnreferencedRoiToMaskAlgorithm.class);
-        registerAlgorithm("ij1-roi-to-mask", RoiToMaskAlgorithm.class);
-        registerAlgorithm("ij1-roi-outline", OutlineRoiAlgorithm.class);
-        registerAlgorithm("ij1-roi-remove-bordering", RemoveBorderRoisAlgorithm.class);
-        registerAlgorithm("ij1-roi-statistics-unreferenced", UnreferencedRoiStatisticsAlgorithm.class);
-        registerAlgorithm("ij1-roi-statistics", RoiStatisticsAlgorithm.class);
-        registerAlgorithm("ij1-roi-filter-statistics-unreferenced", UnreferencedFilterRoiByStatisticsAlgorithm.class);
-        registerAlgorithm("ij1-roi-filter-statistics", FilterRoiByStatisticsAlgorithm.class);
-        registerAlgorithm("ij1-roi-sort-and-extract-statistics-unreferenced", UnreferencedSortAndExtractRoiByStatisticsAlgorithm.class);
-        registerAlgorithm("ij1-roi-sort-and-extract-statistics", SortAndExtractRoiByStatisticsAlgorithm.class);
-        registerAlgorithm("ij1-roi-set-properties", ChangeRoiPropertiesAlgorithm.class);
+        registerTraits();
+        registerBlurAlgorithms();
+        registerColorAlgorithms();
+        registerEdgeAlgorithms();
+        registerContrastAlgorithms();
+        registerFeatureAlgorithms();
+        registerMathAlgorithms();
+        registerMorphologyAlgorithms();
+        registerBinaryAlgorithms();
+        registerNoiseAlgorithms();
+        registerBackgroundAlgorithms();
+        registerSharpenAlgorithms();
+        registerThresholdAlgorithms();
+        registerDimensionAlgorithms();
+        registerAnalysisAlgorithms();
+        registerFFTAlgorithms();
+        registerTransformationAlgorithms();
+        registerConvolutionAlgorithms();
+        registerROIAlgorithms();
 
         // Register enum parameters
-        registerEnumParameterType("ij1-interpolation-method", InterpolationMethod.class,
-                "Interpolation method", "Available interpolation methods");
-        registerEnumParameterType("ij1-measurement", Measurement.class,
-                "Measurement", "Available measurements");
-        registerEnumParameterType("ij1-measurement-column", MeasurementColumn.class,
-                "Measurement column", "Available measurement columns");
-        registerEnumParameterType("ij1-sort-order", SortOrder.class,
-                "Sort order", "Available sort orders");
-
-        registerEnumParameterType("ij1-background-rollingball2d:background-type", RollingBallBackgroundEstimator2DAlgorithm.BackgroundType.class,
-                "Background type", "Available background types");
-        registerEnumParameterType("ij1-background-rollingball2d:background-method", RollingBallBackgroundEstimator2DAlgorithm.Method.class,
-                "Rolling ball method", "Available methods");
-
-        registerEnumParameterType("ij1-color-merge-channels:channel-color", MergeChannelsAlgorithm.ChannelColor.class,
-                "Channel color", "Available channel colors");
-
-        registerEnumParameterType("ij1-dimensions-zproject:method", ZProjectorAlgorithm.Method.class,
-                "Method", "Available methods");
-
-        registerEnumParameterType("ij1-feature-vesselness-frangi:slicing-mode", FrangiVesselnessFeatures.SlicingMode.class,
-                "Slicing mode", "Available slicing modes");
-        registerEnumParameterType("ij1-feature-maxima-local-2d:output-type", LocalMaxima2DAlgorithm.OutputType.class,
-                "Output type", "Available output types");
-
-        registerEnumParameterType("ij1-math-math2d:transformation", ApplyMath2DAlgorithm.Transformation.class,
-                "Transformation", "Available transformations");
-        registerEnumParameterType("ij1-math-transform2d:transformation", ApplyTransform2DAlgorithm.Transformation.class,
-                "Transformation", "Available transformations");
-
-        registerEnumParameterType("ij1-math-imagecalculator2d:operation", ImageCalculator2DAlgorithm.Operation.class,
-                "Operation", "Available operations");
-        registerEnumParameterType("ij1-math-imagecalculator2d:operand", ImageCalculator2DAlgorithm.Operand.class,
-                "Operand", "Available operands");
-
-        registerEnumParameterType("ij1-morph-binary-operation2d:operation", MorphologyBinary2DAlgorithm.Operation.class,
-                "Operation", "Available operations");
-        registerEnumParameterType("ij1-morph-greyscale-operation2d:operation", MorphologyGreyscale2DAlgorithm.Operation.class,
-                "Operation", "Available operations");
-
-        registerEnumParameterType("ij1-noise-removeoutliers2d:mode", RemoveOutliersFilter2DAlgorithm.Mode.class,
-                "Mode", "Available modes");
-
-        registerEnumParameterType("ij1-analyze-statistics-histogram:multi-channel-mode", HistogramGenerator.MultiChannelMode.class,
-                "Multichannel mode", "Available modes");
-
-        registerEnumParameterType("ij1-transform-flip2d:flip-mode", TransformFlip2DAlgorithm.FlipMode.class,
-                "Flip mode", "Available modes");
-        registerEnumParameterType("ij1-transform-rotate2d:rotation-mode", TransformRotate2DAlgorithm.RotationMode.class,
-                "Rotation mode", "Available modes");
-
-        registerEnumParameterType(AutoThresholder.Method.class.getCanonicalName(), AutoThresholder.Method.class,
-                "Auto threshold method", "Available methods");
-        registerEnumParameterType("ij1:eigenvalue-selection-2d", EigenvalueSelection2D.class,
-                "Eigenvalue selection (2D)", "Determines whether to choose the smallest or largest Eigenvalue");
-        registerEnumParameterType("ij1:roi-outline", RoiOutline.class,
-                "ROI outline", "Available ways to outline a ROI");
-
-        registerEnumParameterType("ij1:logical-operation", LogicalOperation.class,
-                "Logical operation", "Available logical operations");
+        registerGlobalEnums();
 
         // Register other parameters
+        registerGlobalParameters();
+
+//        registerIJ2Algorithms();
+    }
+
+    private void registerGlobalParameters() {
         registerParameterType("ij1:measurement-filter",
                 MeasurementFilter.class,
                 MeasurementFilter::new,
@@ -347,8 +207,215 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
                 "Measurement column sort order list",
                 "List of measurement column sort orders",
                 null);
+    }
 
-//        registerIJ2Algorithms();
+    private void registerGlobalEnums() {
+        registerEnumParameterType("ij1-interpolation-method", InterpolationMethod.class,
+                "Interpolation method", "Available interpolation methods");
+        registerEnumParameterType("ij1-measurement", Measurement.class,
+                "Measurement", "Available measurements");
+        registerEnumParameterType("ij1-measurement-column", MeasurementColumn.class,
+                "Measurement column", "Available measurement columns");
+        registerEnumParameterType("ij1-sort-order", SortOrder.class,
+                "Sort order", "Available sort orders");
+        registerEnumParameterType("ij1:logical-operation", LogicalOperation.class,
+                "Logical operation", "Available logical operations");
+    }
+
+    private void registerROIAlgorithms() {
+        registerAlgorithm("ij1-roi-split", SplitRoiAlgorithm.class);
+        registerAlgorithm("ij1-roi-merge", MergeRoiListsAlgorithm.class);
+        registerAlgorithm("ij1-roi-calculator", RoiCalculatorAlgorithm.class);
+        registerAlgorithm("ij1-roi-to-mask-unreferenced", UnreferencedRoiToMaskAlgorithm.class);
+        registerAlgorithm("ij1-roi-to-mask", RoiToMaskAlgorithm.class);
+        registerAlgorithm("ij1-roi-outline", OutlineRoiAlgorithm.class);
+        registerAlgorithm("ij1-roi-remove-bordering", RemoveBorderRoisAlgorithm.class);
+        registerAlgorithm("ij1-roi-statistics-unreferenced", UnreferencedRoiStatisticsAlgorithm.class);
+        registerAlgorithm("ij1-roi-statistics", RoiStatisticsAlgorithm.class);
+        registerAlgorithm("ij1-roi-filter-statistics-unreferenced", UnreferencedFilterRoiByStatisticsAlgorithm.class);
+        registerAlgorithm("ij1-roi-filter-statistics", FilterRoiByStatisticsAlgorithm.class);
+        registerAlgorithm("ij1-roi-sort-and-extract-statistics-unreferenced", UnreferencedSortAndExtractRoiByStatisticsAlgorithm.class);
+        registerAlgorithm("ij1-roi-sort-and-extract-statistics", SortAndExtractRoiByStatisticsAlgorithm.class);
+        registerAlgorithm("ij1-roi-set-properties", ChangeRoiPropertiesAlgorithm.class);
+        registerAlgorithm("ij1-roi-to-rgb-unreferenced", UnreferencedRoiToRGBAlgorithm.class);
+        registerAlgorithm("ij1-roi-to-rgb", RoiToRGBAlgorithm.class);
+    }
+
+    private void registerConvolutionAlgorithms() {
+        registerAlgorithm("ij1-convolve-convolve2d", Convolve2DAlgorithm.class);
+    }
+
+    private void registerTransformationAlgorithms() {
+        registerAlgorithm("ij1-transform-flip2d", TransformFlip2DAlgorithm.class);
+        registerAlgorithm("ij1-transform-rotate2d", TransformRotate2DAlgorithm.class);
+        registerAlgorithm("ij1-transform-scale2d", TransformScale2DAlgorithm.class);
+        registerAlgorithm("ij1-transform-scale3d", TransformScale3DAlgorithm.class);
+        registerAlgorithm("ij1-transform-crop2d", TransformCrop2DAlgorithm.class);
+
+        registerEnumParameterType("ij1-transform-flip2d:flip-mode", TransformFlip2DAlgorithm.FlipMode.class,
+                "Flip mode", "Available modes");
+        registerEnumParameterType("ij1-transform-rotate2d:rotation-mode", TransformRotate2DAlgorithm.RotationMode.class,
+                "Rotation mode", "Available modes");
+    }
+
+    private void registerFFTAlgorithms() {
+        registerAlgorithm("ij1-fft-forward2d", FFT2DForwardTransform.class);
+        registerAlgorithm("ij1-fft-inverse2d", FFT2DInverseTransform.class);
+        registerAlgorithm("ij1-fft-swap2d", FFT2DSwapQuadrants.class);
+    }
+
+    private void registerAnalysisAlgorithms() {
+        registerAlgorithm("ij1-analyze-find-particles2d", FindParticles2D.class);
+        registerAlgorithm("ij1-analyze-statistics-histogram", HistogramGenerator.class);
+        registerAlgorithm("ij1-analyze-statistics-pixels-greyscale", GreyscalePixelsGenerator.class);
+
+        registerEnumParameterType("ij1-analyze-statistics-histogram:multi-channel-mode", HistogramGenerator.MultiChannelMode.class,
+                "Multichannel mode", "Available modes");
+    }
+
+    private void registerDimensionAlgorithms() {
+        registerAlgorithm("ij1-dimensions-stack-to-2d", StackTo2DAlgorithm.class);
+        registerAlgorithm("ij1-dimensions-stacksplitter", StackSplitterAlgorithm.class);
+        registerAlgorithm("ij1-dimensions-stackmerger", StackMergerAlgorithm.class);
+        registerAlgorithm("ij1-dimensions-stackinverter", StackInverterAlgorithm.class);
+        registerAlgorithm("ij1-dimensions-zproject", ZProjectorAlgorithm.class);
+
+        registerEnumParameterType("ij1-dimensions-zproject:method", ZProjectorAlgorithm.Method.class,
+                "Method", "Available methods");
+    }
+
+    private void registerThresholdAlgorithms() {
+        registerAlgorithm("ij1-threshold-manual2d-8u", ManualThreshold8U2DAlgorithm.class);
+        registerAlgorithm("ij1-threshold-manual2d-16u", ManualThreshold16U2DAlgorithm.class);
+        registerAlgorithm("ij1-threshold-auto2d", AutoThreshold2DAlgorithm.class);
+        registerAlgorithm("threshold-brightspots2d", BrightSpotsSegmentation2DAlgorithm.class);
+        registerAlgorithm("threshold-hessian2d", HessianSegmentation2DAlgorithm.class);
+        registerAlgorithm("threshold-hough2d", HoughSegmentation2DAlgorithm.class);
+        registerAlgorithm("threshold-internalgradient2d", InternalGradientSegmentation2DAlgorithm.class);
+
+        registerEnumParameterType(AutoThresholder.Method.class.getCanonicalName(), AutoThresholder.Method.class,
+                "Auto threshold method", "Available methods");
+        registerEnumParameterType("ij1:eigenvalue-selection-2d", EigenvalueSelection2D.class,
+                "Eigenvalue selection (2D)", "Determines whether to choose the smallest or largest Eigenvalue");
+        registerEnumParameterType("ij1:roi-outline", RoiOutline.class,
+                "ROI outline", "Available ways to outline a ROI");
+    }
+
+    private void registerSharpenAlgorithms() {
+        registerAlgorithm("ij1-sharpen-laplacian2d", LaplacianSharpen2DAlgorithm.class);
+    }
+
+    private void registerBackgroundAlgorithms() {
+        registerAlgorithm("ij1-background-rollingball2d", RollingBallBackgroundEstimator2DAlgorithm.class);
+
+        registerEnumParameterType("ij1-background-rollingball2d:background-type", RollingBallBackgroundEstimator2DAlgorithm.BackgroundType.class,
+                "Background type", "Available background types");
+        registerEnumParameterType("ij1-background-rollingball2d:background-method", RollingBallBackgroundEstimator2DAlgorithm.Method.class,
+                "Rolling ball method", "Available methods");
+    }
+
+    private void registerNoiseAlgorithms() {
+        registerAlgorithm("ij1-noise-addnormalnoise2d", AddNoise2DAlgorithm.class);
+        registerAlgorithm("ij1-noise-despeckle2d", DespeckleFilter2DAlgorithm.class);
+        registerAlgorithm("ij1-noise-removeoutliers2d", RemoveOutliersFilter2DAlgorithm.class);
+
+        registerEnumParameterType("ij1-noise-removeoutliers2d:mode", RemoveOutliersFilter2DAlgorithm.Mode.class,
+                "Mode", "Available modes");
+    }
+
+    private void registerBinaryAlgorithms() {
+        registerAlgorithm("ij1-binary-dtwatershed2d", DistanceTransformWatershed2DAlgorithm.class);
+        registerAlgorithm("ij1-binary-voronoi2d", Voronoi2DAlgorithm.class);
+        registerAlgorithm("ij1-binary-uep2d", UltimateErodedPoints2DAlgorithm.class);
+    }
+
+    private void registerMorphologyAlgorithms() {
+        registerAlgorithm("ij1-morph-binary-operation2d", MorphologyBinary2DAlgorithm.class);
+        registerAlgorithm("ij1-morph-greyscale-operation2d", MorphologyGreyscale2DAlgorithm.class);
+        registerAlgorithm("ij1-morph-binary-fillholes2d", MorphologyFillHoles2DAlgorithm.class);
+        registerAlgorithm("ij1-morph-binary-outline2d", MorphologyOutline2DAlgorithm.class);
+        registerAlgorithm("ij1-morph-binary-skeletonize2d", MorphologySkeletonize2DAlgorithm.class);
+        registerAlgorithm("ij1-morph-greyscale-internalgradient2d", MorphologyInternalGradient2DAlgorithm.class);
+
+        registerEnumParameterType("ij1-morph-binary-operation2d:operation", MorphologyBinary2DAlgorithm.Operation.class,
+                "Operation", "Available operations");
+        registerEnumParameterType("ij1-morph-greyscale-operation2d:operation", MorphologyGreyscale2DAlgorithm.Operation.class,
+                "Operation", "Available operations");
+    }
+
+    private void registerMathAlgorithms() {
+        registerAlgorithm("ij1-math-math2d", ApplyMath2DAlgorithm.class);
+        registerAlgorithm("ij1-math-transform2d", ApplyTransform2DAlgorithm.class);
+        registerAlgorithm("ij1-math-edt2d", ApplyDistanceTransform2DAlgorithm.class);
+        registerAlgorithm("ij1-math-local-variance2d", LocalVarianceFilter2DAlgorithm.class);
+        registerAlgorithm("ij1-math-local-maximum2d", LocalMaximumFilter2DAlgorithm.class);
+        registerAlgorithm("ij1-math-local-minimum2d", LocalMinimumFilter2DAlgorithm.class);
+        registerAlgorithm("ij1-math-local-variance3d", LocalVarianceFilter2DAlgorithm.class);
+        registerAlgorithm("ij1-math-local-maximum3d", LocalMaximumFilter3DAlgorithm.class);
+        registerAlgorithm("ij1-math-local-minimum3d", LocalMinimumFilter3DAlgorithm.class);
+        registerAlgorithm("ij1-math-replace-nan-by-median2d", RemoveNaNFilter2DAlgorithm.class);
+        registerAlgorithm("ij1-math-imagecalculator2d", ImageCalculator2DAlgorithm.class);
+        registerAlgorithm("ij1-math-hessian2d", Hessian2DAlgorithm.class);
+
+        registerEnumParameterType("ij1-math-math2d:transformation", ApplyMath2DAlgorithm.Transformation.class,
+                "Transformation", "Available transformations");
+        registerEnumParameterType("ij1-math-transform2d:transformation", ApplyTransform2DAlgorithm.Transformation.class,
+                "Transformation", "Available transformations");
+
+        registerEnumParameterType("ij1-math-imagecalculator2d:operation", ImageCalculator2DAlgorithm.Operation.class,
+                "Operation", "Available operations");
+        registerEnumParameterType("ij1-math-imagecalculator2d:operand", ImageCalculator2DAlgorithm.Operand.class,
+                "Operand", "Available operands");
+    }
+
+    private void registerFeatureAlgorithms() {
+        registerAlgorithm("ij1-feature-vesselness-frangi", FrangiVesselnessFeatures.class);
+        registerAlgorithm("feature-vesselness-meijering2d", MeijeringVesselness2DFeatures.class);
+        registerAlgorithm("ij1-feature-maxima-local-2d", LocalMaxima2DAlgorithm.class);
+
+        registerEnumParameterType("ij1-feature-vesselness-frangi:slicing-mode", FrangiVesselnessFeatures.SlicingMode.class,
+                "Slicing mode", "Available slicing modes");
+        registerEnumParameterType("ij1-feature-maxima-local-2d:output-type", LocalMaxima2DAlgorithm.OutputType.class,
+                "Output type", "Available output types");
+    }
+
+    private void registerContrastAlgorithms() {
+        registerAlgorithm("ij1-contrast-clahe", CLAHEContrastEnhancer.class);
+        registerAlgorithm("ij1-contrast-illumination-correction2d", IlluminationCorrection2DAlgorithm.class);
+    }
+
+    private void registerEdgeAlgorithms() {
+        registerAlgorithm("ij1-edge-sobel", SobelEdgeDetectorAlgorithm.class);
+    }
+
+    private void registerColorAlgorithms() {
+        registerAlgorithm("ij1-color-invert", InvertColorsAlgorithm.class);
+        registerAlgorithm("ij1-color-merge-channels", MergeChannelsAlgorithm.class);
+        registerAlgorithm("ij1-color-arrange-channels", ArrangeChannelsAlgorithm.class);
+        registerAlgorithm("ij1-color-split-channels", SplitChannelsAlgorithm.class);
+
+        registerEnumParameterType("ij1-color-merge-channels:channel-color", MergeChannelsAlgorithm.ChannelColor.class,
+                "Channel color", "Available channel colors");
+    }
+
+    private void registerBlurAlgorithms() {
+        registerAlgorithm("ij1-blur-gaussian2d", GaussianBlur2DAlgorithm.class);
+        registerAlgorithm("ij1-blur-gaussian3d", GaussianBlur3DAlgorithm.class);
+        registerAlgorithm("ij1-blur-box2d", BoxFilter2DAlgorithm.class);
+        registerAlgorithm("ij1-blur-box3d", BoxFilter3DAlgorithm.class);
+        registerAlgorithm("ij1-blur-median2d-8u", MedianBlurGreyscale8U2DAlgorithm.class);
+        registerAlgorithm("ij1-blur-median2d-rgb", MedianBlurRGB2DAlgorithm.class);
+        registerAlgorithm("ij1-blur-median2d", MedianBlurFilter2DAlgorithm.class);
+        registerAlgorithm("ij1-blur-median3d", MedianBlurFilter3DAlgorithm.class);
+    }
+
+    private void registerTraits() {
+        registerTrait(new ACAQJavaTraitDeclaration("image-index", ImageIndexDiscriminator.class),
+                ResourceUtils.getPluginResource("icons/traits/search-location-blue.png"));
+        registerTrait(new ACAQJavaTraitDeclaration("roi-index", ROIIndexDiscriminator.class),
+                ResourceUtils.getPluginResource("icons/traits/search-location-blue.png"));
+        registerTrait(new ACAQJavaTraitDeclaration("image-title", ImageTitleDiscriminator.class),
+                ResourceUtils.getPluginResource("icons/traits/search-location-blue.png"));
     }
 
     private void registerIJ2Algorithms() {

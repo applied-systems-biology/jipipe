@@ -3,6 +3,7 @@ package org.hkijena.acaq5.extensions.parameters.editors;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
+import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Context;
 
@@ -70,11 +71,7 @@ public class ColorParameterEditorUI extends ACAQParameterEditorUI {
             value = Color.WHITE;
         }
         icon.setFillColor(value);
-        if (value.getAlpha() != 255) {
-            currentlyDisplayed.setText("#" + Integer.toHexString(value.getRGB()).toUpperCase() + Integer.toHexString(value.getAlpha()).toUpperCase());
-        } else {
-            currentlyDisplayed.setText("#" + Integer.toHexString(value.getRGB()).toUpperCase());
-        }
+        currentlyDisplayed.setText(StringUtils.colorToHexString(value));
         isReloading = false;
     }
 }

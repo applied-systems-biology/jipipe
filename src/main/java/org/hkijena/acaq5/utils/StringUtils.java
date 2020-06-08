@@ -15,6 +15,7 @@ package org.hkijena.acaq5.utils;
 import com.google.common.html.HtmlEscapers;
 import org.apache.commons.lang.WordUtils;
 
+import java.awt.*;
 import java.net.URL;
 import java.util.Collection;
 import java.util.function.Predicate;
@@ -29,6 +30,36 @@ public class StringUtils {
 
     private StringUtils() {
 
+    }
+
+    /**
+     * Converts a color to a Hex string
+     * @param color the color
+     * @return A hex string #RRGGBB or #RRGGBBAA (only if alpha is not 255)
+     */
+    public static String colorToHexString(Color color) {
+        if(color.getAlpha() == 255) {
+            return String.format("#%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue());
+        }
+        else {
+            return String.format("#%02X%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+        }
+    }
+
+    /**
+     * Converts a hex color string #RRGGBB or #RRGGBBAA to a color
+     * @param s the string
+     * @return the color
+     */
+    public static Color hexStringToColor(String s) {
+        if (s.length() == 9) {
+            // This is #RRGGBBAA
+            Color rgb = Color.decode(s.substring(0, 7));
+            int alpha = Integer.parseInt(s.substring(7));
+            return new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue(), alpha);
+        } else {
+            return Color.decode(s);
+        }
     }
 
     /**

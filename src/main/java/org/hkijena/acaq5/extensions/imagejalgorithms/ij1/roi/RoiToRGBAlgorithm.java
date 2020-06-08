@@ -15,7 +15,10 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.acaq5.extensions.parameters.OptionalColorParameter;
+import org.hkijena.acaq5.extensions.parameters.primitives.OptionalDoubleParameter;
 
+import java.awt.*;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -25,17 +28,19 @@ import java.util.stream.Collectors;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@ACAQDocumentation(name = "ROI to mask", description = "Converts ROI lists to masks. " +
+@ACAQDocumentation(name = "ROI to RGB", description = "Converts ROI lists to masks. The line and fill color is stored within the ROI themselves. " +
         "This algorithm needs a reference image that provides the output sizes. If you do not have a reference image, you can use the unreferenced variant.")
 @ACAQOrganization(menuPath = "ROI", algorithmCategory = ACAQAlgorithmCategory.Converter)
 @AlgorithmInputSlot(value = ROIListData.class, slotName = "ROI")
 @AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Image")
-@AlgorithmOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
-public class RoiToMaskAlgorithm extends ACAQIteratingAlgorithm {
+@AlgorithmOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output")
+public class RoiToRGBAlgorithm extends ACAQIteratingAlgorithm {
 
     private boolean drawOutline = false;
     private boolean drawFilledOutline = true;
-    private int lineThickness = 1;
+    private OptionalColorParameter overrideFillColor = new OptionalColorParameter();
+    private OptionalColorParameter overrideLineColor = new OptionalColorParameter();
+    private OptionalDoubleParameter overrideLineWidth = new OptionalDoubleParameter();
     private boolean drawOver = false;
 
     /**
@@ -43,12 +48,14 @@ public class RoiToMaskAlgorithm extends ACAQIteratingAlgorithm {
      *
      * @param declaration the declaration
      */
-    public RoiToMaskAlgorithm(ACAQAlgorithmDeclaration declaration) {
+    public RoiToRGBAlgorithm(ACAQAlgorithmDeclaration declaration) {
         super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("ROI", ROIListData.class)
                 .addInputSlot("Image", ImagePlusData.class)
-                .addOutputSlot("Output", ImagePlusGreyscaleMaskData.class, null)
+                .addOutputSlot("Output", ImagePlusColorRGBData.class, null)
                 .seal()
                 .build());
+        overrideLineWidth.setContent(1.0);
+        overrideFillColor.setContent(Color.RED);
     }
 
     /**
@@ -56,11 +63,13 @@ public class RoiToMaskAlgorithm extends ACAQIteratingAlgorithm {
      *
      * @param other the other
      */
-    public RoiToMaskAlgorithm(RoiToMaskAlgorithm other) {
+    public RoiToRGBAlgorithm(RoiToRGBAlgorithm other) {
         super(other);
         this.drawOutline = other.drawOutline;
         this.drawFilledOutline = other.drawFilledOutline;
-        this.lineThickness = other.lineThickness;
+        this.overrideFillColor = new OptionalColorParameter(other.overrideFillColor);
+        this.overrideLineColor = new OptionalColorParameter(other.overrideLineColor);
+        this.overrideLineWidth = new OptionalDoubleParameter(other.overrideLineWidth);
         this.drawOver = other.drawOver;
     }
 
@@ -78,23 +87,29 @@ public class RoiToMaskAlgorithm extends ACAQIteratingAlgorithm {
 
         ImagePlus result;
         if(drawOver) {
-            result = ImagePlusGreyscaleMaskData.convertIfNeeded(reference.duplicate());
+            result = ImagePlusColorRGBData.convertIfNeeded(reference.duplicate());
             result.setTitle("Reference+ROIs");
         }
         else {
-            result = IJ.createImage("ROIs", "8-bit", sx, sy, sc, sz, st);
+            result = IJ.createImage("ROIs", "RGB", sx, sy, sc, sz, st);
         }
         Map<Integer, List<Roi>> groupedByStackIndex =
                 inputData.stream().collect(Collectors.groupingBy(roi -> result.getStackIndex(roi.getCPosition(), roi.getZPosition(), roi.getTPosition())));
         for (Map.Entry<Integer, List<Roi>> entry : groupedByStackIndex.entrySet()) {
             ImageProcessor processor = result.getStack().getProcessor(entry.getKey());
-            processor.setLineWidth(lineThickness);
-            processor.setColor(255);
             for (Roi roi : entry.getValue()) {
-                if (drawFilledOutline)
+                if (drawFilledOutline) {
+                    Color color = (overrideFillColor.isEnabled() || roi.getFillColor() == null) ? overrideFillColor.getContent() : roi.getFillColor();
+                    processor.setColor(color);
                     processor.fill(roi);
-                if (drawOutline)
+                }
+                if (drawOutline) {
+                    Color color = (overrideLineColor.isEnabled() || roi.getStrokeColor() == null) ? overrideLineColor.getContent() : roi.getStrokeColor();
+                    int width = (overrideLineWidth.isEnabled() || roi.getStrokeWidth() <= 0) ? (int)(double)(overrideLineWidth.getContent()) : (int)roi.getStrokeWidth();
+                    processor.setLineWidth(width);
+                    processor.setColor(color);
                     roi.drawPixels(processor);
+                }
             }
         }
 
@@ -128,15 +143,40 @@ public class RoiToMaskAlgorithm extends ACAQIteratingAlgorithm {
         this.drawFilledOutline = drawFilledOutline;
     }
 
-    @ACAQDocumentation(name = "Line thickness", description = "Only relevant if 'Draw outline' is enabled. Sets the outline thickness.")
-    @ACAQParameter("line-thickness")
-    public int getLineThickness() {
-        return lineThickness;
+    @ACAQDocumentation(name = "Override fill color", description = "If enabled, the fill color will be overridden by this value. " +
+            "If a ROI has no fill color, it will always fall back to this color.")
+    @ACAQParameter("override-fill-color")
+    public OptionalColorParameter getOverrideFillColor() {
+        return overrideFillColor;
     }
 
-    @ACAQParameter("line-thickness")
-    public void setLineThickness(int lineThickness) {
-        this.lineThickness = lineThickness;
+    @ACAQParameter("override-fill-color")
+    public void setOverrideFillColor(OptionalColorParameter overrideFillColor) {
+        this.overrideFillColor = overrideFillColor;
+    }
+
+    @ACAQDocumentation(name = "Override line color", description = "If enabled, the line color will be overridden by this value. " +
+            "If a ROI has no line color, it will always fall back to this color.")
+    @ACAQParameter("override-line-color")
+    public OptionalColorParameter getOverrideLineColor() {
+        return overrideLineColor;
+    }
+
+    @ACAQParameter("override-line-color")
+    public void setOverrideLineColor(OptionalColorParameter overrideLineColor) {
+        this.overrideLineColor = overrideLineColor;
+    }
+
+    @ACAQDocumentation(name = "Override line width", description = "If enabled, the line width will be overridden by this value. " +
+            "If a ROI has a line width equal or less than zero, it will fall back to this value.")
+    @ACAQParameter("override-line-width")
+    public OptionalDoubleParameter getOverrideLineWidth() {
+        return overrideLineWidth;
+    }
+
+    @ACAQParameter("override-line-width")
+    public void setOverrideLineWidth(OptionalDoubleParameter overrideLineWidth) {
+        this.overrideLineWidth = overrideLineWidth;
     }
 
     @ACAQDocumentation(name = "Draw over reference", description = "If enabled, draw the ROI over the reference image.")

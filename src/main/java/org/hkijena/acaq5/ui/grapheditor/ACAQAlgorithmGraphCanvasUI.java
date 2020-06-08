@@ -59,6 +59,11 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     private Point cursor;
 
     /**
+     * Used to store the minimum dimensions of the canvas to reduce user disruption
+     */
+    private Dimension minDimensions = null;
+
+    /**
      * Creates a new UI
      *
      * @param algorithmGraph The algorithm graph
@@ -259,6 +264,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 //        nodeUIs.clear();
 //        addNewNodes();
 //        newEntryLocationX = backup;
+        minDimensions = null;
         autoLayoutSugiyama();
     }
 
@@ -470,6 +476,15 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             Component component = getComponent(i);
             width = Math.max(width, component.getX() + 2 * component.getWidth());
             height = Math.max(height, component.getY() + 2 * component.getHeight());
+        }
+        if(minDimensions != null) {
+            width = Math.max(minDimensions.width, width);
+            height = Math.max(minDimensions.height, height);
+            minDimensions.width = width;
+            minDimensions.height = height;
+        }
+        else {
+            minDimensions = new Dimension(width, height);
         }
         return new Dimension(width, height);
     }
