@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Processor, menuPath = "Tables")
 @AlgorithmInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
-public class RenameColumnAlgorithm extends ACAQSimpleIteratingAlgorithm {
+public class RenameTableColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     private StringRenamingList renamingEntries = new StringRenamingList();
 
@@ -31,7 +31,7 @@ public class RenameColumnAlgorithm extends ACAQSimpleIteratingAlgorithm {
      *
      * @param declaration algorithm declaration
      */
-    public RenameColumnAlgorithm(ACAQAlgorithmDeclaration declaration) {
+    public RenameTableColumnsAlgorithm(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
     }
 
@@ -40,7 +40,7 @@ public class RenameColumnAlgorithm extends ACAQSimpleIteratingAlgorithm {
      *
      * @param other the original
      */
-    public RenameColumnAlgorithm(RenameColumnAlgorithm other) {
+    public RenameTableColumnsAlgorithm(RenameTableColumnsAlgorithm other) {
         super(other);
         this.renamingEntries = new StringRenamingList(renamingEntries);
     }

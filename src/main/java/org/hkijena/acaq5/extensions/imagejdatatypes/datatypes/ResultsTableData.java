@@ -3,6 +3,8 @@ package org.hkijena.acaq5.extensions.imagejdatatypes.datatypes;
 import ij.measure.ResultsTable;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.extensions.tables.datatypes.DoubleArrayTableColumn;
+import org.hkijena.acaq5.extensions.tables.datatypes.StringArrayTableColumn;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumnReference;
 import org.hkijena.acaq5.utils.PathUtils;
@@ -111,12 +113,28 @@ public class ResultsTableData implements ACAQData, TableModel {
     }
 
     /**
-     * Returns a column as vector
+     * Returns a column as vector.
+     * This is a reference.
      * @param index the column index
      * @return the column
      */
-    public TableColumn getColumn(int index) {
+    public TableColumn getColumnReference(int index) {
         return new TableColumnReference(this, index);
+    }
+
+    /**
+     * Returns a column as vector.
+     * This is a copy.
+     * @param index the column index
+     * @return the column
+     */
+    public TableColumn getColumnCopy(int index) {
+        if(isNumeric(index)) {
+            return new DoubleArrayTableColumn(getColumnReference(index).getDataAsDouble(getRowCount()), getColumnName(index));
+        }
+        else {
+            return new StringArrayTableColumn(getColumnReference(index).getDataAsString(getRowCount()), getColumnName(index));
+        }
     }
 
     @Override

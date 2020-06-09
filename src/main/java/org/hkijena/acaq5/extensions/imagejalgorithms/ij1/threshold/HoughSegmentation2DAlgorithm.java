@@ -56,6 +56,7 @@ public class HoughSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     private double ratio = 1.0;
     private int bandwidth = 10;
     private int localRadius = 10;
+    private boolean local = false;
 
     /**
      * @param declaration algorithm declaration
@@ -85,6 +86,7 @@ public class HoughSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
         this.ratio = other.ratio;
         this.bandwidth = other.bandwidth;
         this.localRadius = other.localRadius;
+        this.local = other.local;
     }
 
     private boolean outOfBounds(int width, int height, int y, int x) {
@@ -152,7 +154,7 @@ public class HoughSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
                     bandwidth,
                     localRadius,
                     true,
-                    false,
+                    local,
                     false,
                     false,
                     true,
@@ -297,5 +299,17 @@ public class HoughSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @Override
     public void reportValidity(ACAQValidityReport report) {
 
+    }
+
+    @ACAQDocumentation(name = "Local mode")
+    @ACAQParameter("local")
+    public boolean isLocal() {
+        return local;
+    }
+
+    @ACAQParameter("local")
+    public void setLocal(boolean local) {
+        this.local = local;
+        getEventBus().post(new ParameterChangedEvent(this, "local"));
     }
 }

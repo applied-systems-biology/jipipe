@@ -1,7 +1,8 @@
-package org.hkijena.acaq5.extensions.tables.operations;
+package org.hkijena.acaq5.extensions.tables.operations.integrating;
 
 import org.hkijena.acaq5.extensions.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
+import org.hkijena.acaq5.extensions.tables.operations.IntegratingColumnOperation;
 
 /**
  * Implements calculating the min value

@@ -36,6 +36,12 @@ public interface ACAQData {
     ACAQData duplicate();
 
     /**
+     * Called when the data is flushed
+     * Use this to help Java to clean up the memory.
+     */
+    default void flush() {};
+
+    /**
      * Returns the name of a data type
      *
      * @param klass The data class

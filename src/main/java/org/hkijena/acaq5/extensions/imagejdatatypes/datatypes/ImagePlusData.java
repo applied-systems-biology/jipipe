@@ -34,6 +34,13 @@ public class ImagePlusData implements ACAQData {
         image = IJ.openImage(PathUtils.findFileByExtensionIn(storageFilePath, ".tif").toString());
     }
 
+    @Override
+    public void flush() {
+        // Completely remove all references
+        image.flush();
+        image = null;
+    }
+
     /**
      * @param image wrapped image
      */

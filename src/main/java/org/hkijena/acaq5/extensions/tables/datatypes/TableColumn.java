@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.extensions.tables.datatypes;
 
+import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotDataSeries;
 
@@ -7,6 +8,7 @@ import org.hkijena.acaq5.extensions.plots.datatypes.PlotDataSeries;
  * An {@link ACAQData} type that represents a column in a {@link PlotDataSeries}.
  * This type allows data to be provided
  */
+@ACAQDocumentation(name = "Table column", description = "A table column")
 public interface TableColumn extends ACAQData {
     /**
      * Returns as many data entries as rows

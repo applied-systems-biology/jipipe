@@ -2,15 +2,20 @@ package org.hkijena.acaq5.extensions.tables;
 
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
+import org.hkijena.acaq5.extensions.tables.algorithms.ConvertColumnsAlgorithm;
 import org.hkijena.acaq5.extensions.tables.algorithms.GenerateColumnAlgorithm;
 import org.hkijena.acaq5.extensions.tables.algorithms.IntegrateColumnsAlgorithm;
 import org.hkijena.acaq5.extensions.tables.algorithms.RemoveColumnAlgorithm;
-import org.hkijena.acaq5.extensions.tables.algorithms.RenameColumnAlgorithm;
+import org.hkijena.acaq5.extensions.tables.algorithms.RenameTableColumnsAlgorithm;
+import org.hkijena.acaq5.extensions.tables.datatypes.DoubleArrayColumnToTableConverter;
 import org.hkijena.acaq5.extensions.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.acaq5.extensions.tables.datatypes.RowIndexTableColumn;
+import org.hkijena.acaq5.extensions.tables.datatypes.StringArrayColumnToTableConverter;
 import org.hkijena.acaq5.extensions.tables.datatypes.StringArrayTableColumn;
+import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
 import org.hkijena.acaq5.extensions.tables.datatypes.ZeroTableColumn;
-import org.hkijena.acaq5.extensions.tables.operations.*;
+import org.hkijena.acaq5.extensions.tables.operations.converting.*;
+import org.hkijena.acaq5.extensions.tables.operations.integrating.*;
 import org.hkijena.acaq5.extensions.tables.parameters.collections.TableColumnGeneratorProcessorParameterList;
 import org.hkijena.acaq5.extensions.tables.parameters.enums.TableColumnGeneratorParameter;
 import org.hkijena.acaq5.extensions.tables.parameters.enums.TableColumnGeneratorParameterEditorUI;
@@ -19,6 +24,7 @@ import org.hkijena.acaq5.extensions.tables.parameters.TableColumnSourceParameter
 import org.hkijena.acaq5.extensions.tables.parameters.collections.IntegratingTableColumnProcessorParameterList;
 import org.hkijena.acaq5.extensions.tables.parameters.processors.IntegratingTableColumnProcessorParameter;
 import org.hkijena.acaq5.extensions.tables.parameters.processors.TableColumnGeneratorProcessorParameter;
+import org.hkijena.acaq5.extensions.tables.traits.ColumnHeaderDiscriminator;
 import org.hkijena.acaq5.extensions.tables.ui.tableoperations.*;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -54,29 +60,10 @@ public class TablesExtension extends ACAQPrepackagedDefaultJavaExtension {
     public void register() {
 
         // Register the two base column types
-        registerDatatype("table-column-numeric",
-                DoubleArrayTableColumn.class,
-                ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
-                null,
-                null);
-        registerDatatype("table-column-string",
-                StringArrayTableColumn.class,
-                ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
-                null,
-                null);
+        registerDataTypes();
 
         // Register generating data sources
-        registerDatatype("table-column-row-index",
-                RowIndexTableColumn.class,
-                ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
-                null,
-                null);
-        registerDatatype("table-column-zero",
-                ZeroTableColumn.class,
-                ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
-                null,
-                null);
-
+        registerColumnSources();
         registerMenuExtension(NewTableMenuExtension.class);
         registerColumnOperations();
 
@@ -161,18 +148,54 @@ public class TablesExtension extends ACAQPrepackagedDefaultJavaExtension {
                 "Replaces each item with an ID that uniquely identifies the item.",
                 UIUtils.getIconFromResources("inplace-function.png"));
 
-        // Register parameter types
         registerParameters();
-
-        // Register algorithms
+        registerTraits();
         registerAlgorithms();
+    }
+
+    private void registerTraits() {
+        registerTrait("column-header", ColumnHeaderDiscriminator.class, ResourceUtils.getPluginResource("icons/table.png"));
+    }
+
+    private void registerColumnSources() {
+        registerDatatype("table-column-row-index",
+                RowIndexTableColumn.class,
+                ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
+                null,
+                null);
+        registerDatatype("table-column-zero",
+                ZeroTableColumn.class,
+                ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
+                null,
+                null);
+    }
+
+    private void registerDataTypes() {
+        registerDatatype("table-column",
+                TableColumn.class,
+                ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
+                null,
+                null);
+        registerDatatype("table-column-numeric",
+                DoubleArrayTableColumn.class,
+                ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
+                null,
+                null);
+        registerDatatype("table-column-string",
+                StringArrayTableColumn.class,
+                ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
+                null,
+                null);
+        registerDatatypeConversion(new DoubleArrayColumnToTableConverter());
+        registerDatatypeConversion(new StringArrayColumnToTableConverter());
     }
 
     private void registerAlgorithms() {
         registerAlgorithm("table-add-columns-generate", GenerateColumnAlgorithm.class);
         registerAlgorithm("table-remove-columns", RemoveColumnAlgorithm.class);
-        registerAlgorithm("table-rename-columns", RenameColumnAlgorithm.class);
+        registerAlgorithm("table-rename-columns", RenameTableColumnsAlgorithm.class);
         registerAlgorithm("table-integrate-columns", IntegrateColumnsAlgorithm.class);
+        registerAlgorithm("table-convert-columns", ConvertColumnsAlgorithm.class);
     }
 
     private void registerParameters() {
@@ -228,36 +251,94 @@ public class TablesExtension extends ACAQPrepackagedDefaultJavaExtension {
     }
 
     private void registerColumnOperations() {
-        registerTableColumnOperation("to-numeric",
+        // Converters
+        registerTableColumnOperation("convert-to-numeric",
                 new ToNumericColumnOperation(),
                 "Convert to numeric",
                 "numeric",
                 "Converts string columns into numeric columns. Attempts to convert a string into a numeric value. If this fails, zero is returned for this item.");
-        registerTableColumnOperation("factorize",
+        registerTableColumnOperation("convert-factorize",
                 new FactorizeColumnOperation(),
                 "Factorize",
                 "factors",
                 "Converts each item into a numeric factor. The numeric factor is equal for equal items.");
-        registerTableColumnOperation("occurrences",
+        registerTableColumnOperation("convert-occurrences",
                 new OccurrencesColumnOperation(),
                 "Occurrences",
                 "occ",
                 "Converts each item to the count of equal items within the column.");
-        registerTableColumnOperation("sort-ascending",
+        registerTableColumnOperation("convert-sort-ascending",
                 new SortAscendingColumnOperation(),
                 "Sort ascending",
                 "sorta",
                 "Sorts the numeric items in ascending order. String values are sorted in lexicographic order.");
-        registerTableColumnOperation("sort-descending",
+        registerTableColumnOperation("convert-sort-descending",
                 new SortDescendingColumnOperation(),
                 "Sort descending",
                 "sortd",
                 "Sorts the numeric items in descending order. String values are sorted in lexicographic order.");
-        registerTableColumnOperation("remove-nan",
+        registerTableColumnOperation("convert-remove-nan",
                 new RemoveNaNColumnOperation(),
                 "Remove NaN",
                 "rmnan",
                 "Replaces all NaN values by a zero. The same applies to string values.");
+        registerTableColumnOperation("convert-absolute",
+                new AbsoluteColumnOperation(),
+                "Absolute value",
+                "abs",
+                "Calculates the absolute values. String values are converted to numbers or zero.");
+        registerTableColumnOperation("convert-ceiling",
+                new CeilingColumnOperation(),
+                "Ceiling",
+                "ceil",
+                "Rounds the values to the higher integer value. String values are converted to numbers or zero.");
+        registerTableColumnOperation("convert-floor",
+                new FloorColumnOperation(),
+                "Floor",
+                "floor",
+                "Rounds the values to the lower integer value. String values are converted to numbers or zero.");
+        registerTableColumnOperation("convert-clamp-negative",
+                new ClampNegativeColumnOperation(),
+                "Set positive to zero",
+                "clampn",
+                "Sets positives numbers to zero. String values are converted to numbers or zero.");
+        registerTableColumnOperation("convert-clamp-positive",
+                new ClampPositiveColumnOperation(),
+                "Set negative to zero",
+                "clampp",
+                "Sets negative numbers to zero. String values are converted to numbers or zero.");
+        registerTableColumnOperation("convert-degree-to-radians",
+                new DegreeToRadiansColumnOperation(),
+                "Degree to radians",
+                "deg2rad",
+                "Converts the value from degree to radians. String values are converted to numbers or zero.");
+        registerTableColumnOperation("convert-radians-to-degree",
+                new RadiansToDegreeColumnOperation(),
+                "Radians to degree",
+                "rad2deg",
+                "Converts the value from radians to degree. String values are converted to numbers or zero.");
+        registerTableColumnOperation("convert-exp",
+                new ExpColumnOperation(),
+                "Exponent (base e)",
+                "exp",
+                "Calculates e^x for each value x. String values are converted to numbers or zero.");
+        registerTableColumnOperation("convert-ln",
+                new LnColumnOperation(),
+                "Logarithm (base e)",
+                "ln",
+                "Calculates ln(x) for each value x. String values are converted to numbers or zero.");
+        registerTableColumnOperation("convert-sqrt",
+                new SqrtColumnOperation(),
+                "Square root",
+                "sqrt",
+                "Calculates sqrt(x) for each value x. String values are converted to numbers or zero.");
+        registerTableColumnOperation("convert-square",
+                new SquareColumnOperation(),
+                "Square",
+                "sqr",
+                "Calculates x^2 for each value x. String values are converted to numbers or zero.");
+
+        // Integrating functions
         registerTableColumnOperation("statistics-average",
                 new StatisticsAverageIntegratingColumnOperation(),
                 "Average",

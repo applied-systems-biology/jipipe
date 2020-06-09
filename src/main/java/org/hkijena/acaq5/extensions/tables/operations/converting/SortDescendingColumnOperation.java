@@ -1,9 +1,10 @@
-package org.hkijena.acaq5.extensions.tables.operations;
+package org.hkijena.acaq5.extensions.tables.operations.converting;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.hkijena.acaq5.extensions.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.acaq5.extensions.tables.datatypes.StringArrayTableColumn;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
+import org.hkijena.acaq5.extensions.tables.operations.ConvertingColumnOperation;
 
 import java.util.Arrays;
 import java.util.Collections;

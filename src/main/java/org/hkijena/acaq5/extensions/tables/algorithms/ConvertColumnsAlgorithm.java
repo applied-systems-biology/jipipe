@@ -30,20 +30,21 @@ import java.util.function.Supplier;
 /**
  * Algorithm that integrates columns
  */
-@ACAQDocumentation(name = "Integrate table columns", description = "Integrates table columns by applying operations like average, standard deviation, or median")
+@ACAQDocumentation(name = "Apply function", description = "Applies a function")
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Processor, menuPath = "Tables")
 @AlgorithmInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
-public class IntegrateColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
+public class ConvertColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     private IntegratingTableColumnProcessorParameterList processorParameters = new IntegratingTableColumnProcessorParameterList();
+    private boolean append = true;
 
     /**
      * Creates a new instance
      *
      * @param declaration algorithm declaration
      */
-    public IntegrateColumnsAlgorithm(ACAQAlgorithmDeclaration declaration) {
+    public ConvertColumnsAlgorithm(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
         processorParameters.addNewInstance();
     }
@@ -53,9 +54,10 @@ public class IntegrateColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
      *
      * @param other the original
      */
-    public IntegrateColumnsAlgorithm(IntegrateColumnsAlgorithm other) {
+    public ConvertColumnsAlgorithm(ConvertColumnsAlgorithm other) {
         super(other);
         this.processorParameters = new IntegratingTableColumnProcessorParameterList(other.processorParameters);
+        this.append = other.append;
     }
 
     @Override
@@ -75,6 +77,13 @@ public class IntegrateColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
             ColumnOperation columnOperation = ((ACAQTableRegistry.ColumnOperationEntry)processor.getParameter().getValue()).getOperation();
             TableColumn resultColumn = columnOperation.run(sourceColumnData);
             resultColumns.put(processor.getOutput(), resultColumn);
+        }
+        if(append) {
+            for (String columnName : input.getColumnNames()) {
+                if(!resultColumns.containsKey(columnName)) {
+                    resultColumns.put(columnName, input.getColumnReference(input.getColumnIndex(columnName)));
+                }
+            }
         }
 
         // Combine into one table
@@ -114,5 +123,16 @@ public class IntegrateColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("processors")
     public void setProcessorParameters(IntegratingTableColumnProcessorParameterList processorParameters) {
         this.processorParameters = processorParameters;
+    }
+
+    @ACAQDocumentation(name = "Append to existing table", description = "If enabled, the converted columns are appended to the existing table. Existing columns are overwritten.")
+    @ACAQParameter("append")
+    public boolean isAppend() {
+        return append;
+    }
+
+    @ACAQParameter("append")
+    public void setAppend(boolean append) {
+        this.append = append;
     }
 }

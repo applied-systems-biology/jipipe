@@ -312,6 +312,7 @@ public class ACAQDataSlot implements TableModel {
     public void flush() {
         save();
         for (int i = 0; i < data.size(); ++i) {
+            data.get(i).flush();
             data.set(i, null);
         }
     }

@@ -56,7 +56,7 @@ public class ACAQPluginManagerUIPanel extends ACAQProjectWorkbenchPanel {
                 splitPane.setDividerLocation(0.33);
             }
         });
-        splitPane.setLeftComponent(dependencyJList);
+        splitPane.setLeftComponent(new JScrollPane(dependencyJList));
         splitPane.setRightComponent(new JPanel());
 
         add(splitPane, BorderLayout.CENTER);
