@@ -14,6 +14,7 @@ import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.registries.ACAQTableRegistry;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
+import org.hkijena.acaq5.extensions.parameters.collections.StringFilterListParameter;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
 import org.hkijena.acaq5.extensions.tables.operations.ColumnOperation;
 import org.hkijena.acaq5.extensions.tables.parameters.collections.IntegratingTableColumnProcessorParameterList;

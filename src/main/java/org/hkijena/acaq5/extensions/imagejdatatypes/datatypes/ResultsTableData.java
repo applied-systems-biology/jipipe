@@ -1,5 +1,8 @@
 package org.hkijena.acaq5.extensions.imagejdatatypes.datatypes;
 
+import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.hash.TIntIntHashMap;
+import ij.macro.Variable;
 import ij.measure.ResultsTable;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.data.ACAQData;
@@ -101,6 +104,23 @@ public class ResultsTableData implements ACAQData, TableModel {
      */
     public ResultsTableData(ResultsTable table) {
         this.table = table;
+        if(table.columnDeleted() || table.getHeadings().length != getColumnNames().size()) {
+            cleanupTable();
+        }
+    }
+
+    /**
+     * ImageJ tables break many assumptions about tables, as they lazy-delete their columns without ensuring consecutive IDs
+     * This breaks too many algorithms, so re-create the column
+     */
+    private void cleanupTable() {
+        ResultsTable original = table;
+        table = new ResultsTable(original.getCounter());
+
+        for (String column : original.getHeadings()) {
+            Variable[] columnAsVariables = original.getColumnAsVariables(column);
+            table.setColumn(column, columnAsVariables);
+        }
     }
 
     /**
@@ -237,6 +257,39 @@ public class ResultsTableData implements ACAQData, TableModel {
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         return true;
+    }
+
+    /**
+     * Returns a new table that only contains the selected rows.
+     * The resulting table is ordered according to the input rows
+     * @param rows the row indices
+     * @return table only containing the selected rows
+     */
+    public ResultsTableData getRows(Collection<Integer> rows) {
+        ResultsTableData result = new ResultsTableData();
+
+        // Find the location of the columns
+        TIntIntMap columnMap = new TIntIntHashMap();
+        for (int col = 0; col < getColumnCount(); col++) {
+            columnMap.put(col, result.getTable().getFreeColumn(getColumnName(col)));
+        }
+
+        int targetRow = 0;
+        for (Integer sourceRow : rows) {
+            result.table.incrementCounter();
+            for (int sourceCol = 0; sourceCol < getColumnCount(); sourceCol++) {
+                int targetCol = columnMap.get(sourceCol);
+                if(isNumeric(sourceCol)) {
+                    result.table.setValue(targetCol, targetRow, getValueAsDouble(sourceRow, sourceCol));
+                }
+                else {
+                    result.table.setValue(targetCol, targetRow, getValueAsString(sourceRow, sourceCol));
+                }
+            }
+            ++targetRow;
+        }
+
+        return result;
     }
 
     /**

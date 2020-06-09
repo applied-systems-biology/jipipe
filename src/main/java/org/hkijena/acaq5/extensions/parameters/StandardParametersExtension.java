@@ -147,6 +147,18 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 "List of string filters",
                 "A list of filters for strings",
                 null);
+        registerParameterType("string-or-double-filter-list", StringOrDoubleFilterListParameter.class,
+                StringOrDoubleFilterListParameter::new,
+                l -> new StringOrDoubleFilterListParameter((StringOrDoubleFilterListParameter) l),
+                "List of string/double filters",
+                "A list of filters for strings/doubles",
+                null);
+        registerParameterType("string-filter:string-or-double-filter:list", StringFilterToStringOrDoubleFilterPairList.class,
+                StringFilterToStringOrDoubleFilterPairList::new,
+                l -> new StringFilterToStringOrDoubleFilterPairList((StringFilterToStringOrDoubleFilterPairList) l),
+                "String filter to String/double filter assignment list",
+                "A list of string filter to strings/double filter pairs",
+                null);
         registerParameterType("trait-type-list", ACAQTraitDeclarationRefList.class,
                 ACAQTraitDeclarationRefList::new,
                 l -> new ACAQTraitDeclarationRefList((ACAQTraitDeclarationRefList) l),
@@ -344,6 +356,13 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 "Integer replacement",
                 "Replaces a number with another number",
                 null);
+        registerParameterType("string-filter:string-or-double-filter:pair",
+                StringFilterToStringOrDoubleFilterPair.class,
+                StringFilterToStringOrDoubleFilterPair::new,
+                r -> new StringFilterToStringOrDoubleFilterPair((StringFilterToStringOrDoubleFilterPair) r),
+                "String filter to string/double filter",
+                "Mapping from a string filter to a string/double filter",
+                null);
     }
 
     private void registerGeneratingParameters() {
@@ -383,6 +402,13 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 "Double filter",
                 "A filter for numbers",
                 DoubleFilterParameterEditorUI.class);
+        registerParameterType("string-or-double-filter",
+                StringOrDoubleFilter.class,
+                StringOrDoubleFilter::new,
+                f -> new StringOrDoubleFilter((StringOrDoubleFilter) f),
+                "String/Double filter",
+                "A filter for numbers or strings",
+                StringOrDoubleFilterParameterEditorUI.class);
     }
 
     private void registerACAQ5ReferenceTypes() {

@@ -154,6 +154,7 @@ public class TablesExtension extends ACAQPrepackagedDefaultJavaExtension {
 
     private void registerTraits() {
         registerTrait("column-header", ColumnHeaderDiscriminator.class, ResourceUtils.getPluginResource("icons/table.png"));
+        registerTrait("row-filter", ColumnHeaderDiscriminator.class, ResourceUtils.getPluginResource("icons/filter.png"));
     }
 
     private void registerColumnSources() {
@@ -196,8 +197,10 @@ public class TablesExtension extends ACAQPrepackagedDefaultJavaExtension {
         registerAlgorithm("table-rename-single-columns", RenameColumnsAlgorithm.class);
         registerAlgorithm("table-integrate-columns", IntegrateColumnsAlgorithm.class);
         registerAlgorithm("table-convert-columns", ConvertColumnsAlgorithm.class);
-        registerAlgorithm("table-split-into-columns", SplitTableAlgorithm.class);
+        registerAlgorithm("table-split-into-columns", SplitTableIntoColumnsAlgorithm.class);
         registerAlgorithm("table-merge-from-columns", MergeColumnsAlgorithm.class);
+        registerAlgorithm("table-split-by-columns", SplitTableByColumnsAlgorithm.class);
+        registerAlgorithm("table-filter", FilterTableAlgorithm.class);
     }
 
     private void registerParameters() {

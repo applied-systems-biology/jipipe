@@ -7,8 +7,6 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQDataInterface;
-import org.hkijena.acaq5.api.algorithm.ACAQMergingAlgorithm;
-import org.hkijena.acaq5.api.algorithm.ACAQMultiDataInterface;
 import org.hkijena.acaq5.api.algorithm.ACAQSimpleIteratingAlgorithm;
 import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
@@ -17,15 +15,11 @@ import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.extensions.parameters.collections.StringFilterListParameter;
-import org.hkijena.acaq5.extensions.parameters.filters.StringFilter;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
-import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -36,7 +30,7 @@ import java.util.function.Supplier;
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Processor, menuPath = "Tables")
 @AlgorithmInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @AlgorithmOutputSlot(value = TableColumn.class, slotName = "Output", autoCreate = true)
-public class SplitTableAlgorithm extends ACAQSimpleIteratingAlgorithm {
+public class SplitTableIntoColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     private ACAQTraitDeclarationRef generatedAnnotation = new ACAQTraitDeclarationRef(ACAQTraitRegistry.getInstance().getDeclarationById("column-header"));
     private StringFilterListParameter filters = new StringFilterListParameter();
@@ -46,7 +40,7 @@ public class SplitTableAlgorithm extends ACAQSimpleIteratingAlgorithm {
      *
      * @param declaration algorithm declaration
      */
-    public SplitTableAlgorithm(ACAQAlgorithmDeclaration declaration) {
+    public SplitTableIntoColumnsAlgorithm(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
     }
 
@@ -54,7 +48,7 @@ public class SplitTableAlgorithm extends ACAQSimpleIteratingAlgorithm {
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
        ResultsTableData input = dataInterface.getInputData(getFirstInputSlot(), ResultsTableData.class);
         for (String columnName : input.getColumnNames()) {
-            if(filters.test(columnName)) {
+            if(filters.isEmpty() || filters.test(columnName)) {
                 TableColumn column = input.getColumnCopy(input.getColumnIndex(columnName));
                 List<ACAQTrait> traitList = new ArrayList<>();
                 if(generatedAnnotation.getDeclaration() != null) {
@@ -70,7 +64,7 @@ public class SplitTableAlgorithm extends ACAQSimpleIteratingAlgorithm {
      *
      * @param other the original
      */
-    public SplitTableAlgorithm(SplitTableAlgorithm other) {
+    public SplitTableIntoColumnsAlgorithm(SplitTableIntoColumnsAlgorithm other) {
         super(other);
         this.generatedAnnotation = new ACAQTraitDeclarationRef(other.generatedAnnotation);
         this.filters = new StringFilterListParameter(other.filters);
