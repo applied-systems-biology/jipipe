@@ -12,6 +12,7 @@ import org.hkijena.acaq5.extensions.parameters.collections.*;
 import org.hkijena.acaq5.extensions.parameters.colors.*;
 import org.hkijena.acaq5.extensions.parameters.editors.*;
 import org.hkijena.acaq5.extensions.parameters.filters.*;
+import org.hkijena.acaq5.extensions.parameters.functions.FunctionParameter;
 import org.hkijena.acaq5.extensions.parameters.generators.*;
 import org.hkijena.acaq5.extensions.parameters.primitives.*;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQAlgorithmDeclarationRef;
@@ -70,8 +71,13 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
         registerOptionalParameters();
         registerMiscParameters();
         registerCollectionParameters();
+        registerFunctionParameters();
         registerMatrixParameters();
         registerParameterGenerators();
+    }
+
+    private void registerFunctionParameters() {
+        registerParameterEditor(FunctionParameter.class, FunctionParameterEditorUI.class);
     }
 
     private void registerParameterGenerators() {

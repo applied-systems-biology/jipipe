@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.tables.parameters;
+package org.hkijena.acaq5.extensions.tables.parameters.enums;
 
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataDeclaration;

@@ -3,6 +3,7 @@ package org.hkijena.acaq5.extensions.tables;
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.tables.algorithms.GenerateColumnAlgorithm;
+import org.hkijena.acaq5.extensions.tables.algorithms.IntegrateColumnsAlgorithm;
 import org.hkijena.acaq5.extensions.tables.algorithms.RemoveColumnAlgorithm;
 import org.hkijena.acaq5.extensions.tables.algorithms.RenameColumnAlgorithm;
 import org.hkijena.acaq5.extensions.tables.datatypes.DoubleArrayTableColumn;
@@ -10,10 +11,14 @@ import org.hkijena.acaq5.extensions.tables.datatypes.RowIndexTableColumn;
 import org.hkijena.acaq5.extensions.tables.datatypes.StringArrayTableColumn;
 import org.hkijena.acaq5.extensions.tables.datatypes.ZeroTableColumn;
 import org.hkijena.acaq5.extensions.tables.operations.*;
-import org.hkijena.acaq5.extensions.tables.parameters.TableColumnGeneratorParameter;
-import org.hkijena.acaq5.extensions.tables.parameters.TableColumnGeneratorParameterEditorUI;
+import org.hkijena.acaq5.extensions.tables.parameters.collections.TableColumnGeneratorProcessorParameterList;
+import org.hkijena.acaq5.extensions.tables.parameters.enums.TableColumnGeneratorParameter;
+import org.hkijena.acaq5.extensions.tables.parameters.enums.TableColumnGeneratorParameterEditorUI;
 import org.hkijena.acaq5.extensions.tables.parameters.TableColumnSourceParameter;
 import org.hkijena.acaq5.extensions.tables.parameters.TableColumnSourceParameterEditorUI;
+import org.hkijena.acaq5.extensions.tables.parameters.collections.IntegratingTableColumnProcessorParameterList;
+import org.hkijena.acaq5.extensions.tables.parameters.processors.IntegratingTableColumnProcessorParameter;
+import org.hkijena.acaq5.extensions.tables.parameters.processors.TableColumnGeneratorProcessorParameter;
 import org.hkijena.acaq5.extensions.tables.ui.tableoperations.*;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -73,7 +78,6 @@ public class TablesExtension extends ACAQPrepackagedDefaultJavaExtension {
                 null);
 
         registerMenuExtension(NewTableMenuExtension.class);
-
         registerColumnOperations();
 
         // Register spreadsheet operations
@@ -158,6 +162,20 @@ public class TablesExtension extends ACAQPrepackagedDefaultJavaExtension {
                 UIUtils.getIconFromResources("inplace-function.png"));
 
         // Register parameter types
+        registerParameters();
+
+        // Register algorithms
+        registerAlgorithms();
+    }
+
+    private void registerAlgorithms() {
+        registerAlgorithm("table-add-columns-generate", GenerateColumnAlgorithm.class);
+        registerAlgorithm("table-remove-columns", RemoveColumnAlgorithm.class);
+        registerAlgorithm("table-rename-columns", RenameColumnAlgorithm.class);
+        registerAlgorithm("table-integrate-columns", IntegrateColumnsAlgorithm.class);
+    }
+
+    private void registerParameters() {
         registerEnumParameterType("table-column-content-type",
                 ColumnContentType.class,
                 "Column content type",
@@ -177,10 +195,36 @@ public class TablesExtension extends ACAQPrepackagedDefaultJavaExtension {
                 "Defines a column source",
                 TableColumnSourceParameterEditorUI.class);
 
-        // Register algorithms
-        registerAlgorithm("table-add-columns-generate", GenerateColumnAlgorithm.class);
-        registerAlgorithm("table-remove-columns", RemoveColumnAlgorithm.class);
-        registerAlgorithm("table-rename-columns", RenameColumnAlgorithm.class);
+        // Processors
+        registerParameterType("integrating-table-column-processor",
+                IntegratingTableColumnProcessorParameter.class,
+                IntegratingTableColumnProcessorParameter::new,
+                p -> new IntegratingTableColumnProcessorParameter((IntegratingTableColumnProcessorParameter) p),
+                "Column integration processor",
+                "Defines a processor that integrates a column",
+                null);
+        registerParameterType("integrating-table-column-processor-list",
+                IntegratingTableColumnProcessorParameterList.class,
+                IntegratingTableColumnProcessorParameterList::new,
+                p -> new IntegratingTableColumnProcessorParameterList((IntegratingTableColumnProcessorParameterList) p),
+                "Column integration processor list",
+                "Defines processors that integrate columns",
+                null);
+
+        registerParameterType("table-column-generator-column-processor",
+                TableColumnGeneratorProcessorParameter.class,
+                TableColumnGeneratorProcessorParameter::new,
+                p -> new TableColumnGeneratorProcessorParameter((TableColumnGeneratorProcessorParameter) p),
+                "Column generator processor",
+                "Defines a processor that generates a column",
+                null);
+        registerParameterType("table-column-generator-column-processorlist",
+                TableColumnGeneratorProcessorParameterList.class,
+                TableColumnGeneratorProcessorParameterList::new,
+                p -> new TableColumnGeneratorProcessorParameterList((TableColumnGeneratorProcessorParameterList) p),
+                "Column generator processor list",
+                "Defines multiple columns to be generated",
+                null);
     }
 
     private void registerColumnOperations() {

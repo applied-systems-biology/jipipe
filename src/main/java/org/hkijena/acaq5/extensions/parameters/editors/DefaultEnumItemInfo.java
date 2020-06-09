@@ -19,4 +19,9 @@ public class DefaultEnumItemInfo implements EnumItemInfo {
             return "<None selected>";
         }
     }
+
+    @Override
+    public String getTooltip(Object value) {
+        return null;
+    }
 }

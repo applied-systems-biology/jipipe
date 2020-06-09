@@ -2,6 +2,7 @@ package org.hkijena.acaq5.extensions.parameters;
 
 import org.hkijena.acaq5.extensions.parameters.editors.DynamicEnumParameterSettings;
 
+import javax.swing.*;
 import java.util.List;
 
 /**
@@ -9,6 +10,7 @@ import java.util.List;
  * Use {@link DynamicEnumParameterSettings} to define a supplier for the
  * items. Alternatively, use allowedValues to supply items.
  * allowedValues is preferred. If allowedValues is null, you have to use {@link DynamicEnumParameterSettings}.
+ * The JSON serialization must be done manually.
  */
 public abstract class DynamicEnumParameter {
     private Object value;
@@ -43,5 +45,32 @@ public abstract class DynamicEnumParameter {
 
     public void setAllowedValues(List<Object> allowedValues) {
         this.allowedValues = allowedValues;
+    }
+
+    /**
+     * Function that renders the label. This is used in UI.
+     * @param value the value
+     * @return the rendered text
+     */
+    public String renderLabel(Object value) {
+        return "" + value;
+    }
+
+    /**
+     * Function that renders the tooltip. This is used in UI.
+     * @param value the tooltip
+     * @return the rendered tooltip
+     */
+    public String renderTooltip(Object value) {
+        return null;
+    }
+
+    /**
+     * Function that renders the icon. This is used in UI.
+     * @param value the value
+     * @return the rendered icon
+     */
+    public Icon renderIcon(Object value) {
+        return null;
     }
 }

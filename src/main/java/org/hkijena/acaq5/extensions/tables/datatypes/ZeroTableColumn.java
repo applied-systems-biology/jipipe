@@ -30,6 +30,16 @@ public class ZeroTableColumn implements TableColumn {
     }
 
     @Override
+    public String getRowAsString(int row) {
+        return "0";
+    }
+
+    @Override
+    public double getRowAsDouble(int row) {
+        return 0;
+    }
+
+    @Override
     public int getRows() {
         return 0;
     }

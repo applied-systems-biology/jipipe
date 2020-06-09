@@ -34,6 +34,16 @@ public class RowIndexTableColumn implements TableColumn {
     }
 
     @Override
+    public String getRowAsString(int row) {
+        return "" + row;
+    }
+
+    @Override
+    public double getRowAsDouble(int row) {
+        return row;
+    }
+
+    @Override
     public int getRows() {
         return 0;
     }

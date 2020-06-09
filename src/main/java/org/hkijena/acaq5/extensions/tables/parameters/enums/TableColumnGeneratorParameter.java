@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.tables.parameters;
+package org.hkijena.acaq5.extensions.tables.parameters.enums;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;

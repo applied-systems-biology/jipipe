@@ -4,6 +4,7 @@ import ij.measure.ResultsTable;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
+import org.hkijena.acaq5.extensions.tables.datatypes.TableColumnReference;
 import org.hkijena.acaq5.utils.PathUtils;
 
 import javax.swing.event.TableModelEvent;
@@ -22,6 +23,64 @@ public class ResultsTableData implements ACAQData, TableModel {
 
     private ResultsTable table;
     private List<TableModelListener> listeners = new ArrayList<>();
+
+    /**
+     * Creates a new instance
+     */
+    public ResultsTableData() {
+        this.table = new ResultsTable();
+    }
+
+    /**
+     * Creates a {@link ResultsTableData} from a map of column name to column data
+     * @param columns key is column heading
+     */
+    public ResultsTableData(Map<String, TableColumn> columns) {
+        importFromColumns(columns);
+    }
+
+    /**
+     * Creates a {@link ResultsTableData} from a list of columns.
+     * Column headings are extracted from the column labels
+     * @param columns the columns
+     */
+    public ResultsTableData(Collection<TableColumn> columns) {
+        Map<String, TableColumn> map = new HashMap<>();
+        for (TableColumn column : columns) {
+            map.put(column.getLabel(), column);
+        }
+        importFromColumns(map);
+    }
+
+    private void importFromColumns(Map<String, TableColumn> columns) {
+        this.table = new ResultsTable();
+
+        // Collect map column name -> index
+        Map<String, Integer> columnIndexMap = new HashMap<>();
+        for (String column : columns.keySet()) {
+            columnIndexMap.put(column, table.getFreeColumn(column));
+        }
+
+        // Collect the number of rows
+        int rows = 0;
+        for (TableColumn column : columns.values()) {
+            rows = Math.max(rows, column.getRows());
+        }
+
+        // Create table
+        for (int row = 0; row < rows; row++) {
+            table.incrementCounter();
+            for (Map.Entry<String, TableColumn> entry : columns.entrySet()) {
+                int col = columnIndexMap.get(entry.getKey());
+                if(entry.getValue().isNumeric()) {
+                    table.setValue(col, row, entry.getValue().getRowAsDouble(row));
+                }
+                else {
+                    table.setValue(col, row, entry.getValue().getRowAsString(row));
+                }
+            }
+        }
+    }
 
     /**
      * Loads a results table from a folder containing CSV file
@@ -49,6 +108,15 @@ public class ResultsTableData implements ACAQData, TableModel {
      */
     public ResultsTableData(ResultsTableData other) {
         this.table = (ResultsTable) other.table.clone();
+    }
+
+    /**
+     * Returns a column as vector
+     * @param index the column index
+     * @return the column
+     */
+    public TableColumn getColumn(int index) {
+        return new TableColumnReference(this, index);
     }
 
     @Override
@@ -128,6 +196,14 @@ public class ResultsTableData implements ACAQData, TableModel {
     @Override
     public String getColumnName(int columnIndex) {
         return table.getColumnHeading(columnIndex);
+    }
+
+    public List<String> getColumnNames() {
+        List<String> result = new ArrayList<>();
+        for (int i = 0; i < getColumnCount(); i++) {
+            result.add(getColumnName(i));
+        }
+        return result;
     }
 
     @Override

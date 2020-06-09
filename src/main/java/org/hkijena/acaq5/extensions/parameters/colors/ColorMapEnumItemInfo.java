@@ -32,4 +32,9 @@ public class ColorMapEnumItemInfo implements EnumItemInfo {
     public String getLabel(Object value) {
         return WordUtils.capitalize("" + value);
     }
+
+    @Override
+    public String getTooltip(Object value) {
+        return null;
+    }
 }

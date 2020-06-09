@@ -30,7 +30,7 @@ public class ACAQTableRegistry {
      * @param description a description
      */
     public void registerColumnOperation(String id, ColumnOperation operation, String name, String shortName, String description) {
-        registeredColumnOperations.put(id, new ColumnOperationEntry(operation, name, shortName, description));
+        registeredColumnOperations.put(id, new ColumnOperationEntry(id, operation, name, shortName, description));
     }
 
     /**
@@ -59,12 +59,14 @@ public class ACAQTableRegistry {
     }
 
     public static class ColumnOperationEntry {
+        private String id;
         private ColumnOperation operation;
         private String name;
         private String shortName;
         private String description;
 
-        public ColumnOperationEntry(ColumnOperation operation, String name, String shortName, String description) {
+        public ColumnOperationEntry(String id, ColumnOperation operation, String name, String shortName, String description) {
+            this.id = id;
             this.operation = operation;
             this.name = name;
             this.shortName = shortName;
@@ -81,6 +83,10 @@ public class ACAQTableRegistry {
 
         public String getDescription() {
             return description;
+        }
+
+        public String getId() {
+            return id;
         }
     }
 

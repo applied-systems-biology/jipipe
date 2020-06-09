@@ -16,7 +16,9 @@ import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.extensions.tables.ColumnContentType;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
-import org.hkijena.acaq5.extensions.tables.parameters.TableColumnGeneratorParameter;
+import org.hkijena.acaq5.extensions.tables.parameters.collections.TableColumnGeneratorProcessorParameterList;
+import org.hkijena.acaq5.extensions.tables.parameters.enums.TableColumnGeneratorParameter;
+import org.hkijena.acaq5.extensions.tables.parameters.processors.TableColumnGeneratorProcessorParameter;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -31,7 +33,7 @@ import java.util.function.Supplier;
 @AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class GenerateColumnAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
-    private ACAQDynamicParameterCollection columns = new ACAQDynamicParameterCollection(true, TableColumnGeneratorParameter.class);
+    private TableColumnGeneratorProcessorParameterList columns = new TableColumnGeneratorProcessorParameterList();
     private boolean replaceIfExists = false;
 
     /**
@@ -41,7 +43,7 @@ public class GenerateColumnAlgorithm extends ACAQSimpleIteratingAlgorithm {
      */
     public GenerateColumnAlgorithm(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
-        columns.setInstanceGenerator(GenerateColumnAlgorithm::generateColumnParameter);
+        columns.addNewInstance();
     }
 
     /**
@@ -52,19 +54,19 @@ public class GenerateColumnAlgorithm extends ACAQSimpleIteratingAlgorithm {
     public GenerateColumnAlgorithm(GenerateColumnAlgorithm other) {
         super(other);
         this.replaceIfExists = other.replaceIfExists;
-        this.columns = new ACAQDynamicParameterCollection(other.columns);
+        this.columns = new TableColumnGeneratorProcessorParameterList(other.columns);
     }
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ResultsTableData table = (ResultsTableData) dataInterface.getInputData(getFirstInputSlot(), ResultsTableData.class).duplicate();
-        for (Map.Entry<String, ACAQParameterAccess> entry : columns.getParameters().entrySet()) {
-            String columnName = entry.getKey();
+        for (TableColumnGeneratorProcessorParameter entry : columns) {
+            String columnName = entry.getValue();
 
             if (table.getColumnIndex(columnName) != -1 && !replaceIfExists)
                 continue;
 
-            TableColumnGeneratorParameter generatorParameter = entry.getValue().get(TableColumnGeneratorParameter.class);
+            TableColumnGeneratorParameter generatorParameter = entry.getKey();
             TableColumn generator = (TableColumn) ACAQData.createInstance(generatorParameter.getGeneratorType().getDeclaration().getDataClass());
             int columnId = table.getOrCreateColumnIndex(columnName);
 
@@ -99,11 +101,15 @@ public class GenerateColumnAlgorithm extends ACAQSimpleIteratingAlgorithm {
         this.replaceIfExists = replaceIfExists;
     }
 
-    @ACAQDocumentation(name = "Columns", description = "You can add as many columns as you want by clicking the '+' button. Then, select a generator and which " +
-            "data type the column should have.")
+    @ACAQDocumentation(name = "Columns", description = "Columns to be generated")
     @ACAQParameter("columns")
-    public ACAQDynamicParameterCollection getColumns() {
+    public TableColumnGeneratorProcessorParameterList getColumns() {
         return columns;
+    }
+
+    @ACAQParameter("columns")
+    public void setColumns(TableColumnGeneratorProcessorParameterList columns) {
+        this.columns = columns;
     }
 
     /**

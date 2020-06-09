@@ -22,4 +22,12 @@ public interface EnumItemInfo {
      * @return custom label
      */
     String getLabel(Object value);
+
+    /**
+     * Extracts a custom tooltip for the enum value
+     *
+     * @param value the enum value
+     * @return custom tooltip
+     */
+    String getTooltip(Object value);
 }

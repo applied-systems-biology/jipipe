@@ -71,6 +71,35 @@ public class DynamicEnumParameterEditorUI extends ACAQParameterEditorUI {
                 }
             }
         });
+        comboBox.setRenderer(new Renderer(parameter));
         add(comboBox, BorderLayout.CENTER);
+    }
+
+    /**
+     * Renders items in enum parameters
+     */
+    private static class Renderer extends JLabel implements ListCellRenderer<Object> {
+
+        private final DynamicEnumParameter parameter;
+
+        public Renderer(DynamicEnumParameter parameter) {
+            this.parameter = parameter;
+            setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+            setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
+            setOpaque(true);
+        }
+
+        @Override
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            setIcon(parameter.renderIcon(value));
+            setText(parameter.renderLabel(value));
+            setToolTipText(parameter.renderTooltip(value));
+            if (isSelected || cellHasFocus) {
+                setBackground(new Color(184, 207, 229));
+            } else {
+                setBackground(new Color(255, 255, 255));
+            }
+            return this;
+        }
     }
 }

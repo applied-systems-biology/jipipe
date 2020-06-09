@@ -54,7 +54,7 @@ public class TableColumnReference implements TableColumn {
 
     @Override
     public int getRows() {
-        return 0;
+        return source.getRowCount();
     }
 
     @Override

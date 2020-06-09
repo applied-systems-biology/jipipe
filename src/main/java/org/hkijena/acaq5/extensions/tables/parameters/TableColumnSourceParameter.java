@@ -9,6 +9,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.extensions.parameters.filters.StringFilter;
+import org.hkijena.acaq5.extensions.tables.parameters.enums.TableColumnGeneratorParameter;
 
 /**
  * Parameter that acts as source (via matching a column) or a generator

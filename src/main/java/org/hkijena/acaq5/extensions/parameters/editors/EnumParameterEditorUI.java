@@ -80,12 +80,19 @@ public class EnumParameterEditorUI extends ACAQParameterEditorUI {
             this.info = info;
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
             setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
+            setOpaque(true);
         }
 
         @Override
         public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             setIcon(info.getIcon(value));
             setText(info.getLabel(value));
+            setToolTipText(info.getTooltip(value));
+            if (isSelected || cellHasFocus) {
+                setBackground(new Color(184, 207, 229));
+            } else {
+                setBackground(new Color(255, 255, 255));
+            }
             return this;
         }
     }
