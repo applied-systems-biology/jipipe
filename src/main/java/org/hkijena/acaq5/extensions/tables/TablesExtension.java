@@ -2,11 +2,8 @@ package org.hkijena.acaq5.extensions.tables;
 
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
-import org.hkijena.acaq5.extensions.tables.algorithms.ConvertColumnsAlgorithm;
-import org.hkijena.acaq5.extensions.tables.algorithms.GenerateColumnAlgorithm;
-import org.hkijena.acaq5.extensions.tables.algorithms.IntegrateColumnsAlgorithm;
-import org.hkijena.acaq5.extensions.tables.algorithms.RemoveColumnAlgorithm;
-import org.hkijena.acaq5.extensions.tables.algorithms.RenameTableColumnsAlgorithm;
+import org.hkijena.acaq5.extensions.imagejdatatypes.resultanalysis.ResultsTableDataSlotRowUI;
+import org.hkijena.acaq5.extensions.tables.algorithms.*;
 import org.hkijena.acaq5.extensions.tables.datatypes.DoubleArrayColumnToTableConverter;
 import org.hkijena.acaq5.extensions.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.acaq5.extensions.tables.datatypes.RowIndexTableColumn;
@@ -16,12 +13,14 @@ import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
 import org.hkijena.acaq5.extensions.tables.datatypes.ZeroTableColumn;
 import org.hkijena.acaq5.extensions.tables.operations.converting.*;
 import org.hkijena.acaq5.extensions.tables.operations.integrating.*;
+import org.hkijena.acaq5.extensions.tables.parameters.collections.ConvertingTableColumnProcessorParameterList;
 import org.hkijena.acaq5.extensions.tables.parameters.collections.TableColumnGeneratorProcessorParameterList;
 import org.hkijena.acaq5.extensions.tables.parameters.enums.TableColumnGeneratorParameter;
 import org.hkijena.acaq5.extensions.tables.parameters.enums.TableColumnGeneratorParameterEditorUI;
 import org.hkijena.acaq5.extensions.tables.parameters.TableColumnSourceParameter;
 import org.hkijena.acaq5.extensions.tables.parameters.TableColumnSourceParameterEditorUI;
 import org.hkijena.acaq5.extensions.tables.parameters.collections.IntegratingTableColumnProcessorParameterList;
+import org.hkijena.acaq5.extensions.tables.parameters.processors.ConvertingTableColumnProcessorParameter;
 import org.hkijena.acaq5.extensions.tables.parameters.processors.IntegratingTableColumnProcessorParameter;
 import org.hkijena.acaq5.extensions.tables.parameters.processors.TableColumnGeneratorProcessorParameter;
 import org.hkijena.acaq5.extensions.tables.traits.ColumnHeaderDiscriminator;
@@ -174,17 +173,17 @@ public class TablesExtension extends ACAQPrepackagedDefaultJavaExtension {
         registerDatatype("table-column",
                 TableColumn.class,
                 ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
-                null,
+                ResultsTableDataSlotRowUI.class,
                 null);
         registerDatatype("table-column-numeric",
                 DoubleArrayTableColumn.class,
                 ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
-                null,
+                ResultsTableDataSlotRowUI.class,
                 null);
         registerDatatype("table-column-string",
                 StringArrayTableColumn.class,
                 ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
-                null,
+                ResultsTableDataSlotRowUI.class,
                 null);
         registerDatatypeConversion(new DoubleArrayColumnToTableConverter());
         registerDatatypeConversion(new StringArrayColumnToTableConverter());
@@ -194,8 +193,11 @@ public class TablesExtension extends ACAQPrepackagedDefaultJavaExtension {
         registerAlgorithm("table-add-columns-generate", GenerateColumnAlgorithm.class);
         registerAlgorithm("table-remove-columns", RemoveColumnAlgorithm.class);
         registerAlgorithm("table-rename-columns", RenameTableColumnsAlgorithm.class);
+        registerAlgorithm("table-rename-single-columns", RenameColumnsAlgorithm.class);
         registerAlgorithm("table-integrate-columns", IntegrateColumnsAlgorithm.class);
         registerAlgorithm("table-convert-columns", ConvertColumnsAlgorithm.class);
+        registerAlgorithm("table-split-into-columns", SplitTableAlgorithm.class);
+        registerAlgorithm("table-merge-from-columns", MergeColumnsAlgorithm.class);
     }
 
     private void registerParameters() {
@@ -234,6 +236,21 @@ public class TablesExtension extends ACAQPrepackagedDefaultJavaExtension {
                 "Defines processors that integrate columns",
                 null);
 
+        registerParameterType("converting-table-column-processor",
+                ConvertingTableColumnProcessorParameter.class,
+                ConvertingTableColumnProcessorParameter::new,
+                p -> new ConvertingTableColumnProcessorParameter((ConvertingTableColumnProcessorParameter) p),
+                "Column integration processor",
+                "Defines a processor that apply a function to each cell",
+                null);
+        registerParameterType("converting-table-column-processor-list",
+                ConvertingTableColumnProcessorParameterList.class,
+                ConvertingTableColumnProcessorParameterList::new,
+                p -> new ConvertingTableColumnProcessorParameterList((ConvertingTableColumnProcessorParameterList) p),
+                "Column conversion processor list",
+                "Defines processors that apply a function to each cell",
+                null);
+
         registerParameterType("table-column-generator-column-processor",
                 TableColumnGeneratorProcessorParameter.class,
                 TableColumnGeneratorProcessorParameter::new,
@@ -241,7 +258,7 @@ public class TablesExtension extends ACAQPrepackagedDefaultJavaExtension {
                 "Column generator processor",
                 "Defines a processor that generates a column",
                 null);
-        registerParameterType("table-column-generator-column-processorlist",
+        registerParameterType("table-column-generator-column-processor-list",
                 TableColumnGeneratorProcessorParameterList.class,
                 TableColumnGeneratorProcessorParameterList::new,
                 p -> new TableColumnGeneratorProcessorParameterList((TableColumnGeneratorProcessorParameterList) p),

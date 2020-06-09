@@ -14,6 +14,7 @@ import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
+import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.extensions.parameters.collections.StringFilterListParameter;
 import org.hkijena.acaq5.extensions.parameters.filters.StringFilter;
@@ -21,7 +22,9 @@ import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRe
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
 import org.hkijena.acaq5.utils.StringUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -52,7 +55,12 @@ public class SplitTableAlgorithm extends ACAQSimpleIteratingAlgorithm {
        ResultsTableData input = dataInterface.getInputData(getFirstInputSlot(), ResultsTableData.class);
         for (String columnName : input.getColumnNames()) {
             if(filters.test(columnName)) {
-
+                TableColumn column = input.getColumnCopy(input.getColumnIndex(columnName));
+                List<ACAQTrait> traitList = new ArrayList<>();
+                if(generatedAnnotation.getDeclaration() != null) {
+                    traitList.add(generatedAnnotation.getDeclaration().newInstance(columnName));
+                }
+                dataInterface.addOutputData(getFirstOutputSlot(), column, traitList);
             }
         }
     }

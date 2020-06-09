@@ -4,6 +4,7 @@ import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 
 import java.nio.file.Path;
+import java.util.Collections;
 
 /**
  * A table column that references a column within a {@link org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData}
@@ -74,11 +75,12 @@ public class TableColumnReference implements TableColumn {
 
     @Override
     public void saveTo(Path storageFilePath, String name) {
-
+        ResultsTableData resultsTableData = new ResultsTableData(Collections.singletonList(this));
+        resultsTableData.saveTo(storageFilePath, name);
     }
 
     @Override
     public ACAQData duplicate() {
-        return null;
+        return this;
     }
 }

@@ -2,9 +2,11 @@ package org.hkijena.acaq5.extensions.tables.datatypes;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * {@link TableColumn} that contains doubles.
@@ -96,7 +98,8 @@ public class StringArrayTableColumn implements MutableTableColumn {
 
     @Override
     public void saveTo(Path storageFilePath, String name) {
-
+        ResultsTableData resultsTableData = new ResultsTableData(Collections.singletonList(this));
+        resultsTableData.saveTo(storageFilePath, name);
     }
 
     @Override

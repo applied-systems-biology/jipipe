@@ -16,7 +16,9 @@ import org.hkijena.acaq5.api.registries.ACAQTableRegistry;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
 import org.hkijena.acaq5.extensions.tables.operations.ColumnOperation;
+import org.hkijena.acaq5.extensions.tables.parameters.collections.ConvertingTableColumnProcessorParameterList;
 import org.hkijena.acaq5.extensions.tables.parameters.collections.IntegratingTableColumnProcessorParameterList;
+import org.hkijena.acaq5.extensions.tables.parameters.processors.ConvertingTableColumnProcessorParameter;
 import org.hkijena.acaq5.extensions.tables.parameters.processors.IntegratingTableColumnProcessorParameter;
 import org.hkijena.acaq5.utils.StringUtils;
 
@@ -30,13 +32,13 @@ import java.util.function.Supplier;
 /**
  * Algorithm that integrates columns
  */
-@ACAQDocumentation(name = "Apply function", description = "Applies a function")
+@ACAQDocumentation(name = "Apply function to each cell", description = "Applies a function to each individual cell")
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Processor, menuPath = "Tables")
 @AlgorithmInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class ConvertColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
-    private IntegratingTableColumnProcessorParameterList processorParameters = new IntegratingTableColumnProcessorParameterList();
+    private ConvertingTableColumnProcessorParameterList processorParameters = new ConvertingTableColumnProcessorParameterList();
     private boolean append = true;
 
     /**
@@ -56,7 +58,7 @@ public class ConvertColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
      */
     public ConvertColumnsAlgorithm(ConvertColumnsAlgorithm other) {
         super(other);
-        this.processorParameters = new IntegratingTableColumnProcessorParameterList(other.processorParameters);
+        this.processorParameters = new ConvertingTableColumnProcessorParameterList(other.processorParameters);
         this.append = other.append;
     }
 
@@ -64,7 +66,7 @@ public class ConvertColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ResultsTableData input = dataInterface.getInputData(getFirstInputSlot(), ResultsTableData.class);
         Map<String, TableColumn> resultColumns = new HashMap<>();
-        for (IntegratingTableColumnProcessorParameter processor : processorParameters) {
+        for (ConvertingTableColumnProcessorParameter processor : processorParameters) {
             String sourceColumn = input.getColumnNames().stream().filter(processor.getInput()).findFirst().orElse(null);
             if(sourceColumn == null) {
                 throw new UserFriendlyRuntimeException(new NullPointerException(),
@@ -95,7 +97,7 @@ public class ConvertColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
     public void reportValidity(ACAQValidityReport report) {
         report.forCategory("Processors").report(processorParameters);
         Set<String> columnNames = new HashSet<>();
-        for (IntegratingTableColumnProcessorParameter parameter : processorParameters) {
+        for (ConvertingTableColumnProcessorParameter parameter : processorParameters) {
             if(columnNames.contains(parameter.getOutput())) {
                 report.forCategory("Processors").reportIsInvalid("Duplicate output column: " + parameter.getOutput(),
                         "There should not be multiple output columns with the same name.",
@@ -116,12 +118,12 @@ public class ConvertColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     @ACAQDocumentation(name = "Processors", description = "Defines which columns are processed")
     @ACAQParameter("processors")
-    public IntegratingTableColumnProcessorParameterList getProcessorParameters() {
+    public ConvertingTableColumnProcessorParameterList getProcessorParameters() {
         return processorParameters;
     }
 
     @ACAQParameter("processors")
-    public void setProcessorParameters(IntegratingTableColumnProcessorParameterList processorParameters) {
+    public void setProcessorParameters(ConvertingTableColumnProcessorParameterList processorParameters) {
         this.processorParameters = processorParameters;
     }
 
