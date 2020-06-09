@@ -42,6 +42,16 @@ public class DoubleArrayTableColumn implements MutableTableColumn {
     }
 
     @Override
+    public String getRowAsString(int row) {
+        return row < data.length ? "" + data[row] : "";
+    }
+
+    @Override
+    public double getRowAsDouble(int row) {
+        return row < data.length ? data[row] : 0;
+    }
+
+    @Override
     public String getLabel() {
         return label;
     }

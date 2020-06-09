@@ -189,6 +189,22 @@ public class ResultsTableData implements ACAQData, TableModel {
         }
     }
 
+    public double getValueAsDouble(int rowIndex, int columnIndex) {
+        return table.getValueAsDouble(columnIndex, rowIndex);
+    }
+
+    public String getValueAsString(int rowIndex, int columnIndex) {
+        return table.getStringValue(columnIndex, rowIndex);
+    }
+
+    public double getValueAsDouble(int rowIndex, String columnName) {
+        return table.getValue(columnName, rowIndex);
+    }
+
+    public String getValueAsString(int rowIndex, String columnName) {
+        return table.getStringValue(columnName, rowIndex);
+    }
+
     /**
      * Renames a column
      *

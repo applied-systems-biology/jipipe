@@ -52,6 +52,25 @@ public class StringArrayTableColumn implements MutableTableColumn {
     }
 
     @Override
+    public String getRowAsString(int row) {
+        return row < data.length ? data[row] : "";
+    }
+
+    @Override
+    public double getRowAsDouble(int row) {
+        if(row < data.length) {
+            try {
+               return Double.parseDouble(data[row]);
+            } catch (NumberFormatException e) {
+                return 0;
+            }
+        }
+        else {
+            return 0;
+        }
+    }
+
+    @Override
     public int getRows() {
         return data.length;
     }

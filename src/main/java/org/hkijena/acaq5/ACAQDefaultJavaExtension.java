@@ -17,6 +17,7 @@ import org.hkijena.acaq5.api.traits.ACAQJavaTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extensions.parameters.primitives.EnumParameterTypeDeclaration;
+import org.hkijena.acaq5.extensions.tables.operations.ColumnOperation;
 import org.hkijena.acaq5.ui.compat.ImageJDatatypeImporterUI;
 import org.hkijena.acaq5.ui.extension.MenuExtension;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
@@ -295,6 +296,7 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
      * @param description    Description
      * @param icon           Icon
      */
+    @Deprecated
     public void registerTableOperation(Class<? extends ACAQTableVectorOperation> operationClass,
                                        Class<? extends ACAQTableVectorOperationUI> uiClass,
                                        String name,
@@ -302,6 +304,18 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
                                        String description,
                                        Icon icon) {
         registry.getTableAnalyzerUIOperationRegistry().register(operationClass, uiClass, name, shortcut, description, icon);
+    }
+
+    /**
+     * Registers a table column operation. Those operations are used in various places that handle tabular data
+     * @param id operation id
+     * @param operation the operation instance
+     * @param name the name
+     * @param shortName a short name (like min, max, avg, ...)
+     * @param description a description
+     */
+    public void registerTableColumnOperation(String id, ColumnOperation operation, String name, String shortName, String description) {
+        registry.getTableRegistry().registerColumnOperation(id, operation, name, shortName, description);
     }
 
     /**

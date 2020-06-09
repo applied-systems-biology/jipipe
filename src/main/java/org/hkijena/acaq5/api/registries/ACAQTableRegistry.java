@@ -1,0 +1,90 @@
+package org.hkijena.acaq5.api.registries;
+
+import org.hkijena.acaq5.ACAQDefaultRegistry;
+import org.hkijena.acaq5.extensions.tables.operations.ColumnOperation;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Registry for table operations
+ */
+public class ACAQTableRegistry {
+    private Map<String, ColumnOperationEntry> registeredColumnOperations = new HashMap<>();
+
+    /**
+     *
+     * @return all registered column operations
+     */
+    public Map<String, ColumnOperationEntry> getRegisteredColumnOperations() {
+        return Collections.unmodifiableMap(registeredColumnOperations);
+    }
+
+    /**
+     * Registers a new operation
+     * @param id unique id
+     * @param operation operation instance
+     * @param name name
+     * @param shortName a short name that will be used in table headers (e.g. avg, var, ...)
+     * @param description a description
+     */
+    public void registerColumnOperation(String id, ColumnOperation operation, String name, String shortName, String description) {
+        registeredColumnOperations.put(id, new ColumnOperationEntry(operation, name, shortName, description));
+    }
+
+    /**
+     * Returns an operation by ID
+     * @param id the ID
+     * @return the operation
+     */
+    public ColumnOperationEntry getColumnOperationById(String id) {
+        return registeredColumnOperations.get(id);
+    }
+
+    /**
+     * Returns all operations that are assignable to the filter class
+     * @param filterClass the filter class
+     * @return all operations that are assignable to the filter class
+     */
+    public Map<String, ColumnOperationEntry> getOperationsOfType(Class<? extends ColumnOperation> filterClass) {
+        Map<String, ColumnOperationEntry> result = new HashMap<>();
+        for (Map.Entry<String, ColumnOperationEntry> entry : registeredColumnOperations.entrySet()) {
+            if(filterClass.isAssignableFrom(entry.getValue().getOperation().getClass())) {
+                result.put(entry.getKey(), entry.getValue());
+            }
+        }
+
+        return result;
+    }
+
+    public static class ColumnOperationEntry {
+        private ColumnOperation operation;
+        private String name;
+        private String shortName;
+        private String description;
+
+        public ColumnOperationEntry(ColumnOperation operation, String name, String shortName, String description) {
+            this.operation = operation;
+            this.name = name;
+            this.shortName = shortName;
+            this.description = description;
+        }
+
+        public ColumnOperation getOperation() {
+            return operation;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+    }
+
+    public static ACAQTableRegistry getInstance() {
+        return ACAQDefaultRegistry.getInstance().getTableRegistry();
+    }
+}

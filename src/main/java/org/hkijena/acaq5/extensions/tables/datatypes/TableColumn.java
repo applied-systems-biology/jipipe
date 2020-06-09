@@ -25,6 +25,20 @@ public interface TableColumn extends ACAQData {
     double[] getDataAsDouble(int rows);
 
     /**
+     * Returns the data entry as string
+     * @param row the row
+     * @return the data
+     */
+    String getRowAsString(int row);
+
+    /**
+     * Returns the data entry as string
+     * @param row the row
+     * @return the data
+     */
+    double getRowAsDouble(int row);
+
+    /**
      * Returns the number of rows that are existing (not generated)
      *
      * @return the number of rows that are existing (not generated)

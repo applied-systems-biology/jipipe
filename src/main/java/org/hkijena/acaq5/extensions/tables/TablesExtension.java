@@ -9,6 +9,7 @@ import org.hkijena.acaq5.extensions.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.acaq5.extensions.tables.datatypes.RowIndexTableColumn;
 import org.hkijena.acaq5.extensions.tables.datatypes.StringArrayTableColumn;
 import org.hkijena.acaq5.extensions.tables.datatypes.ZeroTableColumn;
+import org.hkijena.acaq5.extensions.tables.operations.*;
 import org.hkijena.acaq5.extensions.tables.parameters.TableColumnGeneratorParameter;
 import org.hkijena.acaq5.extensions.tables.parameters.TableColumnGeneratorParameterEditorUI;
 import org.hkijena.acaq5.extensions.tables.parameters.TableColumnSourceParameter;
@@ -72,6 +73,8 @@ public class TablesExtension extends ACAQPrepackagedDefaultJavaExtension {
                 null);
 
         registerMenuExtension(NewTableMenuExtension.class);
+
+        registerColumnOperations();
 
         // Register spreadsheet operations
         registerTableOperation(StatisticsCountVectorOperation.class,
@@ -178,5 +181,103 @@ public class TablesExtension extends ACAQPrepackagedDefaultJavaExtension {
         registerAlgorithm("table-add-columns-generate", GenerateColumnAlgorithm.class);
         registerAlgorithm("table-remove-columns", RemoveColumnAlgorithm.class);
         registerAlgorithm("table-rename-columns", RenameColumnAlgorithm.class);
+    }
+
+    private void registerColumnOperations() {
+        registerTableColumnOperation("to-numeric",
+                new ToNumericColumnOperation(),
+                "Convert to numeric",
+                "numeric",
+                "Converts string columns into numeric columns. Attempts to convert a string into a numeric value. If this fails, zero is returned for this item.");
+        registerTableColumnOperation("factorize",
+                new FactorizeColumnOperation(),
+                "Factorize",
+                "factors",
+                "Converts each item into a numeric factor. The numeric factor is equal for equal items.");
+        registerTableColumnOperation("occurrences",
+                new OccurrencesColumnOperation(),
+                "Occurrences",
+                "occ",
+                "Converts each item to the count of equal items within the column.");
+        registerTableColumnOperation("sort-ascending",
+                new SortAscendingColumnOperation(),
+                "Sort ascending",
+                "sorta",
+                "Sorts the numeric items in ascending order. String values are sorted in lexicographic order.");
+        registerTableColumnOperation("sort-descending",
+                new SortDescendingColumnOperation(),
+                "Sort descending",
+                "sortd",
+                "Sorts the numeric items in descending order. String values are sorted in lexicographic order.");
+        registerTableColumnOperation("remove-nan",
+                new RemoveNaNColumnOperation(),
+                "Remove NaN",
+                "rmnan",
+                "Replaces all NaN values by a zero. The same applies to string values.");
+        registerTableColumnOperation("statistics-average",
+                new StatisticsAverageIntegratingColumnOperation(),
+                "Average",
+                "avg",
+                "Calculates the average value of all numeric values. String values are converted to numbers or zero.");
+        registerTableColumnOperation("statistics-count",
+                new StatisticsCountIntegratingColumnOperation(),
+                "Count",
+                "count",
+                "Outputs the number of input rows.");
+        registerTableColumnOperation("statistics-count-non-zero",
+                new StatisticsCountNonZeroIntegratingColumnOperation(),
+                "Count non-zero",
+                "countn0",
+                "Counts all values that are not zero. String values are converted to numbers or zero.");
+        registerTableColumnOperation("statistics-cumulative-sum",
+                new StatisticsCumulativeSumColumnOperation(),
+                "Cumulative sum",
+                "cumsum",
+                "Calculates the cumulative sum of the rows in their order.");
+        registerTableColumnOperation("statistics-geometric-mean",
+                new StatisticsGeometricMeanIntegratingColumnOperation(),
+                "Geometric mean",
+                "geomean",
+                "Calculates the geometric mean of all numeric values. String values are converted to numbers or zero.");
+        registerTableColumnOperation("statistics-kurtosis",
+                new StatisticsKurtosisIntegratingColumnOperation(),
+                "Kurtosis",
+                "kurt",
+                "Calculates the kurtosis of all numeric values. String values are converted to numbers or zero.");
+        registerTableColumnOperation("statistics-min",
+                new StatisticsMinIntegratingColumnOperation(),
+                "Minimum",
+                "min",
+                "Calculates the minimum of all numeric values. String values are converted to numbers or zero.");
+        registerTableColumnOperation("statistics-max",
+                new StatisticsMaxIntegratingColumnOperation(),
+                "Maximum",
+                "max",
+                "Calculates the maximum of all numeric values. String values are converted to numbers or zero.");
+        registerTableColumnOperation("statistics-median",
+                new StatisticsMedianIntegratingColumnOperation(),
+                "Median",
+                "median",
+                "Calculates the median of all numeric values. String values are converted to numbers or zero.");
+        registerTableColumnOperation("statistics-skewness",
+                new StatisticsSkewnessIntegratingColumnOperation(),
+                "Skewness",
+                "skewness",
+                "Calculates the skewness of all numeric values. String values are converted to numbers or zero.");
+        registerTableColumnOperation("statistics-standard-deviation",
+                new StatisticsStandardDeviationIntegratingColumnOperation(),
+                "Standard deviation",
+                "stdev",
+                "Calculates the standard deviation of all numeric values. String values are converted to numbers or zero.");
+        registerTableColumnOperation("statistics-variance",
+                new StatisticsVarianceIntegratingColumnOperation(),
+                "Variance",
+                "var",
+                "Calculates the variance of all numeric values. String values are converted to numbers or zero.");
+        registerTableColumnOperation("statistics-weighted-sum",
+                new StatisticsWeightedSumColumnOperation(),
+                "Weighted sum",
+                "wsum",
+                "Calculates the weighted sum of all values. The weight is the row index (beginning with 1). String values are converted to numbers or zero.");
     }
 }

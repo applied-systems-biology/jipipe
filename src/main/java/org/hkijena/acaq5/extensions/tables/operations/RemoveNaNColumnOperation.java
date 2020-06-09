@@ -1,0 +1,20 @@
+package org.hkijena.acaq5.extensions.tables.operations;
+
+import org.hkijena.acaq5.extensions.tables.datatypes.DoubleArrayTableColumn;
+import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
+
+/**
+ * Sets NaN values to zero
+ */
+public class RemoveNaNColumnOperation implements ConvertingColumnOperation {
+    @Override
+    public TableColumn run(TableColumn column) {
+        double[] values = column.getDataAsDouble(column.getRows());
+        for (int i = 0; i < values.length; i++) {
+            if(Double.isNaN(values[i])) {
+                values[i] = 0;
+            }
+        }
+        return new DoubleArrayTableColumn(values, column.getLabel());
+    }
+}
