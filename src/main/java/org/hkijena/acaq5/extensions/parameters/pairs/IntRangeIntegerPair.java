@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.parameters.filters;
+package org.hkijena.acaq5.extensions.parameters.pairs;
 
 import org.hkijena.acaq5.extensions.parameters.collections.KeyValuePairParameter;
 import org.hkijena.acaq5.extensions.parameters.generators.IntRangeStringParameter;
@@ -9,12 +9,12 @@ import java.util.function.Predicate;
 /**
  * A parameter that renames an integer into another integer
  */
-public class IntegerRenaming extends KeyValuePairParameter<IntRangeStringParameter, Integer> implements Predicate<Integer>, Function<Integer, Integer> {
+public class IntRangeIntegerPair extends KeyValuePairParameter<IntRangeStringParameter, Integer> implements Predicate<Integer>, Function<Integer, Integer> {
 
     /**
      * Creates a new instance
      */
-    public IntegerRenaming() {
+    public IntRangeIntegerPair() {
         super(IntRangeStringParameter.class, Integer.class);
     }
 
@@ -23,7 +23,7 @@ public class IntegerRenaming extends KeyValuePairParameter<IntRangeStringParamet
      *
      * @param other the original
      */
-    public IntegerRenaming(IntegerRenaming other) {
+    public IntRangeIntegerPair(IntRangeIntegerPair other) {
         super(other);
     }
 

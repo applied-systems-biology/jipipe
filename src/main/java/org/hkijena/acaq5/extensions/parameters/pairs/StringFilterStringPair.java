@@ -1,6 +1,7 @@
-package org.hkijena.acaq5.extensions.parameters.filters;
+package org.hkijena.acaq5.extensions.parameters.pairs;
 
 import org.hkijena.acaq5.extensions.parameters.collections.KeyValuePairParameter;
+import org.hkijena.acaq5.extensions.parameters.filters.StringFilter;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -8,12 +9,12 @@ import java.util.function.Predicate;
 /**
  * A parameter that renames a matching string into another string
  */
-public class StringRenaming extends KeyValuePairParameter<StringFilter, String> implements Predicate<String>, Function<String, String> {
+public class StringFilterStringPair extends KeyValuePairParameter<StringFilter, String> implements Predicate<String>, Function<String, String> {
 
     /**
      * Creates a new instance
      */
-    public StringRenaming() {
+    public StringFilterStringPair() {
         super(StringFilter.class, String.class);
     }
 
@@ -22,7 +23,7 @@ public class StringRenaming extends KeyValuePairParameter<StringFilter, String> 
      *
      * @param other the original
      */
-    public StringRenaming(StringRenaming other) {
+    public StringFilterStringPair(StringFilterStringPair other) {
         super(other);
     }
 

@@ -1,16 +1,16 @@
 package org.hkijena.acaq5.extensions.parameters.collections;
 
-import org.hkijena.acaq5.extensions.parameters.filters.IntegerIntegerKeyValuePair;
+import org.hkijena.acaq5.extensions.parameters.pairs.IntegerIntegerPair;
 
 /**
- * A collection of multiple {@link IntegerIntegerKeyValuePair}
+ * A collection of multiple {@link IntegerIntegerPair}
  */
-public class IntegerIntegerKeyValuePairList extends ListParameter<IntegerIntegerKeyValuePair> {
+public class IntegerIntegerKeyValuePairList extends ListParameter<IntegerIntegerPair> {
     /**
      * Creates a new instance
      */
     public IntegerIntegerKeyValuePairList() {
-        super(IntegerIntegerKeyValuePair.class);
+        super(IntegerIntegerPair.class);
     }
 
     /**
@@ -19,9 +19,9 @@ public class IntegerIntegerKeyValuePairList extends ListParameter<IntegerInteger
      * @param other the original
      */
     public IntegerIntegerKeyValuePairList(IntegerIntegerKeyValuePairList other) {
-        super(IntegerIntegerKeyValuePair.class);
-        for (IntegerIntegerKeyValuePair filter : other) {
-            add(new IntegerIntegerKeyValuePair(filter));
+        super(IntegerIntegerPair.class);
+        for (IntegerIntegerPair filter : other) {
+            add(new IntegerIntegerPair(filter));
         }
     }
 }

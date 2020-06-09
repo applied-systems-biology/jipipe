@@ -18,7 +18,7 @@ import java.util.function.Predicate;
 public class StringOrDoubleFilter implements ACAQParameterCollection, ACAQValidatable, Predicate<Object> {
 
     private EventBus eventBus = new EventBus();
-    private Mode mode = Mode.Double;
+    private FilterMode filterMode = FilterMode.Double;
     private StringFilter stringFilter = new StringFilter();
     private DoubleFilter doubleFilter = new DoubleFilter();
 
@@ -34,7 +34,7 @@ public class StringOrDoubleFilter implements ACAQParameterCollection, ACAQValida
      * @param other the original
      */
     public StringOrDoubleFilter(StringOrDoubleFilter other) {
-        this.mode = other.mode;
+        this.filterMode = other.filterMode;
         this.stringFilter = new StringFilter(other.stringFilter);
         this.doubleFilter = new DoubleFilter(other.doubleFilter);
     }
@@ -42,14 +42,14 @@ public class StringOrDoubleFilter implements ACAQParameterCollection, ACAQValida
     @ACAQDocumentation(name = "Mode", description = "Which source is used")
     @ACAQParameter("mode")
     @JsonGetter("mode")
-    public Mode getMode() {
-        return mode;
+    public FilterMode getFilterMode() {
+        return filterMode;
     }
 
     @ACAQParameter("mode")
     @JsonSetter("mode")
-    public void setMode(Mode mode) {
-        this.mode = mode;
+    public void setFilterMode(FilterMode filterMode) {
+        this.filterMode = filterMode;
         getEventBus().post(new ParameterChangedEvent(this, "mode"));
     }
 
@@ -88,16 +88,16 @@ public class StringOrDoubleFilter implements ACAQParameterCollection, ACAQValida
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        if (mode == Mode.Double) {
+        if (filterMode == FilterMode.Double) {
             report.report(stringFilter);
-        } else if (mode == Mode.String) {
+        } else if (filterMode == FilterMode.String) {
             report.report(doubleFilter);
         }
     }
 
     @Override
     public boolean test(Object o) {
-        if(mode == Mode.String) {
+        if(filterMode == FilterMode.String) {
             return stringFilter.test("" + o);
         }
         else {
@@ -119,7 +119,7 @@ public class StringOrDoubleFilter implements ACAQParameterCollection, ACAQValida
     /**
      * Modes are that a column is picked or one is generated
      */
-    public enum Mode {
+    public enum FilterMode {
         Double,
         String
     }

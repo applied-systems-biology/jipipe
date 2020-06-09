@@ -120,7 +120,7 @@ public abstract class KeyValuePairParameter<K, V> implements ACAQValidatable, Ma
             }
 
             keyValuePairParameter.key = JsonUtils.getObjectMapper().readerFor(keyValuePairParameter.getKeyClass()).readValue(root.get("key"));
-            keyValuePairParameter.value = JsonUtils.getObjectMapper().readerFor(keyValuePairParameter.getKeyClass()).readValue(root.get("value"));
+            keyValuePairParameter.value = JsonUtils.getObjectMapper().readerFor(keyValuePairParameter.getValueClass()).readValue(root.get("value"));
 
             return keyValuePairParameter;
         }

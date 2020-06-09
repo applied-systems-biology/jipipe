@@ -1,16 +1,16 @@
 package org.hkijena.acaq5.extensions.parameters.collections;
 
-import org.hkijena.acaq5.extensions.parameters.filters.IntegerRenaming;
+import org.hkijena.acaq5.extensions.parameters.pairs.IntRangeIntegerPair;
 
 /**
- * A collection of multiple {@link IntegerRenaming}
+ * A collection of multiple {@link IntRangeIntegerPair}
  */
-public class IntegerRenamingList extends ListParameter<IntegerRenaming> {
+public class IntegerRenamingList extends ListParameter<IntRangeIntegerPair> {
     /**
      * Creates a new instance
      */
     public IntegerRenamingList() {
-        super(IntegerRenaming.class);
+        super(IntRangeIntegerPair.class);
     }
 
     /**
@@ -19,9 +19,9 @@ public class IntegerRenamingList extends ListParameter<IntegerRenaming> {
      * @param other the original
      */
     public IntegerRenamingList(IntegerRenamingList other) {
-        super(IntegerRenaming.class);
-        for (IntegerRenaming filter : other) {
-            add(new IntegerRenaming(filter));
+        super(IntRangeIntegerPair.class);
+        for (IntRangeIntegerPair filter : other) {
+            add(new IntRangeIntegerPair(filter));
         }
     }
 }

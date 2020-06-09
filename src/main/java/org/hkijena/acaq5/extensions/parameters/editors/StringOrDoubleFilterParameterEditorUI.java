@@ -4,7 +4,6 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQTraversedParameterCollection;
 import org.hkijena.acaq5.extensions.parameters.filters.StringOrDoubleFilter;
-import org.hkijena.acaq5.extensions.tables.parameters.TableColumnSourceParameter;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -50,10 +49,10 @@ public class StringOrDoubleFilterParameterEditorUI extends ACAQParameterEditorUI
         stringToggle = addToggle(buttonGroup, UIUtils.getIconFromResources("text2.png"), "Filter a string");
         add(Box.createHorizontalStrut(8));
 
-        if (parameter.getMode() == StringOrDoubleFilter.Mode.Double) {
+        if (parameter.getFilterMode() == StringOrDoubleFilter.FilterMode.Double) {
             doubleToggle.setSelected(true);
             add(ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getContext(), traversedParameterCollection.getParameters().get("number-filter")));
-        } else if (parameter.getMode() == StringOrDoubleFilter.Mode.String) {
+        } else if (parameter.getFilterMode() == StringOrDoubleFilter.FilterMode.String) {
             stringToggle.setSelected(true);
             add(ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getContext(), traversedParameterCollection.getParameters().get("string-filter")));
         }
@@ -81,9 +80,9 @@ public class StringOrDoubleFilterParameterEditorUI extends ACAQParameterEditorUI
             parameter = new StringOrDoubleFilter();
         }
         if (doubleToggle.isSelected())
-            parameter.setMode(StringOrDoubleFilter.Mode.Double);
+            parameter.setFilterMode(StringOrDoubleFilter.FilterMode.Double);
         else if (stringToggle.isSelected())
-            parameter.setMode(StringOrDoubleFilter.Mode.String);
+            parameter.setFilterMode(StringOrDoubleFilter.FilterMode.String);
         getParameterAccess().set(parameter);
         isProcessing = false;
     }

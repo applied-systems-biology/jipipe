@@ -201,6 +201,7 @@ public class TablesExtension extends ACAQPrepackagedDefaultJavaExtension {
         registerAlgorithm("table-merge-from-columns", MergeColumnsAlgorithm.class);
         registerAlgorithm("table-split-by-columns", SplitTableByColumnsAlgorithm.class);
         registerAlgorithm("table-filter", FilterTableAlgorithm.class);
+        registerAlgorithm("table-sort", SortTableAlgorithm.class);
     }
 
     private void registerParameters() {

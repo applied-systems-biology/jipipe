@@ -14,6 +14,9 @@ import org.hkijena.acaq5.extensions.parameters.editors.*;
 import org.hkijena.acaq5.extensions.parameters.filters.*;
 import org.hkijena.acaq5.extensions.parameters.functions.FunctionParameter;
 import org.hkijena.acaq5.extensions.parameters.generators.*;
+import org.hkijena.acaq5.extensions.parameters.pairs.IntegerIntegerPair;
+import org.hkijena.acaq5.extensions.parameters.pairs.StringFilterSortOrderPair;
+import org.hkijena.acaq5.extensions.parameters.pairs.StringFilterStringPair;
 import org.hkijena.acaq5.extensions.parameters.primitives.*;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQAlgorithmDeclarationRef;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQDataDeclarationRef;
@@ -66,7 +69,7 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
         registerACAQ5ReferenceTypes();
         registerFilterParameters();
         registerGeneratingParameters();
-        registerMapParameters();
+        registerPairParameters();
         registerEnumParameters();
         registerOptionalParameters();
         registerMiscParameters();
@@ -165,9 +168,9 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 "List of annotation types",
                 "A list of annotation types",
                 ACAQTraitDeclarationRefCollectionParameterEditorUI.class);
-        registerParameterType("string-renaming-list", StringRenamingList.class,
-                StringRenamingList::new,
-                l -> new StringRenamingList((StringRenamingList) l),
+        registerParameterType("string-renaming-list", StringStringPairList.class,
+                StringStringPairList::new,
+                l -> new StringStringPairList((StringStringPairList) l),
                 "List of string renaming operations",
                 "A list of operations that rename strings",
                 null);
@@ -194,6 +197,12 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 l -> new MarginList((MarginList) l),
                 "Margin list",
                 "A list of margins",
+                null);
+        registerParameterType("string-filter:sort-order:list", StringFilterSortOrderPairList.class,
+                StringFilterSortOrderPairList::new,
+                l -> new StringFilterSortOrderPairList((StringFilterSortOrderPairList) l),
+                "List of string filter to sort order pairs",
+                "A list of string filters associated to sort orders",
                 null);
     }
 
@@ -339,20 +348,20 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
 
     }
 
-    private void registerMapParameters() {
+    private void registerPairParameters() {
         // Map-like parameters
         registerParameterEditor(KeyValuePairParameter.class, KeyValuePairParameterEditorUI.class);
         registerParameterType("string-renaming",
-                StringRenaming.class,
-                StringRenaming::new,
-                r -> new StringRenaming((StringRenaming) r),
+                StringFilterStringPair.class,
+                StringFilterStringPair::new,
+                r -> new StringFilterStringPair((StringFilterStringPair) r),
                 "Text replacement",
                 "Replaces a matched string by the target string",
                 null);
         registerParameterType("integer-integer-pair",
-                IntegerIntegerKeyValuePair.class,
-                IntegerIntegerKeyValuePair::new,
-                r -> new IntegerIntegerKeyValuePair((IntegerIntegerKeyValuePair) r),
+                IntegerIntegerPair.class,
+                IntegerIntegerPair::new,
+                r -> new IntegerIntegerPair((IntegerIntegerPair) r),
                 "Integer replacement",
                 "Replaces a number with another number",
                 null);
@@ -362,6 +371,13 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 r -> new StringFilterToStringOrDoubleFilterPair((StringFilterToStringOrDoubleFilterPair) r),
                 "String filter to string/double filter",
                 "Mapping from a string filter to a string/double filter",
+                null);
+        registerParameterType("string-filter:sort-order:pair",
+                StringFilterSortOrderPair.class,
+                StringFilterSortOrderPair::new,
+                r -> new StringFilterSortOrderPair((StringFilterSortOrderPair) r),
+                "String filter to sort order",
+                "Mapping from a string filter to a sort order",
                 null);
     }
 
