@@ -135,7 +135,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
         addVerticalGlue();
 
         if (getScrollPane() != null) {
-            getScrollPane().getVerticalScrollBar().setValue(0);
+            SwingUtilities.invokeLater(() -> getScrollPane().getVerticalScrollBar().setValue(0));
         }
     }
 

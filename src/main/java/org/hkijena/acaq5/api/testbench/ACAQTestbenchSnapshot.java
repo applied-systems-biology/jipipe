@@ -3,6 +3,7 @@ package org.hkijena.acaq5.api.testbench;
 import org.hkijena.acaq5.api.ACAQMutableRunConfiguration;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQTraversedParameterCollection;
 
@@ -127,6 +128,9 @@ public class ACAQTestbenchSnapshot {
             for (Map.Entry<String, ACAQParameterAccess> entry : parameters.entrySet()) {
                 entry.getValue().set(parameterBackups.get(entry.getKey()));
             }
+
+            // Developers might "forget" to add the events. Trigger a structural event to force the panels to reload
+            targetAlgorithm.getEventBus().post(new ParameterStructureChangedEvent(targetAlgorithm));
         }
     }
 }
