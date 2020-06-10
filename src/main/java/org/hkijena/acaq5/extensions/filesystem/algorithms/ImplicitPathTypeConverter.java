@@ -1,11 +1,11 @@
-package org.hkijena.acaq5.extensions.filesystem.api.algorithms;
+package org.hkijena.acaq5.extensions.filesystem.algorithms;
 
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataConverter;
-import org.hkijena.acaq5.extensions.filesystem.api.dataypes.PathData;
+import org.hkijena.acaq5.extensions.filesystem.dataypes.PathData;
 
 /**
- * Converts between the {@link org.hkijena.acaq5.extensions.filesystem.api.dataypes.PathData} types (non-trivial conversions)
+ * Converts between the {@link org.hkijena.acaq5.extensions.filesystem.dataypes.PathData} types (non-trivial conversions)
  */
 public class ImplicitPathTypeConverter implements ACAQDataConverter {
     private Class<? extends ACAQData> inputType;

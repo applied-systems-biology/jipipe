@@ -16,7 +16,7 @@ import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FileData;
+import org.hkijena.acaq5.extensions.filesystem.dataypes.FileData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 

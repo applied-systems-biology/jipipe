@@ -2,6 +2,8 @@ package org.hkijena.acaq5.api.compat;
 
 import org.hkijena.acaq5.api.data.ACAQData;
 
+import java.util.List;
+
 /**
  * Interface that contains functions that allow conversion between ACAQ5 and ImageJ data type
  */
@@ -57,11 +59,24 @@ public interface ImageJDatatypeAdapter {
     Object convertACAQToImageJ(ACAQData acaqData, boolean activate, boolean noWindow, String windowName);
 
     /**
+     * Converts multiple ACAQ5 data to their corresponding ImageJ data type.
+     * This method is actually called by the single algorithm run, as some data might need to be condensed
+     *
+     * @param acaqData   ACAQ data
+     * @param activate   If true, the data should be made visible in ImageJ
+     * @param noWindow   If true, the conversion should not create GUI windows
+     * @param windowName Window name of the ImageJ data. Might be ignored or used otherwise to identify data.
+     * @return Converted object
+     */
+    List<Object> convertMultipleACAQToImageJ(List<ACAQData> acaqData, boolean activate, boolean noWindow, String windowName);
+
+
+    /**
      * Imports ACAQ data from an ImageJ window
      *
-     * @param windowName Window name of the ImageJ data. Might be ignored or used otherwise to identify data.
+     * @param parameters Parameters of the adapter. Depends entirely on the adapter
      * @return Imported ACAQ data
      */
-    ACAQData importFromImageJ(String windowName);
+    ACAQData importFromImageJ(String parameters);
 
 }

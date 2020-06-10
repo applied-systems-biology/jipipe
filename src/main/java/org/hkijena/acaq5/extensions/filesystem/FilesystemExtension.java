@@ -3,23 +3,26 @@ package org.hkijena.acaq5.extensions.filesystem;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
-import org.hkijena.acaq5.extensions.filesystem.api.algorithms.*;
-import org.hkijena.acaq5.extensions.filesystem.api.annotation.FileAnnotationGenerator;
-import org.hkijena.acaq5.extensions.filesystem.api.annotation.FolderAnnotationGenerator;
-import org.hkijena.acaq5.extensions.filesystem.api.datasources.FileDataSource;
-import org.hkijena.acaq5.extensions.filesystem.api.datasources.FileListDataSource;
-import org.hkijena.acaq5.extensions.filesystem.api.datasources.FolderDataSource;
-import org.hkijena.acaq5.extensions.filesystem.api.datasources.FolderListDataSource;
-import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FileData;
-import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FolderData;
-import org.hkijena.acaq5.extensions.filesystem.api.dataypes.PathData;
-import org.hkijena.acaq5.extensions.filesystem.ui.resultanalysis.FilesystemDataSlotCellUI;
-import org.hkijena.acaq5.extensions.filesystem.ui.resultanalysis.FilesystemDataSlotRowUI;
+import org.hkijena.acaq5.extensions.filesystem.algorithms.*;
+import org.hkijena.acaq5.extensions.filesystem.annotation.FileAnnotationGenerator;
+import org.hkijena.acaq5.extensions.filesystem.annotation.FolderAnnotationGenerator;
+import org.hkijena.acaq5.extensions.filesystem.compat.PathDataImageJAdapter;
+import org.hkijena.acaq5.extensions.filesystem.compat.PathDataImporterUI;
+import org.hkijena.acaq5.extensions.filesystem.datasources.FileDataSource;
+import org.hkijena.acaq5.extensions.filesystem.datasources.FileListDataSource;
+import org.hkijena.acaq5.extensions.filesystem.datasources.FolderDataSource;
+import org.hkijena.acaq5.extensions.filesystem.datasources.FolderListDataSource;
+import org.hkijena.acaq5.extensions.filesystem.dataypes.FileData;
+import org.hkijena.acaq5.extensions.filesystem.dataypes.FolderData;
+import org.hkijena.acaq5.extensions.filesystem.dataypes.PathData;
+import org.hkijena.acaq5.extensions.filesystem.resultanalysis.FilesystemDataSlotCellUI;
+import org.hkijena.acaq5.extensions.filesystem.resultanalysis.FilesystemDataSlotRowUI;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.registries.GraphWrapperAlgorithmRegistrationTask;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.Set;
 
@@ -51,17 +54,30 @@ public class FilesystemExtension extends ACAQPrepackagedDefaultJavaExtension {
 
     @Override
     public void register() {
+        // Register main data types
         registerDatatype("path", PathData.class, ResourceUtils.getPluginResource("icons/data-types/path.png"),
                 FilesystemDataSlotRowUI.class, new FilesystemDataSlotCellUI());
         registerDatatype("file", FileData.class, ResourceUtils.getPluginResource("icons/data-types/file.png"),
                 FilesystemDataSlotRowUI.class, new FilesystemDataSlotCellUI());
         registerDatatype("folder", FolderData.class, ResourceUtils.getPluginResource("icons/data-types/folder.png"),
                 FilesystemDataSlotRowUI.class, new FilesystemDataSlotCellUI());
+
+        // Register conversion between them
         registerDatatypeConversion(new ImplicitPathTypeConverter(PathData.class, FileData.class));
         registerDatatypeConversion(new ImplicitPathTypeConverter(PathData.class, FolderData.class));
         registerDatatypeConversion(new ImplicitPathTypeConverter(FileData.class, FolderData.class));
         registerDatatypeConversion(new ImplicitPathTypeConverter(FolderData.class, FileData.class));
 
+        // Register ImageJ compat
+        registerImageJDataAdapter(new PathDataImageJAdapter(PathData.class), PathDataImporterUI.class);
+        registerImageJDataAdapter(new PathDataImageJAdapter(FileData.class), PathDataImporterUI.class);
+        registerImageJDataAdapter(new PathDataImageJAdapter(FolderData.class), PathDataImporterUI.class);
+
+        registerAlgorithms();
+        registerAlgorithmResources();
+    }
+
+    private void registerAlgorithms() {
         registerAlgorithm("import-file", FileDataSource.class);
         registerAlgorithm("import-file-list", FileListDataSource.class);
         registerAlgorithm("import-folder", FolderDataSource.class);
@@ -75,8 +91,6 @@ public class FilesystemExtension extends ACAQPrepackagedDefaultJavaExtension {
 
         registerAlgorithm("folder-annotate-by-name", FolderAnnotationGenerator.class);
         registerAlgorithm("file-annotate-by-name", FileAnnotationGenerator.class);
-
-        registerAlgorithmResources();
     }
 
     private void registerAlgorithmResources() {

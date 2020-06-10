@@ -5,7 +5,7 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.traits.ACAQDataSlotTraitConfiguration;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
-import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FileData;
+import org.hkijena.acaq5.extensions.filesystem.dataypes.FileData;
 
 import java.util.ArrayList;
 import java.util.Collections;

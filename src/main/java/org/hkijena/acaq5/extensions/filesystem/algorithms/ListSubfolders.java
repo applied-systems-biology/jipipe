@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.filesystem.api.algorithms;
+package org.hkijena.acaq5.extensions.filesystem.algorithms;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
@@ -6,7 +6,7 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FolderData;
+import org.hkijena.acaq5.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.acaq5.extensions.parameters.collections.PathFilterListParameter;
 import org.hkijena.acaq5.extensions.parameters.filters.PathFilter;
 

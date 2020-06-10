@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.filesystem.api.dataypes;
+package org.hkijena.acaq5.extensions.filesystem.dataypes;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;

@@ -5,6 +5,9 @@ import org.hkijena.acaq5.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Adapter between {@link ResultsTableData} and {@link ResultsTable}
  */
@@ -55,7 +58,16 @@ public class ResultsTableDataImageJAdapter implements ImageJDatatypeAdapter {
     }
 
     @Override
-    public ACAQData importFromImageJ(String windowName) {
+    public List<Object> convertMultipleACAQToImageJ(List<ACAQData> acaqData, boolean activate, boolean noWindow, String windowName) {
+        List<Object> result = new ArrayList<>();
+        for (int i = 0; i < acaqData.size(); i++) {
+            result.add(convertACAQToImageJ(acaqData.get(i), activate, noWindow, windowName + "/" + i));
+        }
+        return result;
+    }
+
+    @Override
+    public ACAQData importFromImageJ(String parameters) {
         ResultsTable table = ResultsTable.getResultsTable();
         return new ResultsTableData((ResultsTable) table.clone());
     }

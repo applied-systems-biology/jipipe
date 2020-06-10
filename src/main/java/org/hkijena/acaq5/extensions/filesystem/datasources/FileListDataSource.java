@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.filesystem.api.datasources;
+package org.hkijena.acaq5.extensions.filesystem.datasources;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
@@ -10,7 +10,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FileData;
+import org.hkijena.acaq5.extensions.filesystem.dataypes.FileData;
 import org.hkijena.acaq5.extensions.parameters.collections.PathListParameter;
 import org.hkijena.acaq5.extensions.parameters.editors.FilePathParameterSettings;
 import org.hkijena.acaq5.ui.components.PathEditor;

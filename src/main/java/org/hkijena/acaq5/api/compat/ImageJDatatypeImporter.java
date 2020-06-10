@@ -9,7 +9,7 @@ import java.util.function.Supplier;
  */
 public class ImageJDatatypeImporter implements Supplier<ACAQData> {
     private ImageJDatatypeAdapter adapter;
-    private String windowName;
+    private String parameters;
 
     /**
      * @param adapter the adapter
@@ -18,12 +18,19 @@ public class ImageJDatatypeImporter implements Supplier<ACAQData> {
         this.adapter = adapter;
     }
 
-    public String getWindowName() {
-        return windowName;
+    /**
+     * @return arbitrary string data that can be used by the ImageJ adapter for the conversion
+     */
+    public String getParameters() {
+        return parameters;
     }
 
-    public void setWindowName(String windowName) {
-        this.windowName = windowName;
+    /**
+     * Sets arbitrary string data that can be used by the adapter for the conversion
+     * @param parameters conversion parameters
+     */
+    public void setParameters(String parameters) {
+        this.parameters = parameters;
     }
 
     public ImageJDatatypeAdapter getAdapter() {
@@ -32,6 +39,6 @@ public class ImageJDatatypeImporter implements Supplier<ACAQData> {
 
     @Override
     public ACAQData get() {
-        return adapter.importFromImageJ(windowName);
+        return adapter.importFromImageJ(parameters);
     }
 }

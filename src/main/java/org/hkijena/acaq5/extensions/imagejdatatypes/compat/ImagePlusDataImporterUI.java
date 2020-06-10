@@ -1,12 +1,15 @@
-package org.hkijena.acaq5.extensions.imagejdatatypes.compat.importers;
+package org.hkijena.acaq5.extensions.imagejdatatypes.compat;
 
 import ij.ImagePlus;
 import ij.WindowManager;
 import org.hkijena.acaq5.api.compat.ImageJDatatypeImporter;
 import org.hkijena.acaq5.ui.compat.ImageJDatatypeImporterUI;
+import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 
 /**
@@ -29,7 +32,16 @@ public class ImagePlusDataImporterUI extends ImageJDatatypeImporterUI {
     private void initialize() {
         setLayout(new BorderLayout());
         imageSelection = new JComboBox<>(new DefaultComboBoxModel<>());
+        imageSelection.setEditable(true);
         imageSelection.addItemListener(e -> onImageSelected());
+        JTextComponent editorComponent = (JTextComponent) imageSelection.getEditor().getEditorComponent();
+        editorComponent.getDocument().addDocumentListener(new DocumentChangeListener() {
+            @Override
+            public void changed(DocumentEvent documentEvent) {
+                onImageSelected();
+            }
+        });
+        imageSelection.setToolTipText("The name of the image that should be imported. If you leave this empty, the currently active image will be used.");
         add(imageSelection, BorderLayout.CENTER);
 
         JButton reloadButton = new JButton(UIUtils.getIconFromResources("refresh.png"));
@@ -42,9 +54,9 @@ public class ImagePlusDataImporterUI extends ImageJDatatypeImporterUI {
     private void onImageSelected() {
         if (imageSelection.getSelectedItem() instanceof ImagePlus) {
             ImagePlus img = (ImagePlus) imageSelection.getSelectedItem();
-            getImporter().setWindowName(img.getTitle());
+            getImporter().setParameters(img.getTitle());
         } else {
-            getImporter().setWindowName(null);
+            getImporter().setParameters("" + imageSelection.getSelectedItem());
         }
     }
 

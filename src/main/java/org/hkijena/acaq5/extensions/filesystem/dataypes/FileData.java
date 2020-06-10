@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.filesystem.api.dataypes;
+package org.hkijena.acaq5.extensions.filesystem.dataypes;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
 

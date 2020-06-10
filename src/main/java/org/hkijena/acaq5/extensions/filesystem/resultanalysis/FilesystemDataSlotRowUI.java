@@ -1,10 +1,10 @@
-package org.hkijena.acaq5.extensions.filesystem.ui.resultanalysis;
+package org.hkijena.acaq5.extensions.filesystem.resultanalysis;
 
 import ij.IJ;
 import ij.io.Opener;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
-import org.hkijena.acaq5.extensions.filesystem.api.dataypes.PathData;
+import org.hkijena.acaq5.extensions.filesystem.dataypes.PathData;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQDefaultResultDataSlotRowUI;
 import org.hkijena.acaq5.utils.JsonUtils;

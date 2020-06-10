@@ -10,6 +10,8 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Adapter between {@link ImagePlus} and {@link ImagePlusData}
@@ -86,10 +88,19 @@ public class ImgPlusDataImageJAdapter implements ImageJDatatypeAdapter {
     }
 
     @Override
-    public ACAQData importFromImageJ(String windowName) {
-        if (StringUtils.isNullOrEmpty(windowName))
+    public List<Object> convertMultipleACAQToImageJ(List<ACAQData> acaqData, boolean activate, boolean noWindow, String windowName) {
+        List<Object> result = new ArrayList<>();
+        for (ACAQData data : acaqData) {
+           result.add(convertACAQToImageJ(data, activate, noWindow, windowName));
+        }
+        return result;
+    }
+
+    @Override
+    public ACAQData importFromImageJ(String parameters) {
+        if (StringUtils.isNullOrEmpty(parameters))
             return convertImageJToACAQ(IJ.getImage());
-        ImagePlus image = WindowManager.getImage(windowName);
+        ImagePlus image = WindowManager.getImage(parameters);
         return convertImageJToACAQ(image);
     }
 }

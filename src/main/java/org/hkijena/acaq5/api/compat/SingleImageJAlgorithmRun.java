@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import net.miginfocom.layout.AC;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
@@ -24,10 +25,7 @@ import org.hkijena.acaq5.api.registries.ACAQImageJAdapterRegistry;
 import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Settings class used for a single algorithm run
@@ -93,15 +91,18 @@ public class SingleImageJAlgorithmRun implements ACAQValidatable {
     }
 
     /**
-     * Extracts algorithm output into  ImageJ
+     * Extracts algorithm output into ImageJ.
+     * This will run convertMultipleACAQToImageJ to allow output condensation
      */
     public void pullOutput() {
         for (ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
             ImageJDatatypeAdapter adapter = ACAQImageJAdapterRegistry.getInstance().getAdapterForACAQData(outputSlot.getAcceptedDataType());
+            List<ACAQData> acaqData = new ArrayList<>();
             for (int i = 0; i < outputSlot.getRowCount(); ++i) {
                 ACAQData data = outputSlot.getData(i, ACAQData.class);
-                adapter.convertACAQToImageJ(data, true, false, outputSlot.getName());
+                acaqData.add(data);
             }
+            adapter.convertMultipleACAQToImageJ(acaqData, true, false, outputSlot.getName());
         }
     }
 
@@ -157,7 +158,7 @@ public class SingleImageJAlgorithmRun implements ACAQValidatable {
         if (jsonNode.has("input")) {
             for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.get("input").fields())) {
                 ImageJDatatypeImporter importer = inputSlotImporters.get(entry.getKey());
-                importer.setWindowName(entry.getValue().textValue());
+                importer.setParameters(entry.getValue().textValue());
             }
         }
     }
@@ -212,8 +213,8 @@ public class SingleImageJAlgorithmRun implements ACAQValidatable {
         private void serializeInputSlotData(SingleImageJAlgorithmRun run, JsonGenerator jsonGenerator) throws IOException {
             Map<String, String> slotData = new HashMap<>();
             for (Map.Entry<String, ImageJDatatypeImporter> entry : run.inputSlotImporters.entrySet()) {
-                if (entry.getValue().getWindowName() != null) {
-                    slotData.put(entry.getKey(), entry.getValue().getWindowName());
+                if (entry.getValue().getParameters() != null) {
+                    slotData.put(entry.getKey(), entry.getValue().getParameters());
                 }
             }
             if (!slotData.isEmpty()) {

@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.filesystem.api.annotation;
+package org.hkijena.acaq5.extensions.filesystem.annotation;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
@@ -8,33 +8,33 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extensions.filesystem.api.dataypes.FolderData;
+import org.hkijena.acaq5.extensions.filesystem.dataypes.FileData;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
- * Algorithm that generates annotations from folder names
+ * Generates annotations from filenames
  */
-@ACAQDocumentation(name = "Folders to annotations", description = "Creates an annotation for each folder based on its name")
+@ACAQDocumentation(name = "Files to annotations", description = "Creates an annotation for each file based on its file name")
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Annotation, menuPath = "Generate")
 
 // Algorithm flow
-@AlgorithmInputSlot(value = FolderData.class, slotName = "Folders", autoCreate = true)
-@AlgorithmOutputSlot(value = FolderData.class, slotName = "Annotated folders", autoCreate = true)
+@AlgorithmInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
+@AlgorithmOutputSlot(value = FileData.class, slotName = "Annotated files", autoCreate = true)
 
 // Traits
-public class FolderAnnotationGenerator extends ACAQSimpleIteratingAlgorithm {
+public class FileAnnotationGenerator extends ACAQSimpleIteratingAlgorithm {
 
     private ACAQTraitDeclarationRef generatedAnnotation = new ACAQTraitDeclarationRef();
 
     /**
-     * Creates a new instance
+     * New instance
      *
-     * @param declaration The algorithm declaration
+     * @param declaration Algorithm declaration
      */
-    public FolderAnnotationGenerator(ACAQAlgorithmDeclaration declaration) {
+    public FileAnnotationGenerator(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
         updateSlotTraits();
     }
@@ -42,9 +42,9 @@ public class FolderAnnotationGenerator extends ACAQSimpleIteratingAlgorithm {
     /**
      * Copies the algorithm
      *
-     * @param other The original
+     * @param other Original algorithm
      */
-    public FolderAnnotationGenerator(FolderAnnotationGenerator other) {
+    public FileAnnotationGenerator(FileAnnotationGenerator other) {
         super(other);
         this.generatedAnnotation = new ACAQTraitDeclarationRef(other.generatedAnnotation.getDeclaration());
         updateSlotTraits();
@@ -53,7 +53,7 @@ public class FolderAnnotationGenerator extends ACAQSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         if (generatedAnnotation.getDeclaration() != null) {
-            FolderData inputData = dataInterface.getInputData(getFirstInputSlot(), FolderData.class);
+            FileData inputData = dataInterface.getInputData(getFirstInputSlot(), FileData.class);
             String discriminator = inputData.getPath().getFileName().toString();
             dataInterface.addGlobalAnnotation(generatedAnnotation.getDeclaration().newInstance(discriminator));
             dataInterface.addOutputData(getFirstOutputSlot(), inputData);
@@ -74,18 +74,18 @@ public class FolderAnnotationGenerator extends ACAQSimpleIteratingAlgorithm {
     }
 
     /**
-     * @return The generated annotation type
+     * @return Generated annotation type
      */
-    @ACAQDocumentation(name = "Generated annotation", description = "Select which annotation type is generated for each folder")
+    @ACAQDocumentation(name = "Generated annotation", description = "Select which annotation type is generated for each file")
     @ACAQParameter("generated-annotation")
     public ACAQTraitDeclarationRef getGeneratedAnnotation() {
         return generatedAnnotation;
     }
 
     /**
-     * Sets the generated annotation type
+     * Sets generated annotation type
      *
-     * @param generatedAnnotation The annotation type
+     * @param generatedAnnotation Annotation type
      */
     @ACAQParameter("generated-annotation")
     public void setGeneratedAnnotation(ACAQTraitDeclarationRef generatedAnnotation) {

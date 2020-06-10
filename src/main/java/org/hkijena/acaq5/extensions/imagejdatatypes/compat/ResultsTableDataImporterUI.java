@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.imagejdatatypes.compat.importers;
+package org.hkijena.acaq5.extensions.imagejdatatypes.compat;
 
 import org.hkijena.acaq5.api.compat.ImageJDatatypeImporter;
 import org.hkijena.acaq5.ui.compat.ImageJDatatypeImporterUI;

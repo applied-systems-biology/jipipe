@@ -9,9 +9,9 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.algorithms.ImplicitImageType
 import org.hkijena.acaq5.extensions.imagejdatatypes.compat.ImgPlusDataImageJAdapter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.compat.ROIDataImageJAdapter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.compat.ResultsTableDataImageJAdapter;
-import org.hkijena.acaq5.extensions.imagejdatatypes.compat.importers.ImagePlusDataImporterUI;
-import org.hkijena.acaq5.extensions.imagejdatatypes.compat.importers.ROIDataImporterUI;
-import org.hkijena.acaq5.extensions.imagejdatatypes.compat.importers.ResultsTableDataImporterUI;
+import org.hkijena.acaq5.extensions.imagejdatatypes.compat.ImagePlusDataImporterUI;
+import org.hkijena.acaq5.extensions.imagejdatatypes.compat.ROIDataImporterUI;
+import org.hkijena.acaq5.extensions.imagejdatatypes.compat.ResultsTableDataImporterUI;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datasources.BioFormatsImporter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datasources.ImagePlusFromFileAlgorithmDeclaration;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datasources.ROIDataFromFile;

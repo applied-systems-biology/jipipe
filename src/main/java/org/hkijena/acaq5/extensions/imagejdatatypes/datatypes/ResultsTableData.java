@@ -11,6 +11,7 @@ import org.hkijena.acaq5.extensions.tables.datatypes.StringArrayTableColumn;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumnReference;
 import org.hkijena.acaq5.utils.PathUtils;
+import org.hkijena.acaq5.utils.StringUtils;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Data containing a {@link ResultsTable}
@@ -97,6 +99,18 @@ public class ResultsTableData implements ACAQData, TableModel {
         table = ResultsTable.open(PathUtils.findFileByExtensionIn(storageFilePath, ".csv").toString());
     }
 
+
+
+    /**
+     * Loads a table from CSV
+     * @param file the file
+     * @return the table
+     * @throws IOException thrown by {@link ResultsTable}
+     */
+    public static ResultsTableData fromCSV(Path file) throws IOException {
+        return new ResultsTableData(ResultsTable.open(file.toString()));
+    }
+
     /**
      * Wraps a results table
      *
@@ -104,9 +118,7 @@ public class ResultsTableData implements ACAQData, TableModel {
      */
     public ResultsTableData(ResultsTable table) {
         this.table = table;
-        if(table.columnDeleted() || table.getHeadings().length != getColumnNames().size()) {
-            cleanupTable();
-        }
+        cleanupTable();
     }
 
     /**
@@ -114,12 +126,14 @@ public class ResultsTableData implements ACAQData, TableModel {
      * This breaks too many algorithms, so re-create the column
      */
     private void cleanupTable() {
-        ResultsTable original = table;
-        table = new ResultsTable(original.getCounter());
+        if(table.columnDeleted() || table.getHeadings().length != getColumnNames().size()) {
+            ResultsTable original = table;
+            table = new ResultsTable(original.getCounter());
 
-        for (String column : original.getHeadings()) {
-            Variable[] columnAsVariables = original.getColumnAsVariables(column);
-            table.setColumn(column, columnAsVariables);
+            for (String column : original.getHeadings()) {
+                Variable[] columnAsVariables = original.getColumnAsVariables(column);
+                table.setColumn(column, columnAsVariables);
+            }
         }
     }
 
@@ -163,6 +177,40 @@ public class ResultsTableData implements ACAQData, TableModel {
             table.saveAs(storageFilePath.resolve(name + ".csv").toString());
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Creates a new column that consists of a combination of the selected values.
+     * They will be formatted like col1=col1row1,col2=col2row1, ...
+     * @param sourceColumns the source columns
+     * @param newColumn the new column
+     * @param separator separator character e.g. ", "
+     * @param equals equals character e.g. "="
+     */
+    public void mergeColumns(List<Integer> sourceColumns, String newColumn, String separator, String equals) {
+        String[] value = new String[getRowCount()];
+        for (int row = 0; row < getRowCount(); row++) {
+            int finalRow = row;
+            value[row] = sourceColumns.stream().map(col -> getColumnName(col) + equals + getValueAsString(finalRow, col)).collect(Collectors.joining(separator));
+        }
+        int col = addColumn(newColumn, true);
+        for (int row = 0; row < getRowCount(); row++) {
+            setValueAt(value[row], row, col);
+        }
+    }
+
+    /**
+     * Duplicates a column
+     * @param column the input column
+     * @param newColumn the new column name
+     */
+    public void duplicateColumn(int column, String newColumn) {
+        if(containsColumn(newColumn))
+            throw new IllegalArgumentException("Column '" + newColumn + "' already exists!");
+        int newColumnIndex = addColumn(newColumn, !isNumeric(column));
+        for (int row = 0; row < getRowCount(); row++) {
+            setValueAt(getValueAt(row, column), row, newColumnIndex);
         }
     }
 
@@ -317,7 +365,7 @@ public class ResultsTableData implements ACAQData, TableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        if (getColumnClass(columnIndex) == Double.class) {
+        if (isNumeric(columnIndex)) {
             return table.getValueAsDouble(columnIndex, rowIndex);
         } else {
             return table.getStringValue(columnIndex, rowIndex);
@@ -326,28 +374,52 @@ public class ResultsTableData implements ACAQData, TableModel {
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        if (aValue instanceof String) {
-            table.setValue(columnIndex, rowIndex, (String) aValue);
+        if (aValue instanceof Number) {
+            table.setValue(columnIndex, rowIndex, ((Number) aValue).doubleValue());
         } else {
-            table.setValue(columnIndex, rowIndex, (double) aValue);
+            table.setValue(columnIndex, rowIndex, "" + aValue);
         }
         for (TableModelListener listener : listeners) {
             listener.tableChanged(new TableModelEvent(this, rowIndex));
         }
     }
 
+    /**
+     * Returns a table value as double
+     * @param rowIndex the row
+     * @param columnIndex the column
+     * @return the table value
+     */
     public double getValueAsDouble(int rowIndex, int columnIndex) {
         return table.getValueAsDouble(columnIndex, rowIndex);
     }
 
+    /**
+     * Returns a table value as string
+     * @param rowIndex the row
+     * @param columnIndex the column
+     * @return the table value
+     */
     public String getValueAsString(int rowIndex, int columnIndex) {
         return table.getStringValue(columnIndex, rowIndex);
     }
 
+    /**
+     * Returns a table value as double
+     * @param rowIndex the row
+     * @param columnName the column
+     * @return the table value
+     */
     public double getValueAsDouble(int rowIndex, String columnName) {
         return table.getValue(columnName, rowIndex);
     }
 
+    /**
+     * Returns a table value as string
+     * @param rowIndex the row
+     * @param columnName the column
+     * @return the table value
+     */
     public String getValueAsString(int rowIndex, String columnName) {
         return table.getStringValue(columnName, rowIndex);
     }
@@ -397,6 +469,7 @@ public class ResultsTableData implements ACAQData, TableModel {
      */
     public void removeColumnAt(int col) {
         table.deleteColumn(getColumnName(col));
+        cleanupTable();
         fireChangedEvent(new TableModelEvent(this));
     }
 
@@ -464,5 +537,100 @@ public class ResultsTableData implements ACAQData, TableModel {
         }
 
         return result;
+    }
+
+    /**
+     * Adds a column with the given name.
+     * If the column already exists, the method returns false
+     * @param name column name. cannot be empty.
+     * @param stringColumn if the new column is a string column
+     * @return the column index (this includes any existing column) or -1 if the creation was not possible
+     */
+    public int addColumn(String name, boolean stringColumn) {
+        if(StringUtils.isNullOrEmpty(name))
+            return -1;
+        if(getColumnIndex(name) != -1)
+            return getColumnIndex(name);
+        int index = table.getFreeColumn(name);
+        if(stringColumn) {
+            for (int row = 0; row < getRowCount(); row++) {
+                table.setValue(index, row, "");
+            }
+        }
+        return index;
+    }
+
+    /**
+     * Converts the column into a string column. Silently ignores columns that are already string columns.
+     * @param column column index
+     */
+    public void convertToStringColumn(int column) {
+        if(!isNumeric(column))
+            return;
+        String[] values = new String[getRowCount()];
+        for (int row = 0; row < getRowCount(); row++) {
+            values[row] = getValueAsString(row, column);
+        }
+        String columnName = getColumnName(column);
+        table.deleteColumn(columnName);
+        column = table.getFreeColumn(columnName);
+        for (int row = 0; row < getRowCount(); row++) {
+            table.setValue(column, row, values[row]);
+        }
+        cleanupTable();
+    }
+
+    /**
+     * Converts the column into a numeric column. Silently ignores columns that are already numeric columns.
+     * Attempts to convert string values into their numeric representation. If this fails, defaults to zero.
+     * @param column column index
+     */
+    public void convertToNumericColumn(int column) {
+        if(isNumeric(column))
+            return;
+        double[] values = new double[getRowCount()];
+        for (int row = 0; row < getRowCount(); row++) {
+            String s = getValueAsString(row, column);
+            try {
+                values[row] = Double.parseDouble(s);
+            }
+            catch (NumberFormatException e) {
+            }
+        }
+        String columnName = getColumnName(column);
+        table.deleteColumn(columnName);
+        column = table.getFreeColumn(columnName);
+        for (int row = 0; row < getRowCount(); row++) {
+            table.setValue(column, row, values[row]);
+        }
+        cleanupTable();
+    }
+
+    /**
+     * Returns true if the column exists
+     * @param columnName the column name
+     * @return if the column exists
+     */
+    public boolean containsColumn(String columnName) {
+        return getColumnIndex(columnName) != -1;
+    }
+
+    /**
+     * Adds a new row
+     */
+    public void addRow() {
+        table.incrementCounter();
+        fireChangedEvent(new TableModelEvent(this));
+    }
+
+    /**
+     * Removes the columns with given headings
+     * @param removedColumns the columns to remove
+     */
+    public void removeColumns(Set<String> removedColumns) {
+        for (String removedColumn : removedColumns) {
+            table.deleteColumn(removedColumn);
+        }
+        cleanupTable();
     }
 }
