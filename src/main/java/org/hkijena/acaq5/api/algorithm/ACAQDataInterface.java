@@ -119,7 +119,8 @@ public class ACAQDataInterface {
     }
 
     /**
-     * Gets the list of annotations
+     * Gets the list of annotations.
+     * The map is mutable.
      *
      * @return list of annotations
      */

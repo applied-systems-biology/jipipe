@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
  * 1. A constructor that takes the wrapped data type
  * 2. A constructor that takes a path to a folder to load the data from
  */
+@ACAQDocumentation(name = "Data", description = "Generic data")
 public interface ACAQData {
 
     /**
@@ -41,8 +42,6 @@ public interface ACAQData {
      */
     default void flush() {
     }
-
-    ;
 
     /**
      * Returns the name of a data type

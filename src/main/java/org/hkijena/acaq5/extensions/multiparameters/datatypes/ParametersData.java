@@ -59,4 +59,9 @@ public class ParametersData implements ACAQData {
             gen.writeEndObject();
         }
     }
+
+    @Override
+    public String toString() {
+        return "Parameters (" + String.join(", ", parameterData.keySet()) + ")";
+    }
 }

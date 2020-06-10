@@ -116,6 +116,11 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
     }
 
     @Override
+    public String toString() {
+        return "ROI list (" + size() + " items)";
+    }
+
+    @Override
     public ACAQData duplicate() {
         return new ROIListData(this);
     }

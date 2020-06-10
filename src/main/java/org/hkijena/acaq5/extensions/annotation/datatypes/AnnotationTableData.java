@@ -119,4 +119,9 @@ public class AnnotationTableData extends ResultsTableData {
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "Annotation table (" + getRowCount() + "x" + getColumnCount() + ")";
+    }
 }

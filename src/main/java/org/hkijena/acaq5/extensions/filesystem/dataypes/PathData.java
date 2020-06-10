@@ -71,4 +71,9 @@ public class PathData implements ACAQData {
     private void setPath(Path path) {
         this.path = path;
     }
+
+    @Override
+    public String toString() {
+        return "" + path;
+    }
 }

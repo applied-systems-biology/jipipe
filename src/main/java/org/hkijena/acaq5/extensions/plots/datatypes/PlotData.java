@@ -15,6 +15,7 @@ import org.hkijena.acaq5.api.ACAQHidden;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.api.data.ACAQDataDeclaration;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
@@ -205,6 +206,11 @@ public abstract class PlotData implements ACAQData, ACAQParameterCollection, ACA
     public void clearSeries() {
         this.series.clear();
         getEventBus().post(new ParameterChangedEvent(this, "series"));
+    }
+
+    @Override
+    public String toString() {
+        return ACAQDataDeclaration.getInstance(getClass()).getName();
     }
 
     /**

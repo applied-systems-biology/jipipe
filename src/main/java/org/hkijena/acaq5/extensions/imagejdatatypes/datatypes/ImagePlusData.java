@@ -5,6 +5,7 @@ import ij.ImagePlus;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.api.data.ACAQDataDeclaration;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyNullPointerException;
 import org.hkijena.acaq5.utils.PathUtils;
 
@@ -82,5 +83,10 @@ public class ImagePlusData implements ACAQData {
         } catch (IllegalAccessException | NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public String toString() {
+        return ACAQDataDeclaration.getInstance(getClass()).getName() + " (" + image + ")";
     }
 }

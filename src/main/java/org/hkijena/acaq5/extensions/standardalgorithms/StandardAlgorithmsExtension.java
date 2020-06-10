@@ -2,6 +2,7 @@ package org.hkijena.acaq5.extensions.standardalgorithms;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.acaq5.ACAQJavaExtension;
+import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.MergeDataSlots;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.registries.GraphWrapperAlgorithmRegistrationTask;
@@ -40,6 +41,7 @@ public class StandardAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExten
 
     @Override
     public void register() {
+        registerDatatype("acaq:data", ACAQData.class, ResourceUtils.getPluginResource("icons/data-types/data-type.png"), null, null);
         registerAlgorithm("enhance-merge-slots", MergeDataSlots.class);
     }
 }
