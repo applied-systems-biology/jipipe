@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro;
+package org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms;
 
 import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;

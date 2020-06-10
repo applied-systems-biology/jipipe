@@ -3,10 +3,7 @@ package org.hkijena.acaq5.extensions.standardalgorithms;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
-import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.annotation.AnnotateAll;
-import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.annotation.RemoveAnnotations;
-import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.annotation.SplitByAnnotation;
-import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.processors.*;
+import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.MergeDataSlots;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.registries.GraphWrapperAlgorithmRegistrationTask;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.ResourceUtils;
@@ -43,27 +40,6 @@ public class StandardAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExten
 
     @Override
     public void register() {
-
-        registerAlgorithm("enhance-merge-slots", MergeDataEnhancer.class);
-        registerAlgorithm("annotate-all", AnnotateAll.class);
-        registerAlgorithm("annotate-remove", RemoveAnnotations.class);
-        registerAlgorithm("annotate-split-by-annotation", SplitByAnnotation.class);
-
-        registerAlgorithmResources();
+        registerAlgorithm("enhance-merge-slots", MergeDataSlots.class);
     }
-
-    private void registerAlgorithmResources() {
-        Set<String> algorithmFiles = ResourceUtils.walkInternalResourceFolder("extensions/standardalgorithms/api/algorithms");
-        for (String resourceFile : algorithmFiles) {
-            try {
-                JsonNode node = JsonUtils.getObjectMapper().readValue(ResourceUtils.class.getResource(resourceFile), JsonNode.class);
-                GraphWrapperAlgorithmRegistrationTask task = new GraphWrapperAlgorithmRegistrationTask(node, this);
-                registerAlgorithm(task);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-
 }

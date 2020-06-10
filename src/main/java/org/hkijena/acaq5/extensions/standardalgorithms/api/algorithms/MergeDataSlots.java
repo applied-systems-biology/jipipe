@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.processors;
+package org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
@@ -18,12 +18,12 @@ import java.util.function.Supplier;
  */
 @ACAQDocumentation(name = "Merge data slots", description = "Merges the input slots into one data slot")
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Processor)
-public class MergeDataEnhancer extends ACAQAlgorithm {
+public class MergeDataSlots extends ACAQAlgorithm {
 
     /**
      * @param declaration the algorithm declaration
      */
-    public MergeDataEnhancer(ACAQAlgorithmDeclaration declaration) {
+    public MergeDataSlots(ACAQAlgorithmDeclaration declaration) {
         super(declaration, ACAQMutableSlotConfiguration.builder()
                 .restrictOutputSlotCount(1)
                 .build());
@@ -34,7 +34,7 @@ public class MergeDataEnhancer extends ACAQAlgorithm {
      *
      * @param other the original
      */
-    public MergeDataEnhancer(MergeDataEnhancer other) {
+    public MergeDataSlots(MergeDataSlots other) {
         super(other);
     }
 

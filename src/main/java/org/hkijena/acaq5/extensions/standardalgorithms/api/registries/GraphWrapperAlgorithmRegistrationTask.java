@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableList;
 import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDefaultAlgorithmRegistrationTask;
-import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro.GraphWrapperAlgorithmDeclaration;
+import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.GraphWrapperAlgorithmDeclaration;
 import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.io.IOException;

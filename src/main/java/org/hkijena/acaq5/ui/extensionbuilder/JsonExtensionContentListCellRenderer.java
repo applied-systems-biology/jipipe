@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.ui.extensionbuilder;
 
 import org.hkijena.acaq5.api.traits.ACAQJsonTraitDeclaration;
-import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.macro.GraphWrapperAlgorithmDeclaration;
+import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.GraphWrapperAlgorithmDeclaration;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
