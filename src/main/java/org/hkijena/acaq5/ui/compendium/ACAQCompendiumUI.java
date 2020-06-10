@@ -16,8 +16,9 @@ import java.awt.event.ComponentEvent;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
 
 import static org.hkijena.acaq5.ui.components.MarkdownReader.OPTIONS;
 
@@ -25,15 +26,16 @@ import static org.hkijena.acaq5.ui.components.MarkdownReader.OPTIONS;
  * A browsable list of help pages
  */
 public abstract class ACAQCompendiumUI<T> extends JPanel {
+    private final Map<Object, MarkdownDocument> compendiumCache = new HashMap<>();
+    private final MarkdownDocument defaultDocument;
     private JList<T> itemList;
     private SearchTextField searchField;
     private JSplitPane splitPane;
     private MarkdownReader markdownReader;
-    private final Map<Object, MarkdownDocument> compendiumCache = new HashMap<>();
-    private final MarkdownDocument defaultDocument;
 
     /**
      * Creates a new instance
+     *
      * @param defaultDocument the documentation that is shown by default
      */
     public ACAQCompendiumUI(MarkdownDocument defaultDocument) {
@@ -80,7 +82,7 @@ public abstract class ACAQCompendiumUI<T> extends JPanel {
         saveMarkdown.addActionListener(e -> {
             Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as Markdown (*.md)");
             if (selectedPath != null) {
-                try(BusyCursor cursor = new BusyCursor(this)) {
+                try (BusyCursor cursor = new BusyCursor(this)) {
                     MarkdownDocument wholeCompendium = generateWholeCompendium();
                     try {
                         Files.write(selectedPath, wholeCompendium.getMarkdown().getBytes(Charsets.UTF_8));
@@ -96,7 +98,7 @@ public abstract class ACAQCompendiumUI<T> extends JPanel {
         saveHTML.addActionListener(e -> {
             Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as HTML (*.html)");
             if (selectedPath != null) {
-                try(BusyCursor cursor = new BusyCursor(this)) {
+                try (BusyCursor cursor = new BusyCursor(this)) {
                     try {
                         MarkdownDocument wholeCompendium = generateWholeCompendium();
                         Files.write(selectedPath, wholeCompendium.getRenderedHTML().getBytes(Charsets.UTF_8));
@@ -112,7 +114,7 @@ public abstract class ACAQCompendiumUI<T> extends JPanel {
         savePDF.addActionListener(e -> {
             Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as Portable Document Format (*.pdf)");
             if (selectedPath != null) {
-                try(BusyCursor cursor = new BusyCursor(this)) {
+                try (BusyCursor cursor = new BusyCursor(this)) {
                     MarkdownDocument wholeCompendium = generateWholeCompendium();
                     PdfConverterExtension.exportToPdf(selectedPath.toString(), wholeCompendium.getRenderedHTML(), "", OPTIONS);
                 }
@@ -129,6 +131,7 @@ public abstract class ACAQCompendiumUI<T> extends JPanel {
 
     /**
      * Generates a document that contains the whole compendium
+     *
      * @return the document
      */
     public MarkdownDocument generateWholeCompendium() {
@@ -142,6 +145,7 @@ public abstract class ACAQCompendiumUI<T> extends JPanel {
 
     /**
      * Returns all items that should be available
+     *
      * @param searchStrings the search strings
      * @return all items that should be available
      */
@@ -162,6 +166,7 @@ public abstract class ACAQCompendiumUI<T> extends JPanel {
 
     /**
      * Returns the renderer for the items
+     *
      * @return
      */
     protected abstract ListCellRenderer<T> getItemListRenderer();
@@ -200,6 +205,7 @@ public abstract class ACAQCompendiumUI<T> extends JPanel {
 
     /**
      * Generates the compendium page for the item
+     *
      * @param item the item
      * @return compendium page
      */

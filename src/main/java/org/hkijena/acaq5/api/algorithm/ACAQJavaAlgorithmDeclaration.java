@@ -39,7 +39,7 @@ public class ACAQJavaAlgorithmDeclaration extends ACAQMutableAlgorithmDeclaratio
         setDescription(getDescriptionOf(algorithmClass));
         setCategory(getCategoryOf(algorithmClass));
         setMenuPath(getMenuPathOf(algorithmClass));
-        if(algorithmClass.getAnnotation(ACAQHidden.class) != null) {
+        if (algorithmClass.getAnnotation(ACAQHidden.class) != null) {
             setHidden(true);
         }
         initializeSlots();

@@ -65,7 +65,7 @@ public class ConvertToAnnotationTable extends ACAQSimpleIteratingAlgorithm {
             output.setValueAt(trait.getValue(), 0, col);
         }
 
-        if(removeOutputAnnotations)
+        if (removeOutputAnnotations)
             dataInterface.getAnnotations().clear();
 
         dataInterface.addOutputData(getFirstOutputSlot(), output);

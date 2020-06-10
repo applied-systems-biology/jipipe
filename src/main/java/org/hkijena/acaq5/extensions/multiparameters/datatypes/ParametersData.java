@@ -48,6 +48,11 @@ public class ParametersData implements ACAQData {
         this.parameterData = parameterData;
     }
 
+    @Override
+    public String toString() {
+        return "Parameters (" + String.join(", ", parameterData.keySet()) + ")";
+    }
+
     /**
      * Serializes {@link ParametersData}
      */
@@ -58,10 +63,5 @@ public class ParametersData implements ACAQData {
             gen.writeObjectField("data", value.parameterData);
             gen.writeEndObject();
         }
-    }
-
-    @Override
-    public String toString() {
-        return "Parameters (" + String.join(", ", parameterData.keySet()) + ")";
     }
 }

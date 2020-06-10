@@ -23,6 +23,7 @@ public class ACAQDefaultTrait implements ACAQTrait {
 
     /**
      * Creates a new instance with an empty string value
+     *
      * @param declaration the declaration
      */
     public ACAQDefaultTrait(ACAQTraitDeclaration declaration) {

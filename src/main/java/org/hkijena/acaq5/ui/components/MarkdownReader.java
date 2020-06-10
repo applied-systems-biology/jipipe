@@ -193,6 +193,7 @@ public class MarkdownReader extends JPanel {
 
     /**
      * Renders the content as HTML
+     *
      * @return HTML content
      */
     private String toHTML() {

@@ -71,6 +71,11 @@ public class ImagePlusData implements ACAQData {
         return ACAQData.createInstance(getClass(), image.duplicate());
     }
 
+    @Override
+    public String toString() {
+        return ACAQDataDeclaration.getInstance(getClass()).getName() + " (" + image + ")";
+    }
+
     /**
      * Gets the dimensionality of {@link ImagePlusData}
      *
@@ -83,10 +88,5 @@ public class ImagePlusData implements ACAQData {
         } catch (IllegalAccessException | NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public String toString() {
-        return ACAQDataDeclaration.getInstance(getClass()).getName() + " (" + image + ")";
     }
 }

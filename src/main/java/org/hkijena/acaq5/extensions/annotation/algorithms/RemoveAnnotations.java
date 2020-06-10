@@ -60,7 +60,7 @@ public class RemoveAnnotations extends ACAQAlgorithm {
         for (ACAQDataSlot outputSlot : getOutputSlots()) {
             for (ACAQTraitDeclarationRef annotationType : annotationTypes) {
                 outputSlot.removeAllAnnotationsFromData(annotationType.getDeclaration());
-                if(removeCategory) {
+                if (removeCategory) {
                     for (ACAQTraitDeclaration inherited : annotationType.getDeclaration().getInherited()) {
                         outputSlot.removeAllAnnotationsFromData(inherited);
                     }

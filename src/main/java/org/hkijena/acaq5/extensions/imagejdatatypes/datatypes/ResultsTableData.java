@@ -635,6 +635,11 @@ public class ResultsTableData implements ACAQData, TableModel {
         cleanupTable();
     }
 
+    @Override
+    public String toString() {
+        return "Results table (" + getRowCount() + "x" + getColumnCount() + ")";
+    }
+
     /**
      * Loads a table from CSV
      *
@@ -644,10 +649,5 @@ public class ResultsTableData implements ACAQData, TableModel {
      */
     public static ResultsTableData fromCSV(Path file) throws IOException {
         return new ResultsTableData(ResultsTable.open(file.toString()));
-    }
-
-    @Override
-    public String toString() {
-        return "Results table (" + getRowCount() + "x" + getColumnCount() + ")";
     }
 }

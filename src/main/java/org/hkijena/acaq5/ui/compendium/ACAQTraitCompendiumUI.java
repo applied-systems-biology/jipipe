@@ -1,36 +1,18 @@
 package org.hkijena.acaq5.ui.compendium;
 
-import com.google.common.collect.Comparators;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.acaq5.ACAQDependency;
-import org.hkijena.acaq5.api.ACAQDocumentation;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
-import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
-import org.hkijena.acaq5.api.data.ACAQData;
-import org.hkijena.acaq5.api.parameters.*;
-import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
-import org.hkijena.acaq5.api.registries.ACAQParameterTypeRegistry;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
-import org.hkijena.acaq5.ui.components.ACAQAlgorithmDeclarationListCellRenderer;
 import org.hkijena.acaq5.ui.components.ACAQTraitDeclarationListCellRenderer;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
-import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
-import org.hkijena.acaq5.utils.ResourceUtils;
-import org.hkijena.acaq5.utils.StringUtils;
 
 import javax.swing.*;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import static org.hkijena.acaq5.utils.TooltipUtils.insertOpposingTraitTableContent;
 
 /**
  * A browsable list of traits with full documentation
@@ -78,7 +60,7 @@ public class ACAQTraitCompendiumUI extends ACAQCompendiumUI<ACAQTraitDeclaration
 
         builder.append("\n\nUnique ID: `").append(declaration.getId()).append("`\n\n");
 
-        if(declaration.isHidden()) {
+        if (declaration.isHidden()) {
             builder.append("\n\nThis annotation type was marked as 'Hidden' it cannot be assigned manually in some cases.\n\n");
         }
 
@@ -89,7 +71,7 @@ public class ACAQTraitCompendiumUI extends ACAQCompendiumUI<ACAQTraitDeclaration
 
         // Write parameter documentation
 
-        if(!declaration.getInherited().isEmpty()) {
+        if (!declaration.getInherited().isEmpty()) {
             builder.append("# Inherited annotations\n\n");
             builder.append("<table>");
             builder.append("<tr><td></td><td>Name</td><td>ID</td><td>Description</td></tr>");

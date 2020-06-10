@@ -14,7 +14,6 @@ import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;

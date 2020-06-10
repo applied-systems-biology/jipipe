@@ -21,6 +21,6 @@ public class ImplicitResultsTableDataConverter implements ACAQDataConverter {
 
     @Override
     public ACAQData convert(ACAQData input) {
-        return new AnnotationTableData((ResultsTableData)input);
+        return new AnnotationTableData((ResultsTableData) input);
     }
 }

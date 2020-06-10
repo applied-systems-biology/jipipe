@@ -7,7 +7,6 @@ import org.hkijena.acaq5.api.ACAQHidden;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.utils.ReflectionUtils;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -46,12 +45,12 @@ public class ACAQJavaTraitDeclaration extends ACAQMutableTraitDeclaration {
 
     @Override
     public ACAQTrait newInstance(boolean value) {
-       return newInstance(value ? "True" : "False");
+        return newInstance(value ? "True" : "False");
     }
 
     @Override
     public ACAQTrait newInstance(String value) {
-        return (ACAQTrait) ReflectionUtils.newInstance(getTraitClass(),this, value);
+        return (ACAQTrait) ReflectionUtils.newInstance(getTraitClass(), this, value);
     }
 
     @Override
