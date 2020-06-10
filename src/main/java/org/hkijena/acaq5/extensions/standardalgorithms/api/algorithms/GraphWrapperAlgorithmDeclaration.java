@@ -24,6 +24,7 @@ import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefList;
 import org.hkijena.acaq5.extensions.parameters.collections.StringListParameter;
 import org.hkijena.acaq5.extensions.parameters.editors.ACAQTraitParameterSettings;
 import org.hkijena.acaq5.extensions.parameters.editors.StringParameterSettings;
+import org.hkijena.acaq5.extensions.parameters.references.ACAQAlgorithmIconRef;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.utils.StringUtils;
 
@@ -51,6 +52,7 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     private Map<ACAQDataSlot, String> exportedSlotNames = new HashMap<>();
     private StringListParameter menuPath = new StringListParameter();
     private boolean hidden = false;
+    private ACAQAlgorithmIconRef icon = new ACAQAlgorithmIconRef();
 
     /**
      * Creates a new declaration
@@ -435,5 +437,18 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     public void setHidden(boolean hidden) {
         this.hidden = hidden;
         getEventBus().post(new ParameterChangedEvent(this, "hidden"));
+    }
+
+    @ACAQDocumentation(name = "Icon", description = "A custom algorithm icon")
+    @ACAQParameter("icon")
+    @JsonGetter("icon")
+    public ACAQAlgorithmIconRef getIcon() {
+        return icon;
+    }
+
+    @ACAQParameter("icon")
+    public void setIcon(ACAQAlgorithmIconRef icon) {
+        this.icon = icon;
+        getEventBus().post(new ParameterChangedEvent(this, "icon"));
     }
 }

@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 @ACAQDocumentation(name = "Define rectangular ROI (referenced)", description = "Manually defines a rectangular ROI. This algorithm requires a reference " +
         "image, but also allows more flexibility in defining the rectangles.")
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.DataSource)
-@AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Reference")
+@AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Reference")
 @AlgorithmOutputSlot(value = ROIListData.class, slotName = "Output")
 public class ReferencedDefineRectangularRoiAlgorithm extends ACAQIteratingAlgorithm {
 

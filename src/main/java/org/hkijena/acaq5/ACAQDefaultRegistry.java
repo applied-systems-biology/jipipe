@@ -44,6 +44,7 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
     private ACAQParameterTypeRegistry parameterTypeRegistry = new ACAQParameterTypeRegistry();
     private ACAQSettingsRegistry settingsRegistry = new ACAQSettingsRegistry();
     private ACAQTableRegistry tableRegistry = new ACAQTableRegistry();
+    private ACAQUIAlgorithmRegistry acaquiAlgorithmRegistry = new ACAQUIAlgorithmRegistry();
 
     @Parameter
     private PluginService pluginService;
@@ -75,6 +76,7 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
         parameterTypeRegistry = new ACAQParameterTypeRegistry();
         settingsRegistry = new ACAQSettingsRegistry();
         tableRegistry = new ACAQTableRegistry();
+        acaquiAlgorithmRegistry = new ACAQUIAlgorithmRegistry();
         discover();
     }
 
@@ -246,6 +248,11 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
     @Override
     public ACAQTableRegistry getTableRegistry() {
         return tableRegistry;
+    }
+
+    @Override
+    public ACAQUIAlgorithmRegistry getUIAlgorithmRegistry() {
+        return acaquiAlgorithmRegistry;
     }
 
     /**

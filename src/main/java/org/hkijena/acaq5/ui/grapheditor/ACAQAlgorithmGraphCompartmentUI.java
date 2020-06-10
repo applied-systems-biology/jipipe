@@ -12,6 +12,7 @@ import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQMultiAlgorithmSelectionPanelUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQSingleAlgorithmSelectionPanelUI;
+import org.hkijena.acaq5.ui.registries.ACAQUIAlgorithmRegistry;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -132,7 +133,6 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
             return;
         }
 
-        Icon icon = new ColorIcon(16, 16, UIUtils.getFillColorFor(category));
         Map<String, Set<ACAQAlgorithmDeclaration>> byMenuPath = ACAQAlgorithmDeclaration.groupByMenuPaths(algorithmsOfCategory);
         Map<String, JMenu> menuTree = UIUtils.createMenuTree(menu, byMenuPath.keySet());
 
@@ -141,7 +141,7 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
             for (ACAQAlgorithmDeclaration declaration : ACAQAlgorithmDeclaration.getSortedList(entry.getValue())) {
                 if (declaration.isHidden())
                     continue;
-                JMenuItem addItem = new JMenuItem(declaration.getName(), icon);
+                JMenuItem addItem = new JMenuItem(declaration.getName(), ACAQUIAlgorithmRegistry.getInstance().getIconFor(declaration));
                 addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
                 addItem.addActionListener(e -> algorithmGraph.insertNode(declaration.newInstance(), compartment));
                 addedAlgorithms.add(declaration);
@@ -177,7 +177,7 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
                 for (ACAQAlgorithmDeclaration declaration : dataSources) {
                     if (declaration.isHidden())
                         continue;
-                    JMenuItem addItem = new JMenuItem(declaration.getName(), icon);
+                    JMenuItem addItem = new JMenuItem(declaration.getName(), ACAQUIAlgorithmRegistry.getInstance().getIconFor(declaration));
                     addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
                     addItem.addActionListener(e -> algorithmGraph.insertNode(declaration.newInstance(), compartment));
                     addedAlgorithms.add(declaration);

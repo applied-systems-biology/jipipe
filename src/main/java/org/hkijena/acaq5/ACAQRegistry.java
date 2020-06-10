@@ -84,6 +84,8 @@ public interface ACAQRegistry extends Service, ACAQValidatable {
 
     ACAQTableRegistry getTableRegistry();
 
+    ACAQUIAlgorithmRegistry getUIAlgorithmRegistry();
+
     /**
      * @return Registered extension IDs
      */

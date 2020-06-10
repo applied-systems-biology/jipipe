@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.ui.components;
 
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
+import org.hkijena.acaq5.ui.registries.ACAQUIAlgorithmRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -26,7 +27,7 @@ public class ACAQAlgorithmListCellRenderer extends JLabel implements ListCellRen
         }
         if (value != null) {
             setText(value.getName());
-            setIcon(UIUtils.getIconFromColor(UIUtils.getFillColorFor(value.getDeclaration())));
+            setIcon(ACAQUIAlgorithmRegistry.getInstance().getIconFor(value.getDeclaration()));
         } else {
             setText("<No data type>");
             setIcon(null);

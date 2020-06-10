@@ -6,7 +6,10 @@ import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDefaultAlgorithmRegistrationTask;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.GraphWrapperAlgorithmDeclaration;
+import org.hkijena.acaq5.ui.registries.ACAQUIAlgorithmRegistry;
 import org.hkijena.acaq5.utils.JsonUtils;
+import org.hkijena.acaq5.utils.ResourceUtils;
+import org.hkijena.acaq5.utils.UIUtils;
 
 import java.io.IOException;
 import java.util.Map;
@@ -59,6 +62,10 @@ public class GraphWrapperAlgorithmRegistrationTask extends ACAQDefaultAlgorithmR
         try {
             GraphWrapperAlgorithmDeclaration declaration = JsonUtils.getObjectMapper().readerFor(GraphWrapperAlgorithmDeclaration.class).readValue(jsonNode);
             ACAQAlgorithmRegistry.getInstance().register(declaration, source);
+            if(declaration.getIcon().getIconName() != null) {
+                ACAQUIAlgorithmRegistry.getInstance().registerIcon(declaration,
+                        ResourceUtils.getPluginResource("icons/algorithms/" + declaration.getIcon().getIconName()));
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

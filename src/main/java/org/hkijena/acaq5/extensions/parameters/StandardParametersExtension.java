@@ -21,10 +21,7 @@ import org.hkijena.acaq5.extensions.parameters.pairs.IntegerIntegerPair;
 import org.hkijena.acaq5.extensions.parameters.pairs.StringFilterSortOrderPair;
 import org.hkijena.acaq5.extensions.parameters.pairs.StringFilterStringPair;
 import org.hkijena.acaq5.extensions.parameters.primitives.*;
-import org.hkijena.acaq5.extensions.parameters.references.ACAQAlgorithmDeclarationRef;
-import org.hkijena.acaq5.extensions.parameters.references.ACAQDataDeclarationRef;
-import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
-import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitIconRef;
+import org.hkijena.acaq5.extensions.parameters.references.*;
 import org.hkijena.acaq5.extensions.parameters.roi.IntModificationParameter;
 import org.hkijena.acaq5.extensions.parameters.roi.Margin;
 import org.hkijena.acaq5.extensions.parameters.roi.RectangleDeserializer;
@@ -454,7 +451,7 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 "Reference to an algorithm type",
                 ACAQAlgorithmDeclarationRefParameterEditorUI.class);
 
-        // Special ACAQ5 reference types
+        // Icon types
         registerParameterType("trait-type-icon",
                 ACAQTraitIconRef.class,
                 ACAQTraitIconRef::new,
@@ -462,6 +459,13 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 "Annotation type icon",
                 "Reference to an annotation type icon",
                 ACAQTraitIconRefParameterEditorUI.class);
+        registerParameterType("algorithm-type-icon",
+                ACAQAlgorithmIconRef.class,
+                ACAQAlgorithmIconRef::new,
+                r -> new ACAQAlgorithmIconRef((ACAQAlgorithmIconRef) r),
+                "Algorithm type icon",
+                "Reference to an algorithm type icon",
+                ACAQAlgorithmIconRefParameterEditorUI.class);
     }
 
     private void registerCommonJavaTypes() {
