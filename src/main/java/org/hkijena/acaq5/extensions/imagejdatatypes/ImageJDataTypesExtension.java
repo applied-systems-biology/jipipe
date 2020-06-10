@@ -43,6 +43,7 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.resultanalysis.ImageDataSlot
 import org.hkijena.acaq5.extensions.imagejdatatypes.resultanalysis.ROIDataSlotRowUI;
 import org.hkijena.acaq5.extensions.imagejdatatypes.resultanalysis.ResultsTableDataSlotRowUI;
 import org.hkijena.acaq5.utils.ResourceUtils;
+import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.plugin.Plugin;
 
 import java.util.Arrays;
@@ -216,21 +217,14 @@ public class ImageJDataTypesExtension extends ACAQPrepackagedDefaultJavaExtensio
         registerAlgorithm("import-imagej-bioformats", BioFormatsImporter.class);
 
         // Register algorithms
-        registerAlgorithm("external-imagej-macro", MacroWrapperAlgorithm.class);
-        registerAlgorithm("convert-imagej-image", ImageTypeConverter.class);
+        registerAlgorithm("convert-imagej-image", ImageTypeConverter.class, UIUtils.getAlgorithmIconURL("image.png"));
 
         // Register parameter editors
         registerEnumParameterType("import-imagej-bioformats:color-mode", BioFormatsImporter.ColorMode.class,
                 "Color mode", "Available modes");
         registerEnumParameterType("import-imagej-bioformats:order", BioFormatsImporter.Order.class,
                 "Order", "Available orders");
-        registerParameterType("ij-macro-code",
-                MacroCode.class,
-                MacroCode::new,
-                m -> new MacroCode((MacroCode) m),
-                "ImageJ macro",
-                "An ImageJ macro code",
-                MacroParameterEditorUI.class);
+
     }
 
     /**

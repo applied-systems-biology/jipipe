@@ -249,7 +249,7 @@ public class StringUtils {
                     .replace("\n\n", "\n")
                     .replace("\n ", "\n")
                     .replace(" \n", "\n");
-        return menuPath;
+        return menuPath.trim();
     }
 
     /**

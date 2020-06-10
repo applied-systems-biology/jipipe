@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.imagejdatatypes;
+package org.hkijena.acaq5.extensions.imagejalgorithms.parameters;
 
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;

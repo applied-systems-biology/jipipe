@@ -185,18 +185,18 @@ public class TablesExtension extends ACAQPrepackagedDefaultJavaExtension {
     }
 
     private void registerAlgorithms() {
-        registerAlgorithm("table-add-columns-generate", GenerateColumnAlgorithm.class);
-        registerAlgorithm("table-remove-columns", RemoveColumnAlgorithm.class);
-        registerAlgorithm("table-rename-columns", RenameTableColumnsAlgorithm.class);
-        registerAlgorithm("table-rename-single-columns", RenameColumnsAlgorithm.class);
-        registerAlgorithm("table-integrate-columns", IntegrateColumnsAlgorithm.class);
-        registerAlgorithm("table-convert-columns", ConvertColumnsAlgorithm.class);
-        registerAlgorithm("table-split-into-columns", SplitTableIntoColumnsAlgorithm.class);
-        registerAlgorithm("table-merge-from-columns", MergeColumnsAlgorithm.class);
-        registerAlgorithm("table-merge-tables", MergeTablesAlgorithm.class);
-        registerAlgorithm("table-split-by-columns", SplitTableByColumnsAlgorithm.class);
-        registerAlgorithm("table-filter", FilterTableAlgorithm.class);
-        registerAlgorithm("table-sort", SortTableAlgorithm.class);
+        registerAlgorithm("table-add-columns-generate", GenerateColumnAlgorithm.class, UIUtils.getAlgorithmIconURL("edit-table-insert-column-right.png"));
+        registerAlgorithm("table-remove-columns", RemoveColumnAlgorithm.class, UIUtils.getAlgorithmIconURL("edit-table-delete-column.png"));
+        registerAlgorithm("table-rename-columns", RenameTableColumnsAlgorithm.class, UIUtils.getAlgorithmIconURL("pen.png"));
+        registerAlgorithm("table-rename-single-columns", RenameColumnsAlgorithm.class, UIUtils.getAlgorithmIconURL("pen.png"));
+        registerAlgorithm("table-integrate-columns", IntegrateColumnsAlgorithm.class, UIUtils.getAlgorithmIconURL("statistics.png"));
+        registerAlgorithm("table-convert-columns", ConvertColumnsAlgorithm.class, UIUtils.getAlgorithmIconURL("formula.png"));
+        registerAlgorithm("table-split-into-columns", SplitTableIntoColumnsAlgorithm.class, UIUtils.getAlgorithmIconURL("split.png"));
+        registerAlgorithm("table-merge-from-columns", MergeColumnsAlgorithm.class, UIUtils.getAlgorithmIconURL("merge.png"));
+        registerAlgorithm("table-merge-tables", MergeTablesAlgorithm.class, UIUtils.getAlgorithmIconURL("merge.png"));
+        registerAlgorithm("table-split-by-columns", SplitTableByColumnsAlgorithm.class, UIUtils.getAlgorithmIconURL("split.png"));
+        registerAlgorithm("table-filter", FilterTableAlgorithm.class, UIUtils.getAlgorithmIconURL("filter.png"));
+        registerAlgorithm("table-sort", SortTableAlgorithm.class, UIUtils.getAlgorithmIconURL("sort-amount-up-alt.png"));
     }
 
     private void registerParameters() {

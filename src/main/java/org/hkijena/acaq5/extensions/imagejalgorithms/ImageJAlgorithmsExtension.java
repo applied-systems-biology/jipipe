@@ -11,6 +11,7 @@ import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.EigenvalueSelection2D;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.InterpolationMethod;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.LogicalOperation;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.MacroWrapperAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.analyze.FindParticles2D;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.background.RollingBallBackgroundEstimator2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.binary.DistanceTransformWatershed2DAlgorithm;
@@ -44,6 +45,8 @@ import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.statistics.GreyscalePix
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.statistics.HistogramGenerator;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.threshold.*;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.transform.*;
+import org.hkijena.acaq5.extensions.imagejalgorithms.parameters.MacroCode;
+import org.hkijena.acaq5.extensions.imagejalgorithms.parameters.MacroParameterEditorUI;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColor8UData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
@@ -170,6 +173,8 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerConvolutionAlgorithms();
         registerROIAlgorithms();
 
+        registerAlgorithm("external-imagej-macro", MacroWrapperAlgorithm.class, UIUtils.getAlgorithmIconURL("imagej.png"));
+
         // Register enum parameters
         registerGlobalEnums();
 
@@ -208,6 +213,13 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
                 "Measurement column sort order list",
                 "List of measurement column sort orders",
                 null);
+        registerParameterType("ij-macro-code",
+                MacroCode.class,
+                MacroCode::new,
+                m -> new MacroCode((MacroCode) m),
+                "ImageJ macro",
+                "An ImageJ macro code",
+                MacroParameterEditorUI.class);
     }
 
     private void registerGlobalEnums() {

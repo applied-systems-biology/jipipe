@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.imagejdatatypes;
+package org.hkijena.acaq5.extensions.imagejalgorithms.parameters;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;

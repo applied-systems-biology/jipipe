@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.imagejdatatypes;
+package org.hkijena.acaq5.extensions.imagejalgorithms.ij1;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -20,6 +20,7 @@ import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.registries.ACAQImageJAdapterRegistry;
+import org.hkijena.acaq5.extensions.imagejalgorithms.parameters.MacroCode;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
