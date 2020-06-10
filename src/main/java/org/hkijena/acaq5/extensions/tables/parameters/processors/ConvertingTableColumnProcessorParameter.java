@@ -3,7 +3,6 @@ package org.hkijena.acaq5.extensions.tables.parameters.processors;
 import org.hkijena.acaq5.extensions.parameters.filters.StringFilter;
 import org.hkijena.acaq5.extensions.parameters.functions.FunctionParameter;
 import org.hkijena.acaq5.extensions.tables.parameters.enums.TableColumnConversionParameter;
-import org.hkijena.acaq5.extensions.tables.parameters.enums.TableColumnIntegrationParameter;
 
 /**
  * A parameter that models processing an input column via an conversion function

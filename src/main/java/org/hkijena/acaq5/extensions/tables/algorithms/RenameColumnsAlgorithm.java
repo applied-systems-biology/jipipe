@@ -51,16 +51,15 @@ public class RenameColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
         TableColumn input = dataInterface.getInputData(getFirstInputSlot(), TableColumn.class);
         String name = input.getLabel();
         for (StringFilterStringPair renamingEntry : renamingEntries) {
-            if(renamingEntry.test(name)) {
+            if (renamingEntry.test(name)) {
                 name = renamingEntry.apply(name);
                 break;
             }
         }
 
-        if(input.isNumeric()) {
+        if (input.isNumeric()) {
             dataInterface.addOutputData(getFirstOutputSlot(), new DoubleArrayTableColumn(input.getDataAsDouble(input.getRows()), name));
-        }
-        else {
+        } else {
             dataInterface.addOutputData(getFirstOutputSlot(), new StringArrayTableColumn(input.getDataAsString(input.getRows()), name));
         }
     }

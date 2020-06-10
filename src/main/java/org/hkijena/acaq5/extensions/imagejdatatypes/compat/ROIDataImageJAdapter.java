@@ -63,15 +63,14 @@ public class ROIDataImageJAdapter implements ImageJDatatypeAdapter {
 
     @Override
     public List<Object> convertMultipleACAQToImageJ(List<ACAQData> acaqData, boolean activate, boolean noWindow, String windowName) {
-        if(activate) {
+        if (activate) {
             RoiManager roiManager = new RoiManager();
             for (ACAQData data : acaqData) {
                 ROIListData rois = (ROIListData) data;
                 rois.addToRoiManager(roiManager);
             }
             return Collections.singletonList(roiManager);
-        }
-        else {
+        } else {
             List<Object> result = new ArrayList<>();
             for (ACAQData data : acaqData) {
                 result.add(convertACAQToImageJ(data, activate, noWindow, windowName));

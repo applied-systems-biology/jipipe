@@ -60,14 +60,13 @@ public class StringArrayTableColumn implements MutableTableColumn {
 
     @Override
     public double getRowAsDouble(int row) {
-        if(row < data.length) {
+        if (row < data.length) {
             try {
-               return Double.parseDouble(data[row]);
+                return Double.parseDouble(data[row]);
             } catch (NumberFormatException e) {
                 return 0;
             }
-        }
-        else {
+        } else {
             return 0;
         }
     }

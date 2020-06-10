@@ -61,8 +61,7 @@ public class FormPanel extends JPanel {
         if ((flags & WITH_SCROLLING) == WITH_SCROLLING) {
             scrollPane = new JScrollPane(forms);
             content = scrollPane;
-        }
-        else
+        } else
             content = forms;
 
         if ((flags & WITH_DOCUMENTATION) == WITH_DOCUMENTATION) {

@@ -4,12 +4,7 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.ACAQDataInterface;
-import org.hkijena.acaq5.api.algorithm.ACAQSimpleIteratingAlgorithm;
-import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
@@ -44,21 +39,6 @@ public class SplitTableIntoColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm
         super(declaration);
     }
 
-    @Override
-    protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-       ResultsTableData input = dataInterface.getInputData(getFirstInputSlot(), ResultsTableData.class);
-        for (String columnName : input.getColumnNames()) {
-            if(filters.isEmpty() || filters.test(columnName)) {
-                TableColumn column = input.getColumnCopy(input.getColumnIndex(columnName));
-                List<ACAQTrait> traitList = new ArrayList<>();
-                if(generatedAnnotation.getDeclaration() != null) {
-                    traitList.add(generatedAnnotation.getDeclaration().newInstance(columnName));
-                }
-                dataInterface.addOutputData(getFirstOutputSlot(), column, traitList);
-            }
-        }
-    }
-
     /**
      * Creates a copy
      *
@@ -68,6 +48,21 @@ public class SplitTableIntoColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm
         super(other);
         this.generatedAnnotation = new ACAQTraitDeclarationRef(other.generatedAnnotation);
         this.filters = new StringFilterListParameter(other.filters);
+    }
+
+    @Override
+    protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        ResultsTableData input = dataInterface.getInputData(getFirstInputSlot(), ResultsTableData.class);
+        for (String columnName : input.getColumnNames()) {
+            if (filters.isEmpty() || filters.test(columnName)) {
+                TableColumn column = input.getColumnCopy(input.getColumnIndex(columnName));
+                List<ACAQTrait> traitList = new ArrayList<>();
+                if (generatedAnnotation.getDeclaration() != null) {
+                    traitList.add(generatedAnnotation.getDeclaration().newInstance(columnName));
+                }
+                dataInterface.addOutputData(getFirstOutputSlot(), column, traitList);
+            }
+        }
     }
 
     @Override

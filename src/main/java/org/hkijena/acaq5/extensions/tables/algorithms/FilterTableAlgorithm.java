@@ -9,15 +9,11 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.LogicalOperation;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.extensions.parameters.collections.StringFilterToStringOrDoubleFilterPair;
 import org.hkijena.acaq5.extensions.parameters.collections.StringFilterToStringOrDoubleFilterPairList;
 import org.hkijena.acaq5.extensions.parameters.filters.StringOrDoubleFilter;
-import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
-import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,10 +44,23 @@ public class FilterTableAlgorithm extends ACAQSimpleIteratingAlgorithm {
         super(declaration);
     }
 
+    /**
+     * Creates a copy
+     *
+     * @param other the original
+     */
+    public FilterTableAlgorithm(FilterTableAlgorithm other) {
+        super(other);
+        this.filters = new StringFilterToStringOrDoubleFilterPairList(other.filters);
+        this.betweenColumnOperation = other.betweenColumnOperation;
+        this.sameColumnOperation = other.sameColumnOperation;
+        this.invert = other.invert;
+    }
+
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-       ResultsTableData input = dataInterface.getInputData(getFirstInputSlot(), ResultsTableData.class);
-        Multimap<String, StringOrDoubleFilter> filterPerColumn  = HashMultimap.create();
+        ResultsTableData input = dataInterface.getInputData(getFirstInputSlot(), ResultsTableData.class);
+        Multimap<String, StringOrDoubleFilter> filterPerColumn = HashMultimap.create();
         for (StringFilterToStringOrDoubleFilterPair pair : filters) {
             List<String> targetedColumns = input.getColumnNames().stream().filter(pair.getKey()).collect(Collectors.toList());
             for (String targetedColumn : targetedColumns) {
@@ -68,39 +77,25 @@ public class FilterTableAlgorithm extends ACAQSimpleIteratingAlgorithm {
                 List<Boolean> withinColumn = new ArrayList<>();
                 for (StringOrDoubleFilter filter : filterPerColumn.get(columnName)) {
                     boolean result;
-                    if(isNumeric) {
+                    if (isNumeric) {
                         result = filter.test(input.getValueAsDouble(row, columnIndex));
-                    }
-                    else {
+                    } else {
                         result = filter.test(input.getValueAsString(row, columnIndex));
                     }
                     withinColumn.add(result);
-                 }
+                }
 
                 boolean withinResult = sameColumnOperation.apply(withinColumn);
                 betweenColumns.add(withinResult);
             }
             boolean betweenColumnResult = betweenColumnOperation.apply(betweenColumns);
-            if(betweenColumnResult == !invert) {
+            if (betweenColumnResult == !invert) {
                 selectedRows.add(row);
             }
         }
 
         ResultsTableData output = input.getRows(selectedRows);
         dataInterface.addOutputData(getFirstOutputSlot(), output);
-    }
-
-    /**
-     * Creates a copy
-     *
-     * @param other the original
-     */
-    public FilterTableAlgorithm(FilterTableAlgorithm other) {
-        super(other);
-        this.filters = new StringFilterToStringOrDoubleFilterPairList(other.filters);
-        this.betweenColumnOperation = other.betweenColumnOperation;
-        this.sameColumnOperation = other.sameColumnOperation;
-        this.invert = other.invert;
     }
 
     @Override

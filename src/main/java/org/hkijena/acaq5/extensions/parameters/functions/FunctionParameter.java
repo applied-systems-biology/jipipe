@@ -3,21 +3,12 @@ package org.hkijena.acaq5.extensions.parameters.functions;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.BeanProperty;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
-import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.io.IOException;
@@ -39,9 +30,10 @@ public abstract class FunctionParameter<I, P, O> implements ACAQValidatable {
 
     /**
      * Creates a new instance
-     * @param inputClass the input class
+     *
+     * @param inputClass     the input class
      * @param parameterClass the parameter class
-     * @param outputClass the output class
+     * @param outputClass    the output class
      */
     public FunctionParameter(Class<I> inputClass, Class<P> parameterClass, Class<O> outputClass) {
         this.inputClass = inputClass;
@@ -136,7 +128,7 @@ public abstract class FunctionParameter<I, P, O> implements ACAQValidatable {
      */
     public static class Serializer extends JsonSerializer<FunctionParameter<?, ?, ?>> {
         @Override
-        public void serialize(FunctionParameter<?, ? ,?> objects, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+        public void serialize(FunctionParameter<?, ?, ?> objects, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeObjectField("input", objects.input);
             jsonGenerator.writeObjectField("parameter", objects.parameter);
@@ -148,7 +140,7 @@ public abstract class FunctionParameter<I, P, O> implements ACAQValidatable {
     /**
      * Deserializes the parameter
      */
-    public static class Deserializer<I, P, O> extends JsonDeserializer<FunctionParameter< ? ,?, ?>> implements ContextualDeserializer {
+    public static class Deserializer<I, P, O> extends JsonDeserializer<FunctionParameter<?, ?, ?>> implements ContextualDeserializer {
 
         private JavaType deserializedType;
 

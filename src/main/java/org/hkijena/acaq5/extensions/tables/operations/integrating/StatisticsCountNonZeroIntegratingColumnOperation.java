@@ -14,6 +14,6 @@ public class StatisticsCountNonZeroIntegratingColumnOperation implements Integra
         for (int i = 0; i < column.getRows(); i++) {
             sum += column.getRowAsDouble(i) != 0 ? 1 : 0;
         }
-        return new DoubleArrayTableColumn(new double[] { sum }, column.getLabel());
+        return new DoubleArrayTableColumn(new double[]{sum}, column.getLabel());
     }
 }

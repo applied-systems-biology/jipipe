@@ -13,7 +13,9 @@ import org.hkijena.acaq5.extensions.parameters.collections.StringFilterSortOrder
 import org.hkijena.acaq5.extensions.parameters.filters.StringFilter;
 import org.hkijena.acaq5.extensions.parameters.pairs.StringFilterSortOrderPair;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -38,20 +40,30 @@ public class SortTableAlgorithm extends ACAQSimpleIteratingAlgorithm {
         sortOrderList.addNewInstance();
     }
 
+    /**
+     * Creates a copy
+     *
+     * @param other the original
+     */
+    public SortTableAlgorithm(SortTableAlgorithm other) {
+        super(other);
+        this.sortOrderList = new StringFilterSortOrderPairList(other.sortOrderList);
+    }
+
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-       ResultsTableData input = dataInterface.getInputData(getFirstInputSlot(), ResultsTableData.class);
+        ResultsTableData input = dataInterface.getInputData(getFirstInputSlot(), ResultsTableData.class);
 
-       if(sortOrderList.isEmpty()) {
-           dataInterface.addOutputData(getFirstOutputSlot(), input.duplicate());
-           return;
-       }
+        if (sortOrderList.isEmpty()) {
+            dataInterface.addOutputData(getFirstOutputSlot(), input.duplicate());
+            return;
+        }
         Comparator<Integer> comparator = getRowComparator(sortOrderList.get(0), input);
         for (int i = 1; i < sortOrderList.size(); i++) {
             comparator = comparator.thenComparing(getRowComparator(sortOrderList.get(i), input));
         }
 
-       List<Integer> sortedRows = new ArrayList<>();
+        List<Integer> sortedRows = new ArrayList<>();
         for (int i = 0; i < input.getRowCount(); i++) {
             sortedRows.add(i);
         }
@@ -65,18 +77,17 @@ public class SortTableAlgorithm extends ACAQSimpleIteratingAlgorithm {
         Comparator<Integer> result = null;
         StringFilter filter = pair.getKey();
         for (String columnName : input.getColumnNames()) {
-            if(filter.test(columnName)) {
+            if (filter.test(columnName)) {
                 boolean isNumeric = input.isNumeric(input.getColumnIndex(columnName));
                 Comparator<Integer> chain = (r1, r2) -> {
-                    if(isNumeric) {
+                    if (isNumeric) {
                         double v1 = input.getValueAsDouble(r1, columnName);
                         double v2 = input.getValueAsDouble(r2, columnName);
                         if (pair.getValue() == SortOrder.Ascending)
                             return Double.compare(v1, v2);
                         else
                             return -Double.compare(v1, v2);
-                    }
-                    else {
+                    } else {
                         String v1 = input.getValueAsString(r1, columnName);
                         String v2 = input.getValueAsString(r2, columnName);
                         if (pair.getValue() == SortOrder.Ascending)
@@ -85,13 +96,13 @@ public class SortTableAlgorithm extends ACAQSimpleIteratingAlgorithm {
                             return -v1.compareTo(v2);
                     }
                 };
-                if(result == null)
+                if (result == null)
                     result = chain;
                 else
                     result = result.thenComparing(chain);
             }
         }
-        if(result == null) {
+        if (result == null) {
             throw new UserFriendlyRuntimeException("Could not find column that matches '" + filter.toString() + "'!",
                     "Could not find column!",
                     "Algorithm '" + getName() + "'",
@@ -101,16 +112,6 @@ public class SortTableAlgorithm extends ACAQSimpleIteratingAlgorithm {
                             "via the testbench to see if the input data is correct. You can also select a generator instead of picking a column.");
         }
         return result;
-    }
-
-    /**
-     * Creates a copy
-     *
-     * @param other the original
-     */
-    public SortTableAlgorithm(SortTableAlgorithm other) {
-        super(other);
-        this.sortOrderList = new StringFilterSortOrderPairList(other.sortOrderList);
     }
 
     @Override

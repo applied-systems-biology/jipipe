@@ -14,6 +14,6 @@ public class StatisticsWeightedSumColumnOperation implements IntegratingColumnOp
         for (int i = 0; i < column.getRows(); i++) {
             sum += (i + 1) * column.getRowAsDouble(i);
         }
-        return new DoubleArrayTableColumn(new double[] { sum }, column.getLabel());
+        return new DoubleArrayTableColumn(new double[]{sum}, column.getLabel());
     }
 }

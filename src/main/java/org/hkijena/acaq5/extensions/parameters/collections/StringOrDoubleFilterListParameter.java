@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.extensions.parameters.collections;
 
-import org.hkijena.acaq5.extensions.parameters.filters.StringFilter;
 import org.hkijena.acaq5.extensions.parameters.filters.StringOrDoubleFilter;
 
 import java.util.function.Predicate;

@@ -12,7 +12,6 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -33,6 +32,7 @@ public class TableColumnIntegrationParameter extends DynamicEnumParameter {
 
     /**
      * Creates a copy
+     *
      * @param value the original
      */
     public TableColumnIntegrationParameter(TableColumnIntegrationParameter value) {
@@ -41,44 +41,44 @@ public class TableColumnIntegrationParameter extends DynamicEnumParameter {
 
     @Override
     public String renderLabel(Object value) {
-        if(value instanceof ACAQTableRegistry.ColumnOperationEntry) {
+        if (value instanceof ACAQTableRegistry.ColumnOperationEntry) {
             ACAQTableRegistry.ColumnOperationEntry entry = (ACAQTableRegistry.ColumnOperationEntry) value;
             return entry.getName();
-        }
-        else {
+        } else {
             return "[None selected]";
         }
     }
 
     /**
      * The ID of the selected entry
+     *
      * @return the id
      */
     @JsonGetter("id")
     public String getId() {
-        if(getValue() == null)
+        if (getValue() == null)
             return null;
-        return ((ACAQTableRegistry.ColumnOperationEntry)getValue()).getId();
+        return ((ACAQTableRegistry.ColumnOperationEntry) getValue()).getId();
     }
 
     /**
      * Sets the ID of the selected entry
+     *
      * @param id the id
      */
     @JsonSetter("id")
     public void setId(String id) {
-        if(id != null) {
+        if (id != null) {
             setValue(ACAQTableRegistry.getInstance().getColumnOperationById(id));
         }
     }
 
     @Override
     public String renderTooltip(Object value) {
-        if(value instanceof ACAQTableRegistry.ColumnOperationEntry) {
+        if (value instanceof ACAQTableRegistry.ColumnOperationEntry) {
             ACAQTableRegistry.ColumnOperationEntry entry = (ACAQTableRegistry.ColumnOperationEntry) value;
-            return "<html><strong>" + HtmlEscapers.htmlEscaper().escape(entry.getName()) + "</strong><br/>" + HtmlEscapers.htmlEscaper().escape(entry.getDescription())  + "</html>";
-        }
-        else {
+            return "<html><strong>" + HtmlEscapers.htmlEscaper().escape(entry.getName()) + "</strong><br/>" + HtmlEscapers.htmlEscaper().escape(entry.getDescription()) + "</html>";
+        } else {
             return null;
         }
     }

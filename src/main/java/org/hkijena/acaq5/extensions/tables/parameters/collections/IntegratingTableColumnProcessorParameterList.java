@@ -14,6 +14,7 @@ public class IntegratingTableColumnProcessorParameterList extends ListParameter<
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public IntegratingTableColumnProcessorParameterList(IntegratingTableColumnProcessorParameterList other) {

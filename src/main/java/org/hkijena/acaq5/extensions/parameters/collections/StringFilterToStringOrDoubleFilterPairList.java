@@ -1,9 +1,5 @@
 package org.hkijena.acaq5.extensions.parameters.collections;
 
-import org.hkijena.acaq5.extensions.parameters.filters.StringFilter;
-
-import java.util.function.Predicate;
-
 /**
  * A collection of multiple {@link StringFilterToStringOrDoubleFilterPair}
  * The filters are connected via "OR"

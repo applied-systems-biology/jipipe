@@ -1,7 +1,6 @@
 package org.hkijena.acaq5.extensions.tables.parameters.collections;
 
 import org.hkijena.acaq5.extensions.parameters.collections.ListParameter;
-import org.hkijena.acaq5.extensions.tables.parameters.processors.IntegratingTableColumnProcessorParameter;
 import org.hkijena.acaq5.extensions.tables.parameters.processors.TableColumnGeneratorProcessorParameter;
 
 public class TableColumnGeneratorProcessorParameterList extends ListParameter<TableColumnGeneratorProcessorParameter> {
@@ -15,6 +14,7 @@ public class TableColumnGeneratorProcessorParameterList extends ListParameter<Ta
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public TableColumnGeneratorProcessorParameterList(TableColumnGeneratorProcessorParameterList other) {

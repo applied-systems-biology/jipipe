@@ -1,11 +1,7 @@
 package org.hkijena.acaq5.extensions.parameters.collections;
 
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.LogicalOperation;
 import org.hkijena.acaq5.extensions.parameters.filters.StringFilter;
 
-import java.util.function.BiFunction;
-import java.util.function.BiPredicate;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**

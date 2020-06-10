@@ -1,7 +1,6 @@
 package org.hkijena.acaq5.extensions.parameters.collections;
 
 import org.hkijena.acaq5.extensions.parameters.pairs.StringFilterSortOrderPair;
-import org.hkijena.acaq5.extensions.parameters.pairs.StringFilterStringPair;
 
 /**
  * A collection of multiple {@link StringFilterSortOrderPair}

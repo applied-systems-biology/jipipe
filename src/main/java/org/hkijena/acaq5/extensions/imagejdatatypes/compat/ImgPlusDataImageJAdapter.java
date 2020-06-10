@@ -91,7 +91,7 @@ public class ImgPlusDataImageJAdapter implements ImageJDatatypeAdapter {
     public List<Object> convertMultipleACAQToImageJ(List<ACAQData> acaqData, boolean activate, boolean noWindow, String windowName) {
         List<Object> result = new ArrayList<>();
         for (ACAQData data : acaqData) {
-           result.add(convertACAQToImageJ(data, activate, noWindow, windowName));
+            result.add(convertACAQToImageJ(data, activate, noWindow, windowName));
         }
         return result;
     }

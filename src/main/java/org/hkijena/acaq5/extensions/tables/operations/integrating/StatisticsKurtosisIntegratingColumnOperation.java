@@ -15,6 +15,6 @@ public class StatisticsKurtosisIntegratingColumnOperation implements Integrating
     @Override
     public TableColumn run(TableColumn column) {
         double result = kurtosis.evaluate(column.getDataAsDouble(column.getRows()));
-        return new DoubleArrayTableColumn(new double[] { result }, column.getLabel());
+        return new DoubleArrayTableColumn(new double[]{result}, column.getLabel());
     }
 }

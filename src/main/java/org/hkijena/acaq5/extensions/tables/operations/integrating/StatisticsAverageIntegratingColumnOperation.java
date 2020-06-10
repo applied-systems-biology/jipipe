@@ -14,6 +14,6 @@ public class StatisticsAverageIntegratingColumnOperation implements IntegratingC
         for (int i = 0; i < column.getRows(); i++) {
             sum += column.getRowAsDouble(i);
         }
-        return new DoubleArrayTableColumn(new double[] { sum / column.getRows() }, column.getLabel());
+        return new DoubleArrayTableColumn(new double[]{sum / column.getRows()}, column.getLabel());
     }
 }

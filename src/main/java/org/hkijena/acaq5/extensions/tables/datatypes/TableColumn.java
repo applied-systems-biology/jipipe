@@ -28,6 +28,7 @@ public interface TableColumn extends ACAQData {
 
     /**
      * Returns the data entry as string
+     *
      * @param row the row
      * @return the data
      */
@@ -35,6 +36,7 @@ public interface TableColumn extends ACAQData {
 
     /**
      * Returns the data entry as string
+     *
      * @param row the row
      * @return the data
      */

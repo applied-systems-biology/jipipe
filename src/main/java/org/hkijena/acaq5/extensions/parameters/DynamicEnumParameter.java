@@ -49,6 +49,7 @@ public abstract class DynamicEnumParameter {
 
     /**
      * Function that renders the label. This is used in UI.
+     *
      * @param value the value
      * @return the rendered text
      */
@@ -58,6 +59,7 @@ public abstract class DynamicEnumParameter {
 
     /**
      * Function that renders the tooltip. This is used in UI.
+     *
      * @param value the tooltip
      * @return the rendered tooltip
      */
@@ -67,6 +69,7 @@ public abstract class DynamicEnumParameter {
 
     /**
      * Function that renders the icon. This is used in UI.
+     *
      * @param value the value
      * @return the rendered icon
      */

@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.acaq5.api.registries.ACAQTableRegistry;
 import org.hkijena.acaq5.extensions.parameters.DynamicEnumParameter;
-import org.hkijena.acaq5.extensions.tables.operations.ColumnOperation;
 import org.hkijena.acaq5.extensions.tables.operations.ConvertingColumnOperation;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -33,6 +32,7 @@ public class TableColumnConversionParameter extends DynamicEnumParameter {
 
     /**
      * Creates a copy
+     *
      * @param value the original
      */
     public TableColumnConversionParameter(TableColumnConversionParameter value) {
@@ -41,44 +41,44 @@ public class TableColumnConversionParameter extends DynamicEnumParameter {
 
     @Override
     public String renderLabel(Object value) {
-        if(value instanceof ACAQTableRegistry.ColumnOperationEntry) {
+        if (value instanceof ACAQTableRegistry.ColumnOperationEntry) {
             ACAQTableRegistry.ColumnOperationEntry entry = (ACAQTableRegistry.ColumnOperationEntry) value;
             return entry.getName();
-        }
-        else {
+        } else {
             return "[None selected]";
         }
     }
 
     /**
      * The ID of the selected entry
+     *
      * @return the id
      */
     @JsonGetter("id")
     public String getId() {
-        if(getValue() == null)
+        if (getValue() == null)
             return null;
-        return ((ACAQTableRegistry.ColumnOperationEntry)getValue()).getId();
+        return ((ACAQTableRegistry.ColumnOperationEntry) getValue()).getId();
     }
 
     /**
      * Sets the ID of the selected entry
+     *
      * @param id the id
      */
     @JsonSetter("id")
     public void setId(String id) {
-        if(id != null) {
+        if (id != null) {
             setValue(ACAQTableRegistry.getInstance().getColumnOperationById(id));
         }
     }
 
     @Override
     public String renderTooltip(Object value) {
-        if(value instanceof ACAQTableRegistry.ColumnOperationEntry) {
+        if (value instanceof ACAQTableRegistry.ColumnOperationEntry) {
             ACAQTableRegistry.ColumnOperationEntry entry = (ACAQTableRegistry.ColumnOperationEntry) value;
-            return "<html><strong>" + HtmlEscapers.htmlEscaper().escape(entry.getName()) + "</strong><br/>" + HtmlEscapers.htmlEscaper().escape(entry.getDescription())  + "</html>";
-        }
-        else {
+            return "<html><strong>" + HtmlEscapers.htmlEscaper().escape(entry.getName()) + "</strong><br/>" + HtmlEscapers.htmlEscaper().escape(entry.getDescription()) + "</html>";
+        } else {
             return null;
         }
     }

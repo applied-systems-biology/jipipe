@@ -2,7 +2,6 @@ package org.hkijena.acaq5.extensions.tables.parameters.collections;
 
 import org.hkijena.acaq5.extensions.parameters.collections.ListParameter;
 import org.hkijena.acaq5.extensions.tables.parameters.processors.ConvertingTableColumnProcessorParameter;
-import org.hkijena.acaq5.extensions.tables.parameters.processors.IntegratingTableColumnProcessorParameter;
 
 public class ConvertingTableColumnProcessorParameterList extends ListParameter<ConvertingTableColumnProcessorParameter> {
 
@@ -15,6 +14,7 @@ public class ConvertingTableColumnProcessorParameterList extends ListParameter<C
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public ConvertingTableColumnProcessorParameterList(ConvertingTableColumnProcessorParameterList other) {

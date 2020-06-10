@@ -17,6 +17,7 @@ public class TableColumnGeneratorProcessorParameter extends KeyValuePairParamete
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public TableColumnGeneratorProcessorParameter(TableColumnGeneratorProcessorParameter other) {

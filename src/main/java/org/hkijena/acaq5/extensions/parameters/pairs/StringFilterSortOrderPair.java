@@ -4,13 +4,10 @@ import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure.SortOrder;
 import org.hkijena.acaq5.extensions.parameters.collections.KeyValuePairParameter;
 import org.hkijena.acaq5.extensions.parameters.filters.StringFilter;
 
-import java.util.function.Function;
-import java.util.function.Predicate;
-
 /**
  * A pair of {@link StringFilter} and {@link org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure.SortOrder}
  */
-public class StringFilterSortOrderPair extends KeyValuePairParameter<StringFilter, SortOrder>{
+public class StringFilterSortOrderPair extends KeyValuePairParameter<StringFilter, SortOrder> {
 
     /**
      * Creates a new instance

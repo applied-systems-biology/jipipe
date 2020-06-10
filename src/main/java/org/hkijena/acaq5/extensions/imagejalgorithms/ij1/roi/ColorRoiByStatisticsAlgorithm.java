@@ -91,7 +91,7 @@ public class ColorRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
         for (int row = 0; row < data.size(); row++) {
             double fillValue = statistics.getTable().getValue(fillMeasurement.getColumnName(), row);
             double lineValue = statistics.getTable().getValue(fillMeasurement.getColumnName(), row);
-            
+
             fillValues.add(fillValue);
             fillMin = Math.min(fillValue, fillMin);
             fillMax = Math.max(fillValue, fillMax);
@@ -164,7 +164,7 @@ public class ColorRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     public MeasurementColumn getLineMeasurement() {
         return lineMeasurement;
     }
-    
+
     @ACAQParameter("line-measurement")
     public void setLineMeasurement(MeasurementColumn lineMeasurement) {
         this.lineMeasurement = lineMeasurement;

@@ -1,9 +1,6 @@
 package org.hkijena.acaq5.extensions.parameters.editors;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.extensions.parameters.collections.KeyValuePairParameter;
-import org.hkijena.acaq5.extensions.parameters.collections.KeyValueParameterKeyAccess;
-import org.hkijena.acaq5.extensions.parameters.collections.KeyValueParameterValueAccess;
 import org.hkijena.acaq5.extensions.parameters.functions.FunctionParameter;
 import org.hkijena.acaq5.extensions.parameters.functions.FunctionParameterInputAccess;
 import org.hkijena.acaq5.extensions.parameters.functions.FunctionParameterOutputAccess;
@@ -11,11 +8,10 @@ import org.hkijena.acaq5.extensions.parameters.functions.FunctionParameterParame
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
-import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Context;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 
 /**
  * Editor for {@link org.hkijena.acaq5.extensions.parameters.functions.FunctionParameter}
@@ -51,7 +47,7 @@ public class FunctionParameterEditorUI extends ACAQParameterEditorUI {
     public void reload() {
         formPanel.clear();
 
-        FunctionParameter<? ,?, ?> functionParameter = getParameterAccess().get(FunctionParameter.class);
+        FunctionParameter<?, ?, ?> functionParameter = getParameterAccess().get(FunctionParameter.class);
         FunctionParameterInputAccess<Object, Object, Object> inputAccess = new FunctionParameterInputAccess<>(getParameterAccess());
         FunctionParameterParameterAccess<Object, Object, Object> parameterAccess = new FunctionParameterParameterAccess<>(getParameterAccess());
         FunctionParameterOutputAccess<Object, Object, Object> outputAccess = new FunctionParameterOutputAccess<>(getParameterAccess());

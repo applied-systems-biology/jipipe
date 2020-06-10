@@ -1,14 +1,10 @@
 package org.hkijena.acaq5.extensions.tables.operations.converting;
 
 import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
 import org.hkijena.acaq5.extensions.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
 import org.hkijena.acaq5.extensions.tables.operations.ConvertingColumnOperation;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Converts each entry into a the number of occurrences within the column

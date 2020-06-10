@@ -1,16 +1,9 @@
 package org.hkijena.acaq5.extensions.filesystem.compat;
 
-import ij.ImagePlus;
-import ij.WindowManager;
 import org.hkijena.acaq5.api.compat.ImageJDatatypeImporter;
 import org.hkijena.acaq5.ui.compat.ImageJDatatypeImporterUI;
-import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.components.PathEditor;
-import org.hkijena.acaq5.utils.UIUtils;
 
-import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.text.JTextComponent;
 import java.awt.*;
 
 /**

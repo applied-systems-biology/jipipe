@@ -15,6 +15,6 @@ public class StatisticsMedianIntegratingColumnOperation implements IntegratingCo
     @Override
     public TableColumn run(TableColumn column) {
         double medianResult = median.evaluate(column.getDataAsDouble(column.getRows()));
-        return new DoubleArrayTableColumn(new double[] { medianResult }, column.getLabel());
+        return new DoubleArrayTableColumn(new double[]{medianResult}, column.getLabel());
     }
 }

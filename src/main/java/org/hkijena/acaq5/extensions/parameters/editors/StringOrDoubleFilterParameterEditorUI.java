@@ -64,7 +64,7 @@ public class StringOrDoubleFilterParameterEditorUI extends ACAQParameterEditorUI
 
     @Override
     public void onParameterChanged(ParameterChangedEvent event) {
-        if(event.getKey().equals("mode")) {
+        if (event.getKey().equals("mode")) {
             reload();
             return;
         }

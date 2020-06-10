@@ -12,7 +12,7 @@ public class RemoveNaNColumnOperation implements ConvertingColumnOperation {
     public TableColumn run(TableColumn column) {
         double[] values = column.getDataAsDouble(column.getRows());
         for (int i = 0; i < values.length; i++) {
-            if(Double.isNaN(values[i])) {
+            if (Double.isNaN(values[i])) {
                 values[i] = 0;
             }
         }

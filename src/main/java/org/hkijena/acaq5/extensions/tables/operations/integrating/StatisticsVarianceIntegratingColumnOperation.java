@@ -15,6 +15,6 @@ public class StatisticsVarianceIntegratingColumnOperation implements Integrating
     @Override
     public TableColumn run(TableColumn column) {
         double result = variance.evaluate(column.getDataAsDouble(column.getRows()));
-        return new DoubleArrayTableColumn(new double[] { result }, column.getLabel());
+        return new DoubleArrayTableColumn(new double[]{result}, column.getLabel());
     }
 }

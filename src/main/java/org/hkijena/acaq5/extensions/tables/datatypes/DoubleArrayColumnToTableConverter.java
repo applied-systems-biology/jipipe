@@ -4,7 +4,6 @@ import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataConverter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 /**

@@ -22,7 +22,6 @@ import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
 
-import java.awt.*;
 import java.io.IOException;
 import java.util.Set;
 

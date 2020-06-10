@@ -39,7 +39,10 @@ public interface ACAQData {
      * Called when the data is flushed
      * Use this to help Java to clean up the memory.
      */
-    default void flush() {};
+    default void flush() {
+    }
+
+    ;
 
     /**
      * Returns the name of a data type

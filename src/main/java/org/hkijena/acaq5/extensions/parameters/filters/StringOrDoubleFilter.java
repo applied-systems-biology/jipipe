@@ -97,15 +97,13 @@ public class StringOrDoubleFilter implements ACAQParameterCollection, ACAQValida
 
     @Override
     public boolean test(Object o) {
-        if(filterMode == FilterMode.String) {
+        if (filterMode == FilterMode.String) {
             return stringFilter.test("" + o);
-        }
-        else {
+        } else {
             double value;
-            if(o instanceof Number) {
+            if (o instanceof Number) {
                 value = ((Number) o).doubleValue();
-            }
-            else {
+            } else {
                 try {
                     value = Double.parseDouble("" + o);
                 } catch (NumberFormatException e) {

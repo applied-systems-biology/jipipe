@@ -4,8 +4,6 @@ import org.hkijena.acaq5.extensions.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
 import org.hkijena.acaq5.extensions.tables.operations.ConvertingColumnOperation;
 
-import java.util.Arrays;
-
 /**
  * Sorts the items ascending
  */

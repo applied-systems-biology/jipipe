@@ -34,13 +34,6 @@ public class ImagePlusData implements ACAQData {
         image = IJ.openImage(PathUtils.findFileByExtensionIn(storageFilePath, ".tif").toString());
     }
 
-    @Override
-    public void flush() {
-        // Completely remove all references
-        image.flush();
-        image = null;
-    }
-
     /**
      * @param image wrapped image
      */
@@ -54,6 +47,13 @@ public class ImagePlusData implements ACAQData {
                             "If you cannot solve the issue, please contact the plugin's author.");
         }
         this.image = image;
+    }
+
+    @Override
+    public void flush() {
+        // Completely remove all references
+        image.flush();
+        image = null;
     }
 
     public ImagePlus getImage() {

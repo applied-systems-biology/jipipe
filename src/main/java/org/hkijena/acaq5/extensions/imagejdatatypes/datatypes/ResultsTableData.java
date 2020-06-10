@@ -40,6 +40,7 @@ public class ResultsTableData implements ACAQData, TableModel {
 
     /**
      * Creates a {@link ResultsTableData} from a map of column name to column data
+     *
      * @param columns key is column heading
      */
     public ResultsTableData(Map<String, TableColumn> columns) {
@@ -49,6 +50,7 @@ public class ResultsTableData implements ACAQData, TableModel {
     /**
      * Creates a {@link ResultsTableData} from a list of columns.
      * Column headings are extracted from the column labels
+     *
      * @param columns the columns
      */
     public ResultsTableData(Collection<TableColumn> columns) {
@@ -57,6 +59,36 @@ public class ResultsTableData implements ACAQData, TableModel {
             map.put(column.getLabel(), column);
         }
         importFromColumns(map);
+    }
+
+    /**
+     * Loads a results table from a folder containing CSV file
+     *
+     * @param storageFilePath storage folder
+     * @throws IOException triggered by {@link ResultsTable}
+     */
+    public ResultsTableData(Path storageFilePath) throws IOException {
+        table = ResultsTable.open(PathUtils.findFileByExtensionIn(storageFilePath, ".csv").toString());
+    }
+
+    /**
+     * Wraps a results table
+     *
+     * @param table wrapped table
+     */
+    public ResultsTableData(ResultsTable table) {
+        this.table = table;
+        cleanupTable();
+    }
+
+
+    /**
+     * Creates a copy
+     *
+     * @param other the original
+     */
+    public ResultsTableData(ResultsTableData other) {
+        this.table = (ResultsTable) other.table.clone();
     }
 
     private void importFromColumns(Map<String, TableColumn> columns) {
@@ -79,10 +111,9 @@ public class ResultsTableData implements ACAQData, TableModel {
             table.incrementCounter();
             for (Map.Entry<String, TableColumn> entry : columns.entrySet()) {
                 int col = columnIndexMap.get(entry.getKey());
-                if(entry.getValue().isNumeric()) {
+                if (entry.getValue().isNumeric()) {
                     table.setValue(col, row, entry.getValue().getRowAsDouble(row));
-                }
-                else {
+                } else {
                     table.setValue(col, row, entry.getValue().getRowAsString(row));
                 }
             }
@@ -90,43 +121,11 @@ public class ResultsTableData implements ACAQData, TableModel {
     }
 
     /**
-     * Loads a results table from a folder containing CSV file
-     *
-     * @param storageFilePath storage folder
-     * @throws IOException triggered by {@link ResultsTable}
-     */
-    public ResultsTableData(Path storageFilePath) throws IOException {
-        table = ResultsTable.open(PathUtils.findFileByExtensionIn(storageFilePath, ".csv").toString());
-    }
-
-
-
-    /**
-     * Loads a table from CSV
-     * @param file the file
-     * @return the table
-     * @throws IOException thrown by {@link ResultsTable}
-     */
-    public static ResultsTableData fromCSV(Path file) throws IOException {
-        return new ResultsTableData(ResultsTable.open(file.toString()));
-    }
-
-    /**
-     * Wraps a results table
-     *
-     * @param table wrapped table
-     */
-    public ResultsTableData(ResultsTable table) {
-        this.table = table;
-        cleanupTable();
-    }
-
-    /**
      * ImageJ tables break many assumptions about tables, as they lazy-delete their columns without ensuring consecutive IDs
      * This breaks too many algorithms, so re-create the column
      */
     private void cleanupTable() {
-        if(table.columnDeleted() || table.getHeadings().length != getColumnNames().size()) {
+        if (table.columnDeleted() || table.getHeadings().length != getColumnNames().size()) {
             ResultsTable original = table;
             table = new ResultsTable(original.getCounter());
 
@@ -138,17 +137,9 @@ public class ResultsTableData implements ACAQData, TableModel {
     }
 
     /**
-     * Creates a copy
-     *
-     * @param other the original
-     */
-    public ResultsTableData(ResultsTableData other) {
-        this.table = (ResultsTable) other.table.clone();
-    }
-
-    /**
      * Returns a column as vector.
      * This is a reference.
+     *
      * @param index the column index
      * @return the column
      */
@@ -159,14 +150,14 @@ public class ResultsTableData implements ACAQData, TableModel {
     /**
      * Returns a column as vector.
      * This is a copy.
+     *
      * @param index the column index
      * @return the column
      */
     public TableColumn getColumnCopy(int index) {
-        if(isNumeric(index)) {
+        if (isNumeric(index)) {
             return new DoubleArrayTableColumn(getColumnReference(index).getDataAsDouble(getRowCount()), getColumnName(index));
-        }
-        else {
+        } else {
             return new StringArrayTableColumn(getColumnReference(index).getDataAsString(getRowCount()), getColumnName(index));
         }
     }
@@ -183,10 +174,11 @@ public class ResultsTableData implements ACAQData, TableModel {
     /**
      * Creates a new column that consists of a combination of the selected values.
      * They will be formatted like col1=col1row1,col2=col2row1, ...
+     *
      * @param sourceColumns the source columns
-     * @param newColumn the new column
-     * @param separator separator character e.g. ", "
-     * @param equals equals character e.g. "="
+     * @param newColumn     the new column
+     * @param separator     separator character e.g. ", "
+     * @param equals        equals character e.g. "="
      */
     public void mergeColumns(List<Integer> sourceColumns, String newColumn, String separator, String equals) {
         String[] value = new String[getRowCount()];
@@ -202,11 +194,12 @@ public class ResultsTableData implements ACAQData, TableModel {
 
     /**
      * Duplicates a column
-     * @param column the input column
+     *
+     * @param column    the input column
      * @param newColumn the new column name
      */
     public void duplicateColumn(int column, String newColumn) {
-        if(containsColumn(newColumn))
+        if (containsColumn(newColumn))
             throw new IllegalArgumentException("Column '" + newColumn + "' already exists!");
         int newColumnIndex = addColumn(newColumn, !isNumeric(column));
         for (int row = 0; row < getRowCount(); row++) {
@@ -310,6 +303,7 @@ public class ResultsTableData implements ACAQData, TableModel {
     /**
      * Returns a new table that only contains the selected rows.
      * The resulting table is ordered according to the input rows
+     *
      * @param rows the row indices
      * @return table only containing the selected rows
      */
@@ -327,10 +321,9 @@ public class ResultsTableData implements ACAQData, TableModel {
             result.table.incrementCounter();
             for (int sourceCol = 0; sourceCol < getColumnCount(); sourceCol++) {
                 int targetCol = columnMap.get(sourceCol);
-                if(isNumeric(sourceCol)) {
+                if (isNumeric(sourceCol)) {
                     result.table.setValue(targetCol, targetRow, getValueAsDouble(sourceRow, sourceCol));
-                }
-                else {
+                } else {
                     result.table.setValue(targetCol, targetRow, getValueAsString(sourceRow, sourceCol));
                 }
             }
@@ -386,7 +379,8 @@ public class ResultsTableData implements ACAQData, TableModel {
 
     /**
      * Returns a table value as double
-     * @param rowIndex the row
+     *
+     * @param rowIndex    the row
      * @param columnIndex the column
      * @return the table value
      */
@@ -396,7 +390,8 @@ public class ResultsTableData implements ACAQData, TableModel {
 
     /**
      * Returns a table value as string
-     * @param rowIndex the row
+     *
+     * @param rowIndex    the row
      * @param columnIndex the column
      * @return the table value
      */
@@ -406,7 +401,8 @@ public class ResultsTableData implements ACAQData, TableModel {
 
     /**
      * Returns a table value as double
-     * @param rowIndex the row
+     *
+     * @param rowIndex   the row
      * @param columnName the column
      * @return the table value
      */
@@ -416,7 +412,8 @@ public class ResultsTableData implements ACAQData, TableModel {
 
     /**
      * Returns a table value as string
-     * @param rowIndex the row
+     *
+     * @param rowIndex   the row
      * @param columnName the column
      * @return the table value
      */
@@ -542,17 +539,18 @@ public class ResultsTableData implements ACAQData, TableModel {
     /**
      * Adds a column with the given name.
      * If the column already exists, the method returns false
-     * @param name column name. cannot be empty.
+     *
+     * @param name         column name. cannot be empty.
      * @param stringColumn if the new column is a string column
      * @return the column index (this includes any existing column) or -1 if the creation was not possible
      */
     public int addColumn(String name, boolean stringColumn) {
-        if(StringUtils.isNullOrEmpty(name))
+        if (StringUtils.isNullOrEmpty(name))
             return -1;
-        if(getColumnIndex(name) != -1)
+        if (getColumnIndex(name) != -1)
             return getColumnIndex(name);
         int index = table.getFreeColumn(name);
-        if(stringColumn) {
+        if (stringColumn) {
             for (int row = 0; row < getRowCount(); row++) {
                 table.setValue(index, row, "");
             }
@@ -562,10 +560,11 @@ public class ResultsTableData implements ACAQData, TableModel {
 
     /**
      * Converts the column into a string column. Silently ignores columns that are already string columns.
+     *
      * @param column column index
      */
     public void convertToStringColumn(int column) {
-        if(!isNumeric(column))
+        if (!isNumeric(column))
             return;
         String[] values = new String[getRowCount()];
         for (int row = 0; row < getRowCount(); row++) {
@@ -583,18 +582,18 @@ public class ResultsTableData implements ACAQData, TableModel {
     /**
      * Converts the column into a numeric column. Silently ignores columns that are already numeric columns.
      * Attempts to convert string values into their numeric representation. If this fails, defaults to zero.
+     *
      * @param column column index
      */
     public void convertToNumericColumn(int column) {
-        if(isNumeric(column))
+        if (isNumeric(column))
             return;
         double[] values = new double[getRowCount()];
         for (int row = 0; row < getRowCount(); row++) {
             String s = getValueAsString(row, column);
             try {
                 values[row] = Double.parseDouble(s);
-            }
-            catch (NumberFormatException e) {
+            } catch (NumberFormatException e) {
             }
         }
         String columnName = getColumnName(column);
@@ -608,6 +607,7 @@ public class ResultsTableData implements ACAQData, TableModel {
 
     /**
      * Returns true if the column exists
+     *
      * @param columnName the column name
      * @return if the column exists
      */
@@ -625,6 +625,7 @@ public class ResultsTableData implements ACAQData, TableModel {
 
     /**
      * Removes the columns with given headings
+     *
      * @param removedColumns the columns to remove
      */
     public void removeColumns(Set<String> removedColumns) {
@@ -632,5 +633,16 @@ public class ResultsTableData implements ACAQData, TableModel {
             table.deleteColumn(removedColumn);
         }
         cleanupTable();
+    }
+
+    /**
+     * Loads a table from CSV
+     *
+     * @param file the file
+     * @return the table
+     * @throws IOException thrown by {@link ResultsTable}
+     */
+    public static ResultsTableData fromCSV(Path file) throws IOException {
+        return new ResultsTableData(ResultsTable.open(file.toString()));
     }
 }

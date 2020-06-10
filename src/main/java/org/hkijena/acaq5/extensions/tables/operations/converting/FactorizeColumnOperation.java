@@ -6,7 +6,6 @@ import org.hkijena.acaq5.extensions.tables.operations.ConvertingColumnOperation;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Converts each entry into a factor
@@ -17,7 +16,7 @@ public class FactorizeColumnOperation implements ConvertingColumnOperation {
         Map<String, Integer> factors = new HashMap<>();
         for (int i = 0; i < column.getRows(); i++) {
             String v = column.getRowAsString(i);
-            if(!factors.containsKey(v)) {
+            if (!factors.containsKey(v)) {
                 factors.put(v, factors.size());
             }
         }

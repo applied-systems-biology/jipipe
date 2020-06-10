@@ -11,7 +11,6 @@ import org.hkijena.acaq5.api.data.ACAQDataDeclaration;
 import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQMutableParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.extensions.tables.ColumnContentType;
@@ -20,7 +19,6 @@ import org.hkijena.acaq5.extensions.tables.parameters.collections.TableColumnGen
 import org.hkijena.acaq5.extensions.tables.parameters.enums.TableColumnGeneratorParameter;
 import org.hkijena.acaq5.extensions.tables.parameters.processors.TableColumnGeneratorProcessorParameter;
 
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 

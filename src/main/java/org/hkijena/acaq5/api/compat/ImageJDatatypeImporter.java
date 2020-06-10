@@ -27,6 +27,7 @@ public class ImageJDatatypeImporter implements Supplier<ACAQData> {
 
     /**
      * Sets arbitrary string data that can be used by the adapter for the conversion
+     *
      * @param parameters conversion parameters
      */
     public void setParameters(String parameters) {

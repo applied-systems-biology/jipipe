@@ -14,6 +14,6 @@ public class StatisticsMinIntegratingColumnOperation implements IntegratingColum
         for (int i = 0; i < column.getRows(); i++) {
             min = Math.min(column.getRowAsDouble(i), min);
         }
-        return new DoubleArrayTableColumn(new double[] { min }, column.getLabel());
+        return new DoubleArrayTableColumn(new double[]{min}, column.getLabel());
     }
 }

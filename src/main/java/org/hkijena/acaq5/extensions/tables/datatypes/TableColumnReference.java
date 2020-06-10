@@ -23,7 +23,7 @@ public class TableColumnReference implements TableColumn {
     public String[] getDataAsString(int rows) {
         String[] strings = new String[rows];
         for (int row = 0; row < rows; row++) {
-            if(row < source.getRowCount())
+            if (row < source.getRowCount())
                 strings[row] = source.getValueAsString(row, sourceColumn);
             else
                 strings[row] = "";
@@ -35,7 +35,7 @@ public class TableColumnReference implements TableColumn {
     public double[] getDataAsDouble(int rows) {
         double[] doubles = new double[rows];
         for (int row = 0; row < rows; row++) {
-            if(row < source.getRowCount())
+            if (row < source.getRowCount())
                 doubles[row] = source.getValueAsDouble(row, sourceColumn);
             else
                 break;

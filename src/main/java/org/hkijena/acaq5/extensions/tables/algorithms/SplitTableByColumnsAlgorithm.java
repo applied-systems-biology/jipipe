@@ -42,14 +42,24 @@ public class SplitTableByColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
         super(declaration);
     }
 
+    /**
+     * Creates a copy
+     *
+     * @param other the original
+     */
+    public SplitTableByColumnsAlgorithm(SplitTableByColumnsAlgorithm other) {
+        super(other);
+        this.generatedAnnotation = new ACAQTraitDeclarationRef(other.generatedAnnotation);
+        this.columns = new StringFilterListParameter(other.columns);
+    }
+
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-       ResultsTableData input = dataInterface.getInputData(getFirstInputSlot(), ResultsTableData.class);
+        ResultsTableData input = dataInterface.getInputData(getFirstInputSlot(), ResultsTableData.class);
         List<String> interestingColumns = input.getColumnNames().stream().filter(columns).distinct().collect(Collectors.toList());
-        if(interestingColumns.isEmpty()) {
+        if (interestingColumns.isEmpty()) {
             dataInterface.addOutputData(getFirstOutputSlot(), input.duplicate());
-        }
-        else {
+        } else {
             List<String> rowConditions = new ArrayList<>();
             for (int row = 0; row < input.getRowCount(); row++) {
                 int finalRow = row;
@@ -61,25 +71,14 @@ public class SplitTableByColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
             }
             Map<String, List<Integer>> groupedByCondition = rows.stream().collect(Collectors.groupingBy(rowConditions::get));
             for (Map.Entry<String, List<Integer>> entry : groupedByCondition.entrySet()) {
-                   ResultsTableData output = input.getRows(entry.getValue());
-                   List<ACAQTrait> traits = new ArrayList<>();
-                   if(generatedAnnotation.getDeclaration() != null) {
-                       traits.add(generatedAnnotation.getDeclaration().newInstance(entry.getKey()));
-                   }
-                   dataInterface.addOutputData(getFirstOutputSlot(), output, traits);
+                ResultsTableData output = input.getRows(entry.getValue());
+                List<ACAQTrait> traits = new ArrayList<>();
+                if (generatedAnnotation.getDeclaration() != null) {
+                    traits.add(generatedAnnotation.getDeclaration().newInstance(entry.getKey()));
+                }
+                dataInterface.addOutputData(getFirstOutputSlot(), output, traits);
             }
         }
-    }
-
-    /**
-     * Creates a copy
-     *
-     * @param other the original
-     */
-    public SplitTableByColumnsAlgorithm(SplitTableByColumnsAlgorithm other) {
-        super(other);
-        this.generatedAnnotation = new ACAQTraitDeclarationRef(other.generatedAnnotation);
-        this.columns = new StringFilterListParameter(other.columns);
     }
 
     @Override

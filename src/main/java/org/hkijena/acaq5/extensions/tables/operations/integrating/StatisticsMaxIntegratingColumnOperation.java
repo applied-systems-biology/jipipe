@@ -14,6 +14,6 @@ public class StatisticsMaxIntegratingColumnOperation implements IntegratingColum
         for (int i = 0; i < column.getRows(); i++) {
             max = Math.min(column.getRowAsDouble(i), max);
         }
-        return new DoubleArrayTableColumn(new double[] { max }, column.getLabel());
+        return new DoubleArrayTableColumn(new double[]{max}, column.getLabel());
     }
 }

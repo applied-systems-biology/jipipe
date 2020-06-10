@@ -308,10 +308,11 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
 
     /**
      * Registers a table column operation. Those operations are used in various places that handle tabular data
-     * @param id operation id
-     * @param operation the operation instance
-     * @param name the name
-     * @param shortName a short name (like min, max, avg, ...)
+     *
+     * @param id          operation id
+     * @param operation   the operation instance
+     * @param name        the name
+     * @param shortName   a short name (like min, max, avg, ...)
      * @param description a description
      */
     public void registerTableColumnOperation(String id, ColumnOperation operation, String name, String shortName, String description) {
