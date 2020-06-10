@@ -1,15 +1,25 @@
 package org.hkijena.acaq5.ui.compendium;
 
+import com.google.common.base.Charsets;
+import com.vladsch.flexmark.pdf.converter.PdfConverterExtension;
+import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.components.SearchTextField;
+import org.hkijena.acaq5.utils.BusyCursor;
+import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
+
+import static org.hkijena.acaq5.ui.components.MarkdownReader.OPTIONS;
 
 /**
  * A browsable list of help pages
@@ -63,9 +73,71 @@ public abstract class ACAQCompendiumUI<T> extends JPanel {
         searchField.addActionListener(e -> reloadAlgorithmList());
         toolBar.add(searchField);
 
+        JButton exportButton = new JButton(UIUtils.getIconFromResources("export.png"));
+        exportButton.setToolTipText("Export whole compendium");
+        JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportButton);
+        JMenuItem saveMarkdown = new JMenuItem("as Markdown (*.md)", UIUtils.getIconFromResources("filetype-markdown.png"));
+        saveMarkdown.addActionListener(e -> {
+            Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as Markdown (*.md)");
+            if (selectedPath != null) {
+                try(BusyCursor cursor = new BusyCursor(this)) {
+                    MarkdownDocument wholeCompendium = generateWholeCompendium();
+                    try {
+                        Files.write(selectedPath, wholeCompendium.getMarkdown().getBytes(Charsets.UTF_8));
+                    } catch (IOException e1) {
+                        throw new RuntimeException(e1);
+                    }
+                }
+            }
+        });
+        exportMenu.add(saveMarkdown);
+
+        JMenuItem saveHTML = new JMenuItem("as HTML (*.html)", UIUtils.getIconFromResources("filetype-html.png"));
+        saveHTML.addActionListener(e -> {
+            Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as HTML (*.html)");
+            if (selectedPath != null) {
+                try(BusyCursor cursor = new BusyCursor(this)) {
+                    try {
+                        MarkdownDocument wholeCompendium = generateWholeCompendium();
+                        Files.write(selectedPath, wholeCompendium.getRenderedHTML().getBytes(Charsets.UTF_8));
+                    } catch (IOException e1) {
+                        throw new RuntimeException(e1);
+                    }
+                }
+            }
+        });
+        exportMenu.add(saveHTML);
+
+        JMenuItem savePDF = new JMenuItem("as PDF (*.pdf)", UIUtils.getIconFromResources("filetype-pdf.png"));
+        savePDF.addActionListener(e -> {
+            Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as Portable Document Format (*.pdf)");
+            if (selectedPath != null) {
+                try(BusyCursor cursor = new BusyCursor(this)) {
+                    MarkdownDocument wholeCompendium = generateWholeCompendium();
+                    PdfConverterExtension.exportToPdf(selectedPath.toString(), wholeCompendium.getRenderedHTML(), "", OPTIONS);
+                }
+            }
+        });
+        exportMenu.add(savePDF);
+
+        toolBar.add(exportButton);
+
         add(toolBar, BorderLayout.NORTH);
 
         contentPanel.add(toolBar, BorderLayout.NORTH);
+    }
+
+    /**
+     * Generates a document that contains the whole compendium
+     * @return the document
+     */
+    public MarkdownDocument generateWholeCompendium() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(defaultDocument.getMarkdown()).append("\n\n");
+        for (T item : getFilteredItems(null)) {
+            builder.append(generateCompendiumFor(item).getMarkdown()).append("\n\n");
+        }
+        return new MarkdownDocument(builder.toString());
     }
 
     /**

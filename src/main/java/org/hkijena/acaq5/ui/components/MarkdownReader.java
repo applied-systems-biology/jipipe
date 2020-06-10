@@ -48,7 +48,7 @@ public class MarkdownReader extends JPanel {
             "h3 { padding-top: 30px; }",
             "th { border-bottom: 1px solid #c8c8c8; }",
             ".toc-list { list-style: none; }"};
-    static final MutableDataHolder OPTIONS = new MutableDataSet()
+    public static final MutableDataHolder OPTIONS = new MutableDataSet()
             .set(Parser.EXTENSIONS, Arrays.asList(TablesExtension.create(), AutolinkExtension.create(), TocExtension.create()));
     private JScrollPane scrollPane;
     private JTextPane content;
@@ -191,6 +191,10 @@ public class MarkdownReader extends JPanel {
         }
     }
 
+    /**
+     * Renders the content as HTML
+     * @return HTML content
+     */
     private String toHTML() {
         String html = content.getText();
         StringBuilder stylesheet = new StringBuilder();
