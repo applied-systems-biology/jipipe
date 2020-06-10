@@ -93,6 +93,7 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPan
 
     private void initializeToolbar() {
         JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
         JLabel nameLabel = new JLabel(algorithm.getName(), new ColorIcon(16, 16, UIUtils.getFillColorFor(algorithm.getDeclaration())), JLabel.LEFT);
         nameLabel.setToolTipText(TooltipUtils.getAlgorithmTooltip(algorithm.getDeclaration()));
         toolBar.add(nameLabel);

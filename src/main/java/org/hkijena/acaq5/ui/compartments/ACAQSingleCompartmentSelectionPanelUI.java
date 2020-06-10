@@ -78,6 +78,7 @@ public class ACAQSingleCompartmentSelectionPanelUI extends ACAQProjectWorkbenchP
 
     private void initializeToolbar() {
         JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
         JLabel nameLabel = new JLabel(compartment.getName(), new ColorIcon(16, 16, UIUtils.getFillColorFor(compartment.getDeclaration())), JLabel.LEFT);
         nameLabel.setToolTipText(TooltipUtils.getProjectCompartmentTooltip(compartment, getProject().getGraph()));
         toolBar.add(nameLabel);

@@ -62,6 +62,7 @@ public class ACAQSingleTraitSelectionPanelUI extends ACAQJsonExtensionWorkbenchP
 
     private void initializeToolbar() {
         JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
         JLabel nameLabel = new JLabel(node.getName(), new ColorIcon(16, 16, UIUtils.getFillColorFor(node.getDeclaration())), JLabel.LEFT);
         nameLabel.setToolTipText(TooltipUtils.getTraitTooltip(node.getTraitDeclaration()));
         toolBar.add(nameLabel);

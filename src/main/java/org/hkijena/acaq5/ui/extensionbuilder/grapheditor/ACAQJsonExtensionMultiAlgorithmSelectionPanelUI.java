@@ -56,6 +56,7 @@ public class ACAQJsonExtensionMultiAlgorithmSelectionPanelUI extends ACAQJsonExt
 
     private void initializeToolbar() {
         JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
         JLabel nameLabel = new JLabel(algorithms.size() + " algorithms", UIUtils.getIconFromResources("select.png"), JLabel.LEFT);
         toolBar.add(nameLabel);
 

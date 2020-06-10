@@ -54,6 +54,7 @@ public class ACAQMultiCompartmentSelectionPanelUI extends ACAQProjectWorkbenchPa
 
     private void initializeToolbar() {
         JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
         JLabel nameLabel = new JLabel(compartments.size() + " compartments", UIUtils.getIconFromResources("select.png"), JLabel.LEFT);
         toolBar.add(nameLabel);
 

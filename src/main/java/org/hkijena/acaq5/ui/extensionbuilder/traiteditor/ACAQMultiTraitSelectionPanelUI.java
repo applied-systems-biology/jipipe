@@ -53,6 +53,7 @@ public class ACAQMultiTraitSelectionPanelUI extends ACAQJsonExtensionWorkbenchPa
 
     private void initializeToolbar() {
         JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
         JLabel nameLabel = new JLabel(algorithms.size() + " annotation types", UIUtils.getIconFromResources("select.png"), JLabel.LEFT);
         toolBar.add(nameLabel);
 
