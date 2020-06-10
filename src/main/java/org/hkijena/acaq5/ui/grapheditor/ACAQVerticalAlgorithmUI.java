@@ -5,6 +5,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.ui.registries.ACAQUIAlgorithmRegistry;
 import org.hkijena.acaq5.utils.PointRange;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -51,6 +52,7 @@ public class ACAQVerticalAlgorithmUI extends ACAQAlgorithmUI {
         outputSlotPanel.setOpaque(false);
 
         nameLabel = new JLabel(getAlgorithm().getName());
+        nameLabel.setIcon(ACAQUIAlgorithmRegistry.getInstance().getIconFor(getAlgorithm().getDeclaration()));
         JButton openSettingsButton = new JButton(UIUtils.getIconFromResources("wrench.png"));
         UIUtils.makeFlat25x25(openSettingsButton);
         UIUtils.addPopupMenuToComponent(openSettingsButton, getContextMenu());

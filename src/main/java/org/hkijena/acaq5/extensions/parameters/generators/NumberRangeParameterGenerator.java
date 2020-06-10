@@ -51,10 +51,13 @@ public class NumberRangeParameterGenerator<T extends Number & Comparable<T>> ext
     private void initializeParameters() {
         ACAQMutableParameterAccess minParameter = parameters.addParameter("min", numberClass);
         minParameter.setName("Minimum value");
+        minParameter.setUIOrder(0);
         ACAQMutableParameterAccess maxParameter = parameters.addParameter("max", numberClass);
         maxParameter.setName("Maximum value");
+        maxParameter.setUIOrder(1);
         ACAQMutableParameterAccess stepSizeParameter = parameters.addParameter("step-size", numberClass);
         stepSizeParameter.setName("Step size");
+        stepSizeParameter.setUIOrder(2);
         parameters.setAllowUserModification(false);
     }
 

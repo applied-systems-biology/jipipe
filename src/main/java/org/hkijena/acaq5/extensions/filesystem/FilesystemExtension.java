@@ -20,6 +20,7 @@ import org.hkijena.acaq5.extensions.filesystem.resultanalysis.FilesystemDataSlot
 import org.hkijena.acaq5.extensions.standardalgorithms.api.registries.GraphWrapperAlgorithmRegistrationTask;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.ResourceUtils;
+import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.plugin.Plugin;
 
 import java.io.IOException;
@@ -82,14 +83,14 @@ public class FilesystemExtension extends ACAQPrepackagedDefaultJavaExtension {
         registerAlgorithm("import-folder", FolderDataSource.class);
         registerAlgorithm("import-folder-list", FolderListDataSource.class);
 
-        registerAlgorithm("file-filter", FilterFiles.class);
-        registerAlgorithm("folder-filter", FilterFolders.class);
-        registerAlgorithm("folder-list-files", ListFiles.class);
-        registerAlgorithm("folder-list-subfolders", ListSubfolders.class);
-        registerAlgorithm("folder-navigate-subfolders", NavigateSubFolder.class);
+        registerAlgorithm("file-filter", FilterFiles.class, UIUtils.getAlgorithmIconURL("filter.png"));
+        registerAlgorithm("folder-filter", FilterFolders.class, UIUtils.getAlgorithmIconURL("filter.png"));
+        registerAlgorithm("folder-list-files", ListFiles.class, UIUtils.getAlgorithmIconURL("list.png"));
+        registerAlgorithm("folder-list-subfolders", ListSubfolders.class, UIUtils.getAlgorithmIconURL("list.png"));
+        registerAlgorithm("folder-navigate-subfolders", NavigateSubFolder.class, UIUtils.getAlgorithmIconURL("go-parent-folder.png"));
 
-        registerAlgorithm("folder-annotate-by-name", FolderAnnotationGenerator.class);
-        registerAlgorithm("file-annotate-by-name", FileAnnotationGenerator.class);
+        registerAlgorithm("folder-annotate-by-name", FolderAnnotationGenerator.class, UIUtils.getAlgorithmIconURL("tools-wizard.png"));
+        registerAlgorithm("file-annotate-by-name", FileAnnotationGenerator.class, UIUtils.getAlgorithmIconURL("tools-wizard.png"));
     }
 
     private void registerAlgorithmResources() {

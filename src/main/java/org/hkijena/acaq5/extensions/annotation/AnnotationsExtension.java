@@ -9,6 +9,7 @@ import org.hkijena.acaq5.extensions.annotation.datasources.AnnotationTableFromFi
 import org.hkijena.acaq5.extensions.annotation.datatypes.AnnotationTableData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.resultanalysis.ResultsTableDataSlotRowUI;
 import org.hkijena.acaq5.utils.ResourceUtils;
+import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -42,9 +43,9 @@ public class AnnotationsExtension extends ACAQPrepackagedDefaultJavaExtension {
 
     private void registerAlgorithms() {
         registerAlgorithm("annotation-table-from-file", AnnotationTableFromFile.class);
-        registerAlgorithm("annotate-all", AnnotateAll.class);
-        registerAlgorithm("annotate-remove", RemoveAnnotations.class);
-        registerAlgorithm("annotate-split-by-annotation", SplitByAnnotation.class);
+        registerAlgorithm("annotate-all", AnnotateAll.class, UIUtils.getAlgorithmIconURL("tags.png"));
+        registerAlgorithm("annotate-remove", RemoveAnnotations.class, UIUtils.getAlgorithmIconURL("trash.png"));
+        registerAlgorithm("annotate-split-by-annotation", SplitByAnnotation.class, UIUtils.getAlgorithmIconURL("split.png"));
     }
 
     @Override

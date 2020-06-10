@@ -2,7 +2,6 @@ package org.hkijena.acaq5.ui.components;
 
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.ui.registries.ACAQUIAlgorithmRegistry;
-import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;

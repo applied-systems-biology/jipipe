@@ -8,9 +8,9 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
@@ -81,9 +81,9 @@ public class SearchBox<T> extends JPanel {
         clearButton.setBorder(null);
         add(clearButton, BorderLayout.EAST);
 
-        textField.addFocusListener(new FocusAdapter() {
+        textField.addMouseListener(new MouseAdapter() {
             @Override
-            public void focusGained(FocusEvent e) {
+            public void mouseClicked(MouseEvent e) {
                 comboBox.setPopupVisible(true);
             }
         });

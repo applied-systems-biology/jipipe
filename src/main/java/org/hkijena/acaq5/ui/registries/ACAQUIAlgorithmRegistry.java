@@ -51,17 +51,15 @@ public class ACAQUIAlgorithmRegistry {
      */
     public ImageIcon getIconFor(ACAQAlgorithmDeclaration declaration) {
         URL uri = icons.getOrDefault(declaration, null);
-        if(uri == null) {
+        if (uri == null) {
             URL defaultIcon;
-            if(declaration.getCategory() == ACAQAlgorithmCategory.DataSource) {
-                if(!declaration.getOutputSlots().isEmpty()) {
+            if (declaration.getCategory() == ACAQAlgorithmCategory.DataSource) {
+                if (!declaration.getOutputSlots().isEmpty()) {
                     defaultIcon = ACAQUIDatatypeRegistry.getInstance().getIconURLFor(declaration.getOutputSlots().get(0).value());
-                }
-                else {
+                } else {
                     defaultIcon = ResourceUtils.getPluginResource("icons/cog.png");
                 }
-            }
-            else {
+            } else {
                 defaultIcon = ResourceUtils.getPluginResource("icons/cog.png");
             }
             icons.put(declaration, defaultIcon);

@@ -37,6 +37,7 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.List;
 import java.util.*;
 import java.util.function.Predicate;
@@ -146,6 +147,36 @@ public class UIUtils {
      */
     public static ImageIcon getIconFromResources(String iconName) {
         return new ImageIcon(ResourceUtils.getPluginResource("icons/" + iconName));
+    }
+
+    /**
+     * Returns an icon from ACAQ5 resources
+     *
+     * @param iconName relative to the icons/ plugin resource
+     * @return the icon instance
+     */
+    public static URL getIconURLFromResources(String iconName) {
+        return ResourceUtils.getPluginResource("icons/" + iconName);
+    }
+
+    /**
+     * Returns an included trait icon from ACAQ5 resources
+     *
+     * @param iconName relative to the icons/ plugin resource
+     * @return the icon instance
+     */
+    public static URL getTraitIconURL(String iconName) {
+        return ResourceUtils.getPluginResource("icons/traits/" + iconName);
+    }
+
+    /**
+     * Returns an included trait icon from ACAQ5 resources
+     *
+     * @param iconName relative to the icons/ plugin resource
+     * @return the icon instance
+     */
+    public static URL getAlgorithmIconURL(String iconName) {
+        return ResourceUtils.getPluginResource("icons/algorithms/" + iconName);
     }
 
     /**

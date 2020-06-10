@@ -6,7 +6,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.hkijena.acaq5.api.traits.ACAQJsonTraitDeclaration;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.GraphWrapperAlgorithmDeclaration;
 
 import java.io.IOException;

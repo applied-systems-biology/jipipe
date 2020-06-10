@@ -7,7 +7,6 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
-import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQMultiAlgorithmSelectionPanelUI;

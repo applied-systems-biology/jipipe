@@ -200,7 +200,7 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
      *
      * @param id             Algorithm ID
      * @param algorithmClass Algorithm class
-     * @param icon custom icon
+     * @param icon           custom icon
      */
     public void registerAlgorithm(String id, Class<? extends ACAQGraphNode> algorithmClass, URL icon) {
         registerAlgorithm(new ACAQJavaAlgorithmRegistrationTask(id, algorithmClass, this, icon));
@@ -221,7 +221,7 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
      * If the dependency situation is unclear, register an {@link ACAQAlgorithmRegistrationTask} instead
      *
      * @param declaration Algorithm declaration
-     * @param icon custom algorithm icon
+     * @param icon        custom algorithm icon
      */
     public void registerAlgorithm(ACAQAlgorithmDeclaration declaration, URL icon) {
         registry.getAlgorithmRegistry().register(declaration, this);

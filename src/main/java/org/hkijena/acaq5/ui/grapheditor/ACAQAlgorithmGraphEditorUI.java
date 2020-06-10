@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.ui.grapheditor;
 
 import com.google.common.eventbus.Subscribe;
+import com.google.common.html.HtmlEscapers;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
@@ -15,6 +16,7 @@ import org.hkijena.acaq5.ui.components.SearchBox;
 import org.hkijena.acaq5.ui.events.AlgorithmEvent;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectionChangedEvent;
+import org.hkijena.acaq5.ui.registries.ACAQUIAlgorithmRegistry;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
@@ -528,7 +530,7 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
          */
         public NavigationRenderer() {
             setOpaque(true);
-            setFont(getFont().deriveFont(Font.PLAIN));
+            setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         }
 
@@ -542,8 +544,17 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
                     menuPath += " &gt; " + String.join(" &gt; ", declaration.getMenuPath().split("\n"));
                 }
 
-                setIcon(new ColorIcon(16, 32, Color.WHITE, UIUtils.getFillColorFor(declaration)));
-                setText("<html>Create new <strong>" + declaration.getName() + "</strong><br/><span style=\"color: gray;\">" + menuPath + "</span></html>");
+                setIcon(new ColorIcon(16, 40, Color.WHITE, UIUtils.getFillColorFor(declaration)));
+                setText(String.format("<html><table cellpadding=\"1\"><tr><td><span style=\"color: green;\">Create</span></td>" +
+                                "<td><img src=\"%s\"/></td>" +
+                                "<td>%s</td></tr>" +
+                                "<tr><td></td>" +
+                                "<td></td>" +
+                                "<td><span style=\"color: gray;\">%s</span></td></tr></table></html>",
+                        ACAQUIAlgorithmRegistry.getInstance().getIconURLFor(declaration),
+                        HtmlEscapers.htmlEscaper().escape(declaration.getName()),
+                        menuPath
+                ));
             } else if (value instanceof ACAQAlgorithmUI) {
                 ACAQAlgorithmUI ui = (ACAQAlgorithmUI) value;
                 ACAQAlgorithmDeclaration declaration = ui.getAlgorithm().getDeclaration();
@@ -551,9 +562,17 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
                 if (!StringUtils.isNullOrEmpty(declaration.getMenuPath())) {
                     menuPath += " &gt; " + String.join(" &gt; ", declaration.getMenuPath().split("\n"));
                 }
-                setIcon(new ColorIcon(16, 32, UIUtils.getFillColorFor(ui.getAlgorithm().getDeclaration()),
-                        UIUtils.getBorderColorFor(ui.getAlgorithm().getDeclaration())));
-                setText("<html>Navigate to <strong>" + ui.getAlgorithm().getName() + "</strong><br/><span style=\"color: gray;\">" + menuPath + "</span></html>");
+                setIcon(new ColorIcon(16, 40, UIUtils.getFillColorFor(declaration), UIUtils.getBorderColorFor(declaration)));
+                setText(String.format("<html><table cellpadding=\"1\"><tr><td><span style=\"color: blue;\">Navigate</span></td>" +
+                                "<td><img src=\"%s\"/></td>" +
+                                "<td>%s</td></tr>" +
+                                "<tr><td></td>" +
+                                "<td></td>" +
+                                "<td><span style=\"color: gray;\">%s</span></td></tr></table></html>",
+                        ACAQUIAlgorithmRegistry.getInstance().getIconURLFor(declaration),
+                        HtmlEscapers.htmlEscaper().escape(declaration.getName()),
+                        menuPath
+                ));
             } else {
                 setText("<Null>");
             }

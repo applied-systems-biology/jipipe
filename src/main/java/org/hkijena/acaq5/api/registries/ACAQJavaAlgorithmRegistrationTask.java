@@ -26,7 +26,8 @@ public class ACAQJavaAlgorithmRegistrationTask extends ACAQDefaultAlgorithmRegis
 
     /**
      * Creates a new registration task
-     *  @param id             The id
+     *
+     * @param id             The id
      * @param algorithmClass The algorithm class
      * @param source         The dependency the registers the algorithm
      * @param icon
@@ -64,7 +65,7 @@ public class ACAQJavaAlgorithmRegistrationTask extends ACAQDefaultAlgorithmRegis
         alreadyRegistered = true;
         ACAQJavaAlgorithmDeclaration declaration = new ACAQJavaAlgorithmDeclaration(id, algorithmClass);
         ACAQAlgorithmRegistry.getInstance().register(declaration, source);
-        if(icon != null)
+        if (icon != null)
             ACAQUIAlgorithmRegistry.getInstance().registerIcon(declaration, icon);
     }
 
