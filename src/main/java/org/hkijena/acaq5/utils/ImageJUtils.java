@@ -5,8 +5,12 @@ import ij.ImagePlus;
 import ij.WindowManager;
 import ij.plugin.PlugIn;
 import ij.process.ImageProcessor;
+import org.hkijena.acaq5.extensions.imagejalgorithms.SliceIndex;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -50,6 +54,26 @@ public class ImageJUtils {
             }
         } else {
             function.accept(img.getProcessor(), 0);
+        }
+    }
+
+    /**
+     * Runs the function for each Z and T slice.
+     * The function consumes a map from channel index to the channel slice.
+     * The slice index channel is always set to -1
+     *
+     * @param img      the image
+     * @param function the function
+     */
+    public static void forEachIndexedZTSlice(ImagePlus img, BiConsumer<Map<Integer, ImageProcessor>, SliceIndex> function) {
+        for (int t = 0; t < img.getNFrames(); t++) {
+            for (int z = 0; z < img.getNSlices(); z++) {
+                Map<Integer, ImageProcessor> channels = new HashMap<>();
+                for (int c = 0; c < img.getNChannels(); c++) {
+                    channels.put(c, img.getStack().getProcessor(img.getStackIndex(c + 1, z + 1, t + 1)));
+                }
+                function.accept(channels, new SliceIndex(z, -1, t));
+            }
         }
     }
 
