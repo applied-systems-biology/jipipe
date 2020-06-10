@@ -6,10 +6,7 @@ import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.annotation.AnnotateAll;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.annotation.RemoveAnnotations;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.annotation.SplitByAnnotation;
-import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.converters.MaskToParticleConverter;
-import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.converters.MultiChannelSplitterConverter;
-import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.enhancers.*;
-import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.segmenters.*;
+import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.processors.*;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.registries.GraphWrapperAlgorithmRegistrationTask;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.ResourceUtils;
@@ -31,7 +28,7 @@ public class StandardAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExten
 
     @Override
     public String getDescription() {
-        return "A set of standard image processing algorithms";
+        return "A set of standard algorithms to handle various ACAQ5-specific workloads";
     }
 
     @Override
@@ -48,17 +45,6 @@ public class StandardAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExten
     public void register() {
 
         registerAlgorithm("enhance-merge-slots", MergeDataEnhancer.class);
-        registerAlgorithm("convert-imagej-analyze-particles", MaskToParticleConverter.class);
-        registerAlgorithm("enhance-imagej-clahe", CLAHEImageEnhancer.class);
-        registerAlgorithm("enhance-imagej-illumination-correction", IlluminationCorrectionEnhancer.class);
-        registerAlgorithm("enhance-imagej-watershed", WatershedMaskEnhancer.class);
-        registerAlgorithm("enhance-imagej-auto-threshold", AutoThresholdSegmenter.class);
-        registerAlgorithm("segment-imagej-bright-spots", BrightSpotsSegmenter.class);
-        registerAlgorithm("segment-imagej-hough", HoughSegmenter.class);
-        registerAlgorithm("segment-imagej-internal-gradient", InternalGradientSegmenter.class);
-        registerAlgorithm("convert-imagej-multichannel-splitter", MultiChannelSplitterConverter.class);
-        registerAlgorithm("enhance-imagej-merge-roi", MergeROIEnhancer.class);
-        registerAlgorithm("segment-imagej-hessian", HessianSegmenter.class);
         registerAlgorithm("annotate-all", AnnotateAll.class);
         registerAlgorithm("annotate-remove", RemoveAnnotations.class);
         registerAlgorithm("annotate-split-by-annotation", SplitByAnnotation.class);

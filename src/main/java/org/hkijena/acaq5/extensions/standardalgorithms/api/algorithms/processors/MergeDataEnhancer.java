@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.enhancers;
+package org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.processors;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
@@ -16,8 +16,8 @@ import java.util.function.Supplier;
 /**
  * Merges the input slot tables into one data slot
  */
-@ACAQDocumentation(name = "Merge slots", description = "Merges the input slot tables into one data slot")
-@ACAQOrganization(menuPath = "Merge", algorithmCategory = ACAQAlgorithmCategory.Processor)
+@ACAQDocumentation(name = "Merge data slots", description = "Merges the input slots into one data slot")
+@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Processor)
 public class MergeDataEnhancer extends ACAQAlgorithm {
 
     /**
