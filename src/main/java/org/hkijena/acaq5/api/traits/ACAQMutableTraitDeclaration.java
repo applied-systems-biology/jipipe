@@ -18,8 +18,7 @@ import java.util.Set;
 public abstract class ACAQMutableTraitDeclaration implements ACAQTraitDeclaration, ACAQParameterCollection {
     private EventBus eventBus = new EventBus();
     private String id;
-    private Class<? extends ACAQTrait> traitClass;
-    private boolean discriminator;
+    private Class<? extends ACAQTrait> traitClass = ACAQTrait.class;
     private boolean hidden;
     private String name;
     private String description;
@@ -58,20 +57,6 @@ public abstract class ACAQMutableTraitDeclaration implements ACAQTraitDeclaratio
      */
     public void setTraitClass(Class<? extends ACAQTrait> traitClass) {
         this.traitClass = traitClass;
-    }
-
-    @Override
-    public boolean isDiscriminator() {
-        return discriminator;
-    }
-
-    /**
-     * Sets if the declaration is a discriminator
-     *
-     * @param discriminator Sets if the declaration is a discriminator
-     */
-    public void setDiscriminator(boolean discriminator) {
-        this.discriminator = discriminator;
     }
 
     @Override

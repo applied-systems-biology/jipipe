@@ -507,6 +507,8 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
             haystack += ((ACAQAlgorithmUI) entry).getAlgorithm().getName();
             algorithmDeclaration = ((ACAQAlgorithmUI) entry).getAlgorithm().getDeclaration();
         } else if (entry instanceof ACAQAlgorithmDeclaration) {
+            if(((ACAQAlgorithmDeclaration) entry).isHidden())
+                return false;
             algorithmDeclaration = (ACAQAlgorithmDeclaration) entry;
         }
         if (algorithmDeclaration != null) {

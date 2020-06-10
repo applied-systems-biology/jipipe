@@ -281,28 +281,6 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
         }
         for (ACAQJsonTraitDeclaration declaration : traitDeclarations) {
             report.forCategory("Annotations").forCategory(declaration.getName()).report(declaration);
-
-            for (String id : declaration.getInheritedIds()) {
-                if (ACAQTraitRegistry.getInstance().hasTraitWithId(id)) {
-                    ACAQTraitDeclaration inherited = ACAQTraitRegistry.getInstance().getDeclarationById(id);
-                    if (inherited.isDiscriminator() != declaration.isDiscriminator()) {
-                        report.forCategory("Annotations").forCategory(declaration.getName()).reportIsInvalid("Inconsistent inheritance!",
-                                "Valued annotations cannot inherit from non-valued ones and vice-versa.",
-                                "Please ensure to make the" +
-                                        " 'Contains value' setting consistent to the inherited annotations.",
-                                this);
-                    }
-                } else {
-                    ACAQJsonTraitDeclaration inherited = traitDeclarations.stream().filter(d -> Objects.equals(d.getId(), id)).findFirst().orElse(null);
-                    if (inherited != null && inherited.isDiscriminator() != declaration.isDiscriminator()) {
-                        report.forCategory("Annotations").forCategory(declaration.getName()).reportIsInvalid("Inconsistent inheritance!",
-                                "Valued annotations cannot inherit from non-valued ones and vice-versa.",
-                                "Please ensure to make the" +
-                                        " 'Contains value' setting consistent to the inherited annotations.",
-                                this);
-                    }
-                }
-            }
         }
         if (traitDeclarations.size() != traitDeclarations.stream().map(ACAQMutableTraitDeclaration::getId).collect(Collectors.toSet()).size()) {
             report.forCategory("Annotations").reportIsInvalid("Duplicate IDs found!",

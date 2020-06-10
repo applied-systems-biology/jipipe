@@ -82,7 +82,6 @@ public class MultiParametersExtension extends ACAQPrepackagedDefaultJavaExtensio
                     traitDeclaration.setId(traitId);
                     traitDeclaration.setName(parameterAccess.getName());
                     traitDeclaration.setDescription("Represents a parameter value");
-                    traitDeclaration.setDiscriminator(true);
                     traitDeclaration.setHidden(true);
                     traitDeclaration.getTraitIcon().setIconName("wrench-blue.png");
                     registerTrait(traitDeclaration, ResourceUtils.getPluginResource("icons/traits/wrench-blue.png"));

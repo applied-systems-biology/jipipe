@@ -17,8 +17,6 @@ import java.util.Map;
 @ACAQDocumentation(name = "Imported Annotation", description = "An annotation type that was imported from another extension")
 @AlgorithmInputSlot(ACAQTraitNodeInheritanceData.class)
 @AlgorithmOutputSlot(ACAQTraitNodeInheritanceData.class)
-@AlgorithmInputSlot(ACAQDiscriminatorNodeInheritanceData.class)
-@AlgorithmOutputSlot(ACAQDiscriminatorNodeInheritanceData.class)
 public class ACAQExistingTraitNode extends ACAQTraitNode implements ACAQCustomParameterCollection {
 
     /**

@@ -5,6 +5,7 @@ import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQHidden;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
+import org.hkijena.acaq5.utils.ReflectionUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -27,7 +28,6 @@ public class ACAQJavaTraitDeclaration extends ACAQMutableTraitDeclaration {
             throw new IllegalArgumentException("Trait class instances cannot be interfaces!");
 
         setTraitClass(klass);
-        setDiscriminator(ACAQDiscriminator.class.isAssignableFrom(klass));
         setName(getNameOf(klass));
         setDescription(getDescriptionOf(klass));
         setId(id);
@@ -40,28 +40,18 @@ public class ACAQJavaTraitDeclaration extends ACAQMutableTraitDeclaration {
         }
         Set<Class<? extends ACAQTrait>> inheritedTraitClasses = getInheritedTraitClasses(klass);
         inheritedTraitClasses.remove(ACAQTrait.class);
-        inheritedTraitClasses.remove(ACAQDiscriminator.class);
+        inheritedTraitClasses.remove(ACAQTrait.class);
         setInherited(inheritedTraitClasses.stream().map(idMap::get).filter(Objects::nonNull).collect(Collectors.toSet()));
     }
 
     @Override
-    public ACAQTrait newInstance() {
-        try {
-            return getTraitClass().getConstructor(ACAQTraitDeclaration.class).newInstance(this);
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+    public ACAQTrait newInstance(boolean value) {
+       return newInstance(value ? "True" : "False");
     }
 
     @Override
     public ACAQTrait newInstance(String value) {
-        if (!isDiscriminator())
-            return newInstance();
-        try {
-            return getTraitClass().getConstructor(ACAQTraitDeclaration.class, String.class).newInstance(this, value);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
+        return (ACAQTrait) ReflectionUtils.newInstance(getTraitClass(),this, value);
     }
 
     @Override

@@ -11,7 +11,7 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
-import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
+import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
@@ -75,9 +75,9 @@ public class StackMergerAlgorithm extends ACAQMergingAlgorithm {
         Set<Integer> inputRows = dataInterface.getInputRows(getFirstInputSlot());
         List<Integer> sortedInputRows;
         if (counterAnnotation.getDeclaration() != null) {
-            ACAQDiscriminator defaultCounter = (ACAQDiscriminator) counterAnnotation.getDeclaration().newInstance("");
+            ACAQTrait defaultCounter = (ACAQTrait) counterAnnotation.getDeclaration().newInstance("");
             sortedInputRows = inputRows.stream().sorted(Comparator.comparing(row ->
-                    (ACAQDiscriminator) (getFirstInputSlot().getAnnotationOr(row, counterAnnotation.getDeclaration(), defaultCounter)))).collect(Collectors.toList());
+                    (ACAQTrait) (getFirstInputSlot().getAnnotationOr(row, counterAnnotation.getDeclaration(), defaultCounter)))).collect(Collectors.toList());
             dataInterface.removeGlobalAnnotation(counterAnnotation.getDeclaration());
         } else {
             sortedInputRows = new ArrayList<>(inputRows);

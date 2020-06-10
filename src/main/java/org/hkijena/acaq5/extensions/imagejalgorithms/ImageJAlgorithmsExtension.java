@@ -415,9 +415,9 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
     private void registerTraits() {
         registerTrait(new ACAQJavaTraitDeclaration("image-index", ImageIndexDiscriminator.class),
                 ResourceUtils.getPluginResource("icons/traits/search-location-blue.png"));
-        registerTrait(new ACAQJavaTraitDeclaration("roi-index", ROIIndexDiscriminator.class),
+        registerTrait(new ACAQJavaTraitDeclaration("roi-index", ROIIndexTrait.class),
                 ResourceUtils.getPluginResource("icons/traits/search-location-blue.png"));
-        registerTrait(new ACAQJavaTraitDeclaration("image-title", ImageTitleDiscriminator.class),
+        registerTrait(new ACAQJavaTraitDeclaration("image-title", ImageTitleTrait.class),
                 ResourceUtils.getPluginResource("icons/traits/search-location-blue.png"));
     }
 

@@ -176,6 +176,11 @@ public class ImageJ2AlgorithmWrapperDeclaration implements ACAQAlgorithmDeclarat
         return null;
     }
 
+    @Override
+    public boolean isHidden() {
+        return false;
+    }
+
     public CommandInfo getCommandInfo() {
         return commandInfo;
     }

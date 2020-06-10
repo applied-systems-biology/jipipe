@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import ij.measure.ResultsTable;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
-import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.utils.JsonUtils;
@@ -175,12 +174,10 @@ public class ACAQExportedDataTable implements TableModel {
             table.addValue("acaq:location", row.location.toString());
             for (ACAQTraitDeclaration traitColumn : getTraitColumns()) {
                 ACAQTrait existing = row.traits.stream().filter(t -> t.getDeclaration() == traitColumn).findFirst().orElse(null);
-                if (existing instanceof ACAQDiscriminator)
-                    table.addValue(traitColumn.getName(), ((ACAQDiscriminator) existing).getValue());
-                else if (existing != null)
-                    table.addValue(traitColumn.getName(), 1);
+                if (existing != null)
+                    table.addValue(traitColumn.getName(), existing.getValue());
                 else
-                    table.addValue(traitColumn.getName(), 0);
+                    table.addValue(traitColumn.getName(), "False");
             }
         }
         table.saveAs(fileName.toString());

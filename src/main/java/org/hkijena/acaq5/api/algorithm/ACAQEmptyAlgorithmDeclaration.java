@@ -91,6 +91,11 @@ public class ACAQEmptyAlgorithmDeclaration implements ACAQAlgorithmDeclaration {
         return Collections.emptySet();
     }
 
+    @Override
+    public boolean isHidden() {
+        return true;
+    }
+
     /**
      * Serializes the empty algorithm declaration
      */

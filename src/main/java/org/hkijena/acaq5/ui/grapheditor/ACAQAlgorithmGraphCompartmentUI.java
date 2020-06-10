@@ -139,6 +139,8 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
         for (Map.Entry<String, Set<ACAQAlgorithmDeclaration>> entry : byMenuPath.entrySet()) {
             JMenu subMenu = menuTree.get(entry.getKey());
             for (ACAQAlgorithmDeclaration declaration : ACAQAlgorithmDeclaration.getSortedList(entry.getValue())) {
+                if(declaration.isHidden())
+                    continue;
                 JMenuItem addItem = new JMenuItem(declaration.getName(), icon);
                 addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
                 addItem.addActionListener(e -> algorithmGraph.insertNode(declaration.newInstance(), compartment));
@@ -173,6 +175,8 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
                 dataMenu.setIcon(icon);
 
                 for (ACAQAlgorithmDeclaration declaration : dataSources) {
+                    if(declaration.isHidden())
+                        continue;
                     JMenuItem addItem = new JMenuItem(declaration.getName(), icon);
                     addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
                     addItem.addActionListener(e -> algorithmGraph.insertNode(declaration.newInstance(), compartment));

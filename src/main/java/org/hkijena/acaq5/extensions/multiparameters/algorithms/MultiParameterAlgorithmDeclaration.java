@@ -96,4 +96,9 @@ public class MultiParameterAlgorithmDeclaration implements ACAQAlgorithmDeclarat
     public Set<ACAQDependency> getDependencies() {
         return Collections.emptySet();
     }
+
+    @Override
+    public boolean isHidden() {
+        return false;
+    }
 }

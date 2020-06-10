@@ -1,72 +1,73 @@
 {
-  "id" : "org.hkijena.acaq5:project-management-traits",
-  "version" : "1.0.0",
-  "metadata" : {
-    "name" : "Project management annotations",
-    "description" : "An ACAQ5 project",
-    "authors" : "Zoltán Cseresnyés, Ruman Gerst",
-    "website" : "https://applied-systems-biology.github.io/acaq5/",
-    "license" : "BSD-2",
-    "citation" : ""
+  "id": "org.hkijena.acaq5:project-management-traits",
+  "version": "1.0.0",
+  "metadata": {
+    "name": "Project management annotations",
+    "description": "An ACAQ5 project",
+    "authors": "Zoltán Cseresnyés, Ruman Gerst",
+    "website": "https://applied-systems-biology.github.io/acaq5/",
+    "license": "BSD-2",
+    "citation": ""
   },
-  "algorithms" : [ ],
-  "annotations" : [ {
-    "id" : "project-taxonomicunit",
-    "is-discriminator" : true,
-    "hidden" : false,
-    "name" : "Taxonomic unit",
-    "description" : null,
-    "inherited-annotation-ids" : [ ],
-    "icon" : "share-alt-purple.png"
-  }, {
-    "id" : "project-treatment",
-    "is-discriminator" : true,
-    "hidden" : false,
-    "name" : "Treatment",
-    "description" : null,
-    "inherited-annotation-ids" : [ ],
-    "icon" : "download-purple.png"
-  }, {
-    "id" : "project-sample",
-    "is-discriminator" : true,
-    "hidden" : false,
-    "name" : "Sample",
-    "description" : null,
-    "inherited-annotation-ids" : [ ],
-    "icon" : "flask-purple.png"
-  }, {
-    "id" : "project-strain",
-    "is-discriminator" : true,
-    "hidden" : false,
-    "name" : "Strain",
-    "description" : null,
-    "inherited-annotation-ids" : [ ],
-    "icon" : "biohazard-purple.png"
-  }, {
-    "id" : "project-species",
-    "is-discriminator" : true,
-    "hidden" : false,
-    "name" : "Species",
-    "description" : null,
-    "inherited-annotation-ids" : [ ],
-    "icon" : "leaf-purple.png"
-  }, {
-    "id" : "project-condition",
-    "is-discriminator" : true,
-    "hidden" : false,
-    "name" : "Condition",
-    "description" : null,
-    "inherited-annotation-ids" : [ ],
-    "icon" : "ruler-combined-purple.png"
-  }, {
-    "id" : "project-subject",
-    "is-discriminator" : true,
-    "hidden" : false,
-    "name" : "Subject",
-    "description" : null,
-    "inherited-annotation-ids" : [ ],
-    "icon" : "project-subject.png"
-  } ],
-  "acaq:project-type" : "json-extension",
-  "dependencies" : [ ]
+  "algorithms": [],
+  "annotations": [
+    {
+      "id": "project-taxonomicunit",
+      "hidden": false,
+      "name": "Taxonomic unit",
+      "description": null,
+      "inherited-annotation-ids": [],
+      "icon": "share-alt-purple.png"
+    },
+    {
+      "id": "project-treatment",
+      "hidden": false,
+      "name": "Treatment",
+      "description": null,
+      "inherited-annotation-ids": [],
+      "icon": "download-purple.png"
+    },
+    {
+      "id": "project-sample",
+      "hidden": false,
+      "name": "Sample",
+      "description": null,
+      "inherited-annotation-ids": [],
+      "icon": "flask-purple.png"
+    },
+    {
+      "id": "project-strain",
+      "hidden": false,
+      "name": "Strain",
+      "description": null,
+      "inherited-annotation-ids": [],
+      "icon": "biohazard-purple.png"
+    },
+    {
+      "id": "project-species",
+      "hidden": false,
+      "name": "Species",
+      "description": null,
+      "inherited-annotation-ids": [],
+      "icon": "leaf-purple.png"
+    },
+    {
+      "id": "project-condition",
+      "hidden": false,
+      "name": "Condition",
+      "description": null,
+      "inherited-annotation-ids": [],
+      "icon": "ruler-combined-purple.png"
+    },
+    {
+      "id": "project-subject",
+      "hidden": false,
+      "name": "Subject",
+      "description": null,
+      "inherited-annotation-ids": [],
+      "icon": "project-subject.png"
+    }
+  ],
+  "acaq:project-type": "json-extension",
+  "dependencies": []
 }

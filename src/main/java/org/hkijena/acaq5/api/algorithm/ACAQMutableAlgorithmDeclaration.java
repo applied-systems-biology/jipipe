@@ -24,6 +24,7 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
     private List<AlgorithmInputSlot> inputSlots = new ArrayList<>();
     private List<AlgorithmOutputSlot> outputSlots = new ArrayList<>();
     private String menuPath;
+    private boolean hidden = false;
 
     @Override
     public Class<? extends ACAQGraphNode> getAlgorithmClass() {
@@ -177,5 +178,14 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
      */
     public void setMenuPath(String menuPath) {
         this.menuPath = menuPath;
+    }
+
+    @Override
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
     }
 }

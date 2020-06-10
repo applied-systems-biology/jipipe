@@ -17,7 +17,7 @@ import org.hkijena.acaq5.extensions.tables.parameters.enums.TableColumnGenerator
 import org.hkijena.acaq5.extensions.tables.parameters.processors.ConvertingTableColumnProcessorParameter;
 import org.hkijena.acaq5.extensions.tables.parameters.processors.IntegratingTableColumnProcessorParameter;
 import org.hkijena.acaq5.extensions.tables.parameters.processors.TableColumnGeneratorProcessorParameter;
-import org.hkijena.acaq5.extensions.tables.traits.ColumnHeaderDiscriminator;
+import org.hkijena.acaq5.extensions.tables.traits.ColumnHeaderTrait;
 import org.hkijena.acaq5.extensions.tables.ui.tableoperations.*;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -147,8 +147,8 @@ public class TablesExtension extends ACAQPrepackagedDefaultJavaExtension {
     }
 
     private void registerTraits() {
-        registerTrait("column-header", ColumnHeaderDiscriminator.class, ResourceUtils.getPluginResource("icons/table.png"));
-        registerTrait("row-filter", ColumnHeaderDiscriminator.class, ResourceUtils.getPluginResource("icons/filter.png"));
+        registerTrait("column-header", ColumnHeaderTrait.class, ResourceUtils.getPluginResource("icons/table.png"));
+        registerTrait("row-filter", ColumnHeaderTrait.class, ResourceUtils.getPluginResource("icons/filter.png"));
     }
 
     private void registerColumnSources() {

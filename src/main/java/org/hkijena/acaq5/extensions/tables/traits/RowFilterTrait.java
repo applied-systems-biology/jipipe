@@ -1,18 +1,21 @@
 package org.hkijena.acaq5.extensions.tables.traits;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
-import org.hkijena.acaq5.api.traits.ACAQDefaultDiscriminator;
+import org.hkijena.acaq5.api.traits.ACAQDefaultTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 
-@ACAQDocumentation(name = "Column header", description = "References a column header.")
-public class ColumnHeaderDiscriminator extends ACAQDefaultDiscriminator {
+/**
+ * Contains information how rows are filtered
+ */
+@ACAQDocumentation(name = "Row filter", description = "References a way how rows were filtered.")
+public class RowFilterTrait extends ACAQDefaultTrait {
     /**
      * Creates a new discriminator
      *
      * @param declaration The declaration
      * @param value       The value
      */
-    public ColumnHeaderDiscriminator(ACAQTraitDeclaration declaration, String value) {
+    public RowFilterTrait(ACAQTraitDeclaration declaration, String value) {
         super(declaration, value);
     }
 }

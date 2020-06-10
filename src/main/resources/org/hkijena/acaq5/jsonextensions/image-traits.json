@@ -1,56 +1,65 @@
 {
-  "id" : "org.hkijena.acaq5:image-traits",
-  "version" : "1.0.0",
-  "metadata" : {
-    "name" : "Image property annotations",
-    "description" : "Commonly used annotations for describing image properties",
-    "authors" : "Zoltán Cseresnyés, Ruman Gerst",
-    "website" : "https://applied-systems-biology.github.io/acaq5/",
-    "license" : "BSD-2",
-    "citation" : ""
+  "id": "org.hkijena.acaq5:image-traits",
+  "version": "1.0.0",
+  "metadata": {
+    "name": "Image property annotations",
+    "description": "Commonly used annotations for describing image properties",
+    "authors": "Zoltán Cseresnyés, Ruman Gerst",
+    "website": "https://applied-systems-biology.github.io/acaq5/",
+    "license": "BSD-2",
+    "citation": ""
   },
-  "algorithms" : [ ],
-  "annotations" : [ {
-    "id" : "image-quality-brightness-nonuniform",
-    "is-discriminator" : false,
-    "hidden" : false,
-    "name" : "Non-uniform brightness image",
-    "description" : "The image has non-uniform brightness",
-    "inherited-annotation-ids" : [ "image-quality-brightness" ],
-    "icon" : "non-uniform-brightness.png"
-  }, {
-    "id" : "image-quality-brightness",
-    "is-discriminator" : false,
-    "hidden" : true,
-    "name" : "Image brightness",
-    "description" : "Provides information about the image brightness",
-    "inherited-annotation-ids" : [ "image-quality" ],
-    "icon" : "non-uniform-brightness.png"
-  }, {
-    "id" : "image-quality-brightness-low",
-    "is-discriminator" : false,
-    "hidden" : false,
-    "name" : "Low image brightness",
-    "description" : "The image has low brightness",
-    "inherited-annotation-ids" : [ "image-quality-brightness" ],
-    "icon" : "low-brightness.png"
-  }, {
-    "id" : "image-quality-brightness-uniform",
-    "is-discriminator" : false,
-    "hidden" : false,
-    "name" : "Uniform-brightness image",
-    "description" : "The image has uniform brightness",
-    "inherited-annotation-ids" : [ "image-quality-brightness" ],
-    "icon" : "uniform-brightness.png"
-  }, {
-    "id" : "image-quality",
-    "is-discriminator" : false,
-    "hidden" : true,
-    "name" : "Image quality",
-    "description" : "Provides information about the image quality",
-    "inherited-annotation-ids" : [ ],
-    "icon" : "images-green.png"
-  } ],
-  "acaq:project-type" : "json-extension",
-  "dependencies" : [ ]
+  "algorithms": [],
+  "annotations": [
+    {
+      "id": "image-quality-brightness-nonuniform",
+      "hidden": false,
+      "name": "Non-uniform brightness image",
+      "description": "The image has non-uniform brightness",
+      "inherited-annotation-ids": [
+        "image-quality-brightness"
+      ],
+      "icon": "non-uniform-brightness.png"
+    },
+    {
+      "id": "image-quality-brightness",
+      "hidden": true,
+      "name": "Image brightness",
+      "description": "Provides information about the image brightness",
+      "inherited-annotation-ids": [
+        "image-quality"
+      ],
+      "icon": "non-uniform-brightness.png"
+    },
+    {
+      "id": "image-quality-brightness-low",
+      "hidden": false,
+      "name": "Low image brightness",
+      "description": "The image has low brightness",
+      "inherited-annotation-ids": [
+        "image-quality-brightness"
+      ],
+      "icon": "low-brightness.png"
+    },
+    {
+      "id": "image-quality-brightness-uniform",
+      "hidden": false,
+      "name": "Uniform-brightness image",
+      "description": "The image has uniform brightness",
+      "inherited-annotation-ids": [
+        "image-quality-brightness"
+      ],
+      "icon": "uniform-brightness.png"
+    },
+    {
+      "id": "image-quality",
+      "hidden": true,
+      "name": "Image quality",
+      "description": "Provides information about the image quality",
+      "inherited-annotation-ids": [],
+      "icon": "images-green.png"
+    }
+  ],
+  "acaq:project-type": "json-extension",
+  "dependencies": []
 }

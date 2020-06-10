@@ -80,7 +80,7 @@ public class ACAQTraitGraph extends ACAQAlgorithmGraph {
                     continue;
                 ACAQDataSlot source = sourceAlgorithm.getFirstOutputSlot();
                 String targetSlotName = "Input " + (index++);
-                Class<? extends ACAQData> slotClass = declaration.isDiscriminator() ? ACAQDiscriminatorNodeInheritanceData.class : ACAQTraitNodeInheritanceData.class;
+                Class<? extends ACAQData> slotClass = ACAQTraitNodeInheritanceData.class;
                 slotConfiguration.addSlot(targetSlotName, new ACAQSlotDefinition(slotClass,
                         ACAQDataSlot.SlotType.Input,
                         targetSlotName,

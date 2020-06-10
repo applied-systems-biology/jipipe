@@ -7,7 +7,6 @@ import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
 import org.hkijena.acaq5.api.events.SlotAnnotationsChanged;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
-import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 
@@ -423,14 +422,8 @@ public class ACAQDataSlot implements TableModel {
     public double getInformationOf(ACAQTraitDeclaration traitDeclaration) {
         Map<Object, Integer> frequencies = new HashMap<>();
         for (ACAQTrait trait : annotations.get(traitDeclaration)) {
-            if (trait instanceof ACAQDiscriminator) {
-                String value = ((ACAQDiscriminator) trait).getValue();
-                frequencies.put(value, frequencies.getOrDefault(value, 0) + 1);
-            } else if (trait == null) {
-                frequencies.put(false, frequencies.getOrDefault(false, 0) + 1);
-            } else {
-                frequencies.put(true, frequencies.getOrDefault(true, 0) + 1);
-            }
+            String value = trait.getValue();
+            frequencies.put(value, frequencies.getOrDefault(value, 0) + 1);
         }
         double I = 0;
         for (Map.Entry<Object, Integer> entry : frequencies.entrySet()) {
@@ -476,11 +469,7 @@ public class ACAQDataSlot implements TableModel {
         if (columnIndex == 0)
             return ACAQData.class;
         else {
-            ACAQTraitDeclaration column = annotationColumns.get(columnIndex);
-            if (column.isDiscriminator())
-                return ACAQDiscriminator.class;
-            else
-                return ACAQTrait.class;
+            return ACAQTrait.class;
         }
     }
 

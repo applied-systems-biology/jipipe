@@ -6,17 +6,11 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQData;
-import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
-import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
-import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extensions.annotation.datatypes.AnnotationTableData;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
-import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -68,15 +62,7 @@ public class ConvertToAnnotationTable extends ACAQSimpleIteratingAlgorithm {
         for (Map.Entry<ACAQTraitDeclaration, ACAQTrait> entry : dataInterface.getAnnotations().entrySet()) {
             int col = output.addAnnotationColumn(entry.getKey());
             ACAQTrait trait = entry.getValue();
-            if(trait instanceof ACAQDiscriminator) {
-                output.setValueAt(((ACAQDiscriminator) trait).getValue(), 0, col);
-            }
-            else if(trait != null) {
-                output.setValueAt("Yes", 0, col);
-            }
-            else {
-                output.setValueAt("No", 0, col);
-            }
+            output.setValueAt(trait.getValue(), 0, col);
         }
 
         if(removeOutputAnnotations)

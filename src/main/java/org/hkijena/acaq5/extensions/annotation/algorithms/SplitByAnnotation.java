@@ -12,7 +12,6 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.extensions.parameters.collections.OutputSlotMapParameterCollection;
 import org.hkijena.acaq5.extensions.parameters.filters.StringFilter;
@@ -67,12 +66,7 @@ public class SplitByAnnotation extends ACAQAlgorithm {
         for (int row = 0; row < inputSlot.getRowCount(); ++row) {
             List<ACAQTrait> annotations = inputSlot.getAnnotations(row);
             ACAQTrait matching = annotations.stream().filter(a -> a.getDeclaration() == annotationType.getDeclaration()).findFirst().orElse(null);
-            String matchingValue;
-            if (annotationType.getDeclaration().isDiscriminator()) {
-                matchingValue = matching instanceof ACAQDiscriminator ? "" + ((ACAQDiscriminator) matching).getValue() : "";
-            } else {
-                matchingValue = matching != null ? "true" : "false";
-            }
+            String matchingValue = matching.getValue();
 
             for (ACAQDataSlot slot : getOutputSlots().stream().sorted(Comparator.comparing(ACAQDataSlot::getName)).collect(Collectors.toList())) {
                 StringFilter filter = targetSlots.getParameters().get(slot.getName()).get(StringFilter.class);
@@ -118,7 +112,7 @@ public class SplitByAnnotation extends ACAQAlgorithm {
 
     @ACAQParameter("target-slots")
     @ACAQDocumentation(name = "Target slots", description = "Annotation values that match the filter on the right-hand side are redirected to the data slot on the left-hand side. " +
-            "Non-value annotations are converted into 'true' and 'false'. Use the the RegEx filter '.*' to filter remaining inputs. Filter order is alphabetically.")
+            "Use the the RegEx filter '.*' to filter remaining inputs. Filter order is alphabetically.")
     public OutputSlotMapParameterCollection getTargetSlots() {
         return targetSlots;
     }

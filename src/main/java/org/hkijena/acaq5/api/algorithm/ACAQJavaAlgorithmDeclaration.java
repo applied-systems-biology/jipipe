@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQHidden;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.data.traits.*;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
@@ -38,6 +39,9 @@ public class ACAQJavaAlgorithmDeclaration extends ACAQMutableAlgorithmDeclaratio
         setDescription(getDescriptionOf(algorithmClass));
         setCategory(getCategoryOf(algorithmClass));
         setMenuPath(getMenuPathOf(algorithmClass));
+        if(algorithmClass.getAnnotation(ACAQHidden.class) != null) {
+            setHidden(true);
+        }
         initializeSlots();
         initializeTraits();
     }

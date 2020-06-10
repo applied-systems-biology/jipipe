@@ -52,9 +52,9 @@ public class ImagePlusData implements ACAQData {
 
     @Override
     public void flush() {
-        // Completely remove all references
-        image.flush();
-        image = null;
+//        // Completely remove all references
+//        image.flush();
+//        image = null;
     }
 
     public ImagePlus getImage() {

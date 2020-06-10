@@ -116,6 +116,13 @@ public interface ACAQAlgorithmDeclaration {
     Set<ACAQDependency> getDependencies();
 
     /**
+     * Returns true if this algorithm should not appear in the list of available algorithms.
+     * This is useful if it is a structural algorithm
+     * @return if this algorithm should not appear in the list of available algorithms
+     */
+    boolean isHidden();
+
+    /**
      * Gets the registered algorithms, grouped by their menu paths
      *
      * @param declarations The declarations to group

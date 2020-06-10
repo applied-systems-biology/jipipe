@@ -2,6 +2,7 @@ package org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQHidden;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
@@ -25,9 +26,8 @@ import java.util.Map;
 @ACAQDocumentation(name = "Custom Annotation", description = "A custom annotation type")
 @AlgorithmInputSlot(ACAQTraitNodeInheritanceData.class)
 @AlgorithmOutputSlot(ACAQTraitNodeInheritanceData.class)
-@AlgorithmInputSlot(ACAQDiscriminatorNodeInheritanceData.class)
-@AlgorithmOutputSlot(ACAQDiscriminatorNodeInheritanceData.class)
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Annotation)
+@ACAQHidden
 public class ACAQNewTraitNode extends ACAQTraitNode implements ACAQCustomParameterCollection {
 
     /**

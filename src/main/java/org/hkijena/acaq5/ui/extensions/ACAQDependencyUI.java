@@ -93,11 +93,10 @@ public class ACAQDependencyUI extends JPanel {
         if (list.isEmpty())
             return;
         DefaultTableModel model = new DefaultTableModel();
-        model.setColumnIdentifiers(new Object[]{"Name", "Type", "ID", "Description"});
+        model.setColumnIdentifiers(new Object[]{"Name", "ID", "Description"});
         for (ACAQTraitDeclaration declaration : list) {
             model.addRow(new Object[]{
                     StringUtils.createIconTextHTMLTable(declaration.getName(), ACAQUITraitRegistry.getInstance().getIconURLFor(declaration)),
-                    declaration.isDiscriminator() ? "Valued" : "Boolean",
                     declaration.getId(),
                     StringUtils.wordWrappedHTML(declaration.getDescription(), 50)
             });

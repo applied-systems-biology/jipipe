@@ -50,6 +50,7 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     private ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
     private Map<ACAQDataSlot, String> exportedSlotNames = new HashMap<>();
     private StringListParameter menuPath = new StringListParameter();
+    private boolean hidden = false;
 
     /**
      * Creates a new declaration
@@ -421,5 +422,18 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     public void setMenuPathList(StringListParameter value) {
         this.menuPath = value;
         getEventBus().post(new ParameterChangedEvent(this, "menu-path"));
+    }
+
+    @ACAQParameter("hidden")
+    @ACAQDocumentation(name = "Is hidden", description = "If the algorithm should not appear in the list of available algorithms.")
+    @Override
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    @ACAQParameter("hidden")
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
+        getEventBus().post(new ParameterChangedEvent(this, "hidden"));
     }
 }

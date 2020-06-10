@@ -13,8 +13,8 @@ import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
+import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -68,12 +68,6 @@ public class AnnotateAll extends ACAQAlgorithm {
                     "You have to define which annotation should be added to the data.",
                     "Please setup an annotation that is added to the data.",
                     this);
-        } else if (annotation instanceof ACAQDiscriminator) {
-            if (((ACAQDiscriminator) annotation).getValue() == null)
-                report.forCategory("Annotation").reportIsInvalid("No annotation value provided!",
-                        "Valued annotations carry a text value.",
-                        "Please add a meaningful value that separates your data from other data.",
-                        this);
         }
     }
 

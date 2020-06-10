@@ -21,17 +21,13 @@ public class ACAQTraitMerger {
             return;
         ACAQTrait existing = data.getOrDefault(trait.getDeclaration(), null);
         if (existing != null) {
-            if (trait instanceof ACAQDiscriminator) {
-                String value = ((ACAQDiscriminator) existing).getValue();
-                if (value == null) {
-                    value = ((ACAQDiscriminator) trait).getValue();
-                } else {
-                    value = value + "; " + ((ACAQDiscriminator) trait).getValue();
-                }
-                existing = trait.getDeclaration().newInstance(value);
+            String value = existing.getValue();
+            if (value == null) {
+                value = trait.getValue();
             } else {
-                existing = trait;
+                value = value + "; " + trait.getValue();
             }
+            existing = trait.getDeclaration().newInstance(value);
         } else {
             existing = trait;
         }

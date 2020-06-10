@@ -103,4 +103,9 @@ public class ImagePlusFromFileAlgorithmDeclaration implements ACAQAlgorithmDecla
     public Set<ACAQDependency> getDependencies() {
         return Collections.emptySet();
     }
+
+    @Override
+    public boolean isHidden() {
+        return false;
+    }
 }

@@ -13,7 +13,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
-import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
+import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.extensions.parameters.editors.ACAQTraitParameterSettings;
@@ -200,7 +200,7 @@ public class HistogramGenerator extends ACAQSimpleIteratingAlgorithm {
 
     @ACAQDocumentation(name = "Apply per slice annotation", description = "Optional annotation type that generated for each slice output. " +
             "It contains the string 'slice=[Number]'.")
-    @ACAQTraitParameterSettings(traitBaseClass = ACAQDiscriminator.class)
+    @ACAQTraitParameterSettings(traitBaseClass = ACAQTrait.class)
     @ACAQParameter("slice-annotation")
     public ACAQTraitDeclarationRef getSliceAnnotation() {
         return sliceAnnotation;

@@ -26,25 +26,18 @@ public interface ACAQTraitDeclaration {
     /**
      * Creates a new instance
      *
+     * @param value which boolean value the annotation should reference
      * @return new instance
      */
-    ACAQTrait newInstance();
+    ACAQTrait newInstance(boolean value);
 
     /**
-     * Creates a new instance with a discriminator value.
-     * If the trait is not discriminating, ths returns the same as newInstance()
+     * Creates a new instance with a custom value.
      *
      * @param value discriminator value
      * @return new instance
      */
     ACAQTrait newInstance(String value);
-
-    /**
-     * Returns true if this trait is a discriminator
-     *
-     * @return if this trait is a discriminator
-     */
-    boolean isDiscriminator();
 
     /**
      * Returns true if the trait should be hidden from the user

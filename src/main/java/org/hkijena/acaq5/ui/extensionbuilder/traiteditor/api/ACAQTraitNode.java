@@ -64,7 +64,7 @@ public class ACAQTraitNode extends ACAQGraphNode {
         ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) getSlotConfiguration();
         slotConfiguration.getAllowedInputSlotTypes().clear();
         slotConfiguration.getAllowedOutputSlotTypes().clear();
-        Class<? extends ACAQData> slotClass = getTraitDeclaration().isDiscriminator() ? ACAQDiscriminatorNodeInheritanceData.class : ACAQTraitNodeInheritanceData.class;
+        Class<? extends ACAQData> slotClass = ACAQTraitNodeInheritanceData.class;
         slotConfiguration.getAllowedInputSlotTypes().add(slotClass);
         slotConfiguration.getAllowedOutputSlotTypes().add(slotClass);
         for (ACAQDataSlot value : getSlots().values()) {
@@ -78,8 +78,8 @@ public class ACAQTraitNode extends ACAQGraphNode {
      */
     public static ACAQSlotConfiguration createSlotConfiguration() {
         return ACAQMutableSlotConfiguration.builder()
-                .restrictInputTo(ACAQTraitNodeInheritanceData.class, ACAQDiscriminatorNodeInheritanceData.class)
-                .restrictOutputTo(ACAQTraitNodeInheritanceData.class, ACAQDiscriminatorNodeInheritanceData.class)
+                .restrictInputTo(ACAQTraitNodeInheritanceData.class)
+                .restrictOutputTo(ACAQTraitNodeInheritanceData.class)
                 .addOutputSlot("This", ACAQTraitNodeInheritanceData.class, "")
                 .sealOutput()
                 .build();

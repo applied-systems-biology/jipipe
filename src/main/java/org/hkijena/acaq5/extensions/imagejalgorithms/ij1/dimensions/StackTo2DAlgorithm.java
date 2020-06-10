@@ -10,7 +10,6 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
-import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
@@ -99,7 +98,6 @@ public class StackTo2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     @ACAQDocumentation(name = "Generated annotation", description = "Determines the generated annotation type.")
     @ACAQParameter("annotation-type")
-    @ACAQTraitParameterSettings(traitBaseClass = ACAQDiscriminator.class)
     public ACAQTraitDeclarationRef getAnnotationType() {
         return annotationType;
     }

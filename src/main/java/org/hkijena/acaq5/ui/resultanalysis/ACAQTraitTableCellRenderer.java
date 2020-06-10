@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.ui.resultanalysis;
 
-import org.hkijena.acaq5.api.traits.ACAQDiscriminator;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 
 import javax.swing.*;
@@ -23,13 +22,9 @@ public class ACAQTraitTableCellRenderer extends JLabel implements TableCellRende
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         if (value instanceof ACAQTrait) {
-            if (value instanceof ACAQDiscriminator) {
-                setText(((ACAQDiscriminator) value).getValue());
-            } else {
-                setText("<html><p style=\"color: green;\">Yes</p></html>");
-            }
+            setText(((ACAQTrait) value).getValue());
         } else {
-            setText("<html><p style=\"color: red;\">No</p></html>");
+            setText("<html><p style=\"color: red;\">NA</p></html>");
         }
 
         if (isSelected) {
