@@ -12,6 +12,7 @@
 
 package org.hkijena.acaq5.ui.tableanalyzer;
 
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.components.DocumentTabListCellRenderer;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
@@ -30,7 +31,7 @@ import java.util.Vector;
  */
 public class ACAQMergeTableColumnsDialogUI extends JDialog {
     private ACAQTableEditor tableAnalyzerUI;
-    private DefaultTableModel tableModel;
+    private ResultsTableData tableModel;
     private JComboBox<DocumentTabPane.DocumentTab> tableSelection;
     private JXTable jxTable;
     private JTable columnSelection;
@@ -53,7 +54,7 @@ public class ACAQMergeTableColumnsDialogUI extends JDialog {
      * @param workbenchUI The workbench
      * @param tableModel  The table
      */
-    public ACAQMergeTableColumnsDialogUI(ACAQProjectWorkbench workbenchUI, DefaultTableModel tableModel) {
+    public ACAQMergeTableColumnsDialogUI(ACAQProjectWorkbench workbenchUI, ResultsTableData tableModel) {
         this.tableModel = tableModel;
         initialize();
 
@@ -128,7 +129,7 @@ public class ACAQMergeTableColumnsDialogUI extends JDialog {
         model.setNumRows(0);
 
         if (tableSelection.getSelectedItem() != null) {
-            DefaultTableModel sourceModel = ((ACAQTableEditor) ((DocumentTabPane.DocumentTab) tableSelection.getSelectedItem()).getContent()).getTableModel();
+            ResultsTableData sourceModel = ((ACAQTableEditor) ((DocumentTabPane.DocumentTab) tableSelection.getSelectedItem()).getContent()).getTableModel();
             for (int column = 0; column < sourceModel.getColumnCount(); ++column) {
                 model.addRow(new Object[]{true, sourceModel.getColumnName(column)});
             }
@@ -139,36 +140,37 @@ public class ACAQMergeTableColumnsDialogUI extends JDialog {
         if (tableSelection.getSelectedItem() != null) {
             if (tableAnalyzerUI != null)
                 tableAnalyzerUI.createUndoSnapshot();
-            DefaultTableModel sourceModel = ((ACAQTableEditor) ((DocumentTabPane.DocumentTab) tableSelection.getSelectedItem()).getContent()).getTableModel();
-            DefaultTableModel targetModel = tableModel;
+            ResultsTableData sourceModel = ((ACAQTableEditor) ((DocumentTabPane.DocumentTab) tableSelection.getSelectedItem()).getContent()).getTableModel();
+            ResultsTableData targetModel = tableModel;
 
-            final int targetColumnStartIndex = targetModel.getColumnCount();
-
-            for (int i = 0; i < sourceModel.getColumnCount(); ++i) {
-                boolean isSelected = (boolean) columnSelection.getModel().getValueAt(i, 0);
-                if (isSelected) {
-                    targetModel.addColumn(sourceModel.getColumnName(i));
-                }
-            }
-
-            if (targetModel.getRowCount() < sourceModel.getRowCount())
-                targetModel.setRowCount(sourceModel.getRowCount());
-
-            Vector data = targetModel.getDataVector();
-            for (int row = 0; row < sourceModel.getRowCount(); ++row) {
-                Vector rowVector = (Vector) data.get(row);
-                int targetColumnIndex = 0;
-                for (int i = 0; i < sourceModel.getColumnCount(); ++i) {
-                    boolean isSelected = (boolean) columnSelection.getModel().getValueAt(i, 0);
-                    if (isSelected) {
-                        rowVector.set(targetColumnIndex + targetColumnStartIndex, sourceModel.getValueAt(row, i));
-                        ++targetColumnIndex;
-                    }
-                }
-            }
-            targetModel.setDataVector(data, TableUtils.getColumnIdentifiers(targetModel));
-            if (tableAnalyzerUI != null)
-                tableAnalyzerUI.autoSizeColumns();
+            // TODO: Implement
+//            final int targetColumnStartIndex = targetModel.getColumnCount();
+//
+//            for (int i = 0; i < sourceModel.getColumnCount(); ++i) {
+//                boolean isSelected = (boolean) columnSelection.getModel().getValueAt(i, 0);
+//                if (isSelected) {
+//                    targetModel.addColumn(sourceModel.getColumnName(i));
+//                }
+//            }
+//
+//            if (targetModel.getRowCount() < sourceModel.getRowCount())
+//                targetModel.setRowCount(sourceModel.getRowCount());
+//
+//            Vector data = targetModel.getDataVector();
+//            for (int row = 0; row < sourceModel.getRowCount(); ++row) {
+//                Vector rowVector = (Vector) data.get(row);
+//                int targetColumnIndex = 0;
+//                for (int i = 0; i < sourceModel.getColumnCount(); ++i) {
+//                    boolean isSelected = (boolean) columnSelection.getModel().getValueAt(i, 0);
+//                    if (isSelected) {
+//                        rowVector.set(targetColumnIndex + targetColumnStartIndex, sourceModel.getValueAt(row, i));
+//                        ++targetColumnIndex;
+//                    }
+//                }
+//            }
+//            targetModel.setDataVector(data, TableUtils.getColumnIdentifiers(targetModel));
+//            if (tableAnalyzerUI != null)
+//                tableAnalyzerUI.autoSizeColumns();
 
             setVisible(false);
         }

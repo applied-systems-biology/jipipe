@@ -3,6 +3,7 @@ package org.hkijena.acaq5.ui.plotbuilder;
 import com.google.common.eventbus.Subscribe;
 import ij.measure.ResultsTable;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotDataSeries;
 import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
@@ -106,7 +107,7 @@ public class ACAQPlotAvailableDataManagerUI extends ACAQWorkbenchPanel {
     }
 
     private void importFromTableAnalyzer(ACAQTableEditor tableAnalyzerUI, String title) {
-        DefaultTableModel tableModel = tableAnalyzerUI.getTableModel();
+        ResultsTableData tableModel = tableAnalyzerUI.getTableModel();
         plotBuilderUI.importData(tableModel, title);
     }
 
@@ -126,35 +127,36 @@ public class ACAQPlotAvailableDataManagerUI extends ACAQWorkbenchPanel {
     }
 
     private void showSelectedData() {
-        int rows = 0;
-        for (TableColumn dataSource : dataSourceJList.getSelectedValuesList()) {
-            rows = Math.max(dataSource.getRows(), rows);
-        }
-
-        DefaultTableModel tableModel = new DefaultTableModel(rows, dataSourceJList.getSelectedValuesList().size());
-        tableModel.setColumnIdentifiers(dataSourceJList.getSelectedValuesList().stream().map(TableColumn::getLabel).toArray());
-        for (int column = 0; column < dataSourceJList.getSelectedValuesList().size(); column++) {
-            TableColumn dataSource = dataSourceJList.getSelectedValuesList().get(column);
-            if (dataSource.isNumeric()) {
-                double[] data = dataSource.getDataAsDouble(rows);
-                for (int row = 0; row < rows; row++) {
-                    tableModel.setValueAt(data[row], row, column);
-                }
-            } else {
-                String[] data = dataSource.getDataAsString(rows);
-                for (int row = 0; row < rows; row++) {
-                    tableModel.setValueAt(data[row], row, column);
-                }
-            }
-        }
-
-        String name = dataSourceJList.getSelectedValuesList().size() == 1 ? dataSourceJList.getSelectedValuesList().get(0).getLabel() : "Table";
-        ACAQTableEditor tableAnalyzerUI = new ACAQTableEditor((ACAQProjectWorkbench) getWorkbench(), tableModel);
-        getWorkbench().getDocumentTabPane().addTab(name, UIUtils.getIconFromResources("table.png"),
-                tableAnalyzerUI,
-                DocumentTabPane.CloseMode.withAskOnCloseButton,
-                true);
-        getWorkbench().getDocumentTabPane().switchToLastTab();
+        // TODO: Implement
+//        int rows = 0;
+//        for (TableColumn dataSource : dataSourceJList.getSelectedValuesList()) {
+//            rows = Math.max(dataSource.getRows(), rows);
+//        }
+//
+//        DefaultTableModel tableModel = new DefaultTableModel(rows, dataSourceJList.getSelectedValuesList().size());
+//        tableModel.setColumnIdentifiers(dataSourceJList.getSelectedValuesList().stream().map(TableColumn::getLabel).toArray());
+//        for (int column = 0; column < dataSourceJList.getSelectedValuesList().size(); column++) {
+//            TableColumn dataSource = dataSourceJList.getSelectedValuesList().get(column);
+//            if (dataSource.isNumeric()) {
+//                double[] data = dataSource.getDataAsDouble(rows);
+//                for (int row = 0; row < rows; row++) {
+//                    tableModel.setValueAt(data[row], row, column);
+//                }
+//            } else {
+//                String[] data = dataSource.getDataAsString(rows);
+//                for (int row = 0; row < rows; row++) {
+//                    tableModel.setValueAt(data[row], row, column);
+//                }
+//            }
+//        }
+//
+//        String name = dataSourceJList.getSelectedValuesList().size() == 1 ? dataSourceJList.getSelectedValuesList().get(0).getLabel() : "Table";
+//        ACAQTableEditor tableAnalyzerUI = new ACAQTableEditor((ACAQProjectWorkbench) getWorkbench(), tableModel);
+//        getWorkbench().getDocumentTabPane().addTab(name, UIUtils.getIconFromResources("table.png"),
+//                tableAnalyzerUI,
+//                DocumentTabPane.CloseMode.withAskOnCloseButton,
+//                true);
+//        getWorkbench().getDocumentTabPane().switchToLastTab();
     }
 
     /**

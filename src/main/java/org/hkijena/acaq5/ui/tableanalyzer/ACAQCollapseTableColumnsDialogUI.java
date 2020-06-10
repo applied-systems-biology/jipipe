@@ -30,14 +30,14 @@ import java.util.Vector;
  * UI for integrating table columns
  */
 public class ACAQCollapseTableColumnsDialogUI extends JDialog {
-    private DefaultTableModel tableModel;
-    private DefaultTableModel resultTableModel;
+    private ResultsTableData tableModel;
+    private ResultsTableData resultTableModel;
     private List<JComboBox<Object>> columnOperations = new ArrayList<>();
 
     /**
      * @param tableModel The table model
      */
-    public ACAQCollapseTableColumnsDialogUI(DefaultTableModel tableModel) {
+    public ACAQCollapseTableColumnsDialogUI(ResultsTableData tableModel) {
         this.tableModel = tableModel;
         initialize();
     }
@@ -155,72 +155,74 @@ public class ACAQCollapseTableColumnsDialogUI extends JDialog {
             rowCategoryAssignments[row] = categoryIndex;
         }
 
-        DefaultTableModel result = new DefaultTableModel();
+        ResultsTableData result = new ResultsTableData();
 
-        // Create columns
-        for (int column : categorySourceColumns) {
-            result.addColumn(tableModel.getColumnName(column));
-        }
-        for (int columnIndex = 0; columnIndex < tableModel.getColumnCount(); ++columnIndex) {
-            Object columnRole = columnOperations.get(columnIndex).getSelectedItem();
-            if (columnRole instanceof ACAQTableVectorOperation) {
-                ACAQTableVectorOperation operation = (ACAQTableVectorOperation) columnRole;
-                String shortcut = ACAQDefaultRegistry.getInstance().getTableAnalyzerUIOperationRegistry().getShortcutOf(operation);
-                result.addColumn(shortcut + "(" + tableModel.getColumnName(columnIndex) + ")");
-            }
-        }
-
-        // Create rows
-        ArrayList<Object> rowBuffer = new ArrayList<>();
-        Vector<Object> resultRowBuffer = new Vector<>();
-        for (int category = 0; category < categoryNames.size(); ++category) {
-            resultRowBuffer.clear();
-            resultRowBuffer.addAll(categoryValues.get(category));
-            for (int columnIndex = 0; columnIndex < tableModel.getColumnCount(); ++columnIndex) {
-                Object columnRole = columnOperations.get(columnIndex).getSelectedItem();
-                if (columnRole instanceof ACAQTableVectorOperation) {
-                    ACAQTableVectorOperation operation = (ACAQTableVectorOperation) columnRole;
-                    rowBuffer.clear();
-                    for (int row = 0; row < tableModel.getRowCount(); ++row) {
-                        if (rowCategoryAssignments[row] == category) {
-                            rowBuffer.add(tableModel.getValueAt(row, columnIndex));
-                        }
-                    }
-
-                    Object[] integratedResult = operation.process(rowBuffer.toArray());
-                    resultRowBuffer.add(integratedResult[0]);
-                }
-            }
-            result.addRow(resultRowBuffer.toArray());
-        }
+        // TODO: Implement
+//        // Create columns
+//        for (int column : categorySourceColumns) {
+//            result.addColumn(tableModel.getColumnName(column));
+//        }
+//        for (int columnIndex = 0; columnIndex < tableModel.getColumnCount(); ++columnIndex) {
+//            Object columnRole = columnOperations.get(columnIndex).getSelectedItem();
+//            if (columnRole instanceof ACAQTableVectorOperation) {
+//                ACAQTableVectorOperation operation = (ACAQTableVectorOperation) columnRole;
+//                String shortcut = ACAQDefaultRegistry.getInstance().getTableAnalyzerUIOperationRegistry().getShortcutOf(operation);
+//                result.addColumn(shortcut + "(" + tableModel.getColumnName(columnIndex) + ")");
+//            }
+//        }
+//
+//        // Create rows
+//        ArrayList<Object> rowBuffer = new ArrayList<>();
+//        Vector<Object> resultRowBuffer = new Vector<>();
+//        for (int category = 0; category < categoryNames.size(); ++category) {
+//            resultRowBuffer.clear();
+//            resultRowBuffer.addAll(categoryValues.get(category));
+//            for (int columnIndex = 0; columnIndex < tableModel.getColumnCount(); ++columnIndex) {
+//                Object columnRole = columnOperations.get(columnIndex).getSelectedItem();
+//                if (columnRole instanceof ACAQTableVectorOperation) {
+//                    ACAQTableVectorOperation operation = (ACAQTableVectorOperation) columnRole;
+//                    rowBuffer.clear();
+//                    for (int row = 0; row < tableModel.getRowCount(); ++row) {
+//                        if (rowCategoryAssignments[row] == category) {
+//                            rowBuffer.add(tableModel.getValueAt(row, columnIndex));
+//                        }
+//                    }
+//
+//                    Object[] integratedResult = operation.process(rowBuffer.toArray());
+//                    resultRowBuffer.add(integratedResult[0]);
+//                }
+//            }
+//            result.addRow(resultRowBuffer.toArray());
+//        }
 
         resultTableModel = result;
         setVisible(false);
     }
 
     private void calculateWithoutCategorization() {
-        DefaultTableModel result = new DefaultTableModel();
+        ResultsTableData result = new ResultsTableData();
 
-        Object[] buffer = new Object[tableModel.getRowCount()];
-        Vector<Object> row = new Vector<>();
-
-        for (int columnIndex = 0; columnIndex < tableModel.getColumnCount(); ++columnIndex) {
-            Object columnRole = columnOperations.get(columnIndex).getSelectedItem();
-            if (columnRole instanceof ACAQTableVectorOperation) {
-                ACAQTableVectorOperation operation = (ACAQTableVectorOperation) columnRole;
-                String shortcut = ACAQDefaultRegistry.getInstance().getTableAnalyzerUIOperationRegistry().getShortcutOf(operation);
-                result.addColumn(shortcut + "(" + tableModel.getColumnName(columnIndex) + ")");
-
-                for (int i = 0; i < tableModel.getRowCount(); ++i) {
-                    buffer[i] = tableModel.getValueAt(i, columnIndex);
-                }
-
-                Object[] integratedResult = operation.process(buffer);
-                row.add(integratedResult[0]);
-            }
-        }
-
-        result.addRow(row);
+        //TODO: Implement
+//        Object[] buffer = new Object[tableModel.getRowCount()];
+//        Vector<Object> row = new Vector<>();
+//
+//        for (int columnIndex = 0; columnIndex < tableModel.getColumnCount(); ++columnIndex) {
+//            Object columnRole = columnOperations.get(columnIndex).getSelectedItem();
+//            if (columnRole instanceof ACAQTableVectorOperation) {
+//                ACAQTableVectorOperation operation = (ACAQTableVectorOperation) columnRole;
+//                String shortcut = ACAQDefaultRegistry.getInstance().getTableAnalyzerUIOperationRegistry().getShortcutOf(operation);
+//                result.addColumn(shortcut + "(" + tableModel.getColumnName(columnIndex) + ")");
+//
+//                for (int i = 0; i < tableModel.getRowCount(); ++i) {
+//                    buffer[i] = tableModel.getValueAt(i, columnIndex);
+//                }
+//
+//                Object[] integratedResult = operation.process(buffer);
+//                row.add(integratedResult[0]);
+//            }
+//        }
+//
+//        result.addRow(row);
         resultTableModel = result;
         setVisible(false);
     }

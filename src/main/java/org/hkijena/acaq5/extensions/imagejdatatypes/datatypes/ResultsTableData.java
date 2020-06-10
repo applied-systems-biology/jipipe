@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Data containing a {@link ResultsTable}
@@ -98,6 +99,8 @@ public class ResultsTableData implements ACAQData, TableModel {
         table = ResultsTable.open(PathUtils.findFileByExtensionIn(storageFilePath, ".csv").toString());
     }
 
+
+
     /**
      * Loads a table from CSV
      * @param file the file
@@ -174,6 +177,40 @@ public class ResultsTableData implements ACAQData, TableModel {
             table.saveAs(storageFilePath.resolve(name + ".csv").toString());
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Creates a new column that consists of a combination of the selected values.
+     * They will be formatted like col1=col1row1,col2=col2row1, ...
+     * @param sourceColumns the source columns
+     * @param newColumn the new column
+     * @param separator separator character e.g. ", "
+     * @param equals equals character e.g. "="
+     */
+    public void mergeColumns(List<Integer> sourceColumns, String newColumn, String separator, String equals) {
+        String[] value = new String[getRowCount()];
+        for (int row = 0; row < getRowCount(); row++) {
+            int finalRow = row;
+            value[row] = sourceColumns.stream().map(col -> getColumnName(col) + equals + getValueAsString(finalRow, col)).collect(Collectors.joining(separator));
+        }
+        int col = addColumn(newColumn, true);
+        for (int row = 0; row < getRowCount(); row++) {
+            setValueAt(value[row], row, col);
+        }
+    }
+
+    /**
+     * Duplicates a column
+     * @param column the input column
+     * @param newColumn the new column name
+     */
+    public void duplicateColumn(int column, String newColumn) {
+        if(containsColumn(newColumn))
+            throw new IllegalArgumentException("Column '" + newColumn + "' already exists!");
+        int newColumnIndex = addColumn(newColumn, !isNumeric(column));
+        for (int row = 0; row < getRowCount(); row++) {
+            setValueAt(getValueAt(row, column), row, newColumnIndex);
         }
     }
 
@@ -506,16 +543,67 @@ public class ResultsTableData implements ACAQData, TableModel {
      * Adds a column with the given name.
      * If the column already exists, the method returns false
      * @param name column name. cannot be empty.
-     * @return if creation was successful
+     * @param stringColumn if the new column is a string column
+     * @return the column index (this includes any existing column) or -1 if the creation was not possible
      */
-    public boolean addColumn(String name) {
+    public int addColumn(String name, boolean stringColumn) {
         if(StringUtils.isNullOrEmpty(name))
-            return false;
+            return -1;
         if(getColumnIndex(name) != -1)
-            return false;
-        table.getFreeColumn(name);
-        fireChangedEvent(new TableModelEvent(this));
-        return true;
+            return getColumnIndex(name);
+        int index = table.getFreeColumn(name);
+        if(stringColumn) {
+            for (int row = 0; row < getRowCount(); row++) {
+                table.setValue(index, row, "");
+            }
+        }
+        return index;
+    }
+
+    /**
+     * Converts the column into a string column. Silently ignores columns that are already string columns.
+     * @param column column index
+     */
+    public void convertToStringColumn(int column) {
+        if(!isNumeric(column))
+            return;
+        String[] values = new String[getRowCount()];
+        for (int row = 0; row < getRowCount(); row++) {
+            values[row] = getValueAsString(row, column);
+        }
+        String columnName = getColumnName(column);
+        table.deleteColumn(columnName);
+        column = table.getFreeColumn(columnName);
+        for (int row = 0; row < getRowCount(); row++) {
+            table.setValue(column, row, values[row]);
+        }
+        cleanupTable();
+    }
+
+    /**
+     * Converts the column into a numeric column. Silently ignores columns that are already numeric columns.
+     * Attempts to convert string values into their numeric representation. If this fails, defaults to zero.
+     * @param column column index
+     */
+    public void convertToNumericColumn(int column) {
+        if(isNumeric(column))
+            return;
+        double[] values = new double[getRowCount()];
+        for (int row = 0; row < getRowCount(); row++) {
+            String s = getValueAsString(row, column);
+            try {
+                values[row] = Double.parseDouble(s);
+            }
+            catch (NumberFormatException e) {
+            }
+        }
+        String columnName = getColumnName(column);
+        table.deleteColumn(columnName);
+        column = table.getFreeColumn(columnName);
+        for (int row = 0; row < getRowCount(); row++) {
+            table.setValue(column, row, values[row]);
+        }
+        cleanupTable();
     }
 
     /**
@@ -544,6 +632,5 @@ public class ResultsTableData implements ACAQData, TableModel {
             table.deleteColumn(removedColumn);
         }
         cleanupTable();
-        fireChangedEvent(new TableModelEvent(this));
     }
 }

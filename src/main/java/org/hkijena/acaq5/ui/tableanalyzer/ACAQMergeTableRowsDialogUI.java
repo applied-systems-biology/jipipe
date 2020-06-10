@@ -12,6 +12,7 @@
 
 package org.hkijena.acaq5.ui.tableanalyzer;
 
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.ui.components.DocumentTabListCellRenderer;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -89,43 +90,44 @@ public class ACAQMergeTableRowsDialogUI extends JDialog {
     private void calculate() {
         if (tableSelection.getSelectedItem() != null) {
             tableAnalyzerUI.createUndoSnapshot();
-            DefaultTableModel sourceModel = ((ACAQTableEditor) ((DocumentTabPane.DocumentTab) tableSelection.getSelectedItem()).getContent()).getTableModel();
-            DefaultTableModel targetModel = tableAnalyzerUI.getTableModel();
+            ResultsTableData sourceModel = ((ACAQTableEditor) ((DocumentTabPane.DocumentTab) tableSelection.getSelectedItem()).getContent()).getTableModel();
+            ResultsTableData targetModel = tableAnalyzerUI.getTableModel();
 
-            Set<Integer> assignedTargetColumns = new HashSet<>();
-            int[] sourceToTargetColumnMapping = new int[sourceModel.getColumnCount()];
-            Arrays.fill(sourceToTargetColumnMapping, -1);
-
-            final int initialTargetColumnCount = targetModel.getColumnCount();
-            for (int i = 0; i < sourceModel.getColumnCount(); ++i) {
-                boolean found = false;
-                for (int j = 0; j < initialTargetColumnCount; ++j) {
-                    if (Objects.equals(targetModel.getColumnName(j), sourceModel.getColumnName(i)) &&
-                            !assignedTargetColumns.contains(j)) {
-                        sourceToTargetColumnMapping[i] = j;
-                        assignedTargetColumns.add(j);
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found && addMissingColumnsCheckBox.isSelected()) {
-                    targetModel.addColumn(sourceModel.getColumnName(i));
-                    sourceToTargetColumnMapping[i] = targetModel.getColumnCount() - 1;
-                    assignedTargetColumns.add(targetModel.getColumnCount() - 1);
-                }
-            }
-
-            Object[] rowBuffer = new Object[targetModel.getColumnCount()];
-            for (int row = 0; row < sourceModel.getRowCount(); ++row) {
-                Arrays.fill(rowBuffer, null);
-                for (int i = 0; i < sourceModel.getColumnCount(); ++i) {
-                    int target = sourceToTargetColumnMapping[i];
-                    if (target != -1) {
-                        rowBuffer[target] = sourceModel.getValueAt(row, i);
-                    }
-                }
-                targetModel.addRow(rowBuffer);
-            }
+            // TODO: Implement
+//            Set<Integer> assignedTargetColumns = new HashSet<>();
+//            int[] sourceToTargetColumnMapping = new int[sourceModel.getColumnCount()];
+//            Arrays.fill(sourceToTargetColumnMapping, -1);
+//
+//            final int initialTargetColumnCount = targetModel.getColumnCount();
+//            for (int i = 0; i < sourceModel.getColumnCount(); ++i) {
+//                boolean found = false;
+//                for (int j = 0; j < initialTargetColumnCount; ++j) {
+//                    if (Objects.equals(targetModel.getColumnName(j), sourceModel.getColumnName(i)) &&
+//                            !assignedTargetColumns.contains(j)) {
+//                        sourceToTargetColumnMapping[i] = j;
+//                        assignedTargetColumns.add(j);
+//                        found = true;
+//                        break;
+//                    }
+//                }
+//                if (!found && addMissingColumnsCheckBox.isSelected()) {
+//                    targetModel.addColumn(sourceModel.getColumnName(i));
+//                    sourceToTargetColumnMapping[i] = targetModel.getColumnCount() - 1;
+//                    assignedTargetColumns.add(targetModel.getColumnCount() - 1);
+//                }
+//            }
+//
+//            Object[] rowBuffer = new Object[targetModel.getColumnCount()];
+//            for (int row = 0; row < sourceModel.getRowCount(); ++row) {
+//                Arrays.fill(rowBuffer, null);
+//                for (int i = 0; i < sourceModel.getColumnCount(); ++i) {
+//                    int target = sourceToTargetColumnMapping[i];
+//                    if (target != -1) {
+//                        rowBuffer[target] = sourceModel.getValueAt(row, i);
+//                    }
+//                }
+//                targetModel.addRow(rowBuffer);
+//            }
 
             tableAnalyzerUI.autoSizeColumns();
             setVisible(false);

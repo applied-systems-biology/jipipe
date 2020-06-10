@@ -29,14 +29,14 @@ import java.util.Map;
  * UI for splitting table columns
  */
 public class ACAQSplitColumnDialogUI extends JDialog {
-    private DefaultTableModel tableModel;
-    private DefaultTableModel resultTableModel;
+    private ResultsTableData tableModel;
+    private ResultsTableData resultTableModel;
     private List<JComboBox<ColumnRole>> columnOperations = new ArrayList<>();
 
     /**
      * @param tableModel the table
      */
-    public ACAQSplitColumnDialogUI(DefaultTableModel tableModel) {
+    public ACAQSplitColumnDialogUI(ResultsTableData tableModel) {
         this.tableModel = tableModel;
         initialize();
     }
@@ -97,68 +97,69 @@ public class ACAQSplitColumnDialogUI extends JDialog {
     }
 
     private void calculate() {
-        try (BusyCursor busyCursor = new BusyCursor(this)) {
-            boolean categoryFound = false;
-            int valueColumn = -1;
-            for (int i = 0; i < columnOperations.size(); ++i) {
-                if (columnOperations.get(i).getSelectedItem() == ColumnRole.Category) {
-                    categoryFound = true;
-                } else if (columnOperations.get(i).getSelectedItem() == ColumnRole.Value) {
-                    if (valueColumn != -1) {
-                        JOptionPane.showMessageDialog(this, "You can only select one value column", "Error", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    valueColumn = i;
-                }
-            }
-            if (valueColumn == -1) {
-                JOptionPane.showMessageDialog(this, "Please set one column as value column", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            if (!categoryFound) {
-                JOptionPane.showMessageDialog(this, "Please select at least one category column", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            DefaultTableModel result = new DefaultTableModel();
-            Map<String, Integer> columnStateAssignment = new HashMap<>();
-            Map<String, Integer> columnRowCounts = new HashMap<>();
-            StringBuilder category = new StringBuilder();
-            for (int row = 0; row < tableModel.getRowCount(); ++row) {
-                category.setLength(0);
-                for (int i = 0; i < columnOperations.size(); ++i) {
-                    if (columnOperations.get(i).getSelectedItem() == ColumnRole.Category) {
-                        if (category.length() > 0)
-                            category.append(", ");
-                        category.append(tableModel.getColumnName(i));
-                        category.append("=");
-                        category.append(tableModel.getValueAt(row, i));
-                    }
-                }
-
-                if (!columnStateAssignment.containsKey(category.toString())) {
-                    result.addColumn(tableModel.getColumnName(valueColumn) + " where " + category.toString());
-                    columnStateAssignment.put(category.toString(), result.getColumnCount() - 1);
-                    columnRowCounts.put(category.toString(), 0);
-                }
-
-                // Insert the value into the table
-                {
-                    int targetRow = columnRowCounts.get(category.toString());
-                    int targetColumn = columnStateAssignment.get(category.toString());
-
-                    if (result.getRowCount() < targetRow + 1)
-                        result.setRowCount(targetRow + 1);
-
-                    result.setValueAt(tableModel.getValueAt(row, valueColumn), targetRow, targetColumn);
-                    columnRowCounts.put(category.toString(), targetRow + 1);
-                }
-            }
-
-            resultTableModel = result;
-        }
-
-        setVisible(false);
+        // TODO: Implement
+//        try (BusyCursor busyCursor = new BusyCursor(this)) {
+//            boolean categoryFound = false;
+//            int valueColumn = -1;
+//            for (int i = 0; i < columnOperations.size(); ++i) {
+//                if (columnOperations.get(i).getSelectedItem() == ColumnRole.Category) {
+//                    categoryFound = true;
+//                } else if (columnOperations.get(i).getSelectedItem() == ColumnRole.Value) {
+//                    if (valueColumn != -1) {
+//                        JOptionPane.showMessageDialog(this, "You can only select one value column", "Error", JOptionPane.ERROR_MESSAGE);
+//                        return;
+//                    }
+//                    valueColumn = i;
+//                }
+//            }
+//            if (valueColumn == -1) {
+//                JOptionPane.showMessageDialog(this, "Please set one column as value column", "Error", JOptionPane.ERROR_MESSAGE);
+//                return;
+//            }
+//            if (!categoryFound) {
+//                JOptionPane.showMessageDialog(this, "Please select at least one category column", "Error", JOptionPane.ERROR_MESSAGE);
+//                return;
+//            }
+//
+//            DefaultTableModel result = new DefaultTableModel();
+//            Map<String, Integer> columnStateAssignment = new HashMap<>();
+//            Map<String, Integer> columnRowCounts = new HashMap<>();
+//            StringBuilder category = new StringBuilder();
+//            for (int row = 0; row < tableModel.getRowCount(); ++row) {
+//                category.setLength(0);
+//                for (int i = 0; i < columnOperations.size(); ++i) {
+//                    if (columnOperations.get(i).getSelectedItem() == ColumnRole.Category) {
+//                        if (category.length() > 0)
+//                            category.append(", ");
+//                        category.append(tableModel.getColumnName(i));
+//                        category.append("=");
+//                        category.append(tableModel.getValueAt(row, i));
+//                    }
+//                }
+//
+//                if (!columnStateAssignment.containsKey(category.toString())) {
+//                    result.addColumn(tableModel.getColumnName(valueColumn) + " where " + category.toString());
+//                    columnStateAssignment.put(category.toString(), result.getColumnCount() - 1);
+//                    columnRowCounts.put(category.toString(), 0);
+//                }
+//
+//                // Insert the value into the table
+//                {
+//                    int targetRow = columnRowCounts.get(category.toString());
+//                    int targetColumn = columnStateAssignment.get(category.toString());
+//
+//                    if (result.getRowCount() < targetRow + 1)
+//                        result.setRowCount(targetRow + 1);
+//
+//                    result.setValueAt(tableModel.getValueAt(row, valueColumn), targetRow, targetColumn);
+//                    columnRowCounts.put(category.toString(), targetRow + 1);
+//                }
+//            }
+//
+//            resultTableModel = result;
+//        }
+//
+//        setVisible(false);
     }
 
     public ResultsTableData getResultTableModel() {

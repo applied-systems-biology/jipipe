@@ -30,6 +30,7 @@ import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
@@ -72,7 +73,17 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("save.png"));
+        JButton openButton = new JButton("Open", UIUtils.getIconFromResources("open.png"));
+        {
+            JPopupMenu exportPopup = UIUtils.addPopupMenuToComponent(openButton);
+
+            JMenuItem importFromCSV = new JMenuItem("from CSV table (*.csv)", UIUtils.getIconFromResources("filetype-csv.png"));
+            importFromCSV.addActionListener(e -> importFromCSV());
+            exportPopup.add(importFromCSV);
+        }
+        toolBar.add(openButton);
+
+        JButton exportButton = new JButton("Save", UIUtils.getIconFromResources("save.png"));
         {
             JPopupMenu exportPopup = UIUtils.addPopupMenuToComponent(exportButton);
 
@@ -120,10 +131,14 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
                 this::removeSelectedRows);
 
         addPaletteGroup("Columns", UIUtils.getIconFromResources("select-column.png"));
-        addActionToPalette("Add",
-                "Adds an empty column with a custom name to the table.",
+        addActionToPalette("Add numeric",
+                "Adds an empty numeric column with a custom name to the table.",
                 UIUtils.getIconFromResources("add-column.png"),
-                this::addColumn);
+                () -> addColumn(false));
+        addActionToPalette("Add string",
+                "Adds an empty string column with a custom name to the table.",
+                UIUtils.getIconFromResources("add-column.png"),
+                () -> addColumn(true));
         addActionToPalette("Import",
                 "Adds columns from another ACAQ5 table that is currently open.",
                 UIUtils.getIconFromResources("table.png"),
@@ -133,7 +148,7 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
                 UIUtils.getIconFromResources("copy.png"),
                 this::copyColumn);
         addActionToPalette("Combine",
-                "Creates a new column that combines the selected columns into a new column.",
+                "Creates a new column that contains the values of the selected columns assigned by the pattern colum0=row0, column1=row0, ... for each row.",
                 UIUtils.getIconFromResources("statistics.png"),
                 this::addNewCombinedColumn);
         addSeparatorToPalette();
@@ -146,6 +161,14 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
                 "Remove selected columns",
                 UIUtils.getIconFromResources("remove-column.png"),
                 this::removeSelectedColumns);
+        addActionToPalette("To numeric",
+                "Converts to numeric column. If a string value could not be converted, it is replaced by zero",
+                UIUtils.getIconFromResources("number.png"),
+                this::selectedColumnsToNumeric);
+        addActionToPalette("To string",
+                "Converts to string column.",
+                UIUtils.getIconFromResources("text2.png"),
+                this::selectedColumnsToString);
 
         addPaletteGroup("Selection", UIUtils.getIconFromResources("select.png"));
         addActionToPalette("Whole row",
@@ -196,6 +219,8 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
         jxTable.setColumnSelectionAllowed(true);
         jxTable.setRowSelectionAllowed(true);
         jxTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        jxTable.setDefaultRenderer(String.class, new Renderer(this));
+        jxTable.setDefaultRenderer(Double.class, new Renderer(this));
         jxTable.packAll();
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JScrollPane(jxTable), palettePanel);
@@ -212,6 +237,58 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
         add(splitPane, BorderLayout.CENTER);
 
         jxTable.getSelectionModel().addListSelectionListener(listSelectionEvent -> updateConvertMenu());
+    }
+
+    private void selectedColumnsToString() {
+        try (BusyCursor busyCursor = new BusyCursor(this)) {
+            if (jxTable.getSelectedColumns() != null) {
+                createUndoSnapshot();
+                Set<String> selection = new HashSet<>();
+                for (int viewIndex : jxTable.getSelectedColumns()) {
+                    int modelIndex = jxTable.convertColumnIndexToModel(viewIndex);
+                    selection.add(tableModel.getColumnName(modelIndex));
+                }
+                for (String column : selection) {
+                    int index = tableModel.getColumnIndex(column);
+                    tableModel.convertToStringColumn(index);
+                }
+
+                refreshTable();
+            }
+        }
+    }
+
+    private void selectedColumnsToNumeric() {
+        try (BusyCursor busyCursor = new BusyCursor(this)) {
+            if (jxTable.getSelectedColumns() != null) {
+                createUndoSnapshot();
+                Set<String> selection = new HashSet<>();
+                for (int viewIndex : jxTable.getSelectedColumns()) {
+                    int modelIndex = jxTable.convertColumnIndexToModel(viewIndex);
+                    selection.add(tableModel.getColumnName(modelIndex));
+                }
+                for (String column : selection) {
+                    int index = tableModel.getColumnIndex(column);
+                    tableModel.convertToNumericColumn(index);
+                }
+
+                refreshTable();
+            }
+        }
+    }
+
+    private void importFromCSV() {
+        Path fileName = FileChooserSettings.openFile(this, FileChooserSettings.KEY_PROJECT, "Open *.csv");
+        if(fileName != null) {
+            try {
+                ResultsTableData tableData = ResultsTableData.fromCSV(fileName);
+                tableModel = tableData;
+                jxTable.setModel(tableData);
+                jxTable.packAll();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     private JButton addActionToPalette(String name, String description, Icon icon, Runnable action) {
@@ -458,13 +535,13 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
         jxTable.packAll();
     }
 
-    private void addColumn() {
+    private void addColumn(boolean stringColumn) {
         String name = JOptionPane.showInputDialog(this,
                 "Please provide a name for the new column", "Column " + (tableModel.getColumnCount() + 1));
         if (name != null && !name.isEmpty()) {
             createUndoSnapshot();
-            tableModel.addColumn(name);
-            jxTable.packAll();
+            tableModel.addColumn(name, stringColumn);
+            refreshTable();
         }
     }
 
@@ -475,16 +552,14 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
             return;
 
         sourceColumn = jxTable.convertColumnIndexToModel(sourceColumn);
+        String sourceColumnName = tableModel.getColumnName(sourceColumn);
 
-        String name = JOptionPane.showInputDialog(this,
-                "Please provide a name for the new column", tableModel.getColumnName(sourceColumn));
-        if (name != null && !name.isEmpty()) {
+        String newName = UIUtils.getUniqueStringByDialog(this, "Set the name of the new column:",
+                sourceColumnName, tableModel::containsColumn);
+        if (!StringUtils.isNullOrEmpty(newName) && !tableModel.containsColumn(newName)) {
             createUndoSnapshot();
-            tableModel.addColumn(name);
-            for (int i = 0; i < tableModel.getRowCount(); ++i) {
-                tableModel.setValueAt(tableModel.getValueAt(i, sourceColumn), i, tableModel.getColumnCount() - 1);
-            }
-            jxTable.packAll();
+            tableModel.duplicateColumn(sourceColumn, newName);
+            refreshTable();
         }
     }
 
@@ -502,30 +577,15 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
                 generatedName.append(tableModel.getColumnName(sourceColumns[i]));
             }
 
-            String name = JOptionPane.showInputDialog(this,
-                    "Please provide a name for the new column", generatedName.toString());
-            if (name != null && !name.isEmpty()) {
+            String newName = UIUtils.getUniqueStringByDialog(this, "Set the name of the new column:",
+                    generatedName.toString(), tableModel::containsColumn);
+            if (!StringUtils.isNullOrEmpty(newName) && !tableModel.containsColumn(newName)) {
                 try (BusyCursor busyCursor = new BusyCursor(this)) {
                     createUndoSnapshot();
-                    tableModel.addColumn(name);
-
-                    StringBuilder valueBuffer = new StringBuilder();
-                    for (int row = 0; row < tableModel.getRowCount(); ++row) {
-                        valueBuffer.setLength(0);
-                        for (int i = 0; i < sourceColumns.length; ++i) {
-                            if (i > 0)
-                                valueBuffer.append(", ");
-                            valueBuffer.append(tableModel.getColumnName(sourceColumns[i]));
-                            valueBuffer.append("=");
-                            valueBuffer.append(tableModel.getValueAt(row, sourceColumns[i]));
-                        }
-
-                        tableModel.setValueAt(valueBuffer.toString(), row, tableModel.getColumnCount() - 1);
-                    }
+                    tableModel.mergeColumns(Ints.asList(sourceColumns), newName, ", ", "=");
+                    refreshTable();
                 }
             }
-
-            jxTable.packAll();
         }
     }
 
@@ -536,9 +596,15 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
             String name = UIUtils.getUniqueStringByDialog(this, "Please input a new name", oldName, tableModel::containsColumn);
             if (!StringUtils.isNullOrEmpty(name) && !Objects.equals(name, oldName)) {
                 tableModel.renameColumn(oldName, name);
-                jxTable.packAll();
+                refreshTable();
             }
         }
+    }
+
+    private void refreshTable() {
+        jxTable.setModel(new DefaultTableModel());
+        jxTable.setModel(tableModel);
+        jxTable.packAll();
     }
 
     private void addRow() {
@@ -634,8 +700,6 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
      * @param workbenchUI workbench
      */
     public static void importTableFromCSV(Path fileName, ACAQProjectWorkbench workbenchUI) {
-
-
         try {
             ResultsTableData tableData = ResultsTableData.fromCSV(fileName);
             // Create table analyzer
@@ -682,6 +746,7 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
             this.tableEditor = tableEditor;
             setOpaque(true);
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+            setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
         }
 
         @Override
