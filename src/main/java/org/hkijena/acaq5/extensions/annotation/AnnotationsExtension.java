@@ -5,6 +5,10 @@ import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.annotation.algorithms.AnnotateAll;
 import org.hkijena.acaq5.extensions.annotation.algorithms.RemoveAnnotations;
 import org.hkijena.acaq5.extensions.annotation.algorithms.SplitByAnnotation;
+import org.hkijena.acaq5.extensions.annotation.datasources.AnnotationTableFromFile;
+import org.hkijena.acaq5.extensions.annotation.datatypes.AnnotationTableData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.resultanalysis.ResultsTableDataSlotRowUI;
+import org.hkijena.acaq5.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -24,6 +28,20 @@ public class AnnotationsExtension extends ACAQPrepackagedDefaultJavaExtension {
 
     @Override
     public void register() {
+        registerDataTypes();
+        registerAlgorithms();
+    }
+
+    private void registerDataTypes() {
+        registerDatatype("annotation-table",
+                AnnotationTableData.class,
+                ResourceUtils.getPluginResource("icons/data-types/annotation-table.png"),
+                ResultsTableDataSlotRowUI.class,
+                null);
+    }
+
+    private void registerAlgorithms() {
+        registerAlgorithm("annotation-table-from-file", AnnotationTableFromFile.class);
         registerAlgorithm("annotate-all", AnnotateAll.class);
         registerAlgorithm("annotate-remove", RemoveAnnotations.class);
         registerAlgorithm("annotate-split-by-annotation", SplitByAnnotation.class);
