@@ -29,7 +29,7 @@ import java.util.Vector;
  * UI that merges table columns
  */
 public class ACAQMergeTableColumnsDialogUI extends JDialog {
-    private ACAQTableAnalyzerUI tableAnalyzerUI;
+    private ACAQTableEditor tableAnalyzerUI;
     private DefaultTableModel tableModel;
     private JComboBox<DocumentTabPane.DocumentTab> tableSelection;
     private JXTable jxTable;
@@ -38,12 +38,12 @@ public class ACAQMergeTableColumnsDialogUI extends JDialog {
     /**
      * @param tableAnalyzerUI The table analyzer
      */
-    public ACAQMergeTableColumnsDialogUI(ACAQTableAnalyzerUI tableAnalyzerUI) {
+    public ACAQMergeTableColumnsDialogUI(ACAQTableEditor tableAnalyzerUI) {
         this.tableAnalyzerUI = tableAnalyzerUI;
         this.tableModel = tableAnalyzerUI.getTableModel();
 
         for (DocumentTabPane.DocumentTab tab : tableAnalyzerUI.getProjectWorkbench().getDocumentTabPane().getTabs()) {
-            if (tab.getContent() instanceof ACAQTableAnalyzerUI && tab.getContent() != tableAnalyzerUI) {
+            if (tab.getContent() instanceof ACAQTableEditor && tab.getContent() != tableAnalyzerUI) {
                 tableSelection.addItem(tab);
             }
         }
@@ -58,7 +58,7 @@ public class ACAQMergeTableColumnsDialogUI extends JDialog {
         initialize();
 
         for (DocumentTabPane.DocumentTab tab : workbenchUI.getDocumentTabPane().getTabs()) {
-            if (tab.getContent() instanceof ACAQTableAnalyzerUI) {
+            if (tab.getContent() instanceof ACAQTableEditor) {
                 tableSelection.addItem(tab);
             }
         }
@@ -84,7 +84,7 @@ public class ACAQMergeTableColumnsDialogUI extends JDialog {
         tableSelection.setRenderer(new DocumentTabListCellRenderer());
         tableSelection.addItemListener(e -> {
             if (e.getItem() instanceof DocumentTabPane.DocumentTab) {
-                jxTable.setModel(((ACAQTableAnalyzerUI) ((DocumentTabPane.DocumentTab) e.getItem()).getContent()).getTableModel());
+                jxTable.setModel(((ACAQTableEditor) ((DocumentTabPane.DocumentTab) e.getItem()).getContent()).getTableModel());
                 jxTable.packAll();
                 updateColumnSelection();
             }
@@ -128,7 +128,7 @@ public class ACAQMergeTableColumnsDialogUI extends JDialog {
         model.setNumRows(0);
 
         if (tableSelection.getSelectedItem() != null) {
-            DefaultTableModel sourceModel = ((ACAQTableAnalyzerUI) ((DocumentTabPane.DocumentTab) tableSelection.getSelectedItem()).getContent()).getTableModel();
+            DefaultTableModel sourceModel = ((ACAQTableEditor) ((DocumentTabPane.DocumentTab) tableSelection.getSelectedItem()).getContent()).getTableModel();
             for (int column = 0; column < sourceModel.getColumnCount(); ++column) {
                 model.addRow(new Object[]{true, sourceModel.getColumnName(column)});
             }
@@ -139,7 +139,7 @@ public class ACAQMergeTableColumnsDialogUI extends JDialog {
         if (tableSelection.getSelectedItem() != null) {
             if (tableAnalyzerUI != null)
                 tableAnalyzerUI.createUndoSnapshot();
-            DefaultTableModel sourceModel = ((ACAQTableAnalyzerUI) ((DocumentTabPane.DocumentTab) tableSelection.getSelectedItem()).getContent()).getTableModel();
+            DefaultTableModel sourceModel = ((ACAQTableEditor) ((DocumentTabPane.DocumentTab) tableSelection.getSelectedItem()).getContent()).getTableModel();
             DefaultTableModel targetModel = tableModel;
 
             final int targetColumnStartIndex = targetModel.getColumnCount();

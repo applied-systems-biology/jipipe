@@ -10,7 +10,7 @@ import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
-import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableAnalyzerUI;
+import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableEditor;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -93,19 +93,19 @@ public class ACAQPlotAvailableDataManagerUI extends ACAQWorkbenchPanel {
         importCSVItem.addActionListener(e -> importFromCSV());
         importPopupMenu.add(importCSVItem);
 
-        List<DocumentTabPane.DocumentTab> tableAnalyzers = getWorkbench().getDocumentTabPane().getTabsContaining(ACAQTableAnalyzerUI.class);
+        List<DocumentTabPane.DocumentTab> tableAnalyzers = getWorkbench().getDocumentTabPane().getTabsContaining(ACAQTableEditor.class);
         if (!tableAnalyzers.isEmpty()) {
             importPopupMenu.addSeparator();
             for (DocumentTabPane.DocumentTab tab : tableAnalyzers) {
                 JMenuItem importItem = new JMenuItem("Import from '" + tab.getTitle() + "'", UIUtils.getIconFromResources("table.png"));
-                ACAQTableAnalyzerUI tableAnalyzerUI = (ACAQTableAnalyzerUI) tab.getContent();
+                ACAQTableEditor tableAnalyzerUI = (ACAQTableEditor) tab.getContent();
                 importItem.addActionListener(e -> importFromTableAnalyzer(tableAnalyzerUI, tab.getTitle()));
                 importPopupMenu.add(importItem);
             }
         }
     }
 
-    private void importFromTableAnalyzer(ACAQTableAnalyzerUI tableAnalyzerUI, String title) {
+    private void importFromTableAnalyzer(ACAQTableEditor tableAnalyzerUI, String title) {
         DefaultTableModel tableModel = tableAnalyzerUI.getTableModel();
         plotBuilderUI.importData(tableModel, title);
     }
@@ -149,7 +149,7 @@ public class ACAQPlotAvailableDataManagerUI extends ACAQWorkbenchPanel {
         }
 
         String name = dataSourceJList.getSelectedValuesList().size() == 1 ? dataSourceJList.getSelectedValuesList().get(0).getLabel() : "Table";
-        ACAQTableAnalyzerUI tableAnalyzerUI = new ACAQTableAnalyzerUI((ACAQProjectWorkbench) getWorkbench(), tableModel);
+        ACAQTableEditor tableAnalyzerUI = new ACAQTableEditor((ACAQProjectWorkbench) getWorkbench(), tableModel);
         getWorkbench().getDocumentTabPane().addTab(name, UIUtils.getIconFromResources("table.png"),
                 tableAnalyzerUI,
                 DocumentTabPane.CloseMode.withAskOnCloseButton,

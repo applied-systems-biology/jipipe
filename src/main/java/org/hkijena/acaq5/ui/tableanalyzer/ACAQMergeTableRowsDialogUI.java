@@ -29,7 +29,7 @@ import java.util.Set;
  * UI that merges table rows
  */
 public class ACAQMergeTableRowsDialogUI extends JDialog {
-    private ACAQTableAnalyzerUI tableAnalyzerUI;
+    private ACAQTableEditor tableAnalyzerUI;
     private JComboBox<DocumentTabPane.DocumentTab> tableSelection;
     private JCheckBox addMissingColumnsCheckBox;
     private JXTable jxTable;
@@ -39,12 +39,12 @@ public class ACAQMergeTableRowsDialogUI extends JDialog {
      *
      * @param tableAnalyzerUI The table analyzer
      */
-    public ACAQMergeTableRowsDialogUI(ACAQTableAnalyzerUI tableAnalyzerUI) {
+    public ACAQMergeTableRowsDialogUI(ACAQTableEditor tableAnalyzerUI) {
         this.tableAnalyzerUI = tableAnalyzerUI;
         initialize();
 
         for (DocumentTabPane.DocumentTab tab : tableAnalyzerUI.getProjectWorkbench().getDocumentTabPane().getTabs()) {
-            if (tab.getContent() instanceof ACAQTableAnalyzerUI && tab.getContent() != tableAnalyzerUI) {
+            if (tab.getContent() instanceof ACAQTableEditor && tab.getContent() != tableAnalyzerUI) {
                 tableSelection.addItem(tab);
             }
         }
@@ -58,7 +58,7 @@ public class ACAQMergeTableRowsDialogUI extends JDialog {
         tableSelection.setRenderer(new DocumentTabListCellRenderer());
         tableSelection.addItemListener(e -> {
             if (e.getItem() instanceof DocumentTabPane.DocumentTab) {
-                jxTable.setModel(((ACAQTableAnalyzerUI) ((DocumentTabPane.DocumentTab) e.getItem()).getContent()).getTableModel());
+                jxTable.setModel(((ACAQTableEditor) ((DocumentTabPane.DocumentTab) e.getItem()).getContent()).getTableModel());
                 jxTable.packAll();
             }
         });
@@ -89,7 +89,7 @@ public class ACAQMergeTableRowsDialogUI extends JDialog {
     private void calculate() {
         if (tableSelection.getSelectedItem() != null) {
             tableAnalyzerUI.createUndoSnapshot();
-            DefaultTableModel sourceModel = ((ACAQTableAnalyzerUI) ((DocumentTabPane.DocumentTab) tableSelection.getSelectedItem()).getContent()).getTableModel();
+            DefaultTableModel sourceModel = ((ACAQTableEditor) ((DocumentTabPane.DocumentTab) tableSelection.getSelectedItem()).getContent()).getTableModel();
             DefaultTableModel targetModel = tableAnalyzerUI.getTableModel();
 
             Set<Integer> assignedTargetColumns = new HashSet<>();

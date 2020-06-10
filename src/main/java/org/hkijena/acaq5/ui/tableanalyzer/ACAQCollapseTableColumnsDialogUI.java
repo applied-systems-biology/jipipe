@@ -13,6 +13,7 @@
 package org.hkijena.acaq5.ui.tableanalyzer;
 
 import org.hkijena.acaq5.ACAQDefaultRegistry;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.ui.registries.ACAQTableAnalyzerUIOperationRegistry;
 import org.hkijena.acaq5.utils.BusyCursor;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -227,7 +228,7 @@ public class ACAQCollapseTableColumnsDialogUI extends JDialog {
     /**
      * @return The resulting table model
      */
-    public DefaultTableModel getResultTableModel() {
+    public ResultsTableData getResultTableModel() {
         return resultTableModel;
     }
 
