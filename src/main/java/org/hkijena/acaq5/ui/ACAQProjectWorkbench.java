@@ -14,6 +14,7 @@ import org.hkijena.acaq5.extensions.settings.ProjectsSettings;
 import org.hkijena.acaq5.ui.compartments.ACAQCompartmentGraphUI;
 import org.hkijena.acaq5.ui.compartments.ACAQCompartmentUI;
 import org.hkijena.acaq5.ui.compendium.ACAQAlgorithmCompendiumUI;
+import org.hkijena.acaq5.ui.compendium.ACAQTraitCompendiumUI;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.RecentProjectsMenu;
 import org.hkijena.acaq5.ui.components.ReloadableValidityChecker;
@@ -365,6 +366,17 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
             getDocumentTabPane().switchToLastTab();
         });
         helpMenu.add(algorithmCompendiumButton);
+
+        JMenuItem traitCompendiumButton = new JMenuItem("Open annotation compendium", UIUtils.getIconFromResources("traits/trait.png"));
+        traitCompendiumButton.addActionListener(e -> {
+            getDocumentTabPane().addTab("Annotation compendium",
+                    UIUtils.getIconFromResources("help.png"),
+                    new ACAQTraitCompendiumUI(),
+                    DocumentTabPane.CloseMode.withSilentCloseButton,
+                    true);
+            getDocumentTabPane().switchToLastTab();
+        });
+        helpMenu.add(traitCompendiumButton);
 
         menu.add(helpMenu);
 

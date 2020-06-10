@@ -5,7 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
-import org.hkijena.acaq5.api.compat.AlgorithmDeclarationListCellRenderer;
+import org.hkijena.acaq5.ui.components.ACAQAlgorithmDeclarationListCellRenderer;
 import org.hkijena.acaq5.api.compat.ImageJDatatypeImporter;
 import org.hkijena.acaq5.api.compat.SingleImageJAlgorithmRun;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
@@ -134,7 +134,7 @@ public class RunSingleAlgorithmDialog extends JDialog {
     private void initializeList(JPanel listPanel) {
         algorithmList = new JList<>();
         algorithmList.setBorder(BorderFactory.createEtchedBorder());
-        algorithmList.setCellRenderer(new AlgorithmDeclarationListCellRenderer());
+        algorithmList.setCellRenderer(new ACAQAlgorithmDeclarationListCellRenderer());
         algorithmList.setModel(new DefaultListModel<>());
         algorithmList.addListSelectionListener(e -> {
             selectAlgorithmDeclaration(algorithmList.getSelectedValue());

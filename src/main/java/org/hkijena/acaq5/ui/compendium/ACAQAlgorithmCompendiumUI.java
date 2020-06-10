@@ -7,23 +7,18 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
-import org.hkijena.acaq5.api.compat.AlgorithmDeclarationListCellRenderer;
+import org.hkijena.acaq5.ui.components.ACAQAlgorithmDeclarationListCellRenderer;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQParameterTypeRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
-import org.hkijena.acaq5.ui.components.MarkdownReader;
-import org.hkijena.acaq5.ui.components.SearchTextField;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.util.List;
 import java.util.*;
 import java.util.function.Predicate;
@@ -34,73 +29,17 @@ import static org.hkijena.acaq5.utils.TooltipUtils.insertOpposingTraitTableConte
 /**
  * A browsable list of algorithms with full documentation
  */
-public class ACAQAlgorithmCompendiumUI extends JPanel {
-    private JList<ACAQAlgorithmDeclaration> algorithmList;
-    private SearchTextField searchField;
-    private JSplitPane splitPane;
-    private MarkdownReader markdownReader;
-    private Map<ACAQAlgorithmDeclaration, MarkdownDocument> compediumCache = new HashMap<>();
+public class ACAQAlgorithmCompendiumUI extends ACAQCompendiumUI<ACAQAlgorithmDeclaration> {
 
     /**
      * Creates a new instance
      */
     public ACAQAlgorithmCompendiumUI() {
-        initialize();
-        reloadAlgorithmList();
-        selectAlgorithmDeclaration(null);
+        super(MarkdownDocument.fromPluginResource("documentation/algorithm-compendium.md"));
     }
 
-    private void initialize() {
-        setLayout(new BorderLayout());
-        JPanel listPanel = new JPanel(new BorderLayout());
-        markdownReader = new MarkdownReader(true);
-
-        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, listPanel, markdownReader);
-        splitPane.setDividerSize(3);
-        splitPane.setResizeWeight(0.33);
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                super.componentResized(e);
-                splitPane.setDividerLocation(0.33);
-            }
-        });
-
-        initializeToolbar(listPanel);
-        initializeList(listPanel);
-
-        add(splitPane, BorderLayout.CENTER);
-    }
-
-    private void initializeToolbar(JPanel contentPanel) {
-        JToolBar toolBar = new JToolBar();
-        toolBar.setFloatable(false);
-
-        searchField = new SearchTextField();
-        searchField.addActionListener(e -> reloadAlgorithmList());
-        toolBar.add(searchField);
-
-        add(toolBar, BorderLayout.NORTH);
-
-        contentPanel.add(toolBar, BorderLayout.NORTH);
-    }
-
-    private void reloadAlgorithmList() {
-        List<ACAQAlgorithmDeclaration> declarations = getFilteredAndSortedDeclarations();
-        DefaultListModel<ACAQAlgorithmDeclaration> model = new DefaultListModel<>();
-        for (ACAQAlgorithmDeclaration declaration : declarations) {
-            model.addElement(declaration);
-        }
-        algorithmList.setModel(model);
-
-        if (!model.isEmpty())
-            algorithmList.setSelectedIndex(0);
-        else
-            selectAlgorithmDeclaration(null);
-    }
-
-    private List<ACAQAlgorithmDeclaration> getFilteredAndSortedDeclarations() {
-        String[] searchStrings = searchField.getSearchStrings();
+    @Override
+    protected List<ACAQAlgorithmDeclaration> getFilteredItems(String[] searchStrings) {
         Predicate<ACAQAlgorithmDeclaration> filterFunction = declaration -> {
             if (searchStrings != null && searchStrings.length > 0) {
                 boolean matches = true;
@@ -121,39 +60,13 @@ public class ACAQAlgorithmCompendiumUI extends JPanel {
                 .sorted(Comparator.comparing(ACAQAlgorithmDeclaration::getName)).collect(Collectors.toList());
     }
 
-    private void initializeList(JPanel listPanel) {
-        algorithmList = new JList<>();
-        algorithmList.setBorder(BorderFactory.createEtchedBorder());
-        algorithmList.setCellRenderer(new AlgorithmDeclarationListCellRenderer());
-        algorithmList.setModel(new DefaultListModel<>());
-        algorithmList.addListSelectionListener(e -> {
-            selectAlgorithmDeclaration(algorithmList.getSelectedValue());
-        });
-        listPanel.add(new JScrollPane(algorithmList), BorderLayout.CENTER);
+    @Override
+    protected ListCellRenderer<ACAQAlgorithmDeclaration> getItemListRenderer() {
+        return new ACAQAlgorithmDeclarationListCellRenderer();
     }
 
-    /**
-     * Displays the documentation of the specified algorithm
-     *
-     * @param declaration the algorithm. if null, the compendium documentation is shown
-     */
-    public void selectAlgorithmDeclaration(ACAQAlgorithmDeclaration declaration) {
-        if (declaration != algorithmList.getSelectedValue()) {
-            algorithmList.setSelectedValue(declaration, true);
-        }
-        if (declaration != null) {
-            MarkdownDocument document = compediumCache.getOrDefault(declaration, null);
-            if (document == null) {
-                document = generateCompendiumFor(declaration);
-                compediumCache.put(declaration, document);
-            }
-            markdownReader.setDocument(document);
-        } else {
-            markdownReader.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-compendium.md"));
-        }
-    }
-
-    private MarkdownDocument generateCompendiumFor(ACAQAlgorithmDeclaration declaration) {
+    @Override
+    protected MarkdownDocument generateCompendiumFor(ACAQAlgorithmDeclaration declaration) {
         StringBuilder builder = new StringBuilder();
         builder.append("# ").append(declaration.getName()).append("\n\n");
         // Write algorithm slot info

@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.api.compat;
+package org.hkijena.acaq5.ui.components;
 
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
@@ -12,14 +12,14 @@ import java.awt.*;
 /**
  * Renderer for {@link ACAQAlgorithmDeclaration}
  */
-public class AlgorithmDeclarationListCellRenderer extends JLabel implements ListCellRenderer<ACAQAlgorithmDeclaration> {
+public class ACAQAlgorithmDeclarationListCellRenderer extends JLabel implements ListCellRenderer<ACAQAlgorithmDeclaration> {
 
     private ColorIcon icon = new ColorIcon(16, 32);
 
     /**
      * Creates a new renderer
      */
-    public AlgorithmDeclarationListCellRenderer() {
+    public ACAQAlgorithmDeclarationListCellRenderer() {
         setOpaque(true);
         setIcon(icon);
         setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));

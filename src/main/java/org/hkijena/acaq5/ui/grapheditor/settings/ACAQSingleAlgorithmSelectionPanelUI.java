@@ -130,7 +130,7 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPan
             openCompendiumButton.setToolTipText("Open in algorithm compendium");
             openCompendiumButton.addActionListener(e -> {
                 ACAQAlgorithmCompendiumUI compendiumUI = new ACAQAlgorithmCompendiumUI();
-                compendiumUI.selectAlgorithmDeclaration(algorithm.getDeclaration());
+                compendiumUI.selectItem(algorithm.getDeclaration());
                 getWorkbench().getDocumentTabPane().addTab("Algorithm compendium",
                         UIUtils.getIconFromResources("help.png"),
                         compendiumUI,
