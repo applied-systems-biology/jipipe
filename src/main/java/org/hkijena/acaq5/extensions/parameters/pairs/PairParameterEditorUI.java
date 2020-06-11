@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.parameters.editors;
+package org.hkijena.acaq5.extensions.parameters.pairs;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.extensions.parameters.pairs.Pair;
@@ -14,7 +14,7 @@ import javax.swing.*;
 /**
  * Editor for {@link Pair}
  */
-public class KeyValuePairParameterEditorUI extends ACAQParameterEditorUI {
+public class PairParameterEditorUI extends ACAQParameterEditorUI {
 
     /**
      * Creates new instance
@@ -22,7 +22,7 @@ public class KeyValuePairParameterEditorUI extends ACAQParameterEditorUI {
      * @param context         SciJava context
      * @param parameterAccess Parameter
      */
-    public KeyValuePairParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
+    public PairParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
         super(context, parameterAccess);
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         reload();

@@ -1,7 +1,6 @@
-package org.hkijena.acaq5.extensions.parameters.editors;
+package org.hkijena.acaq5.extensions.parameters.primitives;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.extensions.parameters.primitives.PathList;
 import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
 import org.hkijena.acaq5.ui.components.PathEditor;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
@@ -17,7 +16,7 @@ import java.util.List;
 /**
  * Editor for {@link PathList}
  */
-public class PathCollectionParameterEditorUI extends ACAQParameterEditorUI {
+public class PathListParameterEditorUI extends ACAQParameterEditorUI {
 
     private JList<String> listPanel;
     private PathEditor.IOMode ioMode = PathEditor.IOMode.Open;
@@ -27,7 +26,7 @@ public class PathCollectionParameterEditorUI extends ACAQParameterEditorUI {
      * @param context         SciJava context
      * @param parameterAccess the parameter
      */
-    public PathCollectionParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
+    public PathListParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
         super(context, parameterAccess);
         initializeFileSelection();
         initialize();

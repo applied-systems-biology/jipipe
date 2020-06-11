@@ -1,7 +1,5 @@
 package org.hkijena.acaq5.extensions.parameters.primitives;
 
-import org.hkijena.acaq5.extensions.parameters.editors.DynamicEnumParameterSettings;
-
 import javax.swing.*;
 import java.util.List;
 

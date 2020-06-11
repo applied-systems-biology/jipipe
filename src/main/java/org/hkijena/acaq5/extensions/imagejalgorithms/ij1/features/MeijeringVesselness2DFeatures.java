@@ -20,7 +20,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.acaq5.extensions.parameters.primitives.DoubleList;
-import org.hkijena.acaq5.extensions.parameters.editors.NumberParameterSettings;
+import org.hkijena.acaq5.extensions.parameters.primitives.NumberParameterSettings;
 import org.hkijena.acaq5.utils.ImageJUtils;
 
 import java.util.Vector;

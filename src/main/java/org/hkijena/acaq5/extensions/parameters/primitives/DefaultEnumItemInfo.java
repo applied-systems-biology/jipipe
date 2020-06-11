@@ -1,4 +1,6 @@
-package org.hkijena.acaq5.extensions.parameters.editors;
+package org.hkijena.acaq5.extensions.parameters.primitives;
+
+import org.hkijena.acaq5.extensions.parameters.primitives.EnumItemInfo;
 
 import javax.swing.*;
 

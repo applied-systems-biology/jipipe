@@ -22,7 +22,7 @@ import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extensions.parameters.primitives.StringList;
 import org.hkijena.acaq5.extensions.parameters.editors.ACAQTraitParameterSettings;
-import org.hkijena.acaq5.extensions.parameters.editors.StringParameterSettings;
+import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQAlgorithmIconRef;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.utils.StringUtils;

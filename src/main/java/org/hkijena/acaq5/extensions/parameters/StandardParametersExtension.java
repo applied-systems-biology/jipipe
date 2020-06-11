@@ -10,12 +10,12 @@ import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.parameters.collections.*;
 import org.hkijena.acaq5.extensions.parameters.colors.*;
 import org.hkijena.acaq5.extensions.parameters.editors.*;
+import org.hkijena.acaq5.extensions.parameters.functions.FunctionParameterEditorUI;
+import org.hkijena.acaq5.extensions.parameters.matrix.Matrix2DParameterEditorUI;
 import org.hkijena.acaq5.extensions.parameters.optional.OptionalParameter;
+import org.hkijena.acaq5.extensions.parameters.optional.OptionalParameterEditorUI;
 import org.hkijena.acaq5.extensions.parameters.pairs.*;
-import org.hkijena.acaq5.extensions.parameters.predicates.DoublePredicate;
-import org.hkijena.acaq5.extensions.parameters.predicates.PathPredicate;
-import org.hkijena.acaq5.extensions.parameters.predicates.StringPredicate;
-import org.hkijena.acaq5.extensions.parameters.predicates.StringOrDoublePredicate;
+import org.hkijena.acaq5.extensions.parameters.predicates.*;
 import org.hkijena.acaq5.extensions.parameters.functions.FunctionParameter;
 import org.hkijena.acaq5.extensions.parameters.generators.*;
 import org.hkijena.acaq5.extensions.parameters.matrix.Matrix2DFloat;
@@ -24,6 +24,7 @@ import org.hkijena.acaq5.extensions.parameters.primitives.*;
 import org.hkijena.acaq5.extensions.parameters.references.*;
 import org.hkijena.acaq5.extensions.parameters.roi.*;
 import org.hkijena.acaq5.extensions.parameters.table.ParameterTable;
+import org.hkijena.acaq5.extensions.parameters.table.ParameterTableEditorUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.jfree.chart.util.BooleanList;
@@ -253,7 +254,7 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
 
     private void registerPairParameters() {
         // Pair-like parameters
-        registerParameterEditor(Pair.class, KeyValuePairParameterEditorUI.class);
+        registerParameterEditor(Pair.class, PairParameterEditorUI.class);
         registerParameterType("string-renaming",
                 StringFilterAndStringPair.class,
                 StringFilterAndStringPair.List.class,
@@ -299,7 +300,7 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                         "[range];[range];... with range being an integer or [from]-[to]. [from] and [to] are inclusive borders. Negative numbers must be " +
                         "encased with (brackets). [from] and [to] can be in inverse order, generating numbers in inverse order. Spaces are ignored. " +
                         "Example: 0-10;5;3-(-1)",
-                IntRangeStringParameterEditorUI.class);
+                IntegerRangeParameterEditorUI.class);
     }
 
     private void registerFilterParameters() {
@@ -311,7 +312,7 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 f -> new PathPredicate((PathPredicate) f),
                 "Path filter",
                 "A filter for file or folder names",
-                PathFilterParameterEditorUI.class);
+                PathPredicateParameterEditorUI.class);
         registerParameterType("string-predicate",
                 StringPredicate.class,
                 StringPredicate.List.class,
@@ -319,7 +320,7 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 f -> new StringPredicate((StringPredicate) f),
                 "String filter",
                 "A filter for text values",
-                StringFilterParameterEditorUI.class);
+                StringPredicateParameterEditorUI.class);
         registerParameterType("double-predicate",
                 DoublePredicate.class,
                 DoublePredicate.List.class,
@@ -327,7 +328,7 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 f -> new DoublePredicate((DoublePredicate) f),
                 "Double filter",
                 "A filter for numbers",
-                DoubleFilterParameterEditorUI.class);
+                DoublePredicateParameterEditorUI.class);
         registerParameterType("string-or-double-predicate",
                 StringOrDoublePredicate.class,
                 StringOrDoublePredicate.List.class,
@@ -335,7 +336,7 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 f -> new StringOrDoublePredicate((StringOrDoublePredicate) f),
                 "String/Double filter",
                 "A filter for numbers or strings",
-                StringOrDoubleFilterParameterEditorUI.class);
+                StringOrDoublePredicateParameterEditorUI.class);
     }
 
     private void registerACAQ5ReferenceTypes() {

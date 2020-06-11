@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.extensions.parameters.colors;
 
 import org.apache.commons.lang.WordUtils;
-import org.hkijena.acaq5.extensions.parameters.editors.EnumItemInfo;
+import org.hkijena.acaq5.extensions.parameters.primitives.EnumItemInfo;
 
 import javax.swing.*;
 import java.util.HashMap;

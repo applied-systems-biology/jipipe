@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.parameters.editors;
+package org.hkijena.acaq5.extensions.parameters.primitives;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.ui.components.PathEditor;
@@ -6,12 +6,12 @@ import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.scijava.Context;
 
 import java.awt.*;
-import java.io.File;
+import java.nio.file.Path;
 
 /**
- * Editor for a {@link java.io.File} parameter
+ * Editor for a {@link java.nio.file.Path} parameter
  */
-public class FileParameterEditorUI extends ACAQParameterEditorUI {
+public class FilePathParameterEditorUI extends ACAQParameterEditorUI {
 
     private boolean skipNextReload = false;
     private boolean isReloading = false;
@@ -21,7 +21,7 @@ public class FileParameterEditorUI extends ACAQParameterEditorUI {
      * @param context         SciJava context
      * @param parameterAccess the parameter
      */
-    public FileParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
+    public FilePathParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
         super(context, parameterAccess);
         initialize();
 //        getWorkbenchUI().getProject().getEventBus().register(this);
@@ -39,7 +39,7 @@ public class FileParameterEditorUI extends ACAQParameterEditorUI {
             return;
         }
         isReloading = true;
-        pathEditor.setPath(getParameterAccess().get(File.class).toPath());
+        pathEditor.setPath(getParameterAccess().get(Path.class));
         isReloading = false;
     }
 
@@ -52,12 +52,12 @@ public class FileParameterEditorUI extends ACAQParameterEditorUI {
             pathEditor.setPathMode(settings.pathMode());
         }
 
-        pathEditor.setPath(getParameterAccess().get(File.class).toPath());
+        pathEditor.setPath(getParameterAccess().get(Path.class));
         add(pathEditor, BorderLayout.CENTER);
         pathEditor.addActionListener(e -> {
             if (!isReloading) {
                 skipNextReload = true;
-                if (!getParameterAccess().set(pathEditor.getPath().toFile())) {
+                if (!getParameterAccess().set(pathEditor.getPath())) {
                     skipNextReload = false;
                     reload();
                 }

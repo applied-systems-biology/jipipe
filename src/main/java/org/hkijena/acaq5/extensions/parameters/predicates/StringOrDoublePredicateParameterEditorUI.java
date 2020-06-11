@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.parameters.editors;
+package org.hkijena.acaq5.extensions.parameters.predicates;
 
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
@@ -14,7 +14,7 @@ import javax.swing.*;
 /**
  * A parameter editor UI for {@link StringOrDoublePredicate}
  */
-public class StringOrDoubleFilterParameterEditorUI extends ACAQParameterEditorUI {
+public class StringOrDoublePredicateParameterEditorUI extends ACAQParameterEditorUI {
 
     private boolean isProcessing = false;
     private JToggleButton doubleToggle;
@@ -24,7 +24,7 @@ public class StringOrDoubleFilterParameterEditorUI extends ACAQParameterEditorUI
      * @param context         SciJava context
      * @param parameterAccess the parameter
      */
-    public StringOrDoubleFilterParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
+    public StringOrDoublePredicateParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
         super(context, parameterAccess);
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         reload();

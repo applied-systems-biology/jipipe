@@ -15,7 +15,7 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.extensions.parameters.colors.ColorMapEnumItemInfo;
 import org.hkijena.acaq5.extensions.parameters.colors.OptionalColorMapParameter;
-import org.hkijena.acaq5.extensions.parameters.editors.EnumParameterSettings;
+import org.hkijena.acaq5.extensions.parameters.primitives.EnumParameterSettings;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;

@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.parameters.editors;
+package org.hkijena.acaq5.extensions.parameters.generators;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.extensions.parameters.generators.IntegerRange;
@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Editor for {@link IntegerRange}
  */
-public class IntRangeStringParameterEditorUI extends ACAQParameterEditorUI {
+public class IntegerRangeParameterEditorUI extends ACAQParameterEditorUI {
 
     private JTextField textField;
 
@@ -22,7 +22,7 @@ public class IntRangeStringParameterEditorUI extends ACAQParameterEditorUI {
      * @param context         SciJava context
      * @param parameterAccess the parameter
      */
-    public IntRangeStringParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
+    public IntegerRangeParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
         super(context, parameterAccess);
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         reload();

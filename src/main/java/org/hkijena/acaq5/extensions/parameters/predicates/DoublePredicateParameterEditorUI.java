@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.parameters.editors;
+package org.hkijena.acaq5.extensions.parameters.predicates;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.extensions.parameters.predicates.DoublePredicate;
@@ -12,7 +12,7 @@ import java.awt.*;
 /**
  * Editor for {@link DoublePredicate}
  */
-public class DoubleFilterParameterEditorUI extends ACAQParameterEditorUI {
+public class DoublePredicateParameterEditorUI extends ACAQParameterEditorUI {
 
     private boolean isReloading;
     private boolean skipNextReload;
@@ -21,7 +21,7 @@ public class DoubleFilterParameterEditorUI extends ACAQParameterEditorUI {
      * @param context         SciJava context
      * @param parameterAccess the parameter
      */
-    public DoubleFilterParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
+    public DoublePredicateParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
         super(context, parameterAccess);
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         reload();

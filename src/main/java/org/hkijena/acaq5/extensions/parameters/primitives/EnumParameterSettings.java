@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.parameters.editors;
+package org.hkijena.acaq5.extensions.parameters.primitives;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
