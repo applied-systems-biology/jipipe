@@ -31,6 +31,9 @@ import java.util.function.Supplier;
  */
 public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
 
+    public static final String ITERATING_ALGORITHM_DESCRIPTION = "This algorithm groups the incoming data based on the annotations. " +
+            "Those groups can consist of one data item per slot.";
+
     private ColumnMatching dataSetMatching = ColumnMatching.Intersection;
     private boolean allowDuplicateDataSets = true;
     private boolean skipIncompleteDataSets = false;

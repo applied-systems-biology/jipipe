@@ -3,6 +3,7 @@ package org.hkijena.acaq5.ui.resultanalysis;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.ui.registries.ACAQUIAlgorithmRegistry;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -37,7 +38,7 @@ public class ACAQResultTreeCellRenderer extends JLabel implements TreeCellRender
                 setText(compartment.getName());
             } else if (userObject instanceof ACAQGraphNode) {
                 ACAQGraphNode algorithm = (ACAQGraphNode) userObject;
-                setIcon(UIUtils.getIconFromColor(UIUtils.getFillColorFor(algorithm.getDeclaration())));
+                setIcon(ACAQUIAlgorithmRegistry.getInstance().getIconFor(algorithm.getDeclaration()));
                 setText(algorithm.getName());
             } else if (userObject instanceof ACAQDataSlot) {
                 ACAQDataSlot slot = (ACAQDataSlot) userObject;

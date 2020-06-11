@@ -8,7 +8,7 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extensions.filesystem.dataypes.FileData;
+import org.hkijena.acaq5.extensions.filesystem.dataypes.PathData;
 import org.hkijena.acaq5.extensions.parameters.collections.PathFilterListParameter;
 import org.hkijena.acaq5.extensions.parameters.filters.PathFilter;
 
@@ -20,19 +20,19 @@ import java.util.function.Supplier;
 /**
  * Filters input files
  */
-@ACAQDocumentation(name = "Filter files", description = "Filters the input files by their name")
+@ACAQDocumentation(name = "Filter paths", description = "Filters the paths (files/folders) by their name or absolute path")
 @ACAQOrganization(menuPath = "Filter", algorithmCategory = ACAQAlgorithmCategory.FileSystem)
 
 // Algorithm flow
-@AlgorithmInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
-@AlgorithmOutputSlot(value = FileData.class, slotName = "Filtered files", autoCreate = true)
+@AlgorithmInputSlot(value = PathData.class, slotName = "Input", autoCreate = true)
+@AlgorithmOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true, inheritedSlot = "Input")
 
 // Traits
-public class FilterFiles extends ACAQSimpleIteratingAlgorithm {
+public class FilterPaths extends ACAQSimpleIteratingAlgorithm {
 
     //    private PathFilter filter = new PathFilter();
     private PathFilterListParameter filters = new PathFilterListParameter();
-    private boolean filterOnlyFileNames = true;
+    private boolean filterOnlyNames = true;
     private boolean invert = false;
 
     /**
@@ -40,7 +40,7 @@ public class FilterFiles extends ACAQSimpleIteratingAlgorithm {
      *
      * @param declaration Algorithm declaration
      */
-    public FilterFiles(ACAQAlgorithmDeclaration declaration) {
+    public FilterPaths(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
         filters.addNewInstance();
     }
@@ -50,22 +50,22 @@ public class FilterFiles extends ACAQSimpleIteratingAlgorithm {
      *
      * @param other The original
      */
-    public FilterFiles(FilterFiles other) {
+    public FilterPaths(FilterPaths other) {
         super(other);
         this.filters.clear();
         for (PathFilter filter : other.filters) {
             this.filters.add(new PathFilter(filter));
         }
-        this.filterOnlyFileNames = other.filterOnlyFileNames;
+        this.filterOnlyNames = other.filterOnlyNames;
         this.invert = other.invert;
     }
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        FileData inputData = dataInterface.getInputData("Files", FileData.class);
+        PathData inputData = dataInterface.getInputData(getFirstInputSlot(), PathData.class);
         ACAQDataSlot firstOutputSlot = getFirstOutputSlot();
         Path inputPath = inputData.getPath();
-        if (filterOnlyFileNames)
+        if (filterOnlyNames)
             inputPath = inputPath.getFileName();
         else {
             if (Files.exists(inputPath)) {
@@ -115,17 +115,17 @@ public class FilterFiles extends ACAQSimpleIteratingAlgorithm {
         getEventBus().post(new ParameterChangedEvent(this, "filters"));
     }
 
-    @ACAQDocumentation(name = "Filter only file names", description = "If enabled, the filter is only applied for the file name. If disabled, the filter is " +
+    @ACAQDocumentation(name = "Filter only names", description = "If enabled, the filter is only applied for the path name (file or directory name). If disabled, the filter is " +
             "applied for the absolute path. For non-existing paths it cannot bne guaranteed that the absolute path is tested.")
-    @ACAQParameter("only-filenames")
-    public boolean isFilterOnlyFileNames() {
-        return filterOnlyFileNames;
+    @ACAQParameter("only-names")
+    public boolean isFilterOnlyNames() {
+        return filterOnlyNames;
     }
 
-    @ACAQParameter("only-filenames")
-    public void setFilterOnlyFileNames(boolean filterOnlyFileNames) {
-        this.filterOnlyFileNames = filterOnlyFileNames;
-        getEventBus().post(new ParameterChangedEvent(this, "only-filenames"));
+    @ACAQParameter("only-names")
+    public void setFilterOnlyNames(boolean filterOnlyNames) {
+        this.filterOnlyNames = filterOnlyNames;
+        getEventBus().post(new ParameterChangedEvent(this, "only-names"));
     }
 
     @ACAQParameter("invert")

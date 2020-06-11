@@ -14,6 +14,8 @@ package org.hkijena.acaq5.api;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.hkijena.acaq5.extensions.annotation.algorithms.ConvertToAnnotationTable;
+import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.*;
 
@@ -156,7 +158,7 @@ public class ACAQValidityReport {
         if ((includeMin && value < min) || (!includeMin && value <= min) || (includeMax && value > max) || (!includeMax && value >= max)) {
             reportIsInvalid("Invalid value!", "Numeric values must be within an allowed range.",
                     "Please provide a value within " + (includeMin ? "[" : "(") + min + " and " + (includeMax ? "]" : ")") + max,
-                    this);
+                    source);
         }
     }
 
@@ -169,7 +171,19 @@ public class ACAQValidityReport {
     public void checkNonNull(Object value, Object source) {
         if (value == null) {
             reportIsInvalid("No value provided!", "Dependent methods require that a value is set.", "Please provide a valid value.",
-                    this);
+                    source);
+        }
+    }
+
+    /**
+     * Reports as invalid if the string value is null or empty
+     * @param value the value
+     * @param source the source that triggers the check. passed to details
+     */
+    public void checkNonEmptyNull(String value, Object source) {
+        if (StringUtils.isNullOrEmpty(value)) {
+            reportIsInvalid("No value provided!", "Dependent methods require that a value is set.", "Please provide a valid value.",
+                    source);
         }
     }
 

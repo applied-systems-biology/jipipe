@@ -1,2 +1,4 @@
 .*
 !.gitignore
+target
+/acaq5.properties.json

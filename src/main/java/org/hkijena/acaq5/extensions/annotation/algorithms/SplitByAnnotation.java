@@ -41,7 +41,10 @@ public class SplitByAnnotation extends ACAQAlgorithm {
      * @param declaration algorithm declaration
      */
     public SplitByAnnotation(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, ACAQMutableSlotConfiguration.builder().restrictInputSlotCount(1).build());
+        super(declaration, ACAQMutableSlotConfiguration.builder()
+                .addInputSlot("Input", ACAQData.class)
+                .sealInput()
+                .build());
         this.targetSlots = new OutputSlotMapParameterCollection(StringFilter.class, this, null, true);
         this.targetSlots.getEventBus().register(this);
     }

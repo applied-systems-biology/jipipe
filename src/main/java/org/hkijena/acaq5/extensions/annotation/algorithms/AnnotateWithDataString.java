@@ -1,10 +1,9 @@
-package org.hkijena.acaq5.extensions.filesystem.annotation;
+package org.hkijena.acaq5.extensions.annotation.algorithms;
 
-import org.hkijena.acaq5.api.ACAQDocumentation;
-import org.hkijena.acaq5.api.ACAQOrganization;
-import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
-import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.api.*;
 import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
@@ -17,15 +16,12 @@ import java.util.function.Supplier;
 /**
  * Generates annotations from filenames
  */
-@ACAQDocumentation(name = "Files to annotations", description = "Creates an annotation for each file based on its file name")
+@ACAQDocumentation(name = "Annotate with data string", description = "Converts incoming data into its string representation and creates the a new annotation that " +
+        "contains this generated string.")
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Annotation, menuPath = "Generate")
-
-// Algorithm flow
-@AlgorithmInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
-@AlgorithmOutputSlot(value = FileData.class, slotName = "Annotated files", autoCreate = true)
-
-// Traits
-public class FileAnnotationGenerator extends ACAQSimpleIteratingAlgorithm {
+@AlgorithmInputSlot(value = ACAQData.class, slotName = "Data", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQData.class, slotName = "Annotated data", inheritedSlot = "Data", autoCreate = true)
+public class AnnotateWithDataString extends ACAQSimpleIteratingAlgorithm {
 
     private ACAQTraitDeclarationRef generatedAnnotation = new ACAQTraitDeclarationRef();
 
@@ -34,7 +30,7 @@ public class FileAnnotationGenerator extends ACAQSimpleIteratingAlgorithm {
      *
      * @param declaration Algorithm declaration
      */
-    public FileAnnotationGenerator(ACAQAlgorithmDeclaration declaration) {
+    public AnnotateWithDataString(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
         updateSlotTraits();
     }
@@ -44,7 +40,7 @@ public class FileAnnotationGenerator extends ACAQSimpleIteratingAlgorithm {
      *
      * @param other Original algorithm
      */
-    public FileAnnotationGenerator(FileAnnotationGenerator other) {
+    public AnnotateWithDataString(AnnotateWithDataString other) {
         super(other);
         this.generatedAnnotation = new ACAQTraitDeclarationRef(other.generatedAnnotation.getDeclaration());
         updateSlotTraits();
@@ -53,8 +49,8 @@ public class FileAnnotationGenerator extends ACAQSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         if (generatedAnnotation.getDeclaration() != null) {
-            FileData inputData = dataInterface.getInputData(getFirstInputSlot(), FileData.class);
-            String discriminator = inputData.getPath().getFileName().toString();
+            ACAQData inputData = dataInterface.getInputData(getFirstInputSlot(), ACAQData.class);
+            String discriminator = "" + inputData;
             dataInterface.addGlobalAnnotation(generatedAnnotation.getDeclaration().newInstance(discriminator));
             dataInterface.addOutputData(getFirstOutputSlot(), inputData);
         }
@@ -76,7 +72,7 @@ public class FileAnnotationGenerator extends ACAQSimpleIteratingAlgorithm {
     /**
      * @return Generated annotation type
      */
-    @ACAQDocumentation(name = "Generated annotation", description = "Select which annotation type is generated for each file")
+    @ACAQDocumentation(name = "Generated annotation", description = "Select which annotation type is generated for each data row")
     @ACAQParameter("generated-annotation")
     public ACAQTraitDeclarationRef getGeneratedAnnotation() {
         return generatedAnnotation;

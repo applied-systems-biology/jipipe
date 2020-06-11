@@ -112,7 +112,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
             for (ACAQAlgorithmDeclaration targetAlgorithm : algorithms) {
                 int score = scores.get(targetAlgorithm);
                 // Add a generic one for creating a new instance
-                if (targetAlgorithm.getCategory() != ACAQAlgorithmCategory.Internal) {
+                if (targetAlgorithm.getCategory() != ACAQAlgorithmCategory.Internal && !targetAlgorithm.isHidden()) {
                     ACAQAlgorithmFinderAlgorithmUI algorithmUI = new ACAQAlgorithmFinderAlgorithmUI(outputSlot, graph, compartment, targetAlgorithm, score, maxScore);
                     algorithmUI.getEventBus().register(this);
                     formPanel.addToForm(algorithmUI, null);

@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.filesystem.algorithms.*;
-import org.hkijena.acaq5.extensions.filesystem.annotation.FileAnnotationGenerator;
-import org.hkijena.acaq5.extensions.filesystem.annotation.FolderAnnotationGenerator;
+import org.hkijena.acaq5.extensions.filesystem.algorithms.SimpleFileAnnotationGenerator;
+import org.hkijena.acaq5.extensions.filesystem.algorithms.SimplePathAnnotationGenerator;
 import org.hkijena.acaq5.extensions.filesystem.compat.PathDataImageJAdapter;
 import org.hkijena.acaq5.extensions.filesystem.compat.PathDataImporterUI;
 import org.hkijena.acaq5.extensions.filesystem.datasources.FileDataSource;
@@ -83,14 +83,16 @@ public class FilesystemExtension extends ACAQPrepackagedDefaultJavaExtension {
         registerAlgorithm("import-folder", FolderDataSource.class);
         registerAlgorithm("import-folder-list", FolderListDataSource.class);
 
-        registerAlgorithm("file-filter", FilterFiles.class, UIUtils.getAlgorithmIconURL("filter.png"));
-        registerAlgorithm("folder-filter", FilterFolders.class, UIUtils.getAlgorithmIconURL("filter.png"));
+        registerAlgorithm("path-filter", FilterPaths.class, UIUtils.getAlgorithmIconURL("filter.png"));
         registerAlgorithm("folder-list-files", ListFiles.class, UIUtils.getAlgorithmIconURL("list.png"));
         registerAlgorithm("folder-list-subfolders", ListSubfolders.class, UIUtils.getAlgorithmIconURL("list.png"));
         registerAlgorithm("folder-navigate-subfolders", NavigateSubFolder.class, UIUtils.getAlgorithmIconURL("go-parent-folder.png"));
 
-        registerAlgorithm("folder-annotate-by-name", FolderAnnotationGenerator.class, UIUtils.getAlgorithmIconURL("tools-wizard.png"));
-        registerAlgorithm("file-annotate-by-name", FileAnnotationGenerator.class, UIUtils.getAlgorithmIconURL("tools-wizard.png"));
+        registerAlgorithm("folder-annotate-by-name", SimpleFolderAnnotationGenerator.class, UIUtils.getAlgorithmIconURL("tools-wizard.png"));
+        registerAlgorithm("file-annotate-by-name", SimpleFileAnnotationGenerator.class, UIUtils.getAlgorithmIconURL("tools-wizard.png"));
+        registerAlgorithm("path-to-annotation-simple", SimplePathAnnotationGenerator.class, UIUtils.getAlgorithmIconURL("tools-wizard.png"));
+
+        registerAlgorithm("annotation-table-to-paths", AnnotationTableToPaths.class, UIUtils.getAlgorithmIconURL("path.png"));
     }
 
     private void registerAlgorithmResources() {

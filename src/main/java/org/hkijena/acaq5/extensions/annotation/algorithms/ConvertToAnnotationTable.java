@@ -12,7 +12,9 @@ import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extensions.annotation.datatypes.AnnotationTableData;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -26,9 +28,10 @@ import java.util.function.Supplier;
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Converter)
 @AlgorithmInputSlot(value = ACAQData.class, slotName = "Input", autoCreate = true)
 @AlgorithmOutputSlot(value = AnnotationTableData.class, slotName = "Output", autoCreate = true)
-public class ConvertToAnnotationTable extends ACAQSimpleIteratingAlgorithm {
+public class ConvertToAnnotationTable extends ACAQMergingAlgorithm {
 
     private boolean removeOutputAnnotations = true;
+    private String generatedColumn = "data";
 
     /**
      * @param declaration algorithm declaration
@@ -36,6 +39,7 @@ public class ConvertToAnnotationTable extends ACAQSimpleIteratingAlgorithm {
     public ConvertToAnnotationTable(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
         updateSlotTraits();
+        setDataSetMatching(ACAQIteratingAlgorithm.ColumnMatching.Custom);
     }
 
     /**
@@ -46,23 +50,33 @@ public class ConvertToAnnotationTable extends ACAQSimpleIteratingAlgorithm {
     public ConvertToAnnotationTable(ConvertToAnnotationTable other) {
         super(other);
         this.removeOutputAnnotations = other.removeOutputAnnotations;
+        this.generatedColumn = other.generatedColumn;
         updateSlotTraits();
     }
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
+        report.forCategory("Generated column").checkNonEmptyNull(generatedColumn, this);
     }
 
     @Override
-    protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(ACAQMultiDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        Set<Integer> inputDataRows = dataInterface.getInputRows(getFirstInputSlot());
+
         AnnotationTableData output = new AnnotationTableData();
-        output.addRow();
-        output.addColumn("data", true);
-        output.setValueAt("" + dataInterface.getInputData(getFirstOutputSlot(), ACAQData.class), 0, 0);
-        for (Map.Entry<ACAQTraitDeclaration, ACAQTrait> entry : dataInterface.getAnnotations().entrySet()) {
-            int col = output.addAnnotationColumn(entry.getKey());
-            ACAQTrait trait = entry.getValue();
-            output.setValueAt(trait.getValue(), 0, col);
+        int dataColumn = output.addColumn(generatedColumn, true);
+
+        int row = 0;
+        for (int sourceRow : inputDataRows) {
+            output.addRow();
+            output.setValueAt("" + getFirstInputSlot().getData(sourceRow, ACAQData.class), row, dataColumn);
+            for (ACAQTrait trait : getFirstInputSlot().getAnnotations(sourceRow)) {
+                if(trait != null) {
+                    int col = output.addAnnotationColumn(trait.getDeclaration());
+                    output.setValueAt(trait.getValue(), row, col);
+                }
+            }
+            ++row;
         }
 
         if (removeOutputAnnotations)
@@ -88,5 +102,16 @@ public class ConvertToAnnotationTable extends ACAQSimpleIteratingAlgorithm {
     public void setRemoveOutputAnnotations(boolean removeOutputAnnotations) {
         this.removeOutputAnnotations = removeOutputAnnotations;
         updateSlotTraits();
+    }
+
+    @ACAQDocumentation(name = "Generated column", description = "The string representation of the data are stored in the column with this name")
+    @ACAQParameter("generated-column")
+    public String getGeneratedColumn() {
+        return generatedColumn;
+    }
+
+    @ACAQParameter("generated-column")
+    public void setGeneratedColumn(String generatedColumn) {
+        this.generatedColumn = generatedColumn;
     }
 }

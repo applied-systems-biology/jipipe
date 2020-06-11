@@ -2,9 +2,7 @@ package org.hkijena.acaq5.extensions.annotation;
 
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
-import org.hkijena.acaq5.extensions.annotation.algorithms.AnnotateAll;
-import org.hkijena.acaq5.extensions.annotation.algorithms.RemoveAnnotations;
-import org.hkijena.acaq5.extensions.annotation.algorithms.SplitByAnnotation;
+import org.hkijena.acaq5.extensions.annotation.algorithms.*;
 import org.hkijena.acaq5.extensions.annotation.datasources.AnnotationTableFromFile;
 import org.hkijena.acaq5.extensions.annotation.datatypes.AnnotationTableData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.resultanalysis.ResultsTableDataSlotRowUI;
@@ -46,6 +44,8 @@ public class AnnotationsExtension extends ACAQPrepackagedDefaultJavaExtension {
         registerAlgorithm("annotate-all", AnnotateAll.class, UIUtils.getAlgorithmIconURL("tags.png"));
         registerAlgorithm("annotate-remove", RemoveAnnotations.class, UIUtils.getAlgorithmIconURL("trash.png"));
         registerAlgorithm("annotate-split-by-annotation", SplitByAnnotation.class, UIUtils.getAlgorithmIconURL("split.png"));
+        registerAlgorithm("data-to-annotation-table", ConvertToAnnotationTable.class, UIUtils.getAlgorithmIconURL("annotation-table.png"));
+        registerAlgorithm("annotate-with-data", AnnotateWithDataString.class, UIUtils.getAlgorithmIconURL("data-type.png"));
     }
 
     @Override

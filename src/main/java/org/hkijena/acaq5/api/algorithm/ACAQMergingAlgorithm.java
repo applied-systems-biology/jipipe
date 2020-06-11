@@ -1,6 +1,9 @@
 package org.hkijena.acaq5.api.algorithm;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Multimap;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
@@ -17,10 +20,12 @@ import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefList;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
+import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * An {@link ACAQAlgorithm} that applies a similar algorithm to {@link ACAQIteratingAlgorithm}, but does create {@link ACAQMultiDataInterface} instead.
@@ -29,6 +34,10 @@ import java.util.function.Supplier;
  * Please note that the single-input case will still group the data into multiple groups, or just one group if no grouping could be acquired.
  */
 public abstract class ACAQMergingAlgorithm extends ACAQAlgorithm {
+
+    public static final String MERGING_ALGORITHM_DESCRIPTION = "This algorithm groups the incoming data based on the annotations. " +
+            "Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and " +
+            "leave 'Data set matching annotations' empty.";
 
     private ACAQIteratingAlgorithm.ColumnMatching dataSetMatching = ACAQIteratingAlgorithm.ColumnMatching.Intersection;
     private boolean skipIncompleteDataSets = false;
@@ -179,14 +188,33 @@ public abstract class ACAQMergingAlgorithm extends ACAQAlgorithm {
         for (Map.Entry<ACAQDataSetKey, Map<String, TIntSet>> dataSetEntry : ImmutableList.copyOf(dataSets.entrySet())) {
 
             ACAQMultiDataInterface dataInterface = new ACAQMultiDataInterface(this);
+            Multimap<ACAQTraitDeclaration, String> compoundTraits = HashMultimap.create();
             for (Map.Entry<String, TIntSet> dataSlotEntry : dataSetEntry.getValue().entrySet()) {
                 ACAQDataSlot inputSlot = getInputSlot(dataSlotEntry.getKey());
                 TIntSet rows = dataSetEntry.getValue().get(inputSlot.getName());
                 for (TIntIterator it = rows.iterator(); it.hasNext(); ) {
                     int row = it.next();
                     dataInterface.addData(inputSlot, row);
-                    dataInterface.addGlobalAnnotations(inputSlot.getAnnotations(row), true);
+
+                    // Store all annotations
+                    for (ACAQTrait annotation : inputSlot.getAnnotations(row)) {
+                        if (annotation != null) {
+                            compoundTraits.put(annotation.getDeclaration(), "" + annotation.getValue());
+                        }
+                    }
                 }
+            }
+
+            // Create new merged annotations
+            for (ACAQTraitDeclaration declaration : compoundTraits.keySet()) {
+                List<String> valueList = compoundTraits.get(declaration).stream().distinct().sorted().collect(Collectors.toList());
+                String value;
+                try {
+                    value = JsonUtils.getObjectMapper().writeValueAsString(valueList);
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
+                dataInterface.addGlobalAnnotation(declaration.newInstance(value));
             }
 
             dataInterfaces.add(dataInterface);
