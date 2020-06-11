@@ -60,7 +60,7 @@ public class RunSingleAlgorithmDialog extends JDialog {
         JPanel contentPanel = new JPanel(new BorderLayout(8, 8));
 
         JPanel listPanel = new JPanel(new BorderLayout());
-        formPanel = new FormPanel(null, FormPanel.NONE);
+        formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, listPanel, formPanel);
         splitPane.setDividerSize(3);
