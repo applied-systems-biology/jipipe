@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.extensions.parameters.colors;
 
-import org.hkijena.acaq5.extensions.parameters.OptionalParameter;
+import org.hkijena.acaq5.extensions.parameters.optional.OptionalParameter;
 
 /**
  * Optional {@link ColorMap}

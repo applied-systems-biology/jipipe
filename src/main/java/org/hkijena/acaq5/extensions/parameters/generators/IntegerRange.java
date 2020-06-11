@@ -16,13 +16,13 @@ import java.util.List;
  * where from and to are inclusive. Returns the list of integers defined by the string. Empty ranges are ignored.
  * Spaces are ignored. Negative values must be enclosed in brackets
  */
-public class IntRangeStringParameter {
+public class IntegerRange {
     private String value;
 
     /**
      * Creates a new instance with a null value
      */
-    public IntRangeStringParameter() {
+    public IntegerRange() {
     }
 
     /**
@@ -30,7 +30,7 @@ public class IntRangeStringParameter {
      *
      * @param value the value
      */
-    public IntRangeStringParameter(String value) {
+    public IntegerRange(String value) {
         this.value = value;
     }
 
@@ -39,7 +39,7 @@ public class IntRangeStringParameter {
      *
      * @param other the original
      */
-    public IntRangeStringParameter(IntRangeStringParameter other) {
+    public IntegerRange(IntegerRange other) {
         this.value = other.value;
     }
 
@@ -134,10 +134,10 @@ public class IntRangeStringParameter {
     /**
      * Serializes the reference as ID
      */
-    public static class Serializer extends JsonSerializer<IntRangeStringParameter> {
+    public static class Serializer extends JsonSerializer<IntegerRange> {
 
         @Override
-        public void serialize(IntRangeStringParameter ref, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+        public void serialize(IntegerRange ref, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             jsonGenerator.writeString(ref.value);
         }
 
@@ -146,12 +146,12 @@ public class IntRangeStringParameter {
     /**
      * Deserializes the reference from a string
      */
-    public static class Deserializer extends JsonDeserializer<IntRangeStringParameter> {
+    public static class Deserializer extends JsonDeserializer<IntegerRange> {
 
         @Override
-        public IntRangeStringParameter deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+        public IntegerRange deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JsonNode node = jsonParser.readValueAsTree();
-            IntRangeStringParameter result = new IntRangeStringParameter();
+            IntegerRange result = new IntegerRange();
             if (!node.isNull()) {
                 result.setValue(node.textValue());
             }

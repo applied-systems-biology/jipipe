@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.extensions.parameters.pairs;
 
 import org.hkijena.acaq5.extensions.parameters.collections.ListParameter;
-import org.hkijena.acaq5.extensions.parameters.generators.IntRangeStringParameter;
+import org.hkijena.acaq5.extensions.parameters.generators.IntegerRange;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -9,13 +9,13 @@ import java.util.function.Predicate;
 /**
  * A parameter that renames an integer into another integer
  */
-public class IntRangeAndIntegerPair extends Pair<IntRangeStringParameter, Integer> implements Predicate<Integer>, Function<Integer, Integer> {
+public class IntRangeAndIntegerPair extends Pair<IntegerRange, Integer> implements Predicate<Integer>, Function<Integer, Integer> {
 
     /**
      * Creates a new instance
      */
     public IntRangeAndIntegerPair() {
-        super(IntRangeStringParameter.class, Integer.class);
+        super(IntegerRange.class, Integer.class);
     }
 
     /**

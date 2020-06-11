@@ -18,7 +18,7 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
 import org.hkijena.acaq5.extensions.parameters.collections.OutputSlotMapParameterCollection;
-import org.hkijena.acaq5.extensions.parameters.generators.IntRangeStringParameter;
+import org.hkijena.acaq5.extensions.parameters.generators.IntegerRange;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 
 import java.util.ArrayList;
@@ -56,9 +56,9 @@ public class StackSplitterAlgorithm extends ACAQSimpleIteratingAlgorithm {
                 .allowOutputSlotInheritance(true)
                 .sealInput()
                 .build());
-        stackAssignments = new OutputSlotMapParameterCollection(IntRangeStringParameter.class,
+        stackAssignments = new OutputSlotMapParameterCollection(IntegerRange.class,
                 this,
-                IntRangeStringParameter::new,
+                IntegerRange::new,
                 false);
         stackAssignments.updateSlots();
         registerSubParameter(stackAssignments);
@@ -71,9 +71,9 @@ public class StackSplitterAlgorithm extends ACAQSimpleIteratingAlgorithm {
      */
     public StackSplitterAlgorithm(StackSplitterAlgorithm other) {
         super(other);
-        stackAssignments = new OutputSlotMapParameterCollection(IntRangeStringParameter.class,
+        stackAssignments = new OutputSlotMapParameterCollection(IntegerRange.class,
                 this,
-                IntRangeStringParameter::new,
+                IntegerRange::new,
                 false);
         other.stackAssignments.copyTo(stackAssignments);
         registerSubParameter(stackAssignments);
@@ -83,7 +83,7 @@ public class StackSplitterAlgorithm extends ACAQSimpleIteratingAlgorithm {
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlus img = dataInterface.getInputData(getFirstInputSlot(), ImagePlusColorData.class).getImage();
         for (Map.Entry<String, ACAQParameterAccess> entry : stackAssignments.getParameters().entrySet()) {
-            IntRangeStringParameter sliceSelection = entry.getValue().get(IntRangeStringParameter.class);
+            IntegerRange sliceSelection = entry.getValue().get(IntegerRange.class);
             List<Integer> sliceIndices = sliceSelection.getIntegers();
             if (ignoreMissingSlices) {
                 sliceIndices.removeIf(i -> i >= img.getStackSize());
@@ -130,7 +130,7 @@ public class StackSplitterAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @Override
     public void reportValidity(ACAQValidityReport report) {
         for (Map.Entry<String, ACAQParameterAccess> entry : stackAssignments.getParameters().entrySet()) {
-            IntRangeStringParameter sliceSelection = entry.getValue().get(IntRangeStringParameter.class);
+            IntegerRange sliceSelection = entry.getValue().get(IntegerRange.class);
             try {
                 List<Integer> integers = sliceSelection.getIntegers();
                 if (integers.isEmpty()) {

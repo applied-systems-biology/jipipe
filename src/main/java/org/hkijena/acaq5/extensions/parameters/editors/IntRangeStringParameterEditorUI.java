@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.extensions.parameters.editors;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.extensions.parameters.generators.IntRangeStringParameter;
+import org.hkijena.acaq5.extensions.parameters.generators.IntegerRange;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.scijava.Context;
@@ -12,7 +12,7 @@ import java.awt.*;
 import java.util.List;
 
 /**
- * Editor for {@link org.hkijena.acaq5.extensions.parameters.generators.IntRangeStringParameter}
+ * Editor for {@link IntegerRange}
  */
 public class IntRangeStringParameterEditorUI extends ACAQParameterEditorUI {
 
@@ -36,9 +36,9 @@ public class IntRangeStringParameterEditorUI extends ACAQParameterEditorUI {
     @Override
     public void reload() {
         removeAll();
-        IntRangeStringParameter rangeString = getParameterAccess().get(IntRangeStringParameter.class);
+        IntegerRange rangeString = getParameterAccess().get(IntegerRange.class);
         if (rangeString == null) {
-            getParameterAccess().set(new IntRangeStringParameter());
+            getParameterAccess().set(new IntegerRange());
             return;
         }
         textField = new JTextField(rangeString.getValue());
@@ -57,9 +57,9 @@ public class IntRangeStringParameterEditorUI extends ACAQParameterEditorUI {
     }
 
     private void checkParameter() {
-        IntRangeStringParameter rangeString = getParameterAccess().get(IntRangeStringParameter.class);
+        IntegerRange rangeString = getParameterAccess().get(IntegerRange.class);
         if (rangeString == null) {
-            getParameterAccess().set(new IntRangeStringParameter());
+            getParameterAccess().set(new IntegerRange());
             return;
         }
         try {

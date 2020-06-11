@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.parameters;
+package org.hkijena.acaq5.extensions.parameters.optional;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;

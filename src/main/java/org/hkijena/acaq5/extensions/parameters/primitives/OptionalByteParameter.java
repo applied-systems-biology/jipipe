@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.extensions.parameters.primitives;
 
-import org.hkijena.acaq5.extensions.parameters.OptionalParameter;
+import org.hkijena.acaq5.extensions.parameters.optional.OptionalParameter;
 
 /**
  * Optional {@link Byte}

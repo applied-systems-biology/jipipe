@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.parameters;
+package org.hkijena.acaq5.extensions.parameters.primitives;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;

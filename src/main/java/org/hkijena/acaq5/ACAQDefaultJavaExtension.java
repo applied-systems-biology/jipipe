@@ -16,6 +16,7 @@ import org.hkijena.acaq5.api.registries.ACAQJavaAlgorithmRegistrationTask;
 import org.hkijena.acaq5.api.traits.ACAQJavaTraitDeclaration;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
+import org.hkijena.acaq5.extensions.parameters.collections.ListParameter;
 import org.hkijena.acaq5.extensions.parameters.primitives.EnumParameterTypeDeclaration;
 import org.hkijena.acaq5.extensions.tables.operations.ColumnOperation;
 import org.hkijena.acaq5.ui.compat.ImageJDatatypeImporterUI;
@@ -27,6 +28,7 @@ import org.hkijena.acaq5.ui.resultanalysis.ACAQResultDataSlotCellUI;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultDataSlotRowUI;
 import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableVectorOperation;
 import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableVectorOperationUI;
+import org.hkijena.acaq5.utils.ReflectionUtils;
 import org.scijava.service.AbstractService;
 
 import javax.swing.*;
@@ -34,6 +36,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Ref;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -264,11 +267,41 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
     public void registerParameterType(String id, Class<?> parameterClass, Supplier<Object> newInstanceGenerator, Function<Object, Object> duplicateFunction, String name, String description, Class<? extends ACAQParameterEditorUI> uiClass) {
         ACAQDefaultParameterTypeDeclaration declaration = new ACAQDefaultParameterTypeDeclaration(id,
                 parameterClass,
-                newInstanceGenerator,
-                duplicateFunction,
+                newInstanceGenerator != null ? newInstanceGenerator : () -> ReflectionUtils.newInstance(parameterClass),
+                duplicateFunction != null ? duplicateFunction : o -> ReflectionUtils.newInstance(parameterClass, o),
                 name,
                 description);
         registerParameterType(declaration, uiClass);
+    }
+
+    /**
+     * Registers a new parameter type and respective editors
+     *
+     * @param id                   Unique ID of this parameter type
+     * @param parameterClass       Parameter class
+     * @param listClass            Optional list class. If not null this creates a registration entry for the equivalent list entry
+     * @param newInstanceGenerator Function that creates a new instance. If null, the function calls the default constructor
+     * @param duplicateFunction    Function that copies an existing instance. If null, the function calls the copy constructor
+     * @param name                 Parameter class name
+     * @param description          Description for the parameter type
+     * @param uiClass              Parameter editor UI. Can be null if the editor is already provided.
+     * @param <T> parameter class
+     */
+    public <T> void registerParameterType(String id, Class<T> parameterClass, Class<? extends ListParameter<T>> listClass, Supplier<Object> newInstanceGenerator, Function<Object, Object> duplicateFunction, String name, String description, Class<? extends ACAQParameterEditorUI> uiClass) {
+        ACAQDefaultParameterTypeDeclaration declaration = new ACAQDefaultParameterTypeDeclaration(id,
+                parameterClass,
+                newInstanceGenerator != null ? newInstanceGenerator : () -> ReflectionUtils.newInstance(parameterClass),
+                duplicateFunction != null ? duplicateFunction : o -> ReflectionUtils.newInstance(parameterClass, o),
+                name,
+                description);
+        registerParameterType(declaration, uiClass);
+        if(listClass != null) {
+            registerParameterType(id + "-list", listClass, () -> ReflectionUtils.newInstance(listClass),
+                    o -> ReflectionUtils.newInstance(listClass, o),
+                    "List of " + name,
+                    description,
+                    null);
+        }
     }
 
     /**
@@ -281,6 +314,27 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
         registry.getParameterTypeRegistry().register(declaration);
         if (uiClass != null) {
             registerParameterEditor(declaration.getFieldClass(), uiClass);
+        }
+    }
+
+    /**
+     * Registers a new parameter type and respective editor
+     *
+     * @param declaration the declaration
+     * @param listClass a parameter type that is a list of the registered type
+     * @param uiClass     Parameter editor UI. Can be null if the editor is already provided.
+     */
+    public void registerParameterType(ACAQParameterTypeDeclaration declaration, Class<?> listClass, Class<? extends ACAQParameterEditorUI> uiClass) {
+        registry.getParameterTypeRegistry().register(declaration);
+        if (uiClass != null) {
+            registerParameterEditor(declaration.getFieldClass(), uiClass);
+        }
+        if(listClass != null) {
+            registerParameterType(declaration.getId() + "-list", listClass, () -> ReflectionUtils.newInstance(listClass),
+                    o -> ReflectionUtils.newInstance(listClass, o),
+                    "List of " + declaration.getName(),
+                    declaration.getDescription(),
+                    null);
         }
     }
 

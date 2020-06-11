@@ -21,7 +21,7 @@ import java.util.Set;
 /**
  * Editor for {@link ACAQTraitDeclarationRef.List}
  */
-public class ACAQTraitDeclarationRefCollectionParameterEditorUI extends ACAQParameterEditorUI {
+public class ACAQTraitDeclarationRefListParameterEditorUI extends ACAQParameterEditorUI {
 
     private ACAQTraitPicker picker;
     private JPanel currentlyDisplayed;
@@ -31,7 +31,7 @@ public class ACAQTraitDeclarationRefCollectionParameterEditorUI extends ACAQPara
      * @param context         SciJava context
      * @param parameterAccess the parameter
      */
-    public ACAQTraitDeclarationRefCollectionParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
+    public ACAQTraitDeclarationRefListParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
         super(context, parameterAccess);
         initialize();
         reload();

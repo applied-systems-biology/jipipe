@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.parameters;
+package org.hkijena.acaq5.extensions.parameters.primitives;
 
 import org.hkijena.acaq5.extensions.parameters.editors.DynamicEnumParameterSettings;
 

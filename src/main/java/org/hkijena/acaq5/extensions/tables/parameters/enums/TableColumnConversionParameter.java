@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.acaq5.api.registries.ACAQTableRegistry;
-import org.hkijena.acaq5.extensions.parameters.DynamicEnumParameter;
+import org.hkijena.acaq5.extensions.parameters.primitives.DynamicEnumParameter;
 import org.hkijena.acaq5.extensions.tables.operations.ConvertingColumnOperation;
 import org.hkijena.acaq5.utils.UIUtils;
 
