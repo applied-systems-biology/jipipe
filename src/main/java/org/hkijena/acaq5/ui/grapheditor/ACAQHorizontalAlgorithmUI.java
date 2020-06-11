@@ -297,6 +297,10 @@ public class ACAQHorizontalAlgorithmUI extends ACAQAlgorithmUI {
 
     @Override
     public void updateSize() {
+        int oldWidth = getWidth();
+        int oldHeight = getHeight();
         setSize(calculateWidth(), calculateHeight());
+        if(getWidth() != oldWidth || oldHeight != getHeight())
+            getGraphUI().repaint();
     }
 }
