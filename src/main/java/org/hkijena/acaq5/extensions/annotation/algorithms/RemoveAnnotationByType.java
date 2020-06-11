@@ -4,11 +4,8 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.ACAQIOSlotConfiguration;
-import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
 import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
@@ -25,9 +22,9 @@ import java.util.function.Supplier;
  */
 @ACAQDocumentation(name = "Remove annotation", description = "Removes annotations")
 @ACAQOrganization(menuPath = "Remove", algorithmCategory = ACAQAlgorithmCategory.Annotation)
-
-// Traits
-public class RemoveAnnotations extends ACAQAlgorithm {
+@AlgorithmInputSlot(value = ACAQData.class, slotName = "Input", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
+public class RemoveAnnotationByType extends ACAQSimpleIteratingAlgorithm {
 
     private ACAQTraitDeclarationRef.List annotationTypes = new ACAQTraitDeclarationRef.List();
     private boolean removeCategory = true;
@@ -35,7 +32,7 @@ public class RemoveAnnotations extends ACAQAlgorithm {
     /**
      * @param declaration algorithm declaration
      */
-    public RemoveAnnotations(ACAQAlgorithmDeclaration declaration) {
+    public RemoveAnnotationByType(ACAQAlgorithmDeclaration declaration) {
         super(declaration, new ACAQIOSlotConfiguration());
     }
 
@@ -44,32 +41,22 @@ public class RemoveAnnotations extends ACAQAlgorithm {
      *
      * @param other the original
      */
-    public RemoveAnnotations(RemoveAnnotations other) {
+    public RemoveAnnotationByType(RemoveAnnotationByType other) {
         super(other);
         this.annotationTypes = other.annotationTypes;
         updateSlotTraits();
     }
 
     @Override
-    public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        for (ACAQDataSlot inputSlot : getInputSlots()) {
-            ACAQDataSlot outputSlot = getSlots().get("Output " + inputSlot.getName());
-            outputSlot.copyFrom(inputSlot);
-        }
-        for (ACAQDataSlot outputSlot : getOutputSlots()) {
-            for (ACAQTraitDeclarationRef annotationType : annotationTypes) {
-                outputSlot.removeAllAnnotationsFromData(annotationType.getDeclaration());
-                if (removeCategory) {
-                    for (ACAQTraitDeclaration inherited : annotationType.getDeclaration().getInherited()) {
-                        outputSlot.removeAllAnnotationsFromData(inherited);
-                    }
-                }
-            }
-        }
+    public void reportValidity(ACAQValidityReport report) {
     }
 
     @Override
-    public void reportValidity(ACAQValidityReport report) {
+    protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        for (ACAQTraitDeclarationRef annotationType : annotationTypes) {
+            dataInterface.removeGlobalAnnotation(annotationType.getDeclaration(), removeCategory);
+        }
+        dataInterface.addOutputData(getFirstOutputSlot(), dataInterface.getInputData(getFirstInputSlot(), ACAQData.class));
     }
 
     private void updateSlotTraits() {

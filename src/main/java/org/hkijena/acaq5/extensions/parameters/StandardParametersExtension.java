@@ -10,11 +10,14 @@ import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.parameters.collections.*;
 import org.hkijena.acaq5.extensions.parameters.colors.*;
 import org.hkijena.acaq5.extensions.parameters.editors.*;
+import org.hkijena.acaq5.extensions.parameters.functions.ACAQTraitPatternExtractionFunction;
 import org.hkijena.acaq5.extensions.parameters.functions.FunctionParameterEditorUI;
 import org.hkijena.acaq5.extensions.parameters.matrix.Matrix2DParameterEditorUI;
 import org.hkijena.acaq5.extensions.parameters.optional.OptionalParameter;
 import org.hkijena.acaq5.extensions.parameters.optional.OptionalParameterEditorUI;
 import org.hkijena.acaq5.extensions.parameters.pairs.*;
+import org.hkijena.acaq5.extensions.parameters.patterns.StringPatternExtraction;
+import org.hkijena.acaq5.extensions.parameters.patterns.StringPatternExtractionParameterEditorUI;
 import org.hkijena.acaq5.extensions.parameters.predicates.*;
 import org.hkijena.acaq5.extensions.parameters.functions.FunctionParameter;
 import org.hkijena.acaq5.extensions.parameters.generators.*;
@@ -77,10 +80,30 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
         registerFunctionParameters();
         registerMatrixParameters();
         registerParameterGenerators();
+        registerPatternParameters();
+    }
+
+    private void registerPatternParameters() {
+        registerParameterType("string-pattern-extraction",
+                StringPatternExtraction.class,
+                StringPatternExtraction.List.class,
+                null,
+                null,
+                "String pattern extraction",
+                "Allows to extract a string from another string",
+                StringPatternExtractionParameterEditorUI.class);
     }
 
     private void registerFunctionParameters() {
         registerParameterEditor(FunctionParameter.class, FunctionParameterEditorUI.class);
+        registerParameterType("acaq-trait:string-pattern-extraction:acaq-trait:function",
+                ACAQTraitPatternExtractionFunction.class,
+                ACAQTraitPatternExtractionFunction.List.class,
+                null,
+                null,
+                "Annotation pattern extraction function",
+                "A function that applies pattern extraction to an annotation",
+                null);
     }
 
     private void registerParameterGenerators() {
@@ -286,6 +309,14 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 r -> new StringFilterAndSortOrderPair((StringFilterAndSortOrderPair) r),
                 "String filter to sort order",
                 "Mapping from a string filter to a sort order",
+                null);
+        registerParameterType("acaq-trait-declaration-ref:string-predicate:pair",
+                ACAQTraitDeclarationRefAndStringPredicatePair.class,
+                ACAQTraitDeclarationRefAndStringPredicatePair.List.class,
+                null,
+                null,
+                "Annotation type to string filter",
+                "Mapping annotation type to string filter",
                 null);
     }
 

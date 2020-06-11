@@ -42,10 +42,12 @@ public class AnnotationsExtension extends ACAQPrepackagedDefaultJavaExtension {
     private void registerAlgorithms() {
         registerAlgorithm("annotation-table-from-file", AnnotationTableFromFile.class);
         registerAlgorithm("annotate-all", AnnotateAll.class, UIUtils.getAlgorithmIconURL("tags.png"));
-        registerAlgorithm("annotate-remove", RemoveAnnotations.class, UIUtils.getAlgorithmIconURL("trash.png"));
+        registerAlgorithm("annotate-remove-by-type", RemoveAnnotationByType.class, UIUtils.getAlgorithmIconURL("trash.png"));
+        registerAlgorithm("annotate-remove-by-value", RemoveAnnotationByValue.class, UIUtils.getAlgorithmIconURL("trash.png"));
         registerAlgorithm("annotate-split-by-annotation", SplitByAnnotation.class, UIUtils.getAlgorithmIconURL("split.png"));
         registerAlgorithm("data-to-annotation-table", ConvertToAnnotationTable.class, UIUtils.getAlgorithmIconURL("annotation-table.png"));
         registerAlgorithm("annotate-with-data", AnnotateWithDataString.class, UIUtils.getAlgorithmIconURL("data-type.png"));
+        registerAlgorithm("extract-and-replace-annotation", ExtractAndReplaceAnnotation.class, UIUtils.getAlgorithmIconURL("edit-find-replace.png"));
     }
 
     @Override

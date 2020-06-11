@@ -9,11 +9,8 @@ import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extensions.annotation.datatypes.AnnotationTableData;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -58,7 +55,7 @@ public class ConvertToAnnotationTable extends ACAQMergingAlgorithm {
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        report.forCategory("Generated column").checkNonEmptyNull(generatedColumn, this);
+        report.forCategory("Generated column").checkNonEmpty(generatedColumn, this);
     }
 
     @Override

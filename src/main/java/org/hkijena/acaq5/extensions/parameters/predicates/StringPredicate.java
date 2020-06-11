@@ -8,6 +8,8 @@ import org.hkijena.acaq5.extensions.parameters.collections.ListParameter;
 
 import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * A filter for path filenames that can handle multiple filter modes
@@ -81,6 +83,17 @@ public class StringPredicate implements Predicate<String>, ACAQValidatable {
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
+        if(mode == Mode.Regex) {
+            try {
+                Pattern.compile(filterString);
+            }
+            catch (PatternSyntaxException e) {
+                report.forCategory("RegEx").reportIsInvalid("RegEx syntax is wrong!",
+                        "The regular expression string is wrong.",
+                        "Please check the syntax. If you are not familiar with it, you can find plenty of resources online.",
+                        this);
+            }
+        }
     }
 
     @Override
