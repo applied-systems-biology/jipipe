@@ -63,6 +63,11 @@ public abstract class ACAQSimpleIteratingAlgorithm extends ACAQAlgorithm {
                     "Algorithm '" + getName() + "'",
                     "The developer of this algorithm chose the wrong node type. The one that was selected only supports at most one input.",
                     "Please contact the plugin developers and tell them to let algorithm '" + getDeclaration().getId() + "' inherit from 'ACAQIteratingAlgorithm' instead.");
+        if(isPassThrough() && canPassThrough()) {
+            algorithmProgress.accept(subProgress.resolve("Data passed through to output"));
+            runPassThrough();
+            return;
+        }
 
         if (getInputSlots().isEmpty()) {
             final int row = 0;

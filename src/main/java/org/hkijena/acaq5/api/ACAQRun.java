@@ -111,7 +111,6 @@ public class ACAQRun implements ACAQRunnable {
                 }
             }
             if (canFlush) {
-                System.out.println("Flush: " + outputSlot.getNameWithAlgorithmName());
                 if (configuration.isFlushingKeepsDataEnabled())
                     outputSlot.save();
                 else

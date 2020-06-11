@@ -46,6 +46,7 @@ public abstract class ACAQAlgorithmUI extends JPanel {
     private JMenuItem cutContextMenuButton;
     private JMenuItem copyContextMenuButton;
     private JMenuItem enableDisableContextMenuButton;
+    private JMenuItem passThroughContextMenuButton;
 
     /**
      * Creates a new UI
@@ -81,6 +82,11 @@ public abstract class ACAQAlgorithmUI extends JPanel {
             } else {
                 enableDisableContextMenuButton.setText("Enable algorithm");
             }
+            if (a.isPassThrough()) {
+                passThroughContextMenuButton.setText("Disable pass through");
+            } else {
+                passThroughContextMenuButton.setText("Enable pass through");
+            }
         }
         if (cutContextMenuButton != null)
             cutContextMenuButton.setEnabled(algorithm.canUserDelete() && graphUI.getCopyPasteBehavior() != null);
@@ -114,7 +120,14 @@ public abstract class ACAQAlgorithmUI extends JPanel {
 
         if (algorithm instanceof ACAQAlgorithm) {
             ACAQAlgorithm a = (ACAQAlgorithm) algorithm;
-            enableDisableContextMenuButton = new JMenuItem("Enable/Disable algorithm", UIUtils.getIconFromResources("eye.png"));
+            passThroughContextMenuButton = new JMenuItem("Enable/Disable pass through", UIUtils.getIconFromResources("pass-through.png"));
+            passThroughContextMenuButton.addActionListener(e -> a.setPassThrough(!a.isPassThrough()));
+            contextMenu.add(passThroughContextMenuButton);
+        }
+
+        if (algorithm instanceof ACAQAlgorithm) {
+            ACAQAlgorithm a = (ACAQAlgorithm) algorithm;
+            enableDisableContextMenuButton = new JMenuItem("Enable/Disable algorithm", UIUtils.getIconFromResources("block.png"));
             enableDisableContextMenuButton.addActionListener(e -> a.setEnabled(!a.isEnabled()));
             contextMenu.add(enableDisableContextMenuButton);
         }
@@ -293,6 +306,10 @@ public abstract class ACAQAlgorithmUI extends JPanel {
             revalidate();
             repaint();
         } else if (event.getSource() == algorithm && "acaq:algorithm:enabled".equals(event.getKey())) {
+            updateActivationStatus();
+            updateContextMenu();
+        }
+        else if (event.getSource() == algorithm && "acaq:algorithm:pass-through".equals(event.getKey())) {
             updateActivationStatus();
             updateContextMenu();
         }

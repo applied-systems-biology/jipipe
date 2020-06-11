@@ -25,6 +25,7 @@ public class ACAQHorizontalAlgorithmUI extends ACAQAlgorithmUI {
     private JPanel inputSlotPanel;
     private JPanel outputSlotPanel;
     private JLabel nameLabel;
+    private JButton openSettingsButton;
 
     /**
      * Creates a new UI
@@ -53,7 +54,7 @@ public class ACAQHorizontalAlgorithmUI extends ACAQAlgorithmUI {
 
         nameLabel = new JLabel(getAlgorithm().getName());
         nameLabel.setIcon(ACAQUIAlgorithmRegistry.getInstance().getIconFor(getAlgorithm().getDeclaration()));
-        JButton openSettingsButton = new JButton(UIUtils.getIconFromResources("wrench.png"));
+        openSettingsButton = new JButton(UIUtils.getIconFromResources("wrench.png"));
         UIUtils.makeFlat25x25(openSettingsButton);
         UIUtils.addPopupMenuToComponent(openSettingsButton, getContextMenu());
 
@@ -270,16 +271,27 @@ public class ACAQHorizontalAlgorithmUI extends ACAQAlgorithmUI {
     @Override
     protected void updateActivationStatus() {
         if (getAlgorithm() instanceof ACAQAlgorithm) {
-            if (((ACAQAlgorithm) getAlgorithm()).isEnabled()) {
-                setBackground(getFillColor());
-                nameLabel.setForeground(Color.BLACK);
+            ACAQAlgorithm algorithm = (ACAQAlgorithm) getAlgorithm();
+            if (algorithm.isEnabled()) {
+                if(!algorithm.isPassThrough()) {
+                    setBackground(getFillColor());
+                    nameLabel.setForeground(Color.BLACK);
+                    openSettingsButton.setIcon(UIUtils.getIconFromResources("wrench.png"));
+                }
+                else {
+                    setBackground(Color.WHITE);
+                    nameLabel.setForeground(Color.BLACK);
+                    openSettingsButton.setIcon(UIUtils.getIconFromResources("pass-through-h.png"));
+                }
             } else {
-                setBackground(Color.LIGHT_GRAY);
-                nameLabel.setForeground(Color.GRAY);
+                setBackground(new Color(227, 86, 86));
+                nameLabel.setForeground(Color.WHITE);
+                openSettingsButton.setIcon(UIUtils.getIconFromResources("block.png"));
             }
         } else {
             setBackground(getFillColor());
             nameLabel.setForeground(Color.BLACK);
+            openSettingsButton.setIcon(UIUtils.getIconFromResources("wrench.png"));
         }
     }
 

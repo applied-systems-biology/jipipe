@@ -81,6 +81,13 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
 
     @Override
     public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+
+        if(isPassThrough() && canPassThrough()) {
+            algorithmProgress.accept(subProgress.resolve("Data passed through to output"));
+            runPassThrough();
+            return;
+        }
+
         // Special case: No input slots
         if (getInputSlots().isEmpty()) {
             if (isCancelled.get())
