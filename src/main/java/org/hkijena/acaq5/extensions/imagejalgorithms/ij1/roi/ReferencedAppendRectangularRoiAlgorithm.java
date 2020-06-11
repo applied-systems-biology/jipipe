@@ -17,11 +17,13 @@ import java.awt.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import static org.hkijena.acaq5.api.algorithm.ACAQIteratingAlgorithm.ITERATING_ALGORITHM_DESCRIPTION;
+
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
 @ACAQDocumentation(name = "Append rectangular ROI (referenced)", description = "Appends manually defines rectangular ROI to all input ROI lists. " +
-        "Ths algorithm allows to add rectangles as margins to the reference image bounds.")
+        "Ths algorithm allows to add rectangles as margins to the reference image bounds."+ "\n\n" + ITERATING_ALGORITHM_DESCRIPTION)
 @ACAQOrganization(menuPath = "ROI", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ROIListData.class, slotName = "ROI")
 @AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Reference")

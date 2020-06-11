@@ -10,10 +10,13 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import static org.hkijena.acaq5.api.algorithm.ACAQMergingAlgorithm.MERGING_ALGORITHM_DESCRIPTION;
+
 /**
  * Algorithm that integrates columns
  */
-@ACAQDocumentation(name = "Merge tables", description = "Merges multiple tables into one table. Columns are automatically created if they do not exist.")
+@ACAQDocumentation(name = "Merge tables", description = "Merges multiple tables into one table. Columns are automatically created if they do not exist."
+        + "\n\n" + MERGING_ALGORITHM_DESCRIPTION)
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Processor, menuPath = "Tables")
 @AlgorithmInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)

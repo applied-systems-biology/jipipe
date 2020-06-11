@@ -22,10 +22,12 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import static org.hkijena.acaq5.extensions.imagejalgorithms.ij1.roi.ImageRoiProcessorAlgorithm.ROI_PROCESSOR_DESCRIPTION;
+
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@ACAQDocumentation(name = "Extract ROI statistics", description = "Generates a results table containing ROI statistics.")
+@ACAQDocumentation(name = "Extract ROI statistics", description = "Generates a results table containing ROI statistics." + "\n\n" + ROI_PROCESSOR_DESCRIPTION)
 @ACAQOrganization(menuPath = "ROI", algorithmCategory = ACAQAlgorithmCategory.Analysis)
 @AlgorithmInputSlot(value = ROIListData.class, slotName = "ROI")
 @AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Reference")

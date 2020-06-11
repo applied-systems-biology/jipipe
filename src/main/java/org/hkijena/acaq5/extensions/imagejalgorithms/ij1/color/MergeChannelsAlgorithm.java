@@ -22,12 +22,13 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import static org.hkijena.acaq5.api.algorithm.ACAQIteratingAlgorithm.ITERATING_ALGORITHM_DESCRIPTION;
 import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExtension.TO_COLOR_CONVERSION;
 
 /**
  * Wrapper around {@link ImageProcessor}
  */
-@ACAQDocumentation(name = "Merge channels", description = "Merges each greyscale image plane into a multi-channel image")
+@ACAQDocumentation(name = "Merge channels", description = "Merges each greyscale image plane into a multi-channel image. " + "\n\n" + ITERATING_ALGORITHM_DESCRIPTION)
 @ACAQOrganization(menuPath = "Colors", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")
 @AlgorithmOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output")

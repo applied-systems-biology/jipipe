@@ -11,13 +11,15 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import static org.hkijena.acaq5.api.algorithm.ACAQMergingAlgorithm.MERGING_ALGORITHM_DESCRIPTION;
+
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
 @ACAQDocumentation(name = "Merge ROI lists", description = "Merges multiple ROI lists by using data annotations. " +
         "By default, ROIs with equivalent annotations are put into the same group and merged into one ROI list for each group. " +
         "Use the parameters to control how groups are created. To merge all incoming ROI lists into just one list, set the matching strategy to 'Custom' and leave the list of " +
-        "annotation columns empty.")
+        "annotation columns empty."  + "\n\n" + MERGING_ALGORITHM_DESCRIPTION)
 @ACAQOrganization(menuPath = "ROI", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ROIListData.class, slotName = "Input")
 @AlgorithmOutputSlot(value = ROIListData.class, slotName = "Output")

@@ -18,13 +18,15 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import static org.hkijena.acaq5.api.algorithm.ACAQMergingAlgorithm.MERGING_ALGORITHM_DESCRIPTION;
+
 /**
  * Removes a specified annotation
  */
 @ACAQDocumentation(name = "Convert to annotation table", description = "Converts data into an annotation table that contains " +
         "all annotations of the data row. The table contains a column 'data' that contains a string representation of the input data. " +
         "All other columns are generated based on the annotations. They have following structure: 'annotation:[annotation-id]' where the annotation id " +
-        "is the unique identifier of this annotation type. You can find annotation types in the help menu.")
+        "is the unique identifier of this annotation type. You can find annotation types in the help menu." + "\n\n" + MERGING_ALGORITHM_DESCRIPTION)
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Converter)
 @AlgorithmInputSlot(value = ACAQData.class, slotName = "Input", autoCreate = true)
 @AlgorithmOutputSlot(value = AnnotationTableData.class, slotName = "Output", autoCreate = true)

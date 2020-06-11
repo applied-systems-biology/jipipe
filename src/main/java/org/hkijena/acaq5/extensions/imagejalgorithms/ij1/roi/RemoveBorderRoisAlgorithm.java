@@ -17,11 +17,13 @@ import java.awt.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import static org.hkijena.acaq5.api.algorithm.ACAQIteratingAlgorithm.ITERATING_ALGORITHM_DESCRIPTION;
+
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
 @ACAQDocumentation(name = "Remove ROI at borders", description = "Removes all ROI that intersect with image borders. Use the 'Border' parameter " +
-        "to define a rectangle inside of the image dimensions. If a ROI is not contained within this region, it is removed.")
+        "to define a rectangle inside of the image dimensions. If a ROI is not contained within this region, it is removed." + "\n\n" + ITERATING_ALGORITHM_DESCRIPTION)
 @ACAQOrganization(menuPath = "ROI", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ROIListData.class, slotName = "ROI")
 @AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Image")

@@ -20,10 +20,12 @@ import org.hkijena.acaq5.extensions.parameters.editors.EnumParameterSettings;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import static org.hkijena.acaq5.extensions.imagejalgorithms.ij1.roi.ImageRoiProcessorAlgorithm.ROI_PROCESSOR_DESCRIPTION;
+
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@ACAQDocumentation(name = "Color ROI by statistics", description = "Sets the ROI item colors by measurements.")
+@ACAQDocumentation(name = "Color ROI by statistics", description = "Sets the ROI item colors by measurements." + "\n\n" + ROI_PROCESSOR_DESCRIPTION)
 @ACAQOrganization(menuPath = "ROI", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ROIListData.class, slotName = "ROI")
 @AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Reference")

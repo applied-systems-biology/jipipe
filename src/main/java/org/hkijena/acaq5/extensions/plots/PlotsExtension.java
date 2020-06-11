@@ -7,6 +7,7 @@ import org.hkijena.acaq5.extensions.plots.parameters.UIPlotDataSeriesColumnEnum;
 import org.hkijena.acaq5.extensions.plots.parameters.UIPlotDataSeriesColumnEnumParameterEditorUI;
 import org.hkijena.acaq5.extensions.plots.ui.resultanalysis.PlotDataSlotRowUI;
 import org.hkijena.acaq5.utils.ResourceUtils;
+import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -106,7 +107,7 @@ public class PlotsExtension extends ACAQPrepackagedDefaultJavaExtension {
                 null);
 
         // Register algorithms to create plots
-        registerAlgorithm("plot-from-table", PlotGeneratorAlgorithm.class);
+        registerAlgorithm("plot-from-table", PlotGeneratorAlgorithm.class, UIUtils.getAlgorithmIconURL("chart-line.png"));
 
         // Register parameters
         registerEnumParameterType("plot-histogram:type",

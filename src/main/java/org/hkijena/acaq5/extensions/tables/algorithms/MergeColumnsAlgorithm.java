@@ -14,10 +14,12 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import static org.hkijena.acaq5.api.algorithm.ACAQMergingAlgorithm.MERGING_ALGORITHM_DESCRIPTION;
+
 /**
  * Algorithm that integrates columns
  */
-@ACAQDocumentation(name = "Merge columns", description = "Merges multiple table columns into a table")
+@ACAQDocumentation(name = "Merge columns", description = "Merges multiple table columns into a table."  + "\n\n" + MERGING_ALGORITHM_DESCRIPTION)
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Processor, menuPath = "Tables")
 @AlgorithmInputSlot(value = TableColumn.class, slotName = "Input", autoCreate = true)
 @AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)

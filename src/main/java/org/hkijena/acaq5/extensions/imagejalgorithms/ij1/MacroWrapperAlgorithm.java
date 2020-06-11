@@ -20,6 +20,7 @@ import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.registries.ACAQImageJAdapterRegistry;
+import org.hkijena.acaq5.extensions.filesystem.dataypes.PathData;
 import org.hkijena.acaq5.extensions.imagejalgorithms.parameters.MacroCode;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -35,14 +36,21 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import static org.hkijena.acaq5.api.algorithm.ACAQIteratingAlgorithm.ITERATING_ALGORITHM_DESCRIPTION;
+
 /**
  * An algorithm that wraps around an ImageJ macro
  */
-@ACAQDocumentation(name = "ImageJ Macro", description = "Runs a custom ImageJ macro")
+@ACAQDocumentation(name = "ImageJ Macro", description = "Runs a custom ImageJ macro. " +
+        "Images are opened as windows named according to the input slot. You have to select windows with " +
+        "the select() function or comparable functions. You have have one results table input which " +
+        "can be adressed via the global functions. Input ROI are merged into one ROI manager.\n\n" +
+        "You can define variables that are passed from ACAQ5 to ImageJ. Variables are also created for incoming path-like data." + "\n\n" + ITERATING_ALGORITHM_DESCRIPTION)
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(ImagePlusData.class)
 @AlgorithmInputSlot(ROIListData.class)
 @AlgorithmInputSlot(ResultsTableData.class)
+@AlgorithmInputSlot(PathData.class)
 @AlgorithmOutputSlot(ImagePlusData.class)
 @AlgorithmOutputSlot(ROIListData.class)
 @AlgorithmOutputSlot(ResultsTableData.class)
@@ -125,6 +133,19 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
             finalCode.append(";\n");
         }
 
+        // Inject path data
+        for (ACAQDataSlot inputSlot : getInputSlots()) {
+            ACAQData data = dataInterface.getInputData(inputSlot, ACAQData.class);
+            if(data instanceof PathData) {
+                if (!MacroUtils.isValidVariableName(inputSlot.getName()))
+                    throw new IllegalArgumentException("Invalid variable name " + inputSlot.getName());
+                finalCode.append("var ").append(inputSlot.getName()).append(" = ");
+                String value = "" + ((PathData) data).getPath();
+                finalCode.append("\"").append(MacroUtils.escapeString(value)).append("\"");
+                finalCode.append(";\n");
+            }
+        }
+
         finalCode.append("\n").append(code.getCode());
 
         Interpreter interpreter = new Interpreter();
@@ -194,6 +215,8 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
         }
         for (ACAQDataSlot inputSlot : getInputSlots()) {
             ACAQData data = dataInterface.getInputData(inputSlot, ACAQData.class);
+            if(data instanceof PathData)
+                continue;
             ImageJDatatypeAdapter adapter = ACAQImageJAdapterRegistry.getInstance().getAdapterForACAQData(data);
             if (batchMode) {
                 adapter.convertACAQToImageJ(data, true, true, inputSlot.getName());

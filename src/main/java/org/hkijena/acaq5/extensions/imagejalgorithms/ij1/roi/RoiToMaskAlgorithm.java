@@ -21,11 +21,14 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static org.hkijena.acaq5.api.algorithm.ACAQIteratingAlgorithm.ITERATING_ALGORITHM_DESCRIPTION;
+
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
 @ACAQDocumentation(name = "Convert ROI to mask", description = "Converts ROI lists to masks. " +
-        "This algorithm needs a reference image that provides the output sizes. If you do not have a reference image, you can use the unreferenced variant.")
+        "This algorithm needs a reference image that provides the output sizes. If you do not have a reference image, you can use the unreferenced variant."
+        + "\n\n" + ITERATING_ALGORITHM_DESCRIPTION)
 @ACAQOrganization(menuPath = "ROI", algorithmCategory = ACAQAlgorithmCategory.Converter)
 @AlgorithmInputSlot(value = ROIListData.class, slotName = "ROI")
 @AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Image")

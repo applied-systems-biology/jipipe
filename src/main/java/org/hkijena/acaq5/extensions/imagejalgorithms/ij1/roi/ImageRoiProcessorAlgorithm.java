@@ -26,6 +26,10 @@ import java.util.function.Supplier;
  */
 public abstract class ImageRoiProcessorAlgorithm extends ACAQIteratingAlgorithm {
 
+    public static final String ROI_PROCESSOR_DESCRIPTION = "This algorithm can process ROI lists with or without a reference image. " +
+            "The reference image provides information about the area where the ROI are located and can be used to extract statistics. " +
+            "You can choose to disable the reference image slot via the 'Require reference image' parameter.\n\n" + ITERATING_ALGORITHM_DESCRIPTION;
+
     private boolean requireReferenceImage = true;
     private UnreferencedRoiToMaskAlgorithm toMaskAlgorithm;
 
