@@ -18,7 +18,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.extensions.parameters.editors.ACAQDataParameterSettings;
-import org.hkijena.acaq5.extensions.parameters.filters.StringFilter;
+import org.hkijena.acaq5.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQDataDeclarationRef;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotColumn;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotData;
@@ -98,7 +98,7 @@ public class PlotGeneratorAlgorithm extends ACAQAlgorithm {
                 TableColumnSourceParameter parameter = entry.getValue().get(TableColumnSourceParameter.class);
                 if (parameter.getMode() == TableColumnSourceParameter.Mode.PickColumn) {
                     String matchingColumn = null;
-                    StringFilter filter = parameter.getColumnSource();
+                    StringPredicate filter = parameter.getColumnSource();
                     for (String columnHeading : columnHeadings) {
                         if (filter.test(columnHeading)) {
                             matchingColumn = columnHeading;
@@ -209,7 +209,7 @@ public class PlotGeneratorAlgorithm extends ACAQAlgorithm {
                 parameterAccess.setFieldClass(TableColumnSourceParameter.class);
                 TableColumnSourceParameter initialValue = new TableColumnSourceParameter();
                 initialValue.setMode(TableColumnSourceParameter.Mode.PickColumn);
-                initialValue.setColumnSource(new StringFilter(StringFilter.Mode.Equals, column.name()));
+                initialValue.setColumnSource(new StringPredicate(StringPredicate.Mode.Equals, column.name()));
                 initialValue.getGeneratorSource().setGeneratedType(column.isNumeric() ? ColumnContentType.NumericColumn : ColumnContentType.StringColumn);
                 parameterAccess.set(initialValue);
                 parameterAccess.setDescription(column.description() + " " + (column.isNumeric() ? "(Numeric column)" : "(String column)"));

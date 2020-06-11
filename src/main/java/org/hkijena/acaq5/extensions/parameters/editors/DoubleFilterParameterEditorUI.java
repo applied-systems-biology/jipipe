@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.extensions.parameters.editors;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.extensions.parameters.filters.DoubleFilter;
+import org.hkijena.acaq5.extensions.parameters.predicates.DoublePredicate;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Context;
@@ -10,7 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Editor for {@link org.hkijena.acaq5.extensions.parameters.filters.DoubleFilter}
+ * Editor for {@link DoublePredicate}
  */
 public class DoubleFilterParameterEditorUI extends ACAQParameterEditorUI {
 
@@ -43,28 +43,28 @@ public class DoubleFilterParameterEditorUI extends ACAQParameterEditorUI {
 
         isReloading = true;
         removeAll();
-        DoubleFilter filter = getParameterAccess().get(DoubleFilter.class);
+        DoublePredicate filter = getParameterAccess().get(DoublePredicate.class);
         if (filter == null) {
-            getParameterAccess().set(new DoubleFilter());
+            getParameterAccess().set(new DoublePredicate());
             return;
         }
 
         ButtonGroup group = new ButtonGroup();
         addFilterModeSelection(filter,
                 group,
-                DoubleFilter.Mode.LessThan);
+                DoublePredicate.Mode.LessThan);
         addFilterModeSelection(filter,
                 group,
-                DoubleFilter.Mode.LessThanOrEquals);
+                DoublePredicate.Mode.LessThanOrEquals);
         addFilterModeSelection(filter,
                 group,
-                DoubleFilter.Mode.Equals);
+                DoublePredicate.Mode.Equals);
         addFilterModeSelection(filter,
                 group,
-                DoubleFilter.Mode.GreaterThanOrEquals);
+                DoublePredicate.Mode.GreaterThanOrEquals);
         addFilterModeSelection(filter,
                 group,
-                DoubleFilter.Mode.GreaterThan);
+                DoublePredicate.Mode.GreaterThan);
 
 
         SpinnerNumberModel model = new SpinnerNumberModel(filter.getReference(), Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, 1);
@@ -84,7 +84,7 @@ public class DoubleFilterParameterEditorUI extends ACAQParameterEditorUI {
         isReloading = false;
     }
 
-    private void addFilterModeSelection(DoubleFilter filter, ButtonGroup group, DoubleFilter.Mode mode) {
+    private void addFilterModeSelection(DoublePredicate filter, ButtonGroup group, DoublePredicate.Mode mode) {
         JToggleButton toggleButton = new JToggleButton(mode.getStringRepresentation());
         UIUtils.makeFlat25x25(toggleButton);
         toggleButton.addActionListener(e -> {

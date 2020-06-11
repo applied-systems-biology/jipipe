@@ -14,7 +14,6 @@ import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefList;
 import org.hkijena.acaq5.extensions.parameters.editors.ACAQTraitParameterSettings;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 
@@ -30,7 +29,7 @@ import java.util.function.Supplier;
 // Traits
 public class RemoveAnnotations extends ACAQAlgorithm {
 
-    private ACAQTraitDeclarationRefList annotationTypes = new ACAQTraitDeclarationRefList();
+    private ACAQTraitDeclarationRef.List annotationTypes = new ACAQTraitDeclarationRef.List();
     private boolean removeCategory = true;
 
     /**
@@ -93,12 +92,12 @@ public class RemoveAnnotations extends ACAQAlgorithm {
     @ACAQDocumentation(name = "Removed annotation", description = "This annotation is removed from each input data")
     @ACAQParameter("annotation-type")
     @ACAQTraitParameterSettings(showHidden = true)
-    public ACAQTraitDeclarationRefList getAnnotationTypes() {
+    public ACAQTraitDeclarationRef.List getAnnotationTypes() {
         return annotationTypes;
     }
 
     @ACAQParameter("annotation-type")
-    public void setAnnotationTypes(ACAQTraitDeclarationRefList annotationTypes) {
+    public void setAnnotationTypes(ACAQTraitDeclarationRef.List annotationTypes) {
         this.annotationTypes = annotationTypes;
         updateSlotTraits();
         getEventBus().post(new ParameterChangedEvent(this, "annotation-type"));

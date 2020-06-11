@@ -9,7 +9,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
-import org.hkijena.acaq5.extensions.parameters.collections.StringFilterListParameter;
+import org.hkijena.acaq5.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
 
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 public class SplitTableByColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     private ACAQTraitDeclarationRef generatedAnnotation = new ACAQTraitDeclarationRef(ACAQTraitRegistry.getInstance().getDeclarationById("row-filter"));
-    private StringFilterListParameter columns = new StringFilterListParameter();
+    private StringPredicate.List columns = new StringPredicate.List();
 
     /**
      * Creates a new instance
@@ -50,7 +50,7 @@ public class SplitTableByColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
     public SplitTableByColumnsAlgorithm(SplitTableByColumnsAlgorithm other) {
         super(other);
         this.generatedAnnotation = new ACAQTraitDeclarationRef(other.generatedAnnotation);
-        this.columns = new StringFilterListParameter(other.columns);
+        this.columns = new StringPredicate.List(other.columns);
     }
 
     @Override
@@ -99,12 +99,12 @@ public class SplitTableByColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     @ACAQDocumentation(name = "Selected columns", description = "The list of columns to select")
     @ACAQParameter("columns")
-    public StringFilterListParameter getColumns() {
+    public StringPredicate.List getColumns() {
         return columns;
     }
 
     @ACAQParameter("columns")
-    public void setColumns(StringFilterListParameter columns) {
+    public void setColumns(StringPredicate.List columns) {
         this.columns = columns;
     }
 }

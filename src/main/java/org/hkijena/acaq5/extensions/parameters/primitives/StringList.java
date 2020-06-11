@@ -1,13 +1,15 @@
-package org.hkijena.acaq5.extensions.parameters.collections;
+package org.hkijena.acaq5.extensions.parameters.primitives;
+
+import org.hkijena.acaq5.extensions.parameters.collections.ListParameter;
 
 /**
  * A list of {@link String}
  */
-public class StringListParameter extends ListParameter<String> {
+public class StringList extends ListParameter<String> {
     /**
      * Creates a new empty list
      */
-    public StringListParameter() {
+    public StringList() {
         super(String.class);
     }
 
@@ -16,7 +18,7 @@ public class StringListParameter extends ListParameter<String> {
      *
      * @param other the original
      */
-    public StringListParameter(StringListParameter other) {
+    public StringList(StringList other) {
         super(String.class);
         addAll(other);
     }

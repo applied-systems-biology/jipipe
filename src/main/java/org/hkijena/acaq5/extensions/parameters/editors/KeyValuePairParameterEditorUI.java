@@ -1,9 +1,9 @@
 package org.hkijena.acaq5.extensions.parameters.editors;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.extensions.parameters.collections.KeyValuePairParameter;
-import org.hkijena.acaq5.extensions.parameters.collections.KeyValueParameterKeyAccess;
-import org.hkijena.acaq5.extensions.parameters.collections.KeyValueParameterValueAccess;
+import org.hkijena.acaq5.extensions.parameters.pairs.Pair;
+import org.hkijena.acaq5.extensions.parameters.pairs.PairParameterKeyAccess;
+import org.hkijena.acaq5.extensions.parameters.pairs.PairParameterValueAccess;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -12,7 +12,7 @@ import org.scijava.Context;
 import javax.swing.*;
 
 /**
- * Editor for {@link org.hkijena.acaq5.extensions.parameters.collections.KeyValuePairParameter}
+ * Editor for {@link Pair}
  */
 public class KeyValuePairParameterEditorUI extends ACAQParameterEditorUI {
 
@@ -37,9 +37,9 @@ public class KeyValuePairParameterEditorUI extends ACAQParameterEditorUI {
     public void reload() {
         removeAll();
 
-        KeyValuePairParameter<?, ?> renaming = getParameterAccess().get(KeyValuePairParameter.class);
-        KeyValueParameterKeyAccess<?, ?> keyAccess = new KeyValueParameterKeyAccess<>(getParameterAccess(), renaming);
-        KeyValueParameterValueAccess<?, ?> valueAccess = new KeyValueParameterValueAccess<>(getParameterAccess(), renaming);
+        Pair<?, ?> renaming = getParameterAccess().get(Pair.class);
+        PairParameterKeyAccess<?, ?> keyAccess = new PairParameterKeyAccess<>(getParameterAccess(), renaming);
+        PairParameterValueAccess<?, ?> valueAccess = new PairParameterValueAccess<>(getParameterAccess(), renaming);
 
         add(ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getContext(), keyAccess));
         add(new JLabel(UIUtils.getIconFromResources("chevron-right.png")));

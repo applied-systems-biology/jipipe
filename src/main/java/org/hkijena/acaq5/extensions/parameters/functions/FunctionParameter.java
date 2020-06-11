@@ -9,13 +9,14 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.extensions.parameters.pairs.Pair;
 import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.io.IOException;
 
 /**
  * A parameter that allows to model a function with an input, an output, and parameters.
- * This can be used if {@link org.hkijena.acaq5.extensions.parameters.collections.KeyValuePairParameter} is not sufficient
+ * This can be used if {@link Pair} is not sufficient
  */
 @JsonSerialize(using = FunctionParameter.Serializer.class)
 @JsonDeserialize(using = FunctionParameter.Deserializer.class)

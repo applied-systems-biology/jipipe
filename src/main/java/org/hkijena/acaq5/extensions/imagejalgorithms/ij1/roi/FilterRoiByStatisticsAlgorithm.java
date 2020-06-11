@@ -12,13 +12,11 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.LogicalOperation;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure.MeasurementColumn;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure.MeasurementFilter;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure.MeasurementFilterList;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -34,7 +32,7 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ij1.roi.ImageRoiProc
 @AlgorithmOutputSlot(value = ROIListData.class, slotName = "Output")
 public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
 
-    private MeasurementFilterList measurementFilters = new MeasurementFilterList();
+    private MeasurementFilter.List measurementFilters = new MeasurementFilter.List();
     private boolean invert = false;
     private LogicalOperation betweenMeasurementOperation = LogicalOperation.LogicalAnd;
     private LogicalOperation sameMeasurementOperation = LogicalOperation.LogicalAnd;
@@ -59,7 +57,7 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
         super(other);
         this.invert = other.invert;
         this.sameMeasurementOperation = other.sameMeasurementOperation;
-        this.measurementFilters = new MeasurementFilterList(other.measurementFilters);
+        this.measurementFilters = new MeasurementFilter.List(other.measurementFilters);
         this.betweenMeasurementOperation = other.betweenMeasurementOperation;
         this.sameMeasurementOperation = other.sameMeasurementOperation;
     }
@@ -93,10 +91,10 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
 
         ROIListData outputData = new ROIListData();
         for (int row = 0; row < statistics.getRowCount(); row++) {
-            List<Boolean> betweenMeasurements = new ArrayList<>();
+            java.util.List betweenMeasurements = new ArrayList<>();
             for (MeasurementColumn measurementColumn : filtersPerColumn.keySet()) {
                 double value = statistics.getTable().getValue(measurementColumn.getColumnName(), row);
-                List<Boolean> withinMeasurement = new ArrayList<>();
+                java.util.List withinMeasurement = new ArrayList<>();
                 for (MeasurementFilter measurementFilter : filtersPerColumn.get(measurementColumn)) {
                     withinMeasurement.add(measurementFilter.getValue().test(value));
                 }
@@ -130,12 +128,12 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
 
     @ACAQParameter("filter")
     @ACAQDocumentation(name = "Filter", description = "The set of filters to apply")
-    public MeasurementFilterList getMeasurementFilters() {
+    public MeasurementFilter.List getMeasurementFilters() {
         return measurementFilters;
     }
 
     @ACAQParameter("filter")
-    public void setMeasurementFilters(MeasurementFilterList measurementFilters) {
+    public void setMeasurementFilters(MeasurementFilter.List measurementFilters) {
         this.measurementFilters = measurementFilters;
     }
 

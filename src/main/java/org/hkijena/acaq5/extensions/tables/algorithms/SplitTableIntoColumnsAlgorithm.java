@@ -7,14 +7,12 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
-import org.hkijena.acaq5.extensions.parameters.collections.StringFilterListParameter;
+import org.hkijena.acaq5.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -28,7 +26,7 @@ import java.util.function.Supplier;
 public class SplitTableIntoColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     private ACAQTraitDeclarationRef generatedAnnotation = new ACAQTraitDeclarationRef(ACAQTraitRegistry.getInstance().getDeclarationById("column-header"));
-    private StringFilterListParameter filters = new StringFilterListParameter();
+    private StringPredicate.List filters = new StringPredicate.List();
 
     /**
      * Creates a new instance
@@ -47,7 +45,7 @@ public class SplitTableIntoColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm
     public SplitTableIntoColumnsAlgorithm(SplitTableIntoColumnsAlgorithm other) {
         super(other);
         this.generatedAnnotation = new ACAQTraitDeclarationRef(other.generatedAnnotation);
-        this.filters = new StringFilterListParameter(other.filters);
+        this.filters = new StringPredicate.List(other.filters);
     }
 
     @Override
@@ -56,7 +54,7 @@ public class SplitTableIntoColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm
         for (String columnName : input.getColumnNames()) {
             if (filters.isEmpty() || filters.test(columnName)) {
                 TableColumn column = input.getColumnCopy(input.getColumnIndex(columnName));
-                List<ACAQTrait> traitList = new ArrayList<>();
+                java.util.List traitList = new ArrayList<>();
                 if (generatedAnnotation.getDeclaration() != null) {
                     traitList.add(generatedAnnotation.getDeclaration().newInstance(columnName));
                 }
@@ -83,12 +81,12 @@ public class SplitTableIntoColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm
 
     @ACAQDocumentation(name = "Filters", description = "Allows you to filter only specific columns that will be extracted. The filters are connected via OR.")
     @ACAQParameter("filters")
-    public StringFilterListParameter getFilters() {
+    public StringPredicate.List getFilters() {
         return filters;
     }
 
     @ACAQParameter("filters")
-    public void setFilters(StringFilterListParameter filters) {
+    public void setFilters(StringPredicate.List filters) {
         this.filters = filters;
     }
 }

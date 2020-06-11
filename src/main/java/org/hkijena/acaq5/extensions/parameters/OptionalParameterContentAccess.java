@@ -3,12 +3,12 @@ package org.hkijena.acaq5.extensions.parameters;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
-import org.hkijena.acaq5.extensions.parameters.collections.KeyValuePairParameter;
+import org.hkijena.acaq5.extensions.parameters.pairs.Pair;
 
 import java.lang.annotation.Annotation;
 
 /**
- * Parameter access for the key entry in {@link KeyValuePairParameter}
+ * Parameter access for the key entry in {@link Pair}
  */
 public class OptionalParameterContentAccess<T> implements ACAQParameterAccess {
     private ACAQParameterAccess parent;

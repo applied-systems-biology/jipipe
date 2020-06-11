@@ -11,7 +11,7 @@ import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.filesystem.dataypes.FolderData;
-import org.hkijena.acaq5.extensions.parameters.collections.PathListParameter;
+import org.hkijena.acaq5.extensions.parameters.primitives.PathList;
 import org.hkijena.acaq5.extensions.parameters.editors.FilePathParameterSettings;
 import org.hkijena.acaq5.ui.components.PathEditor;
 
@@ -28,7 +28,7 @@ import java.util.function.Supplier;
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.DataSource)
 public class FolderListDataSource extends ACAQAlgorithm {
 
-    private PathListParameter folderPaths = new PathListParameter();
+    private PathList folderPaths = new PathList();
     private Path currentWorkingDirectory;
 
     /**
@@ -64,7 +64,7 @@ public class FolderListDataSource extends ACAQAlgorithm {
     @ACAQParameter("folder-paths")
     @ACAQDocumentation(name = "Folder paths")
     @FilePathParameterSettings(ioMode = PathEditor.IOMode.Open, pathMode = PathEditor.PathMode.DirectoriesOnly)
-    public PathListParameter getFolderPaths() {
+    public PathList getFolderPaths() {
         return folderPaths;
     }
 
@@ -74,7 +74,7 @@ public class FolderListDataSource extends ACAQAlgorithm {
      * @param folderPaths Folder paths
      */
     @ACAQParameter("folder-paths")
-    public void setFolderPaths(PathListParameter folderPaths) {
+    public void setFolderPaths(PathList folderPaths) {
         this.folderPaths = folderPaths;
         getEventBus().post(new ParameterChangedEvent(this, "folder-paths"));
     }
@@ -82,8 +82,8 @@ public class FolderListDataSource extends ACAQAlgorithm {
     /**
      * @return Folder paths as absolute paths
      */
-    public PathListParameter getAbsoluteFolderPaths() {
-        PathListParameter result = new PathListParameter();
+    public PathList getAbsoluteFolderPaths() {
+        PathList result = new PathList();
         for (Path folderPath : folderPaths) {
             if (folderPath == null)
                 result.add(null);

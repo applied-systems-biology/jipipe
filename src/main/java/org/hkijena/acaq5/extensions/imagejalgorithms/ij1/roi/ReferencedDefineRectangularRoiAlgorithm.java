@@ -10,7 +10,6 @@ import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.acaq5.extensions.parameters.collections.MarginList;
 import org.hkijena.acaq5.extensions.parameters.roi.Margin;
 
 import java.awt.*;
@@ -29,7 +28,7 @@ import static org.hkijena.acaq5.api.algorithm.ACAQIteratingAlgorithm.ITERATING_A
 @AlgorithmOutputSlot(value = ROIListData.class, slotName = "Output")
 public class ReferencedDefineRectangularRoiAlgorithm extends ACAQIteratingAlgorithm {
 
-    private MarginList rectangles = new MarginList();
+    private Margin.List rectangles = new Margin.List();
     private boolean split = false;
     private boolean close = true;
 
@@ -54,7 +53,7 @@ public class ReferencedDefineRectangularRoiAlgorithm extends ACAQIteratingAlgori
      */
     public ReferencedDefineRectangularRoiAlgorithm(ReferencedDefineRectangularRoiAlgorithm other) {
         super(other);
-        this.rectangles = new MarginList(other.rectangles);
+        this.rectangles = new Margin.List(other.rectangles);
         this.close = other.close;
         this.split = other.split;
     }
@@ -84,12 +83,12 @@ public class ReferencedDefineRectangularRoiAlgorithm extends ACAQIteratingAlgori
 
     @ACAQDocumentation(name = "Rectangles", description = "List of rectangles")
     @ACAQParameter("rectangles")
-    public MarginList getRectangles() {
+    public Margin.List getRectangles() {
         return rectangles;
     }
 
     @ACAQParameter("rectangles")
-    public void setRectangles(MarginList rectangles) {
+    public void setRectangles(Margin.List rectangles) {
         this.rectangles = rectangles;
     }
 

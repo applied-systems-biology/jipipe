@@ -6,6 +6,7 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
+import org.hkijena.acaq5.extensions.parameters.collections.ListParameter;
 
 import java.awt.*;
 import java.util.HashSet;
@@ -298,6 +299,30 @@ public class Margin implements Function<Rectangle, Rectangle>, ACAQParameterColl
 
         public int getRelevantParameters() {
             return relevantParameters;
+        }
+    }
+
+    /**
+     * List parameter of {@link Margin}
+     */
+    public static class List extends ListParameter<Margin> {
+        /**
+         * Creates a new instance
+         */
+        public List() {
+            super(Margin.class);
+        }
+
+        /**
+         * Creates a copy
+         *
+         * @param other the original
+         */
+        public List(List other) {
+            super(Margin.class);
+            for (Margin rectangle : other) {
+                add(new Margin(rectangle));
+            }
         }
     }
 }

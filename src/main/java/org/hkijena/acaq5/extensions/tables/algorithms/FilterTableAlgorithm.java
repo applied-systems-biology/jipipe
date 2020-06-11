@@ -11,9 +11,8 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.LogicalOperation;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
-import org.hkijena.acaq5.extensions.parameters.collections.StringFilterToStringOrDoubleFilterPair;
-import org.hkijena.acaq5.extensions.parameters.collections.StringFilterToStringOrDoubleFilterPairList;
-import org.hkijena.acaq5.extensions.parameters.filters.StringOrDoubleFilter;
+import org.hkijena.acaq5.extensions.parameters.pairs.StringFilterAndStringOrDoubleFilterPair;
+import org.hkijena.acaq5.extensions.parameters.predicates.StringOrDoublePredicate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +29,7 @@ import java.util.stream.Collectors;
 @AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class FilterTableAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
-    private StringFilterToStringOrDoubleFilterPairList filters = new StringFilterToStringOrDoubleFilterPairList();
+    private StringFilterAndStringOrDoubleFilterPair.List filters = new StringFilterAndStringOrDoubleFilterPair.List();
     private LogicalOperation betweenColumnOperation = LogicalOperation.LogicalAnd;
     private LogicalOperation sameColumnOperation = LogicalOperation.LogicalAnd;
     private boolean invert = false;
@@ -51,7 +50,7 @@ public class FilterTableAlgorithm extends ACAQSimpleIteratingAlgorithm {
      */
     public FilterTableAlgorithm(FilterTableAlgorithm other) {
         super(other);
-        this.filters = new StringFilterToStringOrDoubleFilterPairList(other.filters);
+        this.filters = new StringFilterAndStringOrDoubleFilterPair.List(other.filters);
         this.betweenColumnOperation = other.betweenColumnOperation;
         this.sameColumnOperation = other.sameColumnOperation;
         this.invert = other.invert;
@@ -60,8 +59,8 @@ public class FilterTableAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ResultsTableData input = dataInterface.getInputData(getFirstInputSlot(), ResultsTableData.class);
-        Multimap<String, StringOrDoubleFilter> filterPerColumn = HashMultimap.create();
-        for (StringFilterToStringOrDoubleFilterPair pair : filters) {
+        Multimap<String, StringOrDoublePredicate> filterPerColumn = HashMultimap.create();
+        for (StringFilterAndStringOrDoubleFilterPair pair : filters) {
             List<String> targetedColumns = input.getColumnNames().stream().filter(pair.getKey()).collect(Collectors.toList());
             for (String targetedColumn : targetedColumns) {
                 filterPerColumn.put(targetedColumn, pair.getValue());
@@ -75,7 +74,7 @@ public class FilterTableAlgorithm extends ACAQSimpleIteratingAlgorithm {
                 boolean isNumeric = input.isNumeric(columnIndex);
 
                 List<Boolean> withinColumn = new ArrayList<>();
-                for (StringOrDoubleFilter filter : filterPerColumn.get(columnName)) {
+                for (StringOrDoublePredicate filter : filterPerColumn.get(columnName)) {
                     boolean result;
                     if (isNumeric) {
                         result = filter.test(input.getValueAsDouble(row, columnIndex));
@@ -105,12 +104,12 @@ public class FilterTableAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     @ACAQDocumentation(name = "Filters", description = "Allows you to select how to filter the values.")
     @ACAQParameter("filters")
-    public StringFilterToStringOrDoubleFilterPairList getFilters() {
+    public StringFilterAndStringOrDoubleFilterPair.List getFilters() {
         return filters;
     }
 
     @ACAQParameter("filters")
-    public void setFilters(StringFilterToStringOrDoubleFilterPairList filters) {
+    public void setFilters(StringFilterAndStringOrDoubleFilterPair.List filters) {
         this.filters = filters;
     }
 

@@ -20,8 +20,7 @@ import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefList;
-import org.hkijena.acaq5.extensions.parameters.collections.StringListParameter;
+import org.hkijena.acaq5.extensions.parameters.primitives.StringList;
 import org.hkijena.acaq5.extensions.parameters.editors.ACAQTraitParameterSettings;
 import org.hkijena.acaq5.extensions.parameters.editors.StringParameterSettings;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQAlgorithmIconRef;
@@ -45,12 +44,12 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     private Set<ACAQTraitDeclaration> addedTraits = new HashSet<>();
     private Set<ACAQTraitDeclaration> removedTraits = new HashSet<>();
     private ACAQDataSlotTraitConfiguration dataSlotTraitConfiguration;
-    private List<AlgorithmInputSlot> inputSlots = new ArrayList<>();
-    private List<AlgorithmOutputSlot> outputSlots = new ArrayList<>();
+    private List inputSlots = new ArrayList<>();
+    private List outputSlots = new ArrayList<>();
     private ACAQParameterCollectionVisibilities parameterCollectionVisibilities = new ACAQParameterCollectionVisibilities();
     private ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
     private Map<ACAQDataSlot, String> exportedSlotNames = new HashMap<>();
-    private StringListParameter menuPath = new StringListParameter();
+    private StringList menuPath = new StringList();
     private boolean hidden = false;
     private ACAQAlgorithmIconRef icon = new ACAQAlgorithmIconRef();
 
@@ -156,12 +155,12 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     }
 
     @Override
-    public List<AlgorithmInputSlot> getInputSlots() {
+    public List getInputSlots() {
         return inputSlots;
     }
 
     @Override
-    public List<AlgorithmOutputSlot> getOutputSlots() {
+    public List getOutputSlots() {
         return outputSlots;
     }
 
@@ -191,13 +190,13 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     @ACAQParameter(value = "preferred-traits", uiOrder = 100)
     @JsonGetter("preferred-traits")
     @ACAQTraitParameterSettings(showHidden = true)
-    public ACAQTraitDeclarationRefList getPreferredTraitIds() {
-        return new ACAQTraitDeclarationRefList(preferredTraits.stream().map(ACAQTraitDeclarationRef::new).collect(Collectors.toList()));
+    public ACAQTraitDeclarationRef.List getPreferredTraitIds() {
+        return new ACAQTraitDeclarationRef.List(preferredTraits.stream().map(ACAQTraitDeclarationRef::new).collect(Collectors.toList()));
     }
 
     @ACAQParameter("preferred-traits")
     @JsonGetter("preferred-traits")
-    public void setPreferredTraitIds(ACAQTraitDeclarationRefList ids) {
+    public void setPreferredTraitIds(ACAQTraitDeclarationRef.List ids) {
         preferredTraits.clear();
         for (ACAQTraitDeclarationRef declarationRef : ids) {
             preferredTraits.add(declarationRef.getDeclaration());
@@ -209,13 +208,13 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     @ACAQParameter(value = "unwanted-traits", uiOrder = 100)
     @JsonGetter("unwanted-traits")
     @ACAQTraitParameterSettings(showHidden = true)
-    public ACAQTraitDeclarationRefList getUnwantedTraitIds() {
-        return new ACAQTraitDeclarationRefList(unwantedTraits.stream().map(ACAQTraitDeclarationRef::new).collect(Collectors.toList()));
+    public ACAQTraitDeclarationRef.List getUnwantedTraitIds() {
+        return new ACAQTraitDeclarationRef.List(unwantedTraits.stream().map(ACAQTraitDeclarationRef::new).collect(Collectors.toList()));
     }
 
     @ACAQParameter("unwanted-traits")
     @JsonGetter("unwanted-traits")
-    public void setUnwantedTraitIds(ACAQTraitDeclarationRefList ids) {
+    public void setUnwantedTraitIds(ACAQTraitDeclarationRef.List ids) {
         unwantedTraits.clear();
         for (ACAQTraitDeclarationRef declarationRef : ids) {
             unwantedTraits.add(declarationRef.getDeclaration());
@@ -227,13 +226,13 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     @ACAQParameter(value = "added-traits", uiOrder = 200)
     @JsonGetter("added-traits")
     @ACAQTraitParameterSettings(showHidden = true)
-    public ACAQTraitDeclarationRefList getAddedTraitIds() {
-        return new ACAQTraitDeclarationRefList(addedTraits.stream().map(ACAQTraitDeclarationRef::new).collect(Collectors.toList()));
+    public ACAQTraitDeclarationRef.List getAddedTraitIds() {
+        return new ACAQTraitDeclarationRef.List(addedTraits.stream().map(ACAQTraitDeclarationRef::new).collect(Collectors.toList()));
     }
 
     @ACAQParameter("added-traits")
     @JsonGetter("added-traits")
-    public void setAddedTraitIds(ACAQTraitDeclarationRefList ids) {
+    public void setAddedTraitIds(ACAQTraitDeclarationRef.List ids) {
         addedTraits.clear();
         for (ACAQTraitDeclarationRef declarationRef : ids) {
             addedTraits.add(declarationRef.getDeclaration());
@@ -245,13 +244,13 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     @ACAQParameter("removed-traits")
     @JsonGetter("removed-traits")
     @ACAQTraitParameterSettings(showHidden = true)
-    public ACAQTraitDeclarationRefList getRemovedTraitIds() {
-        return new ACAQTraitDeclarationRefList(removedTraits.stream().map(ACAQTraitDeclarationRef::new).collect(Collectors.toList()));
+    public ACAQTraitDeclarationRef.List getRemovedTraitIds() {
+        return new ACAQTraitDeclarationRef.List(removedTraits.stream().map(ACAQTraitDeclarationRef::new).collect(Collectors.toList()));
     }
 
     @ACAQParameter(value = "removed-traits", uiOrder = 200)
     @JsonGetter("removed-traits")
-    public void setRemovedTraitIds(ACAQTraitDeclarationRefList ids) {
+    public void setRemovedTraitIds(ACAQTraitDeclarationRef.List ids) {
         removedTraits.clear();
         for (ACAQTraitDeclarationRef declarationRef : ids) {
             removedTraits.add(declarationRef.getDeclaration());
@@ -415,13 +414,13 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     @ACAQParameter("menu-path")
     @ACAQDocumentation(name = "Menu path", description = "Menu path where the algorithm is placed. " +
             "If you leave this empty, the menu item will be placed in the category's root menu.")
-    public StringListParameter getMenuPathList() {
+    public StringList getMenuPathList() {
         return menuPath;
     }
 
 
     @ACAQParameter("menu-path")
-    public void setMenuPathList(StringListParameter value) {
+    public void setMenuPathList(StringList value) {
         this.menuPath = value;
         getEventBus().post(new ParameterChangedEvent(this, "menu-path"));
     }

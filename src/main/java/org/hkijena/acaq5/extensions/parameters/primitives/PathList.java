@@ -1,15 +1,17 @@
-package org.hkijena.acaq5.extensions.parameters.collections;
+package org.hkijena.acaq5.extensions.parameters.primitives;
+
+import org.hkijena.acaq5.extensions.parameters.collections.ListParameter;
 
 import java.nio.file.Path;
 
 /**
  * Collection of paths. Used as parameter type.
  */
-public class PathListParameter extends ListParameter<Path> {
+public class PathList extends ListParameter<Path> {
     /**
      * Creates a new instance
      */
-    public PathListParameter() {
+    public PathList() {
         super(Path.class);
     }
 
@@ -18,7 +20,7 @@ public class PathListParameter extends ListParameter<Path> {
      *
      * @param other the original
      */
-    public PathListParameter(PathListParameter other) {
+    public PathList(PathList other) {
         super(Path.class);
         addAll(other);
     }

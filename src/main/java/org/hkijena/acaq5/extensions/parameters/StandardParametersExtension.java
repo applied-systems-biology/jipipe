@@ -6,26 +6,23 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQIteratingAlgorithm;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollectionVisibilities;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefList;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.parameters.collections.*;
 import org.hkijena.acaq5.extensions.parameters.colors.*;
 import org.hkijena.acaq5.extensions.parameters.editors.*;
-import org.hkijena.acaq5.extensions.parameters.filters.DoubleFilter;
-import org.hkijena.acaq5.extensions.parameters.filters.PathFilter;
-import org.hkijena.acaq5.extensions.parameters.filters.StringFilter;
-import org.hkijena.acaq5.extensions.parameters.filters.StringOrDoubleFilter;
+import org.hkijena.acaq5.extensions.parameters.pairs.*;
+import org.hkijena.acaq5.extensions.parameters.predicates.DoublePredicate;
+import org.hkijena.acaq5.extensions.parameters.predicates.PathPredicate;
+import org.hkijena.acaq5.extensions.parameters.predicates.StringPredicate;
+import org.hkijena.acaq5.extensions.parameters.predicates.StringOrDoublePredicate;
 import org.hkijena.acaq5.extensions.parameters.functions.FunctionParameter;
 import org.hkijena.acaq5.extensions.parameters.generators.*;
-import org.hkijena.acaq5.extensions.parameters.pairs.IntegerIntegerPair;
-import org.hkijena.acaq5.extensions.parameters.pairs.StringFilterSortOrderPair;
-import org.hkijena.acaq5.extensions.parameters.pairs.StringFilterStringPair;
+import org.hkijena.acaq5.extensions.parameters.matrix.Matrix2DFloat;
+import org.hkijena.acaq5.extensions.parameters.matrix.Matrix2D;
 import org.hkijena.acaq5.extensions.parameters.primitives.*;
 import org.hkijena.acaq5.extensions.parameters.references.*;
-import org.hkijena.acaq5.extensions.parameters.roi.IntModificationParameter;
-import org.hkijena.acaq5.extensions.parameters.roi.Margin;
-import org.hkijena.acaq5.extensions.parameters.roi.RectangleDeserializer;
-import org.hkijena.acaq5.extensions.parameters.roi.RectangleSerializer;
+import org.hkijena.acaq5.extensions.parameters.roi.*;
+import org.hkijena.acaq5.extensions.parameters.table.ParameterTable;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.scijava.Priority;
@@ -101,11 +98,11 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
 
     private void registerMatrixParameters() {
         // Matrix parameters
-        registerParameterEditor(Matrix2DParameter.class, Matrix2DParameterEditorUI.class);
+        registerParameterEditor(Matrix2D.class, Matrix2DParameterEditorUI.class);
         registerParameterType("matrix2d-float",
-                Matrix2DFloatParameter.class,
-                Matrix2DFloatParameter::new,
-                p -> new Matrix2DFloatParameter((Matrix2DFloatParameter) p),
+                Matrix2DFloat.class,
+                Matrix2DFloat::new,
+                p -> new Matrix2DFloat((Matrix2DFloat) p),
                 "2D matrix (float)",
                 "A matrix containing float numbers",
                 null);
@@ -114,75 +111,75 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
     private void registerCollectionParameters() {
         // Collection parameters
         registerParameterEditor(ListParameter.class, ListParameterEditorUI.class);
-        registerParameterType("integer-list", IntListParameter.class,
-                IntListParameter::new,
-                l -> new IntListParameter((IntListParameter) l),
+        registerParameterType("integer-list", IntegerList.class,
+                IntegerList::new,
+                l -> new IntegerList((IntegerList) l),
                 "List of integers",
                 "A list of integers",
                 null);
-        registerParameterType("float-list", FloatListParameter.class,
-                FloatListParameter::new,
-                l -> new FloatListParameter((FloatListParameter) l),
+        registerParameterType("float-list", FloatList.class,
+                FloatList::new,
+                l -> new FloatList((FloatList) l),
                 "List of float",
                 "A list of float",
                 null);
-        registerParameterType("double-list", DoubleListParameter.class,
-                DoubleListParameter::new,
-                l -> new DoubleListParameter((DoubleListParameter) l),
+        registerParameterType("double-list", DoubleList.class,
+                DoubleList::new,
+                l -> new DoubleList((DoubleList) l),
                 "List of double",
                 "A list of double",
                 null);
-        registerParameterType("string-ist", StringListParameter.class,
-                StringListParameter::new,
-                l -> new StringListParameter((StringListParameter) l),
+        registerParameterType("string-ist", StringList.class,
+                StringList::new,
+                l -> new StringList((StringList) l),
                 "List of strings",
                 "A list of strings",
                 null);
-        registerParameterType("path-filter-list", PathFilterListParameter.class,
-                PathFilterListParameter::new,
-                l -> new PathFilterListParameter((PathFilterListParameter) l),
+        registerParameterType("path-filter-list", PathPredicate.List.class,
+                List::new,
+                l -> new PathPredicate.List((PathPredicate.List) l),
                 "List of path filters",
                 "A list of filters that filter folder or file names",
                 null);
-        registerParameterType("string-filter-list", StringFilterListParameter.class,
-                StringFilterListParameter::new,
-                l -> new StringFilterListParameter((StringFilterListParameter) l),
+        registerParameterType("string-filter-list", StringPredicate.List.class,
+                List::new,
+                l -> new StringPredicate.List((StringPredicate.List) l),
                 "List of string filters",
                 "A list of filters for strings",
                 null);
-        registerParameterType("string-or-double-filter-list", StringOrDoubleFilterListParameter.class,
-                StringOrDoubleFilterListParameter::new,
-                l -> new StringOrDoubleFilterListParameter((StringOrDoubleFilterListParameter) l),
+        registerParameterType("string-or-double-filter-list", StringOrDoublePredicate.List.class,
+                List::new,
+                l -> new StringOrDoublePredicate.List((StringOrDoublePredicate.List) l),
                 "List of string/double filters",
                 "A list of filters for strings/doubles",
                 null);
-        registerParameterType("string-filter:string-or-double-filter:list", StringFilterToStringOrDoubleFilterPairList.class,
-                StringFilterToStringOrDoubleFilterPairList::new,
-                l -> new StringFilterToStringOrDoubleFilterPairList((StringFilterToStringOrDoubleFilterPairList) l),
+        registerParameterType("string-filter:string-or-double-filter:list", StringFilterAndStringOrDoubleFilterPair.List.class,
+                List::new,
+                l -> new StringFilterAndStringOrDoubleFilterPair.List((StringFilterAndStringOrDoubleFilterPair.List) l),
                 "String filter to String/double filter assignment list",
                 "A list of string filter to strings/double filter pairs",
                 null);
-        registerParameterType("trait-type-list", ACAQTraitDeclarationRefList.class,
-                ACAQTraitDeclarationRefList::new,
-                l -> new ACAQTraitDeclarationRefList((ACAQTraitDeclarationRefList) l),
+        registerParameterType("trait-type-list", ACAQTraitDeclarationRef.List.class,
+                List::new,
+                l -> new ACAQTraitDeclarationRef.List((ACAQTraitDeclarationRef.List) l),
                 "List of annotation types",
                 "A list of annotation types",
                 ACAQTraitDeclarationRefCollectionParameterEditorUI.class);
-        registerParameterType("string-renaming-list", StringStringPairList.class,
-                StringStringPairList::new,
-                l -> new StringStringPairList((StringStringPairList) l),
+        registerParameterType("string-renaming-list", StringFilterAndStringPair.List.class,
+                List::new,
+                l -> new StringFilterAndStringPair.List((StringFilterAndStringPair.List) l),
                 "List of string renaming operations",
                 "A list of operations that rename strings",
                 null);
-        registerParameterType("integer-integer-pair-list", IntegerIntegerKeyValuePairList.class,
-                IntegerIntegerKeyValuePairList::new,
-                l -> new IntegerIntegerKeyValuePairList((IntegerIntegerKeyValuePairList) l),
+        registerParameterType("integer-integer-pair-list", IntegerAndIntegerPair.List.class,
+                List::new,
+                l -> new IntegerAndIntegerPair.List((IntegerAndIntegerPair.List) l),
                 "List of integer replacement operations",
                 "A list of operations that replace integers",
                 null);
-        registerParameterType("integer-renaming-list", IntegerRenamingList.class,
-                IntegerRenamingList::new,
-                l -> new IntegerRenamingList((IntegerRenamingList) l),
+        registerParameterType("integer-renaming-list", IntRangeAndIntegerPair.List.class,
+                List::new,
+                l -> new IntRangeAndIntegerPair.List((IntRangeAndIntegerPair.List) l),
                 "List of integer replacement operations",
                 "A list of operations that replace integers",
                 null);
@@ -192,15 +189,15 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 "Rectangle list",
                 "A list of rectangles",
                 null);
-        registerParameterType("margin-list", MarginList.class,
-                MarginList::new,
-                l -> new MarginList((MarginList) l),
+        registerParameterType("margin-list", Margin.List.class,
+                List::new,
+                l -> new Margin.List((Margin.List) l),
                 "Margin list",
                 "A list of margins",
                 null);
-        registerParameterType("string-filter:sort-order:list", StringFilterSortOrderPairList.class,
-                StringFilterSortOrderPairList::new,
-                l -> new StringFilterSortOrderPairList((StringFilterSortOrderPairList) l),
+        registerParameterType("string-filter:sort-order:list", StringFilterAndSortOrderPair.List.class,
+                List::new,
+                l -> new StringFilterAndSortOrderPair.List((StringFilterAndSortOrderPair.List) l),
                 "List of string filter to sort order pairs",
                 "A list of string filters associated to sort orders",
                 null);
@@ -230,9 +227,9 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 "A table that contains parameters",
                 ParameterTableEditorUI.class);
         registerParameterType("path-list",
-                PathListParameter.class,
-                PathListParameter::new,
-                t -> new PathListParameter((PathListParameter) t),
+                PathList.class,
+                PathList::new,
+                t -> new PathList((PathList) t),
                 "Path list",
                 "A list of file or folder paths",
                 PathCollectionParameterEditorUI.class);
@@ -341,8 +338,8 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
         // Enums
         registerEnumParameterType("color-map", ColorMap.class, "Color map", "Available color maps that convert a scalar to a color");
         registerEnumParameterType("rectangle-roi:anchor", Margin.Anchor.class, "Anchor", "Available rectangle anchors");
-        registerEnumParameterType("path-filter:mode", PathFilter.Mode.class, "Mode", "Available modes");
-        registerEnumParameterType("string-filter:mode", StringFilter.Mode.class, "Mode", "Available modes");
+        registerEnumParameterType("path-filter:mode", PathPredicate.Mode.class, "Mode", "Available modes");
+        registerEnumParameterType("string-filter:mode", StringPredicate.Mode.class, "Mode", "Available modes");
         registerEnumParameterType("acaq:iterating-algorithm:column-matching", ACAQIteratingAlgorithm.ColumnMatching.class, "Column matching strategy", "Determines how columns for dataset matching are selected");
         registerEnumParameterType("acaq:ui:graph-editor-view-mode", ACAQAlgorithmGraphCanvasUI.ViewMode.class, "Graph editor view mode", "Determines how the graphs are displayed");
 
@@ -350,32 +347,32 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
 
     private void registerPairParameters() {
         // Map-like parameters
-        registerParameterEditor(KeyValuePairParameter.class, KeyValuePairParameterEditorUI.class);
+        registerParameterEditor(Pair.class, KeyValuePairParameterEditorUI.class);
         registerParameterType("string-renaming",
-                StringFilterStringPair.class,
-                StringFilterStringPair::new,
-                r -> new StringFilterStringPair((StringFilterStringPair) r),
+                StringFilterAndStringPair.class,
+                StringFilterAndStringPair::new,
+                r -> new StringFilterAndStringPair((StringFilterAndStringPair) r),
                 "Text replacement",
                 "Replaces a matched string by the target string",
                 null);
         registerParameterType("integer-integer-pair",
-                IntegerIntegerPair.class,
-                IntegerIntegerPair::new,
-                r -> new IntegerIntegerPair((IntegerIntegerPair) r),
+                IntegerAndIntegerPair.class,
+                IntegerAndIntegerPair::new,
+                r -> new IntegerAndIntegerPair((IntegerAndIntegerPair) r),
                 "Integer replacement",
                 "Replaces a number with another number",
                 null);
         registerParameterType("string-filter:string-or-double-filter:pair",
-                StringFilterToStringOrDoubleFilterPair.class,
-                StringFilterToStringOrDoubleFilterPair::new,
-                r -> new StringFilterToStringOrDoubleFilterPair((StringFilterToStringOrDoubleFilterPair) r),
+                StringFilterAndStringOrDoubleFilterPair.class,
+                StringFilterAndStringOrDoubleFilterPair::new,
+                r -> new StringFilterAndStringOrDoubleFilterPair((StringFilterAndStringOrDoubleFilterPair) r),
                 "String filter to string/double filter",
                 "Mapping from a string filter to a string/double filter",
                 null);
         registerParameterType("string-filter:sort-order:pair",
-                StringFilterSortOrderPair.class,
-                StringFilterSortOrderPair::new,
-                r -> new StringFilterSortOrderPair((StringFilterSortOrderPair) r),
+                StringFilterAndSortOrderPair.class,
+                StringFilterAndSortOrderPair::new,
+                r -> new StringFilterAndSortOrderPair((StringFilterAndSortOrderPair) r),
                 "String filter to sort order",
                 "Mapping from a string filter to a sort order",
                 null);
@@ -398,30 +395,30 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
     private void registerFilterParameters() {
         // Filter parameters
         registerParameterType("path-filter",
-                PathFilter.class,
-                PathFilter::new,
-                f -> new PathFilter((PathFilter) f),
+                PathPredicate.class,
+                PathPredicate::new,
+                f -> new PathPredicate((PathPredicate) f),
                 "Path filter",
                 "A filter for file or folder names",
                 PathFilterParameterEditorUI.class);
         registerParameterType("string-filter",
-                StringFilter.class,
-                StringFilter::new,
-                f -> new StringFilter((StringFilter) f),
+                StringPredicate.class,
+                StringPredicate::new,
+                f -> new StringPredicate((StringPredicate) f),
                 "String filter",
                 "A filter for text values",
                 StringFilterParameterEditorUI.class);
         registerParameterType("double-filter",
-                DoubleFilter.class,
-                DoubleFilter::new,
-                f -> new DoubleFilter((DoubleFilter) f),
+                DoublePredicate.class,
+                DoublePredicate::new,
+                f -> new DoublePredicate((DoublePredicate) f),
                 "Double filter",
                 "A filter for numbers",
                 DoubleFilterParameterEditorUI.class);
         registerParameterType("string-or-double-filter",
-                StringOrDoubleFilter.class,
-                StringOrDoubleFilter::new,
-                f -> new StringOrDoubleFilter((StringOrDoubleFilter) f),
+                StringOrDoublePredicate.class,
+                StringOrDoublePredicate::new,
+                f -> new StringOrDoublePredicate((StringOrDoublePredicate) f),
                 "String/Double filter",
                 "A filter for numbers or strings",
                 StringOrDoubleFilterParameterEditorUI.class);

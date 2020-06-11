@@ -1,14 +1,14 @@
-package org.hkijena.acaq5.extensions.parameters.collections;
+package org.hkijena.acaq5.extensions.parameters.matrix;
 
 /**
  * Matrix containing {@link Float}
  */
-public class Matrix2DFloatParameter extends Matrix2DParameter<Float> {
+public class Matrix2DFloat extends Matrix2D<Float> {
 
     /**
      * Creates a new object
      */
-    public Matrix2DFloatParameter() {
+    public Matrix2DFloat() {
         super(Float.class);
     }
 
@@ -17,7 +17,7 @@ public class Matrix2DFloatParameter extends Matrix2DParameter<Float> {
      *
      * @param other the original
      */
-    public Matrix2DFloatParameter(Matrix2DFloatParameter other) {
+    public Matrix2DFloat(Matrix2DFloat other) {
         super(other);
     }
 

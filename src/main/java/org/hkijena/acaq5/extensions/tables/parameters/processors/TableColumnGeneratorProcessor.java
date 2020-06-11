@@ -1,16 +1,16 @@
 package org.hkijena.acaq5.extensions.tables.parameters.processors;
 
-import org.hkijena.acaq5.extensions.parameters.collections.KeyValuePairParameter;
+import org.hkijena.acaq5.extensions.parameters.pairs.Pair;
 import org.hkijena.acaq5.extensions.tables.parameters.enums.TableColumnGeneratorParameter;
 
 /**
  * Processor-like parameter that maps a column generator to a string
  */
-public class TableColumnGeneratorProcessorParameter extends KeyValuePairParameter<TableColumnGeneratorParameter, String> {
+public class TableColumnGeneratorProcessor extends Pair<TableColumnGeneratorParameter, String> {
     /**
      * Creates a new instance
      */
-    public TableColumnGeneratorProcessorParameter() {
+    public TableColumnGeneratorProcessor() {
         super(TableColumnGeneratorParameter.class, String.class);
         setValue("Output column name");
     }
@@ -20,7 +20,7 @@ public class TableColumnGeneratorProcessorParameter extends KeyValuePairParamete
      *
      * @param other the original
      */
-    public TableColumnGeneratorProcessorParameter(TableColumnGeneratorProcessorParameter other) {
+    public TableColumnGeneratorProcessor(TableColumnGeneratorProcessor other) {
         super(other);
     }
 }

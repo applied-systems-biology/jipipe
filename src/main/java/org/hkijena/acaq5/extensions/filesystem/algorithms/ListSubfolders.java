@@ -7,8 +7,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.filesystem.dataypes.FolderData;
-import org.hkijena.acaq5.extensions.parameters.collections.PathFilterListParameter;
-import org.hkijena.acaq5.extensions.parameters.filters.PathFilter;
+import org.hkijena.acaq5.extensions.parameters.predicates.PathPredicate;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,7 +29,7 @@ import java.util.stream.Collectors;
 // Traits
 public class ListSubfolders extends ACAQSimpleIteratingAlgorithm {
 
-    private PathFilterListParameter filters = new PathFilterListParameter();
+    private PathPredicate.List filters = new PathPredicate.List();
     private boolean filterOnlyFolderNames = true;
 
     /**
@@ -51,8 +50,8 @@ public class ListSubfolders extends ACAQSimpleIteratingAlgorithm {
         super(other);
         this.filterOnlyFolderNames = other.filterOnlyFolderNames;
         this.filters.clear();
-        for (PathFilter filter : other.filters) {
-            this.filters.add(new PathFilter(filter));
+        for (PathPredicate filter : other.filters) {
+            this.filters.add(new PathPredicate(filter));
         }
     }
 
@@ -83,12 +82,12 @@ public class ListSubfolders extends ACAQSimpleIteratingAlgorithm {
     @ACAQDocumentation(name = "Filters", description = "You can optionally filter the result folders. " +
             "The filters are connected via a logical OR operation. An empty list disables filtering")
     @ACAQParameter("filters")
-    public PathFilterListParameter getFilters() {
+    public PathPredicate.List getFilters() {
         return filters;
     }
 
     @ACAQParameter("filters")
-    public void setFilters(PathFilterListParameter filters) {
+    public void setFilters(PathPredicate.List filters) {
         this.filters = filters;
     }
 

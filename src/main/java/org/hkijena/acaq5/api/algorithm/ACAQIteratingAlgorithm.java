@@ -15,7 +15,6 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefList;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 
 import java.util.*;
@@ -37,7 +36,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
     private ColumnMatching dataSetMatching = ColumnMatching.Intersection;
     private boolean allowDuplicateDataSets = true;
     private boolean skipIncompleteDataSets = false;
-    private ACAQTraitDeclarationRefList customColumns = new ACAQTraitDeclarationRefList();
+    private ACAQTraitDeclarationRef.List customColumns = new ACAQTraitDeclarationRef.List();
 
     /**
      * Creates a new instance
@@ -79,7 +78,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
         this.dataSetMatching = other.dataSetMatching;
         this.allowDuplicateDataSets = other.allowDuplicateDataSets;
         this.skipIncompleteDataSets = other.skipIncompleteDataSets;
-        this.customColumns = new ACAQTraitDeclarationRefList(other.customColumns);
+        this.customColumns = new ACAQTraitDeclarationRef.List(other.customColumns);
     }
 
     @Override
@@ -315,14 +314,14 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
     @ACAQDocumentation(name = "Data set matching annotations", description = "Only used if 'Data set matching strategy' is set to 'Custom'. " +
             "Determines which annotation columns are referred to match data sets.")
     @ACAQParameter(value = "acaq:iterating-algorithm:custom-matched-columns", uiOrder = 999, visibility = ACAQParameterVisibility.Visible)
-    public ACAQTraitDeclarationRefList getCustomColumns() {
+    public ACAQTraitDeclarationRef.List getCustomColumns() {
         if (customColumns == null)
-            customColumns = new ACAQTraitDeclarationRefList();
+            customColumns = new ACAQTraitDeclarationRef.List();
         return customColumns;
     }
 
     @ACAQParameter(value = "acaq:iterating-algorithm:custom-matched-columns", visibility = ACAQParameterVisibility.Visible)
-    public void setCustomColumns(ACAQTraitDeclarationRefList customColumns) {
+    public void setCustomColumns(ACAQTraitDeclarationRef.List customColumns) {
         this.customColumns = customColumns;
         getEventBus().post(new ParameterChangedEvent(this, "acaq:iterating-algorithm:custom-matched-columns"));
     }

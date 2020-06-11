@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.parameters.collections;
+package org.hkijena.acaq5.extensions.parameters.table;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
@@ -7,40 +7,43 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
 import java.lang.annotation.Annotation;
 
 /**
- * Parameter access for the key entry in {@link KeyValuePairParameter}
+ * Implements the access to table cell
  */
-public class KeyValueParameterValueAccess<K, V> implements ACAQParameterAccess {
+public class ParameterTableCellAccess implements ACAQParameterAccess {
+
     private ACAQParameterAccess parent;
-    private KeyValuePairParameter<K, V> keyValuePairParameter;
+    private ParameterTable table;
+    private int row;
+    private int column;
 
     /**
      * Creates a new instance
      *
-     * @param parent                the parent access
-     * @param keyValuePairParameter the parameter
+     * @param parent the parent access
+     * @param table  the table
+     * @param row    the row
+     * @param column the column
      */
-    public KeyValueParameterValueAccess(ACAQParameterAccess parent, KeyValuePairParameter<K, V> keyValuePairParameter) {
+    public ParameterTableCellAccess(ACAQParameterAccess parent, ParameterTable table, int row, int column) {
         this.parent = parent;
-        this.keyValuePairParameter = keyValuePairParameter;
-    }
-
-    public KeyValuePairParameter<K, V> getKeyValuePairParameter() {
-        return keyValuePairParameter;
+        this.table = table;
+        this.row = row;
+        this.column = column;
     }
 
     @Override
     public String getKey() {
-        return "value";
+        return parent.getKey() + "/" + row + "," + column;
     }
 
     @Override
     public String getName() {
-        return "Value";
+        return table.getColumnName(column);
     }
 
     @Override
     public String getDescription() {
-        return "Parameter value";
+        return null;
     }
 
     @Override
@@ -55,17 +58,17 @@ public class KeyValueParameterValueAccess<K, V> implements ACAQParameterAccess {
 
     @Override
     public Class<?> getFieldClass() {
-        return keyValuePairParameter.getValueClass();
+        return table.getColumnClass(column);
     }
 
     @Override
     public <T> T get(Class<T> klass) {
-        return (T) keyValuePairParameter.getValue();
+        return (T) table.getValueAt(row, column);
     }
 
     @Override
     public <T> boolean set(T value) {
-        keyValuePairParameter.setValue((V) value);
+        table.setValueAt(value, row, column);
         return true;
     }
 
@@ -81,15 +84,11 @@ public class KeyValueParameterValueAccess<K, V> implements ACAQParameterAccess {
 
     @Override
     public String getShortKey() {
-        return null;
+        return getKey();
     }
 
     @Override
     public int getUIOrder() {
         return 0;
-    }
-
-    public ACAQParameterAccess getParent() {
-        return parent;
     }
 }

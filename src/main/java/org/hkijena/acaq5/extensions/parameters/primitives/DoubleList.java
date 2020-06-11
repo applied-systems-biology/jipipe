@@ -1,13 +1,15 @@
-package org.hkijena.acaq5.extensions.parameters.collections;
+package org.hkijena.acaq5.extensions.parameters.primitives;
+
+import org.hkijena.acaq5.extensions.parameters.collections.ListParameter;
 
 /**
  * A list of {@link Double}
  */
-public class DoubleListParameter extends ListParameter<Double> {
+public class DoubleList extends ListParameter<Double> {
     /**
      * Creates a new empty list
      */
-    public DoubleListParameter() {
+    public DoubleList() {
         super(Double.class);
     }
 
@@ -16,7 +18,7 @@ public class DoubleListParameter extends ListParameter<Double> {
      *
      * @param other the original
      */
-    public DoubleListParameter(DoubleListParameter other) {
+    public DoubleList(DoubleList other) {
         super(Double.class);
         addAll(other);
     }

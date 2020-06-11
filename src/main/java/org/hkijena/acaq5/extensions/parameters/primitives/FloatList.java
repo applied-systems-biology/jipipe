@@ -1,13 +1,15 @@
-package org.hkijena.acaq5.extensions.parameters.collections;
+package org.hkijena.acaq5.extensions.parameters.primitives;
+
+import org.hkijena.acaq5.extensions.parameters.collections.ListParameter;
 
 /**
  * A list of {@link Float}
  */
-public class FloatListParameter extends ListParameter<Float> {
+public class FloatList extends ListParameter<Float> {
     /**
      * Creates a new empty list
      */
-    public FloatListParameter() {
+    public FloatList() {
         super(Float.class);
     }
 
@@ -16,7 +18,7 @@ public class FloatListParameter extends ListParameter<Float> {
      *
      * @param other the original
      */
-    public FloatListParameter(FloatListParameter other) {
+    public FloatList(FloatList other) {
         super(Float.class);
         addAll(other);
     }

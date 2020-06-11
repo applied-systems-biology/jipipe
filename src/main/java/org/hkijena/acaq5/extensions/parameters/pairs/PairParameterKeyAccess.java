@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.parameters.collections;
+package org.hkijena.acaq5.extensions.parameters.pairs;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
@@ -7,43 +7,40 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
 import java.lang.annotation.Annotation;
 
 /**
- * Implements the access to table cell
+ * Parameter access for the key entry in {@link Pair}
  */
-public class ParameterTableCellAccess implements ACAQParameterAccess {
-
+public class PairParameterKeyAccess<K, V> implements ACAQParameterAccess {
     private ACAQParameterAccess parent;
-    private ParameterTable table;
-    private int row;
-    private int column;
+    private Pair<K, V> pair;
 
     /**
      * Creates a new instance
      *
-     * @param parent the parent access
-     * @param table  the table
-     * @param row    the row
-     * @param column the column
+     * @param parent                the parent access
+     * @param pair the parameter
      */
-    public ParameterTableCellAccess(ACAQParameterAccess parent, ParameterTable table, int row, int column) {
+    public PairParameterKeyAccess(ACAQParameterAccess parent, Pair<K, V> pair) {
         this.parent = parent;
-        this.table = table;
-        this.row = row;
-        this.column = column;
+        this.pair = pair;
+    }
+
+    public Pair<K, V> getPair() {
+        return pair;
     }
 
     @Override
     public String getKey() {
-        return parent.getKey() + "/" + row + "," + column;
+        return "key";
     }
 
     @Override
     public String getName() {
-        return table.getColumnName(column);
+        return "Key";
     }
 
     @Override
     public String getDescription() {
-        return null;
+        return "Parameter key";
     }
 
     @Override
@@ -58,17 +55,17 @@ public class ParameterTableCellAccess implements ACAQParameterAccess {
 
     @Override
     public Class<?> getFieldClass() {
-        return table.getColumnClass(column);
+        return pair.getKeyClass();
     }
 
     @Override
     public <T> T get(Class<T> klass) {
-        return (T) table.getValueAt(row, column);
+        return (T) pair.getKey();
     }
 
     @Override
     public <T> boolean set(T value) {
-        table.setValueAt(value, row, column);
+        pair.setKey((K) value);
         return true;
     }
 
@@ -84,11 +81,15 @@ public class ParameterTableCellAccess implements ACAQParameterAccess {
 
     @Override
     public String getShortKey() {
-        return getKey();
+        return null;
     }
 
     @Override
     public int getUIOrder() {
         return 0;
+    }
+
+    public ACAQParameterAccess getParent() {
+        return parent;
     }
 }

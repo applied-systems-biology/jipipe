@@ -9,8 +9,7 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.filesystem.dataypes.PathData;
-import org.hkijena.acaq5.extensions.parameters.collections.PathFilterListParameter;
-import org.hkijena.acaq5.extensions.parameters.filters.PathFilter;
+import org.hkijena.acaq5.extensions.parameters.predicates.PathPredicate;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,7 +30,7 @@ import java.util.function.Supplier;
 public class FilterPaths extends ACAQSimpleIteratingAlgorithm {
 
     //    private PathFilter filter = new PathFilter();
-    private PathFilterListParameter filters = new PathFilterListParameter();
+    private PathPredicate.List filters = new PathPredicate.List();
     private boolean filterOnlyNames = true;
     private boolean invert = false;
 
@@ -53,8 +52,8 @@ public class FilterPaths extends ACAQSimpleIteratingAlgorithm {
     public FilterPaths(FilterPaths other) {
         super(other);
         this.filters.clear();
-        for (PathFilter filter : other.filters) {
-            this.filters.add(new PathFilter(filter));
+        for (PathPredicate filter : other.filters) {
+            this.filters.add(new PathPredicate(filter));
         }
         this.filterOnlyNames = other.filterOnlyNames;
         this.invert = other.invert;
@@ -74,7 +73,7 @@ public class FilterPaths extends ACAQSimpleIteratingAlgorithm {
         }
         if (!filters.isEmpty()) {
             if (!invert) {
-                for (PathFilter filter : filters) {
+                for (PathPredicate filter : filters) {
                     if (filter.test(inputPath)) {
                         dataInterface.addOutputData(firstOutputSlot, inputData);
                         break;
@@ -82,7 +81,7 @@ public class FilterPaths extends ACAQSimpleIteratingAlgorithm {
                 }
             } else {
                 boolean canPass = true;
-                for (PathFilter filter : filters) {
+                for (PathPredicate filter : filters) {
                     if (filter.test(inputPath)) {
                         canPass = false;
                         break;
@@ -105,12 +104,12 @@ public class FilterPaths extends ACAQSimpleIteratingAlgorithm {
 
     @ACAQParameter("filters")
     @ACAQDocumentation(name = "Filters")
-    public PathFilterListParameter getFilters() {
+    public PathPredicate.List getFilters() {
         return filters;
     }
 
     @ACAQParameter("filters")
-    public void setFilters(PathFilterListParameter filters) {
+    public void setFilters(PathPredicate.List filters) {
         this.filters = filters;
         getEventBus().post(new ParameterChangedEvent(this, "filters"));
     }

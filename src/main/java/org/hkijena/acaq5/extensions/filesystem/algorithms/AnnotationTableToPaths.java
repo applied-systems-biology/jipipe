@@ -5,21 +5,14 @@ import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extensions.annotation.datatypes.AnnotationTableData;
 import org.hkijena.acaq5.extensions.filesystem.dataypes.PathData;
-import org.hkijena.acaq5.extensions.parameters.collections.PathFilterListParameter;
-import org.hkijena.acaq5.extensions.parameters.filters.PathFilter;
-import org.hkijena.acaq5.extensions.parameters.filters.StringFilter;
+import org.hkijena.acaq5.extensions.parameters.predicates.StringPredicate;
 
-import java.lang.reflect.Array;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +33,7 @@ import java.util.function.Supplier;
 // Traits
 public class AnnotationTableToPaths extends ACAQSimpleIteratingAlgorithm {
 
-    private StringFilter column = new StringFilter(StringFilter.Mode.Equals, "data");
+    private StringPredicate column = new StringPredicate(StringPredicate.Mode.Equals, "data");
 
     /**
      * Instantiates the algorithm
@@ -58,7 +51,7 @@ public class AnnotationTableToPaths extends ACAQSimpleIteratingAlgorithm {
      */
     public AnnotationTableToPaths(AnnotationTableToPaths other) {
         super(other);
-        this.column = new StringFilter(other.column);
+        this.column = new StringPredicate(other.column);
     }
 
     @Override
@@ -94,12 +87,12 @@ public class AnnotationTableToPaths extends ACAQSimpleIteratingAlgorithm {
 
     @ACAQDocumentation(name = "Column", description = "The column that contains the paths")
     @ACAQParameter("column")
-    public StringFilter getColumn() {
+    public StringPredicate getColumn() {
         return column;
     }
 
     @ACAQParameter("column")
-    public void setColumn(StringFilter column) {
+    public void setColumn(StringPredicate column) {
         this.column = column;
     }
 }

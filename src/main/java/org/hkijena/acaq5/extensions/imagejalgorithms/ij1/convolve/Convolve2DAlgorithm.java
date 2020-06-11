@@ -11,7 +11,7 @@ import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
-import org.hkijena.acaq5.extensions.parameters.collections.Matrix2DFloatParameter;
+import org.hkijena.acaq5.extensions.parameters.matrix.Matrix2DFloat;
 import org.hkijena.acaq5.utils.ImageJUtils;
 
 import java.util.function.Consumer;
@@ -27,7 +27,7 @@ import java.util.function.Supplier;
 @AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Output")
 public class Convolve2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
-    private Matrix2DFloatParameter matrix = new Matrix2DFloatParameter();
+    private Matrix2DFloat matrix = new Matrix2DFloat();
 
     /**
      * Instantiates a new algorithm.
@@ -49,7 +49,7 @@ public class Convolve2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
      */
     public Convolve2DAlgorithm(Convolve2DAlgorithm other) {
         super(other);
-        this.matrix = new Matrix2DFloatParameter(other.matrix);
+        this.matrix = new Matrix2DFloat(other.matrix);
     }
 
     @Override
@@ -83,12 +83,12 @@ public class Convolve2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     @ACAQDocumentation(name = "Matrix", description = "The convolution matrix")
     @ACAQParameter("matrix")
-    public Matrix2DFloatParameter getMatrix() {
+    public Matrix2DFloat getMatrix() {
         return matrix;
     }
 
     @ACAQParameter("matrix")
-    public void setMatrix(Matrix2DFloatParameter matrix) {
+    public void setMatrix(Matrix2DFloat matrix) {
         this.matrix = matrix;
     }
 

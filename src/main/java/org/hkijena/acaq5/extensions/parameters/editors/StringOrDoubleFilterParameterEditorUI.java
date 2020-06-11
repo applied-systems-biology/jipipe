@@ -3,7 +3,7 @@ package org.hkijena.acaq5.extensions.parameters.editors;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQTraversedParameterCollection;
-import org.hkijena.acaq5.extensions.parameters.filters.StringOrDoubleFilter;
+import org.hkijena.acaq5.extensions.parameters.predicates.StringOrDoublePredicate;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -12,7 +12,7 @@ import org.scijava.Context;
 import javax.swing.*;
 
 /**
- * A parameter editor UI for {@link org.hkijena.acaq5.extensions.parameters.filters.StringOrDoubleFilter}
+ * A parameter editor UI for {@link StringOrDoublePredicate}
  */
 public class StringOrDoubleFilterParameterEditorUI extends ACAQParameterEditorUI {
 
@@ -40,7 +40,7 @@ public class StringOrDoubleFilterParameterEditorUI extends ACAQParameterEditorUI
         isProcessing = true;
         removeAll();
 
-        StringOrDoubleFilter parameter = getParameterAccess().get(StringOrDoubleFilter.class);
+        StringOrDoublePredicate parameter = getParameterAccess().get(StringOrDoublePredicate.class);
         parameter.getEventBus().register(this);
         ACAQTraversedParameterCollection traversedParameterCollection = new ACAQTraversedParameterCollection(parameter);
 
@@ -49,10 +49,10 @@ public class StringOrDoubleFilterParameterEditorUI extends ACAQParameterEditorUI
         stringToggle = addToggle(buttonGroup, UIUtils.getIconFromResources("text2.png"), "Filter a string");
         add(Box.createHorizontalStrut(8));
 
-        if (parameter.getFilterMode() == StringOrDoubleFilter.FilterMode.Double) {
+        if (parameter.getFilterMode() == StringOrDoublePredicate.FilterMode.Double) {
             doubleToggle.setSelected(true);
             add(ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getContext(), traversedParameterCollection.getParameters().get("number-filter")));
-        } else if (parameter.getFilterMode() == StringOrDoubleFilter.FilterMode.String) {
+        } else if (parameter.getFilterMode() == StringOrDoublePredicate.FilterMode.String) {
             stringToggle.setSelected(true);
             add(ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getContext(), traversedParameterCollection.getParameters().get("string-filter")));
         }
@@ -75,14 +75,14 @@ public class StringOrDoubleFilterParameterEditorUI extends ACAQParameterEditorUI
         if (isProcessing)
             return;
         isProcessing = true;
-        StringOrDoubleFilter parameter = getParameterAccess().get(StringOrDoubleFilter.class);
+        StringOrDoublePredicate parameter = getParameterAccess().get(StringOrDoublePredicate.class);
         if (parameter == null) {
-            parameter = new StringOrDoubleFilter();
+            parameter = new StringOrDoublePredicate();
         }
         if (doubleToggle.isSelected())
-            parameter.setFilterMode(StringOrDoubleFilter.FilterMode.Double);
+            parameter.setFilterMode(StringOrDoublePredicate.FilterMode.Double);
         else if (stringToggle.isSelected())
-            parameter.setFilterMode(StringOrDoubleFilter.FilterMode.String);
+            parameter.setFilterMode(StringOrDoublePredicate.FilterMode.String);
         getParameterAccess().set(parameter);
         isProcessing = false;
     }

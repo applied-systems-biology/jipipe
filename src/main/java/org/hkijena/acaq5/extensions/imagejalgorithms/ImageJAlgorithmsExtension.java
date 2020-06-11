@@ -193,9 +193,9 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
                 "Models filtering of measurements",
                 null);
         registerParameterType("ij1:measurement-filter-list",
-                MeasurementFilterList.class,
-                MeasurementFilterList::new,
-                o -> new MeasurementFilterList((MeasurementFilterList) o),
+                MeasurementFilter.List.class,
+                MeasurementFilter.List::new,
+                o -> new MeasurementFilter.List((MeasurementFilter.List) o),
                 "Measurement filter list",
                 "Models filtering of measurements",
                 null);
@@ -207,9 +207,9 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
                 "Describes how a data is sorted by a measurement column",
                 null);
         registerParameterType("ij1:measurement-column-sort-order-list",
-                MeasurementColumnSortOrderList.class,
-                MeasurementColumnSortOrderList::new,
-                o -> new MeasurementColumnSortOrderList((MeasurementColumnSortOrderList) o),
+                MeasurementColumnSortOrder.List.class,
+                MeasurementColumnSortOrder.List::new,
+                o -> new MeasurementColumnSortOrder.List((MeasurementColumnSortOrder.List) o),
                 "Measurement column sort order list",
                 "List of measurement column sort orders",
                 null);

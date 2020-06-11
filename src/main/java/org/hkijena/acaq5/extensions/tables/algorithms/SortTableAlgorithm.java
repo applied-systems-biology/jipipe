@@ -9,13 +9,11 @@ import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure.SortOrder;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
-import org.hkijena.acaq5.extensions.parameters.collections.StringFilterSortOrderPairList;
-import org.hkijena.acaq5.extensions.parameters.filters.StringFilter;
-import org.hkijena.acaq5.extensions.parameters.pairs.StringFilterSortOrderPair;
+import org.hkijena.acaq5.extensions.parameters.predicates.StringPredicate;
+import org.hkijena.acaq5.extensions.parameters.pairs.StringFilterAndSortOrderPair;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -28,7 +26,7 @@ import java.util.function.Supplier;
 @AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class SortTableAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
-    private StringFilterSortOrderPairList sortOrderList = new StringFilterSortOrderPairList();
+    private StringFilterAndSortOrderPair.List sortOrderList = new StringFilterAndSortOrderPair.List();
 
     /**
      * Creates a new instance
@@ -47,7 +45,7 @@ public class SortTableAlgorithm extends ACAQSimpleIteratingAlgorithm {
      */
     public SortTableAlgorithm(SortTableAlgorithm other) {
         super(other);
-        this.sortOrderList = new StringFilterSortOrderPairList(other.sortOrderList);
+        this.sortOrderList = new StringFilterAndSortOrderPair.List(other.sortOrderList);
     }
 
     @Override
@@ -63,7 +61,7 @@ public class SortTableAlgorithm extends ACAQSimpleIteratingAlgorithm {
             comparator = comparator.thenComparing(getRowComparator(sortOrderList.get(i), input));
         }
 
-        List<Integer> sortedRows = new ArrayList<>();
+        java.util.List sortedRows = new ArrayList<>();
         for (int i = 0; i < input.getRowCount(); i++) {
             sortedRows.add(i);
         }
@@ -73,9 +71,9 @@ public class SortTableAlgorithm extends ACAQSimpleIteratingAlgorithm {
         dataInterface.addOutputData(getFirstOutputSlot(), output);
     }
 
-    private Comparator<Integer> getRowComparator(StringFilterSortOrderPair pair, ResultsTableData input) {
+    private Comparator<Integer> getRowComparator(StringFilterAndSortOrderPair pair, ResultsTableData input) {
         Comparator<Integer> result = null;
-        StringFilter filter = pair.getKey();
+        StringPredicate filter = pair.getKey();
         for (String columnName : input.getColumnNames()) {
             if (filter.test(columnName)) {
                 boolean isNumeric = input.isNumeric(input.getColumnIndex(columnName));
@@ -122,12 +120,12 @@ public class SortTableAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQDocumentation(name = "Filters", description = "Allows you determine by which columns the table is sorted. The order determines the " +
             "sorting priority. Columns can be matched multiple times.")
     @ACAQParameter("sort-order")
-    public StringFilterSortOrderPairList getSortOrderList() {
+    public StringFilterAndSortOrderPair.List getSortOrderList() {
         return sortOrderList;
     }
 
     @ACAQParameter("sort-order")
-    public void setSortOrderList(StringFilterSortOrderPairList sortOrderList) {
+    public void setSortOrderList(StringFilterAndSortOrderPair.List sortOrderList) {
         this.sortOrderList = sortOrderList;
     }
 }

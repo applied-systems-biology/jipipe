@@ -11,7 +11,7 @@ import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.acaq5.extensions.parameters.collections.RectangleList;
+import org.hkijena.acaq5.extensions.parameters.roi.RectangleList;
 
 import java.awt.*;
 import java.util.function.Consumer;

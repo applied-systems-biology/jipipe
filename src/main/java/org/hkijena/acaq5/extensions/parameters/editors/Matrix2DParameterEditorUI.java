@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.extensions.parameters.editors;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.extensions.parameters.collections.Matrix2DParameter;
+import org.hkijena.acaq5.extensions.parameters.matrix.Matrix2D;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
@@ -13,7 +13,7 @@ import java.awt.*;
 import java.util.Arrays;
 
 /**
- * Editor for {@link Matrix2DParameter}
+ * Editor for {@link Matrix2D}
  */
 public class Matrix2DParameterEditorUI extends ACAQParameterEditorUI {
 
@@ -43,12 +43,12 @@ public class Matrix2DParameterEditorUI extends ACAQParameterEditorUI {
 
         JButton addRowButton = new JButton(UIUtils.getIconFromResources("add-row.png"));
         addRowButton.setToolTipText("Add row");
-        addRowButton.addActionListener(e -> getParameterAccess().get(Matrix2DParameter.class).addRow());
+        addRowButton.addActionListener(e -> getParameterAccess().get(Matrix2D.class).addRow());
         toolBar.add(addRowButton);
 
         JButton addColumnButton = new JButton(UIUtils.getIconFromResources("add-column.png"));
         addColumnButton.setToolTipText("Add column");
-        addColumnButton.addActionListener(e -> getParameterAccess().get(Matrix2DParameter.class).addColumn());
+        addColumnButton.addActionListener(e -> getParameterAccess().get(Matrix2D.class).addColumn());
         toolBar.add(addColumnButton);
 
         toolBar.addSeparator();
@@ -74,7 +74,7 @@ public class Matrix2DParameterEditorUI extends ACAQParameterEditorUI {
     private void removeColumn() {
         int[] selectedColumns = table.getSelectedColumns();
         Arrays.sort(selectedColumns);
-        Matrix2DParameter<?> parameter = getParameterAccess().get(Matrix2DParameter.class);
+        Matrix2D<?> parameter = getParameterAccess().get(Matrix2D.class);
         for (int i = selectedColumns.length - 1; i >= 0; --i) {
             parameter.removeColumn(i);
         }
@@ -84,7 +84,7 @@ public class Matrix2DParameterEditorUI extends ACAQParameterEditorUI {
     private void removeRow() {
         int[] selectedRows = table.getSelectedRows();
         Arrays.sort(selectedRows);
-        Matrix2DParameter<?> parameter = getParameterAccess().get(Matrix2DParameter.class);
+        Matrix2D<?> parameter = getParameterAccess().get(Matrix2D.class);
         for (int i = selectedRows.length - 1; i >= 0; --i) {
             parameter.removeRow(i);
         }
@@ -98,7 +98,7 @@ public class Matrix2DParameterEditorUI extends ACAQParameterEditorUI {
 
     @Override
     public void reload() {
-        Matrix2DParameter<?> parameter = getParameterAccess().get(Matrix2DParameter.class);
+        Matrix2D<?> parameter = getParameterAccess().get(Matrix2D.class);
         table.setModel(new DefaultTableModel());
         table.setModel(parameter);
     }

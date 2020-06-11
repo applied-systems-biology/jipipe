@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.extensions.tables.parameters.processors;
 
-import org.hkijena.acaq5.extensions.parameters.filters.StringFilter;
+import org.hkijena.acaq5.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.acaq5.extensions.parameters.functions.FunctionParameter;
 import org.hkijena.acaq5.extensions.tables.parameters.enums.TableColumnIntegrationParameter;
 
@@ -8,11 +8,11 @@ import org.hkijena.acaq5.extensions.tables.parameters.enums.TableColumnIntegrati
  * A parameter that models processing an input column via an integration function
  * and generating an output column
  */
-public class IntegratingTableColumnProcessorParameter extends FunctionParameter<StringFilter, TableColumnIntegrationParameter, String> {
+public class IntegratingTableColumnProcessorParameter extends FunctionParameter<StringPredicate, TableColumnIntegrationParameter, String> {
 
     public IntegratingTableColumnProcessorParameter() {
-        super(StringFilter.class, TableColumnIntegrationParameter.class, String.class);
-        setInput(new StringFilter());
+        super(StringPredicate.class, TableColumnIntegrationParameter.class, String.class);
+        setInput(new StringPredicate());
         setParameter(new TableColumnIntegrationParameter());
         setOutput("Output column");
     }

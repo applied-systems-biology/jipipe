@@ -6,7 +6,7 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
-import org.hkijena.acaq5.extensions.parameters.collections.PathListParameter;
+import org.hkijena.acaq5.extensions.parameters.primitives.PathList;
 
 import java.nio.file.Path;
 
@@ -18,8 +18,8 @@ public class ProjectsSettings implements ACAQParameterCollection {
     public static String ID = "projects";
 
     private EventBus eventBus = new EventBus();
-    private PathListParameter recentProjects = new PathListParameter();
-    private PathListParameter recentJsonExtensionProjects = new PathListParameter();
+    private PathList recentProjects = new PathList();
+    private PathList recentJsonExtensionProjects = new PathList();
     private StarterProject starterProject = StarterProject.PreprocessingAnalysisPostprocessing;
 
     @Override
@@ -29,24 +29,24 @@ public class ProjectsSettings implements ACAQParameterCollection {
 
     @ACAQDocumentation(name = "Recent projects", description = "List of recent projects")
     @ACAQParameter("recent-projects")
-    public PathListParameter getRecentProjects() {
+    public PathList getRecentProjects() {
         return recentProjects;
     }
 
     @ACAQParameter("recent-projects")
-    public void setRecentProjects(PathListParameter recentProjects) {
+    public void setRecentProjects(PathList recentProjects) {
         this.recentProjects = recentProjects;
         getEventBus().post(new ParameterChangedEvent(this, "recent-projects"));
     }
 
     @ACAQDocumentation(name = "Recent JSON extension projects", description = "List of recent JSON extension projects")
     @ACAQParameter("recent-json-extension-projects")
-    public PathListParameter getRecentJsonExtensionProjects() {
+    public PathList getRecentJsonExtensionProjects() {
         return recentJsonExtensionProjects;
     }
 
     @ACAQParameter("recent-json-extension-projects")
-    public void setRecentJsonExtensionProjects(PathListParameter recentJsonExtensionProjects) {
+    public void setRecentJsonExtensionProjects(PathList recentJsonExtensionProjects) {
         this.recentJsonExtensionProjects = recentJsonExtensionProjects;
         getEventBus().post(new ParameterChangedEvent(this, "recent-json-extension-projects"));
     }

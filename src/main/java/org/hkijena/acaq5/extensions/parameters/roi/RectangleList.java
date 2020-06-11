@@ -1,4 +1,6 @@
-package org.hkijena.acaq5.extensions.parameters.collections;
+package org.hkijena.acaq5.extensions.parameters.roi;
+
+import org.hkijena.acaq5.extensions.parameters.collections.ListParameter;
 
 import java.awt.*;
 

@@ -10,8 +10,10 @@ import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
+import org.hkijena.acaq5.extensions.parameters.collections.ListParameter;
 
 import java.io.IOException;
+import java.util.Collection;
 
 /**
  * Helper to allow easy serialization of {@link ACAQTraitDeclaration} references
@@ -97,6 +99,29 @@ public class ACAQTraitDeclarationRef implements ACAQValidatable {
                 result.setDeclaration(ACAQTraitRegistry.getInstance().getDeclarationById(node.textValue()));
             }
             return result;
+        }
+    }
+
+    /**
+     * Helper to allow easy serialization of a collection of {@link ACAQTraitDeclaration} references
+     */
+    public static class List extends ListParameter<ACAQTraitDeclarationRef> {
+
+        /**
+         * Creates a new instance
+         */
+        public List() {
+            super(ACAQTraitDeclarationRef.class);
+        }
+
+        /**
+         * @param c the collection
+         */
+        public List(Collection<? extends ACAQTraitDeclarationRef> c) {
+            super(ACAQTraitDeclarationRef.class);
+            for (ACAQTraitDeclarationRef declarationRef : c) {
+                add(new ACAQTraitDeclarationRef(declarationRef));
+            }
         }
     }
 }

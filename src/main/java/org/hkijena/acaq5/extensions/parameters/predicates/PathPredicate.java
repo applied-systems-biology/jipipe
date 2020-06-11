@@ -1,9 +1,10 @@
-package org.hkijena.acaq5.extensions.parameters.filters;
+package org.hkijena.acaq5.extensions.parameters.predicates;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.extensions.parameters.collections.ListParameter;
 
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -14,7 +15,7 @@ import java.util.function.Predicate;
 /**
  * A filter for path filenames that can handle multiple filter modes
  */
-public class PathFilter implements Predicate<Path>, ACAQValidatable {
+public class PathPredicate implements Predicate<Path>, ACAQValidatable {
 
     private Mode mode = Mode.Contains;
     private String filterString;
@@ -23,7 +24,7 @@ public class PathFilter implements Predicate<Path>, ACAQValidatable {
     /**
      * Initializes a new filter. Defaults to no filter string and Mode.Contains
      */
-    public PathFilter() {
+    public PathPredicate() {
 
     }
 
@@ -32,7 +33,7 @@ public class PathFilter implements Predicate<Path>, ACAQValidatable {
      *
      * @param other the original
      */
-    public PathFilter(PathFilter other) {
+    public PathPredicate(PathPredicate other) {
         this.mode = other.mode;
         this.filterString = other.filterString;
         this.globPathMatcher = other.globPathMatcher;
@@ -102,7 +103,7 @@ public class PathFilter implements Predicate<Path>, ACAQValidatable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PathFilter that = (PathFilter) o;
+        PathPredicate that = (PathPredicate) o;
         return mode == that.mode &&
                 Objects.equals(filterString, that.filterString);
     }
@@ -130,4 +131,28 @@ public class PathFilter implements Predicate<Path>, ACAQValidatable {
         Regex
     }
 
+    /**
+     * A collection of multiple {@link PathPredicate}
+     * The filters are connected via "OR"
+     */
+    public static class List extends ListParameter<PathPredicate> {
+        /**
+         * Creates a new instance
+         */
+        public List() {
+            super(PathPredicate.class);
+        }
+
+        /**
+         * Creates a copy
+         *
+         * @param other the original
+         */
+        public List(List other) {
+            super(PathPredicate.class);
+            for (PathPredicate pathPredicate : other) {
+                add(new PathPredicate(pathPredicate));
+            }
+        }
+    }
 }

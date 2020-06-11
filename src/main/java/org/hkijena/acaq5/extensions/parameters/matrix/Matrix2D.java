@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.parameters.collections;
+package org.hkijena.acaq5.extensions.parameters.matrix;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * A 2D matrix of floats
  */
-public abstract class Matrix2DParameter<T> implements TableModel {
+public abstract class Matrix2D<T> implements TableModel {
 
     private List<List<T>> rows = new ArrayList<>();
     private List<TableModelListener> listeners = new ArrayList<>();
@@ -29,7 +29,7 @@ public abstract class Matrix2DParameter<T> implements TableModel {
      *
      * @param entryClass the type of the entries
      */
-    public Matrix2DParameter(Class<T> entryClass) {
+    public Matrix2D(Class<T> entryClass) {
         this.entryClass = entryClass;
     }
 
@@ -38,7 +38,7 @@ public abstract class Matrix2DParameter<T> implements TableModel {
      *
      * @param other the original
      */
-    public Matrix2DParameter(Matrix2DParameter<T> other) {
+    public Matrix2D(Matrix2D<T> other) {
         for (List<T> row : other.rows) {
             rows.add(new ArrayList<>(row));
         }
@@ -156,9 +156,9 @@ public abstract class Matrix2DParameter<T> implements TableModel {
     /**
      * Serializes the parameter
      */
-    public static class Serializer extends JsonSerializer<Matrix2DParameter<?>> {
+    public static class Serializer extends JsonSerializer<Matrix2D<?>> {
         @Override
-        public void serialize(Matrix2DParameter<?> objects, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+        public void serialize(Matrix2D<?> objects, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeObjectField("rows", objects.rows);
             jsonGenerator.writeEndObject();
@@ -168,17 +168,17 @@ public abstract class Matrix2DParameter<T> implements TableModel {
     /**
      * Deserializes the parameter
      */
-    public static class Deserializer<T> extends JsonDeserializer<Matrix2DParameter<T>> implements ContextualDeserializer {
+    public static class Deserializer<T> extends JsonDeserializer<Matrix2D<T>> implements ContextualDeserializer {
 
         private JavaType deserializedType;
 
         @Override
-        public Matrix2DParameter<T> deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+        public Matrix2D<T> deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JsonNode root = jsonParser.readValueAsTree();
 
-            Matrix2DParameter<T> listParameter;
+            Matrix2D<T> listParameter;
             try {
-                listParameter = (Matrix2DParameter<T>) deserializedType.getRawClass().newInstance();
+                listParameter = (Matrix2D<T>) deserializedType.getRawClass().newInstance();
             } catch (InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
@@ -202,7 +202,7 @@ public abstract class Matrix2DParameter<T> implements TableModel {
             JavaType type = ctxt.getContextualType() != null
                     ? ctxt.getContextualType()
                     : property.getMember().getType();
-            Matrix2DParameter.Deserializer<?> deserializer = new Matrix2DParameter.Deserializer<>();
+            Matrix2D.Deserializer<?> deserializer = new Matrix2D.Deserializer<>();
             deserializer.deserializedType = type;
             return deserializer;
         }

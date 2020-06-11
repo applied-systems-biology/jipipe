@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.extensions.parameters.editors;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.extensions.parameters.filters.StringFilter;
+import org.hkijena.acaq5.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -12,7 +12,7 @@ import javax.swing.event.DocumentEvent;
 import java.awt.*;
 
 /**
- * Editor for {@link StringFilter}
+ * Editor for {@link StringPredicate}
  */
 public class StringFilterParameterEditorUI extends ACAQParameterEditorUI {
 
@@ -34,9 +34,9 @@ public class StringFilterParameterEditorUI extends ACAQParameterEditorUI {
     @Override
     public void reload() {
         removeAll();
-        StringFilter filter = getParameterAccess().get(StringFilter.class);
+        StringPredicate filter = getParameterAccess().get(StringPredicate.class);
         if (filter == null) {
-            getParameterAccess().set(new StringFilter());
+            getParameterAccess().set(new StringPredicate());
             return;
         }
         JTextField filterStringEditor = new JTextField(filter.getFilterString());
@@ -53,23 +53,23 @@ public class StringFilterParameterEditorUI extends ACAQParameterEditorUI {
         addFilterModeSelection(filter,
                 group,
                 UIUtils.getIconFromResources("equals.png"),
-                StringFilter.Mode.Equals,
+                StringPredicate.Mode.Equals,
                 "String equals filter text");
         addFilterModeSelection(filter,
                 group,
                 UIUtils.getIconFromResources("text2.png"),
-                StringFilter.Mode.Contains,
+                StringPredicate.Mode.Contains,
                 "String contains filter text");
         addFilterModeSelection(filter,
                 group,
                 UIUtils.getIconFromResources("regex.png"),
-                StringFilter.Mode.Regex,
+                StringPredicate.Mode.Regex,
                 "String matches Regex pattern (e.g. .*\\.txt)");
         revalidate();
         repaint();
     }
 
-    private void addFilterModeSelection(StringFilter filter, ButtonGroup group, Icon icon, StringFilter.Mode mode, String description) {
+    private void addFilterModeSelection(StringPredicate filter, ButtonGroup group, Icon icon, StringPredicate.Mode mode, String description) {
         JToggleButton toggleButton = new JToggleButton(icon);
         UIUtils.makeFlat25x25(toggleButton);
         toggleButton.addActionListener(e -> {

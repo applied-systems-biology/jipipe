@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.parameters.collections;
+package org.hkijena.acaq5.extensions.parameters.pairs;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -17,9 +17,9 @@ import java.util.Map;
 /**
  * Parameter equivalent of {@link java.util.Map.Entry}
  */
-@JsonSerialize(using = KeyValuePairParameter.Serializer.class)
-@JsonDeserialize(using = KeyValuePairParameter.Deserializer.class)
-public abstract class KeyValuePairParameter<K, V> implements ACAQValidatable, Map.Entry<K, V> {
+@JsonSerialize(using = Pair.Serializer.class)
+@JsonDeserialize(using = Pair.Deserializer.class)
+public abstract class Pair<K, V> implements ACAQValidatable, Map.Entry<K, V> {
 
     private Class<K> keyClass;
     private Class<V> valueClass;
@@ -30,7 +30,7 @@ public abstract class KeyValuePairParameter<K, V> implements ACAQValidatable, Ma
      * @param keyClass   the key class
      * @param valueClass the stored content
      */
-    public KeyValuePairParameter(Class<K> keyClass, Class<V> valueClass) {
+    public Pair(Class<K> keyClass, Class<V> valueClass) {
         this.keyClass = keyClass;
         this.valueClass = valueClass;
     }
@@ -41,7 +41,7 @@ public abstract class KeyValuePairParameter<K, V> implements ACAQValidatable, Ma
      *
      * @param other the original
      */
-    public KeyValuePairParameter(KeyValuePairParameter<K, V> other) {
+    public Pair(Pair<K, V> other) {
         this.keyClass = other.keyClass;
         this.valueClass = other.valueClass;
         this.key = other.key;
@@ -92,9 +92,9 @@ public abstract class KeyValuePairParameter<K, V> implements ACAQValidatable, Ma
     /**
      * Serializes the parameter
      */
-    public static class Serializer extends JsonSerializer<KeyValuePairParameter<?, ?>> {
+    public static class Serializer extends JsonSerializer<Pair<?, ?>> {
         @Override
-        public void serialize(KeyValuePairParameter<?, ?> objects, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+        public void serialize(Pair<?, ?> objects, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeObjectField("key", objects.key);
             jsonGenerator.writeObjectField("value", objects.value);
@@ -105,24 +105,24 @@ public abstract class KeyValuePairParameter<K, V> implements ACAQValidatable, Ma
     /**
      * Deserializes the parameter
      */
-    public static class Deserializer<K, V> extends JsonDeserializer<KeyValuePairParameter<?, ?>> implements ContextualDeserializer {
+    public static class Deserializer<K, V> extends JsonDeserializer<Pair<?, ?>> implements ContextualDeserializer {
 
         private JavaType deserializedType;
 
         @Override
-        public KeyValuePairParameter<K, V> deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+        public Pair<K, V> deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JsonNode root = jsonParser.readValueAsTree();
-            KeyValuePairParameter<K, V> keyValuePairParameter;
+            Pair<K, V> pair;
             try {
-                keyValuePairParameter = (KeyValuePairParameter<K, V>) deserializedType.getRawClass().newInstance();
+                pair = (Pair<K, V>) deserializedType.getRawClass().newInstance();
             } catch (InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
 
-            keyValuePairParameter.key = JsonUtils.getObjectMapper().readerFor(keyValuePairParameter.getKeyClass()).readValue(root.get("key"));
-            keyValuePairParameter.value = JsonUtils.getObjectMapper().readerFor(keyValuePairParameter.getValueClass()).readValue(root.get("value"));
+            pair.key = JsonUtils.getObjectMapper().readerFor(pair.getKeyClass()).readValue(root.get("key"));
+            pair.value = JsonUtils.getObjectMapper().readerFor(pair.getValueClass()).readValue(root.get("value"));
 
-            return keyValuePairParameter;
+            return pair;
         }
 
         @Override
@@ -131,7 +131,7 @@ public abstract class KeyValuePairParameter<K, V> implements ACAQValidatable, Ma
             JavaType type = ctxt.getContextualType() != null
                     ? ctxt.getContextualType()
                     : property.getMember().getType();
-            KeyValuePairParameter.Deserializer<K, V> deserializer = new KeyValuePairParameter.Deserializer<>();
+            Pair.Deserializer<K, V> deserializer = new Pair.Deserializer<>();
             deserializer.deserializedType = type;
             return deserializer;
         }

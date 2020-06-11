@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.extensions.tables.parameters.processors;
 
-import org.hkijena.acaq5.extensions.parameters.filters.StringFilter;
+import org.hkijena.acaq5.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.acaq5.extensions.parameters.functions.FunctionParameter;
 import org.hkijena.acaq5.extensions.tables.parameters.enums.TableColumnConversionParameter;
 
@@ -8,11 +8,11 @@ import org.hkijena.acaq5.extensions.tables.parameters.enums.TableColumnConversio
  * A parameter that models processing an input column via an conversion function
  * and generating an output column
  */
-public class ConvertingTableColumnProcessorParameter extends FunctionParameter<StringFilter, TableColumnConversionParameter, String> {
+public class ConvertingTableColumnProcessorParameter extends FunctionParameter<StringPredicate, TableColumnConversionParameter, String> {
 
     public ConvertingTableColumnProcessorParameter() {
-        super(StringFilter.class, TableColumnConversionParameter.class, String.class);
-        setInput(new StringFilter());
+        super(StringPredicate.class, TableColumnConversionParameter.class, String.class);
+        setInput(new StringPredicate());
         setParameter(new TableColumnConversionParameter());
         setOutput("Output column");
     }

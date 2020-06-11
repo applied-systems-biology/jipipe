@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.parameters.collections;
+package org.hkijena.acaq5.extensions.parameters.pairs;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
@@ -7,40 +7,40 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
 import java.lang.annotation.Annotation;
 
 /**
- * Parameter access for the key entry in {@link KeyValuePairParameter}
+ * Parameter access for the key entry in {@link Pair}
  */
-public class KeyValueParameterKeyAccess<K, V> implements ACAQParameterAccess {
+public class PairParameterValueAccess<K, V> implements ACAQParameterAccess {
     private ACAQParameterAccess parent;
-    private KeyValuePairParameter<K, V> keyValuePairParameter;
+    private Pair<K, V> pair;
 
     /**
      * Creates a new instance
      *
      * @param parent                the parent access
-     * @param keyValuePairParameter the parameter
+     * @param pair the parameter
      */
-    public KeyValueParameterKeyAccess(ACAQParameterAccess parent, KeyValuePairParameter<K, V> keyValuePairParameter) {
+    public PairParameterValueAccess(ACAQParameterAccess parent, Pair<K, V> pair) {
         this.parent = parent;
-        this.keyValuePairParameter = keyValuePairParameter;
+        this.pair = pair;
     }
 
-    public KeyValuePairParameter<K, V> getKeyValuePairParameter() {
-        return keyValuePairParameter;
+    public Pair<K, V> getPair() {
+        return pair;
     }
 
     @Override
     public String getKey() {
-        return "key";
+        return "value";
     }
 
     @Override
     public String getName() {
-        return "Key";
+        return "Value";
     }
 
     @Override
     public String getDescription() {
-        return "Parameter key";
+        return "Parameter value";
     }
 
     @Override
@@ -55,17 +55,17 @@ public class KeyValueParameterKeyAccess<K, V> implements ACAQParameterAccess {
 
     @Override
     public Class<?> getFieldClass() {
-        return keyValuePairParameter.getKeyClass();
+        return pair.getValueClass();
     }
 
     @Override
     public <T> T get(Class<T> klass) {
-        return (T) keyValuePairParameter.getKey();
+        return (T) pair.getValue();
     }
 
     @Override
     public <T> boolean set(T value) {
-        keyValuePairParameter.setKey((K) value);
+        pair.setValue((V) value);
         return true;
     }
 

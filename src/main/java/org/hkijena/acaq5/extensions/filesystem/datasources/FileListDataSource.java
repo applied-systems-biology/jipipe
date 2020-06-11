@@ -11,7 +11,7 @@ import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.filesystem.dataypes.FileData;
-import org.hkijena.acaq5.extensions.parameters.collections.PathListParameter;
+import org.hkijena.acaq5.extensions.parameters.primitives.PathList;
 import org.hkijena.acaq5.extensions.parameters.editors.FilePathParameterSettings;
 import org.hkijena.acaq5.ui.components.PathEditor;
 
@@ -28,7 +28,7 @@ import java.util.function.Supplier;
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.DataSource)
 public class FileListDataSource extends ACAQAlgorithm {
 
-    private PathListParameter fileNames = new PathListParameter();
+    private PathList fileNames = new PathList();
     private Path currentWorkingDirectory;
 
     /**
@@ -64,7 +64,7 @@ public class FileListDataSource extends ACAQAlgorithm {
     @ACAQParameter("file-names")
     @ACAQDocumentation(name = "File names")
     @FilePathParameterSettings(ioMode = PathEditor.IOMode.Open, pathMode = PathEditor.PathMode.FilesOnly)
-    public PathListParameter getFileNames() {
+    public PathList getFileNames() {
         return fileNames;
     }
 
@@ -74,7 +74,7 @@ public class FileListDataSource extends ACAQAlgorithm {
      * @param fileNames The file names
      */
     @ACAQParameter("file-names")
-    public void setFileNames(PathListParameter fileNames) {
+    public void setFileNames(PathList fileNames) {
         this.fileNames = fileNames;
         getEventBus().post(new ParameterChangedEvent(this, "file-names"));
     }
@@ -82,8 +82,8 @@ public class FileListDataSource extends ACAQAlgorithm {
     /**
      * @return Absolute file names
      */
-    public PathListParameter getAbsoluteFileNames() {
-        PathListParameter result = new PathListParameter();
+    public PathList getAbsoluteFileNames() {
+        PathList result = new PathList();
         for (Path fileName : fileNames) {
             if (fileName == null)
                 result.add(null);

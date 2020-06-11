@@ -19,7 +19,7 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
-import org.hkijena.acaq5.extensions.parameters.collections.DoubleListParameter;
+import org.hkijena.acaq5.extensions.parameters.primitives.DoubleList;
 import org.hkijena.acaq5.extensions.parameters.editors.NumberParameterSettings;
 import org.hkijena.acaq5.utils.ImageJUtils;
 
@@ -42,7 +42,7 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
 @AlgorithmOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output")
 public class MeijeringVesselness2DFeatures extends ACAQSimpleIteratingAlgorithm {
 
-    private DoubleListParameter scales = new DoubleListParameter();
+    private DoubleList scales = new DoubleList();
     private boolean invert = false;
     private double alpha = 0.5;
 
@@ -68,7 +68,7 @@ public class MeijeringVesselness2DFeatures extends ACAQSimpleIteratingAlgorithm 
      */
     public MeijeringVesselness2DFeatures(MeijeringVesselness2DFeatures other) {
         super(other);
-        this.scales = new DoubleListParameter(other.scales);
+        this.scales = new DoubleList(other.scales);
         this.invert = other.invert;
         this.alpha = other.alpha;
     }
@@ -192,12 +192,12 @@ public class MeijeringVesselness2DFeatures extends ACAQSimpleIteratingAlgorithm 
 
     @ACAQDocumentation(name = "Scales", description = "List of scales to test. They are also referenced as 'Sigmas'.")
     @ACAQParameter("scales")
-    public DoubleListParameter getScales() {
+    public DoubleList getScales() {
         return scales;
     }
 
     @ACAQParameter("scales")
-    public void setScales(DoubleListParameter scales) {
+    public void setScales(DoubleList scales) {
         this.scales = scales;
     }
 }

@@ -1,9 +1,10 @@
-package org.hkijena.acaq5.extensions.parameters.filters;
+package org.hkijena.acaq5.extensions.parameters.predicates;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.extensions.parameters.collections.ListParameter;
 
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -11,7 +12,7 @@ import java.util.function.Predicate;
 /**
  * A filter for {@link Double}
  */
-public class DoubleFilter implements Predicate<Double>, ACAQValidatable {
+public class DoublePredicate implements Predicate<Double>, ACAQValidatable {
 
     private Mode mode = Mode.Equals;
     private double reference = 0;
@@ -19,7 +20,7 @@ public class DoubleFilter implements Predicate<Double>, ACAQValidatable {
     /**
      * Initializes a new filter. Defaults to no filter string and Mode.Contains
      */
-    public DoubleFilter() {
+    public DoublePredicate() {
 
     }
 
@@ -29,7 +30,7 @@ public class DoubleFilter implements Predicate<Double>, ACAQValidatable {
      * @param mode      filter mode
      * @param reference reference value
      */
-    public DoubleFilter(Mode mode, double reference) {
+    public DoublePredicate(Mode mode, double reference) {
         this.mode = mode;
         this.reference = reference;
     }
@@ -39,7 +40,7 @@ public class DoubleFilter implements Predicate<Double>, ACAQValidatable {
      *
      * @param other the original
      */
-    public DoubleFilter(DoubleFilter other) {
+    public DoublePredicate(DoublePredicate other) {
         this.mode = other.mode;
         this.reference = other.reference;
     }
@@ -95,7 +96,7 @@ public class DoubleFilter implements Predicate<Double>, ACAQValidatable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DoubleFilter that = (DoubleFilter) o;
+        DoublePredicate that = (DoublePredicate) o;
         return mode == that.mode &&
                 Objects.equals(reference, that.reference);
     }
@@ -123,6 +124,31 @@ public class DoubleFilter implements Predicate<Double>, ACAQValidatable {
 
         public String getStringRepresentation() {
             return stringRepresentation;
+        }
+    }
+
+    /**
+     * A collection of multiple {@link PathPredicate}
+     * The filters are connected via "OR"
+     */
+    public static class List extends ListParameter<DoublePredicate> {
+        /**
+         * Creates a new instance
+         */
+        public List() {
+            super(DoublePredicate.class);
+        }
+
+        /**
+         * Creates a copy
+         *
+         * @param other the original
+         */
+        public List(DoublePredicate.List other) {
+            super(DoublePredicate.class);
+            for (DoublePredicate pathPredicate : other) {
+                add(new DoublePredicate(pathPredicate));
+            }
         }
     }
 

@@ -1,13 +1,15 @@
-package org.hkijena.acaq5.extensions.parameters.collections;
+package org.hkijena.acaq5.extensions.parameters.primitives;
+
+import org.hkijena.acaq5.extensions.parameters.collections.ListParameter;
 
 /**
  * A list of {@link Integer}
  */
-public class IntListParameter extends ListParameter<Integer> {
+public class IntegerList extends ListParameter<Integer> {
     /**
      * Creates a new empty list
      */
-    public IntListParameter() {
+    public IntegerList() {
         super(Integer.class);
     }
 
@@ -16,7 +18,7 @@ public class IntListParameter extends ListParameter<Integer> {
      *
      * @param other the original
      */
-    public IntListParameter(IntListParameter other) {
+    public IntegerList(IntegerList other) {
         super(Integer.class);
         addAll(other);
     }

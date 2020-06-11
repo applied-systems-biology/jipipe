@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.extensions.parameters.editors;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.extensions.parameters.filters.PathFilter;
+import org.hkijena.acaq5.extensions.parameters.predicates.PathPredicate;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -12,7 +12,7 @@ import javax.swing.event.DocumentEvent;
 import java.awt.*;
 
 /**
- * Editor for {@link PathFilter}
+ * Editor for {@link PathPredicate}
  */
 public class PathFilterParameterEditorUI extends ACAQParameterEditorUI {
 
@@ -34,7 +34,7 @@ public class PathFilterParameterEditorUI extends ACAQParameterEditorUI {
     @Override
     public void reload() {
         removeAll();
-        PathFilter filter = getParameterAccess().get(PathFilter.class);
+        PathPredicate filter = getParameterAccess().get(PathPredicate.class);
         JTextField filterStringEditor = new JTextField(filter.getFilterString());
         filterStringEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         filterStringEditor.getDocument().addDocumentListener(new DocumentChangeListener() {
@@ -49,23 +49,23 @@ public class PathFilterParameterEditorUI extends ACAQParameterEditorUI {
         addFilterModeSelection(filter,
                 group,
                 UIUtils.getIconFromResources("text2.png"),
-                PathFilter.Mode.Contains,
+                PathPredicate.Mode.Contains,
                 "Filename contains filter text");
         addFilterModeSelection(filter,
                 group,
                 UIUtils.getIconFromResources("glob.png"),
-                PathFilter.Mode.Glob,
+                PathPredicate.Mode.Glob,
                 "Filename matches Glob-pattern (e.g. *.txt)");
         addFilterModeSelection(filter,
                 group,
                 UIUtils.getIconFromResources("regex.png"),
-                PathFilter.Mode.Regex,
+                PathPredicate.Mode.Regex,
                 "Filename matches Regex pattern (e.g. .*\\.txt)");
         revalidate();
         repaint();
     }
 
-    private void addFilterModeSelection(PathFilter filter, ButtonGroup group, Icon icon, PathFilter.Mode mode, String description) {
+    private void addFilterModeSelection(PathPredicate filter, ButtonGroup group, Icon icon, PathPredicate.Mode mode, String description) {
         JToggleButton toggleButton = new JToggleButton(icon);
         UIUtils.makeFlat25x25(toggleButton);
         toggleButton.addActionListener(e -> {

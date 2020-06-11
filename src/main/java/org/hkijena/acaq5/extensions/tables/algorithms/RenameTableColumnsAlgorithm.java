@@ -7,8 +7,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
-import org.hkijena.acaq5.extensions.parameters.collections.StringStringPairList;
-import org.hkijena.acaq5.extensions.parameters.pairs.StringFilterStringPair;
+import org.hkijena.acaq5.extensions.parameters.pairs.StringFilterAndStringPair;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.Objects;
@@ -24,7 +23,7 @@ import java.util.function.Supplier;
 @AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class RenameTableColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
-    private StringStringPairList renamingEntries = new StringStringPairList();
+    private StringFilterAndStringPair.List renamingEntries = new StringFilterAndStringPair.List();
 
     /**
      * Creates a new instance
@@ -42,13 +41,13 @@ public class RenameTableColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
      */
     public RenameTableColumnsAlgorithm(RenameTableColumnsAlgorithm other) {
         super(other);
-        this.renamingEntries = new StringStringPairList(renamingEntries);
+        this.renamingEntries = new StringFilterAndStringPair.List(renamingEntries);
     }
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ResultsTableData table = (ResultsTableData) dataInterface.getInputData(getFirstInputSlot(), ResultsTableData.class).duplicate();
-        for (StringFilterStringPair renamingEntry : renamingEntries) {
+        for (StringFilterAndStringPair renamingEntry : renamingEntries) {
             for (int col = 0; col < table.getColumnCount(); col++) {
                 String oldName = table.getColumnName(col);
                 String newName = renamingEntry.apply(oldName);
@@ -75,12 +74,12 @@ public class RenameTableColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     @ACAQDocumentation(name = "Renaming entries", description = "You can rename one or multiple columns.")
     @ACAQParameter("renaming-entries")
-    public StringStringPairList getRenamingEntries() {
+    public StringFilterAndStringPair.List getRenamingEntries() {
         return renamingEntries;
     }
 
     @ACAQParameter("renaming-entries")
-    public void setRenamingEntries(StringStringPairList renamingEntries) {
+    public void setRenamingEntries(StringFilterAndStringPair.List renamingEntries) {
         this.renamingEntries = renamingEntries;
     }
 }

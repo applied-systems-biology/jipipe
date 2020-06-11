@@ -5,7 +5,6 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclarationRefList;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.ui.components.ACAQTraitPicker;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
@@ -20,7 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Editor for {@link ACAQTraitDeclarationRefList}
+ * Editor for {@link ACAQTraitDeclarationRef.List}
  */
 public class ACAQTraitDeclarationRefCollectionParameterEditorUI extends ACAQParameterEditorUI {
 
@@ -65,9 +64,9 @@ public class ACAQTraitDeclarationRefCollectionParameterEditorUI extends ACAQPara
 
     @Override
     public void reload() {
-        ACAQTraitDeclarationRefList declarationRefs = getParameterAccess().get(ACAQTraitDeclarationRefList.class);
+        ACAQTraitDeclarationRef.List declarationRefs = getParameterAccess().get(ACAQTraitDeclarationRef.List.class);
         if (declarationRefs == null) {
-            declarationRefs = new ACAQTraitDeclarationRefList();
+            declarationRefs = new ACAQTraitDeclarationRef.List();
         }
         currentlyDisplayed.removeAll();
         if (declarationRefs.isEmpty()) {
@@ -127,7 +126,7 @@ public class ACAQTraitDeclarationRefCollectionParameterEditorUI extends ACAQPara
     @Subscribe
     public void onTraitSelected(ACAQTraitPicker.SelectedTraitsChangedEvent event) {
         if (pickerDialog.isVisible()) {
-            ACAQTraitDeclarationRefList refs = getParameterAccess().get(ACAQTraitDeclarationRefList.class);
+            ACAQTraitDeclarationRef.List refs = getParameterAccess().get(ACAQTraitDeclarationRef.List.class);
             refs.clear();
             for (ACAQTraitDeclaration selectedTrait : event.getTraitPicker().getSelectedTraits()) {
                 refs.add(new ACAQTraitDeclarationRef(selectedTrait));

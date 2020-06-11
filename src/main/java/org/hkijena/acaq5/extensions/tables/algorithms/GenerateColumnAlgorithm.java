@@ -17,7 +17,7 @@ import org.hkijena.acaq5.extensions.tables.ColumnContentType;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
 import org.hkijena.acaq5.extensions.tables.parameters.collections.TableColumnGeneratorProcessorParameterList;
 import org.hkijena.acaq5.extensions.tables.parameters.enums.TableColumnGeneratorParameter;
-import org.hkijena.acaq5.extensions.tables.parameters.processors.TableColumnGeneratorProcessorParameter;
+import org.hkijena.acaq5.extensions.tables.parameters.processors.TableColumnGeneratorProcessor;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -58,7 +58,7 @@ public class GenerateColumnAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ResultsTableData table = (ResultsTableData) dataInterface.getInputData(getFirstInputSlot(), ResultsTableData.class).duplicate();
-        for (TableColumnGeneratorProcessorParameter entry : columns) {
+        for (TableColumnGeneratorProcessor entry : columns) {
             String columnName = entry.getValue();
 
             if (table.getColumnIndex(columnName) != -1 && !replaceIfExists)

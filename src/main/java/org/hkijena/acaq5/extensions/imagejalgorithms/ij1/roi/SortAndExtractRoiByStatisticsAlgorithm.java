@@ -7,7 +7,7 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure.MeasurementColumnSortOrderList;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure.MeasurementColumnSortOrder;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
@@ -35,7 +35,7 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ij1.roi.ImageRoiProc
 @AlgorithmOutputSlot(value = ROIListData.class, slotName = "Output")
 public class SortAndExtractRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
 
-    private MeasurementColumnSortOrderList sortOrderList = new MeasurementColumnSortOrderList();
+    private MeasurementColumnSortOrder.List sortOrderList = new MeasurementColumnSortOrder.List();
     private IntModificationParameter selection = new IntModificationParameter();
     private RoiStatisticsAlgorithm roiStatisticsAlgorithm = ACAQAlgorithm.newInstance("ij1-roi-statistics");
     private boolean autoClamp = true;
@@ -60,7 +60,7 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends ImageRoiProcessorAlg
      */
     public SortAndExtractRoiByStatisticsAlgorithm(SortAndExtractRoiByStatisticsAlgorithm other) {
         super(other);
-        this.sortOrderList = new MeasurementColumnSortOrderList(other.sortOrderList);
+        this.sortOrderList = new MeasurementColumnSortOrder.List(other.sortOrderList);
         this.selection = new IntModificationParameter(other.selection);
         this.autoClamp = other.autoClamp;
         this.mapFillColor = new OptionalColorMapParameter(other.mapFillColor);
@@ -139,12 +139,12 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends ImageRoiProcessorAlg
     @ACAQDocumentation(name = "Sort order", description = "Allows you to determine by which measurement columns to sort by. You can order by multiple columns " +
             "where the order within this list. If you for example order by 'Area' and then 'Perimeter', the ROI will be ordered by area and if the area is the same by perimeter.")
     @ACAQParameter("sort-orders")
-    public MeasurementColumnSortOrderList getSortOrderList() {
+    public MeasurementColumnSortOrder.List getSortOrderList() {
         return sortOrderList;
     }
 
     @ACAQParameter("sort-orders")
-    public void setSortOrderList(MeasurementColumnSortOrderList sortOrderList) {
+    public void setSortOrderList(MeasurementColumnSortOrder.List sortOrderList) {
         this.sortOrderList = sortOrderList;
     }
 

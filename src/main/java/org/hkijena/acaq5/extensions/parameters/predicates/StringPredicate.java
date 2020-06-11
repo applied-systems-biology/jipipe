@@ -1,9 +1,10 @@
-package org.hkijena.acaq5.extensions.parameters.filters;
+package org.hkijena.acaq5.extensions.parameters.predicates;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.extensions.parameters.collections.ListParameter;
 
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -11,7 +12,7 @@ import java.util.function.Predicate;
 /**
  * A filter for path filenames that can handle multiple filter modes
  */
-public class StringFilter implements Predicate<String>, ACAQValidatable {
+public class StringPredicate implements Predicate<String>, ACAQValidatable {
 
     private Mode mode = Mode.Equals;
     private String filterString;
@@ -19,7 +20,7 @@ public class StringFilter implements Predicate<String>, ACAQValidatable {
     /**
      * Initializes a new filter. Defaults to no filter string and Mode.Contains
      */
-    public StringFilter() {
+    public StringPredicate() {
 
     }
 
@@ -29,7 +30,7 @@ public class StringFilter implements Predicate<String>, ACAQValidatable {
      * @param mode         filter mode
      * @param filterString filter string
      */
-    public StringFilter(Mode mode, String filterString) {
+    public StringPredicate(Mode mode, String filterString) {
         this.mode = mode;
         this.filterString = filterString;
     }
@@ -39,7 +40,7 @@ public class StringFilter implements Predicate<String>, ACAQValidatable {
      *
      * @param other the original
      */
-    public StringFilter(StringFilter other) {
+    public StringPredicate(StringPredicate other) {
         this.mode = other.mode;
         this.filterString = other.filterString;
     }
@@ -91,7 +92,7 @@ public class StringFilter implements Predicate<String>, ACAQValidatable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        StringFilter that = (StringFilter) o;
+        StringPredicate that = (StringPredicate) o;
         return mode == that.mode &&
                 Objects.equals(filterString, that.filterString);
     }
@@ -119,4 +120,43 @@ public class StringFilter implements Predicate<String>, ACAQValidatable {
         Regex
     }
 
+    /**
+     * A collection of multiple {@link StringPredicate}
+     * The filters are connected via "OR"
+     */
+    public static class List extends ListParameter<StringPredicate> implements Predicate<String> {
+        /**
+         * Creates a new instance
+         */
+        public List() {
+            super(StringPredicate.class);
+        }
+
+        /**
+         * Creates a copy
+         *
+         * @param other the original
+         */
+        public List(List other) {
+            super(StringPredicate.class);
+            for (StringPredicate filter : other) {
+                add(new StringPredicate(filter));
+            }
+        }
+
+        /**
+         * Returns true if one or more filters report that the string matches
+         *
+         * @param s the string
+         * @return if a filter matches
+         */
+        @Override
+        public boolean test(String s) {
+            for (StringPredicate stringPredicate : this) {
+                if (stringPredicate.test(s))
+                    return true;
+            }
+            return false;
+        }
+    }
 }

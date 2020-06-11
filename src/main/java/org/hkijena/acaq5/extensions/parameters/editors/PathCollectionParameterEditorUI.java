@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.extensions.parameters.editors;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.extensions.parameters.collections.PathListParameter;
+import org.hkijena.acaq5.extensions.parameters.primitives.PathList;
 import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
 import org.hkijena.acaq5.ui.components.PathEditor;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Editor for {@link PathListParameter}
+ * Editor for {@link PathList}
  */
 public class PathCollectionParameterEditorUI extends ACAQParameterEditorUI {
 
@@ -67,9 +67,9 @@ public class PathCollectionParameterEditorUI extends ACAQParameterEditorUI {
     }
 
     private void removeSelectedEntries() {
-        PathListParameter parameter = getParameterAccess().get(PathListParameter.class);
+        PathList parameter = getParameterAccess().get(PathList.class);
         if (parameter == null) {
-            parameter = new PathListParameter();
+            parameter = new PathList();
         }
         int[] indicies = listPanel.getSelectedIndices();
         Arrays.sort(indicies);
@@ -82,9 +82,9 @@ public class PathCollectionParameterEditorUI extends ACAQParameterEditorUI {
     }
 
     private void addEntry() {
-        PathListParameter parameter = getParameterAccess().get(PathListParameter.class);
+        PathList parameter = getParameterAccess().get(PathList.class);
         if (parameter == null) {
-            parameter = new PathListParameter();
+            parameter = new PathList();
             getParameterAccess().set(parameter);
         }
         List<Path> paths = FileChooserSettings.selectMulti(this, FileChooserSettings.KEY_PARAMETER, "Add path", ioMode, pathMode);
@@ -101,9 +101,9 @@ public class PathCollectionParameterEditorUI extends ACAQParameterEditorUI {
     @Override
     public void reload() {
         DefaultListModel<String> listModel = new DefaultListModel<>();
-        PathListParameter parameter = getParameterAccess().get(PathListParameter.class);
+        PathList parameter = getParameterAccess().get(PathList.class);
         if (parameter == null) {
-            parameter = new PathListParameter();
+            parameter = new PathList();
             getParameterAccess().set(parameter);
         }
         for (Path path : parameter) {

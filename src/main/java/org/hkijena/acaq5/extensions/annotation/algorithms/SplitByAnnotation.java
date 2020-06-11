@@ -14,7 +14,7 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.extensions.parameters.collections.OutputSlotMapParameterCollection;
-import org.hkijena.acaq5.extensions.parameters.filters.StringFilter;
+import org.hkijena.acaq5.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 
 import java.util.Comparator;
@@ -45,7 +45,7 @@ public class SplitByAnnotation extends ACAQAlgorithm {
                 .addInputSlot("Input", ACAQData.class)
                 .sealInput()
                 .build());
-        this.targetSlots = new OutputSlotMapParameterCollection(StringFilter.class, this, null, true);
+        this.targetSlots = new OutputSlotMapParameterCollection(StringPredicate.class, this, null, true);
         this.targetSlots.getEventBus().register(this);
     }
 
@@ -72,7 +72,7 @@ public class SplitByAnnotation extends ACAQAlgorithm {
             String matchingValue = matching.getValue();
 
             for (ACAQDataSlot slot : getOutputSlots().stream().sorted(Comparator.comparing(ACAQDataSlot::getName)).collect(Collectors.toList())) {
-                StringFilter filter = targetSlots.getParameters().get(slot.getName()).get(StringFilter.class);
+                StringPredicate filter = targetSlots.getParameters().get(slot.getName()).get(StringPredicate.class);
                 if (filter.test(matchingValue)) {
                     slot.addData(inputSlot.getData(row, ACAQData.class), inputSlot.getAnnotations(row));
                     if (!enableFallthrough)

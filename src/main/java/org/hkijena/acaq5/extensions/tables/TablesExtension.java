@@ -16,7 +16,7 @@ import org.hkijena.acaq5.extensions.tables.parameters.enums.TableColumnGenerator
 import org.hkijena.acaq5.extensions.tables.parameters.enums.TableColumnGeneratorParameterEditorUI;
 import org.hkijena.acaq5.extensions.tables.parameters.processors.ConvertingTableColumnProcessorParameter;
 import org.hkijena.acaq5.extensions.tables.parameters.processors.IntegratingTableColumnProcessorParameter;
-import org.hkijena.acaq5.extensions.tables.parameters.processors.TableColumnGeneratorProcessorParameter;
+import org.hkijena.acaq5.extensions.tables.parameters.processors.TableColumnGeneratorProcessor;
 import org.hkijena.acaq5.extensions.tables.traits.ColumnHeaderTrait;
 import org.hkijena.acaq5.extensions.tables.ui.tableoperations.*;
 import org.hkijena.acaq5.utils.ResourceUtils;
@@ -251,9 +251,9 @@ public class TablesExtension extends ACAQPrepackagedDefaultJavaExtension {
                 null);
 
         registerParameterType("table-column-generator-column-processor",
-                TableColumnGeneratorProcessorParameter.class,
-                TableColumnGeneratorProcessorParameter::new,
-                p -> new TableColumnGeneratorProcessorParameter((TableColumnGeneratorProcessorParameter) p),
+                TableColumnGeneratorProcessor.class,
+                TableColumnGeneratorProcessor::new,
+                p -> new TableColumnGeneratorProcessor((TableColumnGeneratorProcessor) p),
                 "Column generator processor",
                 "Defines a processor that generates a column",
                 null);

@@ -8,7 +8,7 @@ import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
-import org.hkijena.acaq5.extensions.parameters.filters.StringFilter;
+import org.hkijena.acaq5.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.acaq5.extensions.tables.parameters.enums.TableColumnGeneratorParameter;
 
 /**
@@ -18,7 +18,7 @@ public class TableColumnSourceParameter implements ACAQParameterCollection, ACAQ
 
     private EventBus eventBus = new EventBus();
     private Mode mode = Mode.PickColumn;
-    private StringFilter columnSource = new StringFilter();
+    private StringPredicate columnSource = new StringPredicate();
     private TableColumnGeneratorParameter generatorSource = new TableColumnGeneratorParameter();
 
     /**
@@ -34,7 +34,7 @@ public class TableColumnSourceParameter implements ACAQParameterCollection, ACAQ
      */
     public TableColumnSourceParameter(TableColumnSourceParameter other) {
         this.mode = other.mode;
-        this.columnSource = new StringFilter(other.columnSource);
+        this.columnSource = new StringPredicate(other.columnSource);
         this.generatorSource = new TableColumnGeneratorParameter(other.generatorSource);
     }
 
@@ -54,13 +54,13 @@ public class TableColumnSourceParameter implements ACAQParameterCollection, ACAQ
     @ACAQDocumentation(name = "Column source", description = "Source that picks a column")
     @ACAQParameter("column-source")
     @JsonGetter("column-source")
-    public StringFilter getColumnSource() {
+    public StringPredicate getColumnSource() {
         return columnSource;
     }
 
     @ACAQParameter("column-source")
     @JsonSetter("column-source")
-    public void setColumnSource(StringFilter columnSource) {
+    public void setColumnSource(StringPredicate columnSource) {
         this.columnSource = columnSource;
     }
 

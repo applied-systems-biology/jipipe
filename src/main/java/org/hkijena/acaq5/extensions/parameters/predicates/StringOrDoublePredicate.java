@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.parameters.filters;
+package org.hkijena.acaq5.extensions.parameters.predicates;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
@@ -9,23 +9,24 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
+import org.hkijena.acaq5.extensions.parameters.collections.ListParameter;
 
 import java.util.function.Predicate;
 
 /**
  * Can either filter a string or a double
  */
-public class StringOrDoubleFilter implements ACAQParameterCollection, ACAQValidatable, Predicate<Object> {
+public class StringOrDoublePredicate implements ACAQParameterCollection, ACAQValidatable, Predicate<Object> {
 
     private EventBus eventBus = new EventBus();
     private FilterMode filterMode = FilterMode.Double;
-    private StringFilter stringFilter = new StringFilter();
-    private DoubleFilter doubleFilter = new DoubleFilter();
+    private StringPredicate stringPredicate = new StringPredicate();
+    private DoublePredicate doublePredicate = new DoublePredicate();
 
     /**
      * Creates a new instance
      */
-    public StringOrDoubleFilter() {
+    public StringOrDoublePredicate() {
     }
 
     /**
@@ -33,10 +34,10 @@ public class StringOrDoubleFilter implements ACAQParameterCollection, ACAQValida
      *
      * @param other the original
      */
-    public StringOrDoubleFilter(StringOrDoubleFilter other) {
+    public StringOrDoublePredicate(StringOrDoublePredicate other) {
         this.filterMode = other.filterMode;
-        this.stringFilter = new StringFilter(other.stringFilter);
-        this.doubleFilter = new DoubleFilter(other.doubleFilter);
+        this.stringPredicate = new StringPredicate(other.stringPredicate);
+        this.doublePredicate = new DoublePredicate(other.doublePredicate);
     }
 
     @ACAQDocumentation(name = "Mode", description = "Which source is used")
@@ -56,28 +57,28 @@ public class StringOrDoubleFilter implements ACAQParameterCollection, ACAQValida
     @ACAQDocumentation(name = "String filter", description = "The string filter")
     @ACAQParameter("string-filter")
     @JsonGetter("string-filter")
-    public StringFilter getStringFilter() {
-        return stringFilter;
+    public StringPredicate getStringPredicate() {
+        return stringPredicate;
     }
 
     @ACAQParameter("string-filter")
     @JsonSetter("string-filter")
-    public void setStringFilter(StringFilter stringFilter) {
-        this.stringFilter = stringFilter;
+    public void setStringPredicate(StringPredicate stringPredicate) {
+        this.stringPredicate = stringPredicate;
         getEventBus().post(new ParameterChangedEvent(this, "string-filter"));
     }
 
     @ACAQDocumentation(name = "Number filter", description = "The number filter")
     @ACAQParameter("number-filter")
     @JsonGetter("number-filter")
-    public DoubleFilter getDoubleFilter() {
-        return doubleFilter;
+    public DoublePredicate getDoublePredicate() {
+        return doublePredicate;
     }
 
     @ACAQParameter("number-filter")
     @JsonSetter("number-filter")
-    public void setDoubleFilter(DoubleFilter doubleFilter) {
-        this.doubleFilter = doubleFilter;
+    public void setDoublePredicate(DoublePredicate doublePredicate) {
+        this.doublePredicate = doublePredicate;
         getEventBus().post(new ParameterChangedEvent(this, "number-filter"));
     }
 
@@ -89,16 +90,16 @@ public class StringOrDoubleFilter implements ACAQParameterCollection, ACAQValida
     @Override
     public void reportValidity(ACAQValidityReport report) {
         if (filterMode == FilterMode.Double) {
-            report.report(stringFilter);
+            report.report(stringPredicate);
         } else if (filterMode == FilterMode.String) {
-            report.report(doubleFilter);
+            report.report(doublePredicate);
         }
     }
 
     @Override
     public boolean test(Object o) {
         if (filterMode == FilterMode.String) {
-            return stringFilter.test("" + o);
+            return stringPredicate.test("" + o);
         } else {
             double value;
             if (o instanceof Number) {
@@ -110,7 +111,7 @@ public class StringOrDoubleFilter implements ACAQParameterCollection, ACAQValida
                     value = 0;
                 }
             }
-            return doubleFilter.test(value);
+            return doublePredicate.test(value);
         }
     }
 
@@ -120,5 +121,45 @@ public class StringOrDoubleFilter implements ACAQParameterCollection, ACAQValida
     public enum FilterMode {
         Double,
         String
+    }
+
+    /**
+     * A collection of multiple {@link StringOrDoublePredicate}
+     * The filters are connected via "OR"
+     */
+    public static class List extends ListParameter<StringOrDoublePredicate> implements Predicate<Object> {
+        /**
+         * Creates a new instance
+         */
+        public List() {
+            super(StringOrDoublePredicate.class);
+        }
+
+        /**
+         * Creates a copy
+         *
+         * @param other the original
+         */
+        public List(List other) {
+            super(StringOrDoublePredicate.class);
+            for (StringOrDoublePredicate filter : other) {
+                add(new StringOrDoublePredicate(filter));
+            }
+        }
+
+        /**
+         * Returns true if one or more filters report that the string matches
+         *
+         * @param s the string
+         * @return if a filter matches
+         */
+        @Override
+        public boolean test(Object s) {
+            for (StringOrDoublePredicate filter : this) {
+                if (filter.test(s))
+                    return true;
+            }
+            return false;
+        }
     }
 }
