@@ -52,6 +52,8 @@ public class StringPatternExtractionParameterEditorUI extends ACAQParameterEdito
                 break;
         }
 
+        add(Box.createHorizontalStrut(8));
+
         ButtonGroup group = new ButtonGroup();
         addFilterModeSelection(filter,
                 group,
@@ -87,7 +89,7 @@ public class StringPatternExtractionParameterEditorUI extends ACAQParameterEdito
         });
         add(splitChar);
 
-        add(new JLabel("Select nth"));
+        add(new JLabel("then select nth"));
         SpinnerNumberModel indexModel = new SpinnerNumberModel(filter.getSplitPickedIndex(), 0, Integer.MAX_VALUE, 1);
         JSpinner indexSpinner = new JSpinner(indexModel);
         indexSpinner.setToolTipText("Selects the n-th split component. The first index is zero.");
@@ -110,7 +112,7 @@ public class StringPatternExtractionParameterEditorUI extends ACAQParameterEdito
         });
         add(splitChar);
 
-        add(new JLabel("Select regex"));
+        add(new JLabel("then select by RegEx"));
         JXTextField regexString = new JXTextField("Split character");
         regexString.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         regexString.setToolTipText("Selects the component that matches this regex string");

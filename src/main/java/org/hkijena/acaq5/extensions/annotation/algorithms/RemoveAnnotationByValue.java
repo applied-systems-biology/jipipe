@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 /**
  * Removes a specified annotation
  */
-@ACAQDocumentation(name = "Remove annotation", description = "Removes annotations")
+@ACAQDocumentation(name = "Remove annotation by value", description = "Removes annotations that match a filter value")
 @ACAQOrganization(menuPath = "Remove", algorithmCategory = ACAQAlgorithmCategory.Annotation)
 @AlgorithmInputSlot(value = ACAQData.class, slotName = "Input", autoCreate = true)
 @AlgorithmOutputSlot(value = ACAQData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
