@@ -9,7 +9,6 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
@@ -72,12 +71,6 @@ public class BioFormatsImporter extends ACAQSimpleIteratingAlgorithm {
         this.crop = other.crop;
         this.stitchTiles = other.stitchTiles;
         this.titleAnnotation = new ACAQTraitDeclarationRef(other.titleAnnotation);
-    }
-
-    @Override
-    protected void initializeTraits() {
-        super.initializeTraits();
-        ((ACAQDefaultMutableTraitConfiguration) getTraitConfiguration()).setTraitModificationsSealed(false);
     }
 
     @Override

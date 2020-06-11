@@ -1,8 +1,6 @@
 package org.hkijena.acaq5.extensions.parameters.collections;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.extensions.parameters.collections.ListParameter;
-import org.hkijena.acaq5.extensions.parameters.collections.ListParameterItemParameterAccess;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;

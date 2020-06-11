@@ -11,7 +11,6 @@ import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQParameterTypeRegistry;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.ui.components.ACAQAlgorithmDeclarationListCellRenderer;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
@@ -22,11 +21,8 @@ import javax.swing.*;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import static org.hkijena.acaq5.utils.TooltipUtils.insertOpposingTraitTableContent;
 
 /**
  * A browsable list of algorithms with full documentation
@@ -103,16 +99,6 @@ public class ACAQAlgorithmCompendiumUI extends ACAQCompendiumUI<ACAQAlgorithmDec
         String description = declaration.getDescription();
         if (description != null && !description.isEmpty())
             builder.append(HtmlEscapers.htmlEscaper().escape(description)).append("</br>");
-
-        Set<ACAQTraitDeclaration> preferredTraits = declaration.getPreferredTraits();
-        Set<ACAQTraitDeclaration> unwantedTraits = declaration.getUnwantedTraits();
-        Set<ACAQTraitDeclaration> addedTraits = declaration.getSlotTraitConfiguration().getAddedTraits();
-        Set<ACAQTraitDeclaration> removedTraits = declaration.getSlotTraitConfiguration().getRemovedTraits();
-
-        if (!preferredTraits.isEmpty() || !unwantedTraits.isEmpty())
-            insertOpposingTraitTableContent(builder, preferredTraits, "Good for", unwantedTraits, "Bad for");
-        if (!addedTraits.isEmpty() || !removedTraits.isEmpty())
-            insertOpposingTraitTableContent(builder, addedTraits, "Adds", removedTraits, "Removes");
 
         builder.append("</table>\n\n");
 

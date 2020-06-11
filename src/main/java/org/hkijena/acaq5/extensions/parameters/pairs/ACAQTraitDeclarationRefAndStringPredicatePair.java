@@ -4,13 +4,10 @@ import org.hkijena.acaq5.extensions.parameters.collections.ListParameter;
 import org.hkijena.acaq5.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 
-import java.util.function.Function;
-import java.util.function.Predicate;
-
 /**
  * A parameter that renames a matching string into another string
  */
-public class ACAQTraitDeclarationRefAndStringPredicatePair extends Pair<ACAQTraitDeclarationRef, StringPredicate>  {
+public class ACAQTraitDeclarationRefAndStringPredicatePair extends Pair<ACAQTraitDeclarationRef, StringPredicate> {
 
     /**
      * Creates a new instance

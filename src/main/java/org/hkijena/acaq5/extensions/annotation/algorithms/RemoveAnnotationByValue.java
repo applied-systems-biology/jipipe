@@ -6,14 +6,11 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQData;
-import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
-import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.extensions.parameters.editors.ACAQTraitParameterSettings;
 import org.hkijena.acaq5.extensions.parameters.pairs.ACAQTraitDeclarationRefAndStringPredicatePair;
-import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -45,7 +42,6 @@ public class RemoveAnnotationByValue extends ACAQSimpleIteratingAlgorithm {
     public RemoveAnnotationByValue(RemoveAnnotationByValue other) {
         super(other);
         this.filters = other.filters;
-        updateSlotTraits();
     }
 
     @Override
@@ -56,31 +52,13 @@ public class RemoveAnnotationByValue extends ACAQSimpleIteratingAlgorithm {
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         for (ACAQTraitDeclarationRefAndStringPredicatePair filter : filters) {
             ACAQTrait instance = dataInterface.getAnnotationOfType(filter.getKey().getDeclaration());
-            if(instance != null) {
-                if(filter.getValue().test(instance.getValue())) {
+            if (instance != null) {
+                if (filter.getValue().test(instance.getValue())) {
                     dataInterface.removeGlobalAnnotation(filter.getKey().getDeclaration(), removeCategory);
                 }
             }
         }
         dataInterface.addOutputData(getFirstOutputSlot(), dataInterface.getInputData(getFirstInputSlot(), ACAQData.class));
-    }
-
-    private void updateSlotTraits() {
-        ACAQDefaultMutableTraitConfiguration traitConfiguration = (ACAQDefaultMutableTraitConfiguration) getTraitConfiguration();
-        traitConfiguration.getMutableGlobalTraitModificationTasks().clear();
-        if (!filters.isEmpty()) {
-            for (ACAQTraitDeclarationRefAndStringPredicatePair filter : filters) {
-                ACAQTraitDeclarationRef annotationType = filter.getKey();
-                if (removeCategory) {
-                    traitConfiguration.getMutableGlobalTraitModificationTasks().set(annotationType.getDeclaration(),
-                            ACAQTraitModificationOperation.RemoveCategory);
-                } else {
-                    traitConfiguration.getMutableGlobalTraitModificationTasks().set(annotationType.getDeclaration(),
-                            ACAQTraitModificationOperation.RemoveThis);
-                }
-            }
-        }
-        traitConfiguration.postChangedEvent();
     }
 
     @ACAQDocumentation(name = "Removed annotation", description = "This annotation is removed from each input data")
@@ -93,7 +71,6 @@ public class RemoveAnnotationByValue extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("filters")
     public void setFilters(ACAQTraitDeclarationRefAndStringPredicatePair.List annotationTypes) {
         this.filters = annotationTypes;
-        updateSlotTraits();
         getEventBus().post(new ParameterChangedEvent(this, "filters"));
     }
 

@@ -2,7 +2,6 @@ package org.hkijena.acaq5.api.algorithm;
 
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 
@@ -142,12 +141,12 @@ public class ACAQDataInterface {
     /**
      * Removes an annotation of provided type
      *
-     * @param declaration removed annotation
+     * @param declaration    removed annotation
      * @param removeCategory if true, also remove child annotations
      */
     public void removeGlobalAnnotation(ACAQTraitDeclaration declaration, boolean removeCategory) {
         annotations.remove(declaration);
-        if(removeCategory) {
+        if (removeCategory) {
             for (ACAQTraitDeclaration traitDeclaration : annotations.keySet().stream()
                     .filter(d -> d.getInherited().contains(declaration)).collect(Collectors.toSet())) {
                 annotations.remove(traitDeclaration);

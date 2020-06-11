@@ -1,9 +1,10 @@
 package org.hkijena.acaq5.extensions.filesystem.algorithms;
 
-import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQOrganization;
+import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
-import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.acaq5.extensions.filesystem.dataypes.PathData;
@@ -32,7 +33,6 @@ public class SimplePathAnnotationGenerator extends ACAQSimpleIteratingAlgorithm 
      */
     public SimplePathAnnotationGenerator(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
-        updateSlotTraits();
     }
 
     /**
@@ -45,7 +45,6 @@ public class SimplePathAnnotationGenerator extends ACAQSimpleIteratingAlgorithm 
         this.generatedAnnotation = new ACAQTraitDeclarationRef(other.generatedAnnotation.getDeclaration());
         this.fullPath = other.fullPath;
         this.removeExtensions = other.removeExtensions;
-        updateSlotTraits();
     }
 
     @Override
@@ -54,19 +53,17 @@ public class SimplePathAnnotationGenerator extends ACAQSimpleIteratingAlgorithm 
             FolderData inputData = dataInterface.getInputData(getFirstInputSlot(), FolderData.class);
 
             String annotationValue;
-            if(removeExtensions && fullPath) {
+            if (removeExtensions && fullPath) {
                 String fileName = inputData.getPath().getFileName().toString();
                 fileName = removeExtension(fileName);
                 annotationValue = inputData.getPath().getParent().resolve(fileName).toString();
-            }
-            else {
-                if(fullPath) {
+            } else {
+                if (fullPath) {
                     annotationValue = inputData.getPath().toString();
-                }
-                else {
+                } else {
                     annotationValue = inputData.getPath().getFileName().toString();
                 }
-                if(removeExtensions) {
+                if (removeExtensions) {
                     annotationValue = removeExtension(annotationValue);
                 }
             }
@@ -78,7 +75,7 @@ public class SimplePathAnnotationGenerator extends ACAQSimpleIteratingAlgorithm 
 
     private String removeExtension(String fileName) {
         int dotIndex = fileName.lastIndexOf('.');
-        if(dotIndex <= 0)
+        if (dotIndex <= 0)
             return fileName;
         else
             return fileName.substring(0, dotIndex);
@@ -87,14 +84,6 @@ public class SimplePathAnnotationGenerator extends ACAQSimpleIteratingAlgorithm 
     @Override
     public void reportValidity(ACAQValidityReport report) {
         report.forCategory("Generated annotation").report(generatedAnnotation);
-    }
-
-    private void updateSlotTraits() {
-        ACAQDefaultMutableTraitConfiguration traitConfiguration = (ACAQDefaultMutableTraitConfiguration) getTraitConfiguration();
-        traitConfiguration.getMutableGlobalTraitModificationTasks().clear();
-        if (generatedAnnotation.getDeclaration() != null)
-            traitConfiguration.getMutableGlobalTraitModificationTasks().set(generatedAnnotation.getDeclaration(), ACAQTraitModificationOperation.Add);
-        traitConfiguration.postChangedEvent();
     }
 
     @ACAQDocumentation(name = "Generated annotation", description = "Select which annotation type is generated for each path")
@@ -106,7 +95,6 @@ public class SimplePathAnnotationGenerator extends ACAQSimpleIteratingAlgorithm 
     @ACAQParameter("generated-annotation")
     public void setGeneratedAnnotation(ACAQTraitDeclarationRef generatedAnnotation) {
         this.generatedAnnotation = generatedAnnotation;
-        updateSlotTraits();
     }
 
     @ACAQDocumentation(name = "Annotate with full path", description = "If true, the full path is put into the annotation. Otherwise, only the file or folder name is stored.")

@@ -1,12 +1,7 @@
 package org.hkijena.acaq5.api.algorithm;
 
-import org.hkijena.acaq5.api.data.traits.ACAQDataSlotTraitConfiguration;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
-
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Instantiates {@link ACAQGraphNode} instances
@@ -18,9 +13,6 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
     private String name;
     private String description;
     private ACAQAlgorithmCategory category;
-    private Set<ACAQTraitDeclaration> preferredTraits = new HashSet<>();
-    private Set<ACAQTraitDeclaration> unwantedTraits = new HashSet<>();
-    private ACAQDataSlotTraitConfiguration slotTraitConfiguration = new ACAQDataSlotTraitConfiguration();
     private List<AlgorithmInputSlot> inputSlots = new ArrayList<>();
     private List<AlgorithmOutputSlot> outputSlots = new ArrayList<>();
     private String menuPath;
@@ -82,33 +74,6 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
         this.category = category;
     }
 
-    @Override
-    public Set<ACAQTraitDeclaration> getPreferredTraits() {
-        return preferredTraits;
-    }
-
-    /**
-     * Sets preferred traits
-     *
-     * @param preferredTraits The preferred traits
-     */
-    public void setPreferredTraits(Set<ACAQTraitDeclaration> preferredTraits) {
-        this.preferredTraits = preferredTraits;
-    }
-
-    @Override
-    public Set<ACAQTraitDeclaration> getUnwantedTraits() {
-        return unwantedTraits;
-    }
-
-    /**
-     * Sets unwanted traits
-     *
-     * @param unwantedTraits Unwanted traits
-     */
-    public void setUnwantedTraits(Set<ACAQTraitDeclaration> unwantedTraits) {
-        this.unwantedTraits = unwantedTraits;
-    }
 
     @Override
     public List<AlgorithmInputSlot> getInputSlots() {
@@ -150,20 +115,6 @@ public abstract class ACAQMutableAlgorithmDeclaration implements ACAQAlgorithmDe
      */
     public void setId(String id) {
         this.id = id;
-    }
-
-    @Override
-    public ACAQDataSlotTraitConfiguration getSlotTraitConfiguration() {
-        return slotTraitConfiguration;
-    }
-
-    /**
-     * Sets the slot trait configuration
-     *
-     * @param slotTraitConfiguration The configuration
-     */
-    public void setSlotTraitConfiguration(ACAQDataSlotTraitConfiguration slotTraitConfiguration) {
-        this.slotTraitConfiguration = slotTraitConfiguration;
     }
 
     @Override

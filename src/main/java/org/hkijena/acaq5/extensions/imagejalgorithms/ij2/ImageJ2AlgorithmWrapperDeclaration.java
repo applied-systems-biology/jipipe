@@ -12,8 +12,6 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
-import org.hkijena.acaq5.api.data.traits.ACAQDataSlotTraitConfiguration;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.scijava.Context;
@@ -25,7 +23,6 @@ import org.scijava.module.ModuleInfo;
 import org.scijava.module.ModuleItem;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -41,7 +38,6 @@ public class ImageJ2AlgorithmWrapperDeclaration implements ACAQAlgorithmDeclarat
     private String name;
     private List<AlgorithmInputSlot> inputSlots = new ArrayList<>();
     private List<AlgorithmOutputSlot> outputSlots = new ArrayList<>();
-    private ACAQDataSlotTraitConfiguration slotTraitConfiguration;
     private ACAQMutableSlotConfiguration slotConfiguration;
     private BiMap<String, String> inputMap = HashBiMap.create();
     private BiMap<String, String> outputMap = HashBiMap.create();
@@ -63,7 +59,6 @@ public class ImageJ2AlgorithmWrapperDeclaration implements ACAQAlgorithmDeclarat
         this.name = commandInfo.getMenuPath().getLeaf().getName();
         this.id = "external-imagej2-" + StringUtils.jsonify(commandInfo.getMenuPath().stream().map(MenuEntry::getName).collect(Collectors.joining("-")));
         this.menuPath = commandInfo.getMenuPath().stream().map(MenuEntry::getName).collect(Collectors.joining("\n"));
-        this.slotTraitConfiguration = new ACAQDataSlotTraitConfiguration();
     }
 
     /**
@@ -144,21 +139,6 @@ public class ImageJ2AlgorithmWrapperDeclaration implements ACAQAlgorithmDeclarat
     @Override
     public ACAQAlgorithmCategory getCategory() {
         return ACAQAlgorithmCategory.Miscellaneous;
-    }
-
-    @Override
-    public Set<ACAQTraitDeclaration> getPreferredTraits() {
-        return Collections.emptySet();
-    }
-
-    @Override
-    public Set<ACAQTraitDeclaration> getUnwantedTraits() {
-        return Collections.emptySet();
-    }
-
-    @Override
-    public ACAQDataSlotTraitConfiguration getSlotTraitConfiguration() {
-        return slotTraitConfiguration;
     }
 
     @Override

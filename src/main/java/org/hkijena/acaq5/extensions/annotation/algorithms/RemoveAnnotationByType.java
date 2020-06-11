@@ -6,11 +6,8 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQData;
-import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
-import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extensions.parameters.editors.ACAQTraitParameterSettings;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 
@@ -44,7 +41,6 @@ public class RemoveAnnotationByType extends ACAQSimpleIteratingAlgorithm {
     public RemoveAnnotationByType(RemoveAnnotationByType other) {
         super(other);
         this.annotationTypes = other.annotationTypes;
-        updateSlotTraits();
     }
 
     @Override
@@ -59,23 +55,6 @@ public class RemoveAnnotationByType extends ACAQSimpleIteratingAlgorithm {
         dataInterface.addOutputData(getFirstOutputSlot(), dataInterface.getInputData(getFirstInputSlot(), ACAQData.class));
     }
 
-    private void updateSlotTraits() {
-        ACAQDefaultMutableTraitConfiguration traitConfiguration = (ACAQDefaultMutableTraitConfiguration) getTraitConfiguration();
-        traitConfiguration.getMutableGlobalTraitModificationTasks().clear();
-        if (annotationTypes != null) {
-            for (ACAQTraitDeclarationRef annotationType : annotationTypes) {
-                if (removeCategory) {
-                    traitConfiguration.getMutableGlobalTraitModificationTasks().set(annotationType.getDeclaration(),
-                            ACAQTraitModificationOperation.RemoveCategory);
-                } else {
-                    traitConfiguration.getMutableGlobalTraitModificationTasks().set(annotationType.getDeclaration(),
-                            ACAQTraitModificationOperation.RemoveThis);
-                }
-            }
-        }
-        traitConfiguration.postChangedEvent();
-    }
-
     @ACAQDocumentation(name = "Removed annotation", description = "This annotation is removed from each input data")
     @ACAQParameter("annotation-type")
     @ACAQTraitParameterSettings(showHidden = true)
@@ -86,7 +65,6 @@ public class RemoveAnnotationByType extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("annotation-type")
     public void setAnnotationTypes(ACAQTraitDeclarationRef.List annotationTypes) {
         this.annotationTypes = annotationTypes;
-        updateSlotTraits();
         getEventBus().post(new ParameterChangedEvent(this, "annotation-type"));
     }
 

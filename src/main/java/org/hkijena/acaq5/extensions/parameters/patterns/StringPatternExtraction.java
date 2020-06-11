@@ -30,6 +30,7 @@ public class StringPatternExtraction implements Function<String, String>, ACAQVa
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public StringPatternExtraction(StringPatternExtraction other) {
@@ -41,7 +42,7 @@ public class StringPatternExtraction implements Function<String, String>, ACAQVa
 
     @Override
     public String apply(String s) {
-        if(s == null)
+        if (s == null)
             s = "";
         switch (mode) {
             case SplitAndPick: {
@@ -51,14 +52,14 @@ public class StringPatternExtraction implements Function<String, String>, ACAQVa
             case SplitAndFind: {
                 String[] components = s.split(splitCharacter);
                 for (String component : components) {
-                    if(component.matches(regexString))
+                    if (component.matches(regexString))
                         return component;
                 }
                 return null;
             }
             case Regex: {
                 Matcher matcher = Pattern.compile(regexString).matcher(s);
-                if(matcher.find()) {
+                if (matcher.find()) {
                     return matcher.groupCount() > 0 ? matcher.group(0) : null;
                 }
                 return null;
@@ -121,8 +122,7 @@ public class StringPatternExtraction implements Function<String, String>, ACAQVa
             case Regex:
                 try {
                     Pattern.compile(regexString);
-                }
-                catch (PatternSyntaxException e) {
+                } catch (PatternSyntaxException e) {
                     report.forCategory("RegEx").reportIsInvalid("RegEx syntax is wrong!",
                             "The regular expression string is wrong.",
                             "Please check the syntax. If you are not familiar with it, you can find plenty of resources online.",

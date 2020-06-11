@@ -11,7 +11,6 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
-import org.hkijena.acaq5.api.data.traits.ACAQTraitConfiguration;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
@@ -42,16 +41,6 @@ public abstract class ACAQMergingAlgorithm extends ACAQAlgorithm {
     private boolean skipIncompleteDataSets = false;
     private ACAQTraitDeclarationRef.List customColumns = new ACAQTraitDeclarationRef.List();
 
-    /**
-     * Creates a new instance
-     *
-     * @param declaration        Algorithm declaration
-     * @param slotConfiguration  Slot configuration override
-     * @param traitConfiguration Trait configuration override
-     */
-    public ACAQMergingAlgorithm(ACAQAlgorithmDeclaration declaration, ACAQSlotConfiguration slotConfiguration, ACAQTraitConfiguration traitConfiguration) {
-        super(declaration, slotConfiguration, traitConfiguration);
-    }
 
     /**
      * Creates a new instance
@@ -60,7 +49,7 @@ public abstract class ACAQMergingAlgorithm extends ACAQAlgorithm {
      * @param slotConfiguration Slot configuration override
      */
     public ACAQMergingAlgorithm(ACAQAlgorithmDeclaration declaration, ACAQSlotConfiguration slotConfiguration) {
-        super(declaration, slotConfiguration, null);
+        super(declaration, slotConfiguration);
     }
 
     /**
@@ -69,7 +58,7 @@ public abstract class ACAQMergingAlgorithm extends ACAQAlgorithm {
      * @param declaration Algorithm declaration
      */
     public ACAQMergingAlgorithm(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, null, null);
+        super(declaration, null);
     }
 
     /**

@@ -2,8 +2,6 @@ package org.hkijena.acaq5.extensions.filesystem.algorithms;
 
 import org.hkijena.acaq5.api.*;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
-import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.filesystem.dataypes.FileData;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
@@ -30,7 +28,6 @@ public class SimpleFileAnnotationGenerator extends ACAQSimpleIteratingAlgorithm 
      */
     public SimpleFileAnnotationGenerator(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
-        updateSlotTraits();
     }
 
     /**
@@ -41,7 +38,6 @@ public class SimpleFileAnnotationGenerator extends ACAQSimpleIteratingAlgorithm 
     public SimpleFileAnnotationGenerator(SimpleFileAnnotationGenerator other) {
         super(other);
         this.generatedAnnotation = new ACAQTraitDeclarationRef(other.generatedAnnotation.getDeclaration());
-        updateSlotTraits();
     }
 
     @Override
@@ -57,14 +53,6 @@ public class SimpleFileAnnotationGenerator extends ACAQSimpleIteratingAlgorithm 
     @Override
     public void reportValidity(ACAQValidityReport report) {
         report.forCategory("Generated annotation").report(generatedAnnotation);
-    }
-
-    private void updateSlotTraits() {
-        ACAQDefaultMutableTraitConfiguration traitConfiguration = (ACAQDefaultMutableTraitConfiguration) getTraitConfiguration();
-        traitConfiguration.getMutableGlobalTraitModificationTasks().clear();
-        if (generatedAnnotation.getDeclaration() != null)
-            traitConfiguration.getMutableGlobalTraitModificationTasks().set(generatedAnnotation.getDeclaration(), ACAQTraitModificationOperation.Add);
-        traitConfiguration.postChangedEvent();
     }
 
     /**
@@ -84,6 +72,5 @@ public class SimpleFileAnnotationGenerator extends ACAQSimpleIteratingAlgorithm 
     @ACAQParameter("generated-annotation")
     public void setGeneratedAnnotation(ACAQTraitDeclarationRef generatedAnnotation) {
         this.generatedAnnotation = generatedAnnotation;
-        updateSlotTraits();
     }
 }

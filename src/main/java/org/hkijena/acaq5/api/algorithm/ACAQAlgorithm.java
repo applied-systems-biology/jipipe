@@ -5,8 +5,6 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
-import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
-import org.hkijena.acaq5.api.data.traits.ACAQTraitConfiguration;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
@@ -24,17 +22,6 @@ public abstract class ACAQAlgorithm extends ACAQGraphNode {
 
     private boolean enabled = true;
     private boolean passThrough = false;
-
-    /**
-     * Initializes this algorithm with a custom provided slot configuration and trait configuration
-     *
-     * @param declaration        Contains algorithm metadata
-     * @param slotConfiguration  if null, generate the slot configuration
-     * @param traitConfiguration if null, defaults to {@link ACAQDefaultMutableTraitConfiguration}
-     */
-    public ACAQAlgorithm(ACAQAlgorithmDeclaration declaration, ACAQSlotConfiguration slotConfiguration, ACAQTraitConfiguration traitConfiguration) {
-        super(declaration, slotConfiguration, traitConfiguration);
-    }
 
     /**
      * Initializes a new algorithm instance and sets a custom slot configuration
@@ -68,7 +55,7 @@ public abstract class ACAQAlgorithm extends ACAQGraphNode {
 
     @Override
     public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        if(passThrough && canAutoPassThrough()) {
+        if (passThrough && canAutoPassThrough()) {
             algorithmProgress.accept(subProgress.resolve("Data passed through to output"));
             runPassThrough();
         }
@@ -76,7 +63,7 @@ public abstract class ACAQAlgorithm extends ACAQGraphNode {
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        if(passThrough && !canPassThrough()) {
+        if (passThrough && !canPassThrough()) {
             report.forCategory("Pass through").reportIsInvalid("Pass through is not supported!",
                     "The algorithm reports that it does not support pass through. This is often the case for multi-output algorithms or " +
                             "algorithms that apply a conversion.",
@@ -89,12 +76,12 @@ public abstract class ACAQAlgorithm extends ACAQGraphNode {
      * Runs the pass through. Override this for custom implementations if you want
      */
     protected void runPassThrough() {
-        if(!canAutoPassThrough()) {
+        if (!canAutoPassThrough()) {
             throw new RuntimeException("Auto pass through not allowed!");
         }
-        if(getInputSlots().isEmpty())
+        if (getInputSlots().isEmpty())
             return;
-        if(getOutputSlots().isEmpty())
+        if (getOutputSlots().isEmpty())
             return;
         for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
             getFirstOutputSlot().addData(getFirstInputSlot().getData(row, ACAQData.class), getFirstInputSlot().getAnnotations(row));
@@ -105,6 +92,7 @@ public abstract class ACAQAlgorithm extends ACAQGraphNode {
      * Returns true if the algorithm can automatically apply pass-through
      * This is only possible if there is at most one input and at most one output.
      * Input must be compatible to the output.
+     *
      * @return if the algorithm can automatically apply pass-through
      */
     protected boolean canAutoPassThrough() {
@@ -116,6 +104,7 @@ public abstract class ACAQAlgorithm extends ACAQGraphNode {
     /**
      * Returns true if the algorithm can apply pass-through.
      * Override this method to implement your own checks
+     *
      * @return true if the algorithm can apply pass-through
      */
     protected boolean canPassThrough() {

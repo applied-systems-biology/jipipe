@@ -31,7 +31,7 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
  */
 @ACAQDocumentation(name = "Create 3D stack", description = "Merges 2D image planes into a 3D stack. Data annotations are used to put " +
         "images into groups. All images in a group are then merged into a 3D stack. The order of the stack slices is determined by the 'Slice index annotation' " +
-        "that is ignored while defining the groups."  + "\n\n" + MERGING_ALGORITHM_DESCRIPTION)
+        "that is ignored while defining the groups." + "\n\n" + MERGING_ALGORITHM_DESCRIPTION)
 @ACAQOrganization(menuPath = "Dimensions", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlus2DData.class, slotName = "Input")
 @AlgorithmOutputSlot(value = ImagePlus3DData.class, slotName = "Output")

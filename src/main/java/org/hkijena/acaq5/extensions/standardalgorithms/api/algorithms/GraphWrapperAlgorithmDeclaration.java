@@ -11,8 +11,6 @@ import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.data.traits.ACAQDataSlotTraitConfiguration;
-import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
@@ -20,8 +18,8 @@ import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
-import org.hkijena.acaq5.extensions.parameters.primitives.StringList;
 import org.hkijena.acaq5.extensions.parameters.editors.ACAQTraitParameterSettings;
+import org.hkijena.acaq5.extensions.parameters.primitives.StringList;
 import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQAlgorithmIconRef;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
@@ -43,7 +41,6 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     private Set<ACAQTraitDeclaration> unwantedTraits = new HashSet<>();
     private Set<ACAQTraitDeclaration> addedTraits = new HashSet<>();
     private Set<ACAQTraitDeclaration> removedTraits = new HashSet<>();
-    private ACAQDataSlotTraitConfiguration dataSlotTraitConfiguration;
     private List inputSlots = new ArrayList<>();
     private List outputSlots = new ArrayList<>();
     private ACAQParameterCollectionVisibilities parameterCollectionVisibilities = new ACAQParameterCollectionVisibilities();
@@ -120,38 +117,6 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     public void setCategory(ACAQAlgorithmCategory category) {
         this.category = category;
         getEventBus().post(new ParameterChangedEvent(this, "category"));
-    }
-
-    @Override
-    public Set<ACAQTraitDeclaration> getPreferredTraits() {
-        return preferredTraits;
-    }
-
-    public void setPreferredTraits(Set<ACAQTraitDeclaration> preferredTraits) {
-        this.preferredTraits = preferredTraits;
-    }
-
-    @Override
-    public Set<ACAQTraitDeclaration> getUnwantedTraits() {
-        return unwantedTraits;
-    }
-
-    public void setUnwantedTraits(Set<ACAQTraitDeclaration> unwantedTraits) {
-        this.unwantedTraits = unwantedTraits;
-    }
-
-    @Override
-    public ACAQDataSlotTraitConfiguration getSlotTraitConfiguration() {
-        if (dataSlotTraitConfiguration == null) {
-            dataSlotTraitConfiguration = new ACAQDataSlotTraitConfiguration();
-            for (ACAQTraitDeclaration addedTrait : addedTraits) {
-                dataSlotTraitConfiguration.set(addedTrait, ACAQTraitModificationOperation.Add);
-            }
-            for (ACAQTraitDeclaration removedTrait : removedTraits) {
-                dataSlotTraitConfiguration.set(removedTrait, ACAQTraitModificationOperation.RemoveCategory);
-            }
-        }
-        return dataSlotTraitConfiguration;
     }
 
     @Override

@@ -8,7 +8,6 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.components.SearchTextField;
@@ -205,18 +204,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
      * @return Non-normalized score
      */
     public static int scoreAlgorithmForOutputSlot(ACAQAlgorithmDeclaration declaration, ACAQDataSlot slot, ACAQAlgorithmGraph graph) {
-        Set<ACAQTraitDeclaration> preferredTraits = declaration.getPreferredTraits();
-        Set<ACAQTraitDeclaration> unwantedTraits = declaration.getUnwantedTraits();
         int score = 0;
-        for (ACAQTraitDeclaration trait : slot.getSlotAnnotations()) {
-            if (preferredTraits.contains(trait)) {
-                score += 10;
-            } else if (unwantedTraits.contains(trait)) {
-                score -= 20;
-            } else {
-                score += 5;
-            }
-        }
         return score;
     }
 

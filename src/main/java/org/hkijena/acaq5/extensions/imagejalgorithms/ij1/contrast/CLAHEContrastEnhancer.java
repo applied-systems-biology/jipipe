@@ -8,8 +8,6 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.api.data.traits.GoodForTrait;
-import org.hkijena.acaq5.api.data.traits.RemovesTrait;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -31,14 +29,8 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
 @AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Output")
 
 // Trait matching
-@GoodForTrait("bioobject-preparations-labeling-uniform")
-@GoodForTrait("bioobject-preparations-labeling-membrane")
-@GoodForTrait("image-quality-brightness-low")
-@GoodForTrait("image-quality-brightness-nonuniform")
 
 // Trait configuration
-@RemovesTrait("image-quality-brightness-low")
-@RemovesTrait("image-quality-brightness-nonuniform")
 public class CLAHEContrastEnhancer extends ACAQSimpleIteratingAlgorithm {
 
     private int blockRadius = 127;

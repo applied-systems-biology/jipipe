@@ -3,7 +3,6 @@ package org.hkijena.acaq5.api.algorithm;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
-import org.hkijena.acaq5.api.data.traits.ACAQTraitConfiguration;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 
 import java.util.function.Consumer;
@@ -16,16 +15,6 @@ import java.util.function.Supplier;
  */
 public abstract class ACAQSimpleIteratingAlgorithm extends ACAQAlgorithm {
 
-    /**
-     * Creates a new instance
-     *
-     * @param declaration        Algorithm declaration
-     * @param slotConfiguration  Slot configuration override
-     * @param traitConfiguration Trait configuration override
-     */
-    public ACAQSimpleIteratingAlgorithm(ACAQAlgorithmDeclaration declaration, ACAQSlotConfiguration slotConfiguration, ACAQTraitConfiguration traitConfiguration) {
-        super(declaration, slotConfiguration, traitConfiguration);
-    }
 
     /**
      * Creates a new instance
@@ -34,7 +23,7 @@ public abstract class ACAQSimpleIteratingAlgorithm extends ACAQAlgorithm {
      * @param slotConfiguration Slot configuration override
      */
     public ACAQSimpleIteratingAlgorithm(ACAQAlgorithmDeclaration declaration, ACAQSlotConfiguration slotConfiguration) {
-        super(declaration, slotConfiguration, null);
+        super(declaration, slotConfiguration);
     }
 
     /**
@@ -43,7 +32,7 @@ public abstract class ACAQSimpleIteratingAlgorithm extends ACAQAlgorithm {
      * @param declaration Algorithm declaration
      */
     public ACAQSimpleIteratingAlgorithm(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, null, null);
+        super(declaration, null);
     }
 
     /**
@@ -63,7 +52,7 @@ public abstract class ACAQSimpleIteratingAlgorithm extends ACAQAlgorithm {
                     "Algorithm '" + getName() + "'",
                     "The developer of this algorithm chose the wrong node type. The one that was selected only supports at most one input.",
                     "Please contact the plugin developers and tell them to let algorithm '" + getDeclaration().getId() + "' inherit from 'ACAQIteratingAlgorithm' instead.");
-        if(isPassThrough() && canPassThrough()) {
+        if (isPassThrough() && canPassThrough()) {
             algorithmProgress.accept(subProgress.resolve("Data passed through to output"));
             runPassThrough();
             return;

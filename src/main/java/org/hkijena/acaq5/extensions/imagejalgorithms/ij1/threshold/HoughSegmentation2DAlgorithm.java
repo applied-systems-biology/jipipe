@@ -12,8 +12,6 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.api.data.traits.GoodForTrait;
-import org.hkijena.acaq5.api.data.traits.RemovesTrait;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
@@ -39,11 +37,8 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
 @AlgorithmOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
 
 // Trait matching
-@GoodForTrait("bioobject-morphology-round")
 
 // Trait configuration
-@RemovesTrait("image-quality")
-@RemovesTrait("bioobject-count-cluster")
 public class HoughSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     private int minRadius = 7;

@@ -145,16 +145,6 @@ public class TooltipUtils {
         if (description != null && !description.isEmpty())
             builder.append(HtmlEscapers.htmlEscaper().escape(description)).append("</br>");
 
-        Set<ACAQTraitDeclaration> preferredTraits = declaration.getPreferredTraits();
-        Set<ACAQTraitDeclaration> unwantedTraits = declaration.getUnwantedTraits();
-        Set<ACAQTraitDeclaration> addedTraits = declaration.getSlotTraitConfiguration().getAddedTraits();
-        Set<ACAQTraitDeclaration> removedTraits = declaration.getSlotTraitConfiguration().getRemovedTraits();
-
-        if (!preferredTraits.isEmpty() || !unwantedTraits.isEmpty())
-            insertOpposingTraitTableContent(builder, preferredTraits, "Good for", unwantedTraits, "Bad for");
-        if (!addedTraits.isEmpty() || !removedTraits.isEmpty())
-            insertOpposingTraitTableContent(builder, addedTraits, "Adds", removedTraits, "Removes");
-
         builder.append("</table>\n\n");
 
         // Write author information
@@ -222,16 +212,6 @@ public class TooltipUtils {
         String description = declaration.getDescription();
         if (description != null && !description.isEmpty())
             builder.append(StringUtils.wordWrappedHTMLElement(description, 50)).append("</br>");
-
-        Set<ACAQTraitDeclaration> preferredTraits = declaration.getPreferredTraits();
-        Set<ACAQTraitDeclaration> unwantedTraits = declaration.getUnwantedTraits();
-        Set<ACAQTraitDeclaration> addedTraits = declaration.getSlotTraitConfiguration().getAddedTraits();
-        Set<ACAQTraitDeclaration> removedTraits = declaration.getSlotTraitConfiguration().getRemovedTraits();
-
-        if (!preferredTraits.isEmpty() || !unwantedTraits.isEmpty())
-            insertOpposingTraitTableContent(builder, preferredTraits, "Good for", unwantedTraits, "Bad for");
-        if (!addedTraits.isEmpty() || !removedTraits.isEmpty())
-            insertOpposingTraitTableContent(builder, addedTraits, "Adds", removedTraits, "Removes");
 
         builder.append("</table>");
 

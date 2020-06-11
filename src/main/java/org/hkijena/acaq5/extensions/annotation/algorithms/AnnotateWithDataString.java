@@ -1,13 +1,12 @@
 package org.hkijena.acaq5.extensions.annotation.algorithms;
 
-import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQOrganization;
+import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQData;
-import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
-import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extensions.filesystem.dataypes.FileData;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 
 import java.util.function.Consumer;
@@ -32,7 +31,6 @@ public class AnnotateWithDataString extends ACAQSimpleIteratingAlgorithm {
      */
     public AnnotateWithDataString(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
-        updateSlotTraits();
     }
 
     /**
@@ -43,7 +41,6 @@ public class AnnotateWithDataString extends ACAQSimpleIteratingAlgorithm {
     public AnnotateWithDataString(AnnotateWithDataString other) {
         super(other);
         this.generatedAnnotation = new ACAQTraitDeclarationRef(other.generatedAnnotation.getDeclaration());
-        updateSlotTraits();
     }
 
     @Override
@@ -59,14 +56,6 @@ public class AnnotateWithDataString extends ACAQSimpleIteratingAlgorithm {
     @Override
     public void reportValidity(ACAQValidityReport report) {
         report.forCategory("Generated annotation").report(generatedAnnotation);
-    }
-
-    private void updateSlotTraits() {
-        ACAQDefaultMutableTraitConfiguration traitConfiguration = (ACAQDefaultMutableTraitConfiguration) getTraitConfiguration();
-        traitConfiguration.getMutableGlobalTraitModificationTasks().clear();
-        if (generatedAnnotation.getDeclaration() != null)
-            traitConfiguration.getMutableGlobalTraitModificationTasks().set(generatedAnnotation.getDeclaration(), ACAQTraitModificationOperation.Add);
-        traitConfiguration.postChangedEvent();
     }
 
     /**
@@ -86,6 +75,5 @@ public class AnnotateWithDataString extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("generated-annotation")
     public void setGeneratedAnnotation(ACAQTraitDeclarationRef generatedAnnotation) {
         this.generatedAnnotation = generatedAnnotation;
-        updateSlotTraits();
     }
 }

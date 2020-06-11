@@ -9,8 +9,8 @@ import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure.SortOrder;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
-import org.hkijena.acaq5.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.acaq5.extensions.parameters.pairs.StringFilterAndSortOrderPair;
+import org.hkijena.acaq5.extensions.parameters.predicates.StringPredicate;
 
 import java.util.ArrayList;
 import java.util.Comparator;

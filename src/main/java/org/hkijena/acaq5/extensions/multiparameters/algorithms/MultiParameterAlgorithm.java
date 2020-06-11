@@ -8,9 +8,6 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
-import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
-import org.hkijena.acaq5.api.data.traits.ACAQTraitTransferTask;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
@@ -23,7 +20,10 @@ import org.hkijena.acaq5.extensions.parameters.references.ACAQAlgorithmDeclarati
 import org.hkijena.acaq5.utils.ReflectionUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -216,31 +216,5 @@ public class MultiParameterAlgorithm extends ACAQAlgorithm {
         getEventBus().post(new ParameterStructureChangedEvent(this));
 
         ((MultiParameterAlgorithmSlotConfiguration) getSlotConfiguration()).setAlgorithmInstance(algorithmInstance);
-
-        // Update trait configuration
-        ACAQDefaultMutableTraitConfiguration traitConfiguration = (ACAQDefaultMutableTraitConfiguration) getTraitConfiguration();
-        traitConfiguration.clear();
-
-        if (algorithmInstance.getTraitConfiguration() instanceof ACAQDefaultMutableTraitConfiguration) {
-            ACAQDefaultMutableTraitConfiguration other = (ACAQDefaultMutableTraitConfiguration) algorithmInstance.getTraitConfiguration();
-            traitConfiguration.setTraitModificationsSealed(false);
-            traitConfiguration.setTraitTransfersSealed(false);
-
-            // Copy data over
-            traitConfiguration.setTransferAllToAll(other.isTransferAllToAll());
-            for (ACAQTraitTransferTask transferTask : other.getTransferTasks()) {
-                traitConfiguration.addTransfer(new ACAQTraitTransferTask("Data " + transferTask.getInputSlotName(),
-                        "Data " + transferTask.getOutputSlotName(),
-                        new HashSet<>(transferTask.getTraitRestrictions())));
-            }
-            for (Map.Entry<ACAQTraitDeclaration, ACAQTraitModificationOperation> entry : other.getMutableGlobalTraitModificationTasks().getOperations().entrySet()) {
-                traitConfiguration.getMutableGlobalTraitModificationTasks().getOperations().put(entry.getKey(), entry.getValue());
-            }
-            // TODO: Slot modification tasks
-
-
-            traitConfiguration.setTraitTransfersSealed(other.isTraitTransfersSealed());
-            traitConfiguration.setTraitModificationsSealed(other.isTraitModificationsSealed());
-        }
     }
 }

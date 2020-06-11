@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.filesystem.algorithms.*;
-import org.hkijena.acaq5.extensions.filesystem.algorithms.SimpleFileAnnotationGenerator;
-import org.hkijena.acaq5.extensions.filesystem.algorithms.SimplePathAnnotationGenerator;
 import org.hkijena.acaq5.extensions.filesystem.compat.PathDataImageJAdapter;
 import org.hkijena.acaq5.extensions.filesystem.compat.PathDataImporterUI;
 import org.hkijena.acaq5.extensions.filesystem.datasources.FileDataSource;

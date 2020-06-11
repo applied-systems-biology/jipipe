@@ -83,11 +83,10 @@ public class StringPredicate implements Predicate<String>, ACAQValidatable {
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        if(mode == Mode.Regex) {
+        if (mode == Mode.Regex) {
             try {
                 Pattern.compile(filterString);
-            }
-            catch (PatternSyntaxException e) {
+            } catch (PatternSyntaxException e) {
                 report.forCategory("RegEx").reportIsInvalid("RegEx syntax is wrong!",
                         "The regular expression string is wrong.",
                         "Please check the syntax. If you are not familiar with it, you can find plenty of resources online.",

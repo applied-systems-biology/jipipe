@@ -3,8 +3,6 @@ package org.hkijena.acaq5.extensions.imagejdatatypes.datasources;
 import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQData;
-import org.hkijena.acaq5.api.data.traits.ACAQDataSlotTraitConfiguration;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extensions.filesystem.dataypes.FileData;
 
 import java.util.ArrayList;
@@ -19,7 +17,6 @@ public class ImagePlusFromFileAlgorithmDeclaration implements ACAQAlgorithmDecla
 
     private String dataClassId;
     private Class<? extends ACAQData> dataClass;
-    private ACAQDataSlotTraitConfiguration slotTraitConfiguration = new ACAQDataSlotTraitConfiguration();
     private List<AlgorithmInputSlot> inputSlots = new ArrayList<>();
     private List<AlgorithmOutputSlot> outputSlots = new ArrayList<>();
 
@@ -72,21 +69,6 @@ public class ImagePlusFromFileAlgorithmDeclaration implements ACAQAlgorithmDecla
     @Override
     public ACAQAlgorithmCategory getCategory() {
         return ACAQAlgorithmCategory.DataSource;
-    }
-
-    @Override
-    public Set<ACAQTraitDeclaration> getPreferredTraits() {
-        return Collections.emptySet();
-    }
-
-    @Override
-    public Set<ACAQTraitDeclaration> getUnwantedTraits() {
-        return Collections.emptySet();
-    }
-
-    @Override
-    public ACAQDataSlotTraitConfiguration getSlotTraitConfiguration() {
-        return slotTraitConfiguration;
     }
 
     @Override

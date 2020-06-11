@@ -144,18 +144,14 @@ public class ACAQDependencyUI extends JPanel {
         if (list.isEmpty())
             return;
         DefaultTableModel model = new DefaultTableModel();
-        model.setColumnIdentifiers(new Object[]{"Name", "ID", "Description", "Input slots", "Output slots", "Good for", "Bad for", "Adds", "Removes"});
+        model.setColumnIdentifiers(new Object[]{"Name", "ID", "Description", "Input slots", "Output slots"});
         for (ACAQAlgorithmDeclaration declaration : list) {
             model.addRow(new Object[]{
                     declaration.getName(),
                     declaration.getId(),
                     StringUtils.wordWrappedHTML(declaration.getDescription(), 50),
                     TooltipUtils.getSlotTable(declaration.getInputSlots().stream().map(ACAQSlotDefinition::new).collect(Collectors.toList())),
-                    TooltipUtils.getSlotTable(declaration.getOutputSlots().stream().map(ACAQSlotDefinition::new).collect(Collectors.toList())),
-                    TooltipUtils.getTraitTable(declaration.getPreferredTraits()),
-                    TooltipUtils.getTraitTable(declaration.getUnwantedTraits()),
-                    TooltipUtils.getTraitTable(declaration.getSlotTraitConfiguration().getAddedTraits()),
-                    TooltipUtils.getTraitTable(declaration.getSlotTraitConfiguration().getRemovedTraits())
+                    TooltipUtils.getSlotTable(declaration.getOutputSlots().stream().map(ACAQSlotDefinition::new).collect(Collectors.toList()))
             });
         }
         insertTable(formPanel, model, "Algorithms", UIUtils.getIconFromResources("run.png"));

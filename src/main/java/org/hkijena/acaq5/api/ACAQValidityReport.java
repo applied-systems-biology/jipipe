@@ -14,7 +14,6 @@ package org.hkijena.acaq5.api;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.hkijena.acaq5.extensions.annotation.algorithms.ConvertToAnnotationTable;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.*;
@@ -177,7 +176,8 @@ public class ACAQValidityReport {
 
     /**
      * Reports as invalid if the string value is null or empty
-     * @param value the value
+     *
+     * @param value  the value
      * @param source the source that triggers the check. passed to details
      */
     public void checkNonEmpty(String value, Object source) {

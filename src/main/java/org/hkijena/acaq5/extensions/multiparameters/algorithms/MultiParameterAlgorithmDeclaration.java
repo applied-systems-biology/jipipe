@@ -2,8 +2,6 @@ package org.hkijena.acaq5.extensions.multiparameters.algorithms;
 
 import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.data.traits.ACAQDataSlotTraitConfiguration;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extensions.multiparameters.datatypes.ParametersData;
 
 import java.util.ArrayList;
@@ -16,7 +14,6 @@ import java.util.Set;
  */
 public class MultiParameterAlgorithmDeclaration implements ACAQAlgorithmDeclaration {
 
-    private ACAQDataSlotTraitConfiguration slotConfiguration = new ACAQDataSlotTraitConfiguration();
     private List<AlgorithmInputSlot> inputSlots = new ArrayList<>();
     private List<AlgorithmOutputSlot> outputSlots = new ArrayList<>();
 
@@ -65,21 +62,6 @@ public class MultiParameterAlgorithmDeclaration implements ACAQAlgorithmDeclarat
     @Override
     public ACAQAlgorithmCategory getCategory() {
         return ACAQAlgorithmCategory.Miscellaneous;
-    }
-
-    @Override
-    public Set<ACAQTraitDeclaration> getPreferredTraits() {
-        return Collections.emptySet();
-    }
-
-    @Override
-    public Set<ACAQTraitDeclaration> getUnwantedTraits() {
-        return Collections.emptySet();
-    }
-
-    @Override
-    public ACAQDataSlotTraitConfiguration getSlotTraitConfiguration() {
-        return slotConfiguration;
     }
 
     @Override

@@ -6,7 +6,6 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQData;
-import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.extensions.annotation.datatypes.AnnotationTableData;
@@ -37,7 +36,6 @@ public class ConvertToAnnotationTable extends ACAQMergingAlgorithm {
      */
     public ConvertToAnnotationTable(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
-        updateSlotTraits();
         setDataSetMatching(ACAQIteratingAlgorithm.ColumnMatching.Custom);
     }
 
@@ -50,7 +48,6 @@ public class ConvertToAnnotationTable extends ACAQMergingAlgorithm {
         super(other);
         this.removeOutputAnnotations = other.removeOutputAnnotations;
         this.generatedColumn = other.generatedColumn;
-        updateSlotTraits();
     }
 
     @Override
@@ -70,7 +67,7 @@ public class ConvertToAnnotationTable extends ACAQMergingAlgorithm {
             output.addRow();
             output.setValueAt("" + getFirstInputSlot().getData(sourceRow, ACAQData.class), row, dataColumn);
             for (ACAQTrait trait : getFirstInputSlot().getAnnotations(sourceRow)) {
-                if(trait != null) {
+                if (trait != null) {
                     int col = output.addAnnotationColumn(trait.getDeclaration());
                     output.setValueAt(trait.getValue(), row, col);
                 }
@@ -85,12 +82,6 @@ public class ConvertToAnnotationTable extends ACAQMergingAlgorithm {
 
     }
 
-    private void updateSlotTraits() {
-        ACAQDefaultMutableTraitConfiguration traitConfiguration = (ACAQDefaultMutableTraitConfiguration) getTraitConfiguration();
-        traitConfiguration.setTransferAllToAll(!removeOutputAnnotations);
-        traitConfiguration.postChangedEvent();
-    }
-
     @ACAQDocumentation(name = "Remove output annotations", description = "If enabled, annotations are removed from the output.")
     @ACAQParameter("remove-output-annotations")
     public boolean isRemoveOutputAnnotations() {
@@ -100,7 +91,6 @@ public class ConvertToAnnotationTable extends ACAQMergingAlgorithm {
     @ACAQParameter("remove-output-annotations")
     public void setRemoveOutputAnnotations(boolean removeOutputAnnotations) {
         this.removeOutputAnnotations = removeOutputAnnotations;
-        updateSlotTraits();
     }
 
     @ACAQDocumentation(name = "Generated column", description = "The string representation of the data are stored in the column with this name")

@@ -8,7 +8,6 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
-import org.hkijena.acaq5.api.data.traits.ACAQTraitConfiguration;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
@@ -41,22 +40,11 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
     /**
      * Creates a new instance
      *
-     * @param declaration        Algorithm declaration
-     * @param slotConfiguration  Slot configuration override
-     * @param traitConfiguration Trait configuration override
-     */
-    public ACAQIteratingAlgorithm(ACAQAlgorithmDeclaration declaration, ACAQSlotConfiguration slotConfiguration, ACAQTraitConfiguration traitConfiguration) {
-        super(declaration, slotConfiguration, traitConfiguration);
-    }
-
-    /**
-     * Creates a new instance
-     *
      * @param declaration       Algorithm declaration
      * @param slotConfiguration Slot configuration override
      */
     public ACAQIteratingAlgorithm(ACAQAlgorithmDeclaration declaration, ACAQSlotConfiguration slotConfiguration) {
-        super(declaration, slotConfiguration, null);
+        super(declaration, slotConfiguration);
     }
 
     /**
@@ -65,7 +53,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
      * @param declaration Algorithm declaration
      */
     public ACAQIteratingAlgorithm(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, null, null);
+        super(declaration, null);
     }
 
     /**
@@ -84,7 +72,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
     @Override
     public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
 
-        if(isPassThrough() && canPassThrough()) {
+        if (isPassThrough() && canPassThrough()) {
             algorithmProgress.accept(subProgress.resolve("Data passed through to output"));
             runPassThrough();
             return;

@@ -61,12 +61,6 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPan
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
 
-        ACAQTraitEditorUI traitEditorUI = new ACAQTraitEditorUI(algorithm);
-        tabbedPane.addTab("Annotations", UIUtils.getIconFromResources("label.png"),
-                traitEditorUI,
-                DocumentTabPane.CloseMode.withoutCloseButton,
-                false);
-
         if (algorithm.getCategory() != ACAQAlgorithmCategory.Internal) {
             testbenchTabContent = new JPanel(new BorderLayout());
             tabbedPane.addTab("Testbench", UIUtils.getIconFromResources("testbench.png"),

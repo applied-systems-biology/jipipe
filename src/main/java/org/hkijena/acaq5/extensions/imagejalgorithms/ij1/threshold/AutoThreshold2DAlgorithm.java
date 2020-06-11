@@ -8,10 +8,6 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.api.data.traits.AddsTrait;
-import org.hkijena.acaq5.api.data.traits.BadForTrait;
-import org.hkijena.acaq5.api.data.traits.GoodForTrait;
-import org.hkijena.acaq5.api.data.traits.RemovesTrait;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -32,10 +28,6 @@ import static org.hkijena.acaq5.extensions.imagejalgorithms.ImageJAlgorithmsExte
 @ACAQOrganization(menuPath = "Threshold", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input")
 @AlgorithmOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
-@GoodForTrait("image-quality-brightness-uniform")
-@BadForTrait("image-quality-brightness-nonuniform")
-@RemovesTrait("image-quality")
-@AddsTrait("bioobject-count-cluster")
 public class AutoThreshold2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     private AutoThresholder.Method method = AutoThresholder.Method.Default;

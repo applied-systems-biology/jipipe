@@ -10,9 +10,7 @@ import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQHidden;
 import org.hkijena.acaq5.api.ACAQOrganization;
-import org.hkijena.acaq5.api.data.traits.*;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -43,7 +41,6 @@ public class ACAQJavaAlgorithmDeclaration extends ACAQMutableAlgorithmDeclaratio
             setHidden(true);
         }
         initializeSlots();
-        initializeTraits();
     }
 
     private void initializeSlots() {
@@ -52,27 +49,6 @@ public class ACAQJavaAlgorithmDeclaration extends ACAQMutableAlgorithmDeclaratio
         }
         for (AlgorithmOutputSlot slot : getAlgorithmClass().getAnnotationsByType(AlgorithmOutputSlot.class)) {
             getOutputSlots().add(slot);
-        }
-    }
-
-    private void initializeTraits() {
-        for (GoodForTrait trait : getAlgorithmClass().getAnnotationsByType(GoodForTrait.class)) {
-            getPreferredTraits().add(ACAQTraitRegistry.getInstance().getDeclarationById(trait.value()));
-        }
-        for (BadForTrait trait : getAlgorithmClass().getAnnotationsByType(BadForTrait.class)) {
-            getUnwantedTraits().add(ACAQTraitRegistry.getInstance().getDeclarationById(trait.value()));
-        }
-        for (AddsTrait addsTrait : getAlgorithmClass().getAnnotationsByType(AddsTrait.class)) {
-            getSlotTraitConfiguration().set(
-                    ACAQTraitRegistry.getInstance().getDeclarationById(addsTrait.value()),
-                    ACAQTraitModificationOperation.Add
-            );
-        }
-        for (RemovesTrait removesTrait : getAlgorithmClass().getAnnotationsByType(RemovesTrait.class)) {
-            getSlotTraitConfiguration().set(
-                    ACAQTraitRegistry.getInstance().getDeclarationById(removesTrait.value()),
-                    ACAQTraitModificationOperation.RemoveCategory
-            );
         }
     }
 

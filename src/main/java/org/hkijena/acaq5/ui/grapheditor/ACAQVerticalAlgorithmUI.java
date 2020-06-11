@@ -272,12 +272,11 @@ public class ACAQVerticalAlgorithmUI extends ACAQAlgorithmUI {
         if (getAlgorithm() instanceof ACAQAlgorithm) {
             ACAQAlgorithm algorithm = (ACAQAlgorithm) getAlgorithm();
             if (algorithm.isEnabled()) {
-                if(!algorithm.isPassThrough()) {
+                if (!algorithm.isPassThrough()) {
                     setBackground(getFillColor());
                     nameLabel.setForeground(Color.BLACK);
                     openSettingsButton.setIcon(UIUtils.getIconFromResources("wrench.png"));
-                }
-                else {
+                } else {
                     setBackground(Color.WHITE);
                     nameLabel.setForeground(Color.BLACK);
                     openSettingsButton.setIcon(UIUtils.getIconFromResources("pass-through.png"));
@@ -299,7 +298,7 @@ public class ACAQVerticalAlgorithmUI extends ACAQAlgorithmUI {
         int oldWidth = getWidth();
         int oldHeight = getHeight();
         setSize(calculateWidth(), calculateHeight());
-        if(getWidth() != oldWidth || oldHeight != getHeight())
+        if (getWidth() != oldWidth || oldHeight != getHeight())
             getGraphUI().repaint();
     }
 

@@ -58,7 +58,7 @@ public class AnnotationTableToPaths extends ACAQSimpleIteratingAlgorithm {
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         AnnotationTableData tableData = dataInterface.getInputData(getFirstInputSlot(), AnnotationTableData.class);
         String dataColumn = tableData.getColumnNames().stream().filter(column).findFirst().orElse(null);
-        if(dataColumn == null) {
+        if (dataColumn == null) {
             throw new UserFriendlyRuntimeException("Could not find column that matches '" + column.toString() + "'!",
                     "Could not find column!",
                     "Algorithm '" + getName() + "'",
@@ -72,7 +72,7 @@ public class AnnotationTableToPaths extends ACAQSimpleIteratingAlgorithm {
             List<ACAQTrait> annotations = new ArrayList<>();
             for (String annotationColumn : annotationColumns) {
                 ACAQTraitDeclaration declaration = AnnotationTableData.getAnnotationTypeFromColumnName(annotationColumn);
-                if(declaration != null)
+                if (declaration != null)
                     annotations.add(declaration.newInstance(tableData.getValueAsString(row, annotationColumn)));
             }
 

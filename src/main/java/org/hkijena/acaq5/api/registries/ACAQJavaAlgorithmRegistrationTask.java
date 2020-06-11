@@ -5,10 +5,6 @@ import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.algorithm.ACAQJavaAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
-import org.hkijena.acaq5.api.data.traits.AddsTrait;
-import org.hkijena.acaq5.api.data.traits.BadForTrait;
-import org.hkijena.acaq5.api.data.traits.GoodForTrait;
-import org.hkijena.acaq5.api.data.traits.RemovesTrait;
 import org.hkijena.acaq5.ui.registries.ACAQUIAlgorithmRegistry;
 
 import java.net.URL;
@@ -43,18 +39,6 @@ public class ACAQJavaAlgorithmRegistrationTask extends ACAQDefaultAlgorithmRegis
         }
         for (AlgorithmOutputSlot slot : algorithmClass.getAnnotationsByType(AlgorithmOutputSlot.class)) {
             getDependencyDatatypeClasses().add(slot.value());
-        }
-        for (GoodForTrait trait : algorithmClass.getAnnotationsByType(GoodForTrait.class)) {
-            getDependencyTraitIds().add(trait.value());
-        }
-        for (BadForTrait trait : algorithmClass.getAnnotationsByType(BadForTrait.class)) {
-            getDependencyTraitIds().add(trait.value());
-        }
-        for (AddsTrait trait : algorithmClass.getAnnotationsByType(AddsTrait.class)) {
-            getDependencyTraitIds().add(trait.value());
-        }
-        for (RemovesTrait trait : algorithmClass.getAnnotationsByType(RemovesTrait.class)) {
-            getDependencyTraitIds().add(trait.value());
         }
     }
 

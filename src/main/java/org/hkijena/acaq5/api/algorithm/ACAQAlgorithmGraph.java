@@ -18,7 +18,6 @@ import org.hkijena.acaq5.api.events.*;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extensions.settings.RuntimeSettings;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.jgrapht.Graph;
@@ -45,7 +44,6 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     private BiMap<String, ACAQGraphNode> algorithms = HashBiMap.create();
     private Map<ACAQGraphNode, String> compartments = new HashMap<>();
     private EventBus eventBus = new EventBus();
-    private boolean isUpdatingSlotTraits = false;
 
     /**
      * Creates a new algorithm graph
@@ -101,7 +99,6 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         algorithms.put(key, algorithm);
         compartments.put(algorithm, compartment);
         algorithm.getEventBus().register(this);
-        algorithm.getTraitConfiguration().getEventBus().register(this);
         repairGraph();
 
         // Sometimes we have algorithms with no slots, so trigger manually
@@ -194,7 +191,6 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         algorithms.remove(getIdOf(algorithm));
         compartments.remove(algorithm);
         algorithm.getEventBus().unregister(this);
-        algorithm.getTraitConfiguration().getEventBus().unregister(this);
         for (ACAQDataSlot slot : algorithm.getInputSlots()) {
             graph.removeVertex(slot);
         }
@@ -269,7 +265,6 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         getEventBus().post(new AlgorithmGraphConnectedEvent(this, source, target));
         source.getAlgorithm().onSlotConnected(new AlgorithmGraphConnectedEvent(this, source, target));
         target.getAlgorithm().onSlotConnected(new AlgorithmGraphConnectedEvent(this, source, target));
-        updateDataSlotTraits();
     }
 
     /**
@@ -435,7 +430,6 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
             getEventBus().post(new AlgorithmGraphChangedEvent(this));
             source.getAlgorithm().onSlotDisconnected(new AlgorithmGraphDisconnectedEvent(this, source, target));
             target.getAlgorithm().onSlotDisconnected(new AlgorithmGraphDisconnectedEvent(this, source, target));
-            updateDataSlotTraits();
             return true;
         }
         return false;
@@ -486,18 +480,6 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     }
 
     /**
-     * Should be triggered when an {@link ACAQGraphNode}'s traits are changed
-     * Updates the traits
-     *
-     * @param event Generated event
-     */
-    @Subscribe
-    public void onTraitsChanged(TraitConfigurationChangedEvent event) {
-        updateDataSlotTraits();
-        eventBus.post(new AlgorithmGraphChangedEvent(this));
-    }
-
-    /**
      * Should be triggered when an {@link ACAQGraphNode}'s parameter structure is changed.
      * This event is re-triggered into getEventBus()
      *
@@ -506,53 +488,6 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     @Subscribe
     public void onParameterStructureChanged(ParameterStructureChangedEvent event) {
         eventBus.post(event);
-    }
-
-    /**
-     * Updates global (slot) traits of the algorithms.
-     * Those traits are different from data traits.
-     */
-    public void updateDataSlotTraits() {
-        isUpdatingSlotTraits = true;
-        List<ACAQGraphNode> algorithmList = traverseAlgorithms();
-        for (ACAQGraphNode algorithm : algorithmList) {
-            for (ACAQDataSlot inputSlot : algorithm.getInputSlots()) {
-                inputSlot.getAlgorithm().getTraitConfiguration().apply();
-            }
-            for (ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
-                for (ACAQDataSlot targetSlot : getTargetSlots(outputSlot)) {
-                    targetSlot.clearSlotAnnotations();
-                    for (ACAQTraitDeclaration slotAnnotation : outputSlot.getSlotAnnotations()) {
-//                        System.out.println("GRAPHTRANSFER " + slotAnnotation.getName() + " FROM " + outputSlot.getNameWithAlgorithmName() + " TO " + targetSlot.getNameWithAlgorithmName());
-                        targetSlot.addSlotAnnotation(slotAnnotation);
-                    }
-                }
-            }
-        }
-
-//        for (ACAQDataSlot slot : traverse()) {
-//            if (slot.isInput()) {
-//                // Execute trait configuration
-//                if (!executedAlgorithms.contains(slot.getAlgorithm())) {
-//                    slot.getAlgorithm().getTraitConfiguration().apply();
-//                    executedAlgorithms.add(slot.getAlgorithm());
-//                }
-//            } else {
-//                // Transfer traits from output to input
-//                for (ACAQDataSlot targetSlot : getTargetSlots(slot)) {
-//                    targetSlot.clearSlotAnnotations();
-//                    for (ACAQTraitDeclaration slotAnnotation : slot.getSlotAnnotations()) {
-//                        System.out.println("GRAPHTRANSFER " + slotAnnotation.getName() + " FROM " + slot.getNameWithAlgorithmName() + " TO " + targetSlot.getNameWithAlgorithmName());
-//                        targetSlot.addSlotAnnotation(slotAnnotation);
-//                    }
-//                }
-//            }
-//        }
-        isUpdatingSlotTraits = false;
-        for (ACAQDataSlot dataSlot : graph.vertexSet()) {
-            dataSlot.getEventBus().post(new SlotAnnotationsChanged(dataSlot));
-        }
-
     }
 
     /**
@@ -929,10 +864,6 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
                 result.add(algorithm);
         }
         return result;
-    }
-
-    public boolean isUpdatingSlotTraits() {
-        return isUpdatingSlotTraits;
     }
 
     /**

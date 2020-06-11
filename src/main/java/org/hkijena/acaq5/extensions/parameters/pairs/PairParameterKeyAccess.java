@@ -16,8 +16,8 @@ public class PairParameterKeyAccess<K, V> implements ACAQParameterAccess {
     /**
      * Creates a new instance
      *
-     * @param parent                the parent access
-     * @param pair the parameter
+     * @param parent the parent access
+     * @param pair   the parameter
      */
     public PairParameterKeyAccess(ACAQParameterAccess parent, Pair<K, V> pair) {
         this.parent = parent;

@@ -12,8 +12,8 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
 import org.hkijena.acaq5.api.parameters.ACAQTraversedParameterCollection;
 import org.hkijena.acaq5.extensions.multiparameters.datatypes.ParametersData;
-import org.hkijena.acaq5.extensions.parameters.table.ParameterTable;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQAlgorithmDeclarationRef;
+import org.hkijena.acaq5.extensions.parameters.table.ParameterTable;
 import org.scijava.Priority;
 
 import java.util.ArrayList;

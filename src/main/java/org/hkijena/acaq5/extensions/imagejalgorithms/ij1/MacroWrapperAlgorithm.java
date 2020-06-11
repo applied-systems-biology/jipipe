@@ -15,7 +15,6 @@ import org.hkijena.acaq5.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.api.data.traits.ConfigTraits;
 import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
@@ -54,7 +53,6 @@ import static org.hkijena.acaq5.api.algorithm.ACAQIteratingAlgorithm.ITERATING_A
 @AlgorithmOutputSlot(ImagePlusData.class)
 @AlgorithmOutputSlot(ROIListData.class)
 @AlgorithmOutputSlot(ResultsTableData.class)
-@ConfigTraits(allowModify = true)
 public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
     public static Class<?>[] ALLOWED_PARAMETER_CLASSES = new Class[]{
             String.class,
@@ -136,7 +134,7 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
         // Inject path data
         for (ACAQDataSlot inputSlot : getInputSlots()) {
             ACAQData data = dataInterface.getInputData(inputSlot, ACAQData.class);
-            if(data instanceof PathData) {
+            if (data instanceof PathData) {
                 if (!MacroUtils.isValidVariableName(inputSlot.getName()))
                     throw new IllegalArgumentException("Invalid variable name " + inputSlot.getName());
                 finalCode.append("var ").append(inputSlot.getName()).append(" = ");
@@ -215,7 +213,7 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
         }
         for (ACAQDataSlot inputSlot : getInputSlots()) {
             ACAQData data = dataInterface.getInputData(inputSlot, ACAQData.class);
-            if(data instanceof PathData)
+            if (data instanceof PathData)
                 continue;
             ImageJDatatypeAdapter adapter = ACAQImageJAdapterRegistry.getInstance().getAdapterForACAQData(data);
             if (batchMode) {

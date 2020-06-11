@@ -22,7 +22,6 @@ import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_WIDTH;
 public class ACAQHorizontalDataSlotUI extends ACAQDataSlotUI {
     private AbstractButton assignButton;
     private JLabel nameLabel;
-    private ACAQDataSlotTraitUI traitUI;
 
     /**
      * Creates a new UI
@@ -99,9 +98,6 @@ public class ACAQHorizontalDataSlotUI extends ACAQDataSlotUI {
             nameLabel.setHorizontalTextPosition(JLabel.LEFT);
         }
 
-        traitUI = new ACAQDataSlotTraitUI(getGraph(), getSlot());
-        centerPanel.add(traitUI);
-
         add(centerPanel, BorderLayout.CENTER);
     }
 
@@ -123,8 +119,7 @@ public class ACAQHorizontalDataSlotUI extends ACAQDataSlotUI {
         TextLayout layout = new TextLayout(getDisplayedName(), getFont(), frc);
         double w = layout.getBounds().getWidth();
         int labelWidth = (int) Math.ceil(w * 1.0 / SLOT_UI_WIDTH) * SLOT_UI_WIDTH;
-        int traitWidth = (int) Math.ceil(traitUI.calculateWidth() * 1.0 / SLOT_UI_WIDTH) * SLOT_UI_WIDTH;
-        int width = Math.max(labelWidth, traitWidth) + 75;
+        int width = labelWidth + 75;
 
         return width;
     }

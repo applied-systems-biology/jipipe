@@ -9,7 +9,6 @@ import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQSlotEditorUI;
-import org.hkijena.acaq5.ui.grapheditor.settings.ACAQTraitEditorUI;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -55,12 +54,6 @@ public class ACAQJsonExtensionSingleAlgorithmSelectionPanelUI extends ACAQJsonEx
         ACAQSlotEditorUI slotEditorUI = new ACAQSlotEditorUI(algorithm);
         tabbedPane.addTab("Slots", UIUtils.getIconFromResources("database.png"),
                 slotEditorUI,
-                DocumentTabPane.CloseMode.withoutCloseButton,
-                false);
-
-        ACAQTraitEditorUI traitEditorUI = new ACAQTraitEditorUI(algorithm);
-        tabbedPane.addTab("Annotations", UIUtils.getIconFromResources("label.png"),
-                traitEditorUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
 

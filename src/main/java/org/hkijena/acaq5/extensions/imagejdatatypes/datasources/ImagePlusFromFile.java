@@ -12,7 +12,6 @@ import org.hkijena.acaq5.api.algorithm.ACAQDataInterface;
 import org.hkijena.acaq5.api.algorithm.ACAQSimpleIteratingAlgorithm;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
@@ -60,12 +59,6 @@ public class ImagePlusFromFile extends ACAQSimpleIteratingAlgorithm {
         super(other);
         this.dataClass = other.dataClass;
         this.titleAnnotation = new ACAQTraitDeclarationRef(other.titleAnnotation);
-    }
-
-    @Override
-    protected void initializeTraits() {
-        super.initializeTraits();
-        ((ACAQDefaultMutableTraitConfiguration) getTraitConfiguration()).setTraitModificationsSealed(false);
     }
 
     @Override

@@ -166,7 +166,7 @@ public class DocumentTabPane extends JPanel {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     if (SwingUtilities.isMiddleMouseButton(e)) {
-                            closeTab(tab);
+                        closeTab(tab);
                     } else {
                         tabbedPane.setSelectedComponent(component);
                     }
@@ -185,7 +185,7 @@ public class DocumentTabPane extends JPanel {
      * @param tab the tab
      */
     public void closeTab(DocumentTab tab) {
-        if(tab.closeMode == CloseMode.withoutCloseButton || tab.closeMode == CloseMode.withDisabledCloseButton)
+        if (tab.closeMode == CloseMode.withoutCloseButton || tab.closeMode == CloseMode.withDisabledCloseButton)
             return;
         if (!GeneralUISettings.getInstance().isNeverAskOnClosingTabs() && tab.closeMode == CloseMode.withAskOnCloseButton) {
             if (JOptionPane.showConfirmDialog(tab.getContent(), "Do you really want to close this?",

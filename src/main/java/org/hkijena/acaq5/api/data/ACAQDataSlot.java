@@ -2,8 +2,6 @@ package org.hkijena.acaq5.api.data;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
-import org.hkijena.acaq5.api.data.traits.ACAQMutableTraitConfiguration;
-import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
 import org.hkijena.acaq5.api.events.SlotAnnotationsChanged;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
@@ -556,18 +554,6 @@ public class ACAQDataSlot implements TableModel {
      */
     public EventBus getEventBus() {
         return eventBus;
-    }
-
-    /**
-     * Updates the trait declaration to add this trait
-     *
-     * @param declaration Annotation type
-     * @param operation   The operation
-     */
-    public void setSlotTraitToTraitConfiguration(ACAQTraitDeclaration declaration, ACAQTraitModificationOperation operation) {
-        if (algorithm.getTraitConfiguration() instanceof ACAQMutableTraitConfiguration) {
-            ((ACAQMutableTraitConfiguration) algorithm.getTraitConfiguration()).setTraitModification(getName(), declaration, operation);
-        }
     }
 
     /**

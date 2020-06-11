@@ -1,21 +1,14 @@
 package org.hkijena.acaq5.extensions.annotation.algorithms;
 
-import net.imagej.ops.morphology.thin.ThinningStrategy;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQData;
-import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
-import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.extensions.parameters.collections.ListParameter;
 import org.hkijena.acaq5.extensions.parameters.functions.ACAQTraitPatternExtractionFunction;
-import org.hkijena.acaq5.extensions.parameters.functions.FunctionParameter;
-import org.hkijena.acaq5.extensions.parameters.patterns.StringPatternExtraction;
-import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -56,10 +49,10 @@ public class ExtractAndReplaceAnnotation extends ACAQSimpleIteratingAlgorithm {
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         for (ACAQTraitPatternExtractionFunction function : functions) {
             ACAQTrait inputTrait = dataInterface.getAnnotationOfType(function.getInput().getDeclaration());
-            if(inputTrait == null)
+            if (inputTrait == null)
                 continue;
             String newValue = function.getParameter().apply(inputTrait.getValue());
-            if(newValue == null)
+            if (newValue == null)
                 continue;
             dataInterface.addGlobalAnnotation(function.getOutput().getDeclaration().newInstance(newValue));
         }

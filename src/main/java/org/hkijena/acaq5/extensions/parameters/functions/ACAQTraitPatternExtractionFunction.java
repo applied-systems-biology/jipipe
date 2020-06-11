@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.extensions.parameters.functions;
 
-import org.hkijena.acaq5.extensions.annotation.algorithms.ExtractAndReplaceAnnotation;
 import org.hkijena.acaq5.extensions.parameters.collections.ListParameter;
 import org.hkijena.acaq5.extensions.parameters.patterns.StringPatternExtraction;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
@@ -22,6 +21,7 @@ public class ACAQTraitPatternExtractionFunction extends FunctionParameter<ACAQTr
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public ACAQTraitPatternExtractionFunction(ACAQTraitPatternExtractionFunction other) {
@@ -41,6 +41,7 @@ public class ACAQTraitPatternExtractionFunction extends FunctionParameter<ACAQTr
 
         /**
          * Creates a copy
+         *
          * @param other the original
          */
         public List(List other) {

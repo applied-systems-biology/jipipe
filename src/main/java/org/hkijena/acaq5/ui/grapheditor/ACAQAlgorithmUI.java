@@ -8,7 +8,6 @@ import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
-import org.hkijena.acaq5.api.events.TraitConfigurationChangedEvent;
 import org.hkijena.acaq5.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api.ACAQTraitNode;
@@ -60,7 +59,6 @@ public abstract class ACAQAlgorithmUI extends JPanel {
         this.algorithm = algorithm;
         this.viewMode = viewMode;
         this.algorithm.getEventBus().register(this);
-        this.algorithm.getTraitConfiguration().getEventBus().register(this);
         this.fillColor = UIUtils.getFillColorFor(algorithm.getDeclaration());
         this.borderColor = UIUtils.getBorderColorFor(algorithm.getDeclaration());
         updateContextMenu();
@@ -282,18 +280,6 @@ public abstract class ACAQAlgorithmUI extends JPanel {
     }
 
     /**
-     * Should be triggered when the algorithm's slot traits are changed
-     *
-     * @param event The generated event
-     */
-    @Subscribe
-    public void onTraitsChanged(TraitConfigurationChangedEvent event) {
-        updateSize();
-        revalidate();
-        repaint();
-    }
-
-    /**
      * Should be triggered when an algorithm's name parameter is changed
      *
      * @param event The generated event
@@ -308,8 +294,7 @@ public abstract class ACAQAlgorithmUI extends JPanel {
         } else if (event.getSource() == algorithm && "acaq:algorithm:enabled".equals(event.getKey())) {
             updateActivationStatus();
             updateContextMenu();
-        }
-        else if (event.getSource() == algorithm && "acaq:algorithm:pass-through".equals(event.getKey())) {
+        } else if (event.getSource() == algorithm && "acaq:algorithm:pass-through".equals(event.getKey())) {
             updateActivationStatus();
             updateContextMenu();
         }

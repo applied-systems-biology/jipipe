@@ -2,8 +2,6 @@ package org.hkijena.acaq5.extensions.parameters.table;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.extensions.parameters.table.ParameterTable;
-import org.hkijena.acaq5.extensions.parameters.table.ParameterTableCellAccess;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterGeneratorUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;

@@ -1,8 +1,6 @@
 package org.hkijena.acaq5.api.algorithm;
 
 import org.hkijena.acaq5.ACAQDependency;
-import org.hkijena.acaq5.api.data.traits.ACAQDataSlotTraitConfiguration;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.*;
@@ -69,28 +67,6 @@ public interface ACAQAlgorithmDeclaration {
      * @return The category
      */
     ACAQAlgorithmCategory getCategory();
-
-    /**
-     * Returns the preferred traits
-     *
-     * @return Set of preferred traits
-     */
-    Set<ACAQTraitDeclaration> getPreferredTraits();
-
-    /**
-     * Returns the unwanted traits
-     *
-     * @return Set of unwanted traits
-     */
-    Set<ACAQTraitDeclaration> getUnwantedTraits();
-
-    /**
-     * Returns all algorithm-global trait modification tasks.
-     * Instances can have a configuration that is different from this configuration.
-     *
-     * @return General trait configuration
-     */
-    ACAQDataSlotTraitConfiguration getSlotTraitConfiguration();
 
     /**
      * Returns general input data.

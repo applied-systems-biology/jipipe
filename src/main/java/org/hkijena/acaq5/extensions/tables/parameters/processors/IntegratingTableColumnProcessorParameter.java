@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.extensions.tables.parameters.processors;
 
-import org.hkijena.acaq5.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.acaq5.extensions.parameters.functions.FunctionParameter;
+import org.hkijena.acaq5.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.acaq5.extensions.tables.parameters.enums.TableColumnIntegrationParameter;
 
 /**

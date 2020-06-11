@@ -8,9 +8,6 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.api.data.traits.BadForTrait;
-import org.hkijena.acaq5.api.data.traits.GoodForTrait;
-import org.hkijena.acaq5.api.data.traits.RemovesTrait;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.acaq5.utils.ImageJUtils;
@@ -26,11 +23,6 @@ import java.util.function.Supplier;
 @ACAQOrganization(menuPath = "Binary", algorithmCategory = ACAQAlgorithmCategory.Processor)
 @AlgorithmInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input")
 @AlgorithmOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
-@GoodForTrait("bioobject-morphology-round")
-@GoodForTrait("bioobject-preparations-labeling")
-@BadForTrait("bioobject-preparations-labeling-unlabeled")
-@GoodForTrait("bioobject-count-cluster")
-@RemovesTrait("bioobject-count-cluster")
 public class DistanceTransformWatershed2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     /**

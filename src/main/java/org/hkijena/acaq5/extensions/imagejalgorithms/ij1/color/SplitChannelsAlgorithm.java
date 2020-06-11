@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.extensions.imagejalgorithms.ij1.color;
 
-import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.plugin.ChannelArranger;
@@ -21,7 +20,6 @@ import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.extensions.imagejalgorithms.SliceIndex;
 import org.hkijena.acaq5.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.acaq5.extensions.parameters.collections.OutputSlotMapParameterCollection;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
@@ -79,7 +77,7 @@ public class SplitChannelsAlgorithm extends ACAQSimpleIteratingAlgorithm {
         ImagePlus image = dataInterface.getInputData(getFirstInputSlot(), ImagePlusData.class).getImage();
 
         // If we have a grayscale image then we can just skip everything
-        if(!image.isComposite() && image.getType() != ImagePlus.COLOR_256 && image.getType() != ImagePlus.COLOR_RGB) {
+        if (!image.isComposite() && image.getType() != ImagePlus.COLOR_256 && image.getType() != ImagePlus.COLOR_RGB) {
             int nChannels = 1;
             for (Map.Entry<String, ACAQParameterAccess> entry : channelToSlotAssignment.getParameters().entrySet()) {
                 String slotName = entry.getKey();
@@ -116,15 +114,14 @@ public class SplitChannelsAlgorithm extends ACAQSimpleIteratingAlgorithm {
             Map<Integer, ImageProcessor> decomposed = new HashMap<>();
             for (Map.Entry<Integer, ImageProcessor> entry : channels.entrySet()) {
                 ImageProcessor processor = entry.getValue();
-                if(processor instanceof ColorProcessor) {
+                if (processor instanceof ColorProcessor) {
                     ImagePlus nestedMultiChannel = new ImagePlus("nested", processor);
                     ImagePlus[] split = ChannelSplitter.split(nestedMultiChannel);
                     for (ImagePlus imagePlus : split) {
                         decomposed.put(entry.getKey() + correctedChannel, imagePlus.getProcessor());
                         ++correctedChannel;
                     }
-                }
-                else {
+                } else {
                     decomposed.put(entry.getKey() + correctedChannel, processor);
                 }
             }

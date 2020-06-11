@@ -350,9 +350,6 @@ public class ACAQProject implements ACAQValidatable {
             // Update node visibilities
             project.updateCompartmentVisibility();
 
-            // Assign traits
-            project.graph.updateDataSlotTraits();
-
             return project;
         }
     }

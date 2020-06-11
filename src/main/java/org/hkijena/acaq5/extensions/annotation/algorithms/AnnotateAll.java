@@ -9,8 +9,6 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQIOSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.data.traits.ACAQDefaultMutableTraitConfiguration;
-import org.hkijena.acaq5.api.data.traits.ACAQTraitModificationOperation;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
@@ -46,7 +44,6 @@ public class AnnotateAll extends ACAQAlgorithm {
         super(other);
         this.annotation = other.annotation;
         this.overwrite = other.overwrite;
-        updateSlotTraits();
     }
 
     @Override
@@ -70,14 +67,6 @@ public class AnnotateAll extends ACAQAlgorithm {
         }
     }
 
-    private void updateSlotTraits() {
-        ACAQDefaultMutableTraitConfiguration traitConfiguration = (ACAQDefaultMutableTraitConfiguration) getTraitConfiguration();
-        traitConfiguration.getMutableGlobalTraitModificationTasks().clear();
-        if (annotation != null)
-            traitConfiguration.getMutableGlobalTraitModificationTasks().set(annotation.getDeclaration(), ACAQTraitModificationOperation.Add);
-        traitConfiguration.postChangedEvent();
-    }
-
     @ACAQDocumentation(name = "Annotation", description = "This annotation is added to each input data")
     @ACAQParameter("generated-annotation")
     public ACAQTrait getAnnotation() {
@@ -87,7 +76,6 @@ public class AnnotateAll extends ACAQAlgorithm {
     @ACAQParameter("generated-annotation")
     public void setAnnotation(ACAQTrait annotation) {
         this.annotation = annotation;
-        updateSlotTraits();
         getEventBus().post(new ParameterChangedEvent(this, "generated-annotation"));
     }
 

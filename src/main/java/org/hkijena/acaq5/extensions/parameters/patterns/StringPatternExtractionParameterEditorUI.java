@@ -1,7 +1,6 @@
 package org.hkijena.acaq5.extensions.parameters.patterns;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -9,8 +8,6 @@ import org.jdesktop.swingx.JXTextField;
 import org.scijava.Context;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
 
@@ -43,7 +40,7 @@ public class StringPatternExtractionParameterEditorUI extends ACAQParameterEdito
             return;
         }
 
-        switch(filter.getMode()) {
+        switch (filter.getMode()) {
             case Regex:
                 createRegexUI(filter);
                 break;

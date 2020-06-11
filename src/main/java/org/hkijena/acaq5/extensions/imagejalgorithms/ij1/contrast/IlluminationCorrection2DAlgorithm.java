@@ -8,8 +8,6 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.api.data.traits.GoodForTrait;
-import org.hkijena.acaq5.api.data.traits.RemovesTrait;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.blur.GaussianBlur2DAlgorithm;
@@ -33,11 +31,8 @@ import java.util.function.Supplier;
 @AlgorithmOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output")
 
 // Trait matching
-@GoodForTrait("bioobject-preparations-labeling-unlabeled")
-@GoodForTrait("image-quality-brightness-nonuniform")
 
 // Trait configuration
-@RemovesTrait("image-quality-brightness-nonuniform")
 public class IlluminationCorrection2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     private GaussianBlur2DAlgorithm gaussianAlgorithm = ACAQGraphNode.newInstance("ij1-blur-gaussian2d");
