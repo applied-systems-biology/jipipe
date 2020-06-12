@@ -92,7 +92,7 @@ public interface TableColumn extends ACAQData {
      * @return if the parameter is a mutable table column
      */
     static boolean isGeneratingTableColumn(Class<? extends ACAQData> klass) {
-        return TableColumn.class.isAssignableFrom(klass) && !MutableTableColumn.class.isAssignableFrom(klass);
+        return !klass.isInterface() && TableColumn.class.isAssignableFrom(klass) && !MutableTableColumn.class.isAssignableFrom(klass);
     }
 
     /**

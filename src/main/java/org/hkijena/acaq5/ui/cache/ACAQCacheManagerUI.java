@@ -39,16 +39,19 @@ public class ACAQCacheManagerUI extends ACAQProjectWorkbenchPanel {
     }
 
     private void initialize() {
-        setLayout(new BorderLayout());
+        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         setOpaque(false);
         setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
                 BorderFactory.createEmptyBorder(5, 15, 5, 15)));
 
 
         statusLabel = new JLabel();
-        add(statusLabel, BorderLayout.CENTER);
+        statusLabel.setIcon(UIUtils.getIconFromResources("database.png"));
+        add(statusLabel);
+
         clearButton = new JButton(UIUtils.getIconFromResources("clear-brush.png"));
-        add(clearButton, BorderLayout.EAST);
+        add(Box.createHorizontalStrut(4));
+        add(clearButton);
         UIUtils.makeBorderlessWithoutMargin(clearButton);
         JPopupMenu clearMenu = UIUtils.addPopupMenuToComponent(clearButton);
 

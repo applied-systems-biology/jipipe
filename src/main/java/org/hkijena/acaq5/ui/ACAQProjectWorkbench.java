@@ -331,14 +331,14 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
             menu.add(toolsMenu);
 
         menu.add(Box.createHorizontalGlue());
-
         // Cache monitor
+//        menu.add(new ACAQCacheManagerUI(this));
+
         menu.add(new ACAQCacheManagerUI(this));
-        menu.add(Box.createHorizontalStrut(1));
 
         // Queue monitor
         menu.add(new ACAQRunnerQueueUI());
-        menu.add(Box.createHorizontalStrut(1));
+//        menu.add(Box.createHorizontalStrut(1));
 
         // "Validate" entry
         JButton validateProjectButton = new JButton("Validate", UIUtils.getIconFromResources("checkmark.png"));

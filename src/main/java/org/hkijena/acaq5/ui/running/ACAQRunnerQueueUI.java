@@ -30,6 +30,7 @@ public class ACAQRunnerQueueUI extends JPanel {
     }
 
     private void initialize() {
+        setMaximumSize(new Dimension(200, 32));
         setLayout(new BorderLayout());
         setOpaque(false);
 
