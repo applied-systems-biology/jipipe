@@ -32,11 +32,3 @@ Some algorithms allow you to add additional slots. To add another slot, click th
 **Add** button and select which data type the slot should have. Depending on the algorithm, 
 you can make an output slot inherit the type of an existing input slot.
 
-### Annotating data
-
-You can annotate data slots with information about the data.
-Annotations are carried overby algorithms to the next steps. Algorithms also can modify annotations.
-You can use the information to find which algorithms fits your data best.
-
-To annotate data, click the ![](image://icons/label.png) **Annotate** button within
-a data slot. Then select the annotations.
