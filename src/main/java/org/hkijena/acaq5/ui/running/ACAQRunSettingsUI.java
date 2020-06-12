@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.ui.running;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.api.ACAQMutableRunConfiguration;
+import org.hkijena.acaq5.api.ACAQRunSettings;
 import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
@@ -29,7 +29,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Settings UI for {@link org.hkijena.acaq5.api.ACAQRunConfiguration}
+ * Settings UI for {@link org.hkijena.acaq5.api.ACAQRunSettings}
  */
 public class ACAQRunSettingsUI extends ACAQProjectWorkbenchPanel {
 
@@ -103,7 +103,7 @@ public class ACAQRunSettingsUI extends ACAQProjectWorkbenchPanel {
     private void initializeSetupGUI() {
 
         try {
-            run = new ACAQRun(getProjectWorkbench().getProject(), new ACAQMutableRunConfiguration());
+            run = new ACAQRun(getProjectWorkbench().getProject(), new ACAQRunSettings());
         } catch (Exception e) {
             openError(e);
             return;
@@ -111,7 +111,8 @@ public class ACAQRunSettingsUI extends ACAQProjectWorkbenchPanel {
 
         removeAll();
         JPanel setupPanel = new JPanel(new BorderLayout());
-        ParameterPanel formPanel = new ParameterPanel(getProjectWorkbench(), run.getConfiguration(),
+        ParameterPanel formPanel = new ParameterPanel(getProjectWorkbench(),
+                run.getConfiguration(),
                 MarkdownDocument.fromPluginResource("documentation/run.md"),
                 ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING);
 

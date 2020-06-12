@@ -4,7 +4,9 @@ import com.google.common.collect.ImmutableList;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
+import org.hkijena.acaq5.extensions.settings.RuntimeSettings;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,12 +34,13 @@ public class ACAQProjectCache {
      * Stores data into the cache
      * @param source the generating algorithm
      * @param stateId the state id
-     * @param slotName the slot that contains the data
+     * @param slot the slot that contains the data
      */
-    public void store(ACAQAlgorithm source, String stateId, String slotName) {
+    public void store(ACAQAlgorithm source, String stateId, ACAQDataSlot slot) {
+        if(!RuntimeSettings.getInstance().isAllowCache())
+            return;
         if(!project.getGraph().containsNode(source))
             throw new IllegalArgumentException("The cache only can hold project graph nodes!");
-        ACAQDataSlot slot = source.getOutputSlot(slotName);
         Map<String, Map<String, ACAQDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
         if(stateMap == null) {
             stateMap = new HashMap<>();
@@ -49,12 +52,28 @@ public class ACAQProjectCache {
             stateMap.put(stateId, slotMap);
         }
 
-        ACAQDataSlot existingSlot = slotMap.getOrDefault(slotName, null);
-        existingSlot.clearData();
+        ACAQDataSlot existingSlot = slotMap.getOrDefault(slot.getName(), null);
+        if(existingSlot != null) {
+            existingSlot.clearData();
+        }
 
         ACAQDataSlot slotCopy = new ACAQDataSlot(slot.getDefinition(), source);
         slotCopy.copyFrom(slot);
-        slotMap.put(slotName, slotCopy);
+        slotMap.put(slot.getName(), slotCopy);
+    }
+
+    /**
+     * Tries to extract data from the cache. Returns null if no data is available.
+     * @param source the generating algorithm
+     * @param stateId the state id
+     * @return all cached slots. Please do not work directly on those. Use targetSlot.copyFrom() instead. Never null.
+     */
+    public Map<String, ACAQDataSlot> extract(ACAQAlgorithm source, String stateId) {
+        Map<String, Map<String, ACAQDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
+        if(stateMap != null) {
+            return stateMap.getOrDefault(stateId, Collections.emptyMap());
+        }
+        return Collections.emptyMap();
     }
 
     /**

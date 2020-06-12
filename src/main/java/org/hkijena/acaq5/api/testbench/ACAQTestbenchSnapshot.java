@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.api.testbench;
 
-import org.hkijena.acaq5.api.ACAQMutableRunConfiguration;
+import org.hkijena.acaq5.api.ACAQRunSettings;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
@@ -16,20 +16,20 @@ import java.util.Map;
  * Used by the test bench to backup output data
  */
 public class ACAQTestbenchSnapshot {
-    private ACAQTestbench testbench;
+    private ACAQTestBench testBench;
     private Path outputFolderBackup;
     private LocalDateTime timestamp;
     private String label;
     private Map<ACAQGraphNode, AlgorithmBackup> algorithmBackups = new HashMap<>();
 
     /**
-     * @param testbench the testbench
+     * @param testBench the testbench
      */
-    public ACAQTestbenchSnapshot(ACAQTestbench testbench) {
-        this.testbench = testbench;
-        this.outputFolderBackup = testbench.getTestbenchRun().getConfiguration().getOutputPath();
+    public ACAQTestbenchSnapshot(ACAQTestBench testBench) {
+        this.testBench = testBench;
+        this.outputFolderBackup = testBench.getTestBenchRun().getConfiguration().getOutputPath();
         timestamp = LocalDateTime.now();
-        for (ACAQGraphNode algorithm : testbench.getTestbenchRun().getGraph().traverseAlgorithms()) {
+        for (ACAQGraphNode algorithm : testBench.getTestBenchRun().getGraph().traverseAlgorithms()) {
             algorithmBackups.put(algorithm, new AlgorithmBackup(algorithm));
         }
     }
@@ -38,12 +38,12 @@ public class ACAQTestbenchSnapshot {
      * Restores the snapshot
      */
     public void restore() {
-        ((ACAQMutableRunConfiguration) this.testbench.getTestbenchRun().getConfiguration()).setOutputPath(outputFolderBackup);
-        restore(testbench.getBenchedAlgorithm());
-        ACAQTestbenchSnapshot initial = testbench.getInitialBackup();
+        ((ACAQRunSettings) this.testBench.getTestBenchRun().getConfiguration()).setOutputPath(outputFolderBackup);
+        restore(testBench.getBenchedAlgorithm());
+        ACAQTestbenchSnapshot initial = testBench.getInitialBackup();
         if (this != initial) {
             for (Map.Entry<ACAQGraphNode, AlgorithmBackup> entry : initial.algorithmBackups.entrySet()) {
-                if (entry.getKey() != testbench.getBenchedAlgorithm())
+                if (entry.getKey() != testBench.getBenchedAlgorithm())
                     entry.getValue().restore();
             }
         }

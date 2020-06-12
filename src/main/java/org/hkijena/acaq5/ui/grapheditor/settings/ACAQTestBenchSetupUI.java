@@ -3,12 +3,14 @@ package org.hkijena.acaq5.ui.grapheditor.settings;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
-import org.hkijena.acaq5.api.testbench.ACAQTestbench;
+import org.hkijena.acaq5.api.testbench.ACAQTestBench;
+import org.hkijena.acaq5.api.testbench.ACAQTestBenchSettings;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.*;
 import org.hkijena.acaq5.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.acaq5.ui.events.RunUIWorkerInterruptedEvent;
+import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.ui.running.ACAQRunExecuterUI;
 import org.hkijena.acaq5.ui.running.ACAQRunnerQueue;
 import org.hkijena.acaq5.ui.testbench.ACAQTestBenchUI;
@@ -22,7 +24,7 @@ import java.nio.file.Path;
 import java.util.Set;
 
 /**
- * UI for generating {@link ACAQTestbench}
+ * UI for generating {@link ACAQTestBench}
  */
 public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
 
@@ -30,7 +32,8 @@ public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
     private JPanel setupPanel;
     private JPanel validationReportPanel;
     private ACAQValidityReportUI validationReportUI;
-    private ACAQTestbench currentTestBench;
+    private ACAQTestBenchSettings currentSettings;
+    private ACAQTestBench currentTestBench;
 
     /**
      * @param workbenchUI the workbench
@@ -75,29 +78,18 @@ public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
         setupPanel = new JPanel();
         setupPanel.setLayout(new BorderLayout());
 
-        FormPanel formPanel = new FormPanel(MarkdownDocument.fromPluginResource("documentation/testbench.md"),
-                FormPanel.WITH_SCROLLING);
+        currentSettings = new ACAQTestBenchSettings();
+        ParameterPanel formPanel = new ParameterPanel(getWorkbench(), currentSettings,
+                MarkdownDocument.fromPluginResource("documentation/testbench.md"), ParameterPanel.WITH_SCROLLING |
+                ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW);
         setupPanel.add(formPanel, BorderLayout.CENTER);
-
-        // Let the user choose where temporary data is saved
-        PathEditor outputFolderSelection = new PathEditor();
-        outputFolderSelection.setIoMode(PathEditor.IOMode.Open);
-        outputFolderSelection.setPathMode(PathEditor.PathMode.DirectoriesOnly);
-        try {
-            outputFolderSelection.setPath(Files.createTempDirectory("ACAQ5"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        formPanel.addToForm(outputFolderSelection, new JLabel("Temp. output folder"), null);
-
-        formPanel.addVerticalGlue();
 
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
         toolBar.add(Box.createHorizontalGlue());
 
         JButton generateButton = new JButton("Create", UIUtils.getIconFromResources("run.png"));
-        generateButton.addActionListener(e -> generateTestBench(outputFolderSelection.getPath()));
+        generateButton.addActionListener(e -> generateTestBench());
         toolBar.add(generateButton);
 
         setupPanel.add(toolBar, BorderLayout.NORTH);
@@ -153,7 +145,7 @@ public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
         revalidate();
     }
 
-    private void generateTestBench(Path outputPath) {
+    private void generateTestBench() {
 
         ACAQValidityReport report = new ACAQValidityReport();
         getProject().reportValidity(report);
@@ -162,7 +154,7 @@ public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
             return;
         }
 
-        currentTestBench = new ACAQTestbench(getProject(), algorithm, outputPath);
+        currentTestBench = new ACAQTestBench(getProject(), algorithm, currentSettings);
 
         removeAll();
         ACAQRunExecuterUI executerUI = new ACAQRunExecuterUI(currentTestBench);

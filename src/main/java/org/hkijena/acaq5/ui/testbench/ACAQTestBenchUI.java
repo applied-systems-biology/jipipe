@@ -2,7 +2,7 @@ package org.hkijena.acaq5.ui.testbench;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.testbench.ACAQTestbench;
+import org.hkijena.acaq5.api.testbench.ACAQTestBench;
 import org.hkijena.acaq5.api.testbench.ACAQTestbenchSnapshot;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
@@ -23,11 +23,11 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
 /**
- * UI for {@link ACAQTestbench}
+ * UI for {@link ACAQTestBench}
  */
 public class ACAQTestBenchUI extends ACAQProjectWorkbenchPanel {
 
-    private ACAQTestbench testbench;
+    private ACAQTestBench testbench;
     private JComboBox<ACAQTestbenchSnapshot> backupSelection;
     private JButton newTestButton;
     private JSplitPane splitPane;
@@ -36,7 +36,7 @@ public class ACAQTestBenchUI extends ACAQProjectWorkbenchPanel {
      * @param workbenchUI the workbench
      * @param testbench   the testbench
      */
-    public ACAQTestBenchUI(ACAQProjectWorkbench workbenchUI, ACAQTestbench testbench) {
+    public ACAQTestBenchUI(ACAQProjectWorkbench workbenchUI, ACAQTestBench testbench) {
         super(workbenchUI);
         this.testbench = testbench;
 
@@ -68,15 +68,15 @@ public class ACAQTestBenchUI extends ACAQProjectWorkbenchPanel {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        String compartmentName = getProject().getCompartments().get(testbench.getTargetAlgorithm().getCompartment()).getName();
+        String compartmentName = getProject().getCompartments().get(testbench.getProjectAlgorithm().getCompartment()).getName();
         JLabel compartmentInfo = new JLabel(compartmentName, UIUtils.getIconFromResources("graph-compartment.png"), JLabel.LEFT);
         toolBar.add(compartmentInfo);
 
         toolBar.add(Box.createHorizontalStrut(8));
 
-        JLabel algorithmInfo = new JLabel(testbench.getTargetAlgorithm().getName(), new ColorIcon(16, 16,
-                UIUtils.getFillColorFor(testbench.getTargetAlgorithm().getDeclaration())), JLabel.LEFT);
-        algorithmInfo.setToolTipText(TooltipUtils.getAlgorithmTooltip(testbench.getTargetAlgorithm().getDeclaration()));
+        JLabel algorithmInfo = new JLabel(testbench.getProjectAlgorithm().getName(), new ColorIcon(16, 16,
+                UIUtils.getFillColorFor(testbench.getProjectAlgorithm().getDeclaration())), JLabel.LEFT);
+        algorithmInfo.setToolTipText(TooltipUtils.getAlgorithmTooltip(testbench.getProjectAlgorithm().getDeclaration()));
         toolBar.add(algorithmInfo);
 
         toolBar.add(Box.createHorizontalGlue());
@@ -116,8 +116,8 @@ public class ACAQTestBenchUI extends ACAQProjectWorkbenchPanel {
     private void copyParameters() {
         if (backupSelection.getSelectedItem() instanceof ACAQTestbenchSnapshot) {
             ACAQTestbenchSnapshot backup = (ACAQTestbenchSnapshot) backupSelection.getSelectedItem();
-            backup.getAlgorithmBackup(testbench.getBenchedAlgorithm()).restoreParameters(testbench.getTargetAlgorithm());
-            getProjectWorkbench().sendStatusBarText("Copied parameters from testbench to " + testbench.getTargetAlgorithm().getName());
+            backup.getAlgorithmBackup(testbench.getBenchedAlgorithm()).restoreParameters(testbench.getProjectAlgorithm());
+            getProjectWorkbench().sendStatusBarText("Copied parameters from testbench to " + testbench.getProjectAlgorithm().getName());
         }
     }
 
@@ -200,7 +200,7 @@ public class ACAQTestBenchUI extends ACAQProjectWorkbenchPanel {
                 ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SCROLLING);
         splitPane.setLeftComponent(parameters);
 
-        ACAQResultUI resultUI = new ACAQResultUI(getProjectWorkbench(), testbench.getTestbenchRun());
+        ACAQResultUI resultUI = new ACAQResultUI(getProjectWorkbench(), testbench.getTestBenchRun());
         splitPane.setRightComponent(resultUI);
 
         revalidate();

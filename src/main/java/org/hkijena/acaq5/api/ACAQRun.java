@@ -2,11 +2,11 @@ package org.hkijena.acaq5.api;
 
 import com.google.common.base.Charsets;
 import ij.IJ;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.acaq5.utils.GraphUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.io.IOException;
@@ -15,10 +15,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /**
  * Runnable instance of an {@link ACAQProject}
@@ -26,14 +26,14 @@ import java.util.stream.Collectors;
 public class ACAQRun implements ACAQRunnable {
     ACAQAlgorithmGraph algorithmGraph;
     private ACAQProject project;
-    private ACAQRunConfiguration configuration;
+    private ACAQRunSettings configuration;
     private StringBuilder log = new StringBuilder();
 
     /**
      * @param project       The project
      * @param configuration Run configuration
      */
-    public ACAQRun(ACAQProject project, ACAQRunConfiguration configuration) {
+    public ACAQRun(ACAQProject project, ACAQRunSettings configuration) {
         this.project = project;
         this.configuration = configuration;
         this.algorithmGraph = new ACAQAlgorithmGraph(project.getGraph());
@@ -98,29 +98,34 @@ public class ACAQRun implements ACAQRunnable {
         }
     }
 
-    private void flushFinishedSlots(List<ACAQDataSlot> traversedSlots, Set<ACAQGraphNode> executedAlgorithms, int currentIndex, ACAQDataSlot outputSlot) {
+    private void flushFinishedSlots(List<ACAQDataSlot> traversedSlots, List<ACAQGraphNode> traversedAlgorithms, Set<ACAQGraphNode> executedAlgorithms, int currentIndex, ACAQDataSlot outputSlot, Set<ACAQDataSlot> flushedSlots) {
         if (!executedAlgorithms.contains(outputSlot.getAlgorithm()))
             return;
-        if (configuration.isFlushingEnabled()) {
-            boolean canFlush = true;
-            for (int j = currentIndex + 1; j < traversedSlots.size(); ++j) {
-                ACAQDataSlot futureSlot = traversedSlots.get(j);
-                if (futureSlot.isInput() && algorithmGraph.getSourceSlot(futureSlot) == outputSlot) {
-                    canFlush = false;
-                    break;
-                }
+        if(flushedSlots.contains(outputSlot))
+            return;
+        boolean canFlush = true;
+        for (int j = currentIndex + 1; j < traversedSlots.size(); ++j) {
+            ACAQDataSlot futureSlot = traversedSlots.get(j);
+            if (futureSlot.isInput() && algorithmGraph.getSourceSlot(futureSlot) == outputSlot) {
+                canFlush = false;
+                break;
             }
-            if (canFlush) {
-                if (configuration.isFlushingKeepsDataEnabled())
-                    outputSlot.save();
-                else
-                    outputSlot.flush();
+        }
+        if (canFlush) {
+            if(configuration.isStoreToCache()) {
+                ACAQGraphNode runAlgorithm = outputSlot.getAlgorithm();
+                ACAQGraphNode projectAlgorithm = project.getGraph().getAlgorithmNodes().get(runAlgorithm.getIdInGraph());
+                String stateId = project.getStateIdOf((ACAQAlgorithm) projectAlgorithm, traversedAlgorithms);
+                project.getCache().store((ACAQAlgorithm) projectAlgorithm, stateId, outputSlot);
             }
+            outputSlot.flush();
+            flushedSlots.add(outputSlot);
         }
     }
 
     @Override
     public void run(Consumer<ACAQRunnerStatus> onProgress, Supplier<Boolean> isCancelled) {
+        log.setLength(0);
         prepare();
         try {
             runAnalysis(onProgress, isCancelled);
@@ -136,7 +141,7 @@ public class ACAQRun implements ACAQRunnable {
 
         // Postprocessing
         try {
-            if (configuration.getOutputPath() != null && configuration.isFlushingEnabled())
+            if (configuration.getOutputPath() != null)
                 project.saveProject(configuration.getOutputPath().resolve("parameters.json"));
         } catch (IOException e) {
             throw new UserFriendlyRuntimeException(e, "Could not save project to '" + configuration.getOutputPath().resolve("parameters.json") + "'!",
@@ -156,23 +161,9 @@ public class ACAQRun implements ACAQRunnable {
     private void runAnalysis(Consumer<ACAQRunnerStatus> onProgress, Supplier<Boolean> isCancelled) {
         Set<ACAQGraphNode> unExecutableAlgorithms = algorithmGraph.getDeactivatedAlgorithms();
         Set<ACAQGraphNode> executedAlgorithms = new HashSet<>();
+        Set<ACAQDataSlot> flushedSlots = new HashSet<>();
         List<ACAQDataSlot> traversedSlots = algorithmGraph.traverse();
-
-        // Update algorithm limits that may be used by
-        Set<ACAQGraphNode> algorithmLimits = new HashSet<>();
-        if (configuration.getEndAlgorithmId() != null) {
-            ACAQGraphNode endAlgorithm = algorithmGraph.getAlgorithmNodes().get(configuration.getEndAlgorithmId());
-            if (configuration.isOnlyRunningEndAlgorithm())
-                algorithmLimits.add(endAlgorithm);
-            else {
-                for (ACAQDataSlot slot : endAlgorithm.getOutputSlots()) {
-                    algorithmLimits.addAll(GraphUtils.getAllPredecessors(algorithmGraph.getGraph(), slot)
-                            .stream().map(ACAQDataSlot::getAlgorithm).collect(Collectors.toSet()));
-                }
-            }
-        } else {
-            algorithmLimits.addAll(algorithmGraph.getAlgorithmNodes().values());
-        }
+        List<ACAQGraphNode> traversedAlgorithms = algorithmGraph.traverseAlgorithms();
 
         for (int index = 0; index < traversedSlots.size(); ++index) {
             if (isCancelled.get())
@@ -189,8 +180,8 @@ public class ACAQRun implements ACAQRunnable {
 
             // Let algorithms provide sub-progress
             String statusMessage = "Algorithm: " + slot.getAlgorithm().getName();
-            int traversionIndex = index;
-            Consumer<ACAQRunnerSubStatus> algorithmProgress = s -> logStatus(onProgress, new ACAQRunnerStatus(traversionIndex, traversedSlots.size(),
+            int traversingIndex = index;
+            Consumer<ACAQRunnerSubStatus> algorithmProgress = s -> logStatus(onProgress, new ACAQRunnerStatus(traversingIndex, traversedSlots.size(),
                     statusMessage + " | " + s));
 
             if (slot.isInput()) {
@@ -199,44 +190,89 @@ public class ACAQRun implements ACAQRunnable {
                 slot.copyFrom(sourceSlot);
 
                 // Check if we can flush the output
-                flushFinishedSlots(traversedSlots, executedAlgorithms, index, sourceSlot);
+                flushFinishedSlots(traversedSlots, traversedAlgorithms, executedAlgorithms, index, sourceSlot, flushedSlots);
             } else if (slot.isOutput()) {
                 // Ensure the algorithm has run
-                if (!executedAlgorithms.contains(slot.getAlgorithm()) && algorithmLimits.contains(slot.getAlgorithm())) {
+                if (!executedAlgorithms.contains(slot.getAlgorithm())) {
                     onProgress.accept(new ACAQRunnerStatus(index, traversedSlots.size(), statusMessage));
-                    try {
-                        slot.getAlgorithm().run(new ACAQRunnerSubStatus(), algorithmProgress, isCancelled);
-                    } catch (Exception e) {
-                        throw new UserFriendlyRuntimeException("Algorithm " + slot.getAlgorithm() + " raised an exception!",
-                                e,
-                                "An error occurred during processing",
-                                "On running the algorithm '" + slot.getAlgorithm().getName() + "', within compartment '" + getProject().getCompartments().get(slot.getAlgorithm().getCompartment()).getName() + "'",
-                                "Please refer to the other error messages.",
-                                "Please follow the instructions for the other error messages.");
+
+                    // If enabled try to extract outputs from cache
+                    boolean dataLoadedFromCache = false;
+                    if(configuration.isLoadFromCache()) {
+                        dataLoadedFromCache = tryLoadFromCache(slot.getAlgorithm(),
+                                onProgress,
+                                traversingIndex,
+                                traversedSlots.size(),
+                                statusMessage,
+                                traversedAlgorithms);
                     }
+
+                    if(!dataLoadedFromCache) {
+                        try {
+                            slot.getAlgorithm().run(new ACAQRunnerSubStatus(), algorithmProgress, isCancelled);
+                        } catch (Exception e) {
+                            throw new UserFriendlyRuntimeException("Algorithm " + slot.getAlgorithm() + " raised an exception!",
+                                    e,
+                                    "An error occurred during processing",
+                                    "On running the algorithm '" + slot.getAlgorithm().getName() + "', within compartment '" + getProject().getCompartments().get(slot.getAlgorithm().getCompartment()).getName() + "'",
+                                    "Please refer to the other error messages.",
+                                    "Please follow the instructions for the other error messages.");
+                        }
+                    }
+                    else {
+                        onProgress.accept(new ACAQRunnerStatus(index, traversedSlots.size(), statusMessage + " | Output data was loaded from cache. Not executing."));
+                    }
+
                     executedAlgorithms.add(slot.getAlgorithm());
                 }
 
                 // Check if we can flush the output
-                flushFinishedSlots(traversedSlots, executedAlgorithms, index, slot);
+                flushFinishedSlots(traversedSlots, traversedAlgorithms, executedAlgorithms, index, slot, flushedSlots);
             }
         }
+    }
+
+    /**
+     * Attempts to load data from cache
+     * @param algorithm the target algorithm
+     * @param onProgress progress
+     * @param progress progress
+     * @param maxProgress max progress
+     * @param statusMessage algorithm status message
+     * @param traversedAlgorithms traversed algorithms
+     * @return if successful. This means all output slots were restored.
+     */
+    private boolean tryLoadFromCache(ACAQGraphNode algorithm, Consumer<ACAQRunnerStatus> onProgress, int progress, int maxProgress, String statusMessage, List<ACAQGraphNode> traversedAlgorithms) {
+        if(!configuration.isLoadFromCache())
+            return false;
+        ACAQGraphNode projectAlgorithm = project.getGraph().getAlgorithmNodes().get(algorithm.getIdInGraph());
+        String stateId = project.getStateIdOf((ACAQAlgorithm) projectAlgorithm, traversedAlgorithms);
+        Map<String, ACAQDataSlot> cachedData = project.getCache().extract((ACAQAlgorithm) projectAlgorithm, stateId);
+        if(!cachedData.isEmpty()) {
+            logStatus(onProgress, new ACAQRunnerStatus(progress, maxProgress,
+                    String.format("%s | Accessing cache with slots %s via state id %s", statusMessage, String.join(", ",
+                            cachedData.keySet()), stateId)));
+            for (ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
+                if(!cachedData.containsKey(outputSlot.getName())) {
+                    logStatus(onProgress, new ACAQRunnerStatus(progress, maxProgress,
+                            String.format("%s | Cache access failed. Missing output slot %s", statusMessage, outputSlot.getName())));
+                    return false;
+                }
+            }
+            for (ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
+                outputSlot.clearData();
+                outputSlot.copyFrom(cachedData.get(outputSlot.getName()));
+            }
+            logStatus(onProgress,new ACAQRunnerStatus(progress, maxProgress,
+                    String.format("%s | Cache data access successful.", statusMessage)));
+            return true;
+        }
+        return false;
     }
 
     private void logStatus(Consumer<ACAQRunnerStatus> onProgress, ACAQRunnerStatus status) {
         onProgress.accept(status);
         log.append("[").append(status.getProgress()).append("/").append(status.getMaxProgress()).append("] ").append(status.getMessage()).append("\n");
-    }
-
-    private void forceFlushAlgorithms(Set<ACAQGraphNode> algorithms) {
-        for (ACAQGraphNode algorithm : algorithms) {
-            for (ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
-                if (configuration.isFlushingKeepsDataEnabled())
-                    outputSlot.save();
-                else
-                    outputSlot.flush();
-            }
-        }
     }
 
     public StringBuilder getLog() {
@@ -253,7 +289,7 @@ public class ACAQRun implements ACAQRunnable {
     /**
      * @return The run configuration
      */
-    public ACAQRunConfiguration getConfiguration() {
+    public ACAQRunSettings getConfiguration() {
         return configuration;
     }
 
@@ -267,7 +303,7 @@ public class ACAQRun implements ACAQRunnable {
     public static ACAQRun loadFromFolder(Path folder) throws IOException {
         Path parameterFile = folder.resolve("parameters.json");
         ACAQProject project = ACAQProject.loadProject(parameterFile);
-        ACAQMutableRunConfiguration configuration = new ACAQMutableRunConfiguration();
+        ACAQRunSettings configuration = new ACAQRunSettings();
         configuration.setOutputPath(folder);
         ACAQRun run = new ACAQRun(project, configuration);
         run.prepare();

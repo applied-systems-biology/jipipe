@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.api.testbench;
 
 import org.hkijena.acaq5.api.*;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 
@@ -14,12 +15,12 @@ import java.util.function.Supplier;
 /**
  * Allows to test one algorithm with multiple parameters
  */
-public class ACAQTestbench implements ACAQRunnable, ACAQValidatable {
+public class ACAQTestBench implements ACAQRunnable, ACAQValidatable {
     private ACAQProject project;
-    private ACAQGraphNode targetAlgorithm;
-    private Path workDirectory;
+    private ACAQGraphNode projectAlgorithm;
+    private ACAQTestBenchSettings settings;
 
-    private ACAQRun testbenchRun;
+    private ACAQRun testBenchRun;
     private ACAQGraphNode benchedAlgorithm;
     private volatile ACAQTestbenchSnapshot initialBackup;
 
@@ -27,26 +28,38 @@ public class ACAQTestbench implements ACAQRunnable, ACAQValidatable {
 
     /**
      * @param project         The project
-     * @param targetAlgorithm The tested algorithm
-     * @param workDirectory   A temporary work directory
+     * @param projectAlgorithm The tested algorithm
+     * @param settings   The settings
      */
-    public ACAQTestbench(ACAQProject project, ACAQGraphNode targetAlgorithm, Path workDirectory) {
+    public ACAQTestBench(ACAQProject project, ACAQGraphNode projectAlgorithm, ACAQTestBenchSettings settings) {
         this.project = project;
-        this.targetAlgorithm = targetAlgorithm;
-        this.workDirectory = workDirectory;
+        this.projectAlgorithm = projectAlgorithm;
+        this.settings = settings;
 
         initialize();
     }
 
     private void initialize() {
-        ACAQMutableRunConfiguration configuration = new ACAQMutableRunConfiguration();
-        configuration.setFlushingEnabled(true);
-        configuration.setFlushingKeepsDataEnabled(true);
-        configuration.setOutputPath(workDirectory.resolve("initial"));
-        configuration.setEndAlgorithmId(targetAlgorithm.getIdInGraph());
+        ACAQRunSettings configuration = new ACAQRunSettings();
+        configuration.setOutputPath(settings.getOutputPath().resolve("initial"));
+        configuration.setLoadFromCache(settings.isLoadFromCache());
+        configuration.setStoreToCache(settings.isStoreToCache());
 
-        testbenchRun = new ACAQRun(project, configuration);
-        benchedAlgorithm = testbenchRun.getGraph().getAlgorithmNodes().get(targetAlgorithm.getIdInGraph());
+        testBenchRun = new ACAQRun(project, configuration);
+        benchedAlgorithm = testBenchRun.getGraph().getAlgorithmNodes().get(projectAlgorithm.getIdInGraph());
+
+        // Disable all algorithms that are not dependencies of the benched algorithm
+        List<ACAQGraphNode> predecessorAlgorithms = testBenchRun.getGraph()
+                .getPredecessorAlgorithms(benchedAlgorithm, testBenchRun.getGraph().traverseAlgorithms());
+        predecessorAlgorithms.add(benchedAlgorithm);
+        for (ACAQGraphNode node : testBenchRun.getGraph().getAlgorithmNodes().values()) {
+            if(!predecessorAlgorithms.contains(node)) {
+                if(node instanceof ACAQAlgorithm) {
+                    ((ACAQAlgorithm) node).setEnabled(false);
+                }
+            }
+        }
+
     }
 
     @Override
@@ -57,12 +70,8 @@ public class ACAQTestbench implements ACAQRunnable, ACAQValidatable {
             slot.clearData();
         }
 
-
         // Run the internal graph runner
-        testbenchRun.run(onProgress, isCancelled);
-
-        // Required after first run
-        ((ACAQMutableRunConfiguration) testbenchRun.getConfiguration()).setOnlyRunningEndAlgorithm(true);
+        testBenchRun.run(onProgress, isCancelled);
 
         // Create initial backup
         if (initialBackup == null) {
@@ -75,37 +84,23 @@ public class ACAQTestbench implements ACAQRunnable, ACAQValidatable {
         return project;
     }
 
-    /**
-     * @return the algorithm that is targeted. This algorithm is part of the project.
-     */
-    public ACAQGraphNode getTargetAlgorithm() {
-        return targetAlgorithm;
+
+    public ACAQGraphNode getProjectAlgorithm() {
+        return projectAlgorithm;
     }
 
-    /**
-     * @return the work directory
-     */
-    public Path getWorkDirectory() {
-        return workDirectory;
+    public ACAQTestBenchSettings getSettings() {
+        return settings;
     }
 
-    /**
-     * @return the run
-     */
-    public ACAQRun getTestbenchRun() {
-        return testbenchRun;
+    public ACAQRun getTestBenchRun() {
+        return testBenchRun;
     }
 
-    /**
-     * @return the target algorithm. This algorithm is a copy of the project algorithm.
-     */
     public ACAQGraphNode getBenchedAlgorithm() {
         return benchedAlgorithm;
     }
 
-    /**
-     * @return all backups
-     */
     public List<ACAQTestbenchSnapshot> getBackupList() {
         return backupList;
     }
@@ -136,9 +131,9 @@ public class ACAQTestbench implements ACAQRunnable, ACAQValidatable {
         ACAQValidityReport report = new ACAQValidityReport();
         reportValidity(report);
         if (!report.isValid())
-            throw new RuntimeException("Testbench is not valid!");
+            throw new RuntimeException("Test bench is not valid!");
 
-        Path outputBasePath = testbenchRun.getConfiguration().getOutputPath().getParent();
+        Path outputBasePath = testBenchRun.getConfiguration().getOutputPath().getParent();
         Path outputPath;
         int index = 1;
         do {
@@ -146,7 +141,7 @@ public class ACAQTestbench implements ACAQRunnable, ACAQValidatable {
             ++index;
         }
         while (Files.isDirectory(outputPath));
-        ((ACAQMutableRunConfiguration) testbenchRun.getConfiguration()).setOutputPath(outputPath);
+        testBenchRun.getConfiguration().setOutputPath(outputPath);
     }
 
     /**

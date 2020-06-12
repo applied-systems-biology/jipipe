@@ -1,6 +1,6 @@
 package org.hkijena.acaq5;
 
-import org.hkijena.acaq5.api.ACAQMutableRunConfiguration;
+import org.hkijena.acaq5.api.ACAQRunSettings;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.ACAQRunnerStatus;
@@ -50,7 +50,7 @@ public class ACAQRunCommand implements Command {
                     "Try to load the parameter file in the ACAQ5 GUI.");
         }
 
-        ACAQMutableRunConfiguration configuration = new ACAQMutableRunConfiguration();
+        ACAQRunSettings configuration = new ACAQRunSettings();
         configuration.setOutputPath(outputDirectory.toPath());
         ACAQRun run = new ACAQRun(project, configuration);
         run.run(this::onProgress, () -> false);
