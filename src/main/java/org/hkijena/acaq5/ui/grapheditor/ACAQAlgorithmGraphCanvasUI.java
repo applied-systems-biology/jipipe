@@ -428,6 +428,10 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
                 value.setLocation(value.getX() + ex, value.getY() + ey);
             }
         }
+        if(cursor != null) {
+            cursor.x += ex;
+            cursor.y += ey;
+        }
         if(getParent() != null)
             getParent().revalidate();
         repaint();
@@ -1160,6 +1164,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             ui.setLocation(ui.getX() - minX + ACAQAlgorithmUI.SLOT_UI_WIDTH,
                     ui.getY() - minY + ACAQAlgorithmUI.SLOT_UI_HEIGHT);
         }
+        cursor = new Point(ACAQAlgorithmUI.SLOT_UI_WIDTH, ACAQAlgorithmUI.SLOT_UI_HEIGHT);
         minDimensions = null;
         if(getParent() != null)
             getParent().revalidate();
