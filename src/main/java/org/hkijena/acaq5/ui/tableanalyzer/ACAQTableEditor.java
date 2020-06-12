@@ -207,7 +207,7 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
         addActionToPalette("Integrate",
                 "Collapses the table into a one-row table by applying an integration operation on each column..",
                 UIUtils.getIconFromResources("statistics.png"),
-                this::collapseColumns);
+                this::integrateColumns);
         addSeparatorToPalette();
         convertSelectedCellsButton = addActionToPalette("Convert cells",
                 "Converts the values in the selected cells",
@@ -362,20 +362,19 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
         getProjectWorkbench().getDocumentTabPane().switchToLastTab();
     }
 
-    private void collapseColumns() {
-        // TODO: Implement
-//        ACAQCollapseTableColumnsDialogUI dialog = new ACAQCollapseTableColumnsDialogUI(tableModel);
-//        dialog.pack();
-//        dialog.setSize(800, 600);
-//        dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
-//        dialog.setModal(true);
-//        dialog.setVisible(true);
-//        if (dialog.getResultTableModel() != null) {
-//            createUndoSnapshot();
-//            tableModel = dialog.getResultTableModel();
-//            jxTable.setModel(tableModel);
-//            jxTable.packAll();
-//        }
+    private void integrateColumns() {
+        ACAQIntegrateTableColumnsDialogUI dialog = new ACAQIntegrateTableColumnsDialogUI(tableModel);
+        dialog.pack();
+        dialog.setSize(800, 600);
+        dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
+        dialog.setModal(true);
+        dialog.setVisible(true);
+        if (dialog.getOutputTableModel() != null) {
+            createUndoSnapshot();
+            tableModel = dialog.getOutputTableModel();
+            jxTable.setModel(tableModel);
+            jxTable.packAll();
+        }
     }
 
     private void undo() {
@@ -484,45 +483,6 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
             });
             convertSelectedCellsMenu.add(item);
         }
-
-        // TODO: Implement
-//        final int cellCount = jxTable.getSelectedColumnCount() * jxTable.getSelectedRowCount();
-//
-//        List<ACAQTableAnalyzerUIOperationRegistry.VectorOperationEntry> entries =
-//                new ArrayList<>(ACAQDefaultRegistry.getInstance().getTableAnalyzerUIOperationRegistry().getVectorOperationEntries());
-//        entries.sort(Comparator.comparing(ACAQTableAnalyzerUIOperationRegistry.VectorOperationEntry::getName));
-//
-//        for (ACAQTableAnalyzerUIOperationRegistry.VectorOperationEntry vectorOperationEntry : entries) {
-//            ACAQTableVectorOperation operation = vectorOperationEntry.instantiateOperation();
-//            if (operation.inputMatches(cellCount) && operation.getOutputCount(cellCount) == cellCount) {
-//                JMenuItem item = new JMenuItem(vectorOperationEntry.getName(), vectorOperationEntry.getIcon());
-//                item.setToolTipText(vectorOperationEntry.getDescription());
-//                item.addActionListener(e -> {
-//
-//                    createUndoSnapshot();
-//
-//                    List<Index> selectedCells = getSelectedCells();
-//                    assert cellCount == selectedCells.size();
-//
-//                    Object[] buffer = new Object[cellCount];
-//                    for (int i = 0; i < cellCount; ++i) {
-//                        buffer[i] = tableModel.getValueAt(selectedCells.get(i).getRow(), selectedCells.get(i).getColumn());
-//                    }
-//
-//                    buffer = operation.process(buffer);
-//                    Vector tableData = tableModel.getDataVector();
-//
-//                    for (int i = 0; i < cellCount; ++i) {
-//                        ((Vector) tableData.get(selectedCells.get(i).getRow())).set(selectedCells.get(i).getColumn(), buffer[i]);
-//                    }
-//
-//                    tableModel.setDataVector(tableData, TableUtils.getColumnIdentifiers(tableModel));
-//                    jxTable.packAll();
-//                });
-//                convertSelectedCellsMenu.add(item);
-//            }
-//        }
-
         convertSelectedCellsButton.setEnabled(convertSelectedCellsMenu.getComponentCount() > 0);
     }
 

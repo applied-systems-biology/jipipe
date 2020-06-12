@@ -58,6 +58,9 @@ public class ACAQTableRegistry {
         return result;
     }
 
+    /**
+     * A column operation entry
+     */
     public static class ColumnOperationEntry {
         private String id;
         private ColumnOperation operation;
@@ -65,6 +68,14 @@ public class ACAQTableRegistry {
         private String shortName;
         private String description;
 
+        /**
+         * Creates a new entry
+         * @param id unique id
+         * @param operation the operation
+         * @param name name
+         * @param shortName a short name
+         * @param description description
+         */
         public ColumnOperationEntry(String id, ColumnOperation operation, String name, String shortName, String description) {
             this.id = id;
             this.operation = operation;
@@ -87,6 +98,10 @@ public class ACAQTableRegistry {
 
         public String getId() {
             return id;
+        }
+
+        public String getShortName() {
+            return shortName;
         }
     }
 

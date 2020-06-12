@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class OccurrencesColumnOperation implements ConvertingColumnOperation {
     @Override
-    public TableColumn run(TableColumn column) {
+    public TableColumn apply(TableColumn column) {
         Multiset<String> factors = HashMultiset.create();
         for (int i = 0; i < column.getRows(); i++) {
             String v = column.getRowAsString(i);

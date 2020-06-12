@@ -17,9 +17,7 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
 import org.hkijena.acaq5.extensions.tables.operations.ColumnOperation;
 import org.hkijena.acaq5.extensions.tables.parameters.collections.ConvertingTableColumnProcessorParameterList;
-import org.hkijena.acaq5.extensions.tables.parameters.collections.IntegratingTableColumnProcessorParameterList;
 import org.hkijena.acaq5.extensions.tables.parameters.processors.ConvertingTableColumnProcessorParameter;
-import org.hkijena.acaq5.extensions.tables.parameters.processors.IntegratingTableColumnProcessorParameter;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.HashMap;
@@ -77,7 +75,7 @@ public class ConvertColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
             }
             TableColumn sourceColumnData = input.getColumnReference(input.getColumnIndex(sourceColumn));
             ColumnOperation columnOperation = ((ACAQTableRegistry.ColumnOperationEntry)processor.getParameter().getValue()).getOperation();
-            TableColumn resultColumn = columnOperation.run(sourceColumnData);
+            TableColumn resultColumn = columnOperation.apply(sourceColumnData);
             resultColumns.put(processor.getOutput(), resultColumn);
         }
         if(append) {

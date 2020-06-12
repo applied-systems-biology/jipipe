@@ -11,7 +11,7 @@ import java.util.Arrays;
  */
 public class ToNumericColumnOperation implements ConvertingColumnOperation {
     @Override
-    public TableColumn run(TableColumn column) {
+    public TableColumn apply(TableColumn column) {
         double[] data = column.getDataAsDouble(column.getRows());
         return new DoubleArrayTableColumn(data, column.getLabel());
     }

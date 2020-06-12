@@ -4,6 +4,8 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.extensions.plots.datatypes.PlotDataSeries;
 
+import java.util.List;
+
 /**
  * An {@link ACAQData} type that represents a column in a {@link PlotDataSeries}.
  * This type allows data to be provided
@@ -89,5 +91,30 @@ public interface TableColumn extends ACAQData {
      */
     static boolean isGeneratingTableColumn(Class<? extends ACAQData> klass) {
         return TableColumn.class.isAssignableFrom(klass) && !MutableTableColumn.class.isAssignableFrom(klass);
+    }
+
+    /**
+     * Returns a new table column that contains the selected rows in the provided order
+     * @param input the input column
+     * @param rows the rows
+     * @return a new table column that contains the selected rows in the provided order
+     */
+    static TableColumn getSlice(TableColumn input, List<Integer> rows) {
+        if(input.isNumeric()) {
+            double[] values = new double[rows.size()];
+            for (int row = 0; row < rows.size(); row++) {
+                int inputRow = rows.get(row);
+                values[row] = input.getRowAsDouble(inputRow);
+            }
+            return new DoubleArrayTableColumn(values, input.getLabel());
+        }
+        else {
+            String[] values = new String[rows.size()];
+            for (int row = 0; row < rows.size(); row++) {
+                int inputRow = rows.get(row);
+                values[row] = input.getRowAsString(inputRow);
+            }
+            return new StringArrayTableColumn(values, input.getLabel());
+        }
     }
 }

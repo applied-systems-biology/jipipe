@@ -14,7 +14,7 @@ public class StatisticsStandardDeviationIntegratingColumnOperation implements In
     private static final StandardDeviation standardDeviation = new StandardDeviation();
 
     @Override
-    public TableColumn run(TableColumn column) {
+    public TableColumn apply(TableColumn column) {
         double result = standardDeviation.evaluate(column.getDataAsDouble(column.getRows()));
         return new DoubleArrayTableColumn(new double[] { result }, column.getLabel());
     }

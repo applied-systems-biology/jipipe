@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public class SortAscendingColumnOperation implements ConvertingColumnOperation {
     @Override
-    public TableColumn run(TableColumn column) {
+    public TableColumn apply(TableColumn column) {
         if(column.isNumeric()) {
             double[] data = column.getDataAsDouble(column.getRows());
             Arrays.sort(data);

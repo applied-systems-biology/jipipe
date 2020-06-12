@@ -13,7 +13,7 @@ public class StatisticsSkewnessIntegratingColumnOperation implements Integrating
     private static final Skewness skewness = new Skewness();
 
     @Override
-    public TableColumn run(TableColumn column) {
+    public TableColumn apply(TableColumn column) {
         double result = skewness.evaluate(column.getDataAsDouble(column.getRows()));
         return new DoubleArrayTableColumn(new double[] { result }, column.getLabel());
     }

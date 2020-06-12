@@ -13,7 +13,7 @@ import java.util.Set;
  */
 public class FactorizeColumnOperation implements ConvertingColumnOperation {
     @Override
-    public TableColumn run(TableColumn column) {
+    public TableColumn apply(TableColumn column) {
         Map<String, Integer> factors = new HashMap<>();
         for (int i = 0; i < column.getRows(); i++) {
             String v = column.getRowAsString(i);

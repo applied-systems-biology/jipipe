@@ -9,7 +9,7 @@ import org.hkijena.acaq5.extensions.tables.operations.IntegratingColumnOperation
  */
 public class StatisticsCumulativeSumColumnOperation implements IntegratingColumnOperation {
     @Override
-    public TableColumn run(TableColumn column) {
+    public TableColumn apply(TableColumn column) {
         double sum = 0;
         for (int i = 0; i < column.getRows(); i++) {
             sum += sum + column.getRowAsDouble(i);

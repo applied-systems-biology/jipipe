@@ -11,6 +11,7 @@ import org.hkijena.acaq5.extensions.tables.datatypes.StringArrayTableColumn;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumnReference;
 import org.hkijena.acaq5.extensions.tables.operations.ConvertingColumnOperation;
+import org.hkijena.acaq5.extensions.tables.operations.IntegratingColumnOperation;
 import org.hkijena.acaq5.utils.PathUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 
@@ -128,12 +129,129 @@ public class ResultsTableData implements ACAQData, TableModel {
                 buffer = new StringArrayTableColumn(data, "buffer");
             }
 
-            TableColumn result = operation.run(buffer);
+            TableColumn result = operation.apply(buffer);
             for (int i = 0; i < entry.getValue().size(); i++) {
                 int row = entry.getValue().get(i).row;
                 Object value = numeric ? result.getRowAsDouble(i) : result.getRowAsString(i);
                 setValueAt(value, row, col);
             }
+        }
+    }
+
+    /**
+     * Returns the row indices grouped by the values of the provided columns
+     * @param columns the columns to group by
+     * @return a map from column name to column value to the rows that share the same values
+     */
+    public Map<Map<String, Object>, List<Integer>> getEquivalentRows(Set<String> columns) {
+        Map<Map<String, Object>, List<Integer>> result = new HashMap<>();
+        Set<Integer> columnIndices = columns.stream().map(this::getColumnIndex).collect(Collectors.toSet());
+        for (int row = 0; row < getRowCount(); row++) {
+            Map<String, Object> columnValues = new HashMap<>();
+            for (Integer columnIndex : columnIndices) {
+                String columnName = getColumnName(columnIndex);
+                columnValues.put(columnName, getValueAt(row, columnIndex));
+            }
+            List<Integer> rowList = result.getOrDefault(columnValues, null);
+            if(rowList == null) {
+                rowList = new ArrayList<>();
+                result.put(columnValues, rowList);
+            }
+            rowList.add(row);
+        }
+        return result;
+    }
+
+    /**
+     * Generates a new table that contains statistics.
+     * Optionally, statistics can be created for each category (based on the category column)
+     * @param operations the operations
+     * @param categories columns considered as categorical. They are added to the output without changes.
+     * @return integrated table
+     */
+    public ResultsTableData getStatistics(List<IntegratingColumnOperationEntry> operations, Set<String> categories) {
+        ResultsTableData result = new ResultsTableData();
+
+        if(categories == null || categories.isEmpty()) {
+            result.addRow();
+            for (IntegratingColumnOperationEntry operation : operations) {
+                TableColumn inputColumn = getColumnReference(getColumnIndex(operation.getSourceColumnName()));
+                TableColumn outputColumn = operation.getOperation().apply(inputColumn);
+                if(outputColumn.isNumeric()) {
+                    result.setValueAt(outputColumn.getDataAsDouble(0), 0, result.addColumn(operation.getTargetColumnName(), false));
+                }
+                else {
+                    result.setValueAt(outputColumn.getRowAsString(0), 0, result.addColumn(operation.getTargetColumnName(), true));
+                }
+            }
+        }
+        else {
+            Map<String, Integer> targetColumnIndices = new HashMap<>();
+            // Create category columns first
+            for (String category : categories) {
+                targetColumnIndices.put(category, result.addColumn(category, isNumeric(getColumnIndex(category))));
+            }
+            Map<Map<String, Object>, List<Integer>> equivalentRows = getEquivalentRows(categories);
+            int row = 0;
+            for (Map.Entry<Map<String, Object>, List<Integer>> entry : equivalentRows.entrySet()) {
+                result.addRow();
+                // Write category columns
+                for (Map.Entry<String, Object> categoryEntry : entry.getKey().entrySet()) {
+                    result.setValueAt(categoryEntry.getValue(), row, result.getColumnIndex(categoryEntry.getKey()));
+                }
+
+                // Apply statistics
+                for (IntegratingColumnOperationEntry operation : operations) {
+                    TableColumn inputColumn = TableColumn.getSlice(getColumnReference(getColumnIndex(operation.getSourceColumnName())), entry.getValue());
+                    TableColumn outputColumn = operation.getOperation().apply(inputColumn);
+                    int col = targetColumnIndices.getOrDefault(operation.getTargetColumnName(), -1);
+                    if(col == -1) {
+                        col = result.addColumn(operation.getTargetColumnName(), !outputColumn.isNumeric());
+                    }
+                    if(result.isNumeric(col)) {
+                        result.setValueAt(outputColumn.getRowAsDouble(0), row, col);
+                    }
+                    else {
+                        result.setValueAt(outputColumn.getRowAsString(0), row, col);
+                    }
+                }
+
+                ++row;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * An entry for obtaining statistics/integrated values
+     */
+    public static class IntegratingColumnOperationEntry {
+        private String sourceColumnName;
+        private String targetColumnName;
+        private IntegratingColumnOperation operation;
+
+        public String getSourceColumnName() {
+            return sourceColumnName;
+        }
+
+        public String getTargetColumnName() {
+            return targetColumnName;
+        }
+
+        public IntegratingColumnOperation getOperation() {
+            return operation;
+        }
+
+        /**
+         * Creates a new entry
+         * @param sourceColumnName the source column
+         * @param targetColumnName the target column
+         * @param operation the operation
+         */
+        public IntegratingColumnOperationEntry(String sourceColumnName, String targetColumnName, IntegratingColumnOperation operation) {
+            this.sourceColumnName = sourceColumnName;
+            this.targetColumnName = targetColumnName;
+            this.operation = operation;
         }
     }
 
