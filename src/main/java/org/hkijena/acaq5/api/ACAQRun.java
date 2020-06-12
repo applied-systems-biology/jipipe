@@ -98,7 +98,7 @@ public class ACAQRun implements ACAQRunnable {
         }
     }
 
-    private void flushFinishedSlots(List<ACAQDataSlot> traversedSlots, List<ACAQGraphNode> traversedAlgorithms, Set<ACAQGraphNode> executedAlgorithms, int currentIndex, ACAQDataSlot outputSlot, Set<ACAQDataSlot> flushedSlots) {
+    private void flushFinishedSlots(List<ACAQDataSlot> traversedSlots, List<ACAQGraphNode> traversedProjectAlgorithms, Set<ACAQGraphNode> executedAlgorithms, int currentIndex, ACAQDataSlot outputSlot, Set<ACAQDataSlot> flushedSlots) {
         if (!executedAlgorithms.contains(outputSlot.getAlgorithm()))
             return;
         if(flushedSlots.contains(outputSlot))
@@ -115,7 +115,7 @@ public class ACAQRun implements ACAQRunnable {
             if(configuration.isStoreToCache()) {
                 ACAQGraphNode runAlgorithm = outputSlot.getAlgorithm();
                 ACAQGraphNode projectAlgorithm = project.getGraph().getAlgorithmNodes().get(runAlgorithm.getIdInGraph());
-                String stateId = project.getStateIdOf((ACAQAlgorithm) projectAlgorithm, traversedAlgorithms);
+                String stateId = project.getStateIdOf((ACAQAlgorithm) projectAlgorithm, traversedProjectAlgorithms);
                 project.getCache().store((ACAQAlgorithm) projectAlgorithm, stateId, outputSlot);
             }
             outputSlot.flush();
@@ -163,7 +163,7 @@ public class ACAQRun implements ACAQRunnable {
         Set<ACAQGraphNode> executedAlgorithms = new HashSet<>();
         Set<ACAQDataSlot> flushedSlots = new HashSet<>();
         List<ACAQDataSlot> traversedSlots = algorithmGraph.traverse();
-        List<ACAQGraphNode> traversedAlgorithms = algorithmGraph.traverseAlgorithms();
+        List<ACAQGraphNode> traversedProjectAlgorithms = getProject().getGraph().traverseAlgorithms();
 
         for (int index = 0; index < traversedSlots.size(); ++index) {
             if (isCancelled.get())
@@ -190,7 +190,7 @@ public class ACAQRun implements ACAQRunnable {
                 slot.copyFrom(sourceSlot);
 
                 // Check if we can flush the output
-                flushFinishedSlots(traversedSlots, traversedAlgorithms, executedAlgorithms, index, sourceSlot, flushedSlots);
+                flushFinishedSlots(traversedSlots, traversedProjectAlgorithms, executedAlgorithms, index, sourceSlot, flushedSlots);
             } else if (slot.isOutput()) {
                 // Ensure the algorithm has run
                 if (!executedAlgorithms.contains(slot.getAlgorithm())) {
@@ -204,7 +204,7 @@ public class ACAQRun implements ACAQRunnable {
                                 traversingIndex,
                                 traversedSlots.size(),
                                 statusMessage,
-                                traversedAlgorithms);
+                                traversedProjectAlgorithms);
                     }
 
                     if(!dataLoadedFromCache) {
@@ -227,7 +227,7 @@ public class ACAQRun implements ACAQRunnable {
                 }
 
                 // Check if we can flush the output
-                flushFinishedSlots(traversedSlots, traversedAlgorithms, executedAlgorithms, index, slot, flushedSlots);
+                flushFinishedSlots(traversedSlots, traversedProjectAlgorithms, executedAlgorithms, index, slot, flushedSlots);
             }
         }
     }

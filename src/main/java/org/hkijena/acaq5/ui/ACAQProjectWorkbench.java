@@ -11,6 +11,7 @@ import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.events.CompartmentRemovedEvent;
 import org.hkijena.acaq5.extensions.settings.GeneralUISettings;
 import org.hkijena.acaq5.extensions.settings.ProjectsSettings;
+import org.hkijena.acaq5.ui.cache.ACAQCacheManagerUI;
 import org.hkijena.acaq5.ui.compartments.ACAQCompartmentGraphUI;
 import org.hkijena.acaq5.ui.compartments.ACAQCompartmentUI;
 import org.hkijena.acaq5.ui.compendium.ACAQAlgorithmCompendiumUI;
@@ -330,6 +331,10 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
             menu.add(toolsMenu);
 
         menu.add(Box.createHorizontalGlue());
+
+        // Cache monitor
+        menu.add(new ACAQCacheManagerUI(this));
+        menu.add(Box.createHorizontalStrut(1));
 
         // Queue monitor
         menu.add(new ACAQRunnerQueueUI());

@@ -47,6 +47,7 @@ public class ACAQTestBench implements ACAQRunnable, ACAQValidatable {
 
         testBenchRun = new ACAQRun(project, configuration);
         benchedAlgorithm = testBenchRun.getGraph().getAlgorithmNodes().get(projectAlgorithm.getIdInGraph());
+        ((ACAQAlgorithm)benchedAlgorithm).setEnabled(true);
 
         // Disable all algorithms that are not dependencies of the benched algorithm
         List<ACAQGraphNode> predecessorAlgorithms = testBenchRun.getGraph()
@@ -64,12 +65,6 @@ public class ACAQTestBench implements ACAQRunnable, ACAQValidatable {
 
     @Override
     public void run(Consumer<ACAQRunnerStatus> onProgress, Supplier<Boolean> isCancelled) {
-
-        // Clear benched algorithm outputs
-        for (ACAQDataSlot slot : benchedAlgorithm.getSlots().values()) {
-            slot.clearData();
-        }
-
         // Run the internal graph runner
         testBenchRun.run(onProgress, isCancelled);
 
@@ -78,6 +73,17 @@ public class ACAQTestBench implements ACAQRunnable, ACAQValidatable {
             initialBackup = new ACAQTestbenchSnapshot(this);
             backupList.add(initialBackup);
         }
+
+        // Clear all data
+        for (ACAQGraphNode node : testBenchRun.getGraph().getAlgorithmNodes().values()) {
+            for (ACAQDataSlot inputSlot : node.getInputSlots()) {
+                inputSlot.clearData();
+            }
+            for (ACAQDataSlot outputSlot : node.getOutputSlots()) {
+                outputSlot.clearData();
+            }
+        }
+
     }
 
     public ACAQProject getProject() {

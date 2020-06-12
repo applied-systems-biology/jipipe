@@ -1,21 +1,25 @@
 package org.hkijena.acaq5.api;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
+import org.hkijena.acaq5.api.data.ACAQDataDeclaration;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.extensions.settings.RuntimeSettings;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A structure that manages cached data
  */
 public class ACAQProjectCache {
+    private final EventBus eventBus = new EventBus();
     private final ACAQProject project;
     private final Map<ACAQAlgorithm, Map<String, Map<String, ACAQDataSlot>>> cacheEntries = new HashMap<>();
+    private int cachedRowNumber = 0;
+    private final Map<ACAQDataDeclaration, Integer> cachedDataTypes = new HashMap<>();
 
     /**
      * Creates a new instance
@@ -54,12 +58,16 @@ public class ACAQProjectCache {
 
         ACAQDataSlot existingSlot = slotMap.getOrDefault(slot.getName(), null);
         if(existingSlot != null) {
+            removeFromStatistics(existingSlot);
             existingSlot.clearData();
         }
 
         ACAQDataSlot slotCopy = new ACAQDataSlot(slot.getDefinition(), source);
         slotCopy.copyFrom(slot);
         slotMap.put(slot.getName(), slotCopy);
+        addToStatistics(slotCopy);
+
+        eventBus.post(new ModifiedEvent(this));
     }
 
     /**
@@ -103,10 +111,12 @@ public class ACAQProjectCache {
         if(stateMap != null) {
             for (Map.Entry<String, Map<String, ACAQDataSlot>> stateEntry : stateMap.entrySet()) {
                 for (Map.Entry<String, ACAQDataSlot> slotEntry : stateEntry.getValue().entrySet()) {
+                    removeFromStatistics(slotEntry.getValue());
                     slotEntry.getValue().clearData();
                 }
             }
             cacheEntries.remove(source);
+            eventBus.post(new ModifiedEvent(this));
         }
     }
 
@@ -121,24 +131,75 @@ public class ACAQProjectCache {
             Map<String, ACAQDataSlot> slotMap = stateMap.getOrDefault(stateId, null);
             if(slotMap != null) {
                 for (Map.Entry<String, ACAQDataSlot> slotEntry : slotMap.entrySet()) {
+                    removeFromStatistics(slotEntry.getValue());
                     slotEntry.getValue().clearData();
                 }
-                stateMap.remove(stateId);
             }
+            stateMap.remove(stateId);
+            eventBus.post(new ModifiedEvent(this));
         }
     }
 
     /**
-     * Safely removes cache entries that are not accessible anymore (e.g. an algorithm was removed from the graph; or states where the slots do not exist anymore)
+     * Removes everything from the cache
      */
-    public void autoClean() {
+    public void clear() {
+        for (Map.Entry<ACAQAlgorithm, Map<String, Map<String, ACAQDataSlot>>> algorithmEntry : cacheEntries.entrySet()) {
+            for (Map.Entry<String, Map<String, ACAQDataSlot>> stateEntry : algorithmEntry.getValue().entrySet()) {
+                for (Map.Entry<String, ACAQDataSlot> slotEntry : stateEntry.getValue().entrySet()) {
+                    slotEntry.getValue().clearData();
+                }
+            }
+        }
+        cachedRowNumber = 0;
+        cachedDataTypes.clear();
+        eventBus.post(new ModifiedEvent(this));
+    }
+
+    private void addToStatistics(ACAQDataSlot slot) {
+        cachedRowNumber += slot.getRowCount();
+        ACAQDataDeclaration dataDeclaration = ACAQDataDeclaration.getInstance(slot.getAcceptedDataType());
+        int perDataType = cachedDataTypes.getOrDefault(dataDeclaration, 0);
+        perDataType += slot.getRowCount();
+        cachedDataTypes.put(dataDeclaration, perDataType);
+    }
+
+    private void removeFromStatistics(ACAQDataSlot slot) {
+        cachedRowNumber -= slot.getRowCount();
+        ACAQDataDeclaration dataDeclaration = ACAQDataDeclaration.getInstance(slot.getAcceptedDataType());
+        int perDataType = cachedDataTypes.getOrDefault(dataDeclaration, 0);
+        perDataType -= slot.getRowCount();
+        cachedDataTypes.put(dataDeclaration, perDataType);
+    }
+
+    /**
+     * Safely removes cache entries that are not accessible anymore (e.g. an algorithm was removed from the graph; or states where the slots do not exist anymore)
+     * @param compareSlots if true, states are removed if the output slots don't align with the current configuration anymore
+     * @param compareProjectStates if true, states that are not within the project anymore are also removed
+     */
+    public void autoClean(boolean compareSlots, boolean compareProjectStates) {
+        List<ACAQGraphNode> traversedAlgorithms = null;
         for (ACAQAlgorithm algorithm : ImmutableList.copyOf(cacheEntries.keySet())) {
             if(project.getGraph().containsNode(algorithm)) {
-                Map<String, Map<String, ACAQDataSlot>> stateMap = cacheEntries.getOrDefault(algorithm, null);
-                for (Map.Entry<String, Map<String, ACAQDataSlot>> stateEntry : ImmutableList.copyOf(stateMap.entrySet())) {
-                    for (String slotName : stateEntry.getValue().keySet()) {
-                        if(!algorithm.getSlots().containsKey(slotName) || !algorithm.getSlots().get(slotName).isOutput())   {
-                            clear(algorithm, stateEntry.getKey());
+                if(compareSlots || compareProjectStates) {
+                    if(traversedAlgorithms == null) {
+                        traversedAlgorithms = project.getGraph().traverseAlgorithms();
+                    }
+                    String stateId = project.getStateIdOf(algorithm, traversedAlgorithms);
+
+                    Map<String, Map<String, ACAQDataSlot>> stateMap = cacheEntries.getOrDefault(algorithm, null);
+                    for (Map.Entry<String, Map<String, ACAQDataSlot>> stateEntry : ImmutableList.copyOf(stateMap.entrySet())) {
+                        if (compareProjectStates) {
+                            if (!Objects.equals(stateEntry.getKey(), stateId)) {
+                                clear(algorithm, stateEntry.getKey());
+                            }
+                        } else {
+                            for (String slotName : stateEntry.getValue().keySet()) {
+                                if (!algorithm.getSlots().containsKey(slotName) || !algorithm.getSlots().get(slotName).isOutput()) {
+                                    clear(algorithm, stateEntry.getKey());
+                                    break;
+                                }
+                            }
                         }
                     }
                 }
@@ -150,10 +211,54 @@ public class ACAQProjectCache {
     }
 
     /**
-     * Listens to changes in the algorithm graph
+     * Listens to changes in the algorithm graph.
+     * Triggers autoClean with only removing invalid algorithms
      * @param event the event
      */
     public void onAlgorithmRemoved(AlgorithmGraphChangedEvent event) {
-        autoClean();
+        autoClean(false, false);
+    }
+
+    public EventBus getEventBus() {
+        return eventBus;
+    }
+
+    /**
+     * Returns the number of cached data rows
+     * @return the number of cached data rows
+     */
+    public int getCachedRowNumber() {
+        return cachedRowNumber;
+    }
+
+    /**
+     * Returns statistics on how many rows of given data type have been cached
+     * @return statistics on how many rows of given data type have been cached
+     */
+    public Map<ACAQDataDeclaration, Integer> getCachedDataTypes() {
+        return Collections.unmodifiableMap(cachedDataTypes);
+    }
+
+    public boolean isEmpty() {
+        return cachedRowNumber <= 0;
+    }
+
+    /**
+     * Event that is triggered when the cache was modified (something stored or removed)
+     */
+    public static class ModifiedEvent {
+        private final ACAQProjectCache cache;
+
+        /**
+         * Creates a new event
+         * @param cache source
+         */
+        public ModifiedEvent(ACAQProjectCache cache) {
+            this.cache = cache;
+        }
+
+        public ACAQProjectCache getCache() {
+            return cache;
+        }
     }
 }

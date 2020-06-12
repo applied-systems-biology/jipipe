@@ -579,6 +579,6 @@ public class ACAQDataSlot implements TableModel {
 
     @Override
     public String toString() {
-        return String.format("%s: %s (%drows, %d annotation columns)", getSlotType(), getName(), getRowCount(), getAnnotationColumns().size());
+        return String.format("%s: %s (%d rows, %d annotation columns)", getSlotType(), getName(), getRowCount(), getAnnotationColumns().size());
     }
 }
