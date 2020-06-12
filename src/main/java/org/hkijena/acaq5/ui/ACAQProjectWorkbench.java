@@ -15,9 +15,7 @@ import org.hkijena.acaq5.ui.compartments.ACAQCompartmentGraphUI;
 import org.hkijena.acaq5.ui.compartments.ACAQCompartmentUI;
 import org.hkijena.acaq5.ui.compendium.ACAQAlgorithmCompendiumUI;
 import org.hkijena.acaq5.ui.compendium.ACAQTraitCompendiumUI;
-import org.hkijena.acaq5.ui.components.DocumentTabPane;
-import org.hkijena.acaq5.ui.components.RecentProjectsMenu;
-import org.hkijena.acaq5.ui.components.ReloadableValidityChecker;
+import org.hkijena.acaq5.ui.components.*;
 import org.hkijena.acaq5.ui.components.SplashScreen;
 import org.hkijena.acaq5.ui.extension.MenuTarget;
 import org.hkijena.acaq5.ui.extensions.ACAQPluginManagerUIPanel;
@@ -29,6 +27,7 @@ import org.hkijena.acaq5.ui.settings.ACAQGraphWrapperAlgorithmExporter;
 import org.hkijena.acaq5.ui.settings.ACAQProjectSettingsUI;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXStatusBar;
+import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
 import org.scijava.Context;
 
 import javax.swing.*;
@@ -183,8 +182,11 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
 
     private void initializeStatusBar() {
         JXStatusBar statusBar = new JXStatusBar();
+        statusBar.putClientProperty(BasicStatusBarUI.AUTO_ADD_SEPARATOR, false);
         statusText = new JLabel("Ready ...");
         statusBar.add(statusText);
+        statusBar.add(Box.createHorizontalGlue(), new JXStatusBar.Constraint(JXStatusBar.Constraint.ResizeBehavior.FILL));
+        statusBar.add(new MemoryStatusUI());
         add(statusBar, BorderLayout.SOUTH);
     }
 
