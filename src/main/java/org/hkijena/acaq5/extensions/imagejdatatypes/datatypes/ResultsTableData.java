@@ -139,6 +139,23 @@ public class ResultsTableData implements ACAQData, TableModel {
     }
 
     /**
+     * Returns a column that contains all values of the selected columns
+     * @param columns the columns to merge
+     * @param separator the separator character
+     * @param equals the equals character
+     * @return a column that contains all values of the selected columns
+     */
+    public TableColumn getMergedColumn(Set<String> columns, String separator, String equals) {
+        String[] values = new String[getRowCount()];
+        List<String> sortedColumns = columns.stream().sorted().collect(Collectors.toList());
+        for (int row = 0; row < getRowCount(); row++) {
+            int finalRow = row;
+            values[row] = sortedColumns.stream().map(col -> col + equals + getValueAsString(finalRow, col)).collect(Collectors.joining(separator));
+        }
+        return new StringArrayTableColumn(values, String.join(separator, columns));
+    }
+
+    /**
      * Returns the row indices grouped by the values of the provided columns
      * @param columns the columns to group by
      * @return a map from column name to column value to the rows that share the same values

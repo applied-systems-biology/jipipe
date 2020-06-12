@@ -123,10 +123,6 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
                 "Adds an empty row at the end of the table.",
                 UIUtils.getIconFromResources("add-row.png"),
                 this::addRow);
-        addActionToPalette("Import",
-                "Adds rows from another ACAQ5 table that is currently open",
-                UIUtils.getIconFromResources("table.png"),
-                this::mergeRows);
         addSeparatorToPalette();
         addActionToPalette("Remove",
                 "Remove selected rows",
@@ -142,10 +138,6 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
                 "Adds an empty string column with a custom name to the table.",
                 UIUtils.getIconFromResources("add-column.png"),
                 () -> addColumn(true));
-        addActionToPalette("Import",
-                "Adds columns from another ACAQ5 table that is currently open.",
-                UIUtils.getIconFromResources("table.png"),
-                this::mergeColumns);
         addActionToPalette("Duplicate",
                 "Copies the selected column into a new one.",
                 UIUtils.getIconFromResources("copy.png"),
@@ -200,10 +192,10 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
                 this::autoSizeColumns);
 
         addPaletteGroup("Data", UIUtils.getIconFromResources("table.png"));
-        addActionToPalette("Split",
-                "Allows to split the data of a value column by a user-defined list of reference columns.",
-                UIUtils.getIconFromResources("split.png"),
-                this::splitColumns);
+        addActionToPalette("Import",
+                "Merges another ACAQ5 table into the current one",
+                UIUtils.getIconFromResources("table.png"),
+                this::mergeTables);
         addActionToPalette("Integrate",
                 "Collapses the table into a one-row table by applying an integration operation on each column..",
                 UIUtils.getIconFromResources("statistics.png"),
@@ -318,33 +310,8 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
         currentPaletteGroup.add(Box.createVerticalStrut(8));
     }
 
-    private void splitColumns() {
-        // TODO: Implement
-//        ACAQSplitColumnDialogUI dialog = new ACAQSplitColumnDialogUI(tableModel);
-//        dialog.pack();
-//        dialog.setSize(800, 600);
-//        dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
-//        dialog.setModal(true);
-//        dialog.setVisible(true);
-//        if (dialog.getResultTableModel() != null) {
-//            createUndoSnapshot();
-//            tableModel = dialog.getResultTableModel();
-//            jxTable.setModel(tableModel);
-//            jxTable.packAll();
-//        }
-    }
-
-    private void mergeColumns() {
-        ACAQMergeTableColumnsDialogUI dialog = new ACAQMergeTableColumnsDialogUI(this);
-        dialog.pack();
-        dialog.setSize(800, 600);
-        dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
-        dialog.setModal(true);
-        dialog.setVisible(true);
-    }
-
-    private void mergeRows() {
-        ACAQMergeTableRowsDialogUI dialog = new ACAQMergeTableRowsDialogUI(this);
+    private void mergeTables() {
+        ACAQMergeTablesDialogUI dialog = new ACAQMergeTablesDialogUI(this);
         dialog.pack();
         dialog.setSize(800, 600);
         dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
