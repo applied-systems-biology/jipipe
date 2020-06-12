@@ -51,11 +51,12 @@ public class ACAQProjectCache {
             stateMap = new HashMap<>();
             cacheEntries.put(source, stateMap);
         }
+
         Map<String, ACAQDataSlot> slotMap = stateMap.getOrDefault(stateId, null);
         if(slotMap == null) {
             slotMap = new HashMap<>();
-            stateMap.put(stateId, slotMap);
         }
+        stateMap.put(stateId, slotMap); // Update generation time
 
         ACAQDataSlot existingSlot = slotMap.getOrDefault(slot.getName(), null);
         if(existingSlot != null) {

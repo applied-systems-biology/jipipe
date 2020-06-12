@@ -8,6 +8,7 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
+import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -24,6 +25,7 @@ public class ACAQDataSlotCacheManagerUI extends ACAQProjectWorkbenchPanel {
     private final ACAQDataSlot dataSlot;
     private JButton annotationButton;
     private JButton cacheButton;
+    private JPopupMenu contextMenu;
 
     /**
      * @param workbenchUI The workbench UI
@@ -41,15 +43,83 @@ public class ACAQDataSlotCacheManagerUI extends ACAQProjectWorkbenchPanel {
     private void initialize() {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
+        contextMenu = new JPopupMenu();
+
         annotationButton = new JButton(UIUtils.getIconFromResources("data-types/annotation-table.png"));
         UIUtils.makeFlat25x25(annotationButton);
         annotationButton.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
+        UIUtils.addReloadablePopupMenuToComponent(annotationButton, contextMenu, this::reloadContextMenu);
         add(annotationButton);
 
         cacheButton = new JButton(UIUtils.getIconFromResources("database.png"));
         UIUtils.makeFlat25x25(cacheButton);
         cacheButton.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
+        UIUtils.addReloadablePopupMenuToComponent(cacheButton, contextMenu, this::reloadContextMenu);
         add(cacheButton);
+    }
+
+    private void reloadContextMenu() {
+        contextMenu.removeAll();
+        ACAQProjectCache.State currentState = getProject().getStateIdOf((ACAQAlgorithm) getDataSlot().getAlgorithm(), getProject().getGraph().traverseAlgorithms());
+
+        Map<ACAQProjectCache.State, Map<String, ACAQDataSlot>> stateMap = getProject().getCache().extract((ACAQAlgorithm) getDataSlot().getAlgorithm());
+        if(stateMap != null) {
+            JMenuItem openCurrent = createOpenStateButton(stateMap, currentState, "Open current snapshot");
+            if(openCurrent != null) {
+                contextMenu.add(openCurrent);
+            }
+            JMenu previousMenu = new JMenu("All snapshots");
+            previousMenu.setIcon(UIUtils.getIconFromResources("clock.png"));
+            for (ACAQProjectCache.State state : stateMap.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList())) {
+                JMenuItem item = createOpenStateButton(stateMap, state, "Open snapshot from " + state.getGenerationTime().format(DateTimeFormatter.ISO_LOCAL_DATE) + " " +
+                        state.getGenerationTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+                if(item != null) {
+                    previousMenu.add(item);
+                }
+            }
+            if(previousMenu.getItemCount() > 0) {
+                contextMenu.add(previousMenu);
+                contextMenu.addSeparator();
+            }
+        }
+
+        JMenuItem clearOutdated = new JMenuItem("Clear outdated", UIUtils.getIconFromResources("clock.png"));
+        clearOutdated.setToolTipText("Removes all cached items that are have no representation in the project graph, anymore. " +
+                "This includes items where the algorithm parameters have been changed.");
+        clearOutdated.addActionListener(e-> getProject().getCache().autoClean(false, true));
+        contextMenu.add(clearOutdated);
+
+        JMenuItem clearAll = new JMenuItem("Clear all", UIUtils.getIconFromResources("delete.png"));
+        clearAll.setToolTipText("Removes all cached items.");
+        clearAll.addActionListener(e-> getProject().getCache().clear());
+        contextMenu.add(clearAll);
+    }
+
+    private JMenuItem createOpenStateButton(Map<ACAQProjectCache.State, Map<String, ACAQDataSlot>> stateMap, ACAQProjectCache.State state, String label) {
+        Map<String, ACAQDataSlot> slotMap = stateMap.getOrDefault(state, null);
+        if(slotMap == null)
+            return null;
+        ACAQDataSlot cachedSlot = slotMap.getOrDefault(getDataSlot().getName(), null);
+        if(cachedSlot == null)
+            return null;
+
+        JMenuItem item = new JMenuItem(label);
+        item.setIcon(UIUtils.getIconFromResources("search.png"));
+        item.setToolTipText("Opens the currently cached data as table");
+        item.addActionListener(e -> openData(state, cachedSlot));
+        return item;
+    }
+
+    private void openData(ACAQProjectCache.State state, ACAQDataSlot cachedSlot) {
+        ACAQCacheDataSlotTableUI cacheTable = new ACAQCacheDataSlotTableUI(getProjectWorkbench(), cachedSlot);
+        String tabName = getDataSlot().getAlgorithm().getName() + "/" + getDataSlot().getName() + " @ " + state.getGenerationTime().format(DateTimeFormatter.ISO_LOCAL_DATE) + " " +
+                state.getGenerationTime().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+        getWorkbench().getDocumentTabPane().addTab(tabName,
+                UIUtils.getIconFromResources("database.png"),
+                cacheTable,
+                DocumentTabPane.CloseMode.withSilentCloseButton,
+                true);
+        getWorkbench().getDocumentTabPane().switchToLastTab();
     }
 
     public ACAQDataSlot getDataSlot() {

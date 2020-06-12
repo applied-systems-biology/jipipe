@@ -26,10 +26,11 @@ public class ACAQDataSlotTableColumnHeaderRenderer implements TableCellRenderer 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         TableCellRenderer defaultRenderer = table.getTableHeader().getDefaultRenderer();
-        if (column < 2) {
+        int modelColumn = table.convertColumnIndexToModel(column);
+        if (modelColumn < 2) {
             return defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         } else {
-            ACAQTraitDeclaration declaration = dataTable.getTraitColumns().get(column - 2);
+            ACAQTraitDeclaration declaration = dataTable.getTraitColumns().get(modelColumn - 2);
             String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
                     ACAQUITraitRegistry.getInstance().getIconURLFor(declaration).toString(),
                     declaration.getName());

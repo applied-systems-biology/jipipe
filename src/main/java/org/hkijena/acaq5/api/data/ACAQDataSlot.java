@@ -481,7 +481,7 @@ public class ACAQDataSlot implements TableModel {
         if (columnIndex == 0) {
             return data.get(rowIndex);
         } else {
-            return annotations.get(annotationColumns.get(columnIndex)).get(rowIndex);
+            return annotations.get(annotationColumns.get(columnIndex - 1)).get(rowIndex);
         }
     }
 
