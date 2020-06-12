@@ -10,6 +10,7 @@ import org.hkijena.acaq5.extensions.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.acaq5.extensions.tables.datatypes.StringArrayTableColumn;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumnReference;
+import org.hkijena.acaq5.extensions.tables.operations.ConvertingColumnOperation;
 import org.hkijena.acaq5.utils.PathUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 
@@ -99,6 +100,42 @@ public class ResultsTableData implements ACAQData, TableModel {
         table = ResultsTable.open(PathUtils.findFileByExtensionIn(storageFilePath, ".csv").toString());
     }
 
+    /**
+     * Applies an operation to the selected cells
+     * @param selectedCells the selected cells
+     * @param operation the operation
+     */
+    public void applyOperation(List<Index> selectedCells, ConvertingColumnOperation operation) {
+        Map<Integer, List<Index>> byColumn = selectedCells.stream().collect(Collectors.groupingBy(Index::getColumn));
+        for (Map.Entry<Integer, List<Index>> entry : byColumn.entrySet()) {
+            int col = entry.getKey();
+            TableColumn buffer;
+            boolean numeric = isNumeric(col);
+            if(numeric) {
+                double[] data = new double[entry.getValue().size()];
+                for (int i = 0; i < entry.getValue().size(); i++) {
+                    int row = entry.getValue().get(i).row;
+                    data[i] = getValueAsDouble(row, col);
+                }
+                buffer = new DoubleArrayTableColumn(data, "buffer");
+            }
+            else {
+                String[] data = new String[entry.getValue().size()];
+                for (int i = 0; i < entry.getValue().size(); i++) {
+                    int row = entry.getValue().get(i).row;
+                    data[i] = getValueAsString(row, col);
+                }
+                buffer = new StringArrayTableColumn(data, "buffer");
+            }
+
+            TableColumn result = operation.run(buffer);
+            for (int i = 0; i < entry.getValue().size(); i++) {
+                int row = entry.getValue().get(i).row;
+                Object value = numeric ? result.getRowAsDouble(i) : result.getRowAsString(i);
+                setValueAt(value, row, col);
+            }
+        }
+    }
 
 
     /**
@@ -632,5 +669,37 @@ public class ResultsTableData implements ACAQData, TableModel {
             table.deleteColumn(removedColumn);
         }
         cleanupTable();
+    }
+
+    /**
+     * Points to a cell in the table
+     */
+    public static class Index {
+        public int row;
+        public int column;
+
+        /**
+         * Creates a new instance. Initialized to zero.
+         */
+        public Index() {
+        }
+
+        /**
+         * Creates a new instance and initializes it
+         * @param row the row
+         * @param column the column
+         */
+        public Index(int row, int column) {
+            this.row = row;
+            this.column = column;
+        }
+
+        public int getRow() {
+            return row;
+        }
+
+        public int getColumn() {
+            return column;
+        }
     }
 }

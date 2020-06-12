@@ -15,8 +15,10 @@ package org.hkijena.acaq5.ui.tableanalyzer;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.primitives.Ints;
+import org.hkijena.acaq5.api.registries.ACAQTableRegistry;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
+import org.hkijena.acaq5.extensions.tables.operations.ConvertingColumnOperation;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
@@ -39,6 +41,7 @@ import java.io.*;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Spreadsheet UI
@@ -470,6 +473,18 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
         if (isRebuildingSelection)
             return;
         convertSelectedCellsMenu.removeAll();
+        for (ACAQTableRegistry.ColumnOperationEntry entry :
+                ACAQTableRegistry.getInstance().getOperationsOfType(ConvertingColumnOperation.class)
+                        .values().stream().sorted(Comparator.comparing(ACAQTableRegistry.ColumnOperationEntry::getName)).collect(Collectors.toList())) {
+            JMenuItem item = new JMenuItem(entry.getName(), UIUtils.getIconFromResources("cog.png"));
+            item.setToolTipText(entry.getDescription());
+            item.addActionListener(e -> {
+                createUndoSnapshot();
+                tableModel.applyOperation(getSelectedCells(), (ConvertingColumnOperation)entry.getOperation());
+            });
+            convertSelectedCellsMenu.add(item);
+        }
+
         // TODO: Implement
 //        final int cellCount = jxTable.getSelectedColumnCount() * jxTable.getSelectedRowCount();
 //
@@ -486,7 +501,7 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
 //
 //                    createUndoSnapshot();
 //
-//                    List<CellIndex> selectedCells = getSelectedCells();
+//                    List<Index> selectedCells = getSelectedCells();
 //                    assert cellCount == selectedCells.size();
 //
 //                    Object[] buffer = new Object[cellCount];
@@ -516,12 +531,12 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
      *
      * @return
      */
-    private List<CellIndex> getSelectedCells() {
-        List<CellIndex> result = new ArrayList<>();
+    private List<ResultsTableData.Index> getSelectedCells() {
+        List<ResultsTableData.Index> result = new ArrayList<>();
         if (jxTable.getSelectedRows() != null && jxTable.getSelectedColumns() != null) {
             for (int row : jxTable.getSelectedRows()) {
                 for (int column : jxTable.getSelectedColumns()) {
-                    result.add(new CellIndex(row, column));
+                    result.add(new ResultsTableData.Index(row, column));
                 }
             }
         }
@@ -707,27 +722,6 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
                     new ACAQTableEditor(workbenchUI, tableData), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Points to a cell in the table
-     */
-    private static class CellIndex {
-        private int row;
-        private int column;
-
-        private CellIndex(int row, int column) {
-            this.row = row;
-            this.column = column;
-        }
-
-        public int getRow() {
-            return row;
-        }
-
-        public int getColumn() {
-            return column;
         }
     }
 
