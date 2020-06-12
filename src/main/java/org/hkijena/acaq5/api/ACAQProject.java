@@ -15,6 +15,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.ACAQMutableDependency;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraphEdge;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
@@ -58,6 +59,24 @@ public class ACAQProject implements ACAQValidatable {
      */
     public ACAQProject() {
         compartmentGraph.getEventBus().register(this);
+    }
+
+    /**
+     * Returns the state ID of a graph node
+     * The state ID is a unique representation of how the algorithm's output was generated.
+     * This is used by the data cache.
+     * @param node the target algorithm
+     * @param traversed traversed graph. should be {@link org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph}.traverseAlgorithms(). This parameter is here for performance reasons.
+     * @return unique representation of how the algorithm's output was generated.
+     */
+    public String getStateIdOf(ACAQAlgorithm node, List<ACAQGraphNode> traversed) {
+        List<ACAQGraphNode> predecessorAlgorithms = graph.getPredecessorAlgorithms(node, traversed);
+        predecessorAlgorithms.add(node);
+        StringBuilder result = new StringBuilder();
+        for (ACAQGraphNode predecessorAlgorithm : predecessorAlgorithms) {
+            result.append(((ACAQAlgorithm)predecessorAlgorithm).getStateId()).append("\n");
+        }
+        return result.toString();
     }
 
     /**

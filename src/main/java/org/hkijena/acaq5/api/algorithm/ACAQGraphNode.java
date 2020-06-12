@@ -890,8 +890,8 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
             jsonGenerator.writeStringField("acaq:algorithm-type", algorithm.getDeclaration().getId());
             jsonGenerator.writeStringField("acaq:algorithm-compartment", algorithm.getCompartment());
             ACAQTraversedParameterCollection parameterCollection = new ACAQTraversedParameterCollection(algorithm);
-            for (Map.Entry<String, ACAQParameterAccess> kv : parameterCollection.getParameters().entrySet()) {
-                jsonGenerator.writeObjectField(kv.getKey(), kv.getValue().get(Object.class));
+            for (Map.Entry<String, ACAQParameterAccess> entry : parameterCollection.getParameters().entrySet()) {
+                jsonGenerator.writeObjectField(entry.getKey(), entry.getValue().get(Object.class));
             }
 
             // Save dynamic parameter storage

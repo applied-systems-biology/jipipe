@@ -1,17 +1,28 @@
 package org.hkijena.acaq5.api.algorithm;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
-import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
+import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
+import org.hkijena.acaq5.utils.JsonUtils;
 
+import java.awt.*;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * An {@link ACAQGraphNode} that contains a non-empty workload.
@@ -20,6 +31,7 @@ import java.util.function.Supplier;
  */
 public abstract class ACAQAlgorithm extends ACAQGraphNode {
 
+    private static final StateSerializer STATE_SERIALIZER = new StateSerializer();
     private boolean enabled = true;
     private boolean passThrough = false;
 
@@ -135,5 +147,51 @@ public abstract class ACAQAlgorithm extends ACAQGraphNode {
     public void setPassThrough(boolean passThrough) {
         this.passThrough = passThrough;
         getEventBus().post(new ParameterChangedEvent(this, "acaq:algorithm:pass-through"));
+    }
+
+    /**
+     * Returns a unique identifier that represents the state of the algorithm.
+     * Defaults to a JSON-serialized representation using the {@link StateSerializer}.
+     * Override this method if you have external influences.
+     * @return the state id
+     */
+    public String getStateId() {
+        try (StringWriter writer = new StringWriter()){
+            JsonGenerator generator = JsonUtils.getObjectMapper().getFactory().createGenerator(writer);
+            STATE_SERIALIZER.serialize(this, generator, null);
+            return writer.toString();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Serializer used by getStateId()
+     * It automatically skips name, compartment, description, slot configuration, and UI parameters that are not relevant to the state
+     */
+    public static class StateSerializer extends JsonSerializer<ACAQGraphNode> {
+        @Override
+        public void serialize(ACAQGraphNode algorithm, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeStringField("acaq:algorithm-type", algorithm.getDeclaration().getId());
+            ACAQTraversedParameterCollection parameterCollection = new ACAQTraversedParameterCollection(algorithm);
+            for (Map.Entry<String, ACAQParameterAccess> entry : parameterCollection.getParameters().entrySet()) {
+                if(serializeParameter(entry))
+                    jsonGenerator.writeObjectField(entry.getKey(), entry.getValue().get(Object.class));
+            }
+
+            // Dynamic parameter storage is not saved, as their values are stored into normal parameters
+
+            jsonGenerator.writeEndObject();
+        }
+
+        /**
+         * Returns true if the parameter should be serialized
+         * @param entry the parameter
+         * @return if the parameter should be serialized
+         */
+        protected boolean serializeParameter(Map.Entry<String, ACAQParameterAccess> entry) {
+            return !entry.getKey().equals("acaq:node:name") && !entry.getKey().equals("acaq:node:description");
+        }
     }
 }

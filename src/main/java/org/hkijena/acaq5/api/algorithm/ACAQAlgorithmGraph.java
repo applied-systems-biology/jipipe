@@ -19,11 +19,11 @@ import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.extensions.settings.RuntimeSettings;
+import org.hkijena.acaq5.utils.GraphUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.cycle.CycleDetector;
 import org.jgrapht.graph.DefaultDirectedGraph;
-import org.jgrapht.traverse.DepthFirstIterator;
 import org.jgrapht.traverse.GraphIterator;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
@@ -635,42 +635,23 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     }
 
     /**
-     * Traverses depth-first. The order is not suitable for running the algorithm graph.
-     *
-     * @return Sorted list of data slots
+     * Returns all predecessor algorithms of an algorithm. The predecessors are ordered according to the list of traversed algorithms (topological order)
+     * @param target the target algorithm
+     * @param traversed list of algorithms to sort by (usually this is in topological order)
+     * @return predecessors in topological order
      */
-    public List<ACAQDataSlot> traverseDepthFirst() {
-        GraphIterator<ACAQDataSlot, ACAQAlgorithmGraphEdge> iterator = new DepthFirstIterator<>(graph);
-        List<ACAQDataSlot> result = new ArrayList<>();
-        while (iterator.hasNext()) {
-            ACAQDataSlot slot = iterator.next();
-            result.add(slot);
+    public List<ACAQGraphNode> getPredecessorAlgorithms(ACAQGraphNode target, List<ACAQGraphNode> traversed) {
+        Set<ACAQGraphNode> predecessors = new HashSet<>();
+        for (ACAQDataSlot predecessor : GraphUtils.getAllPredecessors(graph, target.getSlots().values().iterator().next())) {
+            predecessors.add(predecessor.getAlgorithm());
         }
-        return result;
-    }
-
-    /**
-     * Traverses the algorithms depth-first. The order is not suitable for running the algorithm graph.
-     *
-     * @return Sorted list of algorithms
-     */
-    public List<ACAQGraphNode> traverseAlgorithmsDepthFirst() {
-        Set<ACAQGraphNode> visited = new HashSet<>();
-        List<ACAQGraphNode> result = new ArrayList<>();
-        for (ACAQDataSlot slot : traverseDepthFirst()) {
-            if (slot.isOutput()) {
-                if (!visited.contains(slot.getAlgorithm())) {
-                    visited.add(slot.getAlgorithm());
-                    result.add(slot.getAlgorithm());
-                }
-            }
+        predecessors.remove(target);
+        List<ACAQGraphNode> output = new ArrayList<>();
+        for (ACAQGraphNode node : traversed) {
+            if(predecessors.contains(node))
+                output.add(node);
         }
-        for (ACAQGraphNode missing : algorithms.values()) {
-            if (!visited.contains(missing)) {
-                result.add(missing);
-            }
-        }
-        return result;
+        return output;
     }
 
     /**
