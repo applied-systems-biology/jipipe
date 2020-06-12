@@ -212,6 +212,8 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
         centerViewButton.addActionListener(e -> canvasUI.crop());
         menuBar.add(centerViewButton);
 
+        menuBar.add(Box.createHorizontalStrut(8));
+
         switchPanningDirectionButton = new JToggleButton(UIUtils.getIconFromResources("cursor-arrow.png"),
                 GraphEditorUISettings.getInstance().isSwitchPanningDirection());
         switchPanningDirectionButton.setToolTipText("Reverse panning direction");
@@ -231,6 +233,8 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
             GraphEditorUISettings.getInstance().setEnableLayoutHelper(layoutHelperButton.isSelected());
         });
         menuBar.add(layoutHelperButton);
+
+        menuBar.add(Box.createHorizontalStrut(8));
 
         JButton exportButton = new JButton(UIUtils.getIconFromResources("export.png"));
         exportButton.setToolTipText("Export graph");

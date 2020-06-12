@@ -123,6 +123,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     private void moveNodeHere() {
         Point mouseLocation = MouseInfo.getPointerInfo().getLocation();
         SwingUtilities.convertPointFromScreen(mouseLocation, this);
+        setGraphEditorCursor(new Point(mouseLocation.x, mouseLocation.y));
         ACAQGraphNode algorithm = PickAlgorithmDialog.showDialog(this, nodeUIs.keySet(), "Move node");
         if (algorithm != null) {
             ACAQAlgorithmUI ui = nodeUIs.getOrDefault(algorithm, null);
@@ -1170,6 +1171,15 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
         minDimensions = null;
         if (getParent() != null)
             getParent().revalidate();
+    }
+
+    public Point getGraphEditorCursor() {
+        return cursor;
+    }
+
+    public void setGraphEditorCursor(Point cursor) {
+        this.cursor = cursor;
+        repaint();
     }
 
     /**
