@@ -115,7 +115,7 @@ public class ACAQRun implements ACAQRunnable {
             if(configuration.isStoreToCache()) {
                 ACAQGraphNode runAlgorithm = outputSlot.getAlgorithm();
                 ACAQGraphNode projectAlgorithm = project.getGraph().getAlgorithmNodes().get(runAlgorithm.getIdInGraph());
-                String stateId = project.getStateIdOf((ACAQAlgorithm) projectAlgorithm, traversedProjectAlgorithms);
+                ACAQProjectCache.State stateId = project.getStateIdOf((ACAQAlgorithm) projectAlgorithm, traversedProjectAlgorithms);
                 project.getCache().store((ACAQAlgorithm) projectAlgorithm, stateId, outputSlot);
             }
             outputSlot.flush();
@@ -246,7 +246,7 @@ public class ACAQRun implements ACAQRunnable {
         if(!configuration.isLoadFromCache())
             return false;
         ACAQGraphNode projectAlgorithm = project.getGraph().getAlgorithmNodes().get(algorithm.getIdInGraph());
-        String stateId = project.getStateIdOf((ACAQAlgorithm) projectAlgorithm, traversedAlgorithms);
+        ACAQProjectCache.State stateId = project.getStateIdOf((ACAQAlgorithm) projectAlgorithm, traversedAlgorithms);
         Map<String, ACAQDataSlot> cachedData = project.getCache().extract((ACAQAlgorithm) projectAlgorithm, stateId);
         if(!cachedData.isEmpty()) {
             logStatus(onProgress, new ACAQRunnerStatus(progress, maxProgress,

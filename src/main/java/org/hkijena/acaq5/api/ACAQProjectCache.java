@@ -9,6 +9,7 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.extensions.settings.RuntimeSettings;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -17,7 +18,7 @@ import java.util.*;
 public class ACAQProjectCache {
     private final EventBus eventBus = new EventBus();
     private final ACAQProject project;
-    private final Map<ACAQAlgorithm, Map<String, Map<String, ACAQDataSlot>>> cacheEntries = new HashMap<>();
+    private final Map<ACAQAlgorithm, Map<State, Map<String, ACAQDataSlot>>> cacheEntries = new HashMap<>();
     private int cachedRowNumber = 0;
     private final Map<ACAQDataDeclaration, Integer> cachedDataTypes = new HashMap<>();
 
@@ -40,12 +41,12 @@ public class ACAQProjectCache {
      * @param stateId the state id
      * @param slot the slot that contains the data
      */
-    public void store(ACAQAlgorithm source, String stateId, ACAQDataSlot slot) {
+    public void store(ACAQAlgorithm source, State stateId, ACAQDataSlot slot) {
         if(!RuntimeSettings.getInstance().isAllowCache())
             return;
         if(!project.getGraph().containsNode(source))
             throw new IllegalArgumentException("The cache only can hold project graph nodes!");
-        Map<String, Map<String, ACAQDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
+        Map<State, Map<String, ACAQDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
         if(stateMap == null) {
             stateMap = new HashMap<>();
             cacheEntries.put(source, stateMap);
@@ -75,7 +76,7 @@ public class ACAQProjectCache {
      * @param source the generating algorithm
      * @return map from state ID to map of slot name to slot. Null if not found
      */
-    public Map<String, Map<String, ACAQDataSlot>> extract(ACAQAlgorithm source) {
+    public Map<State, Map<String, ACAQDataSlot>> extract(ACAQAlgorithm source) {
         return cacheEntries.getOrDefault(source, null);
     }
 
@@ -85,8 +86,8 @@ public class ACAQProjectCache {
      * @param stateId the state id
      * @return all cached slots. Please do not work directly on those. Use targetSlot.copyFrom() instead. Never null.
      */
-    public Map<String, ACAQDataSlot> extract(ACAQAlgorithm source, String stateId) {
-        Map<String, Map<String, ACAQDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
+    public Map<String, ACAQDataSlot> extract(ACAQAlgorithm source, State stateId) {
+        Map<State, Map<String, ACAQDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
         if(stateMap != null) {
             return stateMap.getOrDefault(stateId, Collections.emptyMap());
         }
@@ -101,7 +102,7 @@ public class ACAQProjectCache {
      * @return the cache's slot. Please do not work directly on this slot. Use targetSlot.copyFrom() instead. Null if not found
      */
     public ACAQDataSlot extract(ACAQAlgorithm source, String stateId, String slotName) {
-        Map<String, Map<String, ACAQDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
+        Map<State, Map<String, ACAQDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
         if(stateMap != null) {
             Map<String, ACAQDataSlot> slotMap = stateMap.getOrDefault(stateId, null);
             if(slotMap != null) {
@@ -116,9 +117,9 @@ public class ACAQProjectCache {
      * @param source the algorithm
      */
     public void clear(ACAQAlgorithm source) {
-        Map<String, Map<String, ACAQDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
+        Map<State, Map<String, ACAQDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
         if(stateMap != null) {
-            for (Map.Entry<String, Map<String, ACAQDataSlot>> stateEntry : stateMap.entrySet()) {
+            for (Map.Entry<State, Map<String, ACAQDataSlot>> stateEntry : stateMap.entrySet()) {
                 for (Map.Entry<String, ACAQDataSlot> slotEntry : stateEntry.getValue().entrySet()) {
                     removeFromStatistics(slotEntry.getValue());
                     slotEntry.getValue().clearData();
@@ -134,8 +135,8 @@ public class ACAQProjectCache {
      * @param source the algorithm
      * @param stateId state id
      */
-    public void clear(ACAQAlgorithm source, String stateId) {
-        Map<String, Map<String, ACAQDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
+    public void clear(ACAQAlgorithm source, State stateId) {
+        Map<State, Map<String, ACAQDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
         if(stateMap != null) {
             Map<String, ACAQDataSlot> slotMap = stateMap.getOrDefault(stateId, null);
             if(slotMap != null) {
@@ -153,13 +154,14 @@ public class ACAQProjectCache {
      * Removes everything from the cache
      */
     public void clear() {
-        for (Map.Entry<ACAQAlgorithm, Map<String, Map<String, ACAQDataSlot>>> algorithmEntry : cacheEntries.entrySet()) {
-            for (Map.Entry<String, Map<String, ACAQDataSlot>> stateEntry : algorithmEntry.getValue().entrySet()) {
+        for (Map.Entry<ACAQAlgorithm, Map<State, Map<String, ACAQDataSlot>>> algorithmEntry : cacheEntries.entrySet()) {
+            for (Map.Entry<State, Map<String, ACAQDataSlot>> stateEntry : algorithmEntry.getValue().entrySet()) {
                 for (Map.Entry<String, ACAQDataSlot> slotEntry : stateEntry.getValue().entrySet()) {
                     slotEntry.getValue().clearData();
                 }
             }
         }
+        cacheEntries.clear();
         cachedRowNumber = 0;
         cachedDataTypes.clear();
         eventBus.post(new ModifiedEvent(this));
@@ -194,10 +196,10 @@ public class ACAQProjectCache {
                     if(traversedAlgorithms == null) {
                         traversedAlgorithms = project.getGraph().traverseAlgorithms();
                     }
-                    String stateId = project.getStateIdOf(algorithm, traversedAlgorithms);
+                    State stateId = project.getStateIdOf(algorithm, traversedAlgorithms);
 
-                    Map<String, Map<String, ACAQDataSlot>> stateMap = cacheEntries.getOrDefault(algorithm, null);
-                    for (Map.Entry<String, Map<String, ACAQDataSlot>> stateEntry : ImmutableList.copyOf(stateMap.entrySet())) {
+                    Map<State, Map<String, ACAQDataSlot>> stateMap = cacheEntries.getOrDefault(algorithm, null);
+                    for (Map.Entry<State, Map<String, ACAQDataSlot>> stateEntry : ImmutableList.copyOf(stateMap.entrySet())) {
                         if (compareProjectStates) {
                             if (!Objects.equals(stateEntry.getKey(), stateId)) {
                                 clear(algorithm, stateEntry.getKey());
@@ -268,6 +270,55 @@ public class ACAQProjectCache {
 
         public ACAQProjectCache getCache() {
             return cache;
+        }
+    }
+
+    /**
+     * Encapsulates a state
+     */
+    public static class State implements Comparable<State> {
+        private final LocalDateTime generationTime;
+        private final String stateId;
+
+        /**
+         * Creates a new instance
+         * @param generationTime the generation time. It is ignored during comparison.
+         * @param stateId the state ID that uniquely identifies the state
+         */
+        public State(LocalDateTime generationTime, String stateId) {
+            this.generationTime = generationTime;
+            this.stateId = stateId;
+        }
+
+        public LocalDateTime getGenerationTime() {
+            return generationTime;
+        }
+
+        public String getStateId() {
+            return stateId;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            State state = (State) o;
+            return stateId.equals(state.stateId);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(stateId);
+        }
+
+        @Override
+        public int compareTo(State o) {
+            return generationTime.compareTo(o.generationTime);
+        }
+
+        @Override
+        public String toString() {
+            return stateId;
         }
     }
 }

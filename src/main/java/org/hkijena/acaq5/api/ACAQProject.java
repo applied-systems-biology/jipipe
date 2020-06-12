@@ -34,6 +34,7 @@ import org.hkijena.acaq5.utils.StringUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -69,10 +70,10 @@ public class ACAQProject implements ACAQValidatable {
      * The state ID is a unique representation of how the algorithm's output was generated.
      * This is used by the data cache.
      * @param node the target algorithm
-     * @param traversed traversed graph. should be {@link org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph}.traverseAlgorithms(). This parameter is here for performance reasons.
+     * @param traversed traversed graph. should be {@link ACAQAlgorithmGraph}.traverseAlgorithms(). This parameter is here for performance reasons.
      * @return unique representation of how the algorithm's output was generated.
      */
-    public String getStateIdOf(ACAQAlgorithm node, List<ACAQGraphNode> traversed) {
+    public ACAQProjectCache.State getStateIdOf(ACAQAlgorithm node, List<ACAQGraphNode> traversed) {
         List<ACAQGraphNode> predecessorAlgorithms = graph.getPredecessorAlgorithms(node, traversed);
         predecessorAlgorithms.add(node);
         List<String> ids = new ArrayList<>();
@@ -80,7 +81,7 @@ public class ACAQProject implements ACAQValidatable {
             ids.add(((ACAQAlgorithm)predecessorAlgorithm).getStateId());
         }
         try {
-            return JsonUtils.getObjectMapper().writeValueAsString(ids);
+            return new ACAQProjectCache.State(LocalDateTime.now(), JsonUtils.getObjectMapper().writeValueAsString(ids));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
