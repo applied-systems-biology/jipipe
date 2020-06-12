@@ -34,6 +34,7 @@ import org.hkijena.acaq5.utils.StringUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -74,11 +75,15 @@ public class ACAQProject implements ACAQValidatable {
     public String getStateIdOf(ACAQAlgorithm node, List<ACAQGraphNode> traversed) {
         List<ACAQGraphNode> predecessorAlgorithms = graph.getPredecessorAlgorithms(node, traversed);
         predecessorAlgorithms.add(node);
-        StringBuilder result = new StringBuilder();
+        List<String> ids = new ArrayList<>();
         for (ACAQGraphNode predecessorAlgorithm : predecessorAlgorithms) {
-            result.append(((ACAQAlgorithm)predecessorAlgorithm).getStateId()).append("\n");
+            ids.add(((ACAQAlgorithm)predecessorAlgorithm).getStateId());
         }
-        return result.toString();
+        try {
+            return JsonUtils.getObjectMapper().writeValueAsString(ids);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

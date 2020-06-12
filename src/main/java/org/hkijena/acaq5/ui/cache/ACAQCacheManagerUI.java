@@ -81,7 +81,7 @@ public class ACAQCacheManagerUI extends ACAQProjectWorkbenchPanel {
             statusLabel.setText(getProject().getCache().getCachedRowNumber() + " items cached");
             StringBuilder cacheInfo = new StringBuilder();
             cacheInfo.append("<html>");
-            cacheInfo.append("Currently there are ").append(getProject().getCache().getCachedRowNumber()).append(" stored in the cache.<br/><br/>");
+            cacheInfo.append("Currently there are ").append(getProject().getCache().getCachedRowNumber()).append(" data rows stored in the cache.<br/><br/>");
             cacheInfo.append("<table>");
             for (Map.Entry<ACAQDataDeclaration, Integer> entry : getProject().getCache().getCachedDataTypes().entrySet()) {
                 cacheInfo.append("<tr><td>").append("<img src=\"").append(ACAQUIDatatypeRegistry.getInstance().getIconURLFor(entry.getKey())).append("\"/></td>");

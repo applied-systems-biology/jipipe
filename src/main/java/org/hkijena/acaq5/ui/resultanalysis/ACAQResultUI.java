@@ -123,10 +123,25 @@ public class ACAQResultUI extends ACAQProjectWorkbenchPanel {
 
     private void initializeToolbar() {
         JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
+
         JButton openFolderButton = new JButton("Open output folder", UIUtils.getIconFromResources("open.png"));
         openFolderButton.addActionListener(e -> openOutputFolder());
         toolBar.add(openFolderButton);
+
+        JButton openLogButton = new JButton("Open log", UIUtils.getIconFromResources("log.png"));
+        openLogButton.addActionListener(e -> openLog());
+        toolBar.add(openLogButton);
+
         add(toolBar, BorderLayout.NORTH);
+    }
+
+    private void openLog() {
+        try {
+            Desktop.getDesktop().open(run.getConfiguration().getOutputPath().resolve("log.txt").toFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void openOutputFolder() {
