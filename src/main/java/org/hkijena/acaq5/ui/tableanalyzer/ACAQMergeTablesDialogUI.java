@@ -12,6 +12,7 @@
 
 package org.hkijena.acaq5.ui.tableanalyzer;
 
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.ui.components.DocumentTabListCellRenderer;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -26,12 +27,11 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * UI that merges table rows
+ * UI that merges tables
  */
-public class ACAQMergeTableRowsDialogUI extends JDialog {
-    private ACAQTableAnalyzerUI tableAnalyzerUI;
+public class ACAQMergeTablesDialogUI extends JDialog {
+    private ACAQTableEditor tableAnalyzerUI;
     private JComboBox<DocumentTabPane.DocumentTab> tableSelection;
-    private JCheckBox addMissingColumnsCheckBox;
     private JXTable jxTable;
 
     /**
@@ -39,12 +39,12 @@ public class ACAQMergeTableRowsDialogUI extends JDialog {
      *
      * @param tableAnalyzerUI The table analyzer
      */
-    public ACAQMergeTableRowsDialogUI(ACAQTableAnalyzerUI tableAnalyzerUI) {
+    public ACAQMergeTablesDialogUI(ACAQTableEditor tableAnalyzerUI) {
         this.tableAnalyzerUI = tableAnalyzerUI;
         initialize();
 
         for (DocumentTabPane.DocumentTab tab : tableAnalyzerUI.getProjectWorkbench().getDocumentTabPane().getTabs()) {
-            if (tab.getContent() instanceof ACAQTableAnalyzerUI && tab.getContent() != tableAnalyzerUI) {
+            if (tab.getContent() instanceof ACAQTableEditor && tab.getContent() != tableAnalyzerUI) {
                 tableSelection.addItem(tab);
             }
         }
@@ -58,7 +58,7 @@ public class ACAQMergeTableRowsDialogUI extends JDialog {
         tableSelection.setRenderer(new DocumentTabListCellRenderer());
         tableSelection.addItemListener(e -> {
             if (e.getItem() instanceof DocumentTabPane.DocumentTab) {
-                jxTable.setModel(((ACAQTableAnalyzerUI) ((DocumentTabPane.DocumentTab) e.getItem()).getContent()).getTableModel());
+                jxTable.setModel(((ACAQTableEditor) ((DocumentTabPane.DocumentTab) e.getItem()).getContent()).getTableModel());
                 jxTable.packAll();
             }
         });
@@ -74,9 +74,6 @@ public class ACAQMergeTableRowsDialogUI extends JDialog {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));
 
-        addMissingColumnsCheckBox = new JCheckBox("Add missing columns", true);
-        buttonPanel.add(addMissingColumnsCheckBox);
-
         buttonPanel.add(Box.createHorizontalGlue());
 
         JButton calculateButton = new JButton("Merge", UIUtils.getIconFromResources("import.png"));
@@ -89,43 +86,10 @@ public class ACAQMergeTableRowsDialogUI extends JDialog {
     private void calculate() {
         if (tableSelection.getSelectedItem() != null) {
             tableAnalyzerUI.createUndoSnapshot();
-            DefaultTableModel sourceModel = ((ACAQTableAnalyzerUI) ((DocumentTabPane.DocumentTab) tableSelection.getSelectedItem()).getContent()).getTableModel();
-            DefaultTableModel targetModel = tableAnalyzerUI.getTableModel();
+            ResultsTableData sourceModel = ((ACAQTableEditor) ((DocumentTabPane.DocumentTab) tableSelection.getSelectedItem()).getContent()).getTableModel();
+            ResultsTableData targetModel = tableAnalyzerUI.getTableModel();
 
-            Set<Integer> assignedTargetColumns = new HashSet<>();
-            int[] sourceToTargetColumnMapping = new int[sourceModel.getColumnCount()];
-            Arrays.fill(sourceToTargetColumnMapping, -1);
-
-            final int initialTargetColumnCount = targetModel.getColumnCount();
-            for (int i = 0; i < sourceModel.getColumnCount(); ++i) {
-                boolean found = false;
-                for (int j = 0; j < initialTargetColumnCount; ++j) {
-                    if (Objects.equals(targetModel.getColumnName(j), sourceModel.getColumnName(i)) &&
-                            !assignedTargetColumns.contains(j)) {
-                        sourceToTargetColumnMapping[i] = j;
-                        assignedTargetColumns.add(j);
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found && addMissingColumnsCheckBox.isSelected()) {
-                    targetModel.addColumn(sourceModel.getColumnName(i));
-                    sourceToTargetColumnMapping[i] = targetModel.getColumnCount() - 1;
-                    assignedTargetColumns.add(targetModel.getColumnCount() - 1);
-                }
-            }
-
-            Object[] rowBuffer = new Object[targetModel.getColumnCount()];
-            for (int row = 0; row < sourceModel.getRowCount(); ++row) {
-                Arrays.fill(rowBuffer, null);
-                for (int i = 0; i < sourceModel.getColumnCount(); ++i) {
-                    int target = sourceToTargetColumnMapping[i];
-                    if (target != -1) {
-                        rowBuffer[target] = sourceModel.getValueAt(row, i);
-                    }
-                }
-                targetModel.addRow(rowBuffer);
-            }
+            targetModel.mergeWith(sourceModel);
 
             tableAnalyzerUI.autoSizeColumns();
             setVisible(false);

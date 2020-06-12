@@ -96,7 +96,7 @@ public class ACAQTableImporterDialog extends JDialog {
         exportButton.addActionListener(e -> {
             if (importFormat.getSelectedItem() == FileFormat.CSV) {
                 if (pathEditor.getPath() != null) {
-                    ACAQTableAnalyzerUI.importTableFromCSV(pathEditor.getPath(), workbench);
+                    ACAQTableEditor.importTableFromCSV(pathEditor.getPath(), workbench);
                 }
             }
 //            else if(importFormat.getSelectedItem() == FileFormat.XLSX) {

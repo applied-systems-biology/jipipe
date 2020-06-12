@@ -13,7 +13,7 @@ public class StatisticsGeometricMeanIntegratingColumnOperation implements Integr
     private static final GeometricMean geometricMean = new GeometricMean();
 
     @Override
-    public TableColumn run(TableColumn column) {
+    public TableColumn apply(TableColumn column) {
         double result = geometricMean.evaluate(column.getDataAsDouble(column.getRows()));
         return new DoubleArrayTableColumn(new double[]{result}, column.getLabel());
     }

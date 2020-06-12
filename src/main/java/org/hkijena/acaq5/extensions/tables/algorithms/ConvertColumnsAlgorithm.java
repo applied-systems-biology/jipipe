@@ -4,7 +4,12 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.api.algorithm.ACAQDataInterface;
+import org.hkijena.acaq5.api.algorithm.ACAQSimpleIteratingAlgorithm;
+import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
+import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.registries.ACAQTableRegistry;
@@ -12,7 +17,9 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
 import org.hkijena.acaq5.extensions.tables.operations.ColumnOperation;
 import org.hkijena.acaq5.extensions.tables.parameters.collections.ConvertingTableColumnProcessorParameterList;
+import org.hkijena.acaq5.extensions.tables.parameters.collections.IntegratingTableColumnProcessorParameterList;
 import org.hkijena.acaq5.extensions.tables.parameters.processors.ConvertingTableColumnProcessorParameter;
+import org.hkijena.acaq5.extensions.tables.parameters.processors.IntegratingTableColumnProcessorParameter;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.HashMap;
@@ -61,7 +68,7 @@ public class ConvertColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
         Map<String, TableColumn> resultColumns = new HashMap<>();
         for (ConvertingTableColumnProcessorParameter processor : processorParameters) {
             String sourceColumn = input.getColumnNames().stream().filter(processor.getInput()).findFirst().orElse(null);
-            if (sourceColumn == null) {
+            if(sourceColumn == null) {
                 throw new UserFriendlyRuntimeException(new NullPointerException(),
                         "Unable to find column matching " + processor.getInput(),
                         "Algorithm '" + getName() + "'",
@@ -69,13 +76,13 @@ public class ConvertColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
                         "Please check if the filter is correct.");
             }
             TableColumn sourceColumnData = input.getColumnReference(input.getColumnIndex(sourceColumn));
-            ColumnOperation columnOperation = ((ACAQTableRegistry.ColumnOperationEntry) processor.getParameter().getValue()).getOperation();
-            TableColumn resultColumn = columnOperation.run(sourceColumnData);
+            ColumnOperation columnOperation = ((ACAQTableRegistry.ColumnOperationEntry)processor.getParameter().getValue()).getOperation();
+            TableColumn resultColumn = columnOperation.apply(sourceColumnData);
             resultColumns.put(processor.getOutput(), resultColumn);
         }
-        if (append) {
+        if(append) {
             for (String columnName : input.getColumnNames()) {
-                if (!resultColumns.containsKey(columnName)) {
+                if(!resultColumns.containsKey(columnName)) {
                     resultColumns.put(columnName, input.getColumnReference(input.getColumnIndex(columnName)));
                 }
             }
@@ -91,14 +98,14 @@ public class ConvertColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
         report.forCategory("Processors").report(processorParameters);
         Set<String> columnNames = new HashSet<>();
         for (ConvertingTableColumnProcessorParameter parameter : processorParameters) {
-            if (columnNames.contains(parameter.getOutput())) {
+            if(columnNames.contains(parameter.getOutput())) {
                 report.forCategory("Processors").reportIsInvalid("Duplicate output column: " + parameter.getOutput(),
                         "There should not be multiple output columns with the same name.",
                         "Change the name to a unique non-empty string",
                         this);
                 break;
             }
-            if (StringUtils.isNullOrEmpty(parameter.getOutput())) {
+            if(StringUtils.isNullOrEmpty(parameter.getOutput())) {
                 report.forCategory("Processors").reportIsInvalid("An output column has no name!",
                         "All output columns must have a non-empty name.",
                         "Change the name to a non-empty string",

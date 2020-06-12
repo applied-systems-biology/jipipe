@@ -15,8 +15,10 @@ package org.hkijena.acaq5.ui.tableanalyzer;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.primitives.Ints;
-import org.hkijena.acaq5.ACAQDefaultRegistry;
+import org.hkijena.acaq5.api.registries.ACAQTableRegistry;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
+import org.hkijena.acaq5.extensions.tables.operations.ConvertingColumnOperation;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
@@ -24,14 +26,14 @@ import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.ModifiedFlowLayout;
 import org.hkijena.acaq5.ui.plotbuilder.ACAQPlotBuilderUI;
-import org.hkijena.acaq5.ui.registries.ACAQTableAnalyzerUIOperationRegistry;
 import org.hkijena.acaq5.utils.BusyCursor;
-import org.hkijena.acaq5.utils.TableUtils;
+import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -39,15 +41,16 @@ import java.io.*;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Spreadsheet UI
  */
-public class ACAQTableAnalyzerUI extends ACAQProjectWorkbenchPanel {
+public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
     private static final int MAX_UNDO = 10;
-    private DefaultTableModel tableModel;
+    private ResultsTableData tableModel;
     private JXTable jxTable;
-    private Stack<DefaultTableModel> undoBuffer = new Stack<>();
+    private Stack<ResultsTableData> undoBuffer = new Stack<>();
     private boolean isRebuildingSelection = false;
 
     private FormPanel palettePanel;
@@ -60,7 +63,7 @@ public class ACAQTableAnalyzerUI extends ACAQProjectWorkbenchPanel {
      * @param workbench  the workbench
      * @param tableModel the table
      */
-    public ACAQTableAnalyzerUI(ACAQProjectWorkbench workbench, DefaultTableModel tableModel) {
+    public ACAQTableEditor(ACAQProjectWorkbench workbench, ResultsTableData tableModel) {
         super(workbench);
         this.tableModel = tableModel;
         initialize();
@@ -73,7 +76,17 @@ public class ACAQTableAnalyzerUI extends ACAQProjectWorkbenchPanel {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("save.png"));
+        JButton openButton = new JButton("Open", UIUtils.getIconFromResources("open.png"));
+        {
+            JPopupMenu exportPopup = UIUtils.addPopupMenuToComponent(openButton);
+
+            JMenuItem importFromCSV = new JMenuItem("from CSV table (*.csv)", UIUtils.getIconFromResources("filetype-csv.png"));
+            importFromCSV.addActionListener(e -> importFromCSV());
+            exportPopup.add(importFromCSV);
+        }
+        toolBar.add(openButton);
+
+        JButton exportButton = new JButton("Save", UIUtils.getIconFromResources("save.png"));
         {
             JPopupMenu exportPopup = UIUtils.addPopupMenuToComponent(exportButton);
 
@@ -110,10 +123,6 @@ public class ACAQTableAnalyzerUI extends ACAQProjectWorkbenchPanel {
                 "Adds an empty row at the end of the table.",
                 UIUtils.getIconFromResources("add-row.png"),
                 this::addRow);
-        addActionToPalette("Import",
-                "Adds rows from another ACAQ5 table that is currently open",
-                UIUtils.getIconFromResources("table.png"),
-                this::mergeRows);
         addSeparatorToPalette();
         addActionToPalette("Remove",
                 "Remove selected rows",
@@ -121,20 +130,20 @@ public class ACAQTableAnalyzerUI extends ACAQProjectWorkbenchPanel {
                 this::removeSelectedRows);
 
         addPaletteGroup("Columns", UIUtils.getIconFromResources("select-column.png"));
-        addActionToPalette("Add",
-                "Adds an empty column with a custom name to the table.",
+        addActionToPalette("Add numeric",
+                "Adds an empty numeric column with a custom name to the table.",
                 UIUtils.getIconFromResources("add-column.png"),
-                this::addColumn);
-        addActionToPalette("Import",
-                "Adds columns from another ACAQ5 table that is currently open.",
-                UIUtils.getIconFromResources("table.png"),
-                this::mergeColumns);
+                () -> addColumn(false));
+        addActionToPalette("Add string",
+                "Adds an empty string column with a custom name to the table.",
+                UIUtils.getIconFromResources("add-column.png"),
+                () -> addColumn(true));
         addActionToPalette("Duplicate",
                 "Copies the selected column into a new one.",
                 UIUtils.getIconFromResources("copy.png"),
                 this::copyColumn);
         addActionToPalette("Combine",
-                "Creates a new column that combines the selected columns into a new column.",
+                "Creates a new column that contains the values of the selected columns assigned by the pattern colum0=row0, column1=row0, ... for each row.",
                 UIUtils.getIconFromResources("statistics.png"),
                 this::addNewCombinedColumn);
         addSeparatorToPalette();
@@ -147,6 +156,14 @@ public class ACAQTableAnalyzerUI extends ACAQProjectWorkbenchPanel {
                 "Remove selected columns",
                 UIUtils.getIconFromResources("remove-column.png"),
                 this::removeSelectedColumns);
+        addActionToPalette("To numeric",
+                "Converts to numeric column. If a string value could not be converted, it is replaced by zero",
+                UIUtils.getIconFromResources("number.png"),
+                this::selectedColumnsToNumeric);
+        addActionToPalette("To string",
+                "Converts to string column.",
+                UIUtils.getIconFromResources("text2.png"),
+                this::selectedColumnsToString);
 
         addPaletteGroup("Selection", UIUtils.getIconFromResources("select.png"));
         addActionToPalette("Whole row",
@@ -175,14 +192,14 @@ public class ACAQTableAnalyzerUI extends ACAQProjectWorkbenchPanel {
                 this::autoSizeColumns);
 
         addPaletteGroup("Data", UIUtils.getIconFromResources("table.png"));
-        addActionToPalette("Split",
-                "Allows to split the data of a value column by a user-defined list of reference columns.",
-                UIUtils.getIconFromResources("split.png"),
-                this::splitColumns);
+        addActionToPalette("Import",
+                "Merges another ACAQ5 table into the current one",
+                UIUtils.getIconFromResources("table.png"),
+                this::mergeTables);
         addActionToPalette("Integrate",
                 "Collapses the table into a one-row table by applying an integration operation on each column..",
                 UIUtils.getIconFromResources("statistics.png"),
-                this::collapseColumns);
+                this::integrateColumns);
         addSeparatorToPalette();
         convertSelectedCellsButton = addActionToPalette("Convert cells",
                 "Converts the values in the selected cells",
@@ -197,6 +214,8 @@ public class ACAQTableAnalyzerUI extends ACAQProjectWorkbenchPanel {
         jxTable.setColumnSelectionAllowed(true);
         jxTable.setRowSelectionAllowed(true);
         jxTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        jxTable.setDefaultRenderer(String.class, new Renderer(this));
+        jxTable.setDefaultRenderer(Double.class, new Renderer(this));
         jxTable.packAll();
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JScrollPane(jxTable), palettePanel);
@@ -213,6 +232,58 @@ public class ACAQTableAnalyzerUI extends ACAQProjectWorkbenchPanel {
         add(splitPane, BorderLayout.CENTER);
 
         jxTable.getSelectionModel().addListSelectionListener(listSelectionEvent -> updateConvertMenu());
+    }
+
+    private void selectedColumnsToString() {
+        try (BusyCursor busyCursor = new BusyCursor(this)) {
+            if (jxTable.getSelectedColumns() != null) {
+                createUndoSnapshot();
+                Set<String> selection = new HashSet<>();
+                for (int viewIndex : jxTable.getSelectedColumns()) {
+                    int modelIndex = jxTable.convertColumnIndexToModel(viewIndex);
+                    selection.add(tableModel.getColumnName(modelIndex));
+                }
+                for (String column : selection) {
+                    int index = tableModel.getColumnIndex(column);
+                    tableModel.convertToStringColumn(index);
+                }
+
+                refreshTable();
+            }
+        }
+    }
+
+    private void selectedColumnsToNumeric() {
+        try (BusyCursor busyCursor = new BusyCursor(this)) {
+            if (jxTable.getSelectedColumns() != null) {
+                createUndoSnapshot();
+                Set<String> selection = new HashSet<>();
+                for (int viewIndex : jxTable.getSelectedColumns()) {
+                    int modelIndex = jxTable.convertColumnIndexToModel(viewIndex);
+                    selection.add(tableModel.getColumnName(modelIndex));
+                }
+                for (String column : selection) {
+                    int index = tableModel.getColumnIndex(column);
+                    tableModel.convertToNumericColumn(index);
+                }
+
+                refreshTable();
+            }
+        }
+    }
+
+    private void importFromCSV() {
+        Path fileName = FileChooserSettings.openFile(this, FileChooserSettings.KEY_PROJECT, "Open *.csv");
+        if(fileName != null) {
+            try {
+                ResultsTableData tableData = ResultsTableData.fromCSV(fileName);
+                tableModel = tableData;
+                jxTable.setModel(tableData);
+                jxTable.packAll();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     private JButton addActionToPalette(String name, String description, Icon icon, Runnable action) {
@@ -239,32 +310,8 @@ public class ACAQTableAnalyzerUI extends ACAQProjectWorkbenchPanel {
         currentPaletteGroup.add(Box.createVerticalStrut(8));
     }
 
-    private void splitColumns() {
-        ACAQSplitColumnDialogUI dialog = new ACAQSplitColumnDialogUI(tableModel);
-        dialog.pack();
-        dialog.setSize(800, 600);
-        dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
-        dialog.setModal(true);
-        dialog.setVisible(true);
-        if (dialog.getResultTableModel() != null) {
-            createUndoSnapshot();
-            tableModel = dialog.getResultTableModel();
-            jxTable.setModel(tableModel);
-            jxTable.packAll();
-        }
-    }
-
-    private void mergeColumns() {
-        ACAQMergeTableColumnsDialogUI dialog = new ACAQMergeTableColumnsDialogUI(this);
-        dialog.pack();
-        dialog.setSize(800, 600);
-        dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
-        dialog.setModal(true);
-        dialog.setVisible(true);
-    }
-
-    private void mergeRows() {
-        ACAQMergeTableRowsDialogUI dialog = new ACAQMergeTableRowsDialogUI(this);
+    private void mergeTables() {
+        ACAQMergeTablesDialogUI dialog = new ACAQMergeTablesDialogUI(this);
         dialog.pack();
         dialog.setSize(800, 600);
         dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
@@ -282,16 +329,16 @@ public class ACAQTableAnalyzerUI extends ACAQProjectWorkbenchPanel {
         getProjectWorkbench().getDocumentTabPane().switchToLastTab();
     }
 
-    private void collapseColumns() {
-        ACAQCollapseTableColumnsDialogUI dialog = new ACAQCollapseTableColumnsDialogUI(tableModel);
+    private void integrateColumns() {
+        ACAQIntegrateTableColumnsDialogUI dialog = new ACAQIntegrateTableColumnsDialogUI(tableModel);
         dialog.pack();
         dialog.setSize(800, 600);
         dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
         dialog.setModal(true);
         dialog.setVisible(true);
-        if (dialog.getResultTableModel() != null) {
+        if (dialog.getOutputTableModel() != null) {
             createUndoSnapshot();
-            tableModel = dialog.getResultTableModel();
+            tableModel = dialog.getOutputTableModel();
             jxTable.setModel(tableModel);
             jxTable.packAll();
         }
@@ -383,7 +430,7 @@ public class ACAQTableAnalyzerUI extends ACAQProjectWorkbenchPanel {
     private void cloneDataToNewTab() {
         getProjectWorkbench().getDocumentTabPane().addTab("Table",
                 UIUtils.getIconFromResources("table.png"),
-                new ACAQTableAnalyzerUI(getProjectWorkbench(), TableUtils.cloneTableModel(tableModel)),
+                new ACAQTableEditor(getProjectWorkbench(), new ResultsTableData(tableModel)),
                 DocumentTabPane.CloseMode.withAskOnCloseButton, true);
         getProjectWorkbench().getDocumentTabPane().switchToLastTab();
     }
@@ -392,43 +439,17 @@ public class ACAQTableAnalyzerUI extends ACAQProjectWorkbenchPanel {
         if (isRebuildingSelection)
             return;
         convertSelectedCellsMenu.removeAll();
-        final int cellCount = jxTable.getSelectedColumnCount() * jxTable.getSelectedRowCount();
-
-        List<ACAQTableAnalyzerUIOperationRegistry.VectorOperationEntry> entries =
-                new ArrayList<>(ACAQDefaultRegistry.getInstance().getTableAnalyzerUIOperationRegistry().getVectorOperationEntries());
-        entries.sort(Comparator.comparing(ACAQTableAnalyzerUIOperationRegistry.VectorOperationEntry::getName));
-
-        for (ACAQTableAnalyzerUIOperationRegistry.VectorOperationEntry vectorOperationEntry : entries) {
-            ACAQTableVectorOperation operation = vectorOperationEntry.instantiateOperation();
-            if (operation.inputMatches(cellCount) && operation.getOutputCount(cellCount) == cellCount) {
-                JMenuItem item = new JMenuItem(vectorOperationEntry.getName(), vectorOperationEntry.getIcon());
-                item.setToolTipText(vectorOperationEntry.getDescription());
-                item.addActionListener(e -> {
-
-                    createUndoSnapshot();
-
-                    List<CellIndex> selectedCells = getSelectedCells();
-                    assert cellCount == selectedCells.size();
-
-                    Object[] buffer = new Object[cellCount];
-                    for (int i = 0; i < cellCount; ++i) {
-                        buffer[i] = tableModel.getValueAt(selectedCells.get(i).getRow(), selectedCells.get(i).getColumn());
-                    }
-
-                    buffer = operation.process(buffer);
-                    Vector tableData = tableModel.getDataVector();
-
-                    for (int i = 0; i < cellCount; ++i) {
-                        ((Vector) tableData.get(selectedCells.get(i).getRow())).set(selectedCells.get(i).getColumn(), buffer[i]);
-                    }
-
-                    tableModel.setDataVector(tableData, TableUtils.getColumnIdentifiers(tableModel));
-                    jxTable.packAll();
-                });
-                convertSelectedCellsMenu.add(item);
-            }
+        for (ACAQTableRegistry.ColumnOperationEntry entry :
+                ACAQTableRegistry.getInstance().getOperationsOfType(ConvertingColumnOperation.class)
+                        .values().stream().sorted(Comparator.comparing(ACAQTableRegistry.ColumnOperationEntry::getName)).collect(Collectors.toList())) {
+            JMenuItem item = new JMenuItem(entry.getName(), UIUtils.getIconFromResources("cog.png"));
+            item.setToolTipText(entry.getDescription());
+            item.addActionListener(e -> {
+                createUndoSnapshot();
+                tableModel.applyOperation(getSelectedCells(), (ConvertingColumnOperation)entry.getOperation());
+            });
+            convertSelectedCellsMenu.add(item);
         }
-
         convertSelectedCellsButton.setEnabled(convertSelectedCellsMenu.getComponentCount() > 0);
     }
 
@@ -437,12 +458,12 @@ public class ACAQTableAnalyzerUI extends ACAQProjectWorkbenchPanel {
      *
      * @return
      */
-    private List<CellIndex> getSelectedCells() {
-        List<CellIndex> result = new ArrayList<>();
+    private List<ResultsTableData.Index> getSelectedCells() {
+        List<ResultsTableData.Index> result = new ArrayList<>();
         if (jxTable.getSelectedRows() != null && jxTable.getSelectedColumns() != null) {
             for (int row : jxTable.getSelectedRows()) {
                 for (int column : jxTable.getSelectedColumns()) {
-                    result.add(new CellIndex(row, column));
+                    result.add(new ResultsTableData.Index(row, column));
                 }
             }
         }
@@ -456,13 +477,13 @@ public class ACAQTableAnalyzerUI extends ACAQProjectWorkbenchPanel {
         jxTable.packAll();
     }
 
-    private void addColumn() {
+    private void addColumn(boolean stringColumn) {
         String name = JOptionPane.showInputDialog(this,
                 "Please provide a name for the new column", "Column " + (tableModel.getColumnCount() + 1));
         if (name != null && !name.isEmpty()) {
             createUndoSnapshot();
-            tableModel.addColumn(name);
-            jxTable.packAll();
+            tableModel.addColumn(name, stringColumn);
+            refreshTable();
         }
     }
 
@@ -473,16 +494,14 @@ public class ACAQTableAnalyzerUI extends ACAQProjectWorkbenchPanel {
             return;
 
         sourceColumn = jxTable.convertColumnIndexToModel(sourceColumn);
+        String sourceColumnName = tableModel.getColumnName(sourceColumn);
 
-        String name = JOptionPane.showInputDialog(this,
-                "Please provide a name for the new column", tableModel.getColumnName(sourceColumn));
-        if (name != null && !name.isEmpty()) {
+        String newName = UIUtils.getUniqueStringByDialog(this, "Set the name of the new column:",
+                sourceColumnName, tableModel::containsColumn);
+        if (!StringUtils.isNullOrEmpty(newName) && !tableModel.containsColumn(newName)) {
             createUndoSnapshot();
-            tableModel.addColumn(name);
-            for (int i = 0; i < tableModel.getRowCount(); ++i) {
-                tableModel.setValueAt(tableModel.getValueAt(i, sourceColumn), i, tableModel.getColumnCount() - 1);
-            }
-            jxTable.packAll();
+            tableModel.duplicateColumn(sourceColumn, newName);
+            refreshTable();
         }
     }
 
@@ -500,30 +519,15 @@ public class ACAQTableAnalyzerUI extends ACAQProjectWorkbenchPanel {
                 generatedName.append(tableModel.getColumnName(sourceColumns[i]));
             }
 
-            String name = JOptionPane.showInputDialog(this,
-                    "Please provide a name for the new column", generatedName.toString());
-            if (name != null && !name.isEmpty()) {
+            String newName = UIUtils.getUniqueStringByDialog(this, "Set the name of the new column:",
+                    generatedName.toString(), tableModel::containsColumn);
+            if (!StringUtils.isNullOrEmpty(newName) && !tableModel.containsColumn(newName)) {
                 try (BusyCursor busyCursor = new BusyCursor(this)) {
                     createUndoSnapshot();
-                    tableModel.addColumn(name);
-
-                    StringBuilder valueBuffer = new StringBuilder();
-                    for (int row = 0; row < tableModel.getRowCount(); ++row) {
-                        valueBuffer.setLength(0);
-                        for (int i = 0; i < sourceColumns.length; ++i) {
-                            if (i > 0)
-                                valueBuffer.append(", ");
-                            valueBuffer.append(tableModel.getColumnName(sourceColumns[i]));
-                            valueBuffer.append("=");
-                            valueBuffer.append(tableModel.getValueAt(row, sourceColumns[i]));
-                        }
-
-                        tableModel.setValueAt(valueBuffer.toString(), row, tableModel.getColumnCount() - 1);
-                    }
+                    tableModel.mergeColumns(Ints.asList(sourceColumns), newName, ", ", "=");
+                    refreshTable();
                 }
             }
-
-            jxTable.packAll();
         }
     }
 
@@ -531,52 +535,34 @@ public class ACAQTableAnalyzerUI extends ACAQProjectWorkbenchPanel {
         if (jxTable.getSelectedColumn() != -1) {
             createUndoSnapshot();
             String oldName = tableModel.getColumnName(jxTable.convertColumnIndexToModel(jxTable.getSelectedColumn()));
-            String name = JOptionPane.showInputDialog(this,
-                    "Please enter a new name for the new column", oldName);
-            if (name != null && !name.isEmpty()) {
-                Object[] identifiers = new Object[tableModel.getColumnCount()];
-                for (int i = 0; i < tableModel.getColumnCount(); ++i) {
-                    identifiers[i] = tableModel.getColumnName(i);
-                }
-                identifiers[jxTable.convertColumnIndexToModel(jxTable.getSelectedColumn())] = name;
-                tableModel.setColumnIdentifiers(identifiers);
-                jxTable.packAll();
+            String name = UIUtils.getUniqueStringByDialog(this, "Please input a new name", oldName, tableModel::containsColumn);
+            if (!StringUtils.isNullOrEmpty(name) && !Objects.equals(name, oldName)) {
+                tableModel.renameColumn(oldName, name);
+                refreshTable();
             }
         }
     }
 
+    private void refreshTable() {
+        jxTable.setModel(new DefaultTableModel());
+        jxTable.setModel(tableModel);
+        jxTable.packAll();
+    }
+
     private void addRow() {
-        tableModel.addRow(new Object[tableModel.getColumnCount()]);
+        tableModel.addRow();
     }
 
     private void removeSelectedColumns() {
         try (BusyCursor busyCursor = new BusyCursor(this)) {
             if (jxTable.getSelectedColumns() != null) {
                 createUndoSnapshot();
-                int[] newColumnIndices = new int[tableModel.getColumnCount()];
-                int newColumnCount = 0;
-                for (int i = 0; i < tableModel.getColumnCount(); ++i) {
-                    if (!Ints.contains(jxTable.getSelectedColumns(), i)) {
-                        newColumnIndices[newColumnCount] = jxTable.convertColumnIndexToModel(i);
-                        ++newColumnCount;
-                    }
+                Set<String> removedColumns = new HashSet<>();
+                for (int viewIndex : jxTable.getSelectedColumns()) {
+                    int modelIndex = jxTable.convertColumnIndexToModel(viewIndex);
+                    removedColumns.add(tableModel.getColumnName(modelIndex));
                 }
-
-                DefaultTableModel newModel = new DefaultTableModel();
-                for (int i = 0; i < newColumnCount; ++i) {
-                    newModel.addColumn(tableModel.getColumnName(newColumnIndices[i]));
-                }
-
-                Object[] rowBuffer = new Object[newColumnCount];
-                for (int i = 0; i < tableModel.getRowCount(); ++i) {
-                    for (int j = 0; j < newColumnCount; ++j) {
-                        rowBuffer[j] = tableModel.getValueAt(i, newColumnIndices[j]);
-                    }
-                    newModel.addRow(rowBuffer);
-                }
-
-                tableModel = newModel;
-                jxTable.setModel(tableModel);
+                tableModel.removeColumns(removedColumns);
                 jxTable.packAll();
             }
         }
@@ -586,19 +572,13 @@ public class ACAQTableAnalyzerUI extends ACAQProjectWorkbenchPanel {
         try (BusyCursor busyCursor = new BusyCursor(this)) {
             if (jxTable.getSelectedRows() != null) {
                 createUndoSnapshot();
-                int[] rows = new int[jxTable.getSelectedRows().length];
+                List<Integer> rows = new ArrayList<>();
                 for (int i = 0; i < jxTable.getSelectedRows().length; ++i) {
-                    rows[i] = jxTable.convertRowIndexToModel(jxTable.getSelectedRows()[i]);
+                    rows.add(jxTable.convertRowIndexToModel(jxTable.getSelectedRows()[i]));
                 }
-                Arrays.sort(rows);
+                rows.sort(Comparator.naturalOrder());
 
-                Vector dataVector = tableModel.getDataVector();
-
-                for (int i = 0; i < rows.length; ++i) {
-                    dataVector.remove(rows[i] - i);
-                }
-
-                tableModel.setDataVector(dataVector, TableUtils.getColumnIdentifiers(tableModel));
+                tableModel = tableModel.getRows(rows);
                 jxTable.packAll();
             }
         }
@@ -611,7 +591,7 @@ public class ACAQTableAnalyzerUI extends ACAQProjectWorkbenchPanel {
         if (undoBuffer.size() >= MAX_UNDO)
             undoBuffer.remove(0);
 
-        undoBuffer.push(TableUtils.cloneTableModel(tableModel));
+        undoBuffer.push(new ResultsTableData(tableModel));
     }
 
     private void exportTableAsCSV() {
@@ -651,127 +631,62 @@ public class ACAQTableAnalyzerUI extends ACAQProjectWorkbenchPanel {
         }
     }
 
-//    private void exportTableAsXLSX() {
-//        JFileChooser fileChooser = new JFileChooser();
-//        fileChooser.setDialogTitle("Export table");
-//        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-//            XSSFWorkbook workbook = new XSSFWorkbook();
-//            XSSFSheet sheet = workbook.createSheet("Quantification output");
-//            Row xlsxHeaderRow = sheet.createRow(0);
-//            for (int i = 0; i < tableModel.getColumnCount(); ++i) {
-//                Cell cell = xlsxHeaderRow.createCell(i, CellType.STRING);
-//                cell.setCellValue(tableModel.getColumnName(i));
-//            }
-//            for (int row = 0; row < tableModel.getRowCount(); ++row) {
-//                Row xlsxRow = sheet.createRow(row + 1);
-//                for (int column = 0; column < tableModel.getColumnCount(); ++column) {
-//                    Object value = tableModel.getValueAt(row, column);
-//                    if (value instanceof Number) {
-//                        Cell cell = xlsxRow.createCell(column, CellType.NUMERIC);
-//                        cell.setCellValue(((Number) value).doubleValue());
-//                    } else if (value instanceof Boolean) {
-//                        Cell cell = xlsxRow.createCell(column, CellType.BOOLEAN);
-//                        cell.setCellValue((Boolean) value);
-//                    } else {
-//                        Cell cell = xlsxRow.createCell(column, CellType.STRING);
-//                        cell.setCellValue("" + value);
-//                    }
-//                }
-//            }
-//
-//            try {
-//                FileOutputStream stream = new FileOutputStream(fileChooser.getSelectedFile());
-//                workbook.write(stream);
-//                workbook.close();
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
-//
-//        }
-//    }
-
-    public DefaultTableModel getTableModel() {
+    public ResultsTableData getTableModel() {
         return tableModel;
     }
 
     /**
-     * Imports a table from CSV and creates a new {@link ACAQTableAnalyzerUI} tab
+     * Imports a table from CSV and creates a new {@link ACAQTableEditor} tab
      *
      * @param fileName    CSV file
      * @param workbenchUI workbench
      */
     public static void importTableFromCSV(Path fileName, ACAQProjectWorkbench workbenchUI) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileName.toFile()))) {
-            DefaultTableModel tableModel = new DefaultTableModel();
-            String currentLine;
-            boolean isFirstLine = true;
-            ArrayList<String> buffer = new ArrayList<>();
-            StringBuilder currentCellBuffer = new StringBuilder();
-            while ((currentLine = reader.readLine()) != null) {
-                buffer.clear();
-                currentCellBuffer.setLength(0);
-                boolean isWithinQuote = false;
-
-                for (int i = 0; i < currentLine.length(); ++i) {
-                    char c = currentLine.charAt(i);
-                    if (c == '\"') {
-                        if (isWithinQuote) {
-                            if (currentLine.charAt(i - 1) == '\"') {
-                                currentCellBuffer.append("\"");
-                            } else {
-                                isWithinQuote = false;
-                            }
-                        } else {
-                            isWithinQuote = true;
-                        }
-                    } else if (c == ',') {
-                        buffer.add(currentCellBuffer.toString());
-                        currentCellBuffer.setLength(0);
-                    } else {
-                        currentCellBuffer.append(c);
-                    }
-                }
-
-                if (currentCellBuffer.length() > 0) {
-                    buffer.add(currentCellBuffer.toString());
-                }
-
-                if (isFirstLine) {
-                    for (String column : buffer) {
-                        tableModel.addColumn(column);
-                    }
-                    isFirstLine = false;
-                } else {
-                    tableModel.addRow(buffer.toArray());
-                }
-            }
-
+        try {
+            ResultsTableData tableData = ResultsTableData.fromCSV(fileName);
             // Create table analyzer
             workbenchUI.getDocumentTabPane().addTab(fileName.getFileName().toString(), UIUtils.getIconFromResources("table.png"),
-                    new ACAQTableAnalyzerUI(workbenchUI, tableModel), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
+                    new ACAQTableEditor(workbenchUI, tableData), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     /**
-     * Points to a cell in the table
+     * Renders a table cell
      */
-    private static class CellIndex {
-        private int row;
-        private int column;
+    private static class Renderer extends JLabel implements TableCellRenderer {
 
-        private CellIndex(int row, int column) {
-            this.row = row;
-            this.column = column;
+        private final ACAQTableEditor tableEditor;
+
+        /**
+         * Creates a new renderer
+         * @param tableEditor the parent component
+         */
+        public Renderer(ACAQTableEditor tableEditor) {
+            this.tableEditor = tableEditor;
+            setOpaque(true);
+            setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+            setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
         }
 
-        public int getRow() {
-            return row;
-        }
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 
-        public int getColumn() {
-            return column;
+            if(!tableEditor.tableModel.isNumeric(column)) {
+                setText("<html><i><span style=\"color:gray;\">\"</span>" + value + "<span style=\"color:gray;\">\"</span></i></html>");
+            }
+            else {
+                setText("" + value);
+            }
+
+            if (isSelected) {
+                setBackground(new Color(184, 207, 229));
+            } else {
+                setBackground(new Color(255, 255, 255));
+            }
+
+            return this;
         }
     }
 }

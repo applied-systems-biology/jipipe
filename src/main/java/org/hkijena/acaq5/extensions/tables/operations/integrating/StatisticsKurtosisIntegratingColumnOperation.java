@@ -13,7 +13,7 @@ public class StatisticsKurtosisIntegratingColumnOperation implements Integrating
     private static final Kurtosis kurtosis = new Kurtosis();
 
     @Override
-    public TableColumn run(TableColumn column) {
+    public TableColumn apply(TableColumn column) {
         double result = kurtosis.evaluate(column.getDataAsDouble(column.getRows()));
         return new DoubleArrayTableColumn(new double[]{result}, column.getLabel());
     }

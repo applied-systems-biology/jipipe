@@ -1,12 +1,13 @@
 package org.hkijena.acaq5.extensions.tables;
 
 import org.hkijena.acaq5.api.ACAQOrganization;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.extension.MenuExtension;
 import org.hkijena.acaq5.ui.extension.MenuTarget;
-import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableAnalyzerUI;
+import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableEditor;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.table.DefaultTableModel;
@@ -32,7 +33,7 @@ public class NewTableMenuExtension extends MenuExtension implements ActionListen
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        ACAQTableAnalyzerUI tableAnalyzerUI = new ACAQTableAnalyzerUI((ACAQProjectWorkbench) getWorkbench(), new DefaultTableModel());
+        ACAQTableEditor tableAnalyzerUI = new ACAQTableEditor((ACAQProjectWorkbench) getWorkbench(), new ResultsTableData());
         getWorkbench().getDocumentTabPane().addTab("Table", UIUtils.getIconFromResources("data-types/results-table.png"),
                 tableAnalyzerUI, DocumentTabPane.CloseMode.withAskOnCloseButton, true);
         getWorkbench().getDocumentTabPane().switchToLastTab();

@@ -9,7 +9,7 @@ import org.hkijena.acaq5.extensions.tables.operations.IntegratingColumnOperation
  */
 public class StatisticsMaxIntegratingColumnOperation implements IntegratingColumnOperation {
     @Override
-    public TableColumn run(TableColumn column) {
+    public TableColumn apply(TableColumn column) {
         double max = Double.NEGATIVE_INFINITY;
         for (int i = 0; i < column.getRows(); i++) {
             max = Math.min(column.getRowAsDouble(i), max);

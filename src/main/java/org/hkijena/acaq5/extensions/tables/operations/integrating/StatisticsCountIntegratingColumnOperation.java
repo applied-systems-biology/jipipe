@@ -9,7 +9,7 @@ import org.hkijena.acaq5.extensions.tables.operations.IntegratingColumnOperation
  */
 public class StatisticsCountIntegratingColumnOperation implements IntegratingColumnOperation {
     @Override
-    public TableColumn run(TableColumn column) {
-        return new DoubleArrayTableColumn(new double[]{column.getRows()}, column.getLabel());
+    public TableColumn apply(TableColumn column) {
+        return new DoubleArrayTableColumn(new double[] { column.getRows() }, column.getLabel());
     }
 }

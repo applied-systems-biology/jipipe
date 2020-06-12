@@ -13,7 +13,7 @@ public class StatisticsMedianIntegratingColumnOperation implements IntegratingCo
     private static final Median median = new Median();
 
     @Override
-    public TableColumn run(TableColumn column) {
+    public TableColumn apply(TableColumn column) {
         double medianResult = median.evaluate(column.getDataAsDouble(column.getRows()));
         return new DoubleArrayTableColumn(new double[]{medianResult}, column.getLabel());
     }

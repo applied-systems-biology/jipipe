@@ -9,7 +9,7 @@ import org.hkijena.acaq5.extensions.tables.operations.IntegratingColumnOperation
  */
 public class StatisticsMinIntegratingColumnOperation implements IntegratingColumnOperation {
     @Override
-    public TableColumn run(TableColumn column) {
+    public TableColumn apply(TableColumn column) {
         double min = Double.POSITIVE_INFINITY;
         for (int i = 0; i < column.getRows(); i++) {
             min = Math.min(column.getRowAsDouble(i), min);

@@ -9,7 +9,7 @@ import org.hkijena.acaq5.extensions.tables.operations.ConvertingColumnOperation;
  */
 public class DegreeToRadiansColumnOperation implements ConvertingColumnOperation {
     @Override
-    public TableColumn run(TableColumn column) {
+    public TableColumn apply(TableColumn column) {
         double[] data = column.getDataAsDouble(column.getRows());
         for (int i = 0; i < data.length; i++) {
             data[i] = data[i] * Math.PI / 180.0;
