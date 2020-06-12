@@ -53,11 +53,13 @@ public class ACAQProject implements ACAQValidatable {
     private BiMap<String, ACAQProjectCompartment> compartments = HashBiMap.create();
     private ACAQProjectMetadata metadata = new ACAQProjectMetadata();
     private Path workDirectory;
+    private ACAQProjectCache cache;
 
     /**
      * An ACAQ5 project
      */
     public ACAQProject() {
+        this.cache = new ACAQProjectCache(this);
         compartmentGraph.getEventBus().register(this);
     }
 
@@ -102,6 +104,10 @@ public class ACAQProject implements ACAQValidatable {
     public void saveProject(Path fileName) throws IOException {
         ObjectMapper mapper = JsonUtils.getObjectMapper();
         mapper.writerWithDefaultPrettyPrinter().writeValue(fileName.toFile(), this);
+    }
+
+    public ACAQProjectCache getCache() {
+        return cache;
     }
 
     /**

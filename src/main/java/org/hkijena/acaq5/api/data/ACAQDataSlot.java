@@ -40,7 +40,7 @@ public class ACAQDataSlot implements TableModel {
     /**
      * Creates a new slot
      *
-     * @param definition
+     * @param definition the slot definition
      * @param algorithm  The algorithm that contains the slot
      */
     public ACAQDataSlot(ACAQSlotDefinition definition, ACAQGraphNode algorithm) {

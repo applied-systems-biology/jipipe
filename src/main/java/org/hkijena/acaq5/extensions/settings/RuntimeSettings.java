@@ -15,6 +15,7 @@ public class RuntimeSettings implements ACAQParameterCollection {
 
     private EventBus eventBus = new EventBus();
     private boolean allowSkipAlgorithmsWithoutInput = true;
+    private boolean allowCache = true;
 
     /**
      * Creates a new instance
@@ -38,6 +39,19 @@ public class RuntimeSettings implements ACAQParameterCollection {
     public void setAllowSkipAlgorithmsWithoutInput(boolean allowSkipAlgorithmsWithoutInput) {
         this.allowSkipAlgorithmsWithoutInput = allowSkipAlgorithmsWithoutInput;
         eventBus.post(new ParameterChangedEvent(this, "allow-skip-algorithms-without-input"));
+    }
+
+    @ACAQDocumentation(name = "Enable data caching", description = "If enabled, ACAQ5 can cache generated to prevent repeating previous steps. " +
+            "Please note that this can fill up the available memory.")
+    @ACAQParameter("allow-ache")
+    public boolean isAllowCache() {
+        return allowCache;
+    }
+
+    @ACAQParameter("allow-ache")
+    public void setAllowCache(boolean allowCache) {
+        this.allowCache = allowCache;
+        eventBus.post(new ParameterChangedEvent(this, "allow-cache"));
     }
 
     public static RuntimeSettings getInstance() {
