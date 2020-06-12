@@ -3,6 +3,7 @@ package org.hkijena.acaq5.api.compartments.datatypes;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQHidden;
 import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 
 import java.nio.file.Path;
 
@@ -21,5 +22,10 @@ public class ACAQCompartmentOutputData implements ACAQData {
     @Override
     public ACAQData duplicate() {
         return new ACAQCompartmentOutputData();
+    }
+
+    @Override
+    public void display(String displayName, ACAQWorkbench workbench) {
+
     }
 }

@@ -12,8 +12,13 @@ import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumnReference;
 import org.hkijena.acaq5.extensions.tables.operations.ConvertingColumnOperation;
 import org.hkijena.acaq5.extensions.tables.operations.IntegratingColumnOperation;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
+import org.hkijena.acaq5.ui.components.DocumentTabPane;
+import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableEditor;
 import org.hkijena.acaq5.utils.PathUtils;
 import org.hkijena.acaq5.utils.StringUtils;
+import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -362,6 +367,12 @@ public class ResultsTableData implements ACAQData, TableModel {
     @Override
     public ACAQData duplicate() {
         return new ResultsTableData((ResultsTable) table.clone());
+    }
+
+    @Override
+    public void display(String displayName, ACAQWorkbench workbench) {
+        workbench.getDocumentTabPane().addTab(displayName, UIUtils.getIconFromResources("table.png"),
+                new ACAQTableEditor((ACAQProjectWorkbench) workbench, (ResultsTableData)duplicate()), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
     }
 
     public ResultsTable getTable() {

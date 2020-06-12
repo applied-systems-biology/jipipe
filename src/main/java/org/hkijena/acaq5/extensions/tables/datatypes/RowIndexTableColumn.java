@@ -2,6 +2,7 @@ package org.hkijena.acaq5.extensions.tables.datatypes;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 
 import java.nio.file.Path;
 
@@ -66,5 +67,10 @@ public class RowIndexTableColumn implements TableColumn {
     @Override
     public ACAQData duplicate() {
         return new RowIndexTableColumn();
+    }
+
+    @Override
+    public void display(String displayName, ACAQWorkbench workbench) {
+
     }
 }

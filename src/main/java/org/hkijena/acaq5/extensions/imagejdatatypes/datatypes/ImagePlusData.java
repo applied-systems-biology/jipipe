@@ -7,6 +7,7 @@ import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataDeclaration;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyNullPointerException;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.utils.PathUtils;
 
 import java.nio.file.Path;
@@ -69,6 +70,11 @@ public class ImagePlusData implements ACAQData {
     @Override
     public ACAQData duplicate() {
         return ACAQData.createInstance(getClass(), image.duplicate());
+    }
+
+    @Override
+    public void display(String displayName, ACAQWorkbench workbench) {
+        image.duplicate().show();
     }
 
     @Override

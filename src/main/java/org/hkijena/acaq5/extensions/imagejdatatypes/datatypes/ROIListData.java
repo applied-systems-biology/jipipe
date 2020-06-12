@@ -1,13 +1,17 @@
 package org.hkijena.acaq5.extensions.imagejdatatypes.datatypes;
 
 import com.google.common.collect.ImmutableList;
+import ij.IJ;
 import ij.ImagePlus;
+import ij.Macro;
+import ij.WindowManager;
 import ij.gui.PointRoi;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import ij.io.RoiDecoder;
 import ij.io.RoiEncoder;
+import ij.macro.Interpreter;
 import ij.measure.ResultsTable;
 import ij.plugin.filter.Analyzer;
 import ij.plugin.frame.RoiManager;
@@ -17,8 +21,10 @@ import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.extensions.imagejalgorithms.SliceIndex;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure.ImageStatisticsParameters;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.roi.RoiOutline;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.utils.PathUtils;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.nio.file.Path;
@@ -123,6 +129,34 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
     @Override
     public ACAQData duplicate() {
         return new ROIListData(this);
+    }
+
+    @Override
+    public void display(String displayName, ACAQWorkbench workbench) {
+        if (IJ.getImage() == null) {
+            JOptionPane.showMessageDialog(null, "There is no current image open in ImageJ!", "Import ROI", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        ImagePlus imp = IJ.getImage();
+        RoiManager roiManager = null;
+        if (roiManager == null) {
+            if (Macro.getOptions() != null && Interpreter.isBatchMode())
+                roiManager = Interpreter.getBatchModeRoiManager();
+            if (roiManager == null) {
+                Frame frame = WindowManager.getFrame("ROI Manager");
+                if (frame == null)
+                    IJ.run("ROI Manager...");
+                frame = WindowManager.getFrame("ROI Manager");
+                if (frame == null || !(frame instanceof RoiManager)) {
+                    return;
+                }
+                roiManager = (RoiManager) frame;
+            }
+        }
+        for (Roi roi : this) {
+            roiManager.add(imp, (Roi) roi.clone(), -1);
+        }
+        roiManager.runCommand("show all with labels");
     }
 
     /**

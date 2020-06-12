@@ -3,6 +3,7 @@ package org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQHidden;
 import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 
 import java.nio.file.Path;
 
@@ -20,5 +21,10 @@ public class ACAQTraitNodeInheritanceData implements ACAQData {
     @Override
     public ACAQData duplicate() {
         return new ACAQTraitNodeInheritanceData();
+    }
+
+    @Override
+    public void display(String displayName, ACAQWorkbench workbench) {
+
     }
 }

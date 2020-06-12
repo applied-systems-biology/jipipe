@@ -22,7 +22,11 @@ import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
+import org.hkijena.acaq5.ui.components.DocumentTabPane;
+import org.hkijena.acaq5.ui.plotbuilder.ACAQPlotBuilderUI;
 import org.hkijena.acaq5.utils.JsonUtils;
+import org.hkijena.acaq5.utils.UIUtils;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
@@ -69,6 +73,15 @@ public abstract class PlotData implements ACAQData, ACAQParameterCollection, ACA
         for (PlotDataSeries data : other.series) {
             this.series.add(new PlotDataSeries(data));
         }
+    }
+
+    @Override
+    public void display(String displayName, ACAQWorkbench workbench) {
+        ACAQPlotBuilderUI plotBuilderUI = new ACAQPlotBuilderUI(workbench);
+        plotBuilderUI.importExistingPlot((PlotData) duplicate());
+        workbench.getDocumentTabPane().addTab(displayName, UIUtils.getIconFromResources("data-types/data-type-plot.png"),
+                plotBuilderUI, DocumentTabPane.CloseMode.withAskOnCloseButton, true);
+        workbench.getDocumentTabPane().switchToLastTab();
     }
 
     @Override

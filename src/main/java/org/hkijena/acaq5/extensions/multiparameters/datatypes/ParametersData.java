@@ -1,15 +1,20 @@
 package org.hkijena.acaq5.extensions.multiparameters.datatypes;
 
+import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.utils.JsonUtils;
 
+import java.awt.*;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +43,18 @@ public class ParametersData implements ACAQData {
         ParametersData data = new ParametersData();
         data.parameterData = new HashMap<>(parameterData);
         return data;
+    }
+
+    @Override
+    public void display(String displayName, ACAQWorkbench workbench) {
+        try {
+            Path outputFile = Files.createTempFile("ACAQTempParameters-" + displayName, ".json");
+            JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter()
+                    .writeValue(outputFile.toFile(), this);
+            Desktop.getDesktop().open(outputFile.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Map<String, Object> getParameterData() {

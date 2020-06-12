@@ -5,6 +5,7 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQHidden;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -35,6 +36,13 @@ public interface ACAQData {
      * @return a deep copy of the data
      */
     ACAQData duplicate();
+
+    /**
+     * This function should display the data in the GUI
+     * @param displayName a name that can be used
+     * @param workbench the workbench
+     */
+    void display(String displayName, ACAQWorkbench workbench);
 
     /**
      * Called when the data is flushed

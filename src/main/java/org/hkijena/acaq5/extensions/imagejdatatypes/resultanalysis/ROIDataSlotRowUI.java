@@ -49,17 +49,20 @@ public class ROIDataSlotRowUI extends ACAQDefaultResultDataSlotRowUI {
         if (roiFile != null) {
             registerAction("Import into current image", "Annotates the currently open image with the ROI annotations.",
                     UIUtils.getIconFromResources("data-types/roi.png"), e -> {
+                        if (IJ.getImage() == null) {
+                            JOptionPane.showMessageDialog(this, "There is no current image open in ImageJ!", "Import ROI", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
                         importROI(roiFile);
                     });
         }
     }
 
-    private void importROI(Path roiFile) {
-        if (IJ.getImage() == null) {
-            JOptionPane.showMessageDialog(this, "There is no current image open in ImageJ!", "Import ROI", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
+    /**
+     * Imports and displays a ROI on the current image
+     * @param roiFile the file
+     */
+    public static void importROI(Path roiFile) {
         ImagePlus imp = IJ.getImage();
         RoiManager roiManager = null;
         if (roiManager == null) {
@@ -77,16 +80,9 @@ public class ROIDataSlotRowUI extends ACAQDefaultResultDataSlotRowUI {
             }
         }
         for (Roi roi : ROIListData.loadRoiListFromFile(roiFile)) {
-//            if (imp.getStackSize() > 1) {
-//                int n = imp.getCurrentSlice();
-//                if (imp.isHyperStack()) {
-//                    int[] pos = imp.convertIndexToPosition(n);
-//                    roi.setPosition(pos[0], pos[1], pos[2]);
-//                } else
-//                    roi.setPosition(n);
-//            }
             roiManager.add(imp, roi, -1);
         }
         roiManager.runCommand("show all with labels");
     }
+
 }

@@ -5,8 +5,10 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.utils.JsonUtils;
 
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -42,6 +44,15 @@ public class PathData implements ACAQData {
     @Override
     public ACAQData duplicate() {
         return new FileData(path);
+    }
+
+    @Override
+    public void display(String displayName, ACAQWorkbench workbench) {
+        try {
+            Desktop.getDesktop().open(getPath().toFile());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

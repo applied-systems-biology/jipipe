@@ -2,6 +2,7 @@ package org.hkijena.acaq5.extensions.tables.datatypes;
 
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 
 import java.nio.file.Path;
 import java.util.Collections;
@@ -82,5 +83,11 @@ public class TableColumnReference implements TableColumn {
     @Override
     public ACAQData duplicate() {
         return this;
+    }
+
+    @Override
+    public void display(String displayName, ACAQWorkbench workbench) {
+        ResultsTableData data = new ResultsTableData(Collections.singleton(this));
+        data.display(displayName, workbench);
     }
 }

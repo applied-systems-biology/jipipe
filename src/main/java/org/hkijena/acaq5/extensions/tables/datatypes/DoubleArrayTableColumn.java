@@ -3,6 +3,7 @@ package org.hkijena.acaq5.extensions.tables.datatypes;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -86,5 +87,11 @@ public class DoubleArrayTableColumn implements MutableTableColumn {
     @Override
     public ACAQData duplicate() {
         return new DoubleArrayTableColumn(Arrays.copyOf(data, data.length), label);
+    }
+
+    @Override
+    public void display(String displayName, ACAQWorkbench workbench) {
+        ResultsTableData data = new ResultsTableData(Collections.singleton(this));
+        data.display(displayName, workbench);
     }
 }

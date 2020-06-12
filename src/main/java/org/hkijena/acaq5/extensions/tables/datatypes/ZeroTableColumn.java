@@ -2,6 +2,7 @@ package org.hkijena.acaq5.extensions.tables.datatypes;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 
 import java.nio.file.Path;
 
@@ -62,5 +63,10 @@ public class ZeroTableColumn implements TableColumn {
     @Override
     public ACAQData duplicate() {
         return new ZeroTableColumn();
+    }
+
+    @Override
+    public void display(String displayName, ACAQWorkbench workbench) {
+
     }
 }
