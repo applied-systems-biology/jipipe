@@ -71,6 +71,15 @@ public class ACAQProjectCache {
     }
 
     /**
+     * Tries to extract data from the cache
+     * @param source the generating algorithm
+     * @return map from state ID to map of slot name to slot. Null if not found
+     */
+    public Map<String, Map<String, ACAQDataSlot>> extract(ACAQAlgorithm source) {
+        return cacheEntries.getOrDefault(source, null);
+    }
+
+    /**
      * Tries to extract data from the cache. Returns null if no data is available.
      * @param source the generating algorithm
      * @param stateId the state id
@@ -89,7 +98,7 @@ public class ACAQProjectCache {
      * @param source the generating algorithm
      * @param stateId the state id
      * @param slotName the slot that contains the data
-     * @return the cache's slot. Please do not work directly on this slot. Use targetSlot.copyFrom() instead
+     * @return the cache's slot. Please do not work directly on this slot. Use targetSlot.copyFrom() instead. Null if not found
      */
     public ACAQDataSlot extract(ACAQAlgorithm source, String stateId, String slotName) {
         Map<String, Map<String, ACAQDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);

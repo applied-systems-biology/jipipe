@@ -89,7 +89,7 @@ public class ACAQVerticalDataSlotUI extends ACAQDataSlotUI {
         centerPanel.add(nameLabel);
         centerPanel.add(Box.createHorizontalGlue());
 
-        if(getSlot().getAlgorithm() instanceof ACAQAlgorithm && getWorkbench() instanceof ACAQProjectWorkbench) {
+        if(getSlot().isOutput() && getSlot().getAlgorithm() instanceof ACAQAlgorithm && getWorkbench() instanceof ACAQProjectWorkbench) {
             ACAQProjectWorkbench projectWorkbench = (ACAQProjectWorkbench) getWorkbench();
             cacheManagerUI = new ACAQDataSlotCacheManagerUI(projectWorkbench, getSlot());
             centerPanel.add(cacheManagerUI);

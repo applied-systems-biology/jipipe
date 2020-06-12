@@ -90,7 +90,7 @@ public class ACAQHorizontalDataSlotUI extends ACAQDataSlotUI {
         nameLabel.setIcon(ACAQUIDatatypeRegistry.getInstance().getIconFor(getSlotDataType()));
         centerPanel.add(nameLabel);
 
-        if(getSlot().getAlgorithm() instanceof ACAQAlgorithm && getWorkbench() instanceof ACAQProjectWorkbench) {
+        if(getSlot().isOutput() && getSlot().getAlgorithm() instanceof ACAQAlgorithm && getWorkbench() instanceof ACAQProjectWorkbench) {
             ACAQProjectWorkbench projectWorkbench = (ACAQProjectWorkbench) getWorkbench();
             cacheManagerUI = new ACAQDataSlotCacheManagerUI(projectWorkbench, getSlot());
             centerPanel.add(cacheManagerUI);
