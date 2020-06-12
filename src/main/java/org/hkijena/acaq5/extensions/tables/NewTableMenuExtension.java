@@ -10,7 +10,6 @@ import org.hkijena.acaq5.ui.extension.MenuTarget;
 import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableEditor;
 import org.hkijena.acaq5.utils.UIUtils;
 
-import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 

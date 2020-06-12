@@ -19,12 +19,7 @@ import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
 
 /**
  * UI that merges tables

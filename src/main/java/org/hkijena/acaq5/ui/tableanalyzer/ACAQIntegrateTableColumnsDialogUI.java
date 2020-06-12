@@ -20,8 +20,8 @@ import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -106,10 +106,9 @@ public class ACAQIntegrateTableColumnsDialogUI extends JDialog {
             List<ResultsTableData.IntegratingColumnOperationEntry> operations = new ArrayList<>();
             for (Map.Entry<String, JComboBox<Object>> entry : columnOperations.entrySet()) {
                 Object value = entry.getValue().getSelectedItem();
-                if(value instanceof CategorizeColumnRole) {
+                if (value instanceof CategorizeColumnRole) {
                     categoryColumns.add(entry.getKey());
-                }
-                else if(value instanceof ACAQTableRegistry.ColumnOperationEntry) {
+                } else if (value instanceof ACAQTableRegistry.ColumnOperationEntry) {
                     ACAQTableRegistry.ColumnOperationEntry operationEntry = (ACAQTableRegistry.ColumnOperationEntry) value;
                     operations.add(new ResultsTableData.IntegratingColumnOperationEntry(entry.getKey(),
                             String.format("%s(%s)", operationEntry.getShortName(), entry.getKey()),

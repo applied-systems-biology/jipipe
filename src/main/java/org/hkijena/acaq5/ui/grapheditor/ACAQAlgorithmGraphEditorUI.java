@@ -486,7 +486,7 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
                 int mny = ny + scrollPane.getVerticalScrollBar().getVisibleAmount();
                 boolean ex = mnx > scrollPane.getHorizontalScrollBar().getMaximum();
                 boolean ey = mny > scrollPane.getVerticalScrollBar().getMaximum();
-                if(ex || ey) {
+                if (ex || ey) {
                     int exv = Math.max(0, mnx - scrollPane.getHorizontalScrollBar().getMaximum());
                     int eyv = Math.max(0, mny - scrollPane.getVerticalScrollBar().getMaximum());
                     canvasUI.expandRightBottom(exv, eyv);

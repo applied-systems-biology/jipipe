@@ -37,7 +37,9 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
@@ -274,7 +276,7 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
 
     private void importFromCSV() {
         Path fileName = FileChooserSettings.openFile(this, FileChooserSettings.KEY_PROJECT, "Open *.csv");
-        if(fileName != null) {
+        if (fileName != null) {
             try {
                 ResultsTableData tableData = ResultsTableData.fromCSV(fileName);
                 tableModel = tableData;
@@ -446,7 +448,7 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
             item.setToolTipText(entry.getDescription());
             item.addActionListener(e -> {
                 createUndoSnapshot();
-                tableModel.applyOperation(getSelectedCells(), (ConvertingColumnOperation)entry.getOperation());
+                tableModel.applyOperation(getSelectedCells(), (ConvertingColumnOperation) entry.getOperation());
             });
             convertSelectedCellsMenu.add(item);
         }
@@ -661,6 +663,7 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
 
         /**
          * Creates a new renderer
+         *
          * @param tableEditor the parent component
          */
         public Renderer(ACAQTableEditor tableEditor) {
@@ -673,10 +676,9 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 
-            if(!tableEditor.tableModel.isNumeric(column)) {
+            if (!tableEditor.tableModel.isNumeric(column)) {
                 setText("<html><i><span style=\"color:gray;\">\"</span>" + value + "<span style=\"color:gray;\">\"</span></i></html>");
-            }
-            else {
+            } else {
                 setText("" + value);
             }
 

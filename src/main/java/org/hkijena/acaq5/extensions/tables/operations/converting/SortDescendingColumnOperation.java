@@ -15,13 +15,12 @@ import java.util.Collections;
 public class SortDescendingColumnOperation implements ConvertingColumnOperation {
     @Override
     public TableColumn apply(TableColumn column) {
-        if(column.isNumeric()) {
+        if (column.isNumeric()) {
             double[] data = column.getDataAsDouble(column.getRows());
             Arrays.sort(data);
             ArrayUtils.reverse(data);
             return new DoubleArrayTableColumn(data, column.getLabel());
-        }
-        else {
+        } else {
             String[] data = column.getDataAsString(column.getRows());
             Arrays.sort(data, Collections.reverseOrder());
             return new StringArrayTableColumn(data, column.getLabel());

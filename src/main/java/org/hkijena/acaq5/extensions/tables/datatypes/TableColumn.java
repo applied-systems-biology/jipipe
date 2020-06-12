@@ -97,20 +97,20 @@ public interface TableColumn extends ACAQData {
 
     /**
      * Returns a new table column that contains the selected rows in the provided order
+     *
      * @param input the input column
-     * @param rows the rows
+     * @param rows  the rows
      * @return a new table column that contains the selected rows in the provided order
      */
     static TableColumn getSlice(TableColumn input, List<Integer> rows) {
-        if(input.isNumeric()) {
+        if (input.isNumeric()) {
             double[] values = new double[rows.size()];
             for (int row = 0; row < rows.size(); row++) {
                 int inputRow = rows.get(row);
                 values[row] = input.getRowAsDouble(inputRow);
             }
             return new DoubleArrayTableColumn(values, input.getLabel());
-        }
-        else {
+        } else {
             String[] values = new String[rows.size()];
             for (int row = 0; row < rows.size(); row++) {
                 int inputRow = rows.get(row);
