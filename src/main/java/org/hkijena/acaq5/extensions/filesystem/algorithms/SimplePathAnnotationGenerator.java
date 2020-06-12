@@ -10,6 +10,7 @@ import org.hkijena.acaq5.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.acaq5.extensions.filesystem.dataypes.PathData;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 
+import java.nio.file.Files;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -51,9 +52,10 @@ public class SimplePathAnnotationGenerator extends ACAQSimpleIteratingAlgorithm 
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         if (generatedAnnotation.getDeclaration() != null) {
             FolderData inputData = dataInterface.getInputData(getFirstInputSlot(), FolderData.class);
+            boolean removeThisExtension = removeExtensions && Files.isRegularFile(inputData.getPath());
 
             String annotationValue;
-            if (removeExtensions && fullPath) {
+            if (removeThisExtension && fullPath) {
                 String fileName = inputData.getPath().getFileName().toString();
                 fileName = removeExtension(fileName);
                 annotationValue = inputData.getPath().getParent().resolve(fileName).toString();
@@ -63,7 +65,7 @@ public class SimplePathAnnotationGenerator extends ACAQSimpleIteratingAlgorithm 
                 } else {
                     annotationValue = inputData.getPath().getFileName().toString();
                 }
-                if (removeExtensions) {
+                if (removeThisExtension) {
                     annotationValue = removeExtension(annotationValue);
                 }
             }
