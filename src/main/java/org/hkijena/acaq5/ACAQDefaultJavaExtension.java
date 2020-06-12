@@ -26,8 +26,6 @@ import org.hkijena.acaq5.ui.parameters.ACAQParameterGeneratorUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultDataSlotCellUI;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultDataSlotRowUI;
-import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableVectorOperation;
-import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableVectorOperationUI;
 import org.hkijena.acaq5.utils.ReflectionUtils;
 import org.scijava.service.AbstractService;
 
@@ -360,26 +358,6 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
     public void registerParameterGenerator(Class<?> parameterClass, Class<? extends ACAQParameterGeneratorUI> uiClass, String name, String description) {
         ACAQUIParameterTypeRegistry parametertypeRegistry = registry.getUIParameterTypeRegistry();
         parametertypeRegistry.registerGenerator(parameterClass, uiClass, name, description);
-    }
-
-    /**
-     * Registers a new table operation
-     *
-     * @param operationClass Operation class
-     * @param uiClass        UI for the operation
-     * @param name           Operation name
-     * @param shortcut       Shortcut displayed in the table column headers
-     * @param description    Description
-     * @param icon           Icon
-     */
-    @Deprecated
-    public void registerTableOperation(Class<? extends ACAQTableVectorOperation> operationClass,
-                                       Class<? extends ACAQTableVectorOperationUI> uiClass,
-                                       String name,
-                                       String shortcut,
-                                       String description,
-                                       Icon icon) {
-        registry.getTableAnalyzerUIOperationRegistry().register(operationClass, uiClass, name, shortcut, description, icon);
     }
 
     /**

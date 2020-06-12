@@ -15,11 +15,6 @@ import java.util.Set;
 public interface ACAQRegistry extends Service, ACAQValidatable {
 
     /**
-     * @return Registry for table analyzer operations
-     */
-    ACAQTableAnalyzerUIOperationRegistry getTableAnalyzerUIOperationRegistry();
-
-    /**
      * @return The event bus
      */
     EventBus getEventBus();

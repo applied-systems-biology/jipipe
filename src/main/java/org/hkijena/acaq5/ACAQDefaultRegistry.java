@@ -37,7 +37,6 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
     private ACAQUIDatatypeRegistry uiDatatypeRegistry = new ACAQUIDatatypeRegistry();
     private ACAQUIParameterTypeRegistry uiParametertypeRegistry = new ACAQUIParameterTypeRegistry();
     private ACAQUITraitRegistry acaquiTraitRegistry = new ACAQUITraitRegistry();
-    private ACAQTableAnalyzerUIOperationRegistry tableAnalyzerUIOperationRegistry = new ACAQTableAnalyzerUIOperationRegistry();
     private ACAQImageJAdapterRegistry imageJDataAdapterRegistry = new ACAQImageJAdapterRegistry();
     private ACAQUIImageJDatatypeAdapterRegistry uiImageJDatatypeAdapterRegistry = new ACAQUIImageJDatatypeAdapterRegistry();
     private ACAQUIMenuServiceRegistry uiMenuServiceRegistry = new ACAQUIMenuServiceRegistry();
@@ -69,7 +68,6 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
         uiDatatypeRegistry = new ACAQUIDatatypeRegistry();
         uiParametertypeRegistry = new ACAQUIParameterTypeRegistry();
         acaquiTraitRegistry = new ACAQUITraitRegistry();
-        tableAnalyzerUIOperationRegistry = new ACAQTableAnalyzerUIOperationRegistry();
         imageJDataAdapterRegistry = new ACAQImageJAdapterRegistry();
         uiImageJDatatypeAdapterRegistry = new ACAQUIImageJDatatypeAdapterRegistry();
         uiMenuServiceRegistry = new ACAQUIMenuServiceRegistry();
@@ -196,11 +194,6 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
     @Override
     public ACAQUIMenuServiceRegistry getUIMenuServiceRegistry() {
         return uiMenuServiceRegistry;
-    }
-
-    @Override
-    public ACAQTableAnalyzerUIOperationRegistry getTableAnalyzerUIOperationRegistry() {
-        return tableAnalyzerUIOperationRegistry;
     }
 
     private void installEvents() {

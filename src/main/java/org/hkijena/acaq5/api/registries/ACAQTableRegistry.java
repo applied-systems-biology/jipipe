@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.api.registries;
 
 import org.hkijena.acaq5.ACAQDefaultRegistry;
+import org.hkijena.acaq5.api.traits.ACAQDefaultTrait;
 import org.hkijena.acaq5.extensions.tables.operations.ColumnOperation;
 
 import java.util.Collections;
@@ -103,5 +104,9 @@ public class ACAQTableRegistry {
         public String getShortName() {
             return shortName;
         }
+    }
+
+    public static ACAQTableRegistry getInstance() {
+        return ACAQDefaultRegistry.getInstance().getTableRegistry();
     }
 }

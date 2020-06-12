@@ -123,16 +123,6 @@ public class ResultsTableData implements ACAQData, TableModel {
     }
 
     /**
-     * Loads a results table from a folder containing CSV file
-     *
-     * @param storageFilePath storage folder
-     * @throws IOException triggered by {@link ResultsTable}
-     */
-    public ResultsTableData(Path storageFilePath) throws IOException {
-        table = ResultsTable.open(PathUtils.findFileByExtensionIn(storageFilePath, ".csv").toString());
-    }
-
-    /**
      * Applies an operation to the selected cells
      * @param selectedCells the selected cells
      * @param operation the operation
@@ -326,16 +316,6 @@ public class ResultsTableData implements ACAQData, TableModel {
     }
 
     /**
-     * Wraps a results table
-     *
-     * @param table wrapped table
-     */
-    public ResultsTableData(ResultsTable table) {
-        this.table = table;
-        cleanupTable();
-    }
-
-    /**
      * ImageJ tables break many assumptions about tables, as they lazy-delete their columns without ensuring consecutive IDs
      * This breaks too many algorithms, so re-create the column
      */
@@ -349,15 +329,6 @@ public class ResultsTableData implements ACAQData, TableModel {
                 table.setColumn(column, columnAsVariables);
             }
         }
-    }
-
-    /**
-     * Creates a copy
-     *
-     * @param other the original
-     */
-    public ResultsTableData(ResultsTableData other) {
-        this.table = (ResultsTable) other.table.clone();
     }
 
     /**
