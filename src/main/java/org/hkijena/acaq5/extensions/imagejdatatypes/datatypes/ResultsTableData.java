@@ -223,6 +223,17 @@ public class ResultsTableData implements ACAQData, TableModel {
     }
 
     /**
+     * Adds multiple rows
+     * @param rows the number of rows to add
+     */
+    public void addRows(int rows) {
+        for (int row = 0; row < rows; row++) {
+            table.incrementCounter();
+        }
+        fireChangedEvent(new TableModelEvent(this));
+    }
+
+    /**
      * An entry for obtaining statistics/integrated values
      */
     public static class IntegratingColumnOperationEntry {

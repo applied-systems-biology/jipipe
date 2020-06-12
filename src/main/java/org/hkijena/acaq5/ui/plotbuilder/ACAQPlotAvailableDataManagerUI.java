@@ -127,36 +127,36 @@ public class ACAQPlotAvailableDataManagerUI extends ACAQWorkbenchPanel {
     }
 
     private void showSelectedData() {
-        // TODO: Implement
-//        int rows = 0;
-//        for (TableColumn dataSource : dataSourceJList.getSelectedValuesList()) {
-//            rows = Math.max(dataSource.getRows(), rows);
-//        }
-//
-//        DefaultTableModel tableModel = new DefaultTableModel(rows, dataSourceJList.getSelectedValuesList().size());
-//        tableModel.setColumnIdentifiers(dataSourceJList.getSelectedValuesList().stream().map(TableColumn::getLabel).toArray());
-//        for (int column = 0; column < dataSourceJList.getSelectedValuesList().size(); column++) {
-//            TableColumn dataSource = dataSourceJList.getSelectedValuesList().get(column);
-//            if (dataSource.isNumeric()) {
-//                double[] data = dataSource.getDataAsDouble(rows);
-//                for (int row = 0; row < rows; row++) {
-//                    tableModel.setValueAt(data[row], row, column);
-//                }
-//            } else {
-//                String[] data = dataSource.getDataAsString(rows);
-//                for (int row = 0; row < rows; row++) {
-//                    tableModel.setValueAt(data[row], row, column);
-//                }
-//            }
-//        }
-//
-//        String name = dataSourceJList.getSelectedValuesList().size() == 1 ? dataSourceJList.getSelectedValuesList().get(0).getLabel() : "Table";
-//        ACAQTableEditor tableAnalyzerUI = new ACAQTableEditor((ACAQProjectWorkbench) getWorkbench(), tableModel);
-//        getWorkbench().getDocumentTabPane().addTab(name, UIUtils.getIconFromResources("table.png"),
-//                tableAnalyzerUI,
-//                DocumentTabPane.CloseMode.withAskOnCloseButton,
-//                true);
-//        getWorkbench().getDocumentTabPane().switchToLastTab();
+        int rows = 0;
+        for (TableColumn dataSource : dataSourceJList.getSelectedValuesList()) {
+            rows = Math.max(dataSource.getRows(), rows);
+        }
+
+        ResultsTableData tableModel = new ResultsTableData();
+        tableModel.addRows(rows);
+        for (int sourceColumn = 0; sourceColumn < dataSourceJList.getSelectedValuesList().size(); sourceColumn++) {
+            TableColumn dataSource = dataSourceJList.getSelectedValuesList().get(sourceColumn);
+            int targetColumn = tableModel.addColumn(dataSource.getLabel(), !dataSource.isNumeric());
+            if (dataSource.isNumeric()) {
+                double[] data = dataSource.getDataAsDouble(rows);
+                for (int row = 0; row < rows; row++) {
+                    tableModel.setValueAt(data[row], row, targetColumn);
+                }
+            } else {
+                String[] data = dataSource.getDataAsString(rows);
+                for (int row = 0; row < rows; row++) {
+                    tableModel.setValueAt(data[row], row, targetColumn);
+                }
+            }
+        }
+
+        String name = dataSourceJList.getSelectedValuesList().size() == 1 ? dataSourceJList.getSelectedValuesList().get(0).getLabel() : "Table";
+        ACAQTableEditor tableAnalyzerUI = new ACAQTableEditor((ACAQProjectWorkbench) getWorkbench(), tableModel);
+        getWorkbench().getDocumentTabPane().addTab(name, UIUtils.getIconFromResources("table.png"),
+                tableAnalyzerUI,
+                DocumentTabPane.CloseMode.withAskOnCloseButton,
+                true);
+        getWorkbench().getDocumentTabPane().switchToLastTab();
     }
 
     /**
