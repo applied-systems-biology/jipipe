@@ -57,6 +57,7 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     private ACAQAlgorithmGraphDragAndDropBehavior dragAndDropBehavior;
     private ACAQAlgorithmGraphCopyPasteBehavior copyPasteBehavior;
     private Point cursor;
+    private long lastTimeExpandedNegative = 0;
 
     /**
      * Used to store the minimum dimensions of the canvas to reduce user disruption
@@ -266,6 +267,8 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 //        newEntryLocationX = backup;
         minDimensions = null;
         autoLayoutSugiyama();
+        if(getParent() != null)
+            getParent().revalidate();
     }
 
     private void autoPlaceAlgorithm(ACAQAlgorithmUI ui) {
@@ -386,6 +389,22 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     @Override
     public void mouseDragged(MouseEvent mouseEvent) {
         if (currentlyDragged != null) {
+            int xu = currentlyDraggedOffset.x + mouseEvent.getX();
+            int yu = currentlyDraggedOffset.y + mouseEvent.getY();
+            if(xu < 0 || yu < 0) {
+                long currentTimeMillis = System.currentTimeMillis();
+                int ex = xu < 0 ? ACAQAlgorithmUI.SLOT_UI_WIDTH : 0;
+                int ey = yu < 0 ? ACAQAlgorithmUI.SLOT_UI_HEIGHT : 0;
+                if(currentTimeMillis - lastTimeExpandedNegative > 100) {
+                    for (ACAQAlgorithmUI value : nodeUIs.values()) {
+                        if (value != currentlyDragged) {
+                            value.setLocation(value.getX() + ex, value.getY() + ey);
+                        }
+                    }
+                    lastTimeExpandedNegative = currentTimeMillis;
+                }
+            }
+
             int x = Math.max(0, currentlyDraggedOffset.x + mouseEvent.getX());
             int y = Math.max(0, currentlyDraggedOffset.y + mouseEvent.getY());
             currentlyDragged.trySetLocationInGrid(x, y);
@@ -394,6 +413,38 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
             if (getParent() != null)
                 getParent().revalidate();
         }
+    }
+
+    /**
+     * Expands the canvas by moving all algorithms
+     * @param left expand left
+     * @param top expand top
+     */
+    public void expandLeftTop(boolean left, boolean top) {
+        int ex = left ? ACAQAlgorithmUI.SLOT_UI_WIDTH : 0;
+        int ey = top ? ACAQAlgorithmUI.SLOT_UI_HEIGHT : 0;
+        for (ACAQAlgorithmUI value : nodeUIs.values()) {
+            if (value != currentlyDragged) {
+                value.setLocation(value.getX() + ex, value.getY() + ey);
+            }
+        }
+        if(getParent() != null)
+            getParent().revalidate();
+        repaint();
+    }
+
+    /**
+     * Expands the canvas
+     * @param right expand right
+     * @param bottom expand bottom
+     */
+    public void expandRightBottom(int right, int bottom) {
+        if(minDimensions == null)
+            minDimensions = new Dimension(getWidth(), getHeight());
+        minDimensions.width += right;
+        minDimensions.height += bottom;
+        if(getParent() != null)
+            getParent().revalidate();
     }
 
     @Override

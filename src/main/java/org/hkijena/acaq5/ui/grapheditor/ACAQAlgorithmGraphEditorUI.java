@@ -457,6 +457,36 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
             }
             int nx = panningScrollbarOffset.x + dx;
             int ny = panningScrollbarOffset.y + dy;
+
+            // Infinite scroll (left, top)
+            {
+                boolean ex = nx < 0;
+                boolean ey = ny < 0;
+                if (ex || ey) {
+                    canvasUI.expandLeftTop(ex, ey);
+                    if (ex) {
+                        nx = ACAQAlgorithmUI.SLOT_UI_WIDTH;
+                        panningOffset.x += ACAQAlgorithmUI.SLOT_UI_WIDTH;
+                    }
+                    if (ey) {
+                        ny = ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+                        panningOffset.y += ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+                    }
+                }
+            }
+            // Infinite scroll (right, bottom)
+            {
+                int mnx = nx + scrollPane.getHorizontalScrollBar().getVisibleAmount();
+                int mny = ny + scrollPane.getVerticalScrollBar().getVisibleAmount();
+                boolean ex = mnx > scrollPane.getHorizontalScrollBar().getMaximum();
+                boolean ey = mny > scrollPane.getVerticalScrollBar().getMaximum();
+                if(ex || ey) {
+                    int exv = Math.max(0, mnx - scrollPane.getHorizontalScrollBar().getMaximum());
+                    int eyv = Math.max(0, mny - scrollPane.getVerticalScrollBar().getMaximum());
+                    canvasUI.expandRightBottom(exv, eyv);
+                }
+            }
+
             scrollPane.getHorizontalScrollBar().setValue(nx);
             scrollPane.getVerticalScrollBar().setValue(ny);
         }
