@@ -1,8 +1,11 @@
 package org.hkijena.acaq5.ui.grapheditor;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
+import org.hkijena.acaq5.ui.cache.ACAQDataSlotCacheManagerUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.TooltipUtils;
@@ -22,17 +25,18 @@ import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_WIDTH;
 public class ACAQHorizontalDataSlotUI extends ACAQDataSlotUI {
     private AbstractButton assignButton;
     private JLabel nameLabel;
+    private ACAQDataSlotCacheManagerUI cacheManagerUI;
 
     /**
      * Creates a new UI
      *
+     * @param workbench the workbench
      * @param algorithmUI The parent algorithm UI
-     * @param graph       The graph
      * @param compartment The compartment ID
      * @param slot        The slot instance
      */
-    public ACAQHorizontalDataSlotUI(ACAQAlgorithmUI algorithmUI, ACAQAlgorithmGraph graph, String compartment, ACAQDataSlot slot) {
-        super(algorithmUI, compartment, slot);
+    public ACAQHorizontalDataSlotUI(ACAQWorkbench workbench, ACAQAlgorithmUI algorithmUI, String compartment, ACAQDataSlot slot) {
+        super(workbench, algorithmUI, compartment, slot);
         initialize();
         reloadButtonStatus();
     }
@@ -85,8 +89,12 @@ public class ACAQHorizontalDataSlotUI extends ACAQDataSlotUI {
         nameLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
         nameLabel.setIcon(ACAQUIDatatypeRegistry.getInstance().getIconFor(getSlotDataType()));
         centerPanel.add(nameLabel);
-//        add(nameLabel, BorderLayout.CENTER);
 
+        if(getSlot().getAlgorithm() instanceof ACAQAlgorithm && getWorkbench() instanceof ACAQProjectWorkbench) {
+            ACAQProjectWorkbench projectWorkbench = (ACAQProjectWorkbench) getWorkbench();
+            cacheManagerUI = new ACAQDataSlotCacheManagerUI(projectWorkbench, getSlot());
+            centerPanel.add(cacheManagerUI);
+        }
 
         if (getSlot().isInput()) {
             add(assignButton, BorderLayout.WEST);

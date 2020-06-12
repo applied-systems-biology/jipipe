@@ -101,7 +101,7 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
             }
         });
 
-        canvasUI = new ACAQAlgorithmGraphCanvasUI(algorithmGraph, compartment);
+        canvasUI = new ACAQAlgorithmGraphCanvasUI(getWorkbench(), algorithmGraph, compartment);
         canvasUI.getEventBus().register(this);
         canvasUI.addMouseListener(this);
         canvasUI.addMouseMotionListener(this);

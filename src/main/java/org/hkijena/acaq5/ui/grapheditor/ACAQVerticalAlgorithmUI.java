@@ -5,6 +5,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.registries.ACAQUIAlgorithmRegistry;
 import org.hkijena.acaq5.utils.PointRange;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -30,11 +31,12 @@ public class ACAQVerticalAlgorithmUI extends ACAQAlgorithmUI {
     /**
      * Creates a new UI
      *
+     * @param workbench
      * @param graphUI   The graph UI that contains this UI
      * @param algorithm The algorithm
      */
-    public ACAQVerticalAlgorithmUI(ACAQAlgorithmGraphCanvasUI graphUI, ACAQGraphNode algorithm) {
-        super(graphUI, algorithm, ACAQAlgorithmGraphCanvasUI.ViewMode.Vertical);
+    public ACAQVerticalAlgorithmUI(ACAQWorkbench workbench, ACAQAlgorithmGraphCanvasUI graphUI, ACAQGraphNode algorithm) {
+        super(workbench, graphUI, algorithm, ACAQAlgorithmGraphCanvasUI.ViewMode.Vertical);
         initialize();
         initializeContextMenu();
         updateAlgorithmSlotUIs();
@@ -213,7 +215,7 @@ public class ACAQVerticalAlgorithmUI extends ACAQAlgorithmUI {
                     rightBorder = 1;
 
                 ACAQDataSlot slot = slots.get(i);
-                ACAQDataSlotUI ui = new ACAQVerticalDataSlotUI(this, getGraphUI().getAlgorithmGraph(), getGraphUI().getCompartment(), slot);
+                ACAQDataSlotUI ui = new ACAQVerticalDataSlotUI(getWorkbench(), this, getGraphUI().getCompartment(), slot);
                 ui.setBorder(BorderFactory.createMatteBorder(0, 0, 1, rightBorder, getBorderColor()));
                 slotUIList.add(ui);
                 inputSlotPanel.add(ui);
@@ -227,7 +229,7 @@ public class ACAQVerticalAlgorithmUI extends ACAQAlgorithmUI {
                 if (i < displayedOutputColumns - 1)
                     rightBorder = 1;
                 ACAQDataSlot slot = slots.get(i);
-                ACAQDataSlotUI ui = new ACAQVerticalDataSlotUI(this, getGraphUI().getAlgorithmGraph(), getGraphUI().getCompartment(), slot);
+                ACAQDataSlotUI ui = new ACAQVerticalDataSlotUI(getWorkbench(), this, getGraphUI().getCompartment(), slot);
                 ui.setBorder(BorderFactory.createMatteBorder(1, 0, 0, rightBorder, getBorderColor()));
                 slotUIList.add(ui);
                 outputSlotPanel.add(ui);

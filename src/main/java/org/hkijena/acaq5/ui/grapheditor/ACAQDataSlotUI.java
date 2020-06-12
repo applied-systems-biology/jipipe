@@ -8,6 +8,8 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
+import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.EditAlgorithmSlotPanel;
 import org.hkijena.acaq5.ui.events.AlgorithmFinderSuccessEvent;
 import org.hkijena.acaq5.ui.grapheditor.algorithmfinder.ACAQAlgorithmFinderUI;
@@ -26,7 +28,7 @@ import java.util.stream.Collectors;
 /**
  * UI around an {@link ACAQDataSlot}
  */
-public abstract class ACAQDataSlotUI extends JPanel {
+public abstract class ACAQDataSlotUI extends ACAQWorkbenchPanel {
     protected JPopupMenu assignButtonMenu;
     private ACAQAlgorithmUI algorithmUI;
     private String compartment;
@@ -35,11 +37,13 @@ public abstract class ACAQDataSlotUI extends JPanel {
     /**
      * Creates a new UI
      *
+     * @param workbench the workbench
      * @param algorithmUI The parent algorithm UI
      * @param compartment The compartment ID
      * @param slot        The slot instance
      */
-    public ACAQDataSlotUI(ACAQAlgorithmUI algorithmUI, String compartment, ACAQDataSlot slot) {
+    public ACAQDataSlotUI(ACAQWorkbench workbench, ACAQAlgorithmUI algorithmUI, String compartment, ACAQDataSlot slot) {
+        super(workbench);
         this.algorithmUI = algorithmUI;
         this.compartment = compartment;
         this.slot = slot;

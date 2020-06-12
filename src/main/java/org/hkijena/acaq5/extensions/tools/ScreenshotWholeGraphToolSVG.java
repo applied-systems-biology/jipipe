@@ -32,7 +32,7 @@ public class ScreenshotWholeGraphToolSVG extends MenuExtension {
 
     private void createScreenshot() {
         ACAQProjectWorkbench workbench = (ACAQProjectWorkbench) getWorkbench();
-        ACAQAlgorithmGraphCanvasUI canvasUI = new ACAQAlgorithmGraphCanvasUI(workbench.getProject().getGraph(), null);
+        ACAQAlgorithmGraphCanvasUI canvasUI = new ACAQAlgorithmGraphCanvasUI(workbench, workbench.getProject().getGraph(), null);
         canvasUI.autoLayoutAll();
         SVGGraphics2D screenshot = canvasUI.createScreenshotSVG();
         Path file = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PARAMETER, "Export full graph as *.png");

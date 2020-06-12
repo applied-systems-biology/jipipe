@@ -8,6 +8,8 @@ import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
+import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api.ACAQTraitNode;
@@ -21,7 +23,7 @@ import java.util.Collections;
 /**
  * UI around an {@link ACAQGraphNode} instance
  */
-public abstract class ACAQAlgorithmUI extends JPanel {
+public abstract class ACAQAlgorithmUI extends ACAQWorkbenchPanel {
 
     /**
      * Height assigned for one slot
@@ -50,11 +52,13 @@ public abstract class ACAQAlgorithmUI extends JPanel {
     /**
      * Creates a new UI
      *
+     * @param workbench thr workbench
      * @param graphUI   The graph UI that contains this UI
      * @param algorithm The algorithm
      * @param viewMode  Directionality of the canvas UI
      */
-    public ACAQAlgorithmUI(ACAQAlgorithmGraphCanvasUI graphUI, ACAQGraphNode algorithm, ACAQAlgorithmGraphCanvasUI.ViewMode viewMode) {
+    public ACAQAlgorithmUI(ACAQWorkbench workbench, ACAQAlgorithmGraphCanvasUI graphUI, ACAQGraphNode algorithm, ACAQAlgorithmGraphCanvasUI.ViewMode viewMode) {
+        super(workbench);
         this.graphUI = graphUI;
         this.algorithm = algorithm;
         this.viewMode = viewMode;

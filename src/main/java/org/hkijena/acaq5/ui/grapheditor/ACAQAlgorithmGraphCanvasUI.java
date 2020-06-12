@@ -14,6 +14,8 @@ import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.AlgorithmGraphConnectedEvent;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.extensions.settings.GraphEditorUISettings;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
+import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.PickAlgorithmDialog;
 import org.hkijena.acaq5.ui.events.AlgorithmEvent;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
@@ -40,7 +42,7 @@ import java.util.*;
 /**
  * UI that displays an {@link ACAQAlgorithmGraph}
  */
-public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionListener, MouseListener {
+public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements MouseMotionListener, MouseListener {
     private final ImageIcon cursorImage = UIUtils.getIconFromResources("target.png");
     private ACAQAlgorithmGraph algorithmGraph;
     private ACAQAlgorithmUI currentlyDragged;
@@ -67,11 +69,13 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     /**
      * Creates a new UI
      *
+     * @param workbench
      * @param algorithmGraph The algorithm graph
      * @param compartment    The compartment to show
      */
-    public ACAQAlgorithmGraphCanvasUI(ACAQAlgorithmGraph algorithmGraph, String compartment) {
-        super(null);
+    public ACAQAlgorithmGraphCanvasUI(ACAQWorkbench workbench, ACAQAlgorithmGraph algorithmGraph, String compartment) {
+        super(workbench);
+        setLayout(null);
         this.algorithmGraph = algorithmGraph;
         this.compartment = compartment;
         initialize();
@@ -192,10 +196,10 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
 
             switch (currentViewMode) {
                 case Horizontal:
-                    ui = new ACAQHorizontalAlgorithmUI(this, algorithm);
+                    ui = new ACAQHorizontalAlgorithmUI(getWorkbench(), this, algorithm);
                     break;
                 case Vertical:
-                    ui = new ACAQVerticalAlgorithmUI(this, algorithm);
+                    ui = new ACAQVerticalAlgorithmUI(getWorkbench(), this, algorithm);
                     break;
                 default:
                     throw new IllegalArgumentException("Unknown view mode!");
