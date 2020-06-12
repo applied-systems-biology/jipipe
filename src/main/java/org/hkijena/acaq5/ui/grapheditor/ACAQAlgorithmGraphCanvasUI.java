@@ -1147,6 +1147,25 @@ public class ACAQAlgorithmGraphCanvasUI extends JPanel implements MouseMotionLis
     }
 
     /**
+     * Sets node positions to make the top left to 0, 0
+     */
+    public void crop() {
+        int minX = Integer.MAX_VALUE;
+        int minY = Integer.MAX_VALUE;
+        for (ACAQAlgorithmUI ui : nodeUIs.values()) {
+            minX = Math.min(ui.getX(), minX);
+            minY = Math.min(ui.getY(), minY);
+        }
+        for (ACAQAlgorithmUI ui : nodeUIs.values()) {
+            ui.setLocation(ui.getX() - minX + ACAQAlgorithmUI.SLOT_UI_WIDTH,
+                    ui.getY() - minY + ACAQAlgorithmUI.SLOT_UI_HEIGHT);
+        }
+        minDimensions = null;
+        if(getParent() != null)
+            getParent().revalidate();
+    }
+
+    /**
      * The direction how a canvas renders the nodes
      */
     public enum ViewMode {

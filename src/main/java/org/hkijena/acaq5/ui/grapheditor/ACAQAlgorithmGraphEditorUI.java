@@ -206,6 +206,12 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
         autoLayoutButton.addActionListener(e -> canvasUI.autoLayoutAll());
         menuBar.add(autoLayoutButton);
 
+        JButton centerViewButton = new JButton(UIUtils.getIconFromResources("algorithms/view-restore.png"));
+        centerViewButton.setToolTipText("Center view to nodes");
+        UIUtils.makeFlat25x25(centerViewButton);
+        centerViewButton.addActionListener(e -> canvasUI.crop());
+        menuBar.add(centerViewButton);
+
         switchPanningDirectionButton = new JToggleButton(UIUtils.getIconFromResources("cursor-arrow.png"),
                 GraphEditorUISettings.getInstance().isSwitchPanningDirection());
         switchPanningDirectionButton.setToolTipText("Reverse panning direction");
