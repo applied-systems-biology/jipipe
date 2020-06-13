@@ -135,7 +135,8 @@ public class FormPanel extends JPanel {
             }
         });
         ++numRows;
-        documentComponent(component, documentation);
+        if(documentation != null)
+            documentComponent(component, documentation);
         return component;
     }
 
@@ -170,8 +171,10 @@ public class FormPanel extends JPanel {
             }
         });
         ++numRows;
-        documentComponent(component, documentation);
-        documentComponent(description, documentation);
+        if(documentation != null)
+            documentComponent(component, documentation);
+        if(documentation != null)
+            documentComponent(description, documentation);
         return component;
     }
 
@@ -196,7 +199,8 @@ public class FormPanel extends JPanel {
             }
         });
         ++numRows;
-        documentComponent(component, documentation);
+        if(documentation != null)
+            documentComponent(component, documentation);
         return component;
     }
 
