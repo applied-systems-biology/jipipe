@@ -81,7 +81,7 @@ public class ACAQDataInterface {
 //                            "Algorithm '" + algorithm.getName() + "'", "The algorithm '" + algorithm.getName() + "' has multiple input data slots. Tho process it, ACAQ must find input data " +
 //                            "that belongs to the same data set. It uses annotations for this purpose. If you have duplicate annotations, or missing columns, then " +
 //                            "ACAQ is not able to find matching data.",
-//                            "Run the testbench on each input data set and check that annotation columns with unique values are created. You can have " +
+//                            "Run the test bench on each input data set and check that annotation columns with unique values are created. You can have " +
 //                                    "multiple columns - all of them will be taken into consideration. If you do not have annotations, use nodes in the 'Annotation' " +
 //                                    "category to add them early on during file processing.");
 //                inputSlotRows.put(inputSlot, row);

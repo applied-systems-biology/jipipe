@@ -226,6 +226,15 @@ public class ACAQProject implements ACAQValidatable {
     }
 
     /**
+     * Reports the validity for the target node and its dependencies
+     * @param report the report
+     * @param targetNode the target node
+     */
+    public void reportValidity(ACAQValidityReport report, ACAQGraphNode targetNode) {
+        graph.reportValidity(report, targetNode);
+    }
+
+    /**
      * @return The compartment graph. Contains only {@link ACAQProjectCompartment} nodes.
      */
     public ACAQAlgorithmGraph getCompartmentGraph() {

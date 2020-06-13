@@ -70,7 +70,7 @@ public class ACAQDatatypeRegistry {
                 "ACAQ plugin manager",
                 "An algorithm requested that the data of type '" + ACAQData.getNameOf(inputData.getClass()) + "' should be converted to type '" + ACAQData.getNameOf(outputDataType) + "'." +
                         " There no available conversion function.",
-                "Please check if the input data has the correct format by using the testbench. If you cannot resolve the issue, please contact the plugin or ACAQ5 authors.");
+                "Please check if the input data has the correct format by using the test bench. If you cannot resolve the issue, please contact the plugin or ACAQ5 authors.");
     }
 
     /**

@@ -9,12 +9,12 @@ algorithm input and allows you to repeatedly run the algorithm with different pa
 
 ## Creating a quick run
 
-To create a testbench for an algorithm, open the algorithm settings, and select *Testbench* on
+To create a test bench for an algorithm, open the algorithm settings, and select *Testbench* on
 the right-hand side. Then click ![](image://icons/run.png) *Create* to create a new instance.
 
 ## Testing parameters
 
-You can change algorithm parameters within the testbench UI on the left-hand side.
+You can change algorithm parameters within the test bench UI on the left-hand side.
 To run the algorithm, click ![](image://icons/run.png) *Add test*. This will run 
 the algorithm and add a new *snapshot* in the selection box.
 

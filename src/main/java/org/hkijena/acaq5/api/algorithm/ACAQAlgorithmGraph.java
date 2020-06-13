@@ -729,6 +729,11 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     @Override
     public void reportValidity(ACAQValidityReport report) {
         for (Map.Entry<String, ACAQGraphNode> entry : algorithms.entrySet()) {
+            if(entry.getValue() instanceof ACAQAlgorithm) {
+                ACAQAlgorithm algorithm = (ACAQAlgorithm) entry.getValue();
+                if(!algorithm.isEnabled() || (algorithm.canPassThrough() && algorithm.isPassThrough()))
+                    continue;
+            }
             report.forCategory(entry.getValue().getCompartment()).forCategory(entry.getValue().getName()).report(entry.getValue());
         }
         if (!RuntimeSettings.getInstance().isAllowSkipAlgorithmsWithoutInput()) {
@@ -743,6 +748,45 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Reports the validity for the target node and its dependencies
+     * @param report the report
+     * @param targetNode the target node
+     */
+    public void reportValidity(ACAQValidityReport report, ACAQGraphNode targetNode) {
+        List<ACAQGraphNode> predecessorAlgorithms = getPredecessorAlgorithms(targetNode, traverseAlgorithms());
+        predecessorAlgorithms.add(targetNode);
+        for (ACAQGraphNode node : predecessorAlgorithms) {
+            if(node instanceof ACAQAlgorithm) {
+                ACAQAlgorithm algorithm = (ACAQAlgorithm) node;
+                if(algorithm.canPassThrough() && algorithm.isPassThrough()) {
+                    continue;
+                }
+                if(!algorithm.isEnabled()) {
+                    report.forCategory(node.getCompartment()).forCategory(node.getName()).reportIsInvalid(
+                            "Dependency algorithm is deactivated!",
+                            "A dependency algorithm is not enabled. It blocks the execution of all following algorithms.",
+                            "Check if all dependency algorithms are enabled. If you just want to skip the processing, try 'Pass through'.",
+                            algorithm
+                    );
+                    return;
+                }
+            }
+            for (ACAQDataSlot slot : node.getInputSlots()) {
+                if (graph.incomingEdgesOf(slot).isEmpty()) {
+                    report.forCategory(slot.getAlgorithm().getCompartment()).forCategory(slot.getAlgorithm().getName())
+                            .forCategory("Slot: " + slot.getName()).reportIsInvalid("An input slot has no incoming data!",
+                            "Input slots must always be provided with input data.",
+                            "Please connect the slot to an output of another algorithm.",
+                            this);
+                    return;
+                }
+            }
+
+            report.forCategory(node.getCompartment()).forCategory(node.getName()).report(node);
         }
     }
 

@@ -55,7 +55,7 @@ public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
     }
 
     /**
-     * Attempts to setup and run the testbench automatically and run a function when finished
+     * Attempts to setup and run the test bench automatically and run a function when finished
      *
      * @param showResults show results after successful run
      * @param settings    settings
@@ -118,11 +118,11 @@ public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
 
     private boolean validateOrShowError() {
         ACAQValidityReport report = new ACAQValidityReport();
-        getProject().reportValidity(report);
+        getProject().reportValidity(report, algorithm);
 
         Set<ACAQGraphNode> algorithmsWithMissingInput = getProject().getGraph().getDeactivatedAlgorithms();
         if (algorithmsWithMissingInput.contains(algorithm)) {
-            report.forCategory("Testbench").reportIsInvalid(
+            report.forCategory("Test Bench").reportIsInvalid(
                     "Selected algorithm is deactivated or missing inputs!",
                     "The selected algorithm would not be executed, as it is deactivated or missing input data. " +
                             "You have to ensure that all input slots are assigned for the selected algorithm and its dependencies.",
@@ -178,7 +178,7 @@ public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
     private void generateTestBench(boolean showResults) {
 
         ACAQValidityReport report = new ACAQValidityReport();
-        getProject().reportValidity(report);
+        getProject().reportValidity(report, algorithm);
         if (!report.isValid()) {
             tryShowSetupPanel();
             return;

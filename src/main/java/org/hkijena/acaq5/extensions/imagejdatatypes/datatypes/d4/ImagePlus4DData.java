@@ -32,7 +32,7 @@ public class ImagePlus4DData extends ImagePlusData {
                             "This is not trivial. This can be caused by selecting the wrong data slot type or applying a conversion" +
                             " from N-dimensional data into data with a defined dimensionality.",
                     "Try to check if the data slots have the correct data types. You can also check the input of the offending algorithm via " +
-                            "the testbench to see if they fit the assumptions. If you cannot find the reason behind this error," +
+                            "the test bench to see if they fit the assumptions. If you cannot find the reason behind this error," +
                             " try to contact the ACAQ5 or plugin developers.");
         }
     }

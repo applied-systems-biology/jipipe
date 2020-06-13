@@ -64,7 +64,7 @@ public class AnnotationTableToPaths extends ACAQSimpleIteratingAlgorithm {
                     "No column matching the rule '" + column.toString() + "' was found. " +
                             "The table contains only following columns: " + String.join(", ", tableData.getColumnNames()),
                     "Please check if your input columns are set up with valid filters. Please check the input of the algorithm " +
-                            "via the testbench to see if the input data is correct.");
+                            "via the test bench to see if the input data is correct.");
         }
         Set<String> annotationColumns = tableData.getAnnotationColumns();
         for (int row = 0; row < tableData.getRowCount(); row++) {

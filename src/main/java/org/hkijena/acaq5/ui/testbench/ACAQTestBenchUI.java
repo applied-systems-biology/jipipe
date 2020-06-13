@@ -27,22 +27,22 @@ import java.awt.event.ComponentEvent;
  */
 public class ACAQTestBenchUI extends ACAQProjectWorkbenchPanel {
 
-    private ACAQTestBench testbench;
+    private final ACAQTestBench testBench;
     private JComboBox<ACAQTestbenchSnapshot> backupSelection;
     private JButton newTestButton;
     private JSplitPane splitPane;
 
     /**
      * @param workbenchUI the workbench
-     * @param testbench   the testbench
+     * @param testBench   the testbench
      */
-    public ACAQTestBenchUI(ACAQProjectWorkbench workbenchUI, ACAQTestBench testbench) {
+    public ACAQTestBenchUI(ACAQProjectWorkbench workbenchUI, ACAQTestBench testBench) {
         super(workbenchUI);
-        this.testbench = testbench;
+        this.testBench = testBench;
 
         initialize();
         updateBackupSelection();
-        loadBackup(testbench.getLatestBackup());
+        loadBackup(testBench.getLatestBackup());
 
         ACAQRunnerQueue.getInstance().getEventBus().register(this);
     }
@@ -68,15 +68,15 @@ public class ACAQTestBenchUI extends ACAQProjectWorkbenchPanel {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        String compartmentName = getProject().getCompartments().get(testbench.getProjectAlgorithm().getCompartment()).getName();
+        String compartmentName = getProject().getCompartments().get(testBench.getProjectAlgorithm().getCompartment()).getName();
         JLabel compartmentInfo = new JLabel(compartmentName, UIUtils.getIconFromResources("graph-compartment.png"), JLabel.LEFT);
         toolBar.add(compartmentInfo);
 
         toolBar.add(Box.createHorizontalStrut(8));
 
-        JLabel algorithmInfo = new JLabel(testbench.getProjectAlgorithm().getName(), new ColorIcon(16, 16,
-                UIUtils.getFillColorFor(testbench.getProjectAlgorithm().getDeclaration())), JLabel.LEFT);
-        algorithmInfo.setToolTipText(TooltipUtils.getAlgorithmTooltip(testbench.getProjectAlgorithm().getDeclaration()));
+        JLabel algorithmInfo = new JLabel(testBench.getProjectAlgorithm().getName(), new ColorIcon(16, 16,
+                UIUtils.getFillColorFor(testBench.getProjectAlgorithm().getDeclaration())), JLabel.LEFT);
+        algorithmInfo.setToolTipText(TooltipUtils.getAlgorithmTooltip(testBench.getProjectAlgorithm().getDeclaration()));
         toolBar.add(algorithmInfo);
 
         toolBar.add(Box.createHorizontalGlue());
@@ -116,8 +116,8 @@ public class ACAQTestBenchUI extends ACAQProjectWorkbenchPanel {
     private void copyParameters() {
         if (backupSelection.getSelectedItem() instanceof ACAQTestbenchSnapshot) {
             ACAQTestbenchSnapshot backup = (ACAQTestbenchSnapshot) backupSelection.getSelectedItem();
-            backup.getAlgorithmBackup(testbench.getBenchedAlgorithm()).restoreParameters(testbench.getProjectAlgorithm());
-            getProjectWorkbench().sendStatusBarText("Copied parameters from testbench to " + testbench.getProjectAlgorithm().getName());
+            backup.getAlgorithmBackup(testBench.getBenchedAlgorithm()).restoreParameters(testBench.getProjectAlgorithm());
+            getProjectWorkbench().sendStatusBarText("Copied parameters from test bench to " + testBench.getProjectAlgorithm().getName());
         }
     }
 
@@ -132,15 +132,15 @@ public class ACAQTestBenchUI extends ACAQProjectWorkbenchPanel {
 
     private void clearBackups() {
         Object current = backupSelection.getSelectedItem();
-        ACAQTestbenchSnapshot initial = testbench.getInitialBackup();
-        testbench.getBackupList().removeIf(b -> b != current);
+        ACAQTestbenchSnapshot initial = testBench.getInitialBackup();
+        testBench.getBackupList().removeIf(b -> b != current);
         updateBackupSelection();
     }
 
     private void updateBackupSelection() {
         Object currentSelection = backupSelection.getSelectedItem();
-        DefaultComboBoxModel<ACAQTestbenchSnapshot> model = new DefaultComboBoxModel<>(testbench.getBackupList().toArray(new ACAQTestbenchSnapshot[0]));
-        if (currentSelection != null && testbench.getBackupList().contains(currentSelection))
+        DefaultComboBoxModel<ACAQTestbenchSnapshot> model = new DefaultComboBoxModel<>(testBench.getBackupList().toArray(new ACAQTestbenchSnapshot[0]));
+        if (currentSelection != null && testBench.getBackupList().contains(currentSelection))
             model.setSelectedItem(currentSelection);
         backupSelection.setModel(model);
     }
@@ -149,41 +149,41 @@ public class ACAQTestBenchUI extends ACAQProjectWorkbenchPanel {
 
         // Check if we are still valid
         ACAQValidityReport report = new ACAQValidityReport();
-        testbench.reportValidity(report);
+        testBench.reportValidity(report);
         if (!report.isValid()) {
             UIUtils.openValidityReportDialog(this, report, false);
             return;
         }
 
-        testbench.newTest();
+        testBench.newTest();
 
         newTestButton.setEnabled(false);
-        ACAQRunnerQueue.getInstance().enqueue(testbench);
+        ACAQRunnerQueue.getInstance().enqueue(testBench);
     }
 
     /**
-     * Triggered when the testbench finished calculating
+     * Triggered when the test bench finished calculating
      *
      * @param event Generated event
      */
     @Subscribe
     public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
-        if (event.getRun() == testbench) {
+        if (event.getRun() == testBench) {
             newTestButton.setEnabled(true);
-            testbench.createBackup();
+            testBench.createBackup();
             updateBackupSelection();
-            backupSelection.setSelectedItem(testbench.getLatestBackup());
+            backupSelection.setSelectedItem(testBench.getLatestBackup());
         }
     }
 
     /**
-     * Triggered when the testbench finished calculating
+     * Triggered when the test bench finished calculating
      *
      * @param event Generated event
      */
     @Subscribe
     public void onWorkerInterrupted(RunUIWorkerInterruptedEvent event) {
-        if (event.getRun() == testbench) {
+        if (event.getRun() == testBench) {
             newTestButton.setEnabled(true);
             UIUtils.openErrorDialog(this, event.getException());
         }
@@ -195,12 +195,12 @@ public class ACAQTestBenchUI extends ACAQProjectWorkbenchPanel {
 
         backup.restore();
 
-        ParameterPanel parameters = new ParameterPanel(getProjectWorkbench(), testbench.getBenchedAlgorithm(),
+        ParameterPanel parameters = new ParameterPanel(getProjectWorkbench(), testBench.getBenchedAlgorithm(),
                 MarkdownDocument.fromPluginResource("documentation/testbench.md"),
                 ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SCROLLING);
         splitPane.setLeftComponent(parameters);
 
-        ACAQResultUI resultUI = new ACAQResultUI(getProjectWorkbench(), testbench.getTestBenchRun());
+        ACAQResultUI resultUI = new ACAQResultUI(getProjectWorkbench(), testBench.getTestBenchRun());
         splitPane.setRightComponent(resultUI);
 
         revalidate();

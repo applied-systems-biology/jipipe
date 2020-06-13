@@ -162,7 +162,7 @@ public abstract class ACAQMergingAlgorithm extends ACAQAlgorithm {
                             "Algorithm '" + getName() + "'",
                             "The algorithm needs to assign input a unique data set via annotations, but there is " +
                                     "not a data set for each input slot.",
-                            "Please check the input of the algorithm by running the testbench on each input algorithm. " +
+                            "Please check the input of the algorithm by running the test bench on each input algorithm. " +
                                     "You can also choose to skip incomplete data sets, although you might lose data in those cases.");
                 }
                 dataSets.remove(dataSetEntry.getKey());

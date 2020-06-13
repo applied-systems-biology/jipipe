@@ -19,6 +19,7 @@ public class GeneralUISettings implements ACAQParameterCollection {
     private LookAndFeel lookAndFeel = LookAndFeel.Metal;
     private boolean showParameterSearchBar = true;
     private boolean neverAskOnClosingTabs = false;
+    private boolean validateOnSave = true;
 
     @Override
     public EventBus getEventBus() {
@@ -62,7 +63,7 @@ public class GeneralUISettings implements ACAQParameterCollection {
         getEventBus().post(new ParameterChangedEvent(this, "show-parameter-search-bar"));
     }
 
-    @ACAQDocumentation(name = "Never ask on closing tabs", description = "If enabled, you do not need to confirm when closing tabs like the testbench, plots, and results.")
+    @ACAQDocumentation(name = "Never ask on closing tabs", description = "If enabled, you do not need to confirm when closing tabs like the test bench, plots, and results.")
     @ACAQParameter("never-ask-on-closing-tabs")
     public boolean isNeverAskOnClosingTabs() {
         return neverAskOnClosingTabs;
@@ -72,6 +73,18 @@ public class GeneralUISettings implements ACAQParameterCollection {
     public void setNeverAskOnClosingTabs(boolean neverAskOnClosingTabs) {
         this.neverAskOnClosingTabs = neverAskOnClosingTabs;
         getEventBus().post(new ParameterChangedEvent(this, "never-ask-on-closing-tabs"));
+    }
+
+    @ACAQDocumentation(name = "Validate project on save", description = "If enabled, the whole project is validated on saving and a report is shown if an issue was found.")
+    @ACAQParameter("validate-on-save")
+    public boolean isValidateOnSave() {
+        return validateOnSave;
+    }
+
+    @ACAQParameter("validate-on-save")
+    public void setValidateOnSave(boolean validateOnSave) {
+        this.validateOnSave = validateOnSave;
+        getEventBus().post(new ParameterChangedEvent(this, "validate-on-save"));
     }
 
     public static GeneralUISettings getInstance() {
