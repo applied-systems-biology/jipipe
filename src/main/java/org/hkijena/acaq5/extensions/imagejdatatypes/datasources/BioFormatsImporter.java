@@ -14,6 +14,8 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.filesystem.dataypes.FileData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.io.IOException;
@@ -241,6 +243,7 @@ public class BioFormatsImporter extends ACAQSimpleIteratingAlgorithm {
 
     @ACAQDocumentation(name = "Title annotation", description = "Optional annotation type where the image title is written.")
     @ACAQParameter("title-annotation")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
     public String getTitleAnnotation() {
         return titleAnnotation;
     }

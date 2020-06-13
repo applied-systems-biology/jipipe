@@ -2,13 +2,17 @@ package org.hkijena.acaq5.extensions.parameters.primitives;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
+import org.hkijena.acaq5.ui.components.FancyTextField;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
+import org.hkijena.acaq5.utils.StringUtils;
 import org.scijava.Context;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * Parameter editor for {@link String}
@@ -32,21 +36,38 @@ public class StringParameterEditorUI extends ACAQParameterEditorUI {
     private void initialize() {
         setLayout(new BorderLayout());
 
+        boolean monospaced = false;
+        boolean multiline = false;
+        String iconURL = null;
+        String prompt = "";
         StringParameterSettings settings = getParameterAccess().getAnnotationOfType(StringParameterSettings.class);
+        if(settings != null) {
+            monospaced = settings.monospace();
+            multiline = settings.multiline();
+            iconURL = settings.icon();
+            prompt = settings.prompt();
+        }
+
         Object value = getParameterAccess().get(Object.class);
         String stringValue = "";
         if (value != null) {
             stringValue = "" + value;
         }
-        boolean monospaced = settings != null && settings.monospace();
-        if (settings != null && settings.multiline()) {
+
+        if (multiline) {
             JTextArea textArea = new JTextArea(stringValue);
             textArea.setBorder(BorderFactory.createEtchedBorder());
             textComponent = textArea;
             add(textArea, BorderLayout.CENTER);
         } else {
-            JTextField textField = new JTextField(stringValue);
-            textComponent = textField;
+            JLabel iconLabel = null;
+            if(!StringUtils.isNullOrEmpty(iconURL)) {
+                ImageIcon imageIcon = new ImageIcon(getClass().getResource(iconURL));
+                iconLabel = new JLabel(imageIcon);
+            }
+
+            FancyTextField textField = new FancyTextField(iconLabel, prompt);
+            textComponent = textField.getTextField();
             add(textField, BorderLayout.CENTER);
         }
         if (monospaced)

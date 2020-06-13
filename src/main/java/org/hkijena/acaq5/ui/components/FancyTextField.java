@@ -10,21 +10,23 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * A {@link org.jdesktop.swingx.JXTextField} designed for searching
+ * A {@link JXTextField} with some fancy additions
  */
-public class SearchTextField extends JPanel {
+public class FancyTextField extends JPanel {
 
     private final JXTextField textField = new JXTextField();
 
     /**
      * Creates a new instance
+     * @param icon Optional icon displayed to the left
+     * @param prompt prompt
      */
-    public SearchTextField() {
+    public FancyTextField(JLabel icon, String prompt) {
         setLayout(new BorderLayout(4, 0));
         setBackground(Color.WHITE);
         setBorder(BorderFactory.createEtchedBorder());
 
-        textField.setPrompt("Search ...");
+        textField.setPrompt(prompt);
         textField.setBorder(null);
         add(textField, BorderLayout.CENTER);
 
@@ -36,22 +38,10 @@ public class SearchTextField extends JPanel {
         clearButton.setBorder(null);
         add(clearButton, BorderLayout.EAST);
 
-    }
-
-    /**
-     * Returns the search strings according to the current text
-     *
-     * @return the search strings
-     */
-    public String[] getSearchStrings() {
-        String[] searchStrings = null;
-        if (getText() != null) {
-            String str = getText().trim();
-            if (!str.isEmpty()) {
-                searchStrings = str.split(" ");
-            }
+        if(icon != null) {
+            add(icon, BorderLayout.WEST);
         }
-        return searchStrings;
+
     }
 
     public String getText() {

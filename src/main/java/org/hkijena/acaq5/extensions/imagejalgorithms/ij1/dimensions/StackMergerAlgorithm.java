@@ -14,6 +14,8 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
+import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.*;
@@ -103,6 +105,7 @@ public class StackMergerAlgorithm extends ACAQMergingAlgorithm {
     @ACAQDocumentation(name = "Slice index annotation",
             description = "Data annotation that is used as reference for ordering the slices. Annotation values are lexicographically sorted.")
     @ACAQParameter("counter-annotation-type")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
     public String getCounterAnnotation() {
         return counterAnnotation;
     }

@@ -8,6 +8,8 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.function.Consumer;
@@ -64,6 +66,7 @@ public class AnnotateWithDataString extends ACAQSimpleIteratingAlgorithm {
      */
     @ACAQDocumentation(name = "Generated annotation", description = "Select which annotation type is generated for each data row")
     @ACAQParameter("generated-annotation")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
     public String getGeneratedAnnotation() {
         return generatedAnnotation;
     }

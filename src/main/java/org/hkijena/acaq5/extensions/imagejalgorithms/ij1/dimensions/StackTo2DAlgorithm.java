@@ -12,7 +12,9 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
+import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.acaq5.utils.ImageJUtils;
+import org.hkijena.acaq5.utils.ResourceUtils;
 
 import java.util.Collections;
 import java.util.function.Consumer;
@@ -91,6 +93,7 @@ public class StackTo2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     @ACAQDocumentation(name = "Generated annotation", description = "Determines the generated annotation type.")
     @ACAQParameter("annotation-type")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
     public String getAnnotationType() {
         return annotationType;
     }

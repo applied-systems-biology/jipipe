@@ -18,6 +18,8 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
 import org.hkijena.acaq5.extensions.parameters.collections.OutputSlotMapParameterCollection;
 import org.hkijena.acaq5.extensions.parameters.generators.IntegerRange;
+import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -182,6 +184,7 @@ public class StackSplitterAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQDocumentation(name = "Generated annotation", description = "An optional annotation that is generated for each output to indicate from which slices the data was generated from. " +
             "The format will be slice=[index0],[index1],...")
     @ACAQParameter("annotation-type")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
     public String getAnnotationType() {
         return annotationType;
     }

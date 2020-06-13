@@ -9,6 +9,8 @@ import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.parameters.primitives.StringList;
+import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.acaq5.utils.ResourceUtils;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -23,7 +25,6 @@ import java.util.function.Supplier;
 public class RemoveAnnotationByType extends ACAQSimpleIteratingAlgorithm {
 
     private StringList annotationTypes = new StringList();
-    private boolean removeCategory = true;
 
     /**
      * @param declaration algorithm declaration
@@ -56,6 +57,7 @@ public class RemoveAnnotationByType extends ACAQSimpleIteratingAlgorithm {
 
     @ACAQDocumentation(name = "Removed annotation", description = "This annotation is removed from each input data")
     @ACAQParameter("annotation-type")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
     public StringList getAnnotationTypes() {
         return annotationTypes;
     }
@@ -64,18 +66,5 @@ public class RemoveAnnotationByType extends ACAQSimpleIteratingAlgorithm {
     public void setAnnotationTypes(StringList annotationTypes) {
         this.annotationTypes = annotationTypes;
         getEventBus().post(new ParameterChangedEvent(this, "annotation-type"));
-    }
-
-    @ACAQDocumentation(name = "Remove child annotations", description = "If enabled, annotations that inherit from the selected annotation types " +
-            "are removed")
-    @ACAQParameter("remove-category")
-    public boolean isRemoveCategory() {
-        return removeCategory;
-    }
-
-    @ACAQParameter("remove-category")
-    public void setRemoveCategory(boolean removeCategory) {
-        this.removeCategory = removeCategory;
-        getEventBus().post(new ParameterChangedEvent(this, "remove-category"));
     }
 }

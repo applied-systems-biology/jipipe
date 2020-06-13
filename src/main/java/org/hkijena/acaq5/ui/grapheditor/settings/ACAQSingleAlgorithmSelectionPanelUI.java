@@ -63,7 +63,7 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPan
 
         if (algorithm.getCategory() != ACAQAlgorithmCategory.Internal) {
             testbenchTabContent = new JPanel(new BorderLayout());
-            tabbedPane.addTab("Testbench", UIUtils.getIconFromResources("testbench.png"),
+            tabbedPane.addTab("Quick run", UIUtils.getIconFromResources("play.png"),
                     testbenchTabContent,
                     DocumentTabPane.CloseMode.withoutCloseButton,
                     false);

@@ -21,7 +21,9 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.acaq5.extensions.parameters.collections.OutputSlotMapParameterCollection;
+import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.acaq5.utils.ImageJUtils;
+import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.*;
@@ -196,6 +198,7 @@ public class SplitChannelsAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQDocumentation(name = "Generated annotation", description = "An optional annotation that is generated for each output to indicate which channel the data is coming from. " +
             "The format will be channel=[index].")
     @ACAQParameter("annotation-type")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
     public String getAnnotationType() {
         return annotationType;
     }

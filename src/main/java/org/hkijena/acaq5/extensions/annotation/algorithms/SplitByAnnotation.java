@@ -15,6 +15,8 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.extensions.parameters.collections.OutputSlotMapParameterCollection;
 import org.hkijena.acaq5.extensions.parameters.predicates.StringPredicate;
+import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.Comparator;
@@ -103,6 +105,7 @@ public class SplitByAnnotation extends ACAQAlgorithm {
 
     @ACAQDocumentation(name = "Annotation", description = "Data is split by this annotation")
     @ACAQParameter("annotation-type")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
     public String getAnnotationType() {
         return annotationType;
     }

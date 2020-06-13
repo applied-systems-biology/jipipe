@@ -24,4 +24,14 @@ public @interface StringParameterSettings {
      * @return if the text is rendered with monospaced font
      */
     boolean monospace() default false;
+
+    /**
+     * @return Icon shown next to the text field (single line only)
+     */
+    String icon() default "";
+
+    /**
+     * @return Prompt shown on the text field
+     */
+    String prompt() default "";
 }

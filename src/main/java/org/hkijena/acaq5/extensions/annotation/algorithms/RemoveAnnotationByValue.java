@@ -10,6 +10,7 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.extensions.parameters.pairs.StringAndStringPredicatePair;
+import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -61,6 +62,7 @@ public class RemoveAnnotationByValue extends ACAQSimpleIteratingAlgorithm {
 
     @ACAQDocumentation(name = "Removed annotation", description = "This annotation is removed from each input data")
     @ACAQParameter("filters")
+    @StringParameterSettings(monospace = true)
     public StringAndStringPredicatePair.List getFilters() {
         return filters;
     }

@@ -14,6 +14,8 @@ import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure.ImageStatistics
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
+import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -99,6 +101,7 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     @ACAQDocumentation(name = "Generated annotation", description = "Optional. The annotation will contain the image slice position that was " +
             "used to generate the statistics.")
     @ACAQParameter("index-annotation")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
     public String getIndexAnnotation() {
         return indexAnnotation;
     }

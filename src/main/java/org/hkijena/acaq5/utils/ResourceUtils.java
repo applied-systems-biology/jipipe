@@ -28,6 +28,8 @@ import java.util.stream.Collectors;
  */
 public class ResourceUtils {
 
+    public static final String RESOURCE_BASE_PATH = "/org/hkijena/acaq5";
+
     public static String getResourceBasePath() {
         return "/org/hkijena/acaq5";
     }

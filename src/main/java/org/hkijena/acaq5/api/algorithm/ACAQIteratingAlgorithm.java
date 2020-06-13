@@ -14,6 +14,8 @@ import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
 import org.hkijena.acaq5.extensions.parameters.primitives.StringList;
+import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.acaq5.utils.ResourceUtils;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -298,6 +300,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
     @ACAQDocumentation(name = "Data set matching annotations", description = "Only used if 'Data set matching strategy' is set to 'Custom'. " +
             "Determines which annotation columns are referred to match data sets.")
     @ACAQParameter(value = "acaq:iterating-algorithm:custom-matched-columns", uiOrder = 999, visibility = ACAQParameterVisibility.Visible)
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
     public StringList getCustomColumns() {
         if (customColumns == null)
             customColumns = new StringList();

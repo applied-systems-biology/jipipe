@@ -9,6 +9,7 @@ import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.parameters.functions.StringPatternExtractionFunction;
+import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -74,6 +75,7 @@ public class ExtractAndReplaceAnnotation extends ACAQSimpleIteratingAlgorithm {
             "or select the one that matches RegEx. Alternatively you can define a RegEx string that contains a matching group (brackets). " +
             "This matching group will then be picked.")
     @ACAQParameter("functions")
+    @StringParameterSettings(monospace = true)
     public StringPatternExtractionFunction.List getFunctions() {
         return functions;
     }
