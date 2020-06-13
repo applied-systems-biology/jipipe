@@ -66,8 +66,7 @@ public class ACAQAlgorithmCacheBrowserUI extends ACAQProjectWorkbenchPanel {
                 } else if (userObject instanceof ACAQGraphNode) {
                     showDataSlotsOfAlgorithm((ACAQGraphNode) userObject);
                 } else if (userObject instanceof ACAQProjectCache.State) {
-                    ACAQGraphNode algorithm = (ACAQGraphNode) ((DefaultMutableTreeNode) ((DefaultMutableTreeNode) lastPathComponent).getParent()).getUserObject();
-                    showDataSlotsOfState(algorithm, (ACAQProjectCache.State) userObject);
+                    showDataSlotsOfState((ACAQProjectCache.State) userObject);
                 } else {
                     showAllDataSlots();
                 }
@@ -77,9 +76,9 @@ public class ACAQAlgorithmCacheBrowserUI extends ACAQProjectWorkbenchPanel {
         initializeToolbar();
     }
 
-    private void showDataSlotsOfState(ACAQGraphNode algorithm, ACAQProjectCache.State state) {
+    private void showDataSlotsOfState(ACAQProjectCache.State state) {
         List<ACAQDataSlot> result = new ArrayList<>();
-        Map<ACAQProjectCache.State, Map<String, ACAQDataSlot>> stateMap = getProject().getCache().extract((ACAQAlgorithm) algorithm);
+        Map<ACAQProjectCache.State, Map<String, ACAQDataSlot>> stateMap = getProject().getCache().extract((ACAQAlgorithm) graphNode);
         if (stateMap != null) {
             Map<String, ACAQDataSlot> slotMap = stateMap.getOrDefault(state, null);
             if (slotMap != null) {

@@ -50,8 +50,8 @@ public class RenameColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
         TableColumn input = dataInterface.getInputData(getFirstInputSlot(), TableColumn.class);
         String name = input.getLabel();
         for (StringFilterAndStringPair renamingEntry : renamingEntries) {
-            if (renamingEntry.test(name)) {
-                name = renamingEntry.apply(name);
+            if (renamingEntry.getKey().test(name)) {
+                name = renamingEntry.getValue();
                 break;
             }
         }

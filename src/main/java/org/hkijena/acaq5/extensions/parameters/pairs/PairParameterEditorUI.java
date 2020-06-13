@@ -71,8 +71,9 @@ public class PairParameterEditorUI extends ACAQParameterEditorUI {
         } else {
             setLayout(new BorderLayout());
             FormPanel panel = new FormPanel(null, FormPanel.NONE);
-            panel.addToForm(new JLabel(keyLabel), keyEditor, null);
-            panel.addToForm(new JLabel(valueLabel), valueEditor, null);
+            panel.setBorder(BorderFactory.createEtchedBorder());
+            panel.addToForm(keyEditor, new JLabel(keyLabel), null);
+            panel.addToForm(valueEditor, new JLabel(valueLabel), null);
             add(panel, BorderLayout.CENTER);
         }
 

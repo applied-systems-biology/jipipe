@@ -50,7 +50,7 @@ public class PairParameterKeyAccess<K, V> implements ACAQParameterAccess {
 
     @Override
     public <T extends Annotation> T getAnnotationOfType(Class<T> klass) {
-        return null;
+        return getParent().getAnnotationOfType(klass);
     }
 
     @Override

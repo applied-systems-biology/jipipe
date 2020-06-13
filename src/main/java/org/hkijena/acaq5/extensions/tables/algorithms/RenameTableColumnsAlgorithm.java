@@ -7,7 +7,9 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
+import org.hkijena.acaq5.extensions.parameters.pairs.PairParameterSettings;
 import org.hkijena.acaq5.extensions.parameters.pairs.StringFilterAndStringPair;
+import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.Objects;
@@ -50,7 +52,7 @@ public class RenameTableColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
         for (StringFilterAndStringPair renamingEntry : renamingEntries) {
             for (int col = 0; col < table.getColumnCount(); col++) {
                 String oldName = table.getColumnName(col);
-                String newName = renamingEntry.apply(oldName);
+                String newName = renamingEntry.getKey().test(oldName) ? renamingEntry.getValue() : oldName;
                 if (!Objects.equals(oldName, newName)) {
                     table.renameColumn(oldName, newName);
                 }
@@ -73,6 +75,8 @@ public class RenameTableColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
     }
 
     @ACAQDocumentation(name = "Renaming entries", description = "You can rename one or multiple columns.")
+    @StringParameterSettings(monospace = true)
+    @PairParameterSettings(singleRow = false, keyLabel = "From", valueLabel = "To")
     @ACAQParameter("renaming-entries")
     public StringFilterAndStringPair.List getRenamingEntries() {
         return renamingEntries;

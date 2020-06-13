@@ -9,6 +9,7 @@ import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.annotation.datatypes.AnnotationTableData;
+import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
 
 import java.util.Set;
 import java.util.function.Consumer;
@@ -95,6 +96,7 @@ public class ConvertToAnnotationTable extends ACAQMergingAlgorithm {
 
     @ACAQDocumentation(name = "Generated column", description = "The string representation of the data are stored in the column with this name")
     @ACAQParameter("generated-column")
+    @StringParameterSettings(monospace = true)
     public String getGeneratedColumn() {
         return generatedColumn;
     }

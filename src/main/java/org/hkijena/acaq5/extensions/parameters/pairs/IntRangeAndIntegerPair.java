@@ -9,7 +9,7 @@ import java.util.function.Predicate;
 /**
  * A parameter that renames an integer into another integer
  */
-public class IntRangeAndIntegerPair extends Pair<IntegerRange, Integer> implements Predicate<Integer>, Function<Integer, Integer> {
+public class IntRangeAndIntegerPair extends Pair<IntegerRange, Integer> {
 
     /**
      * Creates a new instance
@@ -25,20 +25,6 @@ public class IntRangeAndIntegerPair extends Pair<IntegerRange, Integer> implemen
      */
     public IntRangeAndIntegerPair(IntRangeAndIntegerPair other) {
         super(other);
-    }
-
-    @Override
-    public Integer apply(Integer s) {
-        if (test(s)) {
-            return getValue();
-        } else {
-            return s;
-        }
-    }
-
-    @Override
-    public boolean test(Integer s) {
-        return getKey().getIntegers().contains(s);
     }
 
     /**

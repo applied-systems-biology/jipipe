@@ -373,6 +373,7 @@ public class ResultsTableData implements ACAQData, TableModel {
     public void display(String displayName, ACAQWorkbench workbench) {
         workbench.getDocumentTabPane().addTab(displayName, UIUtils.getIconFromResources("table.png"),
                 new ACAQTableEditor((ACAQProjectWorkbench) workbench, (ResultsTableData) duplicate()), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
+        workbench.getDocumentTabPane().switchToLastTab();
     }
 
     public ResultsTable getTable() {

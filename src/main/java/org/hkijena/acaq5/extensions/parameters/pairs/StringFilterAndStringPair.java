@@ -9,7 +9,7 @@ import java.util.function.Predicate;
 /**
  * A parameter that renames a matching string into another string
  */
-public class StringFilterAndStringPair extends Pair<StringPredicate, String> implements Predicate<String>, Function<String, String> {
+public class StringFilterAndStringPair extends Pair<StringPredicate, String>  {
 
     /**
      * Creates a new instance
@@ -25,20 +25,6 @@ public class StringFilterAndStringPair extends Pair<StringPredicate, String> imp
      */
     public StringFilterAndStringPair(StringFilterAndStringPair other) {
         super(other);
-    }
-
-    @Override
-    public String apply(String s) {
-        if (test(s)) {
-            return getValue();
-        } else {
-            return s;
-        }
-    }
-
-    @Override
-    public boolean test(String s) {
-        return getKey().test(s);
     }
 
     /**
