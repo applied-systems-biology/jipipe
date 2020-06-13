@@ -39,7 +39,7 @@ public class RemoveColumnAlgorithm extends ACAQSimpleIteratingAlgorithm {
      */
     public RemoveColumnAlgorithm(RemoveColumnAlgorithm other) {
         super(other);
-        this.filters = new StringPredicate.List(filters);
+        this.filters = new StringPredicate.List(other.filters);
     }
 
     @Override

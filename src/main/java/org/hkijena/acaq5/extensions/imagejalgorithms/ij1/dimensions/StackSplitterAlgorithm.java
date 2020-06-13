@@ -72,6 +72,11 @@ public class StackSplitterAlgorithm extends ACAQSimpleIteratingAlgorithm {
      */
     public StackSplitterAlgorithm(StackSplitterAlgorithm other) {
         super(other);
+        this.ignoreMissingSlices = other.ignoreMissingSlices;
+        this.sortedStackIds = other.sortedStackIds;
+        this.uniqueStackIds = other.uniqueStackIds;
+        this.annotationType = other.annotationType;
+
         stackAssignments = new OutputSlotMapParameterCollection(IntegerRange.class,
                 this,
                 IntegerRange::new,

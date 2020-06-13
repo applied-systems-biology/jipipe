@@ -68,6 +68,9 @@ public class SplitChannelsAlgorithm extends ACAQSimpleIteratingAlgorithm {
      */
     public SplitChannelsAlgorithm(SplitChannelsAlgorithm other) {
         super(other);
+        this.annotationType = other.annotationType;
+        this.ignoreMissingChannels = other.ignoreMissingChannels;
+
         channelToSlotAssignment = new OutputSlotMapParameterCollection(Integer.class, this, () -> 0, false);
         other.channelToSlotAssignment.copyTo(channelToSlotAssignment);
         registerSubParameter(channelToSlotAssignment);

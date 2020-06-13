@@ -799,6 +799,11 @@ public class ResultsTableData implements ACAQData, TableModel {
         cleanupTable();
     }
 
+    @Override
+    public String toString() {
+        return "Table (" + getRowCount() + " rows, " + getColumnCount() + " columns): " + String.join(", ", getColumnNames());
+    }
+
     /**
      * Loads a table from CSV
      *

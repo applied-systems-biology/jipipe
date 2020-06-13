@@ -52,6 +52,7 @@ public class TransformRotate2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     public TransformRotate2DAlgorithm(TransformRotate2DAlgorithm other) {
         super(other);
         this.rotationDirection = other.rotationDirection;
+        this.rotations = other.rotations;
     }
 
     @Override

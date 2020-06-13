@@ -55,6 +55,7 @@ public class RemoveOutliersFilter2DAlgorithm extends ACAQSimpleIteratingAlgorith
         super(other);
         this.radius = other.radius;
         this.mode = other.mode;
+        this.threshold = other.threshold;
     }
 
     @Override

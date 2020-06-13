@@ -54,6 +54,7 @@ public class ArrangeChannelsAlgorithm extends ACAQSimpleIteratingAlgorithm {
     public ArrangeChannelsAlgorithm(ArrangeChannelsAlgorithm other) {
         super(other);
         this.channelReordering = new IntegerAndIntegerPair.List(other.channelReordering);
+        this.keepSameChannelCount = other.keepSameChannelCount;
     }
 
     @Override

@@ -42,7 +42,7 @@ public class RenameColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
      */
     public RenameColumnsAlgorithm(RenameColumnsAlgorithm other) {
         super(other);
-        this.renamingEntries = new StringFilterAndStringPair.List(renamingEntries);
+        this.renamingEntries = new StringFilterAndStringPair.List(other.renamingEntries);
     }
 
     @Override
