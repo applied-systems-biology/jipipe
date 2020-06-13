@@ -63,6 +63,11 @@ public class CLAHEContrastEnhancer extends ACAQSimpleIteratingAlgorithm {
     }
 
     @Override
+    public boolean supportsParallelization() {
+        return true;
+    }
+
+    @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusData.class);
         ImagePlus result = inputData.getImage().duplicate();

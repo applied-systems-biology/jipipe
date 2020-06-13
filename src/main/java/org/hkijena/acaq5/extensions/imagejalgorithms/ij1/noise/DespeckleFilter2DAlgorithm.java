@@ -58,6 +58,11 @@ public class DespeckleFilter2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
         dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
     }
 
+    @Override
+    public boolean supportsParallelization() {
+        return true;
+    }
+
 
     @Override
     public void reportValidity(ACAQValidityReport report) {

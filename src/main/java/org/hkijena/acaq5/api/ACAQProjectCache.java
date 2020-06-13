@@ -11,7 +11,6 @@ import org.hkijena.acaq5.extensions.settings.RuntimeSettings;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**

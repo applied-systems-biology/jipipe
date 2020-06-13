@@ -61,13 +61,18 @@ public class IlluminationCorrection2DAlgorithm extends ACAQSimpleIteratingAlgori
     }
 
     @Override
+    public boolean supportsParallelization() {
+        return true;
+    }
+
+    @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlusGreyscale32FData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusGreyscale32FData.class);
 
-        gaussianAlgorithm.clearSlotData();
-        gaussianAlgorithm.getFirstInputSlot().addData(inputData);
-        gaussianAlgorithm.run(subProgress.resolve("Gaussian"), algorithmProgress, isCancelled);
-        ImagePlus background = gaussianAlgorithm.getFirstOutputSlot().getData(0, ImagePlusGreyscale32FData.class).getImage();
+        GaussianBlur2DAlgorithm gaussianAlgorithmCopy = new GaussianBlur2DAlgorithm(gaussianAlgorithm);
+        gaussianAlgorithmCopy.getFirstInputSlot().addData(inputData);
+        gaussianAlgorithmCopy.run(subProgress.resolve("Gaussian"), algorithmProgress, isCancelled);
+        ImagePlus background = gaussianAlgorithmCopy.getFirstOutputSlot().getData(0, ImagePlusGreyscale32FData.class).getImage();
 
         ImageJUtils.forEachSlice(background, imp -> {
             double max = imp.getStatistics().max;

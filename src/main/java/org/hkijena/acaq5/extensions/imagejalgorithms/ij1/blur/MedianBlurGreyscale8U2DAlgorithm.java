@@ -58,6 +58,11 @@ public class MedianBlurGreyscale8U2DAlgorithm extends ACAQSimpleIteratingAlgorit
         dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale8UData(img));
     }
 
+    @Override
+    public boolean supportsParallelization() {
+        return true;
+    }
+
 
     @Override
     public void reportValidity(ACAQValidityReport report) {

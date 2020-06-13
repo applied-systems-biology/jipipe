@@ -77,6 +77,11 @@ public class SplitChannelsAlgorithm extends ACAQSimpleIteratingAlgorithm {
     }
 
     @Override
+    public boolean supportsParallelization() {
+        return true;
+    }
+
+    @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlus image = dataInterface.getInputData(getFirstInputSlot(), ImagePlusData.class).getImage();
 

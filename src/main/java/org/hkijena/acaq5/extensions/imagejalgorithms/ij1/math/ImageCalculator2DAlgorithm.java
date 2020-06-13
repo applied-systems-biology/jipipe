@@ -75,6 +75,11 @@ public class ImageCalculator2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
         this.setFloatingPointOutput(other.floatingPointOutput);
     }
 
+    @Override
+    public boolean supportsParallelization() {
+        return true;
+    }
+
     private Operand getNewOperand() {
         for (Operand value : Operand.values()) {
             if (operands.getParameters().values().stream()

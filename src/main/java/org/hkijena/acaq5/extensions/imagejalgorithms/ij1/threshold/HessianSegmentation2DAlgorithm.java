@@ -112,6 +112,7 @@ public class HessianSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgorithm
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlus img = dataInterface.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class).getImage();
         ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
+        AutoThreshold2DAlgorithm autoThresholdingCopy = new AutoThreshold2DAlgorithm(autoThresholding);
 
         ImageJUtils.forEachIndexedSlice(img, (imp, index) -> {
             algorithmProgress.accept(subProgress.resolve("Slice " + index + "/" + img.getStackSize()));
@@ -124,10 +125,10 @@ public class HessianSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgorithm
                 applyInternalGradient(processedSlice);
 
             // Convert to mask
-            autoThresholding.clearSlotData();
-            autoThresholding.getFirstInputSlot().addData(new ImagePlus2DGreyscaleData(processedSlice));
-            autoThresholding.run(subProgress.resolve("Auto-thresholding"), algorithmProgress, isCancelled);
-            processedSlice = autoThresholding.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
+            autoThresholdingCopy.clearSlotData();
+            autoThresholdingCopy.getFirstInputSlot().addData(new ImagePlus2DGreyscaleData(processedSlice));
+            autoThresholdingCopy.run(subProgress.resolve("Auto-thresholding"), algorithmProgress, isCancelled);
+            processedSlice = autoThresholdingCopy.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
 
             // Despeckle x2
             if (applyDespeckle)

@@ -46,6 +46,11 @@ public class FFT2DForwardTransform extends ACAQSimpleIteratingAlgorithm {
     }
 
     @Override
+    public boolean supportsParallelization() {
+        return true;
+    }
+
+    @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlus img = dataInterface.getInputData(getFirstInputSlot(), ImagePlus2DData.class).getImage();
         ImagePlus fft = FFT.forward(img);

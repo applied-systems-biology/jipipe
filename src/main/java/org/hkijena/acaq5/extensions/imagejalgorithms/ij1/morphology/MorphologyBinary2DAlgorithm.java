@@ -56,6 +56,11 @@ public class MorphologyBinary2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     }
 
     @Override
+    public boolean supportsParallelization() {
+        return true;
+    }
+
+    @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class);
         ImagePlus img = inputData.getImage().duplicate();

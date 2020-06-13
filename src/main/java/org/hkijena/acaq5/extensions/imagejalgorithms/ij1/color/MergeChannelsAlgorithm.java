@@ -76,6 +76,11 @@ public class MergeChannelsAlgorithm extends ACAQIteratingAlgorithm {
     }
 
     @Override
+    public boolean supportsParallelization() {
+        return true;
+    }
+
+    @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlus[] channels = new ImagePlus[ChannelColor.values().length];
         for (int i = 0; i < ChannelColor.values().length; ++i) {

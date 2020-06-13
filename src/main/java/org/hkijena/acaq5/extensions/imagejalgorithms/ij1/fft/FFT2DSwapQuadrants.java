@@ -55,6 +55,11 @@ public class FFT2DSwapQuadrants extends ACAQSimpleIteratingAlgorithm {
     }
 
     @Override
+    public boolean supportsParallelization() {
+        return true;
+    }
+
+    @Override
     public void reportValidity(ACAQValidityReport report) {
 
     }

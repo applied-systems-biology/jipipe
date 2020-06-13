@@ -73,9 +73,15 @@ public class BrightSpotsSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgor
     }
 
     @Override
+    public boolean supportsParallelization() {
+        return true;
+    }
+
+    @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlus img = dataInterface.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class).getImage();
         ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
+        AutoThreshold2DAlgorithm autoThresholdingCopy = new AutoThreshold2DAlgorithm(autoThresholding);
 
         ImageJUtils.forEachIndexedSlice(img, (imp, index) -> {
             ImagePlus slice = new ImagePlus("slice", imp);
@@ -92,10 +98,10 @@ public class BrightSpotsSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgor
                     true);
 
             // Apply auto threshold
-            autoThresholding.clearSlotData();
-            autoThresholding.getFirstOutputSlot().addData(new ImagePlus2DGreyscaleData(processedSlice));
-            autoThresholding.run(subProgress.resolve("Auto-thresholding"), algorithmProgress, isCancelled);
-            processedSlice = autoThresholding.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
+            autoThresholdingCopy.clearSlotData();
+            autoThresholdingCopy.getFirstOutputSlot().addData(new ImagePlus2DGreyscaleData(processedSlice));
+            autoThresholdingCopy.run(subProgress.resolve("Auto-thresholding"), algorithmProgress, isCancelled);
+            processedSlice = autoThresholdingCopy.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
 
             // Apply morphologial operations
             Binary binaryFilter = new Binary();
@@ -118,10 +124,10 @@ public class BrightSpotsSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgor
                 GaussianBlur gaussianBlur = new GaussianBlur();
                 gaussianBlur.blurGaussian(processedSlice.getProcessor(), gaussianSigma);
 
-                autoThresholding.clearSlotData();
-                autoThresholding.getFirstInputSlot().addData(new ImagePlusGreyscaleData(processedSlice));
-                autoThresholding.run(subProgress.resolve("Auto-thresholding (2)"), algorithmProgress, isCancelled);
-                processedSlice = autoThresholding.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
+                autoThresholdingCopy.clearSlotData();
+                autoThresholdingCopy.getFirstInputSlot().addData(new ImagePlusGreyscaleData(processedSlice));
+                autoThresholdingCopy.run(subProgress.resolve("Auto-thresholding (2)"), algorithmProgress, isCancelled);
+                processedSlice = autoThresholdingCopy.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
             }
             stack.addSlice("slice" + index, processedSlice.getProcessor());
         });

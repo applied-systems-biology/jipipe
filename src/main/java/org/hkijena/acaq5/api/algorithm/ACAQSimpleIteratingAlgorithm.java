@@ -100,11 +100,11 @@ public abstract class ACAQSimpleIteratingAlgorithm extends ACAQAlgorithm impleme
                         runIteration(dataInterface, slotProgress, algorithmProgress, isCancelled);
                     });
                 }
-                algorithmProgress.accept(subProgress.resolve(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getThreadsPerBatch(), getThreadPool().getMaxThreads())));
-                for (Future<Exception> batch : getThreadPool().scheduleBatches(tasks, getThreadsPerBatch())) {
+                algorithmProgress.accept(subProgress.resolve(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getParallelizationBatchSize(), getThreadPool().getMaxThreads())));
+                for (Future<Exception> batch : getThreadPool().scheduleBatches(tasks, getParallelizationBatchSize())) {
                     try {
                         Exception exception = batch.get();
-                        if(exception != null)
+                        if (exception != null)
                             throw new RuntimeException(exception);
                     } catch (InterruptedException | ExecutionException e) {
                         throw new RuntimeException(e);
@@ -141,7 +141,7 @@ public abstract class ACAQSimpleIteratingAlgorithm extends ACAQAlgorithm impleme
     }
 
     @Override
-    public int getThreadsPerBatch() {
+    public int getParallelizationBatchSize() {
         return 1;
     }
 

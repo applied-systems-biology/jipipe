@@ -7,6 +7,7 @@ import java.util.concurrent.TimeoutException;
 
 /**
  * A dummy {@link Future}
+ *
  * @param <T> return type
  */
 public class InstantFuture<T> implements Future<T> {
@@ -15,6 +16,7 @@ public class InstantFuture<T> implements Future<T> {
 
     /**
      * Initializes a new instance
+     *
      * @param returnValue the return value
      */
     public InstantFuture(T returnValue) {

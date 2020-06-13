@@ -9,7 +9,6 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.utils.StringUtils;
 
-import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -145,9 +144,8 @@ public class ACAQRun implements ACAQRunnable {
                 IJ.handleException(ex);
             }
             throw e;
-        }
-        finally {
-            if(threadPool != null) {
+        } finally {
+            if (threadPool != null) {
                 threadPool.shutdown();
             }
             threadPool = null;
@@ -228,7 +226,7 @@ public class ACAQRun implements ACAQRunnable {
 
                     if (!dataLoadedFromCache) {
                         try {
-                            if(slot.getAlgorithm() instanceof ACAQAlgorithm) {
+                            if (slot.getAlgorithm() instanceof ACAQAlgorithm) {
                                 ((ACAQAlgorithm) slot.getAlgorithm()).setThreadPool(threadPool);
                             }
                             slot.getAlgorithm().run(new ACAQRunnerSubStatus(), algorithmProgress, isCancelled);
@@ -239,9 +237,8 @@ public class ACAQRun implements ACAQRunnable {
                                     "On running the algorithm '" + slot.getAlgorithm().getName() + "', within compartment '" + getProject().getCompartments().get(slot.getAlgorithm().getCompartment()).getName() + "'",
                                     "Please refer to the other error messages.",
                                     "Please follow the instructions for the other error messages.");
-                        }
-                        finally {
-                            if(slot.getAlgorithm() instanceof ACAQAlgorithm) {
+                        } finally {
+                            if (slot.getAlgorithm() instanceof ACAQAlgorithm) {
                                 ((ACAQAlgorithm) slot.getAlgorithm()).setThreadPool(null);
                             }
                         }

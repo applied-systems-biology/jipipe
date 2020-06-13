@@ -103,15 +103,13 @@ public class ACAQRunAlgorithmCommand extends DynamicCommand implements Initializ
         IJ.showProgress(2, 3);
         ACAQFixedThreadPool threadPool = new ACAQFixedThreadPool(threads);
         try {
-            if(algorithm instanceof ACAQAlgorithm)
+            if (algorithm instanceof ACAQAlgorithm)
                 ((ACAQAlgorithm) algorithm).setThreadPool(threadPool);
             algorithm.run(new ACAQRunnerSubStatus(), s -> IJ.showStatus("Running ACAQ5 algorithm ... " + s), () -> false);
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
-        }
-        finally {
-            if(algorithm instanceof ACAQAlgorithm)
+        } finally {
+            if (algorithm instanceof ACAQAlgorithm)
                 ((ACAQAlgorithm) algorithm).setThreadPool(null);
             threadPool.shutdown();
             threadPool = null;

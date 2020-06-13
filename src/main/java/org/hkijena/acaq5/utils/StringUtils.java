@@ -37,6 +37,7 @@ public class StringUtils {
 
     /**
      * Formats a duration in milliseconds to something readable
+     *
      * @param durationMilliseconds the duration
      * @return formatted string
      */
@@ -46,11 +47,12 @@ public class StringUtils {
 
     /**
      * A nice human-readable format
+     *
      * @param dateTime the time point
      * @return formatted string
      */
     public static String formatDateTime(LocalDateTime dateTime) {
-        return  dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE) + " " +
+        return dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE) + " " +
                 dateTime.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
     }
 

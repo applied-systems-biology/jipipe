@@ -240,8 +240,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm implements AC
                 algorithmProgress.accept(slotProgress);
                 runIteration(dataInterfaces.get(i), slotProgress, algorithmProgress, isCancelled);
             }
-        }
-        else {
+        } else {
             List<Runnable> tasks = new ArrayList<>();
             for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
                 int rowIndex = i;
@@ -253,11 +252,11 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm implements AC
                     runIteration(dataInterfaces.get(rowIndex), slotProgress, algorithmProgress, isCancelled);
                 });
             }
-            algorithmProgress.accept(subProgress.resolve(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getThreadsPerBatch(), getThreadPool().getMaxThreads())));
-            for (Future<Exception> batch : getThreadPool().scheduleBatches(tasks, getThreadsPerBatch())) {
+            algorithmProgress.accept(subProgress.resolve(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getParallelizationBatchSize(), getThreadPool().getMaxThreads())));
+            for (Future<Exception> batch : getThreadPool().scheduleBatches(tasks, getParallelizationBatchSize())) {
                 try {
                     Exception exception = batch.get();
-                    if(exception != null)
+                    if (exception != null)
                         throw new RuntimeException(exception);
                 } catch (InterruptedException | ExecutionException e) {
                     throw new RuntimeException(e);
@@ -361,7 +360,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm implements AC
     }
 
     @Override
-    public int getThreadsPerBatch() {
+    public int getParallelizationBatchSize() {
         return 1;
     }
 

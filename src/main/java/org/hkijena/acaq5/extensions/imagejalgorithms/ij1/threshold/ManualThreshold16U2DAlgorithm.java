@@ -56,6 +56,11 @@ public class ManualThreshold16U2DAlgorithm extends ACAQSimpleIteratingAlgorithm 
     }
 
     @Override
+    public boolean supportsParallelization() {
+        return true;
+    }
+
+    @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusGreyscale16UData.class);
         ImagePlus img = inputData.getImage().duplicate();

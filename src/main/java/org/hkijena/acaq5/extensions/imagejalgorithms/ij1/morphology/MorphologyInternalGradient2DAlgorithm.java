@@ -53,6 +53,11 @@ public class MorphologyInternalGradient2DAlgorithm extends ACAQSimpleIteratingAl
         this.radius = other.radius;
     }
 
+    @Override
+    public boolean supportsParallelization() {
+        return true;
+    }
+
     private void applyInternalGradient(ImagePlus img) {
         // Erode the original image
         ImagePlus eroded = img.duplicate();

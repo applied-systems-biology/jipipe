@@ -67,6 +67,11 @@ public class BoxFilter3DAlgorithm extends ACAQSimpleIteratingAlgorithm {
         dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
     }
 
+    @Override
+    public boolean supportsParallelization() {
+        return true;
+    }
+
 
     @Override
     public void reportValidity(ACAQValidityReport report) {

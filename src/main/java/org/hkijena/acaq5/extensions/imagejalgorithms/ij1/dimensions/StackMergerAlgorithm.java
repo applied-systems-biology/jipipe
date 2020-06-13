@@ -62,6 +62,10 @@ public class StackMergerAlgorithm extends ACAQMergingAlgorithm {
         this.counterAnnotation = other.counterAnnotation;
     }
 
+    @Override
+    public boolean supportsParallelization() {
+        return true;
+    }
 
     @Override
     protected Set<String> getIgnoredTraitColumns() {

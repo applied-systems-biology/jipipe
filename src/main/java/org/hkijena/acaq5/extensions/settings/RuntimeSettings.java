@@ -87,12 +87,13 @@ public class RuntimeSettings implements ACAQParameterCollection {
 
     /**
      * Sets the number of threads
+     *
      * @param defaultRunThreads threads
      * @return if successful
      */
     @ACAQParameter("default-run-threads")
     public boolean setDefaultRunThreads(int defaultRunThreads) {
-        if(defaultRunThreads <= 0)
+        if (defaultRunThreads <= 0)
             return false;
         this.defaultRunThreads = defaultRunThreads;
         eventBus.post(new ParameterChangedEvent(this, "default-run-threads"));
@@ -107,12 +108,13 @@ public class RuntimeSettings implements ACAQParameterCollection {
 
     /**
      * Sets the number of threads for test bench
-     * @param defaultTestBenchThreads  threads
+     *
+     * @param defaultTestBenchThreads threads
      * @return if successful
      */
     @ACAQParameter("default-test-bench-threads")
     public boolean setDefaultTestBenchThreads(int defaultTestBenchThreads) {
-        if(defaultTestBenchThreads <= 0)
+        if (defaultTestBenchThreads <= 0)
             return false;
         this.defaultTestBenchThreads = defaultTestBenchThreads;
         eventBus.post(new ParameterChangedEvent(this, "default-test-bench-threads"));

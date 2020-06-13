@@ -174,6 +174,7 @@ public abstract class ACAQAlgorithm extends ACAQGraphNode {
     /**
      * Sets the thread pool.
      * Depending on the implementation, the pool is just ignored.
+     *
      * @param threadPool can be null (forces single-threaded run)
      */
     public void setThreadPool(ACAQFixedThreadPool threadPool) {

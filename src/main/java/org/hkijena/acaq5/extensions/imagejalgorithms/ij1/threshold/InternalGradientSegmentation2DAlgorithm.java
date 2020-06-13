@@ -47,6 +47,9 @@ public class InternalGradientSegmentation2DAlgorithm extends ACAQSimpleIterating
     private int internalGradientRadius = 25;
     private int dilationIterations = 3;
     private int erosionIterations = 2;
+    private boolean applyFirstCLAHE = true;
+    private boolean applySecondCLAHE = true;
+    private boolean applyGaussian = true;
 
     private AutoThreshold2DAlgorithm autoThresholding;
     private CLAHEContrastEnhancer contrastEnhancer;
@@ -77,6 +80,9 @@ public class InternalGradientSegmentation2DAlgorithm extends ACAQSimpleIterating
         this.erosionIterations = other.erosionIterations;
         this.autoThresholding = (AutoThreshold2DAlgorithm) other.autoThresholding.getDeclaration().clone(other.autoThresholding);
         this.contrastEnhancer = (CLAHEContrastEnhancer) other.contrastEnhancer.getDeclaration().clone(other.contrastEnhancer);
+        this.applyFirstCLAHE = other.applyFirstCLAHE;
+        this.applySecondCLAHE = other.applySecondCLAHE;
+        this.applyGaussian = other.applyGaussian;
     }
 
     private void applyInternalGradient(ImagePlus img) {
@@ -96,29 +102,39 @@ public class InternalGradientSegmentation2DAlgorithm extends ACAQSimpleIterating
         ImagePlus img = dataInterface.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class).getImage();
         ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
 
+        CLAHEContrastEnhancer contrastEnhancerCopy = new CLAHEContrastEnhancer(contrastEnhancer);
+        AutoThreshold2DAlgorithm autoThresholdingCopy = new AutoThreshold2DAlgorithm(autoThresholding);
+
         ImageJUtils.forEachIndexedSlice(img, (imp, index) -> {
             ImagePlus slice = new ImagePlus("slice", imp);
             ImagePlus processedSlice = slice.duplicate();
 
             // Apply CLAHE enhancer
-            contrastEnhancer.clearSlotData();
-            contrastEnhancer.getFirstInputSlot().addData(new ImagePlusGreyscaleData(processedSlice));
-            contrastEnhancer.run(subProgress.resolve("Slice " + index + "/" + img.getStackSize()).resolve("CLAHE Enhancer (1/2)"), algorithmProgress, isCancelled);
+            if (applyFirstCLAHE) {
+                contrastEnhancerCopy.clearSlotData();
+                contrastEnhancerCopy.getFirstInputSlot().addData(new ImagePlusGreyscaleData(processedSlice));
+                contrastEnhancerCopy.run(subProgress.resolve("Slice " + index + "/" + img.getStackSize()).resolve("CLAHE Enhancer (1/2)"), algorithmProgress, isCancelled);
+                processedSlice = contrastEnhancerCopy.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
+            }
 
-            (new GaussianBlur()).blurGaussian(processedSlice.getProcessor(), gaussSigma);
-            ImageJUtils.runOnImage(processedSlice, "8-bit");
-            applyInternalGradient(processedSlice);
+            if (applyGaussian) {
+                (new GaussianBlur()).blurGaussian(processedSlice.getProcessor(), gaussSigma);
+                ImageJUtils.runOnImage(processedSlice, "8-bit");
+                applyInternalGradient(processedSlice);
+            }
 
-            contrastEnhancer.clearSlotData();
-            contrastEnhancer.getFirstInputSlot().addData(new ImagePlusGreyscaleData(processedSlice));
-            contrastEnhancer.run(subProgress.resolve("Slice " + index + "/" + img.getStackSize()).resolve("CLAHE Enhancer (2/2)"), algorithmProgress, isCancelled);
-            processedSlice = contrastEnhancer.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
+            if (applySecondCLAHE) {
+                contrastEnhancerCopy.clearSlotData();
+                contrastEnhancerCopy.getFirstInputSlot().addData(new ImagePlusGreyscaleData(processedSlice));
+                contrastEnhancerCopy.run(subProgress.resolve("Slice " + index + "/" + img.getStackSize()).resolve("CLAHE Enhancer (2/2)"), algorithmProgress, isCancelled);
+                processedSlice = contrastEnhancerCopy.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
+            }
 
             // Convert image to mask and threshold with given auto threshold method
-            autoThresholding.clearSlotData();
-            autoThresholding.getFirstInputSlot().addData(new ImagePlusGreyscaleData(processedSlice));
-            autoThresholding.run(subProgress.resolve("Slice " + index + "/" + img.getStackSize()).resolve("Auto-thresholding"), algorithmProgress, isCancelled);
-            processedSlice = autoThresholding.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
+            autoThresholdingCopy.clearSlotData();
+            autoThresholdingCopy.getFirstInputSlot().addData(new ImagePlusGreyscaleData(processedSlice));
+            autoThresholdingCopy.run(subProgress.resolve("Slice " + index + "/" + img.getStackSize()).resolve("Auto-thresholding"), algorithmProgress, isCancelled);
+            processedSlice = autoThresholdingCopy.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
 
             // Apply set of rank filters
             Binary binaryFilter = new Binary();
@@ -208,6 +224,39 @@ public class InternalGradientSegmentation2DAlgorithm extends ACAQSimpleIterating
     @ACAQDocumentation(name = "CLAHE Enhancer", description = "Parameters for underlying CLAHE Enhancing algorithm")
     public CLAHEContrastEnhancer getContrastEnhancer() {
         return contrastEnhancer;
+    }
+
+    @ACAQDocumentation(name = "Apply first CLAHE")
+    @ACAQParameter("apply-first-clahe")
+    public boolean isApplyFirstCLAHE() {
+        return applyFirstCLAHE;
+    }
+
+    @ACAQParameter("apply-first-clahe")
+    public void setApplyFirstCLAHE(boolean applyFirstCLAHE) {
+        this.applyFirstCLAHE = applyFirstCLAHE;
+    }
+
+    @ACAQDocumentation(name = "Apply second CLAHE")
+    @ACAQParameter("apply-second-clahe")
+    public boolean isApplySecondCLAHE() {
+        return applySecondCLAHE;
+    }
+
+    @ACAQParameter("apply-second-clahe")
+    public void setApplySecondCLAHE(boolean applySecondCLAHE) {
+        this.applySecondCLAHE = applySecondCLAHE;
+    }
+
+    @ACAQDocumentation(name = "Apply Gaussian")
+    @ACAQParameter("apply-gaussian")
+    public boolean isApplyGaussian() {
+        return applyGaussian;
+    }
+
+    @ACAQParameter("apply-gaussian")
+    public void setApplyGaussian(boolean applyGaussian) {
+        this.applyGaussian = applyGaussian;
     }
 
     @Override
