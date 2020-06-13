@@ -106,7 +106,8 @@ public class ACAQRun implements ACAQRunnable {
         boolean canFlush = true;
         for (int j = currentIndex + 1; j < traversedSlots.size(); ++j) {
             ACAQDataSlot futureSlot = traversedSlots.get(j);
-            if (futureSlot.isInput() && algorithmGraph.getSourceSlot(futureSlot) == outputSlot) {
+            boolean isDeactivated = (futureSlot.getAlgorithm() instanceof ACAQAlgorithm) && (!((ACAQAlgorithm) futureSlot.getAlgorithm()).isEnabled());
+            if (!isDeactivated && futureSlot.isInput() && algorithmGraph.getSourceSlot(futureSlot) == outputSlot) {
                 canFlush = false;
                 break;
             }

@@ -144,7 +144,10 @@ public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
 
     private void tryShowSetupPanel() {
         if (validateOrShowError()) {
+            removeAll();
             add(setupPanel, BorderLayout.CENTER);
+            revalidate();
+            repaint();
         }
     }
 
@@ -214,9 +217,12 @@ public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
                     openError(e);
                 }
             }
-            if (nextRunOnSuccess != null) {
-                nextRunOnSuccess.accept(currentTestBench);
-                nextRunOnSuccess = null;
+            else {
+                if (nextRunOnSuccess != null) {
+                    nextRunOnSuccess.accept(currentTestBench);
+                    nextRunOnSuccess = null;
+                }
+                currentTestBench = null;
             }
         }
     }
