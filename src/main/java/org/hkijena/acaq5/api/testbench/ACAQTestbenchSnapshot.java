@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Used by the test bench to backup output data
+ * Used by the quick run to backup output data
  */
 public class ACAQTestbenchSnapshot {
     private ACAQTestBench testBench;

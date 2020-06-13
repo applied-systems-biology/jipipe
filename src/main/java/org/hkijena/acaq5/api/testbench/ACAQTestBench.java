@@ -137,7 +137,7 @@ public class ACAQTestBench implements ACAQRunnable, ACAQValidatable {
         ACAQValidityReport report = new ACAQValidityReport();
         reportValidity(report);
         if (!report.isValid())
-            throw new RuntimeException("Test bench is not valid!");
+            throw new RuntimeException("Quick run is not valid!");
 
         Path outputBasePath = testBenchRun.getConfiguration().getOutputPath().getParent();
         Path outputPath;

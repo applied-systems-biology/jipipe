@@ -117,7 +117,7 @@ public class ACAQTestBenchUI extends ACAQProjectWorkbenchPanel {
         if (backupSelection.getSelectedItem() instanceof ACAQTestbenchSnapshot) {
             ACAQTestbenchSnapshot backup = (ACAQTestbenchSnapshot) backupSelection.getSelectedItem();
             backup.getAlgorithmBackup(testBench.getBenchedAlgorithm()).restoreParameters(testBench.getProjectAlgorithm());
-            getProjectWorkbench().sendStatusBarText("Copied parameters from test bench to " + testBench.getProjectAlgorithm().getName());
+            getProjectWorkbench().sendStatusBarText("Copied parameters from quick run to " + testBench.getProjectAlgorithm().getName());
         }
     }
 
@@ -162,7 +162,7 @@ public class ACAQTestBenchUI extends ACAQProjectWorkbenchPanel {
     }
 
     /**
-     * Triggered when the test bench finished calculating
+     * Triggered when the quick run finished calculating
      *
      * @param event Generated event
      */
@@ -177,7 +177,7 @@ public class ACAQTestBenchUI extends ACAQProjectWorkbenchPanel {
     }
 
     /**
-     * Triggered when the test bench finished calculating
+     * Triggered when the quick run finished calculating
      *
      * @param event Generated event
      */

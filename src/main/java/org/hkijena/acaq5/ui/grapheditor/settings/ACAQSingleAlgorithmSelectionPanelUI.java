@@ -194,13 +194,13 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPan
     }
 
     /**
-     * Activates and runs the test bench as automatically as possible.
+     * Activates and runs the quick run as automatically as possible.
      *
      * @param showResults show results after a successful run
      * @param showCache   show slot cache after a successful run
      */
     public void runTestBench(boolean showResults, boolean showCache) {
-        // Activate the test bench
+        // Activate the quick run
         tabbedPane.switchToContent(testBenchTabContent);
         ACAQTestBenchSetupUI testBenchSetupUI = (ACAQTestBenchSetupUI) testBenchTabContent.getComponent(0);
         boolean success = testBenchSetupUI.tryAutoRun(showResults, new ACAQTestBenchSettings(), testBench -> {

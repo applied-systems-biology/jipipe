@@ -107,7 +107,7 @@ public class SortTableAlgorithm extends ACAQSimpleIteratingAlgorithm {
                     "A plot generator algorithm was instructed to extract a column matching the rule '" + filter.toString() + "' for plotting. The column could note be found. " +
                             "The table contains only following columns: " + String.join(", ", input.getColumnNames()),
                     "Please check if your input columns are set up with valid filters. Please check the input of the plot generator " +
-                            "via the test bench to see if the input data is correct. You can also select a generator instead of picking a column.");
+                            "via the quick run to see if the input data is correct. You can also select a generator instead of picking a column.");
         }
         return result;
     }

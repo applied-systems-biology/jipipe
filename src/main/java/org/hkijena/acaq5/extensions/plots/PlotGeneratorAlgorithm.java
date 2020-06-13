@@ -112,7 +112,7 @@ public class PlotGeneratorAlgorithm extends ACAQAlgorithm {
                                 "A plot generator algorithm was instructed to extract a column matching the rule '" + filter.toString() + "' for plotting. The column could note be found. " +
                                         "The table contains only following columns: " + String.join(", ", columnHeadings),
                                 "Please check if your input columns are set up with valid filters. Please check the input of the plot generator " +
-                                        "via the test bench to see if the input data is correct. You can also select a generator instead of picking a column.");
+                                        "via the quick run to see if the input data is correct. You can also select a generator instead of picking a column.");
                     }
                     seriesTable.setColumn(entry.getKey(), inputData.getTable().getColumnAsVariables(matchingColumn));
                 }
@@ -247,7 +247,7 @@ public class PlotGeneratorAlgorithm extends ACAQAlgorithm {
     }
 
     @ACAQDocumentation(name = "Input columns", description = "Please define which input table columns are copied into the plot. " +
-            "To find out which columns are available, run the test bench on input data. You can also generate missing columns.")
+            "To find out which columns are available, run the quick run on input data. You can also generate missing columns.")
     @ACAQParameter("column-assignments")
     public ACAQDynamicParameterCollection getColumnAssignments() {
         return columnAssignments;

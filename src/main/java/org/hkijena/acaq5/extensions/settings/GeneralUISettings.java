@@ -63,7 +63,7 @@ public class GeneralUISettings implements ACAQParameterCollection {
         getEventBus().post(new ParameterChangedEvent(this, "show-parameter-search-bar"));
     }
 
-    @ACAQDocumentation(name = "Never ask on closing tabs", description = "If enabled, you do not need to confirm when closing tabs like the test bench, plots, and results.")
+    @ACAQDocumentation(name = "Never ask on closing tabs", description = "If enabled, you do not need to confirm when closing tabs like the quick run, plots, and results.")
     @ACAQParameter("never-ask-on-closing-tabs")
     public boolean isNeverAskOnClosingTabs() {
         return neverAskOnClosingTabs;

@@ -45,7 +45,7 @@ public class ImagePlusData implements ACAQData {
                     "Internal ACAQ5 image type",
                     "An algorithm tried to pass an empty ImageJ image back to ACAQ5. This is not allowed. " +
                             "Either the algorithm inputs are wrong, or there is an error in the program code.",
-                    "Please check the inputs via the test bench to see if they are satisfying the algorithm's assumptions. " +
+                    "Please check the inputs via the quick run to see if they are satisfying the algorithm's assumptions. " +
                             "If you cannot solve the issue, please contact the plugin's author.");
         }
         this.image = image;

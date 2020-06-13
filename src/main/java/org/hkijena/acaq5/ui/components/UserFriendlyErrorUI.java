@@ -53,7 +53,7 @@ public class UserFriendlyErrorUI extends FormPanel {
                     "Internal plugin, ACAQ5, or ImageJ code.",
                     "Cannot be determined. But the response was: " + e.getMessage(),
                     "Please check if your input data has the right format and is not corrupted. " +
-                            "Try to use the test bench on input algorithms and check if the generated data satisfies the problematic algorithm's assumptions." +
+                            "Try to use the quick run on input algorithms and check if the generated data satisfies the problematic algorithm's assumptions." +
                             "If you cannot solve the issue yourself, contact the ACAQ5 or the algorithm/plugin developer.",
                     writer.toString()));
         }

@@ -55,7 +55,7 @@ public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
     }
 
     /**
-     * Attempts to setup and run the test bench automatically and run a function when finished
+     * Attempts to setup and run the quick run automatically and run a function when finished
      *
      * @param showResults show results after successful run
      * @param settings    settings
@@ -208,7 +208,7 @@ public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
             if (showNextResults) {
                 try {
                     ACAQTestBenchUI testBenchUI = new ACAQTestBenchUI(getProjectWorkbench(), currentTestBench);
-                    String name = "Test bench: " + algorithm.getName();
+                    String name = "Quick run: " + algorithm.getName();
                     getProjectWorkbench().getDocumentTabPane().addTab(name, UIUtils.getIconFromResources("testbench.png"),
                             testBenchUI, DocumentTabPane.CloseMode.withAskOnCloseButton, true);
                     getProjectWorkbench().getDocumentTabPane().switchToLastTab();
