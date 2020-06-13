@@ -37,6 +37,7 @@ public class AnnotationsExtension extends ACAQPrepackagedDefaultJavaExtension {
                 ResourceUtils.getPluginResource("icons/data-types/annotation-table.png"),
                 ResultsTableDataSlotRowUI.class,
                 null);
+        registerDatatypeConversion(new ImplicitResultsTableDataConverter());
     }
 
     private void registerAlgorithms() {
