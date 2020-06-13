@@ -163,16 +163,6 @@ public class UIUtils {
      * @param iconName relative to the icons/ plugin resource
      * @return the icon instance
      */
-    public static URL getTraitIconURL(String iconName) {
-        return ResourceUtils.getPluginResource("icons/traits/" + iconName);
-    }
-
-    /**
-     * Returns an included trait icon from ACAQ5 resources
-     *
-     * @param iconName relative to the icons/ plugin resource
-     * @return the icon instance
-     */
     public static URL getAlgorithmIconURL(String iconName) {
         return ResourceUtils.getPluginResource("icons/algorithms/" + iconName);
     }

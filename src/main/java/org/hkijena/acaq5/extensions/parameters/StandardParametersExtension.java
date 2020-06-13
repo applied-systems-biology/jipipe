@@ -310,6 +310,14 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 "String to string predicate",
                 "Mapping from a string to a string predicate",
                 null);
+        registerParameterType("string:string:pair",
+                StringAndStringPair.class,
+                StringAndStringPair.List.class,
+                null,
+                null,
+                "String to string",
+                "Mapping from a string to a string",
+                null);
     }
 
     private void registerGeneratingParameters() {
@@ -380,7 +388,6 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 ACAQAlgorithmDeclarationRefParameterEditorUI.class);
 
         // Icon types
-
         registerParameterType("algorithm-type-icon",
                 ACAQAlgorithmIconRef.class,
                 ACAQAlgorithmIconRef::new,
@@ -393,7 +400,7 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
     private void registerCommonJavaTypes() {
         // Register other common Java classes
         registerParameterEditor(Enum.class, EnumParameterEditorUI.class);
-        registerParameterType("string", String.class, () -> "", s -> s, "String", "A text value", StringParameterEditorUI.class);
+        registerParameterType("string", String.class, StringList.class, () -> "", s -> s, "String", "A text value", StringParameterEditorUI.class);
         registerParameterType("path", Path.class, PathList.class, () -> Paths.get(""), p -> p, "Filesystem path", "A path", FilePathParameterEditorUI.class);
         registerParameterEditor(PathList.class, PathListParameterEditorUI.class);
         registerParameterType("file", File.class, () -> new File(""), f -> f, "Filesystem path", "A path", FileParameterEditorUI.class);

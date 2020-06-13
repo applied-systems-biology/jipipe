@@ -4,14 +4,15 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.ACAQIOSlotConfiguration;
+import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.data.ACAQAnnotation;
+import org.hkijena.acaq5.extensions.parameters.pairs.PairParameterSettings;
+import org.hkijena.acaq5.extensions.parameters.pairs.StringAndStringPair;
+import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -19,20 +20,21 @@ import java.util.function.Supplier;
 /**
  * Algorithm that annotates all data with the same annotation
  */
-@ACAQDocumentation(name = "Annotate data", description = "Annotates each data with the specified annotation")
-@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Annotation)
+@ACAQDocumentation(name = "Set annotations", description = "Sets the specified annotations to the specified values")
+@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Annotation, menuPath = "Modify")
+@AlgorithmInputSlot(value = ACAQData.class, slotName = "Input", autoCreate = true)
+@AlgorithmOutputSlot(value = ACAQData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
+public class AnnotateAll extends ACAQSimpleIteratingAlgorithm {
 
-// Traits
-public class AnnotateAll extends ACAQAlgorithm {
-
-    private ACAQAnnotation annotation;
+    private StringAndStringPair.List annotations = new StringAndStringPair.List();
     private boolean overwrite = false;
 
     /**
      * @param declaration the declaration
      */
     public AnnotateAll(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, new ACAQIOSlotConfiguration());
+        super(declaration);
+        annotations.addNewInstance();
     }
 
     /**
@@ -42,40 +44,36 @@ public class AnnotateAll extends ACAQAlgorithm {
      */
     public AnnotateAll(AnnotateAll other) {
         super(other);
-        this.annotation = other.annotation;
+        this.annotations = new StringAndStringPair.List(other.annotations);
         this.overwrite = other.overwrite;
     }
 
     @Override
-    public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        for (ACAQDataSlot inputSlot : getInputSlots()) {
-            ACAQDataSlot outputSlot = getSlots().get("Output " + inputSlot.getName());
-            outputSlot.copyFrom(inputSlot);
-        }
-        for (ACAQDataSlot outputSlot : getOutputSlots()) {
-            outputSlot.addAnnotationToAllData(annotation, overwrite);
+    public void reportValidity(ACAQValidityReport report) {
+        for (int i = 0; i < annotations.size(); i++) {
+            report.forCategory("Annotations").forCategory("Item #" + (i + 1)).forCategory("Name").checkNonEmpty(annotations.get(i).getKey(), this);
         }
     }
 
     @Override
-    public void reportValidity(ACAQValidityReport report) {
-        if (annotation == null) {
-            report.forCategory("Annotation").reportIsInvalid("No annotation provided!",
-                    "You have to define which annotation should be added to the data.",
-                    "Please setup an annotation that is added to the data.",
-                    this);
+    protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        for (StringAndStringPair annotation : annotations) {
+            dataInterface.addGlobalAnnotation(new ACAQAnnotation(annotation.getKey(), annotation.getValue()), overwrite);
         }
+        dataInterface.addOutputData(getFirstOutputSlot(), dataInterface.getInputData(getFirstInputSlot(), ACAQData.class));
     }
 
-    @ACAQDocumentation(name = "Annotation", description = "This annotation is added to each input data")
+    @ACAQDocumentation(name = "Annotations", description = "Allows you to set the annotation to add/modify")
     @ACAQParameter("generated-annotation")
-    public ACAQAnnotation getAnnotation() {
-        return annotation;
+    @PairParameterSettings(keyLabel = "Name", valueLabel = "Value")
+    @StringParameterSettings(monospace = true)
+    public StringAndStringPair.List getAnnotations() {
+        return annotations;
     }
 
     @ACAQParameter("generated-annotation")
-    public void setAnnotation(ACAQAnnotation annotation) {
-        this.annotation = annotation;
+    public void setAnnotations(StringAndStringPair.List annotations) {
+        this.annotations = annotations;
         getEventBus().post(new ParameterChangedEvent(this, "generated-annotation"));
     }
 

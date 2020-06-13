@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.extensions.parameters.collections;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.api.registries.ACAQParameterTypeRegistry;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
@@ -53,7 +54,12 @@ public class ListParameterEditorUI extends ACAQParameterEditorUI {
     }
 
     private ListParameter<?> getParameter() {
-        return getParameterAccess().get(ListParameter.class);
+        ListParameter<?> listParameter = getParameterAccess().get(ListParameter.class);
+        if(listParameter == null) {
+            listParameter = (ListParameter<?>) ACAQParameterTypeRegistry.getInstance().getDeclarationByFieldClass(getParameterAccess().getFieldClass()).newInstance();
+            getParameterAccess().set(listParameter);
+        }
+        return listParameter;
     }
 
     @Override
