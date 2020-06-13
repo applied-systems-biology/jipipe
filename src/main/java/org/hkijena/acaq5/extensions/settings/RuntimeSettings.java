@@ -24,6 +24,8 @@ public class RuntimeSettings implements ACAQParameterCollection {
     private boolean allowSkipAlgorithmsWithoutInput = true;
     private boolean allowCache = true;
     private OptionalPathParameter tempDirectory = new OptionalPathParameter();
+    private int defaultRunThreads = 1;
+    private int defaultTestBenchThreads = 1;
 
     /**
      * Creates a new instance
@@ -75,6 +77,46 @@ public class RuntimeSettings implements ACAQParameterCollection {
     public void setTempDirectory(OptionalPathParameter tempDirectory) {
         this.tempDirectory = tempDirectory;
         eventBus.post(new ParameterChangedEvent(this, "temp-directory"));
+    }
+
+    @ACAQDocumentation(name = "Default thread count", description = "Default number of threads for running whole pipelines.")
+    @ACAQParameter("default-run-threads")
+    public int getDefaultRunThreads() {
+        return defaultRunThreads;
+    }
+
+    /**
+     * Sets the number of threads
+     * @param defaultRunThreads threads
+     * @return if successful
+     */
+    @ACAQParameter("default-run-threads")
+    public boolean setDefaultRunThreads(int defaultRunThreads) {
+        if(defaultRunThreads <= 0)
+            return false;
+        this.defaultRunThreads = defaultRunThreads;
+        eventBus.post(new ParameterChangedEvent(this, "default-run-threads"));
+        return true;
+    }
+
+    @ACAQDocumentation(name = "Default thread count (quick run)", description = "Default number of threads for executing quick runs.")
+    @ACAQParameter("default-test-bench-threads")
+    public int getDefaultTestBenchThreads() {
+        return defaultTestBenchThreads;
+    }
+
+    /**
+     * Sets the number of threads for test bench
+     * @param defaultTestBenchThreads  threads
+     * @return if successful
+     */
+    @ACAQParameter("default-test-bench-threads")
+    public boolean setDefaultTestBenchThreads(int defaultTestBenchThreads) {
+        if(defaultTestBenchThreads <= 0)
+            return false;
+        this.defaultTestBenchThreads = defaultTestBenchThreads;
+        eventBus.post(new ParameterChangedEvent(this, "default-test-bench-threads"));
+        return true;
     }
 
     public static RuntimeSettings getInstance() {

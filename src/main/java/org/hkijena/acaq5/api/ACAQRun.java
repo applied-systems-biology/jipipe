@@ -28,6 +28,7 @@ public class ACAQRun implements ACAQRunnable {
     private ACAQProject project;
     private ACAQRunSettings configuration;
     private StringBuilder log = new StringBuilder();
+    private ACAQFixedThreadPool threadPool;
 
     /**
      * @param project       The project
@@ -129,6 +130,7 @@ public class ACAQRun implements ACAQRunnable {
         log.setLength(0);
         prepare();
         try {
+            threadPool = new ACAQFixedThreadPool(configuration.getNumThreads());
             runAnalysis(onProgress, isCancelled);
         } catch (Exception e) {
             try {
@@ -138,6 +140,12 @@ public class ACAQRun implements ACAQRunnable {
                 IJ.handleException(ex);
             }
             throw e;
+        }
+        finally {
+            if(threadPool != null) {
+                threadPool.shutdown();
+            }
+            threadPool = null;
         }
 
         // Postprocessing
@@ -210,6 +218,9 @@ public class ACAQRun implements ACAQRunnable {
 
                     if (!dataLoadedFromCache) {
                         try {
+                            if(slot.getAlgorithm() instanceof ACAQAlgorithm) {
+                                ((ACAQAlgorithm) slot.getAlgorithm()).setThreadPool(threadPool);
+                            }
                             slot.getAlgorithm().run(new ACAQRunnerSubStatus(), algorithmProgress, isCancelled);
                         } catch (Exception e) {
                             throw new UserFriendlyRuntimeException("Algorithm " + slot.getAlgorithm() + " raised an exception!",

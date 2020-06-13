@@ -44,6 +44,7 @@ public class ACAQTestBench implements ACAQRunnable, ACAQValidatable {
         configuration.setOutputPath(settings.getOutputPath().resolve("initial"));
         configuration.setLoadFromCache(settings.isLoadFromCache());
         configuration.setStoreToCache(settings.isStoreToCache());
+        configuration.setNumThreads(settings.getNumThreads());
 
         testBenchRun = new ACAQRun(project, configuration);
         benchedAlgorithm = testBenchRun.getGraph().getAlgorithmNodes().get(projectAlgorithm.getIdInGraph());

@@ -5,6 +5,7 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.extensions.parameters.primitives.FilePathParameterSettings;
+import org.hkijena.acaq5.extensions.settings.RuntimeSettings;
 import org.hkijena.acaq5.ui.components.PathEditor;
 
 import java.nio.file.Path;
@@ -17,6 +18,7 @@ public class ACAQRunSettings implements ACAQParameterCollection {
     private Path outputPath;
     private boolean loadFromCache = true;
     private boolean storeToCache = false;
+    private int numThreads = RuntimeSettings.getInstance().getDefaultRunThreads();
 
     @ACAQParameter("output-path")
     @ACAQDocumentation(name = "Output folder")
@@ -57,6 +59,18 @@ public class ACAQRunSettings implements ACAQParameterCollection {
     @ACAQParameter("store-to-cache")
     public void setStoreToCache(boolean storeToCache) {
         this.storeToCache = storeToCache;
+    }
+
+    @ACAQDocumentation(name = "Number of threads", description = "Maximum number of threads that are allocated to the tasks. " +
+            "Please note that the actual allocation depends on the algorithms.")
+    @ACAQParameter("num-threads")
+    public int getNumThreads() {
+        return numThreads;
+    }
+
+    @ACAQParameter("num-threads")
+    public void setNumThreads(int numThreads) {
+        this.numThreads = numThreads;
     }
 
     @Override

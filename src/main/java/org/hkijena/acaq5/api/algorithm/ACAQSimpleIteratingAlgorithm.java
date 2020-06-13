@@ -15,7 +15,6 @@ import java.util.function.Supplier;
  */
 public abstract class ACAQSimpleIteratingAlgorithm extends ACAQAlgorithm {
 
-
     /**
      * Creates a new instance
      *
@@ -76,6 +75,16 @@ public abstract class ACAQSimpleIteratingAlgorithm extends ACAQAlgorithm {
                 runIteration(dataInterface, slotProgress, algorithmProgress, isCancelled);
             }
         }
+    }
+
+    /**
+     * The number of threads that are available for iterating through the data sets.
+     * If less than 2, no multi-threading happens. Defaults to 1 for better compatibility.
+     * To take all threads
+     * @return
+     */
+    public int getAvailableThreadsForIterating() {
+        return 1;
     }
 
     @Override

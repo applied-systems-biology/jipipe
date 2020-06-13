@@ -18,6 +18,7 @@ public class ACAQTestBenchSettings implements ACAQParameterCollection {
     private Path outputPath;
     private boolean loadFromCache = true;
     private boolean storeToCache = true;
+    private int numThreads = RuntimeSettings.getInstance().getDefaultTestBenchThreads();
 
     /**
      * Creates a new instance
@@ -66,5 +67,17 @@ public class ACAQTestBenchSettings implements ACAQParameterCollection {
     @ACAQParameter("store-to-cache")
     public void setStoreToCache(boolean storeToCache) {
         this.storeToCache = storeToCache;
+    }
+
+    @ACAQDocumentation(name = "Number of threads", description = "Maximum number of threads that are allocated to the tasks. " +
+            "Please note that the actual allocation depends on the algorithms.")
+    @ACAQParameter("num-threads")
+    public int getNumThreads() {
+        return numThreads;
+    }
+
+    @ACAQParameter("num-threads")
+    public void setNumThreads(int numThreads) {
+        this.numThreads = numThreads;
     }
 }

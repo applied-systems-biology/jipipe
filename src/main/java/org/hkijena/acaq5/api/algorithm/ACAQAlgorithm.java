@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQFixedThreadPool;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.data.ACAQData;
@@ -33,6 +34,7 @@ public abstract class ACAQAlgorithm extends ACAQGraphNode {
     private static final StateSerializer STATE_SERIALIZER = new StateSerializer();
     private boolean enabled = true;
     private boolean passThrough = false;
+    private ACAQFixedThreadPool threadPool;
 
     /**
      * Initializes a new algorithm instance and sets a custom slot configuration
@@ -163,6 +165,19 @@ public abstract class ACAQAlgorithm extends ACAQGraphNode {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public ACAQFixedThreadPool getThreadPool() {
+        return threadPool;
+    }
+
+    /**
+     * Sets the thread pool.
+     * Depending on the implementation, the pool is just ignored.
+     * @param threadPool can be null (forces single-threaded run)
+     */
+    public void setThreadPool(ACAQFixedThreadPool threadPool) {
+        this.threadPool = threadPool;
     }
 
     /**

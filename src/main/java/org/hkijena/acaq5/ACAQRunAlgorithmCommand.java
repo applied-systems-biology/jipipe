@@ -10,6 +10,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compat.SingleImageJAlgorithmRun;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
+import org.hkijena.acaq5.extensions.settings.RuntimeSettings;
 import org.hkijena.acaq5.ui.compat.RunSingleAlgorithmDialog;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.StringUtils;
@@ -36,10 +37,14 @@ public class ACAQRunAlgorithmCommand extends DynamicCommand implements Initializ
     @Parameter(persist = false)
     private String algorithmParameters = "";
 
+    @Parameter(persist = false)
+    private int threads = RuntimeSettings.getInstance().getDefaultRunThreads();
+
     @Override
     public void initialize() {
         resolveInput("algorithmId");
         resolveInput("algorithmParameters");
+        resolveInput("threads");
     }
 
     @Override

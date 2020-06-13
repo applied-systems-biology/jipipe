@@ -97,7 +97,7 @@ public class ACAQDataSlot implements TableModel {
      * @param row The row
      * @return Annotations at row
      */
-    public List<ACAQAnnotation> getAnnotations(int row) {
+    public synchronized List<ACAQAnnotation> getAnnotations(int row) {
         List<ACAQAnnotation> result = new ArrayList<>();
         for (String declaration : annotationColumns) {
             ACAQAnnotation trait = getOrCreateAnnotationColumnData(declaration).get(row);
@@ -126,7 +126,7 @@ public class ACAQDataSlot implements TableModel {
      * @param declaration Annotation type
      * @return All trait instances of the provided type. Size is getRowCount()
      */
-    private List<ACAQAnnotation> getOrCreateAnnotationColumnData(String declaration) {
+    private synchronized List<ACAQAnnotation> getOrCreateAnnotationColumnData(String declaration) {
         ArrayList<ACAQAnnotation> arrayList = annotations.getOrDefault(declaration, null);
         if (arrayList == null) {
             annotationColumns.add(declaration);
@@ -145,7 +145,7 @@ public class ACAQDataSlot implements TableModel {
      * @param value  The data
      * @param traits Optional traits
      */
-    public void addData(ACAQData value, List<ACAQAnnotation> traits) {
+    public synchronized void addData(ACAQData value, List<ACAQAnnotation> traits) {
         if (!accepts(value))
             throw new IllegalArgumentException("Tried to add data of type " + value.getClass() + ", but slot only accepts " + acceptedDataType + ". A converter could not be found.");
         if (uniqueData) {
@@ -166,7 +166,7 @@ public class ACAQDataSlot implements TableModel {
      * @param trait     The trait instance
      * @param overwrite If false, existing annotations of the same type are not overwritten
      */
-    public void addAnnotationToAllData(ACAQAnnotation trait, boolean overwrite) {
+    public synchronized void addAnnotationToAllData(ACAQAnnotation trait, boolean overwrite) {
         List<ACAQAnnotation> traitArray = getOrCreateAnnotationColumnData(trait.getName());
         for (int i = 0; i < getRowCount(); ++i) {
             if (!overwrite && traitArray.get(i) != null)
@@ -180,7 +180,7 @@ public class ACAQDataSlot implements TableModel {
      *
      * @param declaration Annotation type
      */
-    public void removeAllAnnotationsFromData(String declaration) {
+    public synchronized void removeAllAnnotationsFromData(String declaration) {
         int columnIndex = annotationColumns.indexOf(declaration);
         if (columnIndex != -1) {
             annotationColumns.remove(columnIndex);
@@ -193,7 +193,7 @@ public class ACAQDataSlot implements TableModel {
      *
      * @param value Data
      */
-    public void addData(ACAQData value) {
+    public synchronized void addData(ACAQData value) {
         addData(value, Collections.emptyList());
     }
 
