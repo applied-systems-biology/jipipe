@@ -4,7 +4,6 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
-import org.hkijena.acaq5.api.testbench.ACAQTestBench;
 import org.hkijena.acaq5.extensions.parameters.primitives.FilePathParameterSettings;
 import org.hkijena.acaq5.ui.components.PathEditor;
 

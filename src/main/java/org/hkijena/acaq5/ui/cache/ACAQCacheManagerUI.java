@@ -6,16 +6,10 @@ import org.hkijena.acaq5.api.ACAQProjectCache;
 import org.hkijena.acaq5.api.data.ACAQDataDeclaration;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
-import org.hkijena.acaq5.ui.events.RunUIWorkerFinishedEvent;
-import org.hkijena.acaq5.ui.events.RunUIWorkerInterruptedEvent;
-import org.hkijena.acaq5.ui.events.RunUIWorkerProgressEvent;
-import org.hkijena.acaq5.ui.events.RunUIWorkerStartedEvent;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
-import org.hkijena.acaq5.ui.running.ACAQRunnerQueue;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.Map;
 
 /**
@@ -28,6 +22,7 @@ public class ACAQCacheManagerUI extends ACAQProjectWorkbenchPanel {
 
     /**
      * Creates new instance
+     *
      * @param workbenchUI the workbench
      */
     public ACAQCacheManagerUI(ACAQProjectWorkbench workbenchUI) {
@@ -58,12 +53,12 @@ public class ACAQCacheManagerUI extends ACAQProjectWorkbenchPanel {
         JMenuItem clearOutdated = new JMenuItem("Clear outdated", UIUtils.getIconFromResources("clock.png"));
         clearOutdated.setToolTipText("Removes all cached items that are have no representation in the project graph, anymore. " +
                 "This includes items where the algorithm parameters have been changed.");
-        clearOutdated.addActionListener(e-> getProject().getCache().autoClean(false, true));
+        clearOutdated.addActionListener(e -> getProject().getCache().autoClean(false, true));
         clearMenu.add(clearOutdated);
 
         JMenuItem clearAll = new JMenuItem("Clear all", UIUtils.getIconFromResources("delete.png"));
         clearAll.setToolTipText("Removes all cached items.");
-        clearAll.addActionListener(e-> getProject().getCache().clear());
+        clearAll.addActionListener(e -> getProject().getCache().clear());
         clearMenu.add(clearAll);
 
     }
@@ -72,12 +67,11 @@ public class ACAQCacheManagerUI extends ACAQProjectWorkbenchPanel {
      * Updates the UI status
      */
     public void updateStatus() {
-        if(getProject().getCache().isEmpty()) {
+        if (getProject().getCache().isEmpty()) {
             statusLabel.setText("Nothing cached");
             statusLabel.setToolTipText("There is currently no data in the cache.");
             clearButton.setVisible(false);
-        }
-        else {
+        } else {
             statusLabel.setText(getProject().getCache().getCachedRowNumber() + " items cached");
             StringBuilder cacheInfo = new StringBuilder();
             cacheInfo.append("<html>");
@@ -97,6 +91,7 @@ public class ACAQCacheManagerUI extends ACAQProjectWorkbenchPanel {
 
     /**
      * Triggered when the cache was updated
+     *
      * @param event generated event
      */
     @Subscribe

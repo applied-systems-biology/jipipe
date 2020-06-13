@@ -14,7 +14,10 @@ import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -29,7 +32,7 @@ public class ACAQDataSlotCacheManagerUI extends ACAQProjectWorkbenchPanel {
 
     /**
      * @param workbenchUI The workbench UI
-     * @param dataSlot the data slot
+     * @param dataSlot    the data slot
      */
     public ACAQDataSlotCacheManagerUI(ACAQProjectWorkbench workbenchUI, ACAQDataSlot dataSlot) {
         super(workbenchUI);
@@ -47,13 +50,13 @@ public class ACAQDataSlotCacheManagerUI extends ACAQProjectWorkbenchPanel {
 
         annotationButton = new JButton(UIUtils.getIconFromResources("data-types/annotation-table.png"));
         UIUtils.makeFlat25x25(annotationButton);
-        annotationButton.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
+        annotationButton.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
         UIUtils.addReloadablePopupMenuToComponent(annotationButton, contextMenu, this::reloadContextMenu);
         add(annotationButton);
 
         cacheButton = new JButton(UIUtils.getIconFromResources("database.png"));
         UIUtils.makeFlat25x25(cacheButton);
-        cacheButton.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
+        cacheButton.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
         UIUtils.addReloadablePopupMenuToComponent(cacheButton, contextMenu, this::reloadContextMenu);
         add(cacheButton);
     }
@@ -63,9 +66,9 @@ public class ACAQDataSlotCacheManagerUI extends ACAQProjectWorkbenchPanel {
         ACAQProjectCache.State currentState = getProject().getStateIdOf((ACAQAlgorithm) getDataSlot().getAlgorithm(), getProject().getGraph().traverseAlgorithms());
 
         Map<ACAQProjectCache.State, Map<String, ACAQDataSlot>> stateMap = getProject().getCache().extract((ACAQAlgorithm) getDataSlot().getAlgorithm());
-        if(stateMap != null) {
+        if (stateMap != null) {
             JMenuItem openCurrent = createOpenStateButton(stateMap, currentState, "Open current snapshot");
-            if(openCurrent != null) {
+            if (openCurrent != null) {
                 contextMenu.add(openCurrent);
             }
             JMenu previousMenu = new JMenu("All snapshots");
@@ -73,11 +76,11 @@ public class ACAQDataSlotCacheManagerUI extends ACAQProjectWorkbenchPanel {
             for (ACAQProjectCache.State state : stateMap.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList())) {
                 JMenuItem item = createOpenStateButton(stateMap, state, "Open snapshot from " + state.getGenerationTime().format(DateTimeFormatter.ISO_LOCAL_DATE) + " " +
                         state.getGenerationTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
-                if(item != null) {
+                if (item != null) {
                     previousMenu.add(item);
                 }
             }
-            if(previousMenu.getItemCount() > 0) {
+            if (previousMenu.getItemCount() > 0) {
                 contextMenu.add(previousMenu);
                 contextMenu.addSeparator();
             }
@@ -86,40 +89,38 @@ public class ACAQDataSlotCacheManagerUI extends ACAQProjectWorkbenchPanel {
         JMenuItem clearOutdated = new JMenuItem("Clear outdated", UIUtils.getIconFromResources("clock.png"));
         clearOutdated.setToolTipText("Removes all cached items that are have no representation in the project graph, anymore. " +
                 "This includes items where the algorithm parameters have been changed.");
-        clearOutdated.addActionListener(e-> getProject().getCache().autoClean(false, true));
+        clearOutdated.addActionListener(e -> getProject().getCache().autoClean(false, true));
         contextMenu.add(clearOutdated);
 
         JMenuItem clearAll = new JMenuItem("Clear all", UIUtils.getIconFromResources("delete.png"));
         clearAll.setToolTipText("Removes all cached items.");
-        clearAll.addActionListener(e-> getProject().getCache().clear());
+        clearAll.addActionListener(e -> getProject().getCache().clear());
         contextMenu.add(clearAll);
     }
 
     private JMenuItem createOpenStateButton(Map<ACAQProjectCache.State, Map<String, ACAQDataSlot>> stateMap, ACAQProjectCache.State state, String label) {
         Map<String, ACAQDataSlot> slotMap = stateMap.getOrDefault(state, null);
-        if(slotMap == null)
+        if (slotMap == null)
             return null;
         ACAQDataSlot cachedSlot = slotMap.getOrDefault(getDataSlot().getName(), null);
-        if(cachedSlot == null)
+        if (cachedSlot == null)
             return null;
 
         JMenuItem item = new JMenuItem(label);
-        item.setIcon(UIUtils.getIconFromResources("search.png"));
+        item.setIcon(UIUtils.getIconFromResources("camera.png"));
         item.setToolTipText("Opens the currently cached data as table");
-        item.addActionListener(e -> openData(state, cachedSlot));
+        item.addActionListener(e -> openData(state));
         return item;
     }
 
-    private void openData(ACAQProjectCache.State state, ACAQDataSlot cachedSlot) {
+    private void openData(ACAQProjectCache.State state) {
 //        ACAQCacheDataSlotTableUI cacheTable = new ACAQCacheDataSlotTableUI(getProjectWorkbench(), cachedSlot);
 //        String tabName = getDataSlot().getAlgorithm().getName() + "/" + getDataSlot().getName() + " @ " + state.getGenerationTime().format(DateTimeFormatter.ISO_LOCAL_DATE) + " " +
 //                state.getGenerationTime().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
 
-        ACAQCacheStateUI cacheTable = new ACAQCacheStateUI(getProjectWorkbench(), state);
-        String tabName = "Snapshot @ " + state.getGenerationTime().format(DateTimeFormatter.ISO_LOCAL_DATE) + " " +
-                state.getGenerationTime().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
-
-        getWorkbench().getDocumentTabPane().addTab(tabName,
+        ACAQCacheBrowserUI cacheTable = new ACAQCacheBrowserUI(getProjectWorkbench());
+        cacheTable.getTree().selectDataSlot(state, getDataSlot());
+        getWorkbench().getDocumentTabPane().addTab("Cache browser",
                 UIUtils.getIconFromResources("database.png"),
                 cacheTable,
                 DocumentTabPane.CloseMode.withSilentCloseButton,
@@ -133,6 +134,7 @@ public class ACAQDataSlotCacheManagerUI extends ACAQProjectWorkbenchPanel {
 
     /**
      * Triggered when the cache was updated
+     *
      * @param event generated event
      */
     @Subscribe
@@ -145,28 +147,26 @@ public class ACAQDataSlotCacheManagerUI extends ACAQProjectWorkbenchPanel {
         Map<ACAQProjectCache.State, Map<String, ACAQDataSlot>> stateMap = cache.extract((ACAQAlgorithm) getDataSlot().getAlgorithm());
         int dataRows = 0;
         Set<ACAQTraitDeclaration> traitTypes = new HashSet<>();
-        if(stateMap != null) {
+        if (stateMap != null) {
             for (Map<String, ACAQDataSlot> slotMap : stateMap.values()) {
                 ACAQDataSlot equivalentSlot = slotMap.getOrDefault(getDataSlot().getName(), null);
-                if(equivalentSlot != null) {
+                if (equivalentSlot != null) {
                     dataRows += equivalentSlot.getRowCount();
                     traitTypes.addAll(equivalentSlot.getAnnotationColumns());
                 }
             }
         }
 
-        if(dataRows > 0) {
+        if (dataRows > 0) {
             cacheButton.setVisible(true);
             generateCacheButtonTooltip(dataRows, stateMap);
-        }
-        else {
+        } else {
             cacheButton.setVisible(false);
         }
-        if(dataRows > 0 && !traitTypes.isEmpty()) {
+        if (dataRows > 0 && !traitTypes.isEmpty()) {
             annotationButton.setVisible(true);
             generateAnnotationButtonTooltip(traitTypes);
-        }
-        else {
+        } else {
             annotationButton.setVisible(false);
         }
     }
@@ -193,9 +193,8 @@ public class ACAQDataSlotCacheManagerUI extends ACAQProjectWorkbenchPanel {
         for (ACAQProjectCache.State state : stateMap.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList())) {
             Map<String, ACAQDataSlot> slotMap = stateMap.get(state);
             ACAQDataSlot cacheSlot = slotMap.getOrDefault(getDataSlot().getName(), null);
-            if(cacheSlot != null) {
-                builder.append("<tr><td><strong>Snapshot @ ").append(state.getGenerationTime().format(DateTimeFormatter.ISO_LOCAL_DATE)).append(" ")
-                        .append(state.getGenerationTime().format(DateTimeFormatter.ofPattern("HH:mm:ss"))).append("</strong></td>");
+            if (cacheSlot != null) {
+                builder.append("<tr><td><strong>Snapshot @ ").append(state.renderGenerationTime()).append("</strong></td>");
                 builder.append("<td>").append(cacheSlot.getRowCount()).append(" data rows</td>");
                 builder.append("</tr>");
             }

@@ -29,7 +29,7 @@ public class ACAQVerticalDataSlotUI extends ACAQDataSlotUI {
     /**
      * Creates a new UI
      *
-     * @param workbench the workbench
+     * @param workbench   the workbench
      * @param algorithmUI The parent algorithm UI
      * @param compartment The compartment ID
      * @param slot        The slot instance
@@ -89,7 +89,7 @@ public class ACAQVerticalDataSlotUI extends ACAQDataSlotUI {
         centerPanel.add(nameLabel);
         centerPanel.add(Box.createHorizontalGlue());
 
-        if(getSlot().isOutput() && getSlot().getAlgorithm() instanceof ACAQAlgorithm && getWorkbench() instanceof ACAQProjectWorkbench) {
+        if (getSlot().isOutput() && getSlot().getAlgorithm() instanceof ACAQAlgorithm && getWorkbench() instanceof ACAQProjectWorkbench) {
             ACAQProjectWorkbench projectWorkbench = (ACAQProjectWorkbench) getWorkbench();
             cacheManagerUI = new ACAQDataSlotCacheManagerUI(projectWorkbench, getSlot());
             centerPanel.add(cacheManagerUI);

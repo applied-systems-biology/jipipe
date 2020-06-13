@@ -101,7 +101,7 @@ public class ACAQRun implements ACAQRunnable {
     private void flushFinishedSlots(List<ACAQDataSlot> traversedSlots, List<ACAQGraphNode> traversedProjectAlgorithms, Set<ACAQGraphNode> executedAlgorithms, int currentIndex, ACAQDataSlot outputSlot, Set<ACAQDataSlot> flushedSlots) {
         if (!executedAlgorithms.contains(outputSlot.getAlgorithm()))
             return;
-        if(flushedSlots.contains(outputSlot))
+        if (flushedSlots.contains(outputSlot))
             return;
         boolean canFlush = true;
         for (int j = currentIndex + 1; j < traversedSlots.size(); ++j) {
@@ -112,7 +112,7 @@ public class ACAQRun implements ACAQRunnable {
             }
         }
         if (canFlush) {
-            if(configuration.isStoreToCache()) {
+            if (configuration.isStoreToCache()) {
                 ACAQGraphNode runAlgorithm = outputSlot.getAlgorithm();
                 ACAQGraphNode projectAlgorithm = project.getGraph().getAlgorithmNodes().get(runAlgorithm.getIdInGraph());
                 ACAQProjectCache.State stateId = project.getStateIdOf((ACAQAlgorithm) projectAlgorithm, traversedProjectAlgorithms);
@@ -198,7 +198,7 @@ public class ACAQRun implements ACAQRunnable {
 
                     // If enabled try to extract outputs from cache
                     boolean dataLoadedFromCache = false;
-                    if(configuration.isLoadFromCache()) {
+                    if (configuration.isLoadFromCache()) {
                         dataLoadedFromCache = tryLoadFromCache(slot.getAlgorithm(),
                                 onProgress,
                                 traversingIndex,
@@ -207,7 +207,7 @@ public class ACAQRun implements ACAQRunnable {
                                 traversedProjectAlgorithms);
                     }
 
-                    if(!dataLoadedFromCache) {
+                    if (!dataLoadedFromCache) {
                         try {
                             slot.getAlgorithm().run(new ACAQRunnerSubStatus(), algorithmProgress, isCancelled);
                         } catch (Exception e) {
@@ -218,8 +218,7 @@ public class ACAQRun implements ACAQRunnable {
                                     "Please refer to the other error messages.",
                                     "Please follow the instructions for the other error messages.");
                         }
-                    }
-                    else {
+                    } else {
                         onProgress.accept(new ACAQRunnerStatus(index, traversedSlots.size(), statusMessage + " | Output data was loaded from cache. Not executing."));
                     }
 
@@ -234,26 +233,27 @@ public class ACAQRun implements ACAQRunnable {
 
     /**
      * Attempts to load data from cache
-     * @param algorithm the target algorithm
-     * @param onProgress progress
-     * @param progress progress
-     * @param maxProgress max progress
-     * @param statusMessage algorithm status message
+     *
+     * @param algorithm           the target algorithm
+     * @param onProgress          progress
+     * @param progress            progress
+     * @param maxProgress         max progress
+     * @param statusMessage       algorithm status message
      * @param traversedAlgorithms traversed algorithms
      * @return if successful. This means all output slots were restored.
      */
     private boolean tryLoadFromCache(ACAQGraphNode algorithm, Consumer<ACAQRunnerStatus> onProgress, int progress, int maxProgress, String statusMessage, List<ACAQGraphNode> traversedAlgorithms) {
-        if(!configuration.isLoadFromCache())
+        if (!configuration.isLoadFromCache())
             return false;
         ACAQGraphNode projectAlgorithm = project.getGraph().getAlgorithmNodes().get(algorithm.getIdInGraph());
         ACAQProjectCache.State stateId = project.getStateIdOf((ACAQAlgorithm) projectAlgorithm, traversedAlgorithms);
         Map<String, ACAQDataSlot> cachedData = project.getCache().extract((ACAQAlgorithm) projectAlgorithm, stateId);
-        if(!cachedData.isEmpty()) {
+        if (!cachedData.isEmpty()) {
             logStatus(onProgress, new ACAQRunnerStatus(progress, maxProgress,
                     String.format("%s | Accessing cache with slots %s via state id %s", statusMessage, String.join(", ",
                             cachedData.keySet()), stateId)));
             for (ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
-                if(!cachedData.containsKey(outputSlot.getName())) {
+                if (!cachedData.containsKey(outputSlot.getName())) {
                     logStatus(onProgress, new ACAQRunnerStatus(progress, maxProgress,
                             String.format("%s | Cache access failed. Missing output slot %s", statusMessage, outputSlot.getName())));
                     return false;
@@ -263,7 +263,7 @@ public class ACAQRun implements ACAQRunnable {
                 outputSlot.clearData();
                 outputSlot.copyFrom(cachedData.get(outputSlot.getName()));
             }
-            logStatus(onProgress,new ACAQRunnerStatus(progress, maxProgress,
+            logStatus(onProgress, new ACAQRunnerStatus(progress, maxProgress,
                     String.format("%s | Cache data access successful.", statusMessage)));
             return true;
         }

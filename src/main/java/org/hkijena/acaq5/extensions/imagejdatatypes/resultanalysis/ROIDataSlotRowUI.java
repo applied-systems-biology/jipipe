@@ -60,6 +60,7 @@ public class ROIDataSlotRowUI extends ACAQDefaultResultDataSlotRowUI {
 
     /**
      * Imports and displays a ROI on the current image
+     *
      * @param roiFile the file
      */
     public static void importROI(Path roiFile) {

@@ -569,16 +569,16 @@ public class ACAQDataSlot implements TableModel {
         return definition;
     }
 
+    @Override
+    public String toString() {
+        return String.format("%s: %s (%d rows, %d annotation columns)", getSlotType(), getName(), getRowCount(), getAnnotationColumns().size());
+    }
+
     /**
      * The slot type
      */
     public enum SlotType {
         Input,
         Output
-    }
-
-    @Override
-    public String toString() {
-        return String.format("%s: %s (%d rows, %d annotation columns)", getSlotType(), getName(), getRowCount(), getAnnotationColumns().size());
     }
 }

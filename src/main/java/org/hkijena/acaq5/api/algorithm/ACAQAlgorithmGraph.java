@@ -636,7 +636,8 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
     /**
      * Returns all predecessor algorithms of an algorithm. The predecessors are ordered according to the list of traversed algorithms (topological order)
-     * @param target the target algorithm
+     *
+     * @param target    the target algorithm
      * @param traversed list of algorithms to sort by (usually this is in topological order)
      * @return predecessors in topological order
      */
@@ -648,7 +649,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         predecessors.remove(target);
         List<ACAQGraphNode> output = new ArrayList<>();
         for (ACAQGraphNode node : traversed) {
-            if(predecessors.contains(node))
+            if (predecessors.contains(node))
                 output.add(node);
         }
         return output;

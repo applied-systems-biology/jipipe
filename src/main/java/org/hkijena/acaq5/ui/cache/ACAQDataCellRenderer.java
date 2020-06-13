@@ -22,7 +22,7 @@ public class ACAQDataCellRenderer extends JLabel implements TableCellRenderer {
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        if(value instanceof ACAQData) {
+        if (value instanceof ACAQData) {
             ACAQData data = (ACAQData) value;
             setIcon(ACAQUIDatatypeRegistry.getInstance().getIconFor(data.getClass()));
             setText(ACAQData.getNameOf(data.getClass()));

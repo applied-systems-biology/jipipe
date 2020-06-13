@@ -20,9 +20,10 @@ public class ACAQDataSlotRowUI extends ACAQWorkbenchPanel {
 
     /**
      * Creates a new instance
+     *
      * @param workbench the workbench
-     * @param slot the slot
-     * @param row the row
+     * @param slot      the slot
+     * @param row       the row
      */
     public ACAQDataSlotRowUI(ACAQWorkbench workbench, ACAQDataSlot slot, int row) {
         super(workbench);

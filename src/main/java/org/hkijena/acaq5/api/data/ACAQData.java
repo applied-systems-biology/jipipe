@@ -39,8 +39,9 @@ public interface ACAQData {
 
     /**
      * This function should display the data in the GUI
+     *
      * @param displayName a name that can be used
-     * @param workbench the workbench
+     * @param workbench   the workbench
      */
     void display(String displayName, ACAQWorkbench workbench);
 

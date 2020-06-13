@@ -69,7 +69,8 @@ public class ACAQProject implements ACAQValidatable {
      * Returns the state ID of a graph node
      * The state ID is a unique representation of how the algorithm's output was generated.
      * This is used by the data cache.
-     * @param node the target algorithm
+     *
+     * @param node      the target algorithm
      * @param traversed traversed graph. should be {@link ACAQAlgorithmGraph}.traverseAlgorithms(). This parameter is here for performance reasons.
      * @return unique representation of how the algorithm's output was generated.
      */
@@ -78,7 +79,7 @@ public class ACAQProject implements ACAQValidatable {
         predecessorAlgorithms.add(node);
         List<String> ids = new ArrayList<>();
         for (ACAQGraphNode predecessorAlgorithm : predecessorAlgorithms) {
-            ids.add(((ACAQAlgorithm)predecessorAlgorithm).getStateId());
+            ids.add(((ACAQAlgorithm) predecessorAlgorithm).getStateId());
         }
         try {
             return new ACAQProjectCache.State(LocalDateTime.now(), JsonUtils.getObjectMapper().writeValueAsString(ids));

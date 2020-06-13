@@ -9,7 +9,6 @@ import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +35,7 @@ public class ACAQMergedDataSlotTable implements TableModel {
                 traitColumns.add(traitColumn);
         }
         ACAQProjectCompartment compartment = project.getCompartments().getOrDefault(dataSlot.getAlgorithm().getCompartment(), null);
-        if(compartment == null) {
+        if (compartment == null) {
             compartment = new ACAQProjectCompartment(new ACAQEmptyAlgorithmDeclaration());
             compartment.setCustomName(dataSlot.getAlgorithm().getCompartment());
         }
@@ -111,7 +110,7 @@ public class ACAQMergedDataSlotTable implements TableModel {
             return "" + slotList.get(rowIndex).getData(rowList.get(rowIndex), ACAQData.class);
         else {
             ACAQTraitDeclaration traitColumn = traitColumns.get(columnIndex - 5);
-            ACAQDataSlot slot = slotList.get(rowList.get(rowIndex));
+            ACAQDataSlot slot = slotList.get(rowIndex);
             return slot.getAnnotationOr(rowList.get(rowIndex), traitColumn, null);
         }
     }
@@ -157,6 +156,7 @@ public class ACAQMergedDataSlotTable implements TableModel {
 
     /**
      * Returns the location
+     *
      * @param multiRow the row
      * @return the row at the slot at the row
      */

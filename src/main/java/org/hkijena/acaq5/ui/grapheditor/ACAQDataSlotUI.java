@@ -37,7 +37,7 @@ public abstract class ACAQDataSlotUI extends ACAQWorkbenchPanel {
     /**
      * Creates a new UI
      *
-     * @param workbench the workbench
+     * @param workbench   the workbench
      * @param algorithmUI The parent algorithm UI
      * @param compartment The compartment ID
      * @param slot        The slot instance

@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.ui.cache;
 
+import org.hkijena.acaq5.api.ACAQProjectCache;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
-import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.ui.registries.ACAQUIAlgorithmRegistry;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
@@ -44,6 +44,10 @@ public class ACAQCacheStateTreeCellRenderer extends JLabel implements TreeCellRe
                 ACAQDataSlot slot = (ACAQDataSlot) userObject;
                 setIcon(ACAQUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()));
                 setText(slot.getName());
+            } else if (userObject instanceof ACAQProjectCache.State) {
+                ACAQProjectCache.State state = (ACAQProjectCache.State) userObject;
+                setIcon(UIUtils.getIconFromResources("camera.png"));
+                setText(state.renderGenerationTime());
             } else {
                 setIcon(rootIcon);
                 setText("Results");

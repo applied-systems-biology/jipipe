@@ -2,7 +2,6 @@ package org.hkijena.acaq5.ui.cache;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQProjectCache;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQData;
@@ -24,11 +23,9 @@ import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -39,14 +36,14 @@ import java.util.List;
  */
 public class ACAQCacheMultiDataSlotTableUI extends ACAQProjectWorkbenchPanel {
 
-    private ACAQMergedDataSlotTable multiSlotTable;
     private final List<ACAQDataSlot> slots;
+    private ACAQMergedDataSlotTable multiSlotTable;
     private JXTable table;
     private FormPanel rowUIList;
 
     /**
      * @param workbenchUI the workbench UI
-     * @param slots        The slots
+     * @param slots       The slots
      */
     public ACAQCacheMultiDataSlotTableUI(ACAQProjectWorkbench workbenchUI, List<ACAQDataSlot> slots) {
         super(workbenchUI);
@@ -123,13 +120,14 @@ public class ACAQCacheMultiDataSlotTableUI extends ACAQProjectWorkbenchPanel {
             String name = slot.getAlgorithm().getName() + "/" + slot.getName() + "/" + row;
             JLabel nameLabel = new JLabel(name, ACAQUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()), JLabel.LEFT);
             nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot));
-            ACAQDataSlotRowUI ACAQDataSlotRowUI =new ACAQDataSlotRowUI(getWorkbench(), slot, row);
+            ACAQDataSlotRowUI ACAQDataSlotRowUI = new ACAQDataSlotRowUI(getWorkbench(), slot, row);
             rowUIList.addToForm(ACAQDataSlotRowUI, nameLabel, null);
         }
     }
 
     /**
      * Triggered when the cache was updated
+     *
      * @param event generated event
      */
     @Subscribe
@@ -139,7 +137,7 @@ public class ACAQCacheMultiDataSlotTableUI extends ACAQProjectWorkbenchPanel {
 
     private void updateStatus() {
         for (ACAQDataSlot slot : slots) {
-            if(slot.getRowCount() == 0) {
+            if (slot.getRowCount() == 0) {
                 removeAll();
                 setLayout(new BorderLayout());
                 JLabel label = new JLabel("Data was cleared", UIUtils.getIconFromResources("shredder-64.png"), JLabel.LEFT);

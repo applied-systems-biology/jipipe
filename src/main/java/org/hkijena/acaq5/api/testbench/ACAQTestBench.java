@@ -27,9 +27,9 @@ public class ACAQTestBench implements ACAQRunnable, ACAQValidatable {
     private List<ACAQTestbenchSnapshot> backupList = new ArrayList<>();
 
     /**
-     * @param project         The project
+     * @param project          The project
      * @param projectAlgorithm The tested algorithm
-     * @param settings   The settings
+     * @param settings         The settings
      */
     public ACAQTestBench(ACAQProject project, ACAQGraphNode projectAlgorithm, ACAQTestBenchSettings settings) {
         this.project = project;
@@ -47,15 +47,15 @@ public class ACAQTestBench implements ACAQRunnable, ACAQValidatable {
 
         testBenchRun = new ACAQRun(project, configuration);
         benchedAlgorithm = testBenchRun.getGraph().getAlgorithmNodes().get(projectAlgorithm.getIdInGraph());
-        ((ACAQAlgorithm)benchedAlgorithm).setEnabled(true);
+        ((ACAQAlgorithm) benchedAlgorithm).setEnabled(true);
 
         // Disable all algorithms that are not dependencies of the benched algorithm
         List<ACAQGraphNode> predecessorAlgorithms = testBenchRun.getGraph()
                 .getPredecessorAlgorithms(benchedAlgorithm, testBenchRun.getGraph().traverseAlgorithms());
         predecessorAlgorithms.add(benchedAlgorithm);
         for (ACAQGraphNode node : testBenchRun.getGraph().getAlgorithmNodes().values()) {
-            if(!predecessorAlgorithms.contains(node)) {
-                if(node instanceof ACAQAlgorithm) {
+            if (!predecessorAlgorithms.contains(node)) {
+                if (node instanceof ACAQAlgorithm) {
                     ((ACAQAlgorithm) node).setEnabled(false);
                 }
             }

@@ -3,7 +3,6 @@ package org.hkijena.acaq5.api.algorithm;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
@@ -11,18 +10,18 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
-import org.hkijena.acaq5.api.parameters.*;
+import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
+import org.hkijena.acaq5.api.parameters.ACAQTraversedParameterCollection;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.utils.JsonUtils;
 
-import java.awt.*;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /**
  * An {@link ACAQGraphNode} that contains a non-empty workload.
@@ -153,10 +152,11 @@ public abstract class ACAQAlgorithm extends ACAQGraphNode {
      * Returns a unique identifier that represents the state of the algorithm.
      * Defaults to a JSON-serialized representation using the {@link StateSerializer}.
      * Override this method if you have external influences.
+     *
      * @return the state id
      */
     public String getStateId() {
-        try (StringWriter writer = new StringWriter()){
+        try (StringWriter writer = new StringWriter()) {
             JsonGenerator generator = JsonUtils.getObjectMapper().getFactory().createGenerator(writer);
             STATE_SERIALIZER.serialize(this, generator, null);
             return writer.toString();
@@ -176,7 +176,7 @@ public abstract class ACAQAlgorithm extends ACAQGraphNode {
             jsonGenerator.writeStringField("acaq:algorithm-type", algorithm.getDeclaration().getId());
             ACAQTraversedParameterCollection parameterCollection = new ACAQTraversedParameterCollection(algorithm);
             for (Map.Entry<String, ACAQParameterAccess> entry : parameterCollection.getParameters().entrySet()) {
-                if(serializeParameter(entry))
+                if (serializeParameter(entry))
                     jsonGenerator.writeObjectField(entry.getKey(), entry.getValue().get(Object.class));
             }
 
@@ -187,6 +187,7 @@ public abstract class ACAQAlgorithm extends ACAQGraphNode {
 
         /**
          * Returns true if the parameter should be serialized
+         *
          * @param entry the parameter
          * @return if the parameter should be serialized
          */

@@ -4,18 +4,15 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQProjectCache;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
-import org.hkijena.acaq5.ui.ACAQWorkbench;
-import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
-import org.hkijena.acaq5.ui.resultanalysis.*;
+import org.hkijena.acaq5.ui.resultanalysis.ACAQTraitTableCellRenderer;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
@@ -27,8 +24,6 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -110,13 +105,14 @@ public class ACAQCacheDataSlotTableUI extends ACAQProjectWorkbenchPanel {
             String name = slot.getAlgorithm().getName() + "/" + slot.getName() + "/" + row;
             JLabel nameLabel = new JLabel(name, ACAQUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()), JLabel.LEFT);
             nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot));
-            ACAQDataSlotRowUI rowUI =new ACAQDataSlotRowUI(getWorkbench(), slot, row);
+            ACAQDataSlotRowUI rowUI = new ACAQDataSlotRowUI(getWorkbench(), slot, row);
             rowUIList.addToForm(rowUI, nameLabel, null);
         }
     }
 
     /**
      * Triggered when the cache was updated
+     *
      * @param event generated event
      */
     @Subscribe
@@ -125,7 +121,7 @@ public class ACAQCacheDataSlotTableUI extends ACAQProjectWorkbenchPanel {
     }
 
     private void updateStatus() {
-        if(slot.getRowCount() == 0) {
+        if (slot.getRowCount() == 0) {
             removeAll();
             setLayout(new BorderLayout());
             JLabel label = new JLabel("Data was cleared", UIUtils.getIconFromResources("shredder-64.png"), JLabel.LEFT);
@@ -146,6 +142,7 @@ public class ACAQCacheDataSlotTableUI extends ACAQProjectWorkbenchPanel {
 
         /**
          * Creates a new instance
+         *
          * @param slot the wrapped slot
          */
         public WrapperTableModel(ACAQDataSlot slot) {
@@ -164,20 +161,20 @@ public class ACAQCacheDataSlotTableUI extends ACAQProjectWorkbenchPanel {
 
         @Override
         public String getColumnName(int columnIndex) {
-          if(columnIndex == 0)
-              return slot.getColumnName(0);
-          else if(columnIndex == 1)
-              return "String representation";
-          else {
-              return slot.getColumnName(columnIndex - 1);
-          }
+            if (columnIndex == 0)
+                return slot.getColumnName(0);
+            else if (columnIndex == 1)
+                return "String representation";
+            else {
+                return slot.getColumnName(columnIndex - 1);
+            }
         }
 
         @Override
         public Class<?> getColumnClass(int columnIndex) {
-            if(columnIndex == 0)
+            if (columnIndex == 0)
                 return slot.getColumnClass(0);
-            else if(columnIndex == 1)
+            else if (columnIndex == 1)
                 return String.class;
             else {
                 return slot.getColumnClass(columnIndex - 1);
@@ -191,9 +188,9 @@ public class ACAQCacheDataSlotTableUI extends ACAQProjectWorkbenchPanel {
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
-            if(columnIndex == 0)
+            if (columnIndex == 0)
                 return slot.getValueAt(rowIndex, 0);
-            else if(columnIndex == 1)
+            else if (columnIndex == 1)
                 return "" + slot.getData(rowIndex, ACAQData.class);
             else {
                 return slot.getValueAt(rowIndex, columnIndex - 1);

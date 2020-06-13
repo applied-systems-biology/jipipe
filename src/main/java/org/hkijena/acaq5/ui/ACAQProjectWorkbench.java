@@ -11,13 +11,14 @@ import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.events.CompartmentRemovedEvent;
 import org.hkijena.acaq5.extensions.settings.GeneralUISettings;
 import org.hkijena.acaq5.extensions.settings.ProjectsSettings;
+import org.hkijena.acaq5.ui.cache.ACAQCacheBrowserUI;
 import org.hkijena.acaq5.ui.cache.ACAQCacheManagerUI;
 import org.hkijena.acaq5.ui.compartments.ACAQCompartmentGraphUI;
 import org.hkijena.acaq5.ui.compartments.ACAQCompartmentUI;
 import org.hkijena.acaq5.ui.compendium.ACAQAlgorithmCompendiumUI;
 import org.hkijena.acaq5.ui.compendium.ACAQTraitCompendiumUI;
-import org.hkijena.acaq5.ui.components.*;
 import org.hkijena.acaq5.ui.components.SplashScreen;
+import org.hkijena.acaq5.ui.components.*;
 import org.hkijena.acaq5.ui.extension.MenuTarget;
 import org.hkijena.acaq5.ui.extensions.ACAQPluginManagerUIPanel;
 import org.hkijena.acaq5.ui.extensions.ACAQPluginValidityCheckerPanel;
@@ -326,6 +327,11 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
 
         // Tools menu
         JMenu toolsMenu = new JMenu("Tools");
+
+        JMenuItem openCacheBrowserButton = new JMenuItem("Cache browser", UIUtils.getIconFromResources("database.png"));
+        openCacheBrowserButton.addActionListener(e -> openCacheBrowser());
+        toolsMenu.add(openCacheBrowserButton);
+
         UIUtils.installMenuExtension(this, toolsMenu, MenuTarget.ProjectToolsMenu, false);
         if (toolsMenu.getItemCount() > 0)
             menu.add(toolsMenu);
@@ -388,6 +394,16 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
         menu.add(helpMenu);
 
         add(menu, BorderLayout.NORTH);
+    }
+
+    private void openCacheBrowser() {
+        ACAQCacheBrowserUI cacheTable = new ACAQCacheBrowserUI(this);
+        getDocumentTabPane().addTab("Cache browser",
+                UIUtils.getIconFromResources("database.png"),
+                cacheTable,
+                DocumentTabPane.CloseMode.withSilentCloseButton,
+                true);
+        getDocumentTabPane().switchToLastTab();
     }
 
     /**

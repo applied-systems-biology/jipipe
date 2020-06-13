@@ -372,7 +372,7 @@ public class ResultsTableData implements ACAQData, TableModel {
     @Override
     public void display(String displayName, ACAQWorkbench workbench) {
         workbench.getDocumentTabPane().addTab(displayName, UIUtils.getIconFromResources("table.png"),
-                new ACAQTableEditor((ACAQProjectWorkbench) workbench, (ResultsTableData)duplicate()), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
+                new ACAQTableEditor((ACAQProjectWorkbench) workbench, (ResultsTableData) duplicate()), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
     }
 
     public ResultsTable getTable() {

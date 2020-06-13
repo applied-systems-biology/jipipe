@@ -1,8 +1,8 @@
 package org.hkijena.acaq5;
 
-import org.hkijena.acaq5.api.ACAQRunSettings;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.ACAQRun;
+import org.hkijena.acaq5.api.ACAQRunSettings;
 import org.hkijena.acaq5.api.ACAQRunnerStatus;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.scijava.Context;

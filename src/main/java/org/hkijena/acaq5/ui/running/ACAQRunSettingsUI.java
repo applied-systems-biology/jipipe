@@ -1,8 +1,8 @@
 package org.hkijena.acaq5.ui.running;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.api.ACAQRunSettings;
 import org.hkijena.acaq5.api.ACAQRun;
+import org.hkijena.acaq5.api.ACAQRunSettings;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
