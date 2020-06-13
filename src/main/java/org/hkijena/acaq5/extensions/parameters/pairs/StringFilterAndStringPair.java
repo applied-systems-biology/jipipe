@@ -3,13 +3,10 @@ package org.hkijena.acaq5.extensions.parameters.pairs;
 import org.hkijena.acaq5.extensions.parameters.collections.ListParameter;
 import org.hkijena.acaq5.extensions.parameters.predicates.StringPredicate;
 
-import java.util.function.Function;
-import java.util.function.Predicate;
-
 /**
  * A parameter that renames a matching string into another string
  */
-public class StringFilterAndStringPair extends Pair<StringPredicate, String>  {
+public class StringFilterAndStringPair extends Pair<StringPredicate, String> {
 
     /**
      * Creates a new instance

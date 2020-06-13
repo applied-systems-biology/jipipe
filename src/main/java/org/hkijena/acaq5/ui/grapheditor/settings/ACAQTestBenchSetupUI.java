@@ -216,8 +216,7 @@ public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
                 } catch (Exception e) {
                     openError(e);
                 }
-            }
-            else {
+            } else {
                 if (nextRunOnSuccess != null) {
                     nextRunOnSuccess.accept(currentTestBench);
                     nextRunOnSuccess = null;

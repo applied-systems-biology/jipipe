@@ -43,13 +43,14 @@ public abstract class ACAQParameterEditorUI extends JPanel implements Contextual
     /**
      * Gets or creates a parameter instance.
      * Safe to be called within reload()
+     *
      * @param klass parameter class
-     * @param <T> parameter class
+     * @param <T>   parameter class
      * @return parameter instance. never null.
      */
     public <T> T getParameter(Class<T> klass) {
         T value = (T) getParameterAccess().get(getParameterAccess().getFieldClass());
-        if(value == null) {
+        if (value == null) {
             preventReload = true;
             value = (T) ACAQParameterTypeRegistry.getInstance().getDeclarationByFieldClass(getParameterAccess().getFieldClass()).newInstance();
             getParameterAccess().set(value);
@@ -61,8 +62,9 @@ public abstract class ACAQParameterEditorUI extends JPanel implements Contextual
     /**
      * Sets the parameter value.
      * Can prevent reload()
+     *
      * @param parameter the value
-     * @param reload if enabled, a reload can happen.
+     * @param reload    if enabled, a reload can happen.
      */
     public void setParameter(Object parameter, boolean reload) {
         preventReload = !reload;
@@ -100,7 +102,7 @@ public abstract class ACAQParameterEditorUI extends JPanel implements Contextual
     @Subscribe
     public void onParameterChanged(ParameterChangedEvent event) {
         if (Objects.equals(event.getKey(), parameterAccess.getKey())) {
-            if(!preventReload)
+            if (!preventReload)
                 reload();
         }
     }

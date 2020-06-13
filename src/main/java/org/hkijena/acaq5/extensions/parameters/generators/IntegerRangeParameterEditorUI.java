@@ -8,7 +8,6 @@ import org.scijava.Context;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
-import java.util.List;
 
 /**
  * Editor for {@link IntegerRange}

@@ -3,9 +3,6 @@ package org.hkijena.acaq5.extensions.parameters.pairs;
 import org.hkijena.acaq5.extensions.parameters.collections.ListParameter;
 import org.hkijena.acaq5.extensions.parameters.generators.IntegerRange;
 
-import java.util.function.Function;
-import java.util.function.Predicate;
-
 /**
  * A parameter that renames an integer into another integer
  */

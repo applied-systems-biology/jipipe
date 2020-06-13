@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.extensions.parameters.editors;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQAlgorithmIconRef;
 import org.hkijena.acaq5.ui.components.ACAQIconPickerDialog;
