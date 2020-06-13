@@ -5,6 +5,7 @@ import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.ACAQRunSettings;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
+import org.hkijena.acaq5.extensions.settings.RuntimeSettings;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.*;
@@ -165,6 +166,7 @@ public class ACAQRunSettingsUI extends ACAQProjectWorkbenchPanel {
 
     private void runNow() {
         removeAll();
+        RuntimeSettings.getInstance().setDefaultRunThreads(run.getConfiguration().getNumThreads());
         ACAQRunExecuterUI executerUI = new ACAQRunExecuterUI(run);
         add(executerUI, BorderLayout.CENTER);
         revalidate();

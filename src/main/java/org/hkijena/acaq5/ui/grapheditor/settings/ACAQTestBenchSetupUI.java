@@ -5,6 +5,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.testbench.ACAQTestBench;
 import org.hkijena.acaq5.api.testbench.ACAQTestBenchSettings;
+import org.hkijena.acaq5.extensions.settings.RuntimeSettings;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.*;
@@ -185,6 +186,7 @@ public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
         }
 
         currentTestBench = new ACAQTestBench(getProject(), algorithm, currentSettings);
+        RuntimeSettings.getInstance().setDefaultTestBenchThreads(currentSettings.getNumThreads());
         showNextResults = showResults;
 
         removeAll();

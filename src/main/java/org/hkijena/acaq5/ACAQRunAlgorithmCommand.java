@@ -3,8 +3,10 @@ package org.hkijena.acaq5;
 import com.fasterxml.jackson.databind.JsonNode;
 import ij.IJ;
 import net.imagej.ImageJ;
+import org.hkijena.acaq5.api.ACAQFixedThreadPool;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compat.SingleImageJAlgorithmRun;
@@ -67,6 +69,7 @@ public class ACAQRunAlgorithmCommand extends DynamicCommand implements Initializ
             } else {
                 algorithmId = dialog.getAlgorithmId();
                 algorithmParameters = dialog.getAlgorithmParametersJson();
+                threads = dialog.getNumThreads();
                 algorithm = dialog.getAlgorithm();
                 settings = dialog.getRunSettings();
             }
@@ -98,7 +101,21 @@ public class ACAQRunAlgorithmCommand extends DynamicCommand implements Initializ
         IJ.showProgress(1, 3);
         settings.pushInput();
         IJ.showProgress(2, 3);
-        algorithm.run(new ACAQRunnerSubStatus(), s -> IJ.showStatus("Running ACAQ5 algorithm ... " + s), () -> false);
+        ACAQFixedThreadPool threadPool = new ACAQFixedThreadPool(threads);
+        try {
+            if(algorithm instanceof ACAQAlgorithm)
+                ((ACAQAlgorithm) algorithm).setThreadPool(threadPool);
+            algorithm.run(new ACAQRunnerSubStatus(), s -> IJ.showStatus("Running ACAQ5 algorithm ... " + s), () -> false);
+        }
+        catch(Exception e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            if(algorithm instanceof ACAQAlgorithm)
+                ((ACAQAlgorithm) algorithm).setThreadPool(null);
+            threadPool.shutdown();
+            threadPool = null;
+        }
         IJ.showProgress(3, 3);
         settings.pullOutput();
     }

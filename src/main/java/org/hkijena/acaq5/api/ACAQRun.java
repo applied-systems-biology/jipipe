@@ -9,10 +9,12 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.utils.StringUtils;
 
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -128,6 +130,9 @@ public class ACAQRun implements ACAQRunnable {
     @Override
     public void run(Consumer<ACAQRunnerStatus> onProgress, Supplier<Boolean> isCancelled) {
         log.setLength(0);
+        long startTime = System.currentTimeMillis();
+        log.append("ACAQ5 run starting at ").append(StringUtils.formatDateTime(LocalDateTime.now())).append("\n");
+        log.append("Preparing output folders ...\n");
         prepare();
         try {
             threadPool = new ACAQFixedThreadPool(configuration.getNumThreads());
@@ -157,6 +162,11 @@ public class ACAQRun implements ACAQRunnable {
                     "Pipeline run", "Either the path is invalid, or you have no permission to write to the disk, or the disk space is full",
                     "Check if you can write to the output directory.");
         }
+
+        log.append("Run ending at ").append(StringUtils.formatDateTime(LocalDateTime.now())).append("\n");
+        log.append("\nAnalysis required ").append(StringUtils.formatDuration(System.currentTimeMillis() - startTime))
+                .append(" to execute.\n");
+
         try {
             if (configuration.getOutputPath() != null)
                 Files.write(configuration.getOutputPath().resolve("log.txt"), log.toString().getBytes(Charsets.UTF_8));
@@ -229,6 +239,11 @@ public class ACAQRun implements ACAQRunnable {
                                     "On running the algorithm '" + slot.getAlgorithm().getName() + "', within compartment '" + getProject().getCompartments().get(slot.getAlgorithm().getCompartment()).getName() + "'",
                                     "Please refer to the other error messages.",
                                     "Please follow the instructions for the other error messages.");
+                        }
+                        finally {
+                            if(slot.getAlgorithm() instanceof ACAQAlgorithm) {
+                                ((ACAQAlgorithm) slot.getAlgorithm()).setThreadPool(null);
+                            }
                         }
                     } else {
                         onProgress.accept(new ACAQRunnerStatus(index, traversedSlots.size(), statusMessage + " | Output data was loaded from cache. Not executing."));

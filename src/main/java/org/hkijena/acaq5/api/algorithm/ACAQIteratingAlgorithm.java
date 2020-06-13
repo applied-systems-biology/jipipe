@@ -18,6 +18,8 @@ import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSetting
 import org.hkijena.acaq5.utils.ResourceUtils;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -28,7 +30,7 @@ import java.util.function.Supplier;
  * If your algorithm only has one input and will never have more than one input slot, we recommend using {@link ACAQSimpleIteratingAlgorithm}
  * instead that comes without the additional data set matching strategies
  */
-public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
+public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm implements ACAQParallelizedAlgorithm {
 
     public static final String ITERATING_ALGORITHM_DESCRIPTION = "This algorithm groups the incoming data based on the annotations. " +
             "Those groups can consist of one data item per slot.";
@@ -37,6 +39,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
     private boolean allowDuplicateDataSets = true;
     private boolean skipIncompleteDataSets = false;
     private StringList customColumns = new StringList();
+    private boolean parallelizationEnabled = true;
 
     /**
      * Creates a new instance
@@ -68,6 +71,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
         this.allowDuplicateDataSets = other.allowDuplicateDataSets;
         this.skipIncompleteDataSets = other.skipIncompleteDataSets;
         this.customColumns = new StringList(other.customColumns);
+        this.parallelizationEnabled = other.parallelizationEnabled;
     }
 
     @Override
@@ -228,12 +232,37 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
             dataInterfaces.addAll(dataInterfacesForDataSet);
         }
 
-        for (int i = 0; i < dataInterfaces.size(); i++) {
-            if (isCancelled.get())
-                return;
-            ACAQRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (i + 1) + " / " + dataInterfaces.size());
-            algorithmProgress.accept(slotProgress);
-            runIteration(dataInterfaces.get(i), slotProgress, algorithmProgress, isCancelled);
+        if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1) {
+            for (int i = 0; i < dataInterfaces.size(); i++) {
+                if (isCancelled.get())
+                    return;
+                ACAQRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (i + 1) + " / " + dataInterfaces.size());
+                algorithmProgress.accept(slotProgress);
+                runIteration(dataInterfaces.get(i), slotProgress, algorithmProgress, isCancelled);
+            }
+        }
+        else {
+            List<Runnable> tasks = new ArrayList<>();
+            for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
+                int rowIndex = i;
+                tasks.add(() -> {
+                    if (isCancelled.get())
+                        return;
+                    ACAQRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (rowIndex + 1) + " / " + dataInterfaces.size());
+                    algorithmProgress.accept(slotProgress);
+                    runIteration(dataInterfaces.get(rowIndex), slotProgress, algorithmProgress, isCancelled);
+                });
+            }
+            algorithmProgress.accept(subProgress.resolve(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getThreadsPerBatch(), getThreadPool().getMaxThreads())));
+            for (Future<Exception> batch : getThreadPool().scheduleBatches(tasks, getThreadsPerBatch())) {
+                try {
+                    Exception exception = batch.get();
+                    if(exception != null)
+                        throw new RuntimeException(exception);
+                } catch (InterruptedException | ExecutionException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
     }
 
@@ -324,6 +353,31 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm {
     public void setSkipIncompleteDataSets(boolean skipIncompleteDataSets) {
         this.skipIncompleteDataSets = skipIncompleteDataSets;
         getEventBus().post(new ParameterChangedEvent(this, "acaq:iterating-algorithm:skip-incomplete"));
+    }
+
+    @Override
+    public boolean supportsParallelization() {
+        return false;
+    }
+
+    @Override
+    public int getThreadsPerBatch() {
+        return 1;
+    }
+
+    @ACAQDocumentation(name = "Enable parallelization", description = "If enabled, the workload can be calculated across multiple threads to for speedup. " +
+            "Please note that the actual usage of multiple threads depend on the runtime settings and the algorithm implementation. " +
+            "We recommend to use the runtime parameters to control parallelization in most cases.")
+    @ACAQParameter(value = "acaq:parallelization:enabled", visibility = ACAQParameterVisibility.Visible)
+    @Override
+    public boolean isParallelizationEnabled() {
+        return parallelizationEnabled;
+    }
+
+    @Override
+    @ACAQParameter("acaq:parallelization:enabled")
+    public void setParallelizationEnabled(boolean parallelizationEnabled) {
+        this.parallelizationEnabled = parallelizationEnabled;
     }
 
     /**

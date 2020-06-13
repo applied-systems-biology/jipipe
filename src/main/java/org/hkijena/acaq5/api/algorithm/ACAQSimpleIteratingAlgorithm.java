@@ -1,10 +1,17 @@
 package org.hkijena.acaq5.api.algorithm;
 
+import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -13,7 +20,9 @@ import java.util.function.Supplier;
  * This is a simplified version of {@link ACAQIteratingAlgorithm} that assumes that there is only one or zero input slots.
  * An error is thrown if there are more than one input slots.
  */
-public abstract class ACAQSimpleIteratingAlgorithm extends ACAQAlgorithm {
+public abstract class ACAQSimpleIteratingAlgorithm extends ACAQAlgorithm implements ACAQParallelizedAlgorithm {
+
+    private boolean parallelizationEnabled = true;
 
     /**
      * Creates a new instance
@@ -41,6 +50,7 @@ public abstract class ACAQSimpleIteratingAlgorithm extends ACAQAlgorithm {
      */
     public ACAQSimpleIteratingAlgorithm(ACAQSimpleIteratingAlgorithm other) {
         super(other);
+        this.parallelizationEnabled = other.parallelizationEnabled;
     }
 
     @Override
@@ -64,27 +74,44 @@ public abstract class ACAQSimpleIteratingAlgorithm extends ACAQAlgorithm {
             ACAQDataInterface dataInterface = new ACAQDataInterface(this);
             runIteration(dataInterface, slotProgress, algorithmProgress, isCancelled);
         } else {
-            for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
-                if (isCancelled.get())
-                    return;
-                ACAQRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (i + 1) + " / " + getFirstInputSlot().getRowCount());
-                algorithmProgress.accept(slotProgress);
-                ACAQDataInterface dataInterface = new ACAQDataInterface(this);
-                dataInterface.setData(getFirstInputSlot(), i);
-                dataInterface.addGlobalAnnotations(getFirstInputSlot().getAnnotations(i), true);
-                runIteration(dataInterface, slotProgress, algorithmProgress, isCancelled);
+            if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1) {
+                for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
+                    if (isCancelled.get())
+                        return;
+                    ACAQRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (i + 1) + " / " + getFirstInputSlot().getRowCount());
+                    algorithmProgress.accept(slotProgress);
+                    ACAQDataInterface dataInterface = new ACAQDataInterface(this);
+                    dataInterface.setData(getFirstInputSlot(), i);
+                    dataInterface.addGlobalAnnotations(getFirstInputSlot().getAnnotations(i), true);
+                    runIteration(dataInterface, slotProgress, algorithmProgress, isCancelled);
+                }
+            } else {
+                List<Runnable> tasks = new ArrayList<>();
+                for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
+                    int rowIndex = i;
+                    tasks.add(() -> {
+                        if (isCancelled.get())
+                            return;
+                        ACAQRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (rowIndex + 1) + " / " + getFirstInputSlot().getRowCount());
+                        algorithmProgress.accept(slotProgress);
+                        ACAQDataInterface dataInterface = new ACAQDataInterface(this);
+                        dataInterface.setData(getFirstInputSlot(), rowIndex);
+                        dataInterface.addGlobalAnnotations(getFirstInputSlot().getAnnotations(rowIndex), true);
+                        runIteration(dataInterface, slotProgress, algorithmProgress, isCancelled);
+                    });
+                }
+                algorithmProgress.accept(subProgress.resolve(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getThreadsPerBatch(), getThreadPool().getMaxThreads())));
+                for (Future<Exception> batch : getThreadPool().scheduleBatches(tasks, getThreadsPerBatch())) {
+                    try {
+                        Exception exception = batch.get();
+                        if(exception != null)
+                            throw new RuntimeException(exception);
+                    } catch (InterruptedException | ExecutionException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
             }
         }
-    }
-
-    /**
-     * The number of threads that are available for iterating through the data sets.
-     * If less than 2, no multi-threading happens. Defaults to 1 for better compatibility.
-     * To take all threads
-     * @return
-     */
-    public int getAvailableThreadsForIterating() {
-        return 1;
     }
 
     @Override
@@ -107,4 +134,29 @@ public abstract class ACAQSimpleIteratingAlgorithm extends ACAQAlgorithm {
      * @param isCancelled       Supplier that informs if the current task was canceled
      */
     protected abstract void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled);
+
+    @Override
+    public boolean supportsParallelization() {
+        return false;
+    }
+
+    @Override
+    public int getThreadsPerBatch() {
+        return 1;
+    }
+
+    @ACAQDocumentation(name = "Enable parallelization", description = "If enabled, the workload can be calculated across multiple threads to for speedup. " +
+            "Please note that the actual usage of multiple threads depend on the runtime settings and the algorithm implementation. " +
+            "We recommend to use the runtime parameters to control parallelization in most cases.")
+    @ACAQParameter(value = "acaq:parallelization:enabled", visibility = ACAQParameterVisibility.Visible)
+    @Override
+    public boolean isParallelizationEnabled() {
+        return parallelizationEnabled;
+    }
+
+    @Override
+    @ACAQParameter("acaq:parallelization:enabled")
+    public void setParallelizationEnabled(boolean parallelizationEnabled) {
+        this.parallelizationEnabled = parallelizationEnabled;
+    }
 }

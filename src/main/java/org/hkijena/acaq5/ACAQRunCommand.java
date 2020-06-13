@@ -2,6 +2,7 @@ package org.hkijena.acaq5;
 
 import org.hkijena.acaq5.api.*;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.acaq5.extensions.settings.RuntimeSettings;
 import org.scijava.Context;
 import org.scijava.app.StatusService;
 import org.scijava.command.Command;
@@ -33,6 +34,9 @@ public class ACAQRunCommand implements Command {
     @Parameter(label = "Output directory", style = "directory")
     private File outputDirectory;
 
+    @Parameter(label = "Number of threads")
+    private int threads = RuntimeSettings.getInstance().getDefaultRunThreads();
+
     @Override
     public void run() {
         ACAQDefaultRegistry.instantiate(context);
@@ -43,12 +47,16 @@ public class ACAQRunCommand implements Command {
 
         } catch (IOException e) {
             throw new UserFriendlyRuntimeException(e, "Could not load project from '" + parameterFile.toString() + "'!",
-                    "Run ACAQ5 project", "Either the provided parameter file does not exist or is inaccesible, or it was corrupted.",
+                    "Run ACAQ5 project", "Either the provided parameter file does not exist or is inaccessible, or it was corrupted.",
                     "Try to load the parameter file in the ACAQ5 GUI.");
         }
 
         ACAQRunSettings configuration = new ACAQRunSettings();
+        configuration.setLoadFromCache(false);
+        configuration.setStoreToCache(false);
         configuration.setOutputPath(outputDirectory.toPath());
+        configuration.setNumThreads(threads);
+        RuntimeSettings.getInstance().setDefaultRunThreads(threads);
         ACAQRun run = new ACAQRun(project, configuration);
         run.run(this::onProgress, () -> false);
     }

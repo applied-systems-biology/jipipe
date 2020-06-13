@@ -14,9 +14,12 @@ package org.hkijena.acaq5.utils;
 
 import com.google.common.html.HtmlEscapers;
 import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import java.awt.*;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.function.Predicate;
 
@@ -30,6 +33,25 @@ public class StringUtils {
 
     private StringUtils() {
 
+    }
+
+    /**
+     * Formats a duration in milliseconds to something readable
+     * @param durationMilliseconds the duration
+     * @return formatted string
+     */
+    public static String formatDuration(long durationMilliseconds) {
+        return DurationFormatUtils.formatDuration(durationMilliseconds, "HH:mm:ss,SSS");
+    }
+
+    /**
+     * A nice human-readable format
+     * @param dateTime the time point
+     * @return formatted string
+     */
+    public static String formatDateTime(LocalDateTime dateTime) {
+        return  dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE) + " " +
+                dateTime.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
     }
 
     /**

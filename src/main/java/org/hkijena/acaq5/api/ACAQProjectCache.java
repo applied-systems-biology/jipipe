@@ -8,6 +8,7 @@ import org.hkijena.acaq5.api.data.ACAQDataDeclaration;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.extensions.settings.RuntimeSettings;
+import org.hkijena.acaq5.utils.StringUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -341,8 +342,7 @@ public class ACAQProjectCache {
          * @return formatted string
          */
         public String renderGenerationTime() {
-            return getGenerationTime().format(DateTimeFormatter.ISO_LOCAL_DATE) + " " +
-                    getGenerationTime().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+            return StringUtils.formatDateTime(getGenerationTime());
         }
     }
 }

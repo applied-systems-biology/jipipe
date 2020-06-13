@@ -11,6 +11,7 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
+import org.hkijena.acaq5.extensions.settings.RuntimeSettings;
 import org.hkijena.acaq5.ui.components.ACAQAlgorithmDeclarationListCellRenderer;
 import org.hkijena.acaq5.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.acaq5.ui.components.FormPanel;
@@ -47,6 +48,7 @@ public class RunSingleAlgorithmDialog extends JDialog {
     private SearchTextField searchField;
     private JSplitPane splitPane;
     private FormPanel formPanel;
+    private int numThreads = RuntimeSettings.getInstance().getDefaultRunThreads();
 
     /**
      * @param context SciJava context
@@ -167,6 +169,9 @@ public class RunSingleAlgorithmDialog extends JDialog {
         descriptions.setOpaque(false);
         formPanel.addWideToForm(descriptions, null);
 
+        // Add runtime settings
+        reloadRuntimeSettings();
+
         // Add slot importers
         reloadInputSlots();
 
@@ -178,6 +183,16 @@ public class RunSingleAlgorithmDialog extends JDialog {
         formPanel.addWideToForm(new ParameterPanel(context, runSettings.getAlgorithm(), null, ParameterPanel.NONE), null);
 
         formPanel.addVerticalGlue();
+    }
+
+    private void reloadRuntimeSettings() {
+        formPanel.addGroupHeader("Runtime", UIUtils.getIconFromResources("run.png"));
+        SpinnerNumberModel model = new SpinnerNumberModel(numThreads, 1, Integer.MAX_VALUE, 1);
+        JSpinner spinner = new JSpinner(model);
+        spinner.addChangeListener(e -> {
+            setNumThreads(model.getNumber().intValue());
+        });
+        formPanel.addToForm(spinner, new JLabel("Number of threads"), null);
     }
 
     private void reloadInputSlots() {
@@ -304,7 +319,7 @@ public class RunSingleAlgorithmDialog extends JDialog {
             return;
         }
         String json = getAlgorithmParametersJson();
-        String macro = "run(\"Run ACAQ5 algorithm\", \"algorithmId=" + getAlgorithmId() + ", algorithmParameters=" + MacroUtils.escapeString(json) + "\");";
+        String macro = String.format("run(\"Run ACAQ5 algorithm\", \"algorithmId=%s, threads=%d, algorithmParameters=%s\");", getAlgorithmId(), numThreads, MacroUtils.escapeString(json));
         StringSelection selection = new StringSelection(macro);
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(selection, selection);
@@ -343,5 +358,13 @@ public class RunSingleAlgorithmDialog extends JDialog {
 
     public SingleImageJAlgorithmRun getRunSettings() {
         return runSettings;
+    }
+
+    public int getNumThreads() {
+        return numThreads;
+    }
+
+    public void setNumThreads(int numThreads) {
+        this.numThreads = numThreads;
     }
 }
