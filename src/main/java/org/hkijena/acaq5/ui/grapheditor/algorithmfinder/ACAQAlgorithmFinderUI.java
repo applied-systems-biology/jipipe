@@ -219,7 +219,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
         List<ACAQAlgorithmDeclaration> result = new ArrayList<>();
         for (ACAQAlgorithmDeclaration declaration : ACAQAlgorithmRegistry.getInstance().getRegisteredAlgorithms().values()) {
             for (Class<? extends ACAQData> inputSlotDataClass : declaration.getInputSlots().stream().map(AlgorithmInputSlot::value).collect(Collectors.toList())) {
-                if (ACAQDatatypeRegistry.getInstance().isConvertible(inputSlotDataClass, outputSlotDataClass)) {
+                if (ACAQDatatypeRegistry.getInstance().isConvertible(outputSlotDataClass, inputSlotDataClass)) {
                     result.add(declaration);
                     break;
                 }
