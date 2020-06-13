@@ -2,20 +2,23 @@ package org.hkijena.acaq5.ui.cache;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQProjectCache;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
+import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
+import org.hkijena.acaq5.api.data.ACAQMergedDataSlotTable;
 import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
-import org.hkijena.acaq5.ui.ACAQWorkbench;
-import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
-import org.hkijena.acaq5.ui.resultanalysis.*;
+import org.hkijena.acaq5.ui.resultanalysis.ACAQAlgorithmTableCellRenderer;
+import org.hkijena.acaq5.ui.resultanalysis.ACAQProjectCompartmentTableCellRenderer;
+import org.hkijena.acaq5.ui.resultanalysis.ACAQTraitTableCellRenderer;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
@@ -27,27 +30,31 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 /**
  * UI that displays a {@link ACAQDataSlot} that is cached
  */
-public class ACAQCacheDataSlotTableUI extends ACAQProjectWorkbenchPanel {
+public class ACAQCacheMultiDataSlotTableUI extends ACAQProjectWorkbenchPanel {
 
-    private final ACAQDataSlot slot;
+    private ACAQMergedDataSlotTable multiSlotTable;
+    private final List<ACAQDataSlot> slots;
     private JXTable table;
     private FormPanel rowUIList;
 
     /**
      * @param workbenchUI the workbench UI
-     * @param slot        The slot
+     * @param slots        The slots
      */
-    public ACAQCacheDataSlotTableUI(ACAQProjectWorkbench workbenchUI, ACAQDataSlot slot) {
+    public ACAQCacheMultiDataSlotTableUI(ACAQProjectWorkbench workbenchUI, List<ACAQDataSlot> slots) {
         super(workbenchUI);
-        this.slot = slot;
+        this.slots = slots;
+        this.multiSlotTable = new ACAQMergedDataSlotTable();
+        for (ACAQDataSlot slot : slots) {
+            multiSlotTable.add(getProject(), slot);
+        }
 
         initialize();
         reloadTable();
@@ -56,11 +63,11 @@ public class ACAQCacheDataSlotTableUI extends ACAQProjectWorkbenchPanel {
     }
 
     private void reloadTable() {
-        table.setModel(new WrapperTableModel(slot));
+        table.setModel(multiSlotTable);
         TableColumnModel columnModel = table.getColumnModel();
         for (int i = 0; i < columnModel.getColumnCount(); ++i) {
             TableColumn column = columnModel.getColumn(i);
-            column.setHeaderRenderer(new WrapperColumnHeaderRenderer(slot));
+            column.setHeaderRenderer(new MultiDataSlotTableColumnRenderer(multiSlotTable));
         }
         table.setAutoCreateRowSorter(true);
         table.packAll();
@@ -71,6 +78,8 @@ public class ACAQCacheDataSlotTableUI extends ACAQProjectWorkbenchPanel {
         table = new JXTable();
         table.setRowHeight(25);
         table.setDefaultRenderer(ACAQData.class, new ACAQDataCellRenderer());
+        table.setDefaultRenderer(ACAQGraphNode.class, new ACAQAlgorithmTableCellRenderer());
+        table.setDefaultRenderer(ACAQProjectCompartment.class, new ACAQProjectCompartmentTableCellRenderer());
         table.setDefaultRenderer(ACAQTrait.class, new ACAQTraitTableCellRenderer());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
@@ -99,19 +108,23 @@ public class ACAQCacheDataSlotTableUI extends ACAQProjectWorkbenchPanel {
     }
 
     private void handleSlotRowDefaultAction(int selectedRow) {
-        int row = table.getRowSorter().convertRowIndexToModel(selectedRow);
+        int multiRow = table.getRowSorter().convertRowIndexToModel(selectedRow);
+        ACAQDataSlot slot = multiSlotTable.getSlot(multiRow);
+        int row = multiSlotTable.getRow(multiRow);
         slot.getData(row, ACAQData.class).display(slot.getAlgorithm().getName() + "/" + slot.getName() + "/" + row, getWorkbench());
     }
 
     private void showDataRows(int[] selectedRows) {
         rowUIList.clear();
         for (int viewRow : selectedRows) {
-            int row = table.getRowSorter().convertRowIndexToModel(viewRow);
+            int multiRow = table.getRowSorter().convertRowIndexToModel(viewRow);
+            ACAQDataSlot slot = multiSlotTable.getSlot(multiRow);
+            int row = multiSlotTable.getRow(multiRow);
             String name = slot.getAlgorithm().getName() + "/" + slot.getName() + "/" + row;
             JLabel nameLabel = new JLabel(name, ACAQUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()), JLabel.LEFT);
             nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot));
-            ACAQDataSlotRowUI rowUI =new ACAQDataSlotRowUI(getWorkbench(), slot, row);
-            rowUIList.addToForm(rowUI, nameLabel, null);
+            ACAQDataSlotRowUI ACAQDataSlotRowUI =new ACAQDataSlotRowUI(getWorkbench(), slot, row);
+            rowUIList.addToForm(ACAQDataSlotRowUI, nameLabel, null);
         }
     }
 
@@ -125,109 +138,33 @@ public class ACAQCacheDataSlotTableUI extends ACAQProjectWorkbenchPanel {
     }
 
     private void updateStatus() {
-        if(slot.getRowCount() == 0) {
-            removeAll();
-            setLayout(new BorderLayout());
-            JLabel label = new JLabel("Data was cleared", UIUtils.getIconFromResources("shredder-64.png"), JLabel.LEFT);
-            label.setFont(label.getFont().deriveFont(26.0f));
-            add(label, BorderLayout.CENTER);
+        for (ACAQDataSlot slot : slots) {
+            if(slot.getRowCount() == 0) {
+                removeAll();
+                setLayout(new BorderLayout());
+                JLabel label = new JLabel("Data was cleared", UIUtils.getIconFromResources("shredder-64.png"), JLabel.LEFT);
+                label.setFont(label.getFont().deriveFont(26.0f));
+                add(label, BorderLayout.CENTER);
 
-            getProject().getCache().getEventBus().unregister(this);
-        }
-    }
-
-
-    /**
-     * Wraps around a {@link ACAQDataSlot} to display a "toString" column
-     */
-    public static class WrapperTableModel implements TableModel {
-
-        private final ACAQDataSlot slot;
-
-        /**
-         * Creates a new instance
-         * @param slot the wrapped slot
-         */
-        public WrapperTableModel(ACAQDataSlot slot) {
-            this.slot = slot;
-        }
-
-        @Override
-        public int getRowCount() {
-            return slot.getRowCount();
-        }
-
-        @Override
-        public int getColumnCount() {
-            return slot.getColumnCount() + 1;
-        }
-
-        @Override
-        public String getColumnName(int columnIndex) {
-          if(columnIndex == 0)
-              return slot.getColumnName(0);
-          else if(columnIndex == 1)
-              return "String representation";
-          else {
-              return slot.getColumnName(columnIndex - 1);
-          }
-        }
-
-        @Override
-        public Class<?> getColumnClass(int columnIndex) {
-            if(columnIndex == 0)
-                return slot.getColumnClass(0);
-            else if(columnIndex == 1)
-                return String.class;
-            else {
-                return slot.getColumnClass(columnIndex - 1);
+                getProject().getCache().getEventBus().unregister(this);
+                multiSlotTable = null;
+                return;
             }
-        }
-
-        @Override
-        public boolean isCellEditable(int rowIndex, int columnIndex) {
-            return false;
-        }
-
-        @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            if(columnIndex == 0)
-                return slot.getValueAt(rowIndex, 0);
-            else if(columnIndex == 1)
-                return "" + slot.getData(rowIndex, ACAQData.class);
-            else {
-                return slot.getValueAt(rowIndex, columnIndex - 1);
-            }
-        }
-
-        @Override
-        public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-
-        }
-
-        @Override
-        public void addTableModelListener(TableModelListener l) {
-
-        }
-
-        @Override
-        public void removeTableModelListener(TableModelListener l) {
-
         }
     }
 
     /**
-     * Renders the column header of {@link WrapperTableModel}
+     * Renders the column header
      */
-    public static class WrapperColumnHeaderRenderer implements TableCellRenderer {
-        private final ACAQDataSlot dataTable;
+    public static class MultiDataSlotTableColumnRenderer implements TableCellRenderer {
+        private final ACAQMergedDataSlotTable dataTable;
 
         /**
          * Creates a new instance
          *
          * @param dataTable The table
          */
-        public WrapperColumnHeaderRenderer(ACAQDataSlot dataTable) {
+        public MultiDataSlotTableColumnRenderer(ACAQMergedDataSlotTable dataTable) {
             this.dataTable = dataTable;
         }
 
@@ -235,10 +172,10 @@ public class ACAQCacheDataSlotTableUI extends ACAQProjectWorkbenchPanel {
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             TableCellRenderer defaultRenderer = table.getTableHeader().getDefaultRenderer();
             int modelColumn = table.convertColumnIndexToModel(column);
-            if (modelColumn < 2) {
+            if (modelColumn < 5) {
                 return defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             } else {
-                ACAQTraitDeclaration declaration = dataTable.getAnnotationColumns().get(modelColumn - 2);
+                ACAQTraitDeclaration declaration = dataTable.getTraitColumns().get(modelColumn - 5);
                 String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
                         ACAQUITraitRegistry.getInstance().getIconURLFor(declaration).toString(),
                         declaration.getName());

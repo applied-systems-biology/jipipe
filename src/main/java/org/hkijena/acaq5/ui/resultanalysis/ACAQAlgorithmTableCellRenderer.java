@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.ui.resultanalysis;
 
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
+import org.hkijena.acaq5.ui.registries.ACAQUIAlgorithmRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -25,7 +26,7 @@ public class ACAQAlgorithmTableCellRenderer extends JLabel implements TableCellR
 
         if (value instanceof ACAQGraphNode) {
             ACAQGraphNode algorithm = (ACAQGraphNode) value;
-            setIcon(UIUtils.getIconFromColor(UIUtils.getFillColorFor(algorithm.getDeclaration())));
+            setIcon(ACAQUIAlgorithmRegistry.getInstance().getIconFor(algorithm.getDeclaration()));
             setText(algorithm.getName());
         }
 

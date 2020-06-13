@@ -111,9 +111,14 @@ public class ACAQDataSlotCacheManagerUI extends ACAQProjectWorkbenchPanel {
     }
 
     private void openData(ACAQProjectCache.State state, ACAQDataSlot cachedSlot) {
-        ACAQCacheDataSlotTableUI cacheTable = new ACAQCacheDataSlotTableUI(getProjectWorkbench(), cachedSlot);
-        String tabName = getDataSlot().getAlgorithm().getName() + "/" + getDataSlot().getName() + " @ " + state.getGenerationTime().format(DateTimeFormatter.ISO_LOCAL_DATE) + " " +
+//        ACAQCacheDataSlotTableUI cacheTable = new ACAQCacheDataSlotTableUI(getProjectWorkbench(), cachedSlot);
+//        String tabName = getDataSlot().getAlgorithm().getName() + "/" + getDataSlot().getName() + " @ " + state.getGenerationTime().format(DateTimeFormatter.ISO_LOCAL_DATE) + " " +
+//                state.getGenerationTime().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+
+        ACAQCacheStateUI cacheTable = new ACAQCacheStateUI(getProjectWorkbench(), state);
+        String tabName = "Snapshot @ " + state.getGenerationTime().format(DateTimeFormatter.ISO_LOCAL_DATE) + " " +
                 state.getGenerationTime().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+
         getWorkbench().getDocumentTabPane().addTab(tabName,
                 UIUtils.getIconFromResources("database.png"),
                 cacheTable,
