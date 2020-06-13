@@ -43,7 +43,7 @@ public class UIPlotDataSeriesColumnEnumParameterEditorUI extends ACAQParameterEd
             return;
         }
         isReloading = true;
-        DynamicEnumParameter parameter = getParameterAccess().get(DynamicEnumParameter.class);
+        DynamicEnumParameter parameter = getParameter(DynamicEnumParameter.class);
         comboBox.setSelectedItem(parameter.getValue());
         isReloading = false;
     }
@@ -51,7 +51,7 @@ public class UIPlotDataSeriesColumnEnumParameterEditorUI extends ACAQParameterEd
     private void initialize() {
         setLayout(new BorderLayout());
 
-        DynamicEnumParameter parameter = getParameterAccess().get(DynamicEnumParameter.class);
+        DynamicEnumParameter parameter = getParameter(DynamicEnumParameter.class);
         TableColumn[] values = parameter.getAllowedValues().toArray(new TableColumn[0]);
         comboBox = new JComboBox<>(new DefaultComboBoxModel<>(values));
         comboBox.setRenderer(new PlotDataSeriesColumnListCellRenderer());

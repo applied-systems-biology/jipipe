@@ -120,12 +120,7 @@ public class MarginParameterEditorUI extends ACAQParameterEditorUI {
         for (Map.Entry<Margin.Anchor, JToggleButton> entry : anchorSelectionMap.entrySet()) {
             entry.getValue().addActionListener(e -> {
                 if (entry.getValue().isSelected()) {
-                    Margin roi = getParameterAccess().get(Margin.class);
-                    if (roi == null) {
-                        roi = new Margin();
-                        getParameterAccess().set(roi);
-                        return;
-                    }
+                    Margin roi = getParameter(Margin.class);
                     roi.setAnchor(entry.getKey());
                     getParameterAccess().set(roi);
                     reload();
@@ -146,12 +141,7 @@ public class MarginParameterEditorUI extends ACAQParameterEditorUI {
             return;
         }
         isReloading = true;
-        Margin roi = getParameterAccess().get(Margin.class);
-        if (roi == null) {
-            roi = new Margin();
-            getParameterAccess().set(roi);
-            return;
-        }
+        Margin roi = getParameter(Margin.class);
         anchorSelectionMap.get(roi.getAnchor()).setSelected(true);
 
         // Update the parameter panel

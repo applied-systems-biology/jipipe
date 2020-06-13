@@ -49,17 +49,8 @@ public class ListParameterEditorUI extends ACAQParameterEditorUI {
     }
 
     private void addNewEntry() {
-        getParameter().addNewInstance();
+        getParameter(ListParameter.class).addNewInstance();
         reload();
-    }
-
-    private ListParameter<?> getParameter() {
-        ListParameter<?> listParameter = getParameterAccess().get(ListParameter.class);
-        if (listParameter == null) {
-            listParameter = (ListParameter<?>) ACAQParameterTypeRegistry.getInstance().getDeclarationByFieldClass(getParameterAccess().getFieldClass()).newInstance();
-            getParameterAccess().set(listParameter);
-        }
-        return listParameter;
     }
 
     @Override
@@ -70,16 +61,17 @@ public class ListParameterEditorUI extends ACAQParameterEditorUI {
     @Override
     public void reload() {
         formPanel.clear();
-        for (int i = 0; i < getParameter().size(); ++i) {
-            Object entry = getParameter().get(i);
+        ListParameter<?> parameter = getParameter(ListParameter.class);
+        for (int i = 0; i < parameter.size(); ++i) {
+            Object entry = parameter.get(i);
             JButton removeButton = new JButton(UIUtils.getIconFromResources("close-tab.png"));
             removeButton.setToolTipText("Remove entry");
             UIUtils.makeBorderlessWithoutMargin(removeButton);
             removeButton.addActionListener(e -> removeEntry(entry));
 
             ListParameterItemParameterAccess<?> access = new ListParameterItemParameterAccess(getParameterAccess(),
-                    getParameter(),
-                    getParameter().getContentClass(),
+                    parameter,
+                    parameter.getContentClass(),
                     i);
             ACAQParameterEditorUI ui = ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getContext(), access);
             formPanel.addToForm(ui, removeButton, null);
@@ -87,7 +79,8 @@ public class ListParameterEditorUI extends ACAQParameterEditorUI {
     }
 
     private void removeEntry(Object entry) {
-        getParameter().remove(entry);
+        ListParameter<?> parameter = getParameter(ListParameter.class);
+        parameter.remove(entry);
         reload();
     }
 }

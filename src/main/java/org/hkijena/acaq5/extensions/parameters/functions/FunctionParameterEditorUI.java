@@ -43,7 +43,7 @@ public class FunctionParameterEditorUI extends ACAQParameterEditorUI {
     public void reload() {
         formPanel.clear();
 
-        FunctionParameter<?, ?, ?> functionParameter = getParameterAccess().get(FunctionParameter.class);
+        FunctionParameter<?, ?, ?> functionParameter = getParameter(FunctionParameter.class);
         FunctionParameterInputAccess<Object, Object, Object> inputAccess = new FunctionParameterInputAccess<>(getParameterAccess());
         FunctionParameterParameterAccess<Object, Object, Object> parameterAccess = new FunctionParameterParameterAccess<>(getParameterAccess());
         FunctionParameterOutputAccess<Object, Object, Object> outputAccess = new FunctionParameterOutputAccess<>(getParameterAccess());

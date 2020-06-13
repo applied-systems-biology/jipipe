@@ -36,7 +36,7 @@ public class PairParameterEditorUI extends ACAQParameterEditorUI {
     public void reload() {
         removeAll();
 
-        Pair<?, ?> renaming = getParameterAccess().get(Pair.class);
+        Pair<?, ?> renaming = getParameter(Pair.class);
         PairParameterKeyAccess<?, ?> keyAccess = new PairParameterKeyAccess<>(getParameterAccess(), renaming);
         PairParameterValueAccess<?, ?> valueAccess = new PairParameterValueAccess<>(getParameterAccess(), renaming);
 

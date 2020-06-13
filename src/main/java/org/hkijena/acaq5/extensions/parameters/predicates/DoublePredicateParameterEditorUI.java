@@ -14,7 +14,6 @@ import java.awt.*;
 public class DoublePredicateParameterEditorUI extends ACAQParameterEditorUI {
 
     private boolean isReloading;
-    private boolean skipNextReload;
 
     /**
      * @param context         SciJava context
@@ -35,18 +34,10 @@ public class DoublePredicateParameterEditorUI extends ACAQParameterEditorUI {
     public void reload() {
         if (isReloading)
             return;
-        if (skipNextReload) {
-            skipNextReload = false;
-            return;
-        }
 
         isReloading = true;
         removeAll();
-        DoublePredicate filter = getParameterAccess().get(DoublePredicate.class);
-        if (filter == null) {
-            getParameterAccess().set(new DoublePredicate());
-            return;
-        }
+        DoublePredicate filter = getParameter(DoublePredicate.class);
 
         ButtonGroup group = new ButtonGroup();
         addFilterModeSelection(filter,
@@ -70,7 +61,6 @@ public class DoublePredicateParameterEditorUI extends ACAQParameterEditorUI {
         JSpinner spinner = new JSpinner(model);
         spinner.addChangeListener(e -> {
             if (!isReloading) {
-                skipNextReload = true;
                 filter.setReference(model.getNumber().doubleValue());
             }
         });

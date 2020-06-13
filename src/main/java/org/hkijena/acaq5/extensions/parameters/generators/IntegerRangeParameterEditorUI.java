@@ -35,11 +35,7 @@ public class IntegerRangeParameterEditorUI extends ACAQParameterEditorUI {
     @Override
     public void reload() {
         removeAll();
-        IntegerRange rangeString = getParameterAccess().get(IntegerRange.class);
-        if (rangeString == null) {
-            getParameterAccess().set(new IntegerRange());
-            return;
-        }
+        IntegerRange rangeString = getParameter(IntegerRange.class);
         textField = new JTextField(rangeString.getValue());
         textField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         textField.getDocument().addDocumentListener(new DocumentChangeListener() {
@@ -56,13 +52,9 @@ public class IntegerRangeParameterEditorUI extends ACAQParameterEditorUI {
     }
 
     private void checkParameter() {
-        IntegerRange rangeString = getParameterAccess().get(IntegerRange.class);
-        if (rangeString == null) {
-            getParameterAccess().set(new IntegerRange());
-            return;
-        }
+        IntegerRange rangeString = getParameter(IntegerRange.class);
         try {
-            List<Integer> integers = rangeString.getIntegers();
+            rangeString.getIntegers();
             textField.setBorder(BorderFactory.createEtchedBorder());
             textField.setToolTipText("Valid!");
         } catch (Exception e) {

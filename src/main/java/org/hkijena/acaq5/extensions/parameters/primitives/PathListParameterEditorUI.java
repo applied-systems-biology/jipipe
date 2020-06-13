@@ -66,10 +66,7 @@ public class PathListParameterEditorUI extends ACAQParameterEditorUI {
     }
 
     private void removeSelectedEntries() {
-        PathList parameter = getParameterAccess().get(PathList.class);
-        if (parameter == null) {
-            parameter = new PathList();
-        }
+        PathList parameter = getParameter(PathList.class);
         int[] indicies = listPanel.getSelectedIndices();
         Arrays.sort(indicies);
 
@@ -81,11 +78,7 @@ public class PathListParameterEditorUI extends ACAQParameterEditorUI {
     }
 
     private void addEntry() {
-        PathList parameter = getParameterAccess().get(PathList.class);
-        if (parameter == null) {
-            parameter = new PathList();
-            getParameterAccess().set(parameter);
-        }
+        PathList parameter = getParameter(PathList.class);
         List<Path> paths = FileChooserSettings.selectMulti(this, FileChooserSettings.KEY_PARAMETER, "Add path", ioMode, pathMode);
         parameter.addAll(paths);
         getParameterAccess().set(parameter);
@@ -100,11 +93,7 @@ public class PathListParameterEditorUI extends ACAQParameterEditorUI {
     @Override
     public void reload() {
         DefaultListModel<String> listModel = new DefaultListModel<>();
-        PathList parameter = getParameterAccess().get(PathList.class);
-        if (parameter == null) {
-            parameter = new PathList();
-            getParameterAccess().set(parameter);
-        }
+        PathList parameter = getParameter(PathList.class);
         for (Path path : parameter) {
             listModel.addElement(path.toString());
         }

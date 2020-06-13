@@ -50,10 +50,7 @@ public class ACAQParameterCollectionVisibilitiesParameterEditorUI extends ACAQPa
     @Override
     public void reload() {
         formPanel.clear();
-        ACAQParameterCollectionVisibilities visibilities = getParameterAccess().get(ACAQParameterCollectionVisibilities.class);
-        if (visibilities == null) {
-            visibilities = new ACAQParameterCollectionVisibilities();
-        }
+        ACAQParameterCollectionVisibilities visibilities = getParameter(ACAQParameterCollectionVisibilities.class);
         Map<String, ACAQParameterAccess> parameters = visibilities.getAvailableParameters();
         Map<Object, List<String>> groupedByHolder = parameters.keySet().stream().collect(Collectors.groupingBy(key -> parameters.get(key).getSource()));
 

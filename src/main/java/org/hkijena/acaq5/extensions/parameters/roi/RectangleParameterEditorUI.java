@@ -37,11 +37,7 @@ public class RectangleParameterEditorUI extends ACAQParameterEditorUI {
     public void reload() {
         if (isReloading)
             return;
-        Rectangle rectangle = getParameterAccess().get(Rectangle.class);
-        if (rectangle == null) {
-            getParameterAccess().set(new Rectangle());
-            return;
-        }
+        Rectangle rectangle = getParameter(Rectangle.class);
         isReloading = true;
         xSpinner.getModel().setValue(rectangle.getX());
         ySpinner.getModel().setValue(rectangle.getY());
@@ -52,30 +48,25 @@ public class RectangleParameterEditorUI extends ACAQParameterEditorUI {
 
     private void initialize() {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-        Rectangle rectangle = getParameterAccess().get(Rectangle.class);
-        if (rectangle == null) {
-            rectangle = new Rectangle();
-            getParameterAccess().set(rectangle);
-        }
-        Rectangle finalRectangle = rectangle;
+        Rectangle rectangle = getParameter(Rectangle.class);
         xSpinner = addSpinner("X", rectangle.x, Integer.MIN_VALUE, i -> {
-            finalRectangle.x = i;
-            getParameterAccess().set(finalRectangle);
+            rectangle.x = i;
+            getParameterAccess().set(rectangle);
         });
         add(Box.createHorizontalStrut(4));
         ySpinner = addSpinner("Y", rectangle.y, Integer.MIN_VALUE, i -> {
-            finalRectangle.y = i;
-            getParameterAccess().set(finalRectangle);
+            rectangle.y = i;
+            getParameterAccess().set(rectangle);
         });
         add(Box.createHorizontalStrut(4));
         widthSpinner = addSpinner("W", rectangle.width, Integer.MIN_VALUE, i -> {
-            finalRectangle.width = i;
-            getParameterAccess().set(finalRectangle);
+            rectangle.width = i;
+            getParameterAccess().set(rectangle);
         });
         add(Box.createHorizontalStrut(4));
         heightSpinner = addSpinner("H", rectangle.height, Integer.MIN_VALUE, i -> {
-            finalRectangle.height = i;
-            getParameterAccess().set(finalRectangle);
+            rectangle.height = i;
+            getParameterAccess().set(rectangle);
         });
     }
 

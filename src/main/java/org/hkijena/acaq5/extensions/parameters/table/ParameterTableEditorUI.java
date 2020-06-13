@@ -96,7 +96,7 @@ public class ParameterTableEditorUI extends ACAQParameterEditorUI {
             return;
         }
         int col = table.getSelectedColumn();
-        ParameterTable parameterTable = getParameterAccess().get(ParameterTable.class);
+        ParameterTable parameterTable = getParameter(ParameterTable.class);
         boolean hasColumnEntries = false;
         if (parameterTable != null) {
             for (Class<? extends ACAQParameterGeneratorUI> generator : ACAQUIParameterTypeRegistry.getInstance()
@@ -128,7 +128,7 @@ public class ParameterTableEditorUI extends ACAQParameterEditorUI {
         if (generatedObjects == null)
             return;
 
-        ParameterTable parameterTable = getParameterAccess().get(ParameterTable.class);
+        ParameterTable parameterTable = getParameter(ParameterTable.class);
         int[] rows = getSelectedRows(false);
         for (int i = 0; i < Math.min(generatedObjects.size(), rows.length); ++i) {
             parameterTable.setValueAt(generatedObjects.get(i), rows[i], column);
@@ -137,7 +137,7 @@ public class ParameterTableEditorUI extends ACAQParameterEditorUI {
 
     private void reloadGeneratePopupMenu() {
         generatePopupMenu.removeAll();
-        ParameterTable parameterTable = getParameterAccess().get(ParameterTable.class);
+        ParameterTable parameterTable = getParameter(ParameterTable.class);
         boolean hasColumnEntries = false;
         if (parameterTable != null) {
 
@@ -174,7 +174,7 @@ public class ParameterTableEditorUI extends ACAQParameterEditorUI {
     private void generateRow(int columnIndex, Class<? extends ACAQParameterGeneratorUI> generator) {
         List<Object> generatedObjects = ACAQParameterGeneratorUI.showDialog(this, getContext(), generator);
         if (generatedObjects != null) {
-            ParameterTable parameterTable = getParameterAccess().get(ParameterTable.class);
+            ParameterTable parameterTable = getParameter(ParameterTable.class);
             for (Object generatedObject : generatedObjects) {
                 parameterTable.addRow();
                 parameterTable.setValueAt(generatedObject, parameterTable.getRowCount() - 1, columnIndex);
@@ -193,7 +193,7 @@ public class ParameterTableEditorUI extends ACAQParameterEditorUI {
                 currentEditor = null;
             }
             if (currentSelection.x != -1 && currentSelection.y != -1) {
-                ParameterTable parameterTable = getParameterAccess().get(ParameterTable.class);
+                ParameterTable parameterTable = getParameter(ParameterTable.class);
                 ParameterTableCellAccess access = new ParameterTableCellAccess(getParameterAccess(), parameterTable,
                         currentSelection.x, currentSelection.y);
                 currentEditor = ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getContext(), access);
@@ -220,14 +220,14 @@ public class ParameterTableEditorUI extends ACAQParameterEditorUI {
 
     private void removeSelectedRows() {
         int[] selectedRows = getSelectedRows(true);
-        ParameterTable parameterTable = getParameterAccess().get(ParameterTable.class);
+        ParameterTable parameterTable = getParameter(ParameterTable.class);
         for (int i = selectedRows.length - 1; i >= 0; --i) {
             parameterTable.removeRow(i);
         }
     }
 
     private void addRow() {
-        ParameterTable parameterTable = getParameterAccess().get(ParameterTable.class);
+        ParameterTable parameterTable = getParameter(ParameterTable.class);
         if (parameterTable != null) {
             parameterTable.addRow();
         }
@@ -240,7 +240,7 @@ public class ParameterTableEditorUI extends ACAQParameterEditorUI {
 
     @Override
     public void reload() {
-        ParameterTable parameterTable = getParameterAccess().get(ParameterTable.class);
+        ParameterTable parameterTable = getParameter(ParameterTable.class);
         if (parameterTable == null) {
             table.setModel(new DefaultTableModel());
         } else {

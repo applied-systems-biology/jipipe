@@ -39,11 +39,7 @@ public class IntModificationParameterEditorUI extends ACAQParameterEditorUI {
         }
         isReloading = true;
         removeAll();
-        IntModificationParameter modification = getParameterAccess().get(IntModificationParameter.class);
-        if (modification == null) {
-            getParameterAccess().set(new IntModificationParameter());
-            return;
-        }
+        IntModificationParameter modification = getParameter(IntModificationParameter.class);
         if (modification.isUseExactValue()) {
             SpinnerNumberModel model = new SpinnerNumberModel(modification.getExactValue(), Integer.MIN_VALUE, Integer.MAX_VALUE, 1);
             JSpinner spinner = new JSpinner(model);

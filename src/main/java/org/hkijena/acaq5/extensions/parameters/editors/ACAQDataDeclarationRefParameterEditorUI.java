@@ -69,10 +69,7 @@ public class ACAQDataDeclarationRefParameterEditorUI extends ACAQParameterEditor
         if (isReloading)
             return;
         isReloading = true;
-        ACAQDataDeclarationRef declarationRef = getParameterAccess().get(ACAQDataDeclarationRef.class);
-        if (declarationRef == null) {
-            declarationRef = new ACAQDataDeclarationRef();
-        }
+        ACAQDataDeclarationRef declarationRef = getParameter(ACAQDataDeclarationRef.class);
         ACAQDataDeclaration declaration = declarationRef.getDeclaration();
         if (declaration != null) {
             currentlyDisplayed.setText(declaration.getName());
@@ -127,7 +124,7 @@ public class ACAQDataDeclarationRefParameterEditorUI extends ACAQParameterEditor
     @Subscribe
     public void onTraitSelected(ACAQDataTypePicker.SelectedDataTypesChangedEvent event) {
         if (pickerDialog.isVisible()) {
-            ACAQDataDeclarationRef declarationRef = getParameterAccess().get(ACAQDataDeclarationRef.class);
+            ACAQDataDeclarationRef declarationRef = getParameter(ACAQDataDeclarationRef.class);
             declarationRef.setDeclaration(picker.getSelectedDataTypes().isEmpty() ? null : picker.getSelectedDataTypes().iterator().next());
             getParameterAccess().set(declarationRef);
             reload();

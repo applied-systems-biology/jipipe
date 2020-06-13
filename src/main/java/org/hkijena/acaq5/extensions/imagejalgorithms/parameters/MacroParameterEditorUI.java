@@ -17,7 +17,6 @@ import java.awt.*;
  */
 public class MacroParameterEditorUI extends ACAQParameterEditorUI {
 
-    private boolean skipNextReload = false;
     private boolean isReloading = false;
     private EditorPane textArea;
 
@@ -38,7 +37,7 @@ public class MacroParameterEditorUI extends ACAQParameterEditorUI {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        MacroCode code = getParameterAccess().get(MacroCode.class);
+        MacroCode code = getParameter(MacroCode.class);
         textArea = new EditorPane();
         textArea.setBorder(BorderFactory.createEtchedBorder());
         getContext().inject(textArea);
@@ -63,12 +62,8 @@ public class MacroParameterEditorUI extends ACAQParameterEditorUI {
 
     @Override
     public void reload() {
-        if (skipNextReload) {
-            skipNextReload = false;
-            return;
-        }
         isReloading = true;
-        MacroCode code = getParameterAccess().get(MacroCode.class);
+        MacroCode code = getParameter(MacroCode.class);
         textArea.setText(code.getCode());
         isReloading = false;
     }

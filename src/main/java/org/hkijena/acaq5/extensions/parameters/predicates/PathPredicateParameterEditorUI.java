@@ -33,7 +33,7 @@ public class PathPredicateParameterEditorUI extends ACAQParameterEditorUI {
     @Override
     public void reload() {
         removeAll();
-        PathPredicate filter = getParameterAccess().get(PathPredicate.class);
+        PathPredicate filter = getParameter(PathPredicate.class);
         JTextField filterStringEditor = new JTextField(filter.getFilterString());
         filterStringEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         filterStringEditor.getDocument().addDocumentListener(new DocumentChangeListener() {

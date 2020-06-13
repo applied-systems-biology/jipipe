@@ -3,6 +3,7 @@ package org.hkijena.acaq5.ui.components;
 import com.google.common.eventbus.EventBus;
 import com.google.common.primitives.Ints;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.ui.registries.ACAQUIAlgorithmRegistry;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -269,7 +270,7 @@ public class ACAQAlgorithmPicker extends JPanel {
         @Override
         public Component getListCellRendererComponent(JList<? extends ACAQAlgorithmDeclaration> list, ACAQAlgorithmDeclaration value, int index, boolean isSelected, boolean cellHasFocus) {
             if (value != null) {
-                setText(StringUtils.createIconTextHTMLTable(value.getName(), ResourceUtils.getPluginResource("icons/cog.png")));
+                setText(StringUtils.createIconTextHTMLTable(value.getName(), ACAQUIAlgorithmRegistry.getInstance().getIconURLFor(value)));
             } else {
                 setText(StringUtils.createIconTextHTMLTable("Select none", ResourceUtils.getPluginResource("icons/remove.png")));
             }

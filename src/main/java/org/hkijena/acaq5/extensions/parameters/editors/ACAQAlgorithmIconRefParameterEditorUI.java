@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.extensions.parameters.editors;
 
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQAlgorithmIconRef;
 import org.hkijena.acaq5.ui.components.ACAQIconPickerDialog;
@@ -51,10 +52,7 @@ public class ACAQAlgorithmIconRefParameterEditorUI extends ACAQParameterEditorUI
 
     private void pickIcon() {
         String picked = ACAQIconPickerDialog.showDialog(this, ResourceUtils.getResourcePath("icons/algorithms"), getAvailableAlgorithmIcons());
-        ACAQAlgorithmIconRef ref = getParameterAccess().get(ACAQAlgorithmIconRef.class);
-        if (ref == null) {
-            ref = new ACAQAlgorithmIconRef();
-        }
+        ACAQAlgorithmIconRef ref = getParameter(ACAQAlgorithmIconRef.class);
         ref.setIconName(picked);
         getParameterAccess().set(ref);
         reload();
@@ -67,10 +65,7 @@ public class ACAQAlgorithmIconRefParameterEditorUI extends ACAQParameterEditorUI
 
     @Override
     public void reload() {
-        ACAQAlgorithmIconRef ref = getParameterAccess().get(ACAQAlgorithmIconRef.class);
-        if (ref == null) {
-            ref = new ACAQAlgorithmIconRef();
-        }
+        ACAQAlgorithmIconRef ref = getParameter(ACAQAlgorithmIconRef.class);
         if (!StringUtils.isNullOrEmpty(ref.getIconName())) {
             URL resource = ResourceUtils.getPluginResource("icons/algorithms/" + ref.getIconName());
             if (resource != null) {

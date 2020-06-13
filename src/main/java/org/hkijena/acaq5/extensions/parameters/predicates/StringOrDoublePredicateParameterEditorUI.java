@@ -39,7 +39,7 @@ public class StringOrDoublePredicateParameterEditorUI extends ACAQParameterEdito
         isProcessing = true;
         removeAll();
 
-        StringOrDoublePredicate parameter = getParameterAccess().get(StringOrDoublePredicate.class);
+        StringOrDoublePredicate parameter = getParameter(StringOrDoublePredicate.class);
         parameter.getEventBus().register(this);
         ACAQTraversedParameterCollection traversedParameterCollection = new ACAQTraversedParameterCollection(parameter);
 
@@ -74,7 +74,7 @@ public class StringOrDoublePredicateParameterEditorUI extends ACAQParameterEdito
         if (isProcessing)
             return;
         isProcessing = true;
-        StringOrDoublePredicate parameter = getParameterAccess().get(StringOrDoublePredicate.class);
+        StringOrDoublePredicate parameter = getParameter(StringOrDoublePredicate.class);
         if (parameter == null) {
             parameter = new StringOrDoublePredicate();
         }

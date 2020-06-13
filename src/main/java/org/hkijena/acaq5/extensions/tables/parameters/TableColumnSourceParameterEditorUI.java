@@ -38,7 +38,7 @@ public class TableColumnSourceParameterEditorUI extends ACAQParameterEditorUI {
         isProcessing = true;
         removeAll();
 
-        TableColumnSourceParameter parameter = getParameterAccess().get(TableColumnSourceParameter.class);
+        TableColumnSourceParameter parameter = getParameter(TableColumnSourceParameter.class);
         ACAQTraversedParameterCollection traversedParameterCollection = new ACAQTraversedParameterCollection(parameter);
 
         ButtonGroup buttonGroup = new ButtonGroup();
@@ -63,7 +63,7 @@ public class TableColumnSourceParameterEditorUI extends ACAQParameterEditorUI {
         if (isProcessing)
             return;
         isProcessing = true;
-        TableColumnSourceParameter parameter = getParameterAccess().get(TableColumnSourceParameter.class);
+        TableColumnSourceParameter parameter = getParameter(TableColumnSourceParameter.class);
         if (parameter == null) {
             parameter = new TableColumnSourceParameter();
         }

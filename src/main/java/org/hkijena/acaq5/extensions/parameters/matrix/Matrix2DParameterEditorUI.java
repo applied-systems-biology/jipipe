@@ -42,12 +42,12 @@ public class Matrix2DParameterEditorUI extends ACAQParameterEditorUI {
 
         JButton addRowButton = new JButton(UIUtils.getIconFromResources("add-row.png"));
         addRowButton.setToolTipText("Add row");
-        addRowButton.addActionListener(e -> getParameterAccess().get(Matrix2D.class).addRow());
+        addRowButton.addActionListener(e -> getParameter(Matrix2D.class).addRow());
         toolBar.add(addRowButton);
 
         JButton addColumnButton = new JButton(UIUtils.getIconFromResources("add-column.png"));
         addColumnButton.setToolTipText("Add column");
-        addColumnButton.addActionListener(e -> getParameterAccess().get(Matrix2D.class).addColumn());
+        addColumnButton.addActionListener(e -> getParameter(Matrix2D.class).addColumn());
         toolBar.add(addColumnButton);
 
         toolBar.addSeparator();
@@ -73,7 +73,7 @@ public class Matrix2DParameterEditorUI extends ACAQParameterEditorUI {
     private void removeColumn() {
         int[] selectedColumns = table.getSelectedColumns();
         Arrays.sort(selectedColumns);
-        Matrix2D<?> parameter = getParameterAccess().get(Matrix2D.class);
+        Matrix2D<?> parameter = getParameter(Matrix2D.class);
         for (int i = selectedColumns.length - 1; i >= 0; --i) {
             parameter.removeColumn(i);
         }
@@ -83,7 +83,7 @@ public class Matrix2DParameterEditorUI extends ACAQParameterEditorUI {
     private void removeRow() {
         int[] selectedRows = table.getSelectedRows();
         Arrays.sort(selectedRows);
-        Matrix2D<?> parameter = getParameterAccess().get(Matrix2D.class);
+        Matrix2D<?> parameter = getParameter(Matrix2D.class);
         for (int i = selectedRows.length - 1; i >= 0; --i) {
             parameter.removeRow(i);
         }
@@ -97,7 +97,7 @@ public class Matrix2DParameterEditorUI extends ACAQParameterEditorUI {
 
     @Override
     public void reload() {
-        Matrix2D<?> parameter = getParameterAccess().get(Matrix2D.class);
+        Matrix2D<?> parameter = getParameter(Matrix2D.class);
         table.setModel(new DefaultTableModel());
         table.setModel(parameter);
     }

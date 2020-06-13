@@ -34,11 +34,7 @@ public class StringPatternExtractionParameterEditorUI extends ACAQParameterEdito
     @Override
     public void reload() {
         removeAll();
-        StringPatternExtraction filter = getParameterAccess().get(StringPatternExtraction.class);
-        if (filter == null) {
-            getParameterAccess().set(new StringPatternExtraction());
-            return;
-        }
+        StringPatternExtraction filter = getParameter(StringPatternExtraction.class);
 
         switch (filter.getMode()) {
             case Regex:

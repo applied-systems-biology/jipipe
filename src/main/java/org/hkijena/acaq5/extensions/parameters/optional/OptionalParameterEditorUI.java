@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.extensions.parameters.optional;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.extensions.parameters.primitives.OptionalPathParameter;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -29,10 +30,6 @@ public class OptionalParameterEditorUI extends ACAQParameterEditorUI {
         setLayout(new BorderLayout());
     }
 
-    private OptionalParameter<?> getParameter() {
-        return getParameterAccess().get(OptionalParameter.class);
-    }
-
     @Override
     public boolean isUILabelEnabled() {
         return true;
@@ -40,7 +37,7 @@ public class OptionalParameterEditorUI extends ACAQParameterEditorUI {
 
     @Override
     public void reload() {
-        OptionalParameter<?> parameter = getParameter();
+        OptionalParameter<?> parameter = getParameter(OptionalPathParameter.class);
         removeAll();
 
         // Create toggle button
