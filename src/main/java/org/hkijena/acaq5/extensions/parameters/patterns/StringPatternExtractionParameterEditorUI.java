@@ -113,7 +113,7 @@ public class StringPatternExtractionParameterEditorUI extends ACAQParameterEdito
         add(splitChar);
 
         add(new JLabel("then select by RegEx"));
-        JXTextField regexString = new JXTextField("Split character");
+        JXTextField regexString = new JXTextField("RegEx find");
         regexString.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         regexString.setToolTipText("Selects the component that matches this regex string");
         regexString.setText(filter.getRegexString());
@@ -127,7 +127,7 @@ public class StringPatternExtractionParameterEditorUI extends ACAQParameterEdito
     }
 
     private void createRegexUI(StringPatternExtraction filter) {
-        JXTextField regexString = new JXTextField("Regex selector");
+        JXTextField regexString = new JXTextField("RegEx selector");
         regexString.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         regexString.setToolTipText("A regular expression (RegEx) that contains a group. The group is selected.");
         regexString.setText(filter.getRegexString());

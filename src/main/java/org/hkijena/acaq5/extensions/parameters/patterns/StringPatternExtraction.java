@@ -60,7 +60,7 @@ public class StringPatternExtraction implements Function<String, String>, ACAQVa
             case Regex: {
                 Matcher matcher = Pattern.compile(regexString).matcher(s);
                 if (matcher.find()) {
-                    return matcher.groupCount() > 0 ? matcher.group(0) : null;
+                    return matcher.groupCount() > 0 ? matcher.group(1) : null;
                 }
                 return null;
             }
