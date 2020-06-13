@@ -15,11 +15,6 @@ import org.hkijena.acaq5.api.events.ExtensionContentRemovedEvent;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
-import org.hkijena.acaq5.api.registries.ACAQJsonTraitRegistrationTask;
-import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
-import org.hkijena.acaq5.api.traits.ACAQJsonTraitDeclaration;
-import org.hkijena.acaq5.api.traits.ACAQMutableTraitDeclaration;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.GraphWrapperAlgorithmDeclaration;
 import org.hkijena.acaq5.utils.JsonUtils;
@@ -46,7 +41,6 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
     private ACAQDefaultRegistry registry;
 
     private Set<GraphWrapperAlgorithmDeclaration> algorithmDeclarations = new HashSet<>();
-    private Set<ACAQJsonTraitDeclaration> traitDeclarations = new HashSet<>();
 
     /**
      * Creates a new instance
@@ -138,13 +132,6 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
         for (ACAQAlgorithmDeclaration declaration : algorithmDeclarations) {
             result.addAll(declaration.getDependencies());
         }
-        for (ACAQTraitDeclaration declaration : traitDeclarations) {
-            for (ACAQDependency dependency : declaration.getDependencies()) {
-                if (!Objects.equals(dependency.getDependencyId(), getDependencyId())) {
-                    result.add(dependency);
-                }
-            }
-        }
         return result.stream().map(ACAQMutableDependency::new).collect(Collectors.toSet());
     }
 
@@ -175,10 +162,6 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
      * Registers the content
      */
     public void register() {
-        for (ACAQJsonTraitDeclaration declaration : traitDeclarations) {
-            // There can be internal dependencies; we require a scheduler task
-            ACAQTraitRegistry.getInstance().scheduleRegister(new ACAQJsonTraitRegistrationTask(declaration, this));
-        }
         for (GraphWrapperAlgorithmDeclaration declaration : algorithmDeclarations) {
             // No internal dependencies: The plugin system can handle this
             ACAQAlgorithmRegistry.getInstance().register(declaration, this);
@@ -207,16 +190,6 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
     }
 
     /**
-     * Adds a new trait fo specified type
-     *
-     * @param traitDeclaration The trait type
-     */
-    public void addTrait(ACAQJsonTraitDeclaration traitDeclaration) {
-        traitDeclarations.add(traitDeclaration);
-        eventBus.post(new ExtensionContentAddedEvent(this, traitDeclaration));
-    }
-
-    /**
      * @return Algorithm declarations
      */
     @JsonGetter("algorithms")
@@ -232,26 +205,6 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
     @JsonSetter("algorithms")
     private void setAlgorithmDeclarations(Set<GraphWrapperAlgorithmDeclaration> algorithmDeclarations) {
         this.algorithmDeclarations = algorithmDeclarations;
-    }
-
-    /**
-     * Gets trait types
-     *
-     * @return Trait types
-     */
-    @JsonGetter("annotations")
-    public Set<ACAQJsonTraitDeclaration> getTraitDeclarations() {
-        return Collections.unmodifiableSet(traitDeclarations);
-    }
-
-    /**
-     * Sets trait types
-     *
-     * @param traitDeclarations Trait types
-     */
-    @JsonSetter("annotations")
-    private void setTraitDeclarations(Set<ACAQJsonTraitDeclaration> traitDeclarations) {
-        this.traitDeclarations = traitDeclarations;
     }
 
     @Override
@@ -279,15 +232,6 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
                     "Please provide a meaningful name for your plugin.",
                     this);
         }
-        for (ACAQJsonTraitDeclaration declaration : traitDeclarations) {
-            report.forCategory("Annotations").forCategory(declaration.getName()).report(declaration);
-        }
-        if (traitDeclarations.size() != traitDeclarations.stream().map(ACAQMutableTraitDeclaration::getId).collect(Collectors.toSet()).size()) {
-            report.forCategory("Annotations").reportIsInvalid("Duplicate IDs found!",
-                    "Annotation IDs must be unique.",
-                    "Please make sure that IDs are unique.",
-                    this);
-        }
         for (GraphWrapperAlgorithmDeclaration declaration : algorithmDeclarations) {
             report.forCategory("Algorithms").forCategory(declaration.getName()).report(declaration);
         }
@@ -306,17 +250,6 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
      */
     public void removeAlgorithm(GraphWrapperAlgorithmDeclaration declaration) {
         if (algorithmDeclarations.remove(declaration)) {
-            eventBus.post(new ExtensionContentRemovedEvent(this, declaration));
-        }
-    }
-
-    /**
-     * Removes a trait type
-     *
-     * @param declaration Trait type
-     */
-    public void removeAnnotation(ACAQJsonTraitDeclaration declaration) {
-        if (traitDeclarations.remove(declaration)) {
             eventBus.post(new ExtensionContentRemovedEvent(this, declaration));
         }
     }

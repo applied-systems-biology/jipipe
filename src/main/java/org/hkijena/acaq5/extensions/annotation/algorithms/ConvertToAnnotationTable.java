@@ -5,9 +5,9 @@ import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.extensions.annotation.datatypes.AnnotationTableData;
 
 import java.util.Set;
@@ -66,9 +66,9 @@ public class ConvertToAnnotationTable extends ACAQMergingAlgorithm {
         for (int sourceRow : inputDataRows) {
             output.addRow();
             output.setValueAt("" + getFirstInputSlot().getData(sourceRow, ACAQData.class), row, dataColumn);
-            for (ACAQTrait trait : getFirstInputSlot().getAnnotations(sourceRow)) {
+            for (ACAQAnnotation trait : getFirstInputSlot().getAnnotations(sourceRow)) {
                 if (trait != null) {
-                    int col = output.addAnnotationColumn(trait.getDeclaration());
+                    int col = output.addAnnotationColumn(trait.getName());
                     output.setValueAt(trait.getValue(), row, col);
                 }
             }

@@ -12,7 +12,6 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.events.AlgorithmRegisteredEvent;
 import org.hkijena.acaq5.api.events.DatatypeRegisteredEvent;
-import org.hkijena.acaq5.api.events.TraitRegisteredEvent;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 
 import java.util.*;
@@ -168,19 +167,7 @@ public class ACAQAlgorithmRegistry implements ACAQValidatable {
      * This method is only used internally.
      */
     public void installEvents() {
-        ACAQDefaultRegistry.getInstance().getTraitRegistry().getEventBus().register(this);
         ACAQDefaultRegistry.getInstance().getDatatypeRegistry().getEventBus().register(this);
-    }
-
-    /**
-     * Triggered when a trait was registered.
-     * Attempts to register more algorithms
-     *
-     * @param event Generated event
-     */
-    @Subscribe
-    public void onTraitRegistered(TraitRegisteredEvent event) {
-        runRegistrationTasks();
     }
 
     /**

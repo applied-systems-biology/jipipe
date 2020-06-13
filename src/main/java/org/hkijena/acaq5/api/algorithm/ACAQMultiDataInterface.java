@@ -1,9 +1,8 @@
 package org.hkijena.acaq5.api.algorithm;
 
+import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 
 import java.util.*;
 
@@ -14,7 +13,7 @@ import java.util.*;
 public class ACAQMultiDataInterface {
     private ACAQGraphNode algorithm;
     private Map<ACAQDataSlot, Set<Integer>> inputSlotRows;
-    private Map<ACAQTraitDeclaration, ACAQTrait> annotations = new HashMap<>();
+    private Map<String, ACAQAnnotation> annotations = new HashMap<>();
 
     /**
      * Creates a new interface
@@ -60,13 +59,13 @@ public class ACAQMultiDataInterface {
      * @param annotations the annotations
      * @param overwrite   if true, annotations of the same type are overwritten
      */
-    public void addGlobalAnnotations(List<ACAQTrait> annotations, boolean overwrite) {
-        for (ACAQTrait annotation : annotations) {
+    public void addGlobalAnnotations(List<ACAQAnnotation> annotations, boolean overwrite) {
+        for (ACAQAnnotation annotation : annotations) {
             if (annotation != null) {
                 if (overwrite)
-                    this.annotations.put(annotation.getDeclaration(), annotation);
+                    this.annotations.put(annotation.getName(), annotation);
                 else
-                    this.annotations.putIfAbsent(annotation.getDeclaration(), annotation);
+                    this.annotations.putIfAbsent(annotation.getName(), annotation);
             }
         }
     }
@@ -132,7 +131,7 @@ public class ACAQMultiDataInterface {
      *
      * @return list of annotations
      */
-    public Map<ACAQTraitDeclaration, ACAQTrait> getAnnotations() {
+    public Map<String, ACAQAnnotation> getAnnotations() {
         return annotations;
     }
 
@@ -141,8 +140,8 @@ public class ACAQMultiDataInterface {
      *
      * @param trait added annotation. Cannot be null.
      */
-    public void addGlobalAnnotation(ACAQTrait trait) {
-        annotations.put(trait.getDeclaration(), trait);
+    public void addGlobalAnnotation(ACAQAnnotation trait) {
+        annotations.put(trait.getName(), trait);
     }
 
     /**
@@ -150,7 +149,7 @@ public class ACAQMultiDataInterface {
      *
      * @param declaration removed annotation
      */
-    public void removeGlobalAnnotation(ACAQTraitDeclaration declaration) {
+    public void removeGlobalAnnotation(String declaration) {
         annotations.remove(declaration);
     }
 
@@ -161,7 +160,7 @@ public class ACAQMultiDataInterface {
      * @param declaration annotation type
      * @return null if it does not exist
      */
-    public ACAQTrait getAnnotationOfType(ACAQTraitDeclaration declaration) {
+    public ACAQAnnotation getAnnotationOfType(String declaration) {
         return annotations.getOrDefault(declaration, null);
     }
 
@@ -184,7 +183,7 @@ public class ACAQMultiDataInterface {
      * @param data                  Added data
      * @param additionalAnnotations Annotations that are added additionally to the global ones
      */
-    public void addOutputData(String slotName, ACAQData data, List<ACAQTrait> additionalAnnotations) {
+    public void addOutputData(String slotName, ACAQData data, List<ACAQAnnotation> additionalAnnotations) {
         addOutputData(algorithm.getOutputSlot(slotName), data, additionalAnnotations);
     }
 
@@ -211,12 +210,12 @@ public class ACAQMultiDataInterface {
      * @param data                  Added data
      * @param additionalAnnotations Annotations that are added additionally to the global ones
      */
-    public void addOutputData(ACAQDataSlot slot, ACAQData data, List<ACAQTrait> additionalAnnotations) {
+    public void addOutputData(ACAQDataSlot slot, ACAQData data, List<ACAQAnnotation> additionalAnnotations) {
         if (slot.getAlgorithm() != algorithm)
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isOutput())
             throw new IllegalArgumentException("Slot is not an output slot!");
-        List<ACAQTrait> finalAnnotations = new ArrayList<>(annotations.values());
+        List<ACAQAnnotation> finalAnnotations = new ArrayList<>(annotations.values());
         finalAnnotations.addAll(additionalAnnotations);
         slot.addData(data, finalAnnotations);
     }

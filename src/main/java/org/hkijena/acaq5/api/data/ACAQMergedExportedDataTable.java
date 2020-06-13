@@ -3,8 +3,6 @@ package org.hkijena.acaq5.api.data;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -20,7 +18,7 @@ public class ACAQMergedExportedDataTable implements TableModel {
     private ArrayList<ACAQProjectCompartment> compartmentList = new ArrayList<>();
     private ArrayList<ACAQGraphNode> algorithmList = new ArrayList<>();
     private ArrayList<ACAQExportedDataTable.Row> rowList = new ArrayList<>();
-    private List<ACAQTraitDeclaration> traitColumns = new ArrayList<>();
+    private List<String> traitColumns = new ArrayList<>();
     private ArrayList<ACAQDataSlot> slotList = new ArrayList<>();
 
     /**
@@ -31,7 +29,7 @@ public class ACAQMergedExportedDataTable implements TableModel {
      * @param table    The table
      */
     public void add(ACAQProject project, ACAQDataSlot dataSlot, ACAQExportedDataTable table) {
-        for (ACAQTraitDeclaration traitColumn : table.getTraitColumns()) {
+        for (String traitColumn : table.getTraitColumns()) {
             if (!traitColumns.contains(traitColumn))
                 traitColumns.add(traitColumn);
         }
@@ -68,7 +66,7 @@ public class ACAQMergedExportedDataTable implements TableModel {
         else if (columnIndex == 3)
             return "Data";
         else
-            return traitColumns.get(columnIndex - 4).getName();
+            return traitColumns.get(columnIndex - 4);
     }
 
     @Override
@@ -82,7 +80,7 @@ public class ACAQMergedExportedDataTable implements TableModel {
         else if (columnIndex == 3)
             return ACAQExportedDataTable.Row.class;
         else
-            return ACAQTrait.class;
+            return ACAQAnnotation.class;
     }
 
     @Override
@@ -101,8 +99,8 @@ public class ACAQMergedExportedDataTable implements TableModel {
         else if (columnIndex == 3)
             return rowList.get(rowIndex);
         else {
-            ACAQTraitDeclaration traitColumn = traitColumns.get(columnIndex - 4);
-            return rowList.get(rowIndex).getTraits().stream().filter(t -> t.getDeclaration() == traitColumn).findFirst().orElse(null);
+            String traitColumn = traitColumns.get(columnIndex - 4);
+            return rowList.get(rowIndex).getTraits().stream().filter(t -> t.nameEquals(traitColumn)).findFirst().orElse(null);
         }
     }
 
@@ -122,9 +120,9 @@ public class ACAQMergedExportedDataTable implements TableModel {
     }
 
     /**
-     * @return Additional columns containing {@link ACAQTraitDeclaration}
+     * @return Additional columns
      */
-    public List<ACAQTraitDeclaration> getTraitColumns() {
+    public List<String> getTraitColumns() {
         return traitColumns;
     }
 

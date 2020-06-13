@@ -8,11 +8,8 @@ import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.api.registries.ACAQImageJAdapterRegistry;
-import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
-import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.TooltipUtils;
@@ -63,7 +60,6 @@ public class ACAQDependencyUI extends JPanel {
 
         insertDependencies(formPanel);
         insertAddedDatatypes(formPanel);
-        insertAddedTraits(formPanel);
         insertAddedAlgorithms(formPanel);
 
 
@@ -86,22 +82,6 @@ public class ACAQDependencyUI extends JPanel {
             }
             insertTable(formPanel, model, "Dependencies", UIUtils.getIconFromResources("module.png"));
         }
-    }
-
-    private void insertAddedTraits(FormPanel formPanel) {
-        Set<ACAQTraitDeclaration> list = ACAQTraitRegistry.getInstance().getDeclaredBy(dependency);
-        if (list.isEmpty())
-            return;
-        DefaultTableModel model = new DefaultTableModel();
-        model.setColumnIdentifiers(new Object[]{"Name", "ID", "Description"});
-        for (ACAQTraitDeclaration declaration : list) {
-            model.addRow(new Object[]{
-                    StringUtils.createIconTextHTMLTable(declaration.getName(), ACAQUITraitRegistry.getInstance().getIconURLFor(declaration)),
-                    declaration.getId(),
-                    StringUtils.wordWrappedHTML(declaration.getDescription(), 50)
-            });
-        }
-        insertTable(formPanel, model, "Annotation types", UIUtils.getIconFromResources("label.png"));
     }
 
     private void insertAddedDatatypes(FormPanel formPanel) {

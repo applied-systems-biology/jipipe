@@ -5,8 +5,6 @@ import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.events.SlotAnnotationsChanged;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -15,7 +13,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * A data slot holds an {@link ACAQData} instance.
@@ -32,10 +29,8 @@ public class ACAQDataSlot implements TableModel {
     private EventBus eventBus = new EventBus();
 
     private ArrayList<ACAQData> data = new ArrayList<>();
-    private List<ACAQTraitDeclaration> annotationColumns = new ArrayList<>();
-    private Map<ACAQTraitDeclaration, ArrayList<ACAQTrait>> annotations = new HashMap<>();
-
-    private Set<ACAQTraitDeclaration> slotAnnotations = new HashSet<>();
+    private List<String> annotationColumns = new ArrayList<>();
+    private Map<String, ArrayList<ACAQAnnotation>> annotations = new HashMap<>();
 
     /**
      * Creates a new slot
@@ -51,7 +46,7 @@ public class ACAQDataSlot implements TableModel {
         this.acceptedDataType = definition.getDataClass();
     }
 
-    public List<ACAQTraitDeclaration> getAnnotationColumns() {
+    public List<String> getAnnotationColumns() {
         return Collections.unmodifiableList(annotationColumns);
     }
 
@@ -103,10 +98,10 @@ public class ACAQDataSlot implements TableModel {
      * @param row The row
      * @return Annotations at row
      */
-    public List<ACAQTrait> getAnnotations(int row) {
-        List<ACAQTrait> result = new ArrayList<>();
-        for (ACAQTraitDeclaration declaration : annotationColumns) {
-            ACAQTrait trait = getOrCreateAnnotationColumnData(declaration).get(row);
+    public List<ACAQAnnotation> getAnnotations(int row) {
+        List<ACAQAnnotation> result = new ArrayList<>();
+        for (String declaration : annotationColumns) {
+            ACAQAnnotation trait = getOrCreateAnnotationColumnData(declaration).get(row);
             if (trait != null)
                 result.add(trait);
         }
@@ -121,8 +116,8 @@ public class ACAQDataSlot implements TableModel {
      * @param orElse alternative value
      * @return annotation of type 'type' or 'orElse'
      */
-    public ACAQTrait getAnnotationOr(int row, ACAQTraitDeclaration type, ACAQTrait orElse) {
-        return getAnnotations(row).stream().filter(a -> a != null && a.getDeclaration() == type).findFirst().orElse(orElse);
+    public ACAQAnnotation getAnnotationOr(int row, String type, ACAQAnnotation orElse) {
+        return getAnnotations(row).stream().filter(a -> a != null && Objects.equals(a.getName(), type)).findFirst().orElse(orElse);
     }
 
     /**
@@ -132,8 +127,8 @@ public class ACAQDataSlot implements TableModel {
      * @param declaration Annotation type
      * @return All trait instances of the provided type. Size is getRowCount()
      */
-    private List<ACAQTrait> getOrCreateAnnotationColumnData(ACAQTraitDeclaration declaration) {
-        ArrayList<ACAQTrait> arrayList = annotations.getOrDefault(declaration, null);
+    private List<ACAQAnnotation> getOrCreateAnnotationColumnData(String declaration) {
+        ArrayList<ACAQAnnotation> arrayList = annotations.getOrDefault(declaration, null);
         if (arrayList == null) {
             annotationColumns.add(declaration);
             arrayList = new ArrayList<>();
@@ -151,7 +146,7 @@ public class ACAQDataSlot implements TableModel {
      * @param value  The data
      * @param traits Optional traits
      */
-    public void addData(ACAQData value, List<ACAQTrait> traits) {
+    public void addData(ACAQData value, List<ACAQAnnotation> traits) {
         if (!accepts(value))
             throw new IllegalArgumentException("Tried to add data of type " + value.getClass() + ", but slot only accepts " + acceptedDataType + ". A converter could not be found.");
         if (uniqueData) {
@@ -160,8 +155,8 @@ public class ACAQDataSlot implements TableModel {
             }
         }
         data.add(ACAQDatatypeRegistry.getInstance().convert(value, getAcceptedDataType()));
-        for (ACAQTrait trait : traits) {
-            List<ACAQTrait> traitArray = getOrCreateAnnotationColumnData(trait.getDeclaration());
+        for (ACAQAnnotation trait : traits) {
+            List<ACAQAnnotation> traitArray = getOrCreateAnnotationColumnData(trait.getName());
             traitArray.set(getRowCount() - 1, trait);
         }
     }
@@ -172,8 +167,8 @@ public class ACAQDataSlot implements TableModel {
      * @param trait     The trait instance
      * @param overwrite If false, existing annotations of the same type are not overwritten
      */
-    public void addAnnotationToAllData(ACAQTrait trait, boolean overwrite) {
-        List<ACAQTrait> traitArray = getOrCreateAnnotationColumnData(trait.getDeclaration());
+    public void addAnnotationToAllData(ACAQAnnotation trait, boolean overwrite) {
+        List<ACAQAnnotation> traitArray = getOrCreateAnnotationColumnData(trait.getName());
         for (int i = 0; i < getRowCount(); ++i) {
             if (!overwrite && traitArray.get(i) != null)
                 continue;
@@ -186,7 +181,7 @@ public class ACAQDataSlot implements TableModel {
      *
      * @param declaration Annotation type
      */
-    public void removeAllAnnotationsFromData(ACAQTraitDeclaration declaration) {
+    public void removeAllAnnotationsFromData(String declaration) {
         int columnIndex = annotationColumns.indexOf(declaration);
         if (columnIndex != -1) {
             annotationColumns.remove(columnIndex);
@@ -209,10 +204,10 @@ public class ACAQDataSlot implements TableModel {
      * @param traits A valid annotation list with size equals to getRowCount()
      * @return row index >= 0 if found, otherwise -1
      */
-    public int findRowWithTraits(List<ACAQTrait> traits) {
-        ACAQTraitDeclaration[] declarationMap = new ACAQTraitDeclaration[traits.size()];
+    public int findRowWithTraits(List<ACAQAnnotation> traits) {
+        String[] declarationMap = new String[traits.size()];
         for (int i = 0; i < traits.size(); ++i) {
-            int declarationIndex = annotationColumns.indexOf(traits.get(i).getDeclaration());
+            int declarationIndex = annotationColumns.indexOf(traits.get(i).getName());
             if (declarationIndex == -1)
                 return -1;
             declarationMap[i] = annotationColumns.get(declarationIndex);
@@ -220,9 +215,9 @@ public class ACAQDataSlot implements TableModel {
         for (int row = 0; row < data.size(); ++row) {
             boolean equal = true;
             for (int i = 0; i < traits.size(); ++i) {
-                ACAQTraitDeclaration declaration = declarationMap[i];
-                ACAQTrait rowTrait = annotations.get(declaration).get(row);
-                if (!ACAQTrait.equals(traits.get(i), rowTrait)) {
+                String declaration = declarationMap[i];
+                ACAQAnnotation rowTrait = annotations.get(declaration).get(row);
+                if (!ACAQAnnotation.nameEquals(traits.get(i), rowTrait)) {
                     equal = false;
                 }
             }
@@ -238,10 +233,10 @@ public class ACAQDataSlot implements TableModel {
      * @param traits A valid annotation list with size equals to getRowCount()
      * @return list of rows
      */
-    public List<Integer> findRowsWithTraits(List<ACAQTrait> traits) {
-        ACAQTraitDeclaration[] declarationMap = new ACAQTraitDeclaration[traits.size()];
+    public List<Integer> findRowsWithTraits(List<ACAQAnnotation> traits) {
+        String[] declarationMap = new String[traits.size()];
         for (int i = 0; i < traits.size(); ++i) {
-            int declarationIndex = annotationColumns.indexOf(traits.get(i).getDeclaration());
+            int declarationIndex = annotationColumns.indexOf(traits.get(i).getName());
             if (declarationIndex == -1)
                 return new ArrayList<>();
             declarationMap[i] = annotationColumns.get(declarationIndex);
@@ -250,9 +245,9 @@ public class ACAQDataSlot implements TableModel {
         for (int row = 0; row < data.size(); ++row) {
             boolean equal = true;
             for (int i = 0; i < traits.size(); ++i) {
-                ACAQTraitDeclaration declaration = declarationMap[i];
-                ACAQTrait rowTrait = annotations.get(declaration).get(row);
-                if (!ACAQTrait.equals(traits.get(i), rowTrait)) {
+                String declaration = declarationMap[i];
+                ACAQAnnotation rowTrait = annotations.get(declaration).get(row);
+                if (!ACAQAnnotation.nameEquals(traits.get(i), rowTrait)) {
                     equal = false;
                 }
             }
@@ -399,41 +394,6 @@ public class ACAQDataSlot implements TableModel {
     }
 
     /**
-     * Returns all trait declarations, sorted by their information
-     *
-     * @return Information-sorted trait types
-     */
-    public List<ACAQTraitDeclaration> getTraitsSortedByInformation() {
-        Map<ACAQTraitDeclaration, Double> informations = new HashMap<>();
-        for (ACAQTraitDeclaration traitDeclaration : annotationColumns) {
-            informations.put(traitDeclaration, getInformationOf(traitDeclaration));
-        }
-        return annotationColumns.stream().sorted(Comparator.comparing(informations::get)).collect(Collectors.toList());
-    }
-
-    /**
-     * Calculates the information of a trait
-     *
-     * @param traitDeclaration Trait type
-     * @return Shannon-Information of this trait type
-     */
-    public double getInformationOf(ACAQTraitDeclaration traitDeclaration) {
-        Map<Object, Integer> frequencies = new HashMap<>();
-        for (ACAQTrait trait : annotations.get(traitDeclaration)) {
-            String value = trait.getValue();
-            frequencies.put(value, frequencies.getOrDefault(value, 0) + 1);
-        }
-        double I = 0;
-        for (Map.Entry<Object, Integer> entry : frequencies.entrySet()) {
-            if (entry.getValue() == 0)
-                continue;
-            double Ie = Math.log(1.0 / entry.getValue());
-            I += Ie;
-        }
-        return I;
-    }
-
-    /**
      * Copies the source slot into this slot
      *
      * @param sourceSlot The other slot
@@ -459,7 +419,7 @@ public class ACAQDataSlot implements TableModel {
         if (columnIndex == 0)
             return "Data";
         else
-            return annotationColumns.get(columnIndex - 1).getName();
+            return annotationColumns.get(columnIndex - 1);
     }
 
     @Override
@@ -467,7 +427,7 @@ public class ACAQDataSlot implements TableModel {
         if (columnIndex == 0)
             return ACAQData.class;
         else {
-            return ACAQTrait.class;
+            return ACAQAnnotation.class;
         }
     }
 
@@ -498,55 +458,6 @@ public class ACAQDataSlot implements TableModel {
     @Override
     public void removeTableModelListener(TableModelListener l) {
 
-    }
-
-    /**
-     * Returns all traits that are not associated to data, but instead associated to the slot itself
-     *
-     * @return Slot annotations
-     */
-    public Set<ACAQTraitDeclaration> getSlotAnnotations() {
-        return Collections.unmodifiableSet(slotAnnotations);
-    }
-
-    /**
-     * Adds an annotation to this slot
-     *
-     * @param declaration Annotation type
-     */
-    public void addSlotAnnotation(ACAQTraitDeclaration declaration) {
-        slotAnnotations.add(declaration);
-        eventBus.post(new SlotAnnotationsChanged(this));
-    }
-
-    /**
-     * Removes an annotation from this slot
-     *
-     * @param declaration Annotation type
-     */
-    public void removeSlotAnnotation(ACAQTraitDeclaration declaration) {
-        if (slotAnnotations.remove(declaration))
-            eventBus.post(new SlotAnnotationsChanged(this));
-    }
-
-    /**
-     * Removes the annotation, as well as any other annotation that inherits from it from this slot
-     *
-     * @param declaration Annotation type
-     */
-    public void removeSlotAnnotationCategory(ACAQTraitDeclaration declaration) {
-        if (slotAnnotations.remove(declaration) || slotAnnotations.removeIf(t -> t.getInherited().contains(declaration)))
-            eventBus.post(new SlotAnnotationsChanged(this));
-    }
-
-    /**
-     * Removes all slot annotations
-     */
-    public void clearSlotAnnotations() {
-        if (!slotAnnotations.isEmpty()) {
-            slotAnnotations.clear();
-            eventBus.post(new SlotAnnotationsChanged(this));
-        }
     }
 
     /**

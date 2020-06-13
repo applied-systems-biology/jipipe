@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableSet;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
+import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonExtensionAlgorithmGraphUI;
 import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.awt.*;
@@ -15,7 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Implements copy & paste behavior for {@link ACAQAlgorithmGraphCompartmentUI} and {@link org.hkijena.acaq5.ui.extensionbuilder.grapheditor.ACAQJsonExtensionAlgorithmGraphUI}
+ * Implements copy & paste behavior for {@link ACAQAlgorithmGraphCompartmentUI} and {@link ACAQJsonExtensionAlgorithmGraphUI}
  */
 public class ACAQStandardCopyPasteBehavior implements ACAQAlgorithmGraphCopyPasteBehavior {
     private ACAQAlgorithmGraphEditorUI editorUI;

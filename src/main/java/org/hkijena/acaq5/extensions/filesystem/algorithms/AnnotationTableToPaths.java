@@ -5,10 +5,9 @@ import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extensions.annotation.datatypes.AnnotationTableData;
 import org.hkijena.acaq5.extensions.filesystem.dataypes.PathData;
 import org.hkijena.acaq5.extensions.parameters.predicates.StringPredicate;
@@ -69,11 +68,11 @@ public class AnnotationTableToPaths extends ACAQSimpleIteratingAlgorithm {
         }
         Set<String> annotationColumns = tableData.getAnnotationColumns();
         for (int row = 0; row < tableData.getRowCount(); row++) {
-            List<ACAQTrait> annotations = new ArrayList<>();
+            List<ACAQAnnotation> annotations = new ArrayList<>();
             for (String annotationColumn : annotationColumns) {
-                ACAQTraitDeclaration declaration = AnnotationTableData.getAnnotationTypeFromColumnName(annotationColumn);
+                String declaration = AnnotationTableData.getAnnotationTypeFromColumnName(annotationColumn);
                 if (declaration != null)
-                    annotations.add(declaration.newInstance(tableData.getValueAsString(row, annotationColumn)));
+                    annotations.add(new ACAQAnnotation(declaration, tableData.getValueAsString(row, annotationColumn)));
             }
 
             String data = tableData.getValueAsString(row, dataColumn);

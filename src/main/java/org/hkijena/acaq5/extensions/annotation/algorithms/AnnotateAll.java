@@ -11,7 +11,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQIOSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
+import org.hkijena.acaq5.api.data.ACAQAnnotation;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 // Traits
 public class AnnotateAll extends ACAQAlgorithm {
 
-    private ACAQTrait annotation;
+    private ACAQAnnotation annotation;
     private boolean overwrite = false;
 
     /**
@@ -69,12 +69,12 @@ public class AnnotateAll extends ACAQAlgorithm {
 
     @ACAQDocumentation(name = "Annotation", description = "This annotation is added to each input data")
     @ACAQParameter("generated-annotation")
-    public ACAQTrait getAnnotation() {
+    public ACAQAnnotation getAnnotation() {
         return annotation;
     }
 
     @ACAQParameter("generated-annotation")
-    public void setAnnotation(ACAQTrait annotation) {
+    public void setAnnotation(ACAQAnnotation annotation) {
         this.annotation = annotation;
         getEventBus().post(new ParameterChangedEvent(this, "generated-annotation"));
     }

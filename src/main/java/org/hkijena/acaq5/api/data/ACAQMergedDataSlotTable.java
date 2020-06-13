@@ -4,8 +4,6 @@ import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.algorithm.ACAQEmptyAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -19,7 +17,7 @@ public class ACAQMergedDataSlotTable implements TableModel {
 
     private ArrayList<ACAQProjectCompartment> compartmentList = new ArrayList<>();
     private ArrayList<ACAQGraphNode> algorithmList = new ArrayList<>();
-    private List<ACAQTraitDeclaration> traitColumns = new ArrayList<>();
+    private List<String> traitColumns = new ArrayList<>();
     private ArrayList<ACAQDataSlot> slotList = new ArrayList<>();
     private ArrayList<Integer> rowList = new ArrayList<>();
 
@@ -30,7 +28,7 @@ public class ACAQMergedDataSlotTable implements TableModel {
      * @param dataSlot The data slot
      */
     public void add(ACAQProject project, ACAQDataSlot dataSlot) {
-        for (ACAQTraitDeclaration traitColumn : dataSlot.getAnnotationColumns()) {
+        for (String traitColumn : dataSlot.getAnnotationColumns()) {
             if (!traitColumns.contains(traitColumn))
                 traitColumns.add(traitColumn);
         }
@@ -72,7 +70,7 @@ public class ACAQMergedDataSlotTable implements TableModel {
         else if (columnIndex == 4)
             return "String representation";
         else
-            return traitColumns.get(columnIndex - 5).getName();
+            return traitColumns.get(columnIndex - 5);
     }
 
     @Override
@@ -88,7 +86,7 @@ public class ACAQMergedDataSlotTable implements TableModel {
         else if (columnIndex == 4)
             return String.class;
         else
-            return ACAQTrait.class;
+            return ACAQAnnotation.class;
     }
 
     @Override
@@ -109,7 +107,7 @@ public class ACAQMergedDataSlotTable implements TableModel {
         else if (columnIndex == 4)
             return "" + slotList.get(rowIndex).getData(rowList.get(rowIndex), ACAQData.class);
         else {
-            ACAQTraitDeclaration traitColumn = traitColumns.get(columnIndex - 5);
+            String traitColumn = traitColumns.get(columnIndex - 5);
             ACAQDataSlot slot = slotList.get(rowIndex);
             return slot.getAnnotationOr(rowList.get(rowIndex), traitColumn, null);
         }
@@ -131,9 +129,9 @@ public class ACAQMergedDataSlotTable implements TableModel {
     }
 
     /**
-     * @return Additional columns containing {@link ACAQTraitDeclaration}
-     */
-    public List<ACAQTraitDeclaration> getTraitColumns() {
+     * @return Additional columns
+     * */
+    public List<String> getTraitColumns() {
         return traitColumns;
     }
 

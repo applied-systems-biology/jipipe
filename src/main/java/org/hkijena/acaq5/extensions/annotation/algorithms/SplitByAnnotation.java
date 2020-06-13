@@ -12,10 +12,10 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
+import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.extensions.parameters.collections.OutputSlotMapParameterCollection;
 import org.hkijena.acaq5.extensions.parameters.predicates.StringPredicate;
-import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
+import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.Comparator;
 import java.util.List;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 // Algorithm traits
 public class SplitByAnnotation extends ACAQAlgorithm {
 
-    private ACAQTraitDeclarationRef annotationType = new ACAQTraitDeclarationRef();
+    private String annotationType = "";
     private OutputSlotMapParameterCollection targetSlots;
     private boolean enableFallthrough = false;
 
@@ -67,16 +67,18 @@ public class SplitByAnnotation extends ACAQAlgorithm {
     public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ACAQDataSlot inputSlot = getFirstInputSlot();
         for (int row = 0; row < inputSlot.getRowCount(); ++row) {
-            List<ACAQTrait> annotations = inputSlot.getAnnotations(row);
-            ACAQTrait matching = annotations.stream().filter(a -> a.getDeclaration() == annotationType.getDeclaration()).findFirst().orElse(null);
-            String matchingValue = matching.getValue();
+            List<ACAQAnnotation> annotations = inputSlot.getAnnotations(row);
+            ACAQAnnotation matching = annotations.stream().filter(a -> a.nameEquals(annotationType)).findFirst().orElse(null);
+            if(matching != null) {
+                String matchingValue = matching.getValue();
 
-            for (ACAQDataSlot slot : getOutputSlots().stream().sorted(Comparator.comparing(ACAQDataSlot::getName)).collect(Collectors.toList())) {
-                StringPredicate filter = targetSlots.getParameters().get(slot.getName()).get(StringPredicate.class);
-                if (filter.test(matchingValue)) {
-                    slot.addData(inputSlot.getData(row, ACAQData.class), inputSlot.getAnnotations(row));
-                    if (!enableFallthrough)
-                        break;
+                for (ACAQDataSlot slot : getOutputSlots().stream().sorted(Comparator.comparing(ACAQDataSlot::getName)).collect(Collectors.toList())) {
+                    StringPredicate filter = targetSlots.getParameters().get(slot.getName()).get(StringPredicate.class);
+                    if (filter.test(matchingValue)) {
+                        slot.addData(inputSlot.getData(row, ACAQData.class), inputSlot.getAnnotations(row));
+                        if (!enableFallthrough)
+                            break;
+                    }
                 }
             }
         }
@@ -84,7 +86,7 @@ public class SplitByAnnotation extends ACAQAlgorithm {
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        if (annotationType == null || annotationType.getDeclaration() == null) {
+        if (StringUtils.isNullOrEmpty(annotationType)) {
             report.forCategory("Annotation").reportIsInvalid("No annotation provided!",
                     "You have to determine by which annotation type the data should be split.",
                     "Please provide an annotation type.",
@@ -101,14 +103,12 @@ public class SplitByAnnotation extends ACAQAlgorithm {
 
     @ACAQDocumentation(name = "Annotation", description = "Data is split by this annotation")
     @ACAQParameter("annotation-type")
-    public ACAQTraitDeclarationRef getAnnotationType() {
-        if (annotationType == null)
-            annotationType = new ACAQTraitDeclarationRef();
+    public String getAnnotationType() {
         return annotationType;
     }
 
     @ACAQParameter("annotation-type")
-    public void setAnnotationType(ACAQTraitDeclarationRef annotationType) {
+    public void setAnnotationType(String annotationType) {
         this.annotationType = annotationType;
         getEventBus().post(new ParameterChangedEvent(this, "annotation-type"));
     }

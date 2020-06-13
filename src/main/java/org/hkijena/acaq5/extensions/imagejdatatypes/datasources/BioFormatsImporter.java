@@ -8,14 +8,13 @@ import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.extensions.filesystem.dataypes.FileData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
+import org.hkijena.acaq5.utils.StringUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,7 +40,7 @@ public class BioFormatsImporter extends ACAQSimpleIteratingAlgorithm {
     private boolean concatenate;
     private boolean crop;
     private boolean stitchTiles;
-    private ACAQTraitDeclarationRef titleAnnotation = new ACAQTraitDeclarationRef(ACAQTraitRegistry.getInstance().getDeclarationById("image-title"));
+    private String titleAnnotation = "Image title";
 
     /**
      * @param declaration the declaration
@@ -70,7 +69,7 @@ public class BioFormatsImporter extends ACAQSimpleIteratingAlgorithm {
         this.concatenate = other.concatenate;
         this.crop = other.crop;
         this.stitchTiles = other.stitchTiles;
-        this.titleAnnotation = new ACAQTraitDeclarationRef(other.titleAnnotation);
+        this.titleAnnotation = other.titleAnnotation;
     }
 
     @Override
@@ -113,9 +112,9 @@ public class BioFormatsImporter extends ACAQSimpleIteratingAlgorithm {
             ImagePlus[] images = reader.openImagePlus();
 
             for (ImagePlus image : images) {
-                List<ACAQTrait> traits = new ArrayList<>();
-                if (titleAnnotation.getDeclaration() != null) {
-                    traits.add(titleAnnotation.getDeclaration().newInstance(image.getTitle()));
+                List<ACAQAnnotation> traits = new ArrayList<>();
+                if (!StringUtils.isNullOrEmpty(titleAnnotation)) {
+                    traits.add(new ACAQAnnotation(titleAnnotation, image.getTitle()));
                 }
                 dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusData(image), traits);
             }
@@ -242,14 +241,12 @@ public class BioFormatsImporter extends ACAQSimpleIteratingAlgorithm {
 
     @ACAQDocumentation(name = "Title annotation", description = "Optional annotation type where the image title is written.")
     @ACAQParameter("title-annotation")
-    public ACAQTraitDeclarationRef getTitleAnnotation() {
-        if (titleAnnotation == null)
-            titleAnnotation = new ACAQTraitDeclarationRef();
+    public String getTitleAnnotation() {
         return titleAnnotation;
     }
 
     @ACAQParameter("title-annotation")
-    public void setTitleAnnotation(ACAQTraitDeclarationRef titleAnnotation) {
+    public void setTitleAnnotation(String titleAnnotation) {
         this.titleAnnotation = titleAnnotation;
     }
 

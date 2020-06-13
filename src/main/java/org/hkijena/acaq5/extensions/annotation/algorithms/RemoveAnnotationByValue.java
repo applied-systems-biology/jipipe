@@ -8,9 +8,8 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.extensions.parameters.editors.ACAQTraitParameterSettings;
-import org.hkijena.acaq5.extensions.parameters.pairs.ACAQTraitDeclarationRefAndStringPredicatePair;
+import org.hkijena.acaq5.api.data.ACAQAnnotation;
+import org.hkijena.acaq5.extensions.parameters.pairs.StringAndStringPredicatePair;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -24,8 +23,7 @@ import java.util.function.Supplier;
 @AlgorithmOutputSlot(value = ACAQData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
 public class RemoveAnnotationByValue extends ACAQSimpleIteratingAlgorithm {
 
-    private ACAQTraitDeclarationRefAndStringPredicatePair.List filters = new ACAQTraitDeclarationRefAndStringPredicatePair.List();
-    private boolean removeCategory = true;
+    private StringAndStringPredicatePair.List filters = new StringAndStringPredicatePair.List();
 
     /**
      * @param declaration algorithm declaration
@@ -50,11 +48,11 @@ public class RemoveAnnotationByValue extends ACAQSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        for (ACAQTraitDeclarationRefAndStringPredicatePair filter : filters) {
-            ACAQTrait instance = dataInterface.getAnnotationOfType(filter.getKey().getDeclaration());
+        for (StringAndStringPredicatePair filter : filters) {
+            ACAQAnnotation instance = dataInterface.getAnnotationOfType(filter.getKey());
             if (instance != null) {
                 if (filter.getValue().test(instance.getValue())) {
-                    dataInterface.removeGlobalAnnotation(filter.getKey().getDeclaration(), removeCategory);
+                    dataInterface.removeGlobalAnnotation(filter.getKey());
                 }
             }
         }
@@ -63,27 +61,14 @@ public class RemoveAnnotationByValue extends ACAQSimpleIteratingAlgorithm {
 
     @ACAQDocumentation(name = "Removed annotation", description = "This annotation is removed from each input data")
     @ACAQParameter("filters")
-    @ACAQTraitParameterSettings(showHidden = true)
-    public ACAQTraitDeclarationRefAndStringPredicatePair.List getFilters() {
+    public StringAndStringPredicatePair.List getFilters() {
         return filters;
     }
 
     @ACAQParameter("filters")
-    public void setFilters(ACAQTraitDeclarationRefAndStringPredicatePair.List annotationTypes) {
+    public void setFilters(StringAndStringPredicatePair.List annotationTypes) {
         this.filters = annotationTypes;
         getEventBus().post(new ParameterChangedEvent(this, "filters"));
     }
 
-    @ACAQDocumentation(name = "Remove child annotations", description = "If enabled, annotations that inherit from the selected annotation types " +
-            "are removed")
-    @ACAQParameter("remove-category")
-    public boolean isRemoveCategory() {
-        return removeCategory;
-    }
-
-    @ACAQParameter("remove-category")
-    public void setRemoveCategory(boolean removeCategory) {
-        this.removeCategory = removeCategory;
-        getEventBus().post(new ParameterChangedEvent(this, "remove-category"));
-    }
 }

@@ -8,10 +8,9 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
+import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
+import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +26,7 @@ import java.util.function.Supplier;
 @AlgorithmOutputSlot(value = ROIListData.class, slotName = "Output")
 public class ExplodeRoiAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
-    private ACAQTraitDeclarationRef generatedAnnotation = new ACAQTraitDeclarationRef(ACAQTraitRegistry.getInstance().getDeclarationById("roi-index"));
+    private String generatedAnnotation = "ROI index";
 
     /**
      * Instantiates a new algorithm.
@@ -48,7 +47,7 @@ public class ExplodeRoiAlgorithm extends ACAQSimpleIteratingAlgorithm {
      */
     public ExplodeRoiAlgorithm(ExplodeRoiAlgorithm other) {
         super(other);
-        this.generatedAnnotation = new ACAQTraitDeclarationRef(other.generatedAnnotation);
+        this.generatedAnnotation = other.generatedAnnotation;
     }
 
     @Override
@@ -56,9 +55,9 @@ public class ExplodeRoiAlgorithm extends ACAQSimpleIteratingAlgorithm {
         ROIListData data = dataInterface.getInputData(getFirstInputSlot(), ROIListData.class);
         for (int i = 0; i < data.size(); i++) {
             Roi roi = data.get(i);
-            List<ACAQTrait> traits = new ArrayList<>();
-            if (generatedAnnotation.getDeclaration() != null) {
-                traits.add(generatedAnnotation.getDeclaration().newInstance("index=" + i + ";name=" + roi.getName()));
+            List<ACAQAnnotation> traits = new ArrayList<>();
+            if (!StringUtils.isNullOrEmpty(generatedAnnotation)) {
+                traits.add(new ACAQAnnotation(generatedAnnotation, "index=" + i + ";name=" + roi.getName()));
             }
             ROIListData output = new ROIListData();
             output.add(roi);
@@ -73,12 +72,12 @@ public class ExplodeRoiAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     @ACAQDocumentation(name = "ROI index annotation", description = "Optional. Annotation that is added to each individual ROI list. Contains the value index=[index];name=[name].")
     @ACAQParameter("generated-annotation")
-    public ACAQTraitDeclarationRef getGeneratedAnnotation() {
+    public String getGeneratedAnnotation() {
         return generatedAnnotation;
     }
 
     @ACAQParameter("generated-annotation")
-    public void setGeneratedAnnotation(ACAQTraitDeclarationRef generatedAnnotation) {
+    public void setGeneratedAnnotation(String generatedAnnotation) {
         this.generatedAnnotation = generatedAnnotation;
     }
 }

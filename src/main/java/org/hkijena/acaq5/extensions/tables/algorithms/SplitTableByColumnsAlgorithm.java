@@ -6,12 +6,11 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
+import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.extensions.parameters.predicates.StringPredicate;
-import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
+import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +29,7 @@ import java.util.stream.Collectors;
 @AlgorithmOutputSlot(value = TableColumn.class, slotName = "Output", autoCreate = true)
 public class SplitTableByColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
-    private ACAQTraitDeclarationRef generatedAnnotation = new ACAQTraitDeclarationRef(ACAQTraitRegistry.getInstance().getDeclarationById("row-filter"));
+    private String generatedAnnotation = "Row filter";
     private StringPredicate.List columns = new StringPredicate.List();
 
     /**
@@ -49,7 +48,7 @@ public class SplitTableByColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
      */
     public SplitTableByColumnsAlgorithm(SplitTableByColumnsAlgorithm other) {
         super(other);
-        this.generatedAnnotation = new ACAQTraitDeclarationRef(other.generatedAnnotation);
+        this.generatedAnnotation = other.generatedAnnotation;
         this.columns = new StringPredicate.List(other.columns);
     }
 
@@ -72,9 +71,9 @@ public class SplitTableByColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
             Map<String, List<Integer>> groupedByCondition = rows.stream().collect(Collectors.groupingBy(rowConditions::get));
             for (Map.Entry<String, List<Integer>> entry : groupedByCondition.entrySet()) {
                 ResultsTableData output = input.getRows(entry.getValue());
-                List<ACAQTrait> traits = new ArrayList<>();
-                if (generatedAnnotation.getDeclaration() != null) {
-                    traits.add(generatedAnnotation.getDeclaration().newInstance(entry.getKey()));
+                List<ACAQAnnotation> traits = new ArrayList<>();
+                if (!StringUtils.isNullOrEmpty(generatedAnnotation)) {
+                    traits.add(new ACAQAnnotation(generatedAnnotation, entry.getKey()));
                 }
                 dataInterface.addOutputData(getFirstOutputSlot(), output, traits);
             }
@@ -88,12 +87,12 @@ public class SplitTableByColumnsAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     @ACAQDocumentation(name = "Generated annotation", description = "Optional. The annotation that is created for each table column. The column header will be stored inside it.")
     @ACAQParameter("generated-annotation")
-    public ACAQTraitDeclarationRef getGeneratedAnnotation() {
+    public String getGeneratedAnnotation() {
         return generatedAnnotation;
     }
 
     @ACAQParameter("generated-annotation")
-    public void setGeneratedAnnotation(ACAQTraitDeclarationRef generatedAnnotation) {
+    public void setGeneratedAnnotation(String generatedAnnotation) {
         this.generatedAnnotation = generatedAnnotation;
     }
 

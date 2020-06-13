@@ -33,10 +33,8 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
     private List<ACAQDependency> registeredExtensions = new ArrayList<>();
     private ACAQAlgorithmRegistry algorithmRegistry = new ACAQAlgorithmRegistry();
     private ACAQDatatypeRegistry datatypeRegistry = new ACAQDatatypeRegistry();
-    private ACAQTraitRegistry traitRegistry = new ACAQTraitRegistry();
     private ACAQUIDatatypeRegistry uiDatatypeRegistry = new ACAQUIDatatypeRegistry();
     private ACAQUIParameterTypeRegistry uiParametertypeRegistry = new ACAQUIParameterTypeRegistry();
-    private ACAQUITraitRegistry acaquiTraitRegistry = new ACAQUITraitRegistry();
     private ACAQImageJAdapterRegistry imageJDataAdapterRegistry = new ACAQImageJAdapterRegistry();
     private ACAQUIImageJDatatypeAdapterRegistry uiImageJDatatypeAdapterRegistry = new ACAQUIImageJDatatypeAdapterRegistry();
     private ACAQUIMenuServiceRegistry uiMenuServiceRegistry = new ACAQUIMenuServiceRegistry();
@@ -62,12 +60,10 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
         System.out.println("ACAQ5: Reloading registry service");
         registeredExtensions = new ArrayList<>();
         registeredExtensionIds = new HashSet<>();
-        traitRegistry = new ACAQTraitRegistry();
         datatypeRegistry = new ACAQDatatypeRegistry();
         algorithmRegistry = new ACAQAlgorithmRegistry();
         uiDatatypeRegistry = new ACAQUIDatatypeRegistry();
         uiParametertypeRegistry = new ACAQUIParameterTypeRegistry();
-        acaquiTraitRegistry = new ACAQUITraitRegistry();
         imageJDataAdapterRegistry = new ACAQImageJAdapterRegistry();
         uiImageJDatatypeAdapterRegistry = new ACAQUIImageJDatatypeAdapterRegistry();
         uiMenuServiceRegistry = new ACAQUIMenuServiceRegistry();
@@ -167,16 +163,6 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
     }
 
     @Override
-    public ACAQTraitRegistry getTraitRegistry() {
-        return traitRegistry;
-    }
-
-    @Override
-    public ACAQUITraitRegistry getUITraitRegistry() {
-        return acaquiTraitRegistry;
-    }
-
-    @Override
     public ACAQImageJAdapterRegistry getImageJDataAdapterRegistry() {
         return imageJDataAdapterRegistry;
     }
@@ -213,7 +199,6 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
     @Override
     public void reportValidity(ACAQValidityReport report) {
         report.forCategory("Algorithms").report(algorithmRegistry);
-        report.forCategory("Annotations").report(traitRegistry);
         for (ACAQDependency extension : registeredExtensions) {
             report.forCategory("Extensions").forCategory(extension.getDependencyId()).report(extension);
         }

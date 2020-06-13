@@ -40,11 +40,6 @@ public interface ACAQRegistry extends Service, ACAQValidatable {
     ACAQDatatypeRegistry getDatatypeRegistry();
 
     /**
-     * @return Registered annotation types
-     */
-    ACAQTraitRegistry getTraitRegistry();
-
-    /**
      * @return Registered data type UIs
      */
     ACAQUIDatatypeRegistry getUIDatatypeRegistry();
@@ -58,11 +53,6 @@ public interface ACAQRegistry extends Service, ACAQValidatable {
      * @return Registered parameter UIs
      */
     ACAQUIParameterTypeRegistry getUIParameterTypeRegistry();
-
-    /**
-     * @return Registered annotation UIs
-     */
-    ACAQUITraitRegistry getUITraitRegistry();
 
     /**
      * @return Registered ImageJ adapter UIs

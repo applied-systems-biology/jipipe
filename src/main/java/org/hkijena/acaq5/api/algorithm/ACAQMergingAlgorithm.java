@@ -9,15 +9,14 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
+import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
-import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
+import org.hkijena.acaq5.extensions.parameters.primitives.StringList;
 import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.util.*;
@@ -39,7 +38,7 @@ public abstract class ACAQMergingAlgorithm extends ACAQAlgorithm {
 
     private ACAQIteratingAlgorithm.ColumnMatching dataSetMatching = ACAQIteratingAlgorithm.ColumnMatching.Intersection;
     private boolean skipIncompleteDataSets = false;
-    private ACAQTraitDeclarationRef.List customColumns = new ACAQTraitDeclarationRef.List();
+    private StringList customColumns = new StringList();
 
 
     /**
@@ -70,7 +69,7 @@ public abstract class ACAQMergingAlgorithm extends ACAQAlgorithm {
         super(other);
         this.dataSetMatching = other.dataSetMatching;
         this.skipIncompleteDataSets = other.skipIncompleteDataSets;
-        this.customColumns = new ACAQTraitDeclarationRef.List(other.customColumns);
+        this.customColumns = new StringList(other.customColumns);
     }
 
     /**
@@ -79,7 +78,7 @@ public abstract class ACAQMergingAlgorithm extends ACAQAlgorithm {
      *
      * @return annotation types that should be ignored by the internal logic
      */
-    protected Set<ACAQTraitDeclaration> getIgnoredTraitColumns() {
+    protected Set<String> getIgnoredTraitColumns() {
         return Collections.emptySet();
     }
 
@@ -98,14 +97,11 @@ public abstract class ACAQMergingAlgorithm extends ACAQAlgorithm {
         }
 
         // First find all columns to sort by
-        Set<ACAQTraitDeclaration> referenceTraitColumns;
+        Set<String> referenceTraitColumns;
 
         switch (dataSetMatching) {
             case Custom:
-                referenceTraitColumns = new HashSet<>();
-                for (ACAQTraitDeclarationRef customColumn : customColumns) {
-                    referenceTraitColumns.add(customColumn.getDeclaration());
-                }
+                referenceTraitColumns = new HashSet<>(customColumns);
                 break;
             case Union:
                 referenceTraitColumns = getInputTraitColumnUnion();
@@ -125,12 +121,12 @@ public abstract class ACAQMergingAlgorithm extends ACAQAlgorithm {
         for (ACAQDataSlot inputSlot : getInputSlots()) {
             for (int row = 0; row < inputSlot.getRowCount(); row++) {
                 ACAQDataSetKey key = new ACAQDataSetKey();
-                for (ACAQTraitDeclaration referenceTraitColumn : referenceTraitColumns) {
+                for (String referenceTraitColumn : referenceTraitColumns) {
                     key.getEntries().put(referenceTraitColumn, null);
                 }
-                for (ACAQTrait annotation : inputSlot.getAnnotations(row)) {
-                    if (annotation != null && referenceTraitColumns.contains(annotation.getDeclaration())) {
-                        key.getEntries().put(annotation.getDeclaration(), annotation);
+                for (ACAQAnnotation annotation : inputSlot.getAnnotations(row)) {
+                    if (annotation != null && referenceTraitColumns.contains(annotation.getName())) {
+                        key.getEntries().put(annotation.getName(), annotation);
                     }
                 }
                 Map<String, TIntSet> dataSet = dataSets.getOrDefault(key, null);
@@ -176,7 +172,7 @@ public abstract class ACAQMergingAlgorithm extends ACAQAlgorithm {
         for (Map.Entry<ACAQDataSetKey, Map<String, TIntSet>> dataSetEntry : ImmutableList.copyOf(dataSets.entrySet())) {
 
             ACAQMultiDataInterface dataInterface = new ACAQMultiDataInterface(this);
-            Multimap<ACAQTraitDeclaration, String> compoundTraits = HashMultimap.create();
+            Multimap<String, String> compoundTraits = HashMultimap.create();
             for (Map.Entry<String, TIntSet> dataSlotEntry : dataSetEntry.getValue().entrySet()) {
                 ACAQDataSlot inputSlot = getInputSlot(dataSlotEntry.getKey());
                 TIntSet rows = dataSetEntry.getValue().get(inputSlot.getName());
@@ -185,16 +181,16 @@ public abstract class ACAQMergingAlgorithm extends ACAQAlgorithm {
                     dataInterface.addData(inputSlot, row);
 
                     // Store all annotations
-                    for (ACAQTrait annotation : inputSlot.getAnnotations(row)) {
+                    for (ACAQAnnotation annotation : inputSlot.getAnnotations(row)) {
                         if (annotation != null) {
-                            compoundTraits.put(annotation.getDeclaration(), "" + annotation.getValue());
+                            compoundTraits.put(annotation.getName(), "" + annotation.getValue());
                         }
                     }
                 }
             }
 
             // Create new merged annotations
-            for (ACAQTraitDeclaration declaration : compoundTraits.keySet()) {
+            for (String declaration : compoundTraits.keySet()) {
                 List<String> valueList = compoundTraits.get(declaration).stream().distinct().sorted().collect(Collectors.toList());
                 String value;
                 try {
@@ -202,7 +198,7 @@ public abstract class ACAQMergingAlgorithm extends ACAQAlgorithm {
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
                 }
-                dataInterface.addGlobalAnnotation(declaration.newInstance(value));
+                dataInterface.addGlobalAnnotation(new ACAQAnnotation(declaration, value));
             }
 
             dataInterfaces.add(dataInterface);
@@ -217,8 +213,8 @@ public abstract class ACAQMergingAlgorithm extends ACAQAlgorithm {
         }
     }
 
-    private Set<ACAQTraitDeclaration> getInputTraitColumnIntersection() {
-        Set<ACAQTraitDeclaration> result = null;
+    private Set<String> getInputTraitColumnIntersection() {
+        Set<String> result = null;
         for (ACAQDataSlot inputSlot : getInputSlots()) {
             if (result == null) {
                 result = new HashSet<>(inputSlot.getAnnotationColumns());
@@ -231,8 +227,8 @@ public abstract class ACAQMergingAlgorithm extends ACAQAlgorithm {
         return result;
     }
 
-    private Set<ACAQTraitDeclaration> getInputTraitColumnUnion() {
-        Set<ACAQTraitDeclaration> result = new HashSet<>();
+    private Set<String> getInputTraitColumnUnion() {
+        Set<String> result = new HashSet<>();
         for (ACAQDataSlot inputSlot : getInputSlots()) {
             result.addAll(inputSlot.getAnnotationColumns());
         }
@@ -267,14 +263,14 @@ public abstract class ACAQMergingAlgorithm extends ACAQAlgorithm {
     @ACAQDocumentation(name = "Data set matching annotations", description = "Only used if 'Data set matching strategy' is set to 'Custom'. " +
             "Determines which annotation columns are referred to match data sets.")
     @ACAQParameter(value = "acaq:iterating-algorithm:custom-matched-columns", uiOrder = 999, visibility = ACAQParameterVisibility.Visible)
-    public ACAQTraitDeclarationRef.List getCustomColumns() {
+    public StringList getCustomColumns() {
         if (customColumns == null)
-            customColumns = new ACAQTraitDeclarationRef.List();
+            customColumns = new StringList();
         return customColumns;
     }
 
     @ACAQParameter(value = "acaq:iterating-algorithm:custom-matched-columns", visibility = ACAQParameterVisibility.Visible)
-    public void setCustomColumns(ACAQTraitDeclarationRef.List customColumns) {
+    public void setCustomColumns(StringList customColumns) {
         this.customColumns = customColumns;
         getEventBus().post(new ParameterChangedEvent(this, "acaq:iterating-algorithm:custom-matched-columns"));
     }

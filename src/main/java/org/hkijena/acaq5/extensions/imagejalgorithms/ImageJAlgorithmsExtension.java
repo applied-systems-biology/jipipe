@@ -6,7 +6,6 @@ import ij.Menus;
 import ij.process.AutoThresholder;
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.api.data.ACAQData;
-import org.hkijena.acaq5.api.traits.ACAQJavaTraitDeclaration;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.EigenvalueSelection2D;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.InterpolationMethod;
@@ -153,7 +152,6 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
 
     @Override
     public void register() {
-        registerTraits();
         registerBlurAlgorithms();
         registerColorAlgorithms();
         registerEdgeAlgorithms();
@@ -423,15 +421,6 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerAlgorithm("ij1-blur-median2d-rgb", MedianBlurRGB2DAlgorithm.class, UIUtils.getAlgorithmIconURL("insert-math-expression.png"));
         registerAlgorithm("ij1-blur-median2d", MedianBlurFilter2DAlgorithm.class, UIUtils.getAlgorithmIconURL("insert-math-expression.png"));
         registerAlgorithm("ij1-blur-median3d", MedianBlurFilter3DAlgorithm.class, UIUtils.getAlgorithmIconURL("insert-math-expression.png"));
-    }
-
-    private void registerTraits() {
-        registerTrait(new ACAQJavaTraitDeclaration("image-index", ImageIndexDiscriminator.class),
-                ResourceUtils.getPluginResource("icons/traits/search-location-blue.png"));
-        registerTrait(new ACAQJavaTraitDeclaration("roi-index", ROIIndexTrait.class),
-                ResourceUtils.getPluginResource("icons/traits/search-location-blue.png"));
-        registerTrait(new ACAQJavaTraitDeclaration("image-title", ImageTitleTrait.class),
-                ResourceUtils.getPluginResource("icons/traits/search-location-blue.png"));
     }
 
     private void registerIJ2Algorithms() {

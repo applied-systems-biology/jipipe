@@ -2,10 +2,11 @@ package org.hkijena.acaq5.extensions.filesystem.algorithms;
 
 import org.hkijena.acaq5.api.*;
 import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.acaq5.extensions.filesystem.dataypes.PathData;
-import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
+import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -20,7 +21,7 @@ import java.util.function.Supplier;
 @ACAQHidden
 public class SimpleFolderAnnotationGenerator extends ACAQSimpleIteratingAlgorithm {
 
-    private ACAQTraitDeclarationRef generatedAnnotation = new ACAQTraitDeclarationRef();
+    private String generatedAnnotation = "";
 
     /**
      * Creates a new instance
@@ -38,22 +39,22 @@ public class SimpleFolderAnnotationGenerator extends ACAQSimpleIteratingAlgorith
      */
     public SimpleFolderAnnotationGenerator(SimpleFolderAnnotationGenerator other) {
         super(other);
-        this.generatedAnnotation = new ACAQTraitDeclarationRef(other.generatedAnnotation.getDeclaration());
+        this.generatedAnnotation =  other.generatedAnnotation;
     }
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        if (generatedAnnotation.getDeclaration() != null) {
+        if (!StringUtils.isNullOrEmpty(generatedAnnotation)) {
             FolderData inputData = dataInterface.getInputData(getFirstInputSlot(), FolderData.class);
             String discriminator = inputData.getPath().getFileName().toString();
-            dataInterface.addGlobalAnnotation(generatedAnnotation.getDeclaration().newInstance(discriminator));
+            dataInterface.addGlobalAnnotation(new ACAQAnnotation(generatedAnnotation, discriminator));
             dataInterface.addOutputData(getFirstOutputSlot(), inputData);
         }
     }
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        report.forCategory("Generated annotation").report(generatedAnnotation);
+        report.forCategory("Generated annotation").checkNonEmpty(generatedAnnotation, this);
     }
 
     /**
@@ -61,7 +62,7 @@ public class SimpleFolderAnnotationGenerator extends ACAQSimpleIteratingAlgorith
      */
     @ACAQDocumentation(name = "Generated annotation", description = "Select which annotation type is generated for each folder")
     @ACAQParameter("generated-annotation")
-    public ACAQTraitDeclarationRef getGeneratedAnnotation() {
+    public String getGeneratedAnnotation() {
         return generatedAnnotation;
     }
 
@@ -71,7 +72,7 @@ public class SimpleFolderAnnotationGenerator extends ACAQSimpleIteratingAlgorith
      * @param generatedAnnotation The annotation type
      */
     @ACAQParameter("generated-annotation")
-    public void setGeneratedAnnotation(ACAQTraitDeclarationRef generatedAnnotation) {
+    public void setGeneratedAnnotation(String generatedAnnotation) {
         this.generatedAnnotation = generatedAnnotation;
     }
 }

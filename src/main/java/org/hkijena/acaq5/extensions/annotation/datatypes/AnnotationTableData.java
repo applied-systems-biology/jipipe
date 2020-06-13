@@ -2,8 +2,6 @@ package org.hkijena.acaq5.extensions.annotation.datatypes;
 
 import ij.measure.ResultsTable;
 import org.hkijena.acaq5.api.ACAQDocumentation;
-import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
 
@@ -67,7 +65,7 @@ public class AnnotationTableData extends ResultsTableData {
      * @param traitDeclaration the annotation type
      * @return index
      */
-    public int addAnnotationColumn(ACAQTraitDeclaration traitDeclaration) {
+    public int addAnnotationColumn(String traitDeclaration) {
         return addColumn(getAnnotationColumnName(traitDeclaration), true);
     }
 
@@ -94,7 +92,7 @@ public class AnnotationTableData extends ResultsTableData {
     public Set<String> getAnnotationColumns() {
         Set<String> result = new HashSet<>();
         for (String columnName : getColumnNames()) {
-            ACAQTraitDeclaration annotationType = getAnnotationTypeFromColumnName(columnName);
+            String annotationType = getAnnotationTypeFromColumnName(columnName);
             if (annotationType != null) {
                 result.add(columnName);
             }
@@ -113,8 +111,8 @@ public class AnnotationTableData extends ResultsTableData {
      * @param traitDeclaration the annotation type
      * @return column name
      */
-    public static String getAnnotationColumnName(ACAQTraitDeclaration traitDeclaration) {
-        return "annotation:" + traitDeclaration.getId();
+    public static String getAnnotationColumnName(String traitDeclaration) {
+        return "annotation:" + traitDeclaration;
     }
 
     /**
@@ -124,11 +122,9 @@ public class AnnotationTableData extends ResultsTableData {
      * @param columnName the column name
      * @return annotation type or null if not an annotation column name or the annotation type does not exist
      */
-    public static ACAQTraitDeclaration getAnnotationTypeFromColumnName(String columnName) {
+    public static String getAnnotationTypeFromColumnName(String columnName) {
         if (columnName.startsWith("annotation:")) {
-            String id = columnName.substring("annotation:".length());
-            if (ACAQTraitRegistry.getInstance().hasTraitWithId(id))
-                return ACAQTraitRegistry.getInstance().getDeclarationById(id);
+            return columnName.substring("annotation:".length());
         }
         return null;
     }

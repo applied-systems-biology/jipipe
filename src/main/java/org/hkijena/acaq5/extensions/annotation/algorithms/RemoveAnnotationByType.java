@@ -8,8 +8,7 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extensions.parameters.editors.ACAQTraitParameterSettings;
-import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
+import org.hkijena.acaq5.extensions.parameters.primitives.StringList;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -23,7 +22,7 @@ import java.util.function.Supplier;
 @AlgorithmOutputSlot(value = ACAQData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
 public class RemoveAnnotationByType extends ACAQSimpleIteratingAlgorithm {
 
-    private ACAQTraitDeclarationRef.List annotationTypes = new ACAQTraitDeclarationRef.List();
+    private StringList annotationTypes = new StringList();
     private boolean removeCategory = true;
 
     /**
@@ -49,21 +48,20 @@ public class RemoveAnnotationByType extends ACAQSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        for (ACAQTraitDeclarationRef annotationType : annotationTypes) {
-            dataInterface.removeGlobalAnnotation(annotationType.getDeclaration(), removeCategory);
+        for (String annotationType : annotationTypes) {
+            dataInterface.removeGlobalAnnotation(annotationType);
         }
         dataInterface.addOutputData(getFirstOutputSlot(), dataInterface.getInputData(getFirstInputSlot(), ACAQData.class));
     }
 
     @ACAQDocumentation(name = "Removed annotation", description = "This annotation is removed from each input data")
     @ACAQParameter("annotation-type")
-    @ACAQTraitParameterSettings(showHidden = true)
-    public ACAQTraitDeclarationRef.List getAnnotationTypes() {
+    public StringList getAnnotationTypes() {
         return annotationTypes;
     }
 
     @ACAQParameter("annotation-type")
-    public void setAnnotationTypes(ACAQTraitDeclarationRef.List annotationTypes) {
+    public void setAnnotationTypes(StringList annotationTypes) {
         this.annotationTypes = annotationTypes;
         getEventBus().post(new ParameterChangedEvent(this, "annotation-type"));
     }

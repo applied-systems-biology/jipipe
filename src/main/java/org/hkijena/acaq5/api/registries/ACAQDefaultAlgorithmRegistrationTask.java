@@ -11,7 +11,6 @@ import java.util.Set;
  */
 public abstract class ACAQDefaultAlgorithmRegistrationTask implements ACAQAlgorithmRegistrationTask {
     private Set<String> dependencyAlgorithmIds = new HashSet<>();
-    private Set<String> dependencyTraitIds = new HashSet<>();
     private Set<String> dependencyDatatypeIds = new HashSet<>();
     private Set<Class<? extends ACAQData>> dependencyDatatypeClasses = new HashSet<>();
 
@@ -35,28 +34,10 @@ public abstract class ACAQDefaultAlgorithmRegistrationTask implements ACAQAlgori
         this.dependencyAlgorithmIds = dependencyAlgorithmIds;
     }
 
-    /**
-     * @return Dependency annotation IDs
-     */
-    public Set<String> getDependencyTraitIds() {
-        return dependencyTraitIds;
-    }
-
-    /**
-     * @param dependencyTraitIds IDs of dependency annotation types
-     */
-    public void setDependencyTraitIds(Set<String> dependencyTraitIds) {
-        this.dependencyTraitIds = dependencyTraitIds;
-    }
-
     @Override
     public boolean canRegister() {
         for (String id : dependencyAlgorithmIds) {
             if (!ACAQAlgorithmRegistry.getInstance().hasAlgorithmWithId(id))
-                return false;
-        }
-        for (String id : dependencyTraitIds) {
-            if (!ACAQTraitRegistry.getInstance().hasTraitWithId(id))
                 return false;
         }
         for (String id : dependencyDatatypeIds) {
@@ -107,13 +88,6 @@ public abstract class ACAQDefaultAlgorithmRegistrationTask implements ACAQAlgori
             if (!ACAQAlgorithmRegistry.getInstance().hasAlgorithmWithId(id))
                 report.forCategory("Dependency Algorithms").reportIsInvalid("A dependency is missing!",
                         "Dependency algorithm '" + id + "' is missing!",
-                        "Please make sure to install dependency plugins.",
-                        this);
-        }
-        for (String id : dependencyTraitIds) {
-            if (!ACAQTraitRegistry.getInstance().hasTraitWithId(id))
-                report.forCategory("Dependency Annotations").reportIsInvalid("A dependency is missing!",
-                        "Dependency annotation '" + id + "' is missing!",
                         "Please make sure to install dependency plugins.",
                         this);
         }

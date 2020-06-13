@@ -5,11 +5,9 @@ import com.google.common.html.HtmlEscapers;
 import org.hkijena.acaq5.api.ACAQProjectCache;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
-import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -146,7 +144,7 @@ public class ACAQDataSlotCacheManagerUI extends ACAQProjectWorkbenchPanel {
         ACAQProjectCache cache = getProject().getCache();
         Map<ACAQProjectCache.State, Map<String, ACAQDataSlot>> stateMap = cache.extract((ACAQAlgorithm) getDataSlot().getAlgorithm());
         int dataRows = 0;
-        Set<ACAQTraitDeclaration> traitTypes = new HashSet<>();
+        Set<String> traitTypes = new HashSet<>();
         if (stateMap != null) {
             for (Map<String, ACAQDataSlot> slotMap : stateMap.values()) {
                 ACAQDataSlot equivalentSlot = slotMap.getOrDefault(getDataSlot().getName(), null);
@@ -171,14 +169,14 @@ public class ACAQDataSlotCacheManagerUI extends ACAQProjectWorkbenchPanel {
         }
     }
 
-    private void generateAnnotationButtonTooltip(Set<ACAQTraitDeclaration> traitTypes) {
+    private void generateAnnotationButtonTooltip(Set<String> traitTypes) {
         StringBuilder builder = new StringBuilder();
         builder.append("<html>");
         builder.append("This output data is annotated in at least one snapshot.<br/><br/>");
         builder.append("<table>");
-        for (ACAQTraitDeclaration declaration : traitTypes.stream().sorted(Comparator.comparing(ACAQTraitDeclaration::getName)).collect(Collectors.toList())) {
-            builder.append("<tr><td><img src=\"").append(ACAQUITraitRegistry.getInstance().getIconURLFor(declaration)).append("\"/><td>");
-            builder.append(HtmlEscapers.htmlEscaper().escape(declaration.getName())).append("</td></tr>");
+        for (String declaration : traitTypes.stream().sorted().collect(Collectors.toList())) {
+            builder.append("<tr><td><img src=\"").append(UIUtils.getIconFromResources("annotation.png")).append("\"/><td>");
+            builder.append(HtmlEscapers.htmlEscaper().escape(declaration)).append("</td></tr>");
         }
         builder.append("<table>");
         builder.append("</html>");

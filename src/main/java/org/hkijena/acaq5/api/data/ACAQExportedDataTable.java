@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import ij.measure.ResultsTable;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.utils.JsonUtils;
 
 import javax.swing.event.TableModelListener;
@@ -28,7 +26,7 @@ public class ACAQExportedDataTable implements TableModel {
     private Path internalPath;
     private Class<? extends ACAQData> acceptedDataType;
     private List<Row> rowList;
-    private List<ACAQTraitDeclaration> traitColumns;
+    private List<String> traitColumns;
 
     /**
      * Initializes a new table from a slot
@@ -172,25 +170,25 @@ public class ACAQExportedDataTable implements TableModel {
             table.addValue("acaq:data-type", ACAQDatatypeRegistry.getInstance().getIdOf(acceptedDataType));
             table.addValue("acaq:internal-path", internalPath.toString());
             table.addValue("acaq:location", row.location.toString());
-            for (ACAQTraitDeclaration traitColumn : getTraitColumns()) {
-                ACAQTrait existing = row.traits.stream().filter(t -> t.getDeclaration() == traitColumn).findFirst().orElse(null);
+            for (String traitColumn : getTraitColumns()) {
+                ACAQAnnotation existing = row.traits.stream().filter(t -> t.nameEquals(traitColumn)).findFirst().orElse(null);
                 if (existing != null)
-                    table.addValue(traitColumn.getName(), existing.getValue());
+                    table.addValue(traitColumn, existing.getValue());
                 else
-                    table.addValue(traitColumn.getName(), "False");
+                    table.addValue(traitColumn, "");
             }
         }
         table.saveAs(fileName.toString());
     }
 
     /**
-     * @return Additional columns containing {@link ACAQTraitDeclaration}
+     * @return Additional columns
      */
-    public List<ACAQTraitDeclaration> getTraitColumns() {
+    public List<String> getTraitColumns() {
         if (traitColumns == null) {
-            Set<ACAQTraitDeclaration> registeredTraits = new HashSet<>();
+            Set<String> registeredTraits = new HashSet<>();
             for (Row row : rowList) {
-                registeredTraits.addAll(row.traits.stream().map(ACAQTrait::getDeclaration).collect(Collectors.toSet()));
+                registeredTraits.addAll(row.traits.stream().map(ACAQAnnotation::getName).collect(Collectors.toSet()));
             }
             traitColumns = new ArrayList<>(registeredTraits);
         }
@@ -214,7 +212,7 @@ public class ACAQExportedDataTable implements TableModel {
         else if (columnIndex == 1)
             return "Data";
         else
-            return traitColumns.get(columnIndex - 2).getName();
+            return traitColumns.get(columnIndex - 2);
     }
 
     @Override
@@ -224,7 +222,7 @@ public class ACAQExportedDataTable implements TableModel {
         else if (columnIndex == 1)
             return Row.class;
         else
-            return ACAQTrait.class;
+            return ACAQAnnotation.class;
     }
 
     @Override
@@ -239,8 +237,8 @@ public class ACAQExportedDataTable implements TableModel {
         else if (columnIndex == 1)
             return rowList.get(rowIndex);
         else {
-            ACAQTraitDeclaration traitColumn = traitColumns.get(columnIndex - 2);
-            return rowList.get(rowIndex).traits.stream().filter(t -> t.getDeclaration() == traitColumn).findFirst().orElse(null);
+            String traitColumn = traitColumns.get(columnIndex - 2);
+            return rowList.get(rowIndex).traits.stream().filter(t -> t.nameEquals(traitColumn)).findFirst().orElse(null);
         }
     }
 
@@ -280,7 +278,7 @@ public class ACAQExportedDataTable implements TableModel {
      */
     public static class Row {
         private Path location;
-        private List<ACAQTrait> traits;
+        private List<ACAQAnnotation> traits;
 
         /**
          * Creates new instance
@@ -310,7 +308,7 @@ public class ACAQExportedDataTable implements TableModel {
          * @return Annotations
          */
         @JsonGetter("traits")
-        public List<ACAQTrait> getTraits() {
+        public List<ACAQAnnotation> getTraits() {
             return traits;
         }
 
@@ -320,7 +318,7 @@ public class ACAQExportedDataTable implements TableModel {
          * @param traits List of annotations
          */
         @JsonSetter("traits")
-        public void setTraits(List<ACAQTrait> traits) {
+        public void setTraits(List<ACAQAnnotation> traits) {
             this.traits = traits;
         }
     }

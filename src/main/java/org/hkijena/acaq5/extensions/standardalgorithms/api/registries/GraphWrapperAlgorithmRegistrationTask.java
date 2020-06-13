@@ -30,19 +30,6 @@ public class GraphWrapperAlgorithmRegistrationTask extends ACAQDefaultAlgorithmR
         this.jsonNode = jsonNode;
         this.source = source;
         findDependencyAlgorithms();
-        findDependencyTraits("preferred-traits");
-        findDependencyTraits("unwanted-traits");
-        findDependencyTraits("added-traits");
-        findDependencyTraits("removed-traits");
-    }
-
-    private void findDependencyTraits(String key) {
-        JsonNode node = jsonNode.path(key);
-        if (!node.isMissingNode()) {
-            for (JsonNode entry : ImmutableList.copyOf(node.elements())) {
-                getDependencyTraitIds().add(entry.asText());
-            }
-        }
     }
 
     private void findDependencyAlgorithms() {

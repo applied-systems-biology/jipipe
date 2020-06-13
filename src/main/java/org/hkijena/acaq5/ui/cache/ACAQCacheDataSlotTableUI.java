@@ -4,14 +4,12 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQProjectCache;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
+import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
-import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQTraitTableCellRenderer;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -66,7 +64,7 @@ public class ACAQCacheDataSlotTableUI extends ACAQProjectWorkbenchPanel {
         table = new JXTable();
         table.setRowHeight(25);
         table.setDefaultRenderer(ACAQData.class, new ACAQDataCellRenderer());
-        table.setDefaultRenderer(ACAQTrait.class, new ACAQTraitTableCellRenderer());
+        table.setDefaultRenderer(ACAQAnnotation.class, new ACAQTraitTableCellRenderer());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
         JScrollPane scrollPane = new JScrollPane(table);
@@ -235,10 +233,10 @@ public class ACAQCacheDataSlotTableUI extends ACAQProjectWorkbenchPanel {
             if (modelColumn < 2) {
                 return defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             } else {
-                ACAQTraitDeclaration declaration = dataTable.getAnnotationColumns().get(modelColumn - 2);
+                String declaration = dataTable.getAnnotationColumns().get(modelColumn - 2);
                 String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
-                        ACAQUITraitRegistry.getInstance().getIconURLFor(declaration).toString(),
-                        declaration.getName());
+                        UIUtils.getIconFromResources("annotation.png"),
+                        declaration);
                 return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
             }
         }

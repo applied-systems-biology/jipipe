@@ -9,15 +9,11 @@ import org.hkijena.acaq5.api.data.ACAQDataDeclaration;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
-import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Utilities that generate tooltips or other text from ACAQ5 data data structures
@@ -49,51 +45,6 @@ public class TooltipUtils {
             builder.append("</tr>");
         }
         builder.append("</table>");
-        builder.append("</html>");
-
-        return builder.toString();
-    }
-
-    /**
-     * Creates a tooltip for an {@link ACAQDataSlot}
-     *
-     * @param slot            the slot
-     * @param withAnnotations if annotations should be displayed
-     * @return the toopltip
-     */
-    public static String getSlotInstanceTooltip(ACAQDataSlot slot, boolean withAnnotations) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("<html>");
-        builder.append("<table>");
-        builder.append("<tr>");
-        builder.append("<td>").append("<img src=\"")
-                .append(ACAQUIDatatypeRegistry.getInstance().getIconURLFor(slot.getAcceptedDataType()))
-                .append("\"/>").append("</td>");
-        builder.append("<td>").append(slot.getName()).append("</td>");
-        builder.append("</tr>");
-        builder.append("</table>");
-
-        builder.append("<br>Data type: <i>").append(ACAQData.getNameOf(slot.getAcceptedDataType())).append("</i><br>");
-        String description = ACAQData.getDescriptionOf(slot.getAcceptedDataType());
-        if (description != null && !description.isEmpty()) {
-            builder.append("<br>").append(description).append("<br><br/>");
-        }
-
-        if (slot.isInput())
-            builder.append("Input");
-        else
-            builder.append("Output");
-        builder.append(" of ").append(slot.getAlgorithm().getName()).append("<br/>");
-
-        // Show annotations
-        if (withAnnotations) {
-            Set<ACAQTraitDeclaration> slotAnnotations = slot.getSlotAnnotations();
-            if (!slotAnnotations.isEmpty()) {
-                builder.append("<br/><br/><strong>Annotations<br/>");
-                insertTraitTable(builder, slotAnnotations);
-            }
-        }
-
         builder.append("</html>");
 
         return builder.toString();
@@ -236,9 +187,9 @@ public class TooltipUtils {
         return builder.toString();
     }
 
-    //    public static String getTraitTooltip(Class<? extends ACAQTrait> klass) {
-//        String name = ACAQTrait.getNameOf(klass);
-//        String description = ACAQTrait.getDescriptionOf(klass);
+    //    public static String getTraitTooltip(Class<? extends ACAQAnnotation> klass) {
+//        String name = ACAQAnnotation.getNameOf(klass);
+//        String description = ACAQAnnotation.getDescriptionOf(klass);
 //        StringBuilder builder = new StringBuilder();
 //        builder.append("<html><u><strong>");
 //        builder.append(name);
@@ -248,17 +199,17 @@ public class TooltipUtils {
 //                .append(description);
 //        }
 //
-//        Set<Class<? extends ACAQTrait>> categories = ACAQTrait.getCategoriesOf(klass);
+//        Set<Class<? extends ACAQAnnotation>> categories = ACAQAnnotation.getCategoriesOf(klass);
 //        if(!categories.isEmpty()) {
 //            builder.append("<br/><br/>");
 //            builder.append("<strong>Inherited annotations</strong><br/>");
 //            builder.append("<table>");
-//            for (Class<? extends ACAQTrait> trait : categories) {
+//            for (Class<? extends ACAQAnnotation> trait : categories) {
 //                builder.append("<tr>");
 //                builder.append("<td>").append("<img src=\"")
 //                        .append(ACAQUITraitRegistry.getInstance().getIconURLFor(trait))
 //                        .append("\"/>").append("</td>");
-//                builder.append("<td>").append(ACAQTrait.getNameOf(trait)).append("</td>");
+//                builder.append("<td>").append(ACAQAnnotation.getNameOf(trait)).append("</td>");
 //                builder.append("</tr>");
 //            }
 //            builder.append("</table>");
@@ -267,60 +218,6 @@ public class TooltipUtils {
 //
 //        return builder.toString();
 //    }
-
-    /**
-     * Creates a table that has two columns of {@link ACAQTraitDeclaration}
-     *
-     * @param builder     the string builder
-     * @param leftTraits  left traits
-     * @param leftTitle   left title
-     * @param rightTraits right traits
-     * @param rightTitle  right title
-     */
-    public static void insertOpposingTraitTableContent(StringBuilder builder, Set<ACAQTraitDeclaration> leftTraits, String leftTitle, Set<ACAQTraitDeclaration> rightTraits, String rightTitle) {
-//        builder.append("<table>");
-        builder.append("<tr><td><i>").append(leftTitle).append("</i></td><td><i>").append(rightTitle).append("</i></td></tr>");
-        Iterator<ACAQTraitDeclaration> leftIterator = leftTraits.iterator();
-        Iterator<ACAQTraitDeclaration> rightIterator = rightTraits.iterator();
-        for (int i = 0; i < Math.max(leftTraits.size(), rightTraits.size()); ++i) {
-            builder.append("<tr>");
-
-            builder.append("<td>");
-            if (i < leftTraits.size()) {
-                ACAQTraitDeclaration declaration = leftIterator.next();
-                builder.append(StringUtils.createIconTextHTMLTableElement(declaration.getName(), ACAQUITraitRegistry.getInstance().getIconURLFor(declaration)));
-            }
-            builder.append("</td>");
-            builder.append("<td>");
-            if (i < rightTraits.size()) {
-                ACAQTraitDeclaration declaration = rightIterator.next();
-                builder.append(StringUtils.createIconTextHTMLTableElement(declaration.getName(), ACAQUITraitRegistry.getInstance().getIconURLFor(declaration)));
-            }
-            builder.append("</td>");
-
-            builder.append("</tr>");
-        }
-//        builder.append("</table>");
-    }
-
-    /**
-     * Creates a table of {@link ACAQTraitDeclaration}
-     *
-     * @param builder builder
-     * @param traits  the traits
-     */
-    public static void insertTraitTable(StringBuilder builder, Set<ACAQTraitDeclaration> traits) {
-        builder.append("<table>");
-        for (ACAQTraitDeclaration trait : traits) {
-            builder.append("<tr>");
-            builder.append("<td>").append("<img src=\"")
-                    .append(ACAQUITraitRegistry.getInstance().getIconURLFor(trait))
-                    .append("\"/>").append("</td>");
-            builder.append("<td>").append(trait.getName()).append("</td>");
-            builder.append("</tr>");
-        }
-        builder.append("</table>");
-    }
 
     /**
      * Creates a tooltip for an {@link ACAQDataSlot}
@@ -357,44 +254,6 @@ public class TooltipUtils {
         return builder.toString();
     }
 
-    /**
-     * Gets a tooltip for an {@link ACAQTraitDeclaration}
-     *
-     * @param trait the trait type
-     * @return the tooltip
-     */
-    public static String getTraitTooltip(ACAQTraitDeclaration trait) {
-        String name = trait.getName();
-        String description = trait.getDescription();
-        StringBuilder builder = new StringBuilder();
-        builder.append("<html><u><strong>");
-        builder.append(name);
-        builder.append("</u></strong>");
-
-        if (description != null && !description.isEmpty()) {
-            builder.append("<br/>")
-                    .append(description);
-        }
-
-        Set<ACAQTraitDeclaration> categories = trait.getInherited();
-        if (!categories.isEmpty()) {
-            builder.append("<br/><br/>");
-            builder.append("<strong>Inherited annotations</strong><br/>");
-            builder.append("<table>");
-            for (ACAQTraitDeclaration inherited : categories) {
-                builder.append("<tr>");
-                builder.append("<td>").append("<img src=\"")
-                        .append(ACAQUITraitRegistry.getInstance().getIconURLFor(inherited))
-                        .append("\"/>").append("</td>");
-                builder.append("<td>").append(inherited.getName()).append("</td>");
-                builder.append("</tr>");
-            }
-            builder.append("</table>");
-        }
-        builder.append("</html>");
-
-        return builder.toString();
-    }
 
     /**
      * Creates a slot definition table.
@@ -412,28 +271,6 @@ public class TooltipUtils {
                     .append(ACAQUIDatatypeRegistry.getInstance().getIconURLFor(definition.getDataClass()))
                     .append("\"/>").append("</td>");
             builder.append("<td>").append(!StringUtils.isNullOrEmpty(definition.getName()) ? definition.getName() : ACAQData.getNameOf(definition.getDataClass())).append("</td>");
-            builder.append("</tr>");
-        }
-        builder.append("</table></html>");
-        return builder.toString();
-    }
-
-    /**
-     * Creates a trait declaration table
-     * Has a HTML root
-     *
-     * @param traitDeclarations the declarations
-     * @return the tooltip
-     */
-    public static String getTraitTable(Collection<ACAQTraitDeclaration> traitDeclarations) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("<html><table>");
-        for (ACAQTraitDeclaration definition : traitDeclarations) {
-            builder.append("<tr>");
-            builder.append("<td>").append("<img src=\"")
-                    .append(ACAQUITraitRegistry.getInstance().getIconURLFor(definition))
-                    .append("\"/>").append("</td>");
-            builder.append("<td>").append(definition.getName()).append("</td>");
             builder.append("</tr>");
         }
         builder.append("</table></html>");

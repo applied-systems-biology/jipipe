@@ -12,7 +12,6 @@ import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
-import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api.ACAQTraitNode;
 import org.hkijena.acaq5.utils.PointRange;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -137,10 +136,6 @@ public abstract class ACAQAlgorithmUI extends ACAQWorkbenchPanel {
         if (algorithm instanceof ACAQProjectCompartment) {
             JMenuItem deleteButton = new JMenuItem("Delete compartment", UIUtils.getIconFromResources("delete.png"));
             deleteButton.addActionListener(e -> removeCompartment());
-            contextMenu.add(deleteButton);
-        } else if (algorithm instanceof ACAQTraitNode) {
-            JMenuItem deleteButton = new JMenuItem("Delete annotation", UIUtils.getIconFromResources("delete.png"));
-            deleteButton.addActionListener(e -> removeTrait());
             contextMenu.add(deleteButton);
         } else {
             JMenuItem deleteButton = new JMenuItem("Delete algorithm", UIUtils.getIconFromResources("delete.png"));

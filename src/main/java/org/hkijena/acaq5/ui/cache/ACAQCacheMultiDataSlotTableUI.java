@@ -7,14 +7,12 @@ import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMergedDataSlotTable;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
+import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
-import org.hkijena.acaq5.ui.registries.ACAQUITraitRegistry;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQAlgorithmTableCellRenderer;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQProjectCompartmentTableCellRenderer;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQTraitTableCellRenderer;
@@ -77,7 +75,7 @@ public class ACAQCacheMultiDataSlotTableUI extends ACAQProjectWorkbenchPanel {
         table.setDefaultRenderer(ACAQData.class, new ACAQDataCellRenderer());
         table.setDefaultRenderer(ACAQGraphNode.class, new ACAQAlgorithmTableCellRenderer());
         table.setDefaultRenderer(ACAQProjectCompartment.class, new ACAQProjectCompartmentTableCellRenderer());
-        table.setDefaultRenderer(ACAQTrait.class, new ACAQTraitTableCellRenderer());
+        table.setDefaultRenderer(ACAQAnnotation.class, new ACAQTraitTableCellRenderer());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
         JScrollPane scrollPane = new JScrollPane(table);
@@ -173,10 +171,10 @@ public class ACAQCacheMultiDataSlotTableUI extends ACAQProjectWorkbenchPanel {
             if (modelColumn < 5) {
                 return defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             } else {
-                ACAQTraitDeclaration declaration = dataTable.getTraitColumns().get(modelColumn - 5);
+                String declaration = dataTable.getTraitColumns().get(modelColumn - 5);
                 String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
-                        ACAQUITraitRegistry.getInstance().getIconURLFor(declaration).toString(),
-                        declaration.getName());
+                        UIUtils.getIconFromResources("annotation.png"),
+                        declaration);
                 return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
             }
         }

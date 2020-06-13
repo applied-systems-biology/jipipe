@@ -83,7 +83,7 @@ public class ACAQVerticalDataSlotUI extends ACAQDataSlotUI {
 
         nameLabel = new JLabel();
         reloadName();
-        nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(getSlot(), false));
+        nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(getSlot()));
         nameLabel.setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 5));
         nameLabel.setIcon(ACAQUIDatatypeRegistry.getInstance().getIconFor(getSlotDataType()));
         centerPanel.add(nameLabel);

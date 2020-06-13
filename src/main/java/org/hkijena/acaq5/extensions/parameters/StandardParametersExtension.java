@@ -2,16 +2,14 @@ package org.hkijena.acaq5.extensions.parameters;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.hkijena.acaq5.ACAQJavaExtension;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQIteratingAlgorithm;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollectionVisibilities;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.parameters.collections.ListParameter;
 import org.hkijena.acaq5.extensions.parameters.collections.ListParameterEditorUI;
 import org.hkijena.acaq5.extensions.parameters.colors.*;
 import org.hkijena.acaq5.extensions.parameters.editors.*;
-import org.hkijena.acaq5.extensions.parameters.functions.ACAQTraitPatternExtractionFunction;
+import org.hkijena.acaq5.extensions.parameters.functions.StringPatternExtractionFunction;
 import org.hkijena.acaq5.extensions.parameters.functions.FunctionParameter;
 import org.hkijena.acaq5.extensions.parameters.functions.FunctionParameterEditorUI;
 import org.hkijena.acaq5.extensions.parameters.generators.*;
@@ -98,8 +96,8 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
     private void registerFunctionParameters() {
         registerParameterEditor(FunctionParameter.class, FunctionParameterEditorUI.class);
         registerParameterType("acaq-trait:string-pattern-extraction:acaq-trait:function",
-                ACAQTraitPatternExtractionFunction.class,
-                ACAQTraitPatternExtractionFunction.List.class,
+                StringPatternExtractionFunction.class,
+                StringPatternExtractionFunction.List.class,
                 null,
                 null,
                 "Annotation pattern extraction function",
@@ -142,13 +140,6 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
 
     private void registerMiscParameters() {
         // Other ACAQ5 parameters
-        registerParameterType("trait",
-                ACAQTrait.class,
-                () -> null,
-                t -> ((ACAQTrait) t).duplicate(),
-                "Annotation",
-                "An annotation",
-                ACAQTraitParameterEditorUI.class);
         registerParameterType("parameter-visibilities",
                 ACAQParameterCollectionVisibilities.class,
                 ACAQParameterCollectionVisibilities::new,
@@ -311,13 +302,13 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 "String filter to sort order",
                 "Mapping from a string filter to a sort order",
                 null);
-        registerParameterType("acaq-trait-declaration-ref:string-predicate:pair",
-                ACAQTraitDeclarationRefAndStringPredicatePair.class,
-                ACAQTraitDeclarationRefAndStringPredicatePair.List.class,
+        registerParameterType("string:string-predicate:pair",
+                StringAndStringPredicatePair.class,
+                StringAndStringPredicatePair.List.class,
                 null,
                 null,
-                "Annotation type to string filter",
-                "Mapping annotation type to string filter",
+                "String to string predicate",
+                "Mapping from a string to a string predicate",
                 null);
     }
 
@@ -373,20 +364,6 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
 
     private void registerACAQ5ReferenceTypes() {
         // ACAQ5 registry reference types
-        registerParameterType("trait-type",
-                ACAQTraitDeclarationRef.class,
-                ACAQTraitDeclarationRef::new,
-                r -> new ACAQAlgorithmDeclarationRef((ACAQAlgorithmDeclaration) r),
-                "Annotation type",
-                "Reference to an annotation type",
-                ACAQTraitDeclarationRefParameterEditorUI.class);
-        registerParameterType("trait-type-list",
-                ACAQTraitDeclarationRef.List.class,
-                ACAQTraitDeclarationRef.List::new,
-                r -> new ACAQTraitDeclarationRef.List((ACAQTraitDeclarationRef.List) r),
-                "List of Annotation type",
-                "Reference to an annotation type",
-                ACAQTraitDeclarationRefListParameterEditorUI.class);
         registerParameterType("data-type",
                 ACAQDataDeclarationRef.class,
                 ACAQDataDeclarationRef::new,
@@ -403,13 +380,7 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 ACAQAlgorithmDeclarationRefParameterEditorUI.class);
 
         // Icon types
-        registerParameterType("trait-type-icon",
-                ACAQTraitIconRef.class,
-                ACAQTraitIconRef::new,
-                r -> new ACAQTraitIconRef((ACAQTraitIconRef) r),
-                "Annotation type icon",
-                "Reference to an annotation type icon",
-                ACAQTraitIconRefParameterEditorUI.class);
+
         registerParameterType("algorithm-type-icon",
                 ACAQAlgorithmIconRef.class,
                 ACAQAlgorithmIconRef::new,

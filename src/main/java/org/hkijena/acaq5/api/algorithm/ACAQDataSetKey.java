@@ -1,7 +1,6 @@
 package org.hkijena.acaq5.api.algorithm;
 
-import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
+import org.hkijena.acaq5.api.data.ACAQAnnotation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,16 +8,16 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * Structure that can hold multiple {@link org.hkijena.acaq5.api.traits.ACAQTrait} instances to make a set of traits a key
+ * Structure that can hold multiple {@link ACAQAnnotation} instances to make a set of traits a key
  */
 public class ACAQDataSetKey {
-    private Map<ACAQTraitDeclaration, ACAQTrait> entries = new HashMap<>();
+    private Map<String, ACAQAnnotation> entries = new HashMap<>();
 
-    public Map<ACAQTraitDeclaration, ACAQTrait> getEntries() {
+    public Map<String, ACAQAnnotation> getEntries() {
         return entries;
     }
 
-    public void setEntries(Map<ACAQTraitDeclaration, ACAQTrait> entries) {
+    public void setEntries(Map<String, ACAQAnnotation> entries) {
         this.entries = entries;
     }
 

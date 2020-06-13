@@ -8,13 +8,13 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
+import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.extensions.imagejalgorithms.SliceIndex;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure.ImageStatisticsParameters;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
-import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
+import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +38,7 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     private boolean applyPerSlice = false;
     private boolean applyPerChannel = false;
     private boolean applyPerFrame = false;
-    private ACAQTraitDeclarationRef indexAnnotation = new ACAQTraitDeclarationRef();
+    private String indexAnnotation = "Image index";
 
     /**
      * Instantiates a new algorithm.
@@ -60,7 +60,7 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
         this.applyPerChannel = other.applyPerChannel;
         this.applyPerFrame = other.applyPerFrame;
         this.applyPerSlice = other.applyPerSlice;
-        this.indexAnnotation = new ACAQTraitDeclarationRef(other.indexAnnotation);
+        this.indexAnnotation = other.indexAnnotation;
 
     }
 
@@ -74,9 +74,9 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
             ROIListData data = new ROIListData(entry.getValue());
 
             ResultsTableData result = data.measure(reference, measurements);
-            List<ACAQTrait> annotations = new ArrayList<>();
-            if (indexAnnotation.getDeclaration() != null) {
-                annotations.add(indexAnnotation.getDeclaration().newInstance(entry.getKey().toString()));
+            List<ACAQAnnotation> annotations = new ArrayList<>();
+            if (!StringUtils.isNullOrEmpty(indexAnnotation)) {
+                annotations.add(new ACAQAnnotation(indexAnnotation, entry.getKey().toString()));
             }
 
             dataInterface.addOutputData(getFirstOutputSlot(), result, annotations);
@@ -99,12 +99,12 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     @ACAQDocumentation(name = "Generated annotation", description = "Optional. The annotation will contain the image slice position that was " +
             "used to generate the statistics.")
     @ACAQParameter("index-annotation")
-    public ACAQTraitDeclarationRef getIndexAnnotation() {
+    public String getIndexAnnotation() {
         return indexAnnotation;
     }
 
     @ACAQParameter("index-annotation")
-    public void setIndexAnnotation(ACAQTraitDeclarationRef indexAnnotation) {
+    public void setIndexAnnotation(String indexAnnotation) {
         this.indexAnnotation = indexAnnotation;
     }
 

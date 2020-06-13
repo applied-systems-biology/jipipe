@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.ui.extensionbuilder.grapheditor;
+package org.hkijena.acaq5.ui.extensionbuilder;
 
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;

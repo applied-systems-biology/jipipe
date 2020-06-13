@@ -70,7 +70,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
         toolBar.add(algorithmNameLabel);
         toolBar.add(Box.createHorizontalStrut(5));
         JLabel slotNameLabel = new JLabel(outputSlot.getName(), ACAQUIDatatypeRegistry.getInstance().getIconFor(outputSlot.getAcceptedDataType()), JLabel.LEFT);
-        slotNameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(outputSlot, true));
+        slotNameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(outputSlot));
         toolBar.add(slotNameLabel);
 
         toolBar.add(Box.createHorizontalGlue());

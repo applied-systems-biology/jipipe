@@ -6,15 +6,13 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
+import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQTraversedParameterCollection;
-import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQAlgorithmDeclarationRef;
 import org.hkijena.acaq5.utils.ReflectionUtils;
@@ -69,7 +67,7 @@ public class MultiParameterAlgorithm extends ACAQAlgorithm {
         Map<String, Object> defaultParameterSnapshot = getDefaultParameterSnapshot();
         ACAQDataSlot parameterSlot = getInputSlot("Parameters");
         Map<String, ACAQParameterAccess> parameters = ACAQTraversedParameterCollection.getParameters(algorithmInstance);
-        Map<String, ACAQTraitDeclaration> changedParameterTraits = new HashMap<>();
+        Map<String, String> changedParameterTraits = new HashMap<>();
 
         for (int row = 0; row < parameterSlot.getRowCount(); ++row) {
             if (isCancelled.get())
@@ -86,9 +84,7 @@ public class MultiParameterAlgorithm extends ACAQAlgorithm {
                 }
                 if (!Objects.equals(parameterAccess.get(Object.class), entry.getValue())) {
                     String traitId = "parameter-" + StringUtils.jsonify(parameterAccess.getName());
-                    if (ACAQTraitRegistry.getInstance().hasTraitWithId(traitId)) {
-                        changedParameterTraits.put(entry.getKey(), ACAQTraitRegistry.getInstance().getDeclarationById(traitId));
-                    }
+                    changedParameterTraits.put(entry.getKey(), traitId);
                 }
             }
         }
@@ -121,14 +117,14 @@ public class MultiParameterAlgorithm extends ACAQAlgorithm {
         return result;
     }
 
-    private void passOutputData(Map<String, ACAQParameterAccess> parameters, Map<String, ACAQTraitDeclaration> newParameters) {
+    private void passOutputData(Map<String, ACAQParameterAccess> parameters, Map<String, String> newParameters) {
         for (ACAQDataSlot wrappedOutputSlot : algorithmInstance.getOutputSlots()) {
             ACAQDataSlot outputSlot = getOutputSlot("Data " + wrappedOutputSlot.getName());
             for (int row = 0; row < wrappedOutputSlot.getRowCount(); ++row) {
                 ACAQData data = wrappedOutputSlot.getData(row, ACAQData.class);
-                List<ACAQTrait> traits = wrappedOutputSlot.getAnnotations(row);
-                for (Map.Entry<String, ACAQTraitDeclaration> entry : newParameters.entrySet()) {
-                    traits.add(entry.getValue().newInstance("" + parameters.get(entry.getKey()).get(Object.class)));
+                List<ACAQAnnotation> traits = wrappedOutputSlot.getAnnotations(row);
+                for (Map.Entry<String, String> entry : newParameters.entrySet()) {
+                    traits.add(new ACAQAnnotation(entry.getKey(), "" + parameters.get(entry.getKey()).get(Object.class)));
                 }
                 outputSlot.addData(data, traits);
             }

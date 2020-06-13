@@ -5,6 +5,7 @@ import org.hkijena.acaq5.api.ACAQProjectMetadata;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
+import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataConverter;
@@ -13,9 +14,6 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameterTypeDeclaration;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistrationTask;
 import org.hkijena.acaq5.api.registries.ACAQJavaAlgorithmRegistrationTask;
-import org.hkijena.acaq5.api.traits.ACAQJavaTraitDeclaration;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extensions.parameters.collections.ListParameter;
 import org.hkijena.acaq5.extensions.parameters.primitives.EnumParameterTypeDeclaration;
 import org.hkijena.acaq5.extensions.tables.operations.ColumnOperation;
@@ -126,31 +124,6 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
      */
     public void registerMenuExtension(Class<? extends MenuExtension> klass) {
         registry.getUIMenuServiceRegistry().register(klass);
-    }
-
-    /**
-     * Registers a new annotation type. The {@link ACAQTraitDeclaration} is generated from the class as {@link ACAQJavaTraitDeclaration}.
-     * It is assumed that all dependencies are met.
-     *
-     * @param id         Annotation type ID
-     * @param traitClass Annotation class
-     * @param icon       Annotation icon. Can be null.
-     */
-    public void registerTrait(String id, Class<? extends ACAQTrait> traitClass, URL icon) {
-        registerTrait(new ACAQJavaTraitDeclaration(id, traitClass), icon);
-    }
-
-    /**
-     * Registers a new annotation type. It is assumed that all dependencies are met.
-     *
-     * @param traitDeclaration Annotation declaration
-     * @param icon             Annotation icon. Can be null.
-     */
-    public void registerTrait(ACAQTraitDeclaration traitDeclaration, URL icon) {
-        registry.getTraitRegistry().register(traitDeclaration, this);
-        if (icon != null) {
-            registry.getUITraitRegistry().registerIcon(traitDeclaration, icon);
-        }
     }
 
     /**

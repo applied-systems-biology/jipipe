@@ -23,8 +23,6 @@ import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.UserFriendlyErrorUI;
 import org.hkijena.acaq5.ui.extension.MenuExtension;
 import org.hkijena.acaq5.ui.extension.MenuTarget;
-import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api.ACAQExistingTraitNode;
-import org.hkijena.acaq5.ui.extensionbuilder.traiteditor.api.ACAQNewTraitNode;
 import org.hkijena.acaq5.ui.registries.ACAQUIMenuServiceRegistry;
 
 import javax.swing.*;
@@ -396,10 +394,6 @@ public class UIUtils {
     public static Color getFillColorFor(ACAQAlgorithmDeclaration declaration) {
         if (declaration.getAlgorithmClass() == ACAQProjectCompartment.class)
             return new Color(254, 254, 255);
-        if (declaration.getAlgorithmClass() == ACAQExistingTraitNode.class)
-            return new Color(254, 254, 255);
-        if (declaration.getAlgorithmClass() == ACAQNewTraitNode.class)
-            return new Color(203, 187, 213);
         return declaration.getCategory().getColor(0.1f, 0.9f);
     }
 
@@ -422,10 +416,6 @@ public class UIUtils {
     public static Color getBorderColorFor(ACAQAlgorithmDeclaration declaration) {
         if (declaration.getAlgorithmClass() == ACAQProjectCompartment.class)
             return new Color(6, 20, 57);
-        if (declaration.getAlgorithmClass() == ACAQExistingTraitNode.class)
-            return new Color(6, 20, 57);
-        if (declaration.getAlgorithmClass() == ACAQNewTraitNode.class)
-            return new Color(58, 32, 63);
         return declaration.getCategory().getColor(0.1f, 0.5f);
     }
 

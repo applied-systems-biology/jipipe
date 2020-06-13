@@ -16,13 +16,9 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
-import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
-import org.hkijena.acaq5.extensions.parameters.editors.ACAQTraitParameterSettings;
 import org.hkijena.acaq5.extensions.parameters.primitives.StringList;
 import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQAlgorithmIconRef;
-import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.*;
@@ -37,12 +33,8 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     private String id;
     private ACAQProjectMetadata metadata = new ACAQProjectMetadata();
     private ACAQAlgorithmCategory category = ACAQAlgorithmCategory.Miscellaneous;
-    private Set<ACAQTraitDeclaration> preferredTraits = new HashSet<>();
-    private Set<ACAQTraitDeclaration> unwantedTraits = new HashSet<>();
-    private Set<ACAQTraitDeclaration> addedTraits = new HashSet<>();
-    private Set<ACAQTraitDeclaration> removedTraits = new HashSet<>();
-    private List inputSlots = new ArrayList<>();
-    private List outputSlots = new ArrayList<>();
+    private List<AlgorithmInputSlot> inputSlots = new ArrayList<>();
+    private List<AlgorithmOutputSlot> outputSlots = new ArrayList<>();
     private ACAQParameterCollectionVisibilities parameterCollectionVisibilities = new ACAQParameterCollectionVisibilities();
     private ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
     private Map<ACAQDataSlot, String> exportedSlotNames = new HashMap<>();
@@ -120,107 +112,18 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     }
 
     @Override
-    public List getInputSlots() {
+    public List<AlgorithmInputSlot> getInputSlots() {
         return inputSlots;
     }
 
     @Override
-    public List getOutputSlots() {
+    public List<AlgorithmOutputSlot> getOutputSlots() {
         return outputSlots;
     }
 
     @Override
     public Set<ACAQDependency> getDependencies() {
-        Set<ACAQDependency> result = new HashSet<>(graph.getDependencies());
-        for (ACAQTraitDeclaration declaration : preferredTraits) {
-            result.add(ACAQTraitRegistry.getInstance().getSourceOf(declaration.getId()));
-            result.addAll(declaration.getDependencies());
-        }
-        for (ACAQTraitDeclaration declaration : unwantedTraits) {
-            result.add(ACAQTraitRegistry.getInstance().getSourceOf(declaration.getId()));
-            result.addAll(declaration.getDependencies());
-        }
-        for (ACAQTraitDeclaration declaration : addedTraits) {
-            result.add(ACAQTraitRegistry.getInstance().getSourceOf(declaration.getId()));
-            result.addAll(declaration.getDependencies());
-        }
-        for (ACAQTraitDeclaration declaration : removedTraits) {
-            result.add(ACAQTraitRegistry.getInstance().getSourceOf(declaration.getId()));
-            result.addAll(declaration.getDependencies());
-        }
-        return result;
-    }
-
-    @ACAQDocumentation(name = "Preferred annotations", description = "Marks the algorithm as good for handling the specified annotations")
-    @ACAQParameter(value = "preferred-traits", uiOrder = 100)
-    @JsonGetter("preferred-traits")
-    @ACAQTraitParameterSettings(showHidden = true)
-    public ACAQTraitDeclarationRef.List getPreferredTraitIds() {
-        return new ACAQTraitDeclarationRef.List(preferredTraits.stream().map(ACAQTraitDeclarationRef::new).collect(Collectors.toList()));
-    }
-
-    @ACAQParameter("preferred-traits")
-    @JsonGetter("preferred-traits")
-    public void setPreferredTraitIds(ACAQTraitDeclarationRef.List ids) {
-        preferredTraits.clear();
-        for (ACAQTraitDeclarationRef declarationRef : ids) {
-            preferredTraits.add(declarationRef.getDeclaration());
-        }
-        getEventBus().post(new ParameterChangedEvent(this, "preferred-traits"));
-    }
-
-    @ACAQDocumentation(name = "Unwanted annotations", description = "Marks the algorithm as bad for handling the specified annotations")
-    @ACAQParameter(value = "unwanted-traits", uiOrder = 100)
-    @JsonGetter("unwanted-traits")
-    @ACAQTraitParameterSettings(showHidden = true)
-    public ACAQTraitDeclarationRef.List getUnwantedTraitIds() {
-        return new ACAQTraitDeclarationRef.List(unwantedTraits.stream().map(ACAQTraitDeclarationRef::new).collect(Collectors.toList()));
-    }
-
-    @ACAQParameter("unwanted-traits")
-    @JsonGetter("unwanted-traits")
-    public void setUnwantedTraitIds(ACAQTraitDeclarationRef.List ids) {
-        unwantedTraits.clear();
-        for (ACAQTraitDeclarationRef declarationRef : ids) {
-            unwantedTraits.add(declarationRef.getDeclaration());
-        }
-        getEventBus().post(new ParameterChangedEvent(this, "unwanted-traits"));
-    }
-
-    @ACAQDocumentation(name = "Added annotations", description = "Annotations that are added to the algorithm outputs")
-    @ACAQParameter(value = "added-traits", uiOrder = 200)
-    @JsonGetter("added-traits")
-    @ACAQTraitParameterSettings(showHidden = true)
-    public ACAQTraitDeclarationRef.List getAddedTraitIds() {
-        return new ACAQTraitDeclarationRef.List(addedTraits.stream().map(ACAQTraitDeclarationRef::new).collect(Collectors.toList()));
-    }
-
-    @ACAQParameter("added-traits")
-    @JsonGetter("added-traits")
-    public void setAddedTraitIds(ACAQTraitDeclarationRef.List ids) {
-        addedTraits.clear();
-        for (ACAQTraitDeclarationRef declarationRef : ids) {
-            addedTraits.add(declarationRef.getDeclaration());
-        }
-        getEventBus().post(new ParameterChangedEvent(this, "added-traits"));
-    }
-
-    @ACAQDocumentation(name = "Removed annotations", description = "Annotations that are removed from algorithm inputs")
-    @ACAQParameter("removed-traits")
-    @JsonGetter("removed-traits")
-    @ACAQTraitParameterSettings(showHidden = true)
-    public ACAQTraitDeclarationRef.List getRemovedTraitIds() {
-        return new ACAQTraitDeclarationRef.List(removedTraits.stream().map(ACAQTraitDeclarationRef::new).collect(Collectors.toList()));
-    }
-
-    @ACAQParameter(value = "removed-traits", uiOrder = 200)
-    @JsonGetter("removed-traits")
-    public void setRemovedTraitIds(ACAQTraitDeclarationRef.List ids) {
-        removedTraits.clear();
-        for (ACAQTraitDeclarationRef declarationRef : ids) {
-            removedTraits.add(declarationRef.getDeclaration());
-        }
-        getEventBus().post(new ParameterChangedEvent(this, "removed-traits"));
+        return new HashSet<>(graph.getDependencies());
     }
 
     @JsonGetter("metadata")

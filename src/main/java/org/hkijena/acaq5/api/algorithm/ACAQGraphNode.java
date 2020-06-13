@@ -20,8 +20,6 @@ import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
-import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
-import org.hkijena.acaq5.api.traits.ACAQTraitDeclaration;
 import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.StringUtils;
@@ -777,9 +775,6 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
         // Add data slots
         for (Map.Entry<String, ACAQDataSlot> entry : slots.entrySet()) {
             result.add(ACAQDatatypeRegistry.getInstance().getSourceOf(entry.getValue().getAcceptedDataType()));
-            for (ACAQTraitDeclaration traitDeclaration : entry.getValue().getSlotAnnotations()) {
-                result.add(ACAQTraitRegistry.getInstance().getSourceOf(traitDeclaration.getId()));
-            }
         }
 
         return result;

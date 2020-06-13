@@ -9,8 +9,6 @@ import org.hkijena.acaq5.api.events.AlgorithmRegisteredEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQTraversedParameterCollection;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
-import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
-import org.hkijena.acaq5.api.traits.ACAQJsonTraitDeclaration;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.multiparameters.algorithms.MultiParameterAlgorithmDeclaration;
 import org.hkijena.acaq5.extensions.multiparameters.datasources.ParametersDataDefinition;
@@ -40,10 +38,6 @@ public class MultiParametersExtension extends ACAQPrepackagedDefaultJavaExtensio
 
     @Override
     public void register() {
-        // Register annotations for each available parameter
-        for (ACAQAlgorithmDeclaration declaration : ACAQAlgorithmRegistry.getInstance().getRegisteredAlgorithms().values()) {
-            registerParameterTraits(declaration);
-        }
         ACAQAlgorithmRegistry.getInstance().getEventBus().register(this);
 
         // Register data types
@@ -56,38 +50,6 @@ public class MultiParametersExtension extends ACAQPrepackagedDefaultJavaExtensio
         registerAlgorithm("parameters-define", ParametersDataDefinition.class);
         registerAlgorithm("parameters-define-table", ParametersDataTableDefinition.class);
         registerAlgorithm(new MultiParameterAlgorithmDeclaration());
-    }
-
-    /**
-     * Triggered when an algorithm is registered
-     *
-     * @param event generated event
-     */
-    @Subscribe
-    public void onAlgorithmRegistered(AlgorithmRegisteredEvent event) {
-        registerParameterTraits(event.getAlgorithmDeclaration());
-    }
-
-    private void registerParameterTraits(ACAQAlgorithmDeclaration declaration) {
-        if (declaration.getCategory() == ACAQAlgorithmCategory.Internal)
-            return;
-        ACAQGraphNode instance = declaration.newInstance();
-        Map<String, ACAQParameterAccess> parameters = ACAQTraversedParameterCollection.getParameters(instance);
-
-        for (ACAQParameterAccess parameterAccess : parameters.values()) {
-            if (!StringUtils.isNullOrEmpty(parameterAccess.getName())) {
-                String traitId = "parameter-" + StringUtils.jsonify(parameterAccess.getName());
-                if (!ACAQTraitRegistry.getInstance().hasTraitWithId(traitId)) {
-                    ACAQJsonTraitDeclaration traitDeclaration = new ACAQJsonTraitDeclaration();
-                    traitDeclaration.setId(traitId);
-                    traitDeclaration.setName(parameterAccess.getName());
-                    traitDeclaration.setDescription("Represents a parameter value");
-                    traitDeclaration.setHidden(true);
-                    traitDeclaration.getTraitIcon().setIconName("wrench-blue.png");
-                    registerTrait(traitDeclaration, ResourceUtils.getPluginResource("icons/traits/wrench-blue.png"));
-                }
-            }
-        }
     }
 
     @Override

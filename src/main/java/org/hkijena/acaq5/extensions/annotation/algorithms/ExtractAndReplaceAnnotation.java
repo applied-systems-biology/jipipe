@@ -5,10 +5,10 @@ import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
-import org.hkijena.acaq5.extensions.parameters.functions.ACAQTraitPatternExtractionFunction;
+import org.hkijena.acaq5.extensions.parameters.functions.StringPatternExtractionFunction;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 @AlgorithmOutputSlot(value = ACAQData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
 public class ExtractAndReplaceAnnotation extends ACAQSimpleIteratingAlgorithm {
 
-    private ACAQTraitPatternExtractionFunction.List functions = new ACAQTraitPatternExtractionFunction.List();
+    private StringPatternExtractionFunction.List functions = new StringPatternExtractionFunction.List();
 
     /**
      * New instance
@@ -42,19 +42,19 @@ public class ExtractAndReplaceAnnotation extends ACAQSimpleIteratingAlgorithm {
      */
     public ExtractAndReplaceAnnotation(ExtractAndReplaceAnnotation other) {
         super(other);
-        this.functions = new ACAQTraitPatternExtractionFunction.List(other.functions);
+        this.functions = new StringPatternExtractionFunction.List(other.functions);
     }
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        for (ACAQTraitPatternExtractionFunction function : functions) {
-            ACAQTrait inputTrait = dataInterface.getAnnotationOfType(function.getInput().getDeclaration());
+        for (StringPatternExtractionFunction function : functions) {
+            ACAQAnnotation inputTrait = dataInterface.getAnnotationOfType(function.getInput());
             if (inputTrait == null)
                 continue;
             String newValue = function.getParameter().apply(inputTrait.getValue());
             if (newValue == null)
                 continue;
-            dataInterface.addGlobalAnnotation(function.getOutput().getDeclaration().newInstance(newValue));
+            dataInterface.addGlobalAnnotation(new ACAQAnnotation(function.getOutput(), newValue));
         }
         dataInterface.addOutputData(getFirstOutputSlot(), dataInterface.getInputData(getFirstInputSlot(), ACAQData.class));
     }
@@ -64,8 +64,8 @@ public class ExtractAndReplaceAnnotation extends ACAQSimpleIteratingAlgorithm {
         report.forCategory("Functions").report(functions);
         for (int i = 0; i < functions.size(); i++) {
             ACAQValidityReport subReport = report.forCategory("Functions").forCategory("Item #" + (i + 1));
-            subReport.forCategory("Input").checkNonNull(functions.get(i).getInput().getDeclaration(), this);
-            subReport.forCategory("Output").checkNonNull(functions.get(i).getOutput().getDeclaration(), this);
+            subReport.forCategory("Input").checkNonEmpty(functions.get(i).getInput(), this);
+            subReport.forCategory("Output").checkNonEmpty(functions.get(i).getOutput(), this);
         }
     }
 
@@ -74,12 +74,12 @@ public class ExtractAndReplaceAnnotation extends ACAQSimpleIteratingAlgorithm {
             "or select the one that matches RegEx. Alternatively you can define a RegEx string that contains a matching group (brackets). " +
             "This matching group will then be picked.")
     @ACAQParameter("functions")
-    public ACAQTraitPatternExtractionFunction.List getFunctions() {
+    public StringPatternExtractionFunction.List getFunctions() {
         return functions;
     }
 
     @ACAQParameter("functions")
-    public void setFunctions(ACAQTraitPatternExtractionFunction.List functions) {
+    public void setFunctions(StringPatternExtractionFunction.List functions) {
         this.functions = functions;
     }
 }

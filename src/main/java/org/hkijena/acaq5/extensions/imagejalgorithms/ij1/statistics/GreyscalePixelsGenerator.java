@@ -11,14 +11,12 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
+import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.acaq5.extensions.parameters.editors.ACAQTraitParameterSettings;
-import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.utils.ImageJUtils;
+import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.Collections;
 import java.util.function.Consumer;
@@ -35,7 +33,7 @@ import java.util.function.Supplier;
 public class GreyscalePixelsGenerator extends ACAQSimpleIteratingAlgorithm {
 
     private boolean applyPerSlice = false;
-    private ACAQTraitDeclarationRef sliceAnnotation = new ACAQTraitDeclarationRef(ACAQTraitRegistry.getInstance().getDeclarationById("image-index"));
+    private String sliceAnnotation = "Image index";
 
     /**
      * Creates a new instance
@@ -54,7 +52,7 @@ public class GreyscalePixelsGenerator extends ACAQSimpleIteratingAlgorithm {
     public GreyscalePixelsGenerator(GreyscalePixelsGenerator other) {
         super(other);
         this.applyPerSlice = other.applyPerSlice;
-        this.sliceAnnotation = new ACAQTraitDeclarationRef(other.sliceAnnotation);
+        this.sliceAnnotation = other.sliceAnnotation;
     }
 
     @Override
@@ -66,9 +64,9 @@ public class GreyscalePixelsGenerator extends ACAQSimpleIteratingAlgorithm {
                 TDoubleList pixels = new TDoubleArrayList(imp.getPixelCount());
                 getPixels(imp, pixels);
                 ResultsTableData resultsTable = toResultsTable(pixels);
-                if (sliceAnnotation != null && sliceAnnotation.getDeclaration() != null) {
+                if (!StringUtils.isNullOrEmpty(sliceAnnotation)) {
                     dataInterface.addOutputData(getFirstOutputSlot(), resultsTable,
-                            Collections.singletonList(sliceAnnotation.getDeclaration().newInstance("slice=" + index)));
+                            Collections.singletonList(new ACAQAnnotation(sliceAnnotation, "slice=" + index)));
                 } else {
                     dataInterface.addOutputData(getFirstOutputSlot(), resultsTable);
                 }
@@ -121,14 +119,13 @@ public class GreyscalePixelsGenerator extends ACAQSimpleIteratingAlgorithm {
 
     @ACAQDocumentation(name = "Apply per slice annotation", description = "Optional annotation type that generated for each slice output. " +
             "It contains the string 'slice=[Number]'.")
-    @ACAQTraitParameterSettings(traitBaseClass = ACAQTrait.class)
     @ACAQParameter("slice-annotation")
-    public ACAQTraitDeclarationRef getSliceAnnotation() {
+    public String getSliceAnnotation() {
         return sliceAnnotation;
     }
 
     @ACAQParameter("slice-annotation")
-    public void setSliceAnnotation(ACAQTraitDeclarationRef sliceAnnotation) {
+    public void setSliceAnnotation(String sliceAnnotation) {
         this.sliceAnnotation = sliceAnnotation;
     }
 }

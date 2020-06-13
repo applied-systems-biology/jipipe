@@ -11,19 +11,18 @@ import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.registries.ACAQTraitRegistry;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.extensions.imagejalgorithms.SliceIndex;
 import org.hkijena.acaq5.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.acaq5.extensions.parameters.collections.OutputSlotMapParameterCollection;
-import org.hkijena.acaq5.extensions.parameters.references.ACAQTraitDeclarationRef;
 import org.hkijena.acaq5.utils.ImageJUtils;
+import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -41,7 +40,7 @@ public class SplitChannelsAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     private OutputSlotMapParameterCollection channelToSlotAssignment;
     private boolean ignoreMissingChannels = false;
-    private ACAQTraitDeclarationRef annotationType = new ACAQTraitDeclarationRef(ACAQTraitRegistry.getInstance().getDeclarationById("image-index"));
+    private String annotationType = "Image index";
 
     /**
      * Instantiates a new algorithm.
@@ -95,9 +94,9 @@ public class SplitChannelsAlgorithm extends ACAQSimpleIteratingAlgorithm {
                     }
                 }
 
-                List<ACAQTrait> annotations = new ArrayList<>();
-                if (annotationType.getDeclaration() != null) {
-                    annotations.add(annotationType.getDeclaration().newInstance("channel=" + channelIndex));
+                List<ACAQAnnotation> annotations = new ArrayList<>();
+                if (!StringUtils.isNullOrEmpty(annotationType)) {
+                    annotations.add(new ACAQAnnotation(annotationType, "channel=" + channelIndex));
                 }
                 dataInterface.addOutputData(slotName, new ImagePlusGreyscaleData(image), annotations);
             }
@@ -147,9 +146,9 @@ public class SplitChannelsAlgorithm extends ACAQSimpleIteratingAlgorithm {
                 }
             }
 
-            List<ACAQTrait> annotations = new ArrayList<>();
-            if (annotationType.getDeclaration() != null) {
-                annotations.add(annotationType.getDeclaration().newInstance("channel=" + channelIndex));
+            List<ACAQAnnotation> annotations = new ArrayList<>();
+            if (!StringUtils.isNullOrEmpty(annotationType)) {
+                annotations.add(new ACAQAnnotation(annotationType, "channel=" + channelIndex));
             }
 
             // Rebuild image stack
@@ -197,12 +196,12 @@ public class SplitChannelsAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQDocumentation(name = "Generated annotation", description = "An optional annotation that is generated for each output to indicate which channel the data is coming from. " +
             "The format will be channel=[index].")
     @ACAQParameter("annotation-type")
-    public ACAQTraitDeclarationRef getAnnotationType() {
+    public String getAnnotationType() {
         return annotationType;
     }
 
     @ACAQParameter("annotation-type")
-    public void setAnnotationType(ACAQTraitDeclarationRef annotationType) {
+    public void setAnnotationType(String annotationType) {
         this.annotationType = annotationType;
     }
 }

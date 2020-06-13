@@ -1,9 +1,9 @@
 package org.hkijena.acaq5.ui.resultanalysis;
 
 import org.hkijena.acaq5.api.ACAQRun;
+import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
-import org.hkijena.acaq5.api.traits.ACAQTrait;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.FormPanel;
@@ -51,7 +51,7 @@ public class ACAQResultDataSlotTableUI extends ACAQProjectWorkbenchPanel {
         table.setRowHeight(25);
         table.setDefaultRenderer(Path.class, new ACAQRowLocationTableCellRenderer());
         table.setDefaultRenderer(ACAQExportedDataTable.Row.class, new ACAQRowDataTableCellRenderer(getProjectWorkbench(), slot));
-        table.setDefaultRenderer(ACAQTrait.class, new ACAQTraitTableCellRenderer());
+        table.setDefaultRenderer(ACAQAnnotation.class, new ACAQTraitTableCellRenderer());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
         JScrollPane scrollPane = new JScrollPane(table);

@@ -1,13 +1,13 @@
 package org.hkijena.acaq5.ui.resultanalysis;
 
-import org.hkijena.acaq5.api.traits.ACAQTrait;
+import org.hkijena.acaq5.api.data.ACAQAnnotation;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
 /**
- * Renders {@link ACAQTrait}
+ * Renders {@link ACAQAnnotation}
  */
 public class ACAQTraitTableCellRenderer extends JLabel implements TableCellRenderer {
 
@@ -21,8 +21,8 @@ public class ACAQTraitTableCellRenderer extends JLabel implements TableCellRende
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        if (value instanceof ACAQTrait) {
-            setText(((ACAQTrait) value).getValue());
+        if (value instanceof ACAQAnnotation) {
+            setText(((ACAQAnnotation) value).getValue());
         } else {
             setText("<html><p style=\"color: red;\">NA</p></html>");
         }
