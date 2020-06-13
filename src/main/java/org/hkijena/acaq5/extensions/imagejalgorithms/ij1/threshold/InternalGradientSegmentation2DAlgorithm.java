@@ -85,6 +85,11 @@ public class InternalGradientSegmentation2DAlgorithm extends ACAQSimpleIterating
         this.applyGaussian = other.applyGaussian;
     }
 
+    @Override
+    public boolean supportsParallelization() {
+        return true;
+    }
+
     private void applyInternalGradient(ImagePlus img) {
         // Erode the original image
         ImagePlus eroded = img.duplicate();

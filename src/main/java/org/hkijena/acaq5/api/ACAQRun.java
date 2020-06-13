@@ -134,6 +134,7 @@ public class ACAQRun implements ACAQRunnable {
         log.append("Preparing output folders ...\n");
         prepare();
         try {
+            log.append("Running main analysis with ").append(configuration.getNumThreads()).append(" threads ...\n");
             threadPool = new ACAQFixedThreadPool(configuration.getNumThreads());
             runAnalysis(onProgress, isCancelled);
         } catch (Exception e) {
@@ -152,6 +153,7 @@ public class ACAQRun implements ACAQRunnable {
         }
 
         // Postprocessing
+        log.append("Postprocessing steps ...\n");
         try {
             if (configuration.getOutputPath() != null)
                 project.saveProject(configuration.getOutputPath().resolve("parameters.json"));
@@ -294,7 +296,7 @@ public class ACAQRun implements ACAQRunnable {
         return false;
     }
 
-    private void logStatus(Consumer<ACAQRunnerStatus> onProgress, ACAQRunnerStatus status) {
+    private synchronized void logStatus(Consumer<ACAQRunnerStatus> onProgress, ACAQRunnerStatus status) {
         onProgress.accept(status);
         log.append("[").append(status.getProgress()).append("/").append(status.getMaxProgress()).append("] ").append(status.getMessage()).append("\n");
     }
