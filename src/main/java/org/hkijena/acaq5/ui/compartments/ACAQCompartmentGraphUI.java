@@ -11,7 +11,7 @@ import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
-import org.hkijena.acaq5.ui.events.DefaultUIActionRequestedEvent;
+import org.hkijena.acaq5.ui.events.DefaultAlgorithmUIActionRequestedEvent;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphEditorUI;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.TooltipUtils;
@@ -125,7 +125,7 @@ public class ACAQCompartmentGraphUI extends ACAQAlgorithmGraphEditorUI {
      * @param event Generated event
      */
     @Subscribe
-    public void onOpenCompartment(DefaultUIActionRequestedEvent event) {
+    public void onOpenCompartment(DefaultAlgorithmUIActionRequestedEvent event) {
         if (event.getUi() != null && event.getUi().getAlgorithm() instanceof ACAQProjectCompartment) {
             getProjectWorkbench().openCompartmentGraph((ACAQProjectCompartment) event.getUi().getAlgorithm(), true);
         }

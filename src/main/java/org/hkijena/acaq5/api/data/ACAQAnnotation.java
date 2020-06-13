@@ -21,7 +21,8 @@ public class ACAQAnnotation implements Comparable<ACAQAnnotation> {
 
     /**
      * Initializes a new instance
-     * @param name the name
+     *
+     * @param name  the name
      * @param value the value
      */
     public ACAQAnnotation(String name, String value) {
@@ -31,7 +32,7 @@ public class ACAQAnnotation implements Comparable<ACAQAnnotation> {
 
     @JsonGetter("name")
     public String getName() {
-        if(name == null)
+        if (name == null)
             return "";
         return name;
     }
@@ -43,7 +44,7 @@ public class ACAQAnnotation implements Comparable<ACAQAnnotation> {
 
     @JsonGetter("value")
     public String getValue() {
-        if(value == null)
+        if (value == null)
             return "";
         return value;
     }
@@ -60,6 +61,7 @@ public class ACAQAnnotation implements Comparable<ACAQAnnotation> {
 
     /**
      * Returns true if the name and value are equal
+     *
      * @param o the other
      * @return if the name and value are equal
      */
@@ -79,6 +81,7 @@ public class ACAQAnnotation implements Comparable<ACAQAnnotation> {
 
     /**
      * Returns true if the names are equal
+     *
      * @param other the other
      * @return if the names are equal
      */
@@ -88,6 +91,7 @@ public class ACAQAnnotation implements Comparable<ACAQAnnotation> {
 
     /**
      * Returns true if the name equals the string
+     *
      * @param name the string
      * @return if the name equals the string
      */
@@ -98,12 +102,13 @@ public class ACAQAnnotation implements Comparable<ACAQAnnotation> {
     /**
      * Returns true if both have the same name.
      * Returns false if either are null
+     *
      * @param lhs the first
      * @param rhs the second
      * @return if both have the same name and are not null
      */
     public static boolean nameEquals(ACAQAnnotation lhs, ACAQAnnotation rhs) {
-        if(lhs == null || rhs == null)
+        if (lhs == null || rhs == null)
             return false;
         return lhs.nameEquals(rhs);
     }

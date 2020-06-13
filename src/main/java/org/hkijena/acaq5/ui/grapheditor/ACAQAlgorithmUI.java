@@ -3,6 +3,7 @@ package org.hkijena.acaq5.ui.grapheditor;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
@@ -12,6 +13,7 @@ import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
+import org.hkijena.acaq5.ui.events.AlgorithmUIActionRequestedEvent;
 import org.hkijena.acaq5.utils.PointRange;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -33,6 +35,9 @@ public abstract class ACAQAlgorithmUI extends ACAQWorkbenchPanel {
      * Grid width for horizontal direction
      */
     public static final int SLOT_UI_WIDTH = 25;
+
+    public static final String REQUEST_RUN_AND_SHOW_RESULTS = "RUN_AND_SHOW_RESULTS";
+    public static final String REQUEST_RUN_ONLY = "RUN_ONLY";
 
     private ACAQAlgorithmGraphCanvasUI graphUI;
     private ACAQGraphNode algorithm;
@@ -106,6 +111,20 @@ public abstract class ACAQAlgorithmUI extends ACAQWorkbenchPanel {
         JMenuItem addToSelectionButton = new JMenuItem("Add to selection", UIUtils.getIconFromResources("select.png"));
         addToSelectionButton.addActionListener(e -> eventBus.post(new AlgorithmSelectedEvent(this, true)));
         contextMenu.add(addToSelectionButton);
+
+        if (algorithm instanceof ACAQAlgorithm && algorithm.getCategory() != ACAQAlgorithmCategory.Internal) {
+            contextMenu.addSeparator();
+
+            JMenuItem runAndShowResultsItem = new JMenuItem("Run & show results", UIUtils.getIconFromResources("play.png"));
+            runAndShowResultsItem.setToolTipText("Runs the pipeline up until this algorithm and shows the results.");
+            runAndShowResultsItem.addActionListener(e -> getEventBus().post(new AlgorithmUIActionRequestedEvent(this, REQUEST_RUN_AND_SHOW_RESULTS)));
+            contextMenu.add(runAndShowResultsItem);
+
+            JMenuItem runOnlyItem = new JMenuItem("Update cache", UIUtils.getIconFromResources("database.png"));
+            runOnlyItem.setToolTipText("Runs the pipeline up until this algorithm and caches the results. Nothing is written to disk.");
+            runOnlyItem.addActionListener(e -> getEventBus().post(new AlgorithmUIActionRequestedEvent(this, REQUEST_RUN_ONLY)));
+            contextMenu.add(runOnlyItem);
+        }
 
         contextMenu.addSeparator();
 

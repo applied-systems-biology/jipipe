@@ -8,10 +8,13 @@ import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.parameters.collections.ListParameter;
 import org.hkijena.acaq5.extensions.parameters.collections.ListParameterEditorUI;
 import org.hkijena.acaq5.extensions.parameters.colors.*;
-import org.hkijena.acaq5.extensions.parameters.editors.*;
-import org.hkijena.acaq5.extensions.parameters.functions.StringPatternExtractionFunction;
+import org.hkijena.acaq5.extensions.parameters.editors.ACAQAlgorithmDeclarationRefParameterEditorUI;
+import org.hkijena.acaq5.extensions.parameters.editors.ACAQAlgorithmIconRefParameterEditorUI;
+import org.hkijena.acaq5.extensions.parameters.editors.ACAQDataDeclarationRefParameterEditorUI;
+import org.hkijena.acaq5.extensions.parameters.editors.ACAQParameterCollectionVisibilitiesParameterEditorUI;
 import org.hkijena.acaq5.extensions.parameters.functions.FunctionParameter;
 import org.hkijena.acaq5.extensions.parameters.functions.FunctionParameterEditorUI;
+import org.hkijena.acaq5.extensions.parameters.functions.StringPatternExtractionFunction;
 import org.hkijena.acaq5.extensions.parameters.generators.*;
 import org.hkijena.acaq5.extensions.parameters.matrix.Matrix2D;
 import org.hkijena.acaq5.extensions.parameters.matrix.Matrix2DFloat;
@@ -23,7 +26,9 @@ import org.hkijena.acaq5.extensions.parameters.patterns.StringPatternExtraction;
 import org.hkijena.acaq5.extensions.parameters.patterns.StringPatternExtractionParameterEditorUI;
 import org.hkijena.acaq5.extensions.parameters.predicates.*;
 import org.hkijena.acaq5.extensions.parameters.primitives.*;
-import org.hkijena.acaq5.extensions.parameters.references.*;
+import org.hkijena.acaq5.extensions.parameters.references.ACAQAlgorithmDeclarationRef;
+import org.hkijena.acaq5.extensions.parameters.references.ACAQAlgorithmIconRef;
+import org.hkijena.acaq5.extensions.parameters.references.ACAQDataDeclarationRef;
 import org.hkijena.acaq5.extensions.parameters.roi.*;
 import org.hkijena.acaq5.extensions.parameters.table.ParameterTable;
 import org.hkijena.acaq5.extensions.parameters.table.ParameterTableEditorUI;
@@ -243,6 +248,13 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 o -> new OptionalColorMapParameter((OptionalColorMapParameter) o),
                 "Optional color map",
                 "An optional color map",
+                null);
+        registerParameterType("optional-path",
+                OptionalPathParameter.class,
+                OptionalPathParameter::new,
+                o -> new OptionalPathParameter((OptionalPathParameter) o),
+                "Optional path",
+                "An optional path",
                 null);
     }
 

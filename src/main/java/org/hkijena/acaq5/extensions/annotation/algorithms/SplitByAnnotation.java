@@ -7,12 +7,12 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.extensions.parameters.collections.OutputSlotMapParameterCollection;
 import org.hkijena.acaq5.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
@@ -71,7 +71,7 @@ public class SplitByAnnotation extends ACAQAlgorithm {
         for (int row = 0; row < inputSlot.getRowCount(); ++row) {
             List<ACAQAnnotation> annotations = inputSlot.getAnnotations(row);
             ACAQAnnotation matching = annotations.stream().filter(a -> a.nameEquals(annotationType)).findFirst().orElse(null);
-            if(matching != null) {
+            if (matching != null) {
                 String matchingValue = matching.getValue();
 
                 for (ACAQDataSlot slot : getOutputSlots().stream().sorted(Comparator.comparing(ACAQDataSlot::getName)).collect(Collectors.toList())) {

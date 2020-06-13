@@ -41,7 +41,7 @@ public class SimpleFolderAnnotationGenerator extends ACAQSimpleIteratingAlgorith
      */
     public SimpleFolderAnnotationGenerator(SimpleFolderAnnotationGenerator other) {
         super(other);
-        this.generatedAnnotation =  other.generatedAnnotation;
+        this.generatedAnnotation = other.generatedAnnotation;
     }
 
     @Override

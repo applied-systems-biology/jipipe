@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.ui.grapheditor;
 
+import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
@@ -9,6 +10,7 @@ import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
+import org.hkijena.acaq5.ui.events.AlgorithmUIActionRequestedEvent;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQMultiAlgorithmSelectionPanelUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQSingleAlgorithmSelectionPanelUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIAlgorithmRegistry;
@@ -17,6 +19,7 @@ import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,6 +29,7 @@ import java.util.stream.Collectors;
 public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI {
 
     private MarkdownReader documentationPanel;
+    private boolean disableUpdateOnSelection = false;
 
     /**
      * Creates a project graph compartment editor
@@ -59,6 +63,8 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
     @Override
     protected void updateSelection() {
         super.updateSelection();
+        if (disableUpdateOnSelection)
+            return;
         if (getSelection().isEmpty()) {
             setPropertyPanel(documentationPanel);
         } else if (getSelection().size() == 1) {
@@ -67,6 +73,27 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
         } else {
             setPropertyPanel(new ACAQMultiAlgorithmSelectionPanelUI((ACAQProjectWorkbench) getWorkbench(), getCanvasUI(),
                     getSelection().stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet())));
+        }
+    }
+
+    /**
+     * Listens to events of algorithms requesting some action
+     *
+     * @param event the event
+     */
+    @Subscribe
+    public void onAlgorithmActionRequested(AlgorithmUIActionRequestedEvent event) {
+        if (Objects.equals(event.getAction(), ACAQAlgorithmUI.REQUEST_RUN_AND_SHOW_RESULTS) ||
+                Objects.equals(event.getAction(), ACAQAlgorithmUI.REQUEST_RUN_ONLY)) {
+            disableUpdateOnSelection = true;
+            selectOnly(event.getUi());
+            ACAQSingleAlgorithmSelectionPanelUI panel = new ACAQSingleAlgorithmSelectionPanelUI((ACAQProjectWorkbench) getWorkbench(),
+                    getCanvasUI(),
+                    event.getUi().getAlgorithm());
+            setPropertyPanel(panel);
+            panel.runTestBench(Objects.equals(event.getAction(), ACAQAlgorithmUI.REQUEST_RUN_AND_SHOW_RESULTS),
+                    Objects.equals(event.getAction(), ACAQAlgorithmUI.REQUEST_RUN_ONLY));
+            SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
         }
     }
 

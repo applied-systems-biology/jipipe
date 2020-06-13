@@ -5,13 +5,13 @@ import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
 /**
  * Triggered when an {@link ACAQAlgorithmUI} requests a default action (double click)
  */
-public class DefaultUIActionRequestedEvent {
+public class DefaultAlgorithmUIActionRequestedEvent {
     private ACAQAlgorithmUI ui;
 
     /**
      * @param ui event source
      */
-    public DefaultUIActionRequestedEvent(ACAQAlgorithmUI ui) {
+    public DefaultAlgorithmUIActionRequestedEvent(ACAQAlgorithmUI ui) {
         this.ui = ui;
     }
 

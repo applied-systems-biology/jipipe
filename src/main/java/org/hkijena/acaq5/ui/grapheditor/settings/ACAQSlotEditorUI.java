@@ -66,6 +66,7 @@ public class ACAQSlotEditorUI extends JPanel {
 
     private void initializeToolbar() {
         JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
         add(toolBar, BorderLayout.NORTH);
 
         if (canModifyInputSlots()) {
@@ -86,7 +87,7 @@ public class ACAQSlotEditorUI extends JPanel {
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton relabelButton = new JButton(UIUtils.getIconFromResources("label.png"));
+        JButton relabelButton = new JButton("Label", UIUtils.getIconFromResources("label.png"));
         relabelButton.setToolTipText("Sets a custom name for this slot without deleting it");
         relabelButton.addActionListener(e -> relabelSlot());
         toolBar.add(relabelButton);
@@ -94,7 +95,7 @@ public class ACAQSlotEditorUI extends JPanel {
         if (algorithm.getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
 
             if (canModifyInputSlots() || canModifyOutputSlots()) {
-                JButton editButton = new JButton(UIUtils.getIconFromResources("edit.png"));
+                JButton editButton = new JButton("Edit", UIUtils.getIconFromResources("edit.png"));
                 editButton.setToolTipText("Edit selected slot");
                 editButton.addActionListener(e -> editSlot());
                 toolBar.add(editButton);

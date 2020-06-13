@@ -5,8 +5,10 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
+import org.hkijena.acaq5.api.testbench.ACAQTestBenchSettings;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
+import org.hkijena.acaq5.ui.cache.ACAQAlgorithmCacheBrowserUI;
 import org.hkijena.acaq5.ui.compendium.ACAQAlgorithmCompendiumUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
@@ -27,7 +29,9 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPan
     private ACAQAlgorithmGraph graph;
     private ACAQAlgorithmGraphCanvasUI canvas;
     private ACAQGraphNode algorithm;
-    private JPanel testbenchTabContent;
+    private JPanel testBenchTabContent;
+    private JPanel cacheBrowserTabContent;
+    private DocumentTabPane tabbedPane;
 
     /**
      * @param workbenchUI the workbench UI
@@ -44,7 +48,7 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPan
 
     private void initialize() {
         setLayout(new BorderLayout());
-        DocumentTabPane tabbedPane = new DocumentTabPane();
+        tabbedPane = new DocumentTabPane();
 
         ParameterPanel parametersUI = new ParameterPanel(getProjectWorkbench(),
                 algorithm,
@@ -56,31 +60,46 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPan
                 false);
 
         ACAQSlotEditorUI slotEditorUI = new ACAQSlotEditorUI(algorithm);
-        tabbedPane.addTab("Slots", UIUtils.getIconFromResources("database.png"),
+        tabbedPane.addTab("Slots", UIUtils.getIconFromResources("plug.png"),
                 slotEditorUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
 
-        if (algorithm.getCategory() != ACAQAlgorithmCategory.Internal) {
-            testbenchTabContent = new JPanel(new BorderLayout());
-            tabbedPane.addTab("Quick run", UIUtils.getIconFromResources("play.png"),
-                    testbenchTabContent,
+        {
+            cacheBrowserTabContent = new JPanel(new BorderLayout());
+            tabbedPane.addTab("Cache browser", UIUtils.getIconFromResources("database.png"),
+                    cacheBrowserTabContent,
                     DocumentTabPane.CloseMode.withoutCloseButton,
                     false);
         }
 
+        if (algorithm.getCategory() != ACAQAlgorithmCategory.Internal) {
+            testBenchTabContent = new JPanel(new BorderLayout());
+            tabbedPane.addTab("Quick run", UIUtils.getIconFromResources("play.png"),
+                    testBenchTabContent,
+                    DocumentTabPane.CloseMode.withoutCloseButton,
+                    false);
+        }
+
+
         add(tabbedPane, BorderLayout.CENTER);
 
-        tabbedPane.getTabbedPane().addChangeListener(e -> activateTestBenchIfNeeded(tabbedPane));
+        tabbedPane.getTabbedPane().addChangeListener(e -> activateLazyContent(tabbedPane));
 
         initializeToolbar();
     }
 
-    private void activateTestBenchIfNeeded(DocumentTabPane tabbedPane) {
-        if (testbenchTabContent != null && tabbedPane.getCurrentContent() == testbenchTabContent) {
-            if (testbenchTabContent.getComponentCount() == 0) {
+    private void activateLazyContent(DocumentTabPane tabbedPane) {
+        if (testBenchTabContent != null && tabbedPane.getCurrentContent() == testBenchTabContent) {
+            if (testBenchTabContent.getComponentCount() == 0) {
                 ACAQTestBenchSetupUI testBenchSetupUI = new ACAQTestBenchSetupUI(getProjectWorkbench(), algorithm);
-                testbenchTabContent.add(testBenchSetupUI, BorderLayout.CENTER);
+                testBenchTabContent.add(testBenchSetupUI, BorderLayout.CENTER);
+            }
+        }
+        if (cacheBrowserTabContent != null && tabbedPane.getCurrentContent() == cacheBrowserTabContent) {
+            if (cacheBrowserTabContent.getComponentCount() == 0) {
+                ACAQAlgorithmCacheBrowserUI browserUI = new ACAQAlgorithmCacheBrowserUI(getProjectWorkbench(), algorithm);
+                cacheBrowserTabContent.add(browserUI, BorderLayout.CENTER);
             }
         }
     }
@@ -172,5 +191,25 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPan
      */
     public ACAQGraphNode getAlgorithm() {
         return algorithm;
+    }
+
+    /**
+     * Activates and runs the test bench as automatically as possible.
+     *
+     * @param showResults show results after a successful run
+     * @param showCache   show slot cache after a successful run
+     */
+    public void runTestBench(boolean showResults, boolean showCache) {
+        // Activate the test bench
+        tabbedPane.switchToContent(testBenchTabContent);
+        ACAQTestBenchSetupUI testBenchSetupUI = (ACAQTestBenchSetupUI) testBenchTabContent.getComponent(0);
+        boolean success = testBenchSetupUI.tryAutoRun(showResults, new ACAQTestBenchSettings(), testBench -> {
+            if (showCache) {
+                SwingUtilities.invokeLater(() -> tabbedPane.switchToContent(cacheBrowserTabContent));
+            }
+        });
+        if (!success) {
+            SwingUtilities.invokeLater(() -> tabbedPane.switchToContent(testBenchTabContent));
+        }
     }
 }

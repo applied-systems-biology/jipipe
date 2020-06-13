@@ -11,8 +11,6 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * Parameter editor for {@link String}
@@ -41,7 +39,7 @@ public class StringParameterEditorUI extends ACAQParameterEditorUI {
         String iconURL = null;
         String prompt = "";
         StringParameterSettings settings = getParameterAccess().getAnnotationOfType(StringParameterSettings.class);
-        if(settings != null) {
+        if (settings != null) {
             monospaced = settings.monospace();
             multiline = settings.multiline();
             iconURL = settings.icon();
@@ -61,7 +59,7 @@ public class StringParameterEditorUI extends ACAQParameterEditorUI {
             add(textArea, BorderLayout.CENTER);
         } else {
             JLabel iconLabel = null;
-            if(!StringUtils.isNullOrEmpty(iconURL)) {
+            if (!StringUtils.isNullOrEmpty(iconURL)) {
                 ImageIcon imageIcon = new ImageIcon(getClass().getResource(iconURL));
                 iconLabel = new JLabel(imageIcon);
             }

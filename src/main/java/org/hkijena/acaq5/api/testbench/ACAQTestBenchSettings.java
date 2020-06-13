@@ -5,10 +5,9 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.extensions.parameters.primitives.FilePathParameterSettings;
+import org.hkijena.acaq5.extensions.settings.RuntimeSettings;
 import org.hkijena.acaq5.ui.components.PathEditor;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
@@ -24,11 +23,7 @@ public class ACAQTestBenchSettings implements ACAQParameterCollection {
      * Creates a new instance
      */
     public ACAQTestBenchSettings() {
-        try {
-            outputPath = Files.createTempDirectory("ACAQ5-TestBench");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        outputPath = RuntimeSettings.generateTempDirectory("TestBench");
     }
 
     @Override

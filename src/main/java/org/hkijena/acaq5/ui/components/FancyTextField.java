@@ -18,7 +18,8 @@ public class FancyTextField extends JPanel {
 
     /**
      * Creates a new instance
-     * @param icon Optional icon displayed to the left
+     *
+     * @param icon   Optional icon displayed to the left
      * @param prompt prompt
      */
     public FancyTextField(JLabel icon, String prompt) {
@@ -38,7 +39,7 @@ public class FancyTextField extends JPanel {
         clearButton.setBorder(null);
         add(clearButton, BorderLayout.EAST);
 
-        if(icon != null) {
+        if (icon != null) {
             add(icon, BorderLayout.WEST);
         }
 

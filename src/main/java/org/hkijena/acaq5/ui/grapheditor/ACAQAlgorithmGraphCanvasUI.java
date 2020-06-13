@@ -17,10 +17,7 @@ import org.hkijena.acaq5.extensions.settings.GraphEditorUISettings;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.PickAlgorithmDialog;
-import org.hkijena.acaq5.ui.events.AlgorithmEvent;
-import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
-import org.hkijena.acaq5.ui.events.AlgorithmSelectionChangedEvent;
-import org.hkijena.acaq5.ui.events.DefaultUIActionRequestedEvent;
+import org.hkijena.acaq5.ui.events.*;
 import org.hkijena.acaq5.utils.PointRange;
 import org.hkijena.acaq5.utils.ScreenImage;
 import org.hkijena.acaq5.utils.ScreenImageSVG;
@@ -276,6 +273,17 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
             getParent().revalidate();
     }
 
+    /**
+     * Triggers when an {@link ACAQAlgorithmUI} requests an action.
+     * Passes the action to its own event bus
+     *
+     * @param event event
+     */
+    @Subscribe
+    public void onActionRequested(AlgorithmUIActionRequestedEvent event) {
+        getEventBus().post(event);
+    }
+
     private void autoPlaceAlgorithm(ACAQAlgorithmUI ui) {
         ACAQGraphNode targetAlgorithm = ui.getAlgorithm();
 
@@ -468,7 +476,7 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
         if (SwingUtilities.isLeftMouseButton(mouseEvent) && mouseEvent.getClickCount() == 2) {
             ACAQAlgorithmUI ui = pickComponent(mouseEvent);
             if (ui != null)
-                eventBus.post(new DefaultUIActionRequestedEvent(ui));
+                eventBus.post(new DefaultAlgorithmUIActionRequestedEvent(ui));
         } else if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
             cursor = new Point(mouseEvent.getX(), mouseEvent.getY());
             requestFocusInWindow();

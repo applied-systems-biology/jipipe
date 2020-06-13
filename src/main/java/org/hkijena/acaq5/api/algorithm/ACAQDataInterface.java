@@ -139,11 +139,11 @@ public class ACAQDataInterface {
     /**
      * Adds an annotation to the annotation list
      *
-     * @param trait added annotation. Cannot be null.
+     * @param trait     added annotation. Cannot be null.
      * @param overwrite if existing annotation types can be overwritten
      */
     public void addGlobalAnnotation(ACAQAnnotation trait, boolean overwrite) {
-        if(overwrite && annotations.containsKey(trait.getName()))
+        if (overwrite && annotations.containsKey(trait.getName()))
             return;
         annotations.put(trait.getName(), trait);
     }
@@ -152,7 +152,7 @@ public class ACAQDataInterface {
     /**
      * Removes an annotation of provided type
      *
-     * @param declaration    removed annotation
+     * @param declaration removed annotation
      */
     public void removeGlobalAnnotation(String declaration) {
         annotations.remove(declaration);

@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.extensions.parameters.pairs;
 
-import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 

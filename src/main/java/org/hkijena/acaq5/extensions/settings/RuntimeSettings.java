@@ -6,6 +6,13 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
+import org.hkijena.acaq5.extensions.parameters.primitives.FilePathParameterSettings;
+import org.hkijena.acaq5.extensions.parameters.primitives.OptionalPathParameter;
+import org.hkijena.acaq5.ui.components.PathEditor;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * Settings related to how algorithms are executed
@@ -16,6 +23,7 @@ public class RuntimeSettings implements ACAQParameterCollection {
     private EventBus eventBus = new EventBus();
     private boolean allowSkipAlgorithmsWithoutInput = true;
     private boolean allowCache = true;
+    private OptionalPathParameter tempDirectory = new OptionalPathParameter();
 
     /**
      * Creates a new instance
@@ -54,7 +62,69 @@ public class RuntimeSettings implements ACAQParameterCollection {
         eventBus.post(new ParameterChangedEvent(this, "allow-cache"));
     }
 
+    @ACAQDocumentation(name = "Override temporary directory", description = "For various tasks - like the Quick Run feature - data " +
+            "must be placed into a directory. This defaults to your system's temporary directory. If there are issues with space, " +
+            "you can provide an alternative path.")
+    @ACAQParameter("temp-directory")
+    @FilePathParameterSettings(pathMode = PathEditor.PathMode.DirectoriesOnly, ioMode = PathEditor.IOMode.Open)
+    public OptionalPathParameter getTempDirectory() {
+        return tempDirectory;
+    }
+
+    @ACAQParameter("temp-directory")
+    public void setTempDirectory(OptionalPathParameter tempDirectory) {
+        this.tempDirectory = tempDirectory;
+        eventBus.post(new ParameterChangedEvent(this, "temp-directory"));
+    }
+
     public static RuntimeSettings getInstance() {
         return ACAQDefaultRegistry.getInstance().getSettingsRegistry().getSettings(ID, RuntimeSettings.class);
+    }
+
+    /**
+     * Generates a temporary directory
+     *
+     * @param baseName optional base name
+     * @return a temporary directory
+     */
+    public static Path generateTempDirectory(String baseName) {
+        OptionalPathParameter tempDirectory = getInstance().getTempDirectory();
+        if (tempDirectory.isEnabled()) {
+            try {
+                return Files.createTempDirectory(tempDirectory.getContent(), "ACAQ5" + baseName);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            try {
+                return Files.createTempDirectory("ACAQ5" + baseName);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    /**
+     * Generates a temporary directory
+     *
+     * @param prefix prefix
+     * @param suffix suffix
+     * @return a temporary directory
+     */
+    public static Path generateTempFile(String prefix, String suffix) {
+        OptionalPathParameter tempDirectory = getInstance().getTempDirectory();
+        if (tempDirectory.isEnabled()) {
+            try {
+                return Files.createTempFile(tempDirectory.getContent(), "ACAQ5" + prefix, suffix);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            try {
+                return Files.createTempFile("ACAQ5" + prefix, suffix);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

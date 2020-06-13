@@ -55,7 +55,7 @@ public class ListParameterEditorUI extends ACAQParameterEditorUI {
 
     private ListParameter<?> getParameter() {
         ListParameter<?> listParameter = getParameterAccess().get(ListParameter.class);
-        if(listParameter == null) {
+        if (listParameter == null) {
             listParameter = (ListParameter<?>) ACAQParameterTypeRegistry.getInstance().getDeclarationByFieldClass(getParameterAccess().getFieldClass()).newInstance();
             getParameterAccess().set(listParameter);
         }

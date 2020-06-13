@@ -19,18 +19,21 @@ import org.hkijena.acaq5.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * UI for generating {@link ACAQTestBench}
  */
 public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
 
+    boolean showNextResults;
     private ACAQGraphNode algorithm;
     private JPanel setupPanel;
     private JPanel validationReportPanel;
     private ACAQValidityReportUI validationReportUI;
     private ACAQTestBenchSettings currentSettings;
     private ACAQTestBench currentTestBench;
+    private Consumer<ACAQTestBench> nextRunOnSuccess;
 
     /**
      * @param workbenchUI the workbench
@@ -49,6 +52,23 @@ public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
         tryShowSetupPanel();
 
         ACAQRunnerQueue.getInstance().getEventBus().register(this);
+    }
+
+    /**
+     * Attempts to setup and run the testbench automatically and run a function when finished
+     *
+     * @param showResults show results after successful run
+     * @param settings    settings
+     * @param onSuccess   called if successful
+     * @return if the initial validation failed
+     */
+    public boolean tryAutoRun(boolean showResults, ACAQTestBenchSettings settings, Consumer<ACAQTestBench> onSuccess) {
+        if (!validateOrShowError())
+            return false;
+        currentSettings = settings;
+        nextRunOnSuccess = onSuccess;
+        generateTestBench(showResults);
+        return true;
     }
 
     private void initializeValidationReportUI() {
@@ -85,14 +105,18 @@ public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
         toolBar.setFloatable(false);
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton generateButton = new JButton("Create", UIUtils.getIconFromResources("run.png"));
-        generateButton.addActionListener(e -> generateTestBench());
-        toolBar.add(generateButton);
+        JButton runOnly = new JButton("Run", UIUtils.getIconFromResources("run.png"));
+        runOnly.addActionListener(e -> generateTestBench(false));
+        toolBar.add(runOnly);
+
+        JButton runAndOpen = new JButton("Run & open results", UIUtils.getIconFromResources("run.png"));
+        runAndOpen.addActionListener(e -> generateTestBench(true));
+        toolBar.add(runAndOpen);
 
         setupPanel.add(toolBar, BorderLayout.NORTH);
     }
 
-    private void tryShowSetupPanel() {
+    private boolean validateOrShowError() {
         ACAQValidityReport report = new ACAQValidityReport();
         getProject().reportValidity(report);
 
@@ -106,16 +130,22 @@ public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
                     algorithm
             );
         }
+        if (report.isValid())
+            return true;
 
+        // Replace by error UI
         removeAll();
-        if (report.isValid()) {
-            add(setupPanel, BorderLayout.CENTER);
-        } else {
-            add(validationReportPanel, BorderLayout.CENTER);
-            validationReportUI.setReport(report);
-        }
+        add(validationReportPanel, BorderLayout.CENTER);
+        validationReportUI.setReport(report);
         revalidate();
         repaint();
+        return false;
+    }
+
+    private void tryShowSetupPanel() {
+        if (validateOrShowError()) {
+            add(setupPanel, BorderLayout.CENTER);
+        }
     }
 
     private void openError(Exception exception) {
@@ -142,7 +172,7 @@ public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
         revalidate();
     }
 
-    private void generateTestBench() {
+    private void generateTestBench(boolean showResults) {
 
         ACAQValidityReport report = new ACAQValidityReport();
         getProject().reportValidity(report);
@@ -152,6 +182,7 @@ public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
         }
 
         currentTestBench = new ACAQTestBench(getProject(), algorithm, currentSettings);
+        showNextResults = showResults;
 
         removeAll();
         ACAQRunExecuterUI executerUI = new ACAQRunExecuterUI(currentTestBench);
@@ -171,15 +202,21 @@ public class ACAQTestBenchSetupUI extends ACAQProjectWorkbenchPanel {
         if (event.getRun() == currentTestBench) {
             tryShowSetupPanel();
 
-            try {
-                ACAQTestBenchUI testBenchUI = new ACAQTestBenchUI(getProjectWorkbench(), currentTestBench);
-                String name = "Testbench: " + algorithm.getName();
-                getProjectWorkbench().getDocumentTabPane().addTab(name, UIUtils.getIconFromResources("testbench.png"),
-                        testBenchUI, DocumentTabPane.CloseMode.withAskOnCloseButton, true);
-                getProjectWorkbench().getDocumentTabPane().switchToLastTab();
-                currentTestBench = null;
-            } catch (Exception e) {
-                openError(e);
+            if (showNextResults) {
+                try {
+                    ACAQTestBenchUI testBenchUI = new ACAQTestBenchUI(getProjectWorkbench(), currentTestBench);
+                    String name = "Test bench: " + algorithm.getName();
+                    getProjectWorkbench().getDocumentTabPane().addTab(name, UIUtils.getIconFromResources("testbench.png"),
+                            testBenchUI, DocumentTabPane.CloseMode.withAskOnCloseButton, true);
+                    getProjectWorkbench().getDocumentTabPane().switchToLastTab();
+                    currentTestBench = null;
+                } catch (Exception e) {
+                    openError(e);
+                }
+            }
+            if (nextRunOnSuccess != null) {
+                nextRunOnSuccess.accept(currentTestBench);
+                nextRunOnSuccess = null;
             }
         }
     }

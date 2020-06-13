@@ -45,7 +45,7 @@ public class PairParameterEditorUI extends ACAQParameterEditorUI {
         boolean singleRow = true;
         boolean singleRowChevron = true;
 
-        if(getParameterAccess().getAnnotationOfType(PairParameterSettings.class) != null) {
+        if (getParameterAccess().getAnnotationOfType(PairParameterSettings.class) != null) {
             PairParameterSettings settings = getParameterAccess().getAnnotationOfType(PairParameterSettings.class);
             keyLabel = settings.keyLabel();
             valueLabel = settings.valueLabel();
@@ -56,20 +56,19 @@ public class PairParameterEditorUI extends ACAQParameterEditorUI {
         ACAQParameterEditorUI keyEditor = ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getContext(), keyAccess);
         ACAQParameterEditorUI valueEditor = ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getContext(), valueAccess);
 
-        if(singleRow) {
+        if (singleRow) {
             setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
             add(new JLabel(keyLabel));
-            if(!StringUtils.isNullOrEmpty(keyLabel))
+            if (!StringUtils.isNullOrEmpty(keyLabel))
                 add(Box.createHorizontalStrut(4));
             add(keyEditor);
-            if(singleRowChevron)
+            if (singleRowChevron)
                 add(new JLabel(UIUtils.getIconFromResources("chevron-right.png")));
             add(new JLabel(valueLabel));
-            if(!StringUtils.isNullOrEmpty(valueLabel))
+            if (!StringUtils.isNullOrEmpty(valueLabel))
                 add(Box.createHorizontalStrut(4));
             add(valueEditor);
-        }
-        else {
+        } else {
             setLayout(new BorderLayout());
             FormPanel panel = new FormPanel(null, FormPanel.NONE);
             panel.addToForm(new JLabel(keyLabel), keyEditor, null);

@@ -50,7 +50,7 @@ public class ACAQCacheStateTreeCellRenderer extends JLabel implements TreeCellRe
                 setText(state.renderGenerationTime());
             } else {
                 setIcon(rootIcon);
-                setText("Results");
+                setText("Cache");
             }
         } else {
             setIcon(null);

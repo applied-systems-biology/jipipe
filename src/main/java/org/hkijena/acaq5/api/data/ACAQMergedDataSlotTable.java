@@ -130,7 +130,7 @@ public class ACAQMergedDataSlotTable implements TableModel {
 
     /**
      * @return Additional columns
-     * */
+     */
     public List<String> getTraitColumns() {
         return traitColumns;
     }

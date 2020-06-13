@@ -13,6 +13,7 @@
 package org.hkijena.acaq5.ui.components;
 
 import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
+import org.hkijena.acaq5.extensions.settings.RuntimeSettings;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -20,8 +21,6 @@ import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -127,14 +126,10 @@ public class PathEditor extends JPanel {
     }
 
     private void generateRandom() {
-        try {
-            if (pathMode == PathMode.DirectoriesOnly) {
-                setPath(Files.createTempDirectory("ACAQ5"));
-            } else {
-                setPath(Files.createTempFile("ACAQ5", null));
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if (pathMode == PathMode.DirectoriesOnly) {
+            setPath(RuntimeSettings.generateTempDirectory("ACAQ5"));
+        } else {
+            setPath(RuntimeSettings.generateTempFile("ACAQ5", null));
         }
     }
 

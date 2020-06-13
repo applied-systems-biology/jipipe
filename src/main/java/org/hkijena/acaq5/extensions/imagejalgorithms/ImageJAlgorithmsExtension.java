@@ -71,7 +71,6 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d5.color.ImagePlus
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d5.color.ImagePlus5DColorRGBData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d5.greyscale.*;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.*;
-import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.command.CommandInfo;
 import org.scijava.command.CommandService;

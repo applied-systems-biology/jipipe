@@ -1,5 +1,3 @@
-
-
 package org.hkijena.acaq5.ui.extensionbuilder;
 
 import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.GraphWrapperAlgorithmDeclaration;

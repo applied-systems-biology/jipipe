@@ -1,5 +1,3 @@
-
-
 package org.hkijena.acaq5.ui.extensionbuilder;
 
 import com.google.common.collect.ImmutableList;
@@ -108,6 +106,7 @@ public class ACAQJsonExtensionContentListUI extends ACAQJsonExtensionWorkbenchPa
 
     /**
      * Triggered when a name was changed
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -119,6 +118,7 @@ public class ACAQJsonExtensionContentListUI extends ACAQJsonExtensionWorkbenchPa
 
     /**
      * Triggered when content was added
+     *
      * @param event Generated event
      */
     @Subscribe
@@ -128,6 +128,7 @@ public class ACAQJsonExtensionContentListUI extends ACAQJsonExtensionWorkbenchPa
 
     /**
      * Triggered when content was removed
+     *
      * @param event Generated event
      */
     @Subscribe

@@ -376,6 +376,10 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
         canvasUI.removeFromSelection(ui);
     }
 
+    protected Component getPropertyPanel() {
+        return splitPane.getRightComponent();
+    }
+
     /**
      * Sets the component displayed in the right property panel
      *

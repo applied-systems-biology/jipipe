@@ -1,13 +1,6 @@
 package org.hkijena.acaq5.extensions.multiparameters;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQJavaExtension;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
-import org.hkijena.acaq5.api.events.AlgorithmRegisteredEvent;
-import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQTraversedParameterCollection;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.multiparameters.algorithms.MultiParameterAlgorithmDeclaration;
@@ -15,10 +8,7 @@ import org.hkijena.acaq5.extensions.multiparameters.datasources.ParametersDataDe
 import org.hkijena.acaq5.extensions.multiparameters.datasources.ParametersDataTableDefinition;
 import org.hkijena.acaq5.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.acaq5.utils.ResourceUtils;
-import org.hkijena.acaq5.utils.StringUtils;
 import org.scijava.plugin.Plugin;
-
-import java.util.Map;
 
 /**
  * Extension that provides capabilities to run multiple parameters
