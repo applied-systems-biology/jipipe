@@ -21,7 +21,7 @@ public class PlotDataSeries extends ResultsTableData implements ACAQParameterCol
      * Creates a new instance with a null table
      */
     public PlotDataSeries() {
-        super((ResultsTable) null);
+        super();
     }
 
     /**
