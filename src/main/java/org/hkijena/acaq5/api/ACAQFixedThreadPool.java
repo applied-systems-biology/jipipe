@@ -82,6 +82,11 @@ public class ACAQFixedThreadPool {
         return maxThreads;
     }
 
+    /**
+     * Returns the {@link ExecutorService} or null.
+     * This will return null if getMaxThreads() <= 1
+     * @return the {@link ExecutorService} or null
+     */
     public ExecutorService getExecutorService() {
         return executorService;
     }
