@@ -64,7 +64,7 @@ public class NavigateSubFolder extends ACAQSimpleIteratingAlgorithm {
      */
     @ACAQParameter("subfolder")
     @ACAQDocumentation(name = "Subfolder name")
-    @StringParameterSettings(monospace = true)
+    @StringParameterSettings(monospace = true, icon = "folder.png")
     public String getSubFolder() {
         return subFolder;
     }
