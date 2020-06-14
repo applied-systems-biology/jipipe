@@ -14,9 +14,9 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.filesystem.dataypes.FileData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.acaq5.extensions.parameters.primitives.OptionalStringParameter;
 import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.acaq5.utils.ResourceUtils;
-import org.hkijena.acaq5.utils.StringUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ public class BioFormatsImporter extends ACAQSimpleIteratingAlgorithm {
     private boolean concatenate;
     private boolean crop;
     private boolean stitchTiles;
-    private String titleAnnotation = "Image title";
+    private OptionalStringParameter titleAnnotation = new OptionalStringParameter();
 
     /**
      * @param declaration the declaration
@@ -53,6 +53,7 @@ public class BioFormatsImporter extends ACAQSimpleIteratingAlgorithm {
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());
+        titleAnnotation.setContent("Image title");
     }
 
     /**
@@ -71,7 +72,7 @@ public class BioFormatsImporter extends ACAQSimpleIteratingAlgorithm {
         this.concatenate = other.concatenate;
         this.crop = other.crop;
         this.stitchTiles = other.stitchTiles;
-        this.titleAnnotation = other.titleAnnotation;
+        this.titleAnnotation = new OptionalStringParameter(other.titleAnnotation);
     }
 
     @Override
@@ -115,8 +116,8 @@ public class BioFormatsImporter extends ACAQSimpleIteratingAlgorithm {
 
             for (ImagePlus image : images) {
                 List<ACAQAnnotation> traits = new ArrayList<>();
-                if (!StringUtils.isNullOrEmpty(titleAnnotation)) {
-                    traits.add(new ACAQAnnotation(titleAnnotation, image.getTitle()));
+                if (titleAnnotation.isEnabled()) {
+                    traits.add(new ACAQAnnotation(titleAnnotation.getContent(), image.getTitle()));
                 }
                 dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusData(image), traits);
             }
@@ -130,7 +131,8 @@ public class BioFormatsImporter extends ACAQSimpleIteratingAlgorithm {
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-
+        super.reportValidity(report);
+        report.forCategory("Title annotation").checkNonEmpty(getTitleAnnotation().getContent(), null);
     }
 
     @ACAQDocumentation(name = "Color mode")
@@ -244,12 +246,12 @@ public class BioFormatsImporter extends ACAQSimpleIteratingAlgorithm {
     @ACAQDocumentation(name = "Title annotation", description = "Optional annotation type where the image title is written.")
     @ACAQParameter("title-annotation")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
-    public String getTitleAnnotation() {
+    public OptionalStringParameter getTitleAnnotation() {
         return titleAnnotation;
     }
 
     @ACAQParameter("title-annotation")
-    public void setTitleAnnotation(String titleAnnotation) {
+    public void setTitleAnnotation(OptionalStringParameter titleAnnotation) {
         this.titleAnnotation = titleAnnotation;
     }
 
