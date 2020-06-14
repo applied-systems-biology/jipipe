@@ -5,7 +5,6 @@ import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.annotation.datatypes.AnnotationTableData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
@@ -52,7 +51,7 @@ public class ConvertAnnotationTableToAnnotatedTables extends ACAQSimpleIterating
         TableColumn mergedColumn = inputData.getMergedColumn(inputData.getAnnotationColumns(), ", ", "=");
         for (Map.Entry<String, ResultsTableData> entry : inputData.splitBy(mergedColumn).entrySet()) {
             ResultsTableData data = entry.getValue();
-            if(!keepAnnotationColumns) {
+            if (!keepAnnotationColumns) {
                 data.removeColumns(inputData.getAnnotationColumns());
             }
             dataInterface.addOutputData(getFirstOutputSlot(), data);

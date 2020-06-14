@@ -55,13 +55,12 @@ public class DynamicEnumParameterEditorUI extends ACAQParameterEditorUI {
             values = parameter.getAllowedValues().toArray();
         } else {
             DynamicEnumParameterSettings settings = getParameterAccess().getAnnotationOfType(DynamicEnumParameterSettings.class);
-            if(settings != null) {
+            if (settings != null) {
                 Supplier<List<Object>> supplier = (Supplier<List<Object>>) ReflectionUtils.newInstance(settings.supplier());
                 values = supplier.get().toArray();
-            }
-            else {
+            } else {
                 values = new Object[0];
-                System.err.println( "In " + this + ": " + getParameterAccess().getFieldClass() + " not provided with a generator supplier!");
+                System.err.println("In " + this + ": " + getParameterAccess().getFieldClass() + " not provided with a generator supplier!");
             }
         }
         comboBox = new JComboBox<>(values);

@@ -104,7 +104,7 @@ public class ImagePlusFromFile extends ACAQSimpleIteratingAlgorithm {
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        if(titleAnnotation.isEnabled()) {
+        if (titleAnnotation.isEnabled()) {
             report.forCategory("Title annotation").checkNonEmpty(titleAnnotation.getContent(), this);
         }
     }

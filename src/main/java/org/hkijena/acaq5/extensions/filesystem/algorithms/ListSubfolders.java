@@ -71,20 +71,19 @@ public class ListSubfolders extends ACAQSimpleIteratingAlgorithm {
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         FolderData inputFolder = dataInterface.getInputData(getFirstInputSlot(), FolderData.class);
         Path inputPath = inputFolder.getPath();
-        if(!StringUtils.isNullOrEmpty(subFolder)) {
+        if (!StringUtils.isNullOrEmpty(subFolder)) {
             inputPath = inputPath.resolve(subFolder);
         }
         try {
             Stream<Path> stream;
-            if(recursive) {
+            if (recursive) {
                 FileVisitOption[] options;
-                if(recursiveFollowsLinks)
-                    options = new FileVisitOption[] { FileVisitOption.FOLLOW_LINKS };
+                if (recursiveFollowsLinks)
+                    options = new FileVisitOption[]{FileVisitOption.FOLLOW_LINKS};
                 else
                     options = new FileVisitOption[0];
                 stream = Files.walk(inputPath, options).filter(Files::isDirectory);
-            }
-            else
+            } else
                 stream = Files.list(inputPath).filter(Files::isDirectory);
             for (Path file : stream.collect(Collectors.toList())) {
                 Path testedFile;

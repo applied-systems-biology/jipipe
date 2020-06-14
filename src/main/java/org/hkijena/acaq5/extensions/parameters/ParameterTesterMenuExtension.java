@@ -1,13 +1,10 @@
 package org.hkijena.acaq5.extensions.parameters;
 
 import org.hkijena.acaq5.api.ACAQOrganization;
-import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
-import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.extension.MenuExtension;
 import org.hkijena.acaq5.ui.extension.MenuTarget;
-import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableEditor;
 import org.hkijena.acaq5.utils.ParameterUITester;
 import org.hkijena.acaq5.utils.UIUtils;
 

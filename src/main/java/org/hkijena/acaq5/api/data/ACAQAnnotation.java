@@ -99,6 +99,11 @@ public class ACAQAnnotation implements Comparable<ACAQAnnotation> {
         return Objects.equals(getName(), name);
     }
 
+    @Override
+    public String toString() {
+        return name + "=" + value;
+    }
+
     /**
      * Returns true if both have the same name.
      * Returns false if either are null
@@ -111,10 +116,5 @@ public class ACAQAnnotation implements Comparable<ACAQAnnotation> {
         if (lhs == null || rhs == null)
             return false;
         return lhs.nameEquals(rhs);
-    }
-
-    @Override
-    public String toString() {
-        return name + "=" + value;
     }
 }

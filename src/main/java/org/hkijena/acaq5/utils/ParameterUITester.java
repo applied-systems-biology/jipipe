@@ -7,7 +7,6 @@ import org.hkijena.acaq5.api.registries.ACAQParameterTypeRegistry;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
-import org.scijava.Context;
 
 import java.awt.*;
 
@@ -20,6 +19,7 @@ public class ParameterUITester extends ACAQWorkbenchPanel {
 
     /**
      * Creates a new instance
+     *
      * @param workbench the workbench
      */
     public ParameterUITester(ACAQWorkbench workbench) {

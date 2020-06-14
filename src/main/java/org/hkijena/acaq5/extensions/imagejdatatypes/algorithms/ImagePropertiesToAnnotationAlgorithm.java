@@ -8,7 +8,6 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extensions.imagejalgorithms.parameters.MacroCode;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.parameters.primitives.OptionalStringParameter;
 import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
@@ -27,7 +26,7 @@ import java.util.function.Supplier;
 @AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
 @AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Annotated image", inheritedSlot = "Image", autoCreate = true)
 public class ImagePropertiesToAnnotationAlgorithm extends ACAQSimpleIteratingAlgorithm {
-    
+
     private OptionalStringParameter titleAnnotation = new OptionalStringParameter();
     private OptionalStringParameter widthAnnotation = new OptionalStringParameter();
     private OptionalStringParameter heightAnnotation = new OptionalStringParameter();
@@ -37,9 +36,10 @@ public class ImagePropertiesToAnnotationAlgorithm extends ACAQSimpleIteratingAlg
     private OptionalStringParameter framesSizeAnnotation = new OptionalStringParameter();
     private OptionalStringParameter imageTypeAnnotation = new OptionalStringParameter();
     private OptionalStringParameter bitDepthAnnotation = new OptionalStringParameter();
-    
+
     /**
      * Creates a new instance
+     *
      * @param declaration algorithm declaration
      */
     public ImagePropertiesToAnnotationAlgorithm(ACAQAlgorithmDeclaration declaration) {
@@ -57,6 +57,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends ACAQSimpleIteratingAlg
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public ImagePropertiesToAnnotationAlgorithm(ImagePropertiesToAnnotationAlgorithm other) {
@@ -75,23 +76,23 @@ public class ImagePropertiesToAnnotationAlgorithm extends ACAQSimpleIteratingAlg
     @Override
     public void reportValidity(ACAQValidityReport report) {
         super.reportValidity(report);
-        if(getTitleAnnotation().isEnabled())
+        if (getTitleAnnotation().isEnabled())
             report.forCategory("Annotate with title").checkNonEmpty(getTitleAnnotation().getContent(), this);
-        if(getWidthAnnotation().isEnabled())
+        if (getWidthAnnotation().isEnabled())
             report.forCategory("Annotate with image width").checkNonEmpty(getWidthAnnotation().getContent(), this);
-        if(getHeightAnnotation().isEnabled())
+        if (getHeightAnnotation().isEnabled())
             report.forCategory("Annotate with image height").checkNonEmpty(getHeightAnnotation().getContent(), this);
-        if(getStackSizeAnnotation().isEnabled())
+        if (getStackSizeAnnotation().isEnabled())
             report.forCategory("Annotate with stack size (Z)").checkNonEmpty(getStackSizeAnnotation().getContent(), this);
-        if(getPlaneNumberAnnotation().isEnabled())
+        if (getPlaneNumberAnnotation().isEnabled())
             report.forCategory("Annotate with number of planes").checkNonEmpty(getPlaneNumberAnnotation().getContent(), this);
-        if(getChannelSizeAnnotation().isEnabled())
+        if (getChannelSizeAnnotation().isEnabled())
             report.forCategory("Annotate with channel size (C)").checkNonEmpty(getChannelSizeAnnotation().getContent(), this);
-        if(getFramesSizeAnnotation().isEnabled())
+        if (getFramesSizeAnnotation().isEnabled())
             report.forCategory("Annotate with number of frames (T)").checkNonEmpty(getFramesSizeAnnotation().getContent(), this);
-        if(getImageTypeAnnotation().isEnabled())
+        if (getImageTypeAnnotation().isEnabled())
             report.forCategory("Annotate with image type").checkNonEmpty(getImageTypeAnnotation().getContent(), this);
-        if(getBitDepthAnnotation().isEnabled())
+        if (getBitDepthAnnotation().isEnabled())
             report.forCategory("Annotate with bit depth").checkNonEmpty(getBitDepthAnnotation().getContent(), this);
     }
 
@@ -100,28 +101,28 @@ public class ImagePropertiesToAnnotationAlgorithm extends ACAQSimpleIteratingAlg
         ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusData.class);
         List<ACAQAnnotation> annotations = new ArrayList<>();
 
-        if(getTitleAnnotation().isEnabled()) {
+        if (getTitleAnnotation().isEnabled()) {
             annotations.add(new ACAQAnnotation(getTitleAnnotation().getContent(), "" + inputData.getImage().getTitle()));
         }
-        if(getWidthAnnotation().isEnabled()) {
+        if (getWidthAnnotation().isEnabled()) {
             annotations.add(new ACAQAnnotation(getWidthAnnotation().getContent(), "" + inputData.getImage().getWidth()));
         }
-        if(getHeightAnnotation().isEnabled()) {
+        if (getHeightAnnotation().isEnabled()) {
             annotations.add(new ACAQAnnotation(getHeightAnnotation().getContent(), "" + inputData.getImage().getHeight()));
         }
-        if(getStackSizeAnnotation().isEnabled()) {
+        if (getStackSizeAnnotation().isEnabled()) {
             annotations.add(new ACAQAnnotation(getStackSizeAnnotation().getContent(), "" + inputData.getImage().getNSlices()));
         }
-        if(getPlaneNumberAnnotation().isEnabled()) {
+        if (getPlaneNumberAnnotation().isEnabled()) {
             annotations.add(new ACAQAnnotation(getPlaneNumberAnnotation().getContent(), "" + inputData.getImage().getStackSize()));
         }
-        if(getChannelSizeAnnotation().isEnabled()) {
+        if (getChannelSizeAnnotation().isEnabled()) {
             annotations.add(new ACAQAnnotation(getChannelSizeAnnotation().getContent(), "" + inputData.getImage().getNChannels()));
         }
-        if(getFramesSizeAnnotation().isEnabled()) {
+        if (getFramesSizeAnnotation().isEnabled()) {
             annotations.add(new ACAQAnnotation(getFramesSizeAnnotation().getContent(), "" + inputData.getImage().getNFrames()));
         }
-        if(getImageTypeAnnotation().isEnabled()) {
+        if (getImageTypeAnnotation().isEnabled()) {
             String type;
             switch (inputData.getImage().getType()) {
                 case ImagePlus.GRAY8:
@@ -145,7 +146,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends ACAQSimpleIteratingAlg
             }
             annotations.add(new ACAQAnnotation(getImageTypeAnnotation().getContent(), type));
         }
-        if(getBitDepthAnnotation().isEnabled()) {
+        if (getBitDepthAnnotation().isEnabled()) {
             annotations.add(new ACAQAnnotation(getBitDepthAnnotation().getContent(), "" + inputData.getImage().getBitDepth()));
         }
 

@@ -34,7 +34,6 @@ import org.hkijena.acaq5.extensions.parameters.table.ParameterTable;
 import org.hkijena.acaq5.extensions.parameters.table.ParameterTableEditorUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.utils.JsonUtils;
-import org.jfree.chart.util.BooleanList;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
