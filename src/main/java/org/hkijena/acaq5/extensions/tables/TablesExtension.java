@@ -109,6 +109,7 @@ public class TablesExtension extends ACAQPrepackagedDefaultJavaExtension {
         registerAlgorithm("table-filter", FilterTableAlgorithm.class, UIUtils.getAlgorithmIconURL("filter.png"));
         registerAlgorithm("table-sort", SortTableAlgorithm.class, UIUtils.getAlgorithmIconURL("sort-amount-up-alt.png"));
         registerAlgorithm("table-add-annotation-columns", AddAnnotationColumnsAlgorithm.class, UIUtils.getAlgorithmIconURL("edit-table-insert-column-right.png"));
+        registerAlgorithm("convert-annotation-table-to-annotated-tables", ConvertAnnotationTableToAnnotatedTables.class, UIUtils.getAlgorithmIconURL("annotation-table.png"));
     }
 
     private void registerParameters() {
