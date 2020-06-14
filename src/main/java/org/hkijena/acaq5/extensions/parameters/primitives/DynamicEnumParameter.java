@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.extensions.parameters.primitives;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,6 +19,7 @@ public abstract class DynamicEnumParameter {
      * Creates a new instance with null value
      */
     public DynamicEnumParameter() {
+        this.allowedValues = new ArrayList<>();
     }
 
     /**

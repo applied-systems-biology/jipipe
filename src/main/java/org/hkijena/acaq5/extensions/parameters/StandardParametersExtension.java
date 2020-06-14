@@ -85,6 +85,8 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
         registerMatrixParameters();
         registerParameterGenerators();
         registerPatternParameters();
+
+        registerMenuExtension(ParameterTesterMenuExtension.class);
     }
 
     private void registerPatternParameters() {
@@ -425,7 +427,7 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
     private void registerPrimitives() {
         // Register boolean
         registerParameterType(new BooleanPrimitiveParameterTypeDeclaration(), BooleanParameterEditorUI.class);
-        registerParameterType(new BooleanParameterTypeDeclaration(), BooleanList.class, BooleanParameterEditorUI.class);
+        registerParameterType(new BooleanParameterTypeDeclaration(), BooleanParameterEditorUI.class);
 
         // Register numbers
         registerParameterType(new BytePrimitiveParameterTypeDeclaration(), NumberParameterEditorUI.class);

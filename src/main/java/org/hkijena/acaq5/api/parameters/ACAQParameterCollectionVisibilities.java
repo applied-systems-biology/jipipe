@@ -20,6 +20,7 @@ public class ACAQParameterCollectionVisibilities {
      * Creates new instance
      */
     public ACAQParameterCollectionVisibilities() {
+        this.availableParameters = new HashMap<>();
     }
 
     /**

@@ -2,6 +2,7 @@ package org.hkijena.acaq5.api.registries;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableBiMap;
 import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.api.parameters.ACAQParameterTypeDeclaration;
 
@@ -24,6 +25,10 @@ public class ACAQParameterTypeRegistry {
             throw new RuntimeException("Parameter type with class '" + parameterTypeDeclaration.getFieldClass() + "' already exists!");
         registeredParameters.put(parameterTypeDeclaration.getId(), parameterTypeDeclaration);
         registeredParameterClasses.put(parameterTypeDeclaration.getFieldClass(), parameterTypeDeclaration);
+    }
+
+    public BiMap<String, ACAQParameterTypeDeclaration> getRegisteredParameters() {
+        return ImmutableBiMap.copyOf(registeredParameters);
     }
 
     /**
