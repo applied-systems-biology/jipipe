@@ -8,8 +8,7 @@
         "id",
         "version",
         "metadata",
-        "algorithms",
-        "annotations"
+        "algorithms"
     ],
     "properties": {
         "id": {
@@ -47,16 +46,6 @@
             "default": [],
             "items": {
               "$ref": "https://applied-systems-biology.github.io/acaq5/schemas/algorithm.schema.json"
-            }
-        },
-        "annotations": {
-            "$id": "#/properties/annotations",
-            "type": "array",
-            "title": "Annotations",
-            "description": "List of added annotations",
-            "default": [],
-            "items": {
-              "$ref": "https://applied-systems-biology.github.io/acaq5/schemas/trait.schema.json"
             }
         }
     }

@@ -20,7 +20,7 @@ public class ACAQRunSettings implements ACAQParameterCollection {
     private boolean storeToCache = false;
     private int numThreads = RuntimeSettings.getInstance().getDefaultRunThreads();
 
-    @ACAQParameter("output-path")
+    @ACAQParameter(value = "output-path", uiOrder = -999)
     @ACAQDocumentation(name = "Output folder")
     @FilePathParameterSettings(ioMode = PathEditor.IOMode.Save, pathMode = PathEditor.PathMode.DirectoriesOnly)
     public Path getOutputPath() {

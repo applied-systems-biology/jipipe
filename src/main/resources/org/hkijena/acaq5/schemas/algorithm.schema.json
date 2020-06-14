@@ -11,11 +11,7 @@
         "parameter-visibilities",
         "graph",
         "menu-path",
-        "unwanted-traits",
-        "added-traits",
-        "removed-traits",
-        "acaq:project-type",
-        "preferred-traits"
+        "acaq:project-type"
     ],
     "properties": {
         "id": {
@@ -101,27 +97,6 @@
                 "Blur"
             ]
         },
-        "unwanted-traits": {
-            "$id": "#/properties/unwanted-traits",
-            "type": "array",
-            "title": "Unwanted annotations",
-            "description": "List of annotation IDs that are bad for the algorithm",
-            "default": []
-        },
-        "added-traits": {
-            "$id": "#/properties/added-traits",
-            "type": "array",
-            "title": "Added annotations",
-            "description": "Annotations added by the algorithm",
-            "default": []
-        },
-        "removed-traits": {
-            "$id": "#/properties/removed-traits",
-            "type": "array",
-            "title": "Removed annotations",
-            "description": "Annotations removed by the algorithm. They are removed via RemoveCategory.",
-            "default": []
-        },
         "acaq:project-type": {
             "$id": "#/properties/acaq:project-type",
             "type": "string",
@@ -131,13 +106,6 @@
             "enum": [
                 "graph-wrapper-algorithm"
             ]
-        },
-        "preferred-traits": {
-            "$id": "#/properties/preferred-traits",
-            "type": "array",
-            "title": "Preferred annotations",
-            "description": "List of annotation IDs that are good for the algorithm",
-            "default": []
         }
     }
 }

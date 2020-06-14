@@ -9,8 +9,7 @@
         "acaq:algorithm-type",
         "acaq:algorithm-compartment",
         "name",
-        "description",
-        "acaq:trait-generation"
+        "description"
     ],
     "properties": {
         "acaq:slot-configuration": {
@@ -77,10 +76,6 @@
             "examples": [
                 null
             ]
-        },
-        "acaq:trait-generation": {
-            "$id": "#/properties/acaq:trait-generation",
-            "$ref": "https://applied-systems-biology.github.io/acaq5/schemas/point.schema.json"
         }
     }
 }
