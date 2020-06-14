@@ -82,6 +82,10 @@ public class ACAQFixedThreadPool {
         return maxThreads;
     }
 
+    public ExecutorService getExecutorService() {
+        return executorService;
+    }
+
     /**
      * Forces the thread pool to shut down
      */
