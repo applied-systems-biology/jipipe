@@ -328,7 +328,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm implements AC
     @ACAQDocumentation(name = "Data set matching annotations", description = "Only used if 'Data set matching strategy' is set to 'Custom'. " +
             "Determines which annotation columns are referred to match data sets.")
     @ACAQParameter(value = "acaq:iterating-algorithm:custom-matched-columns", uiOrder = 999, visibility = ACAQParameterVisibility.Visible)
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/imgplus.png")
     public StringList getCustomColumns() {
         if (customColumns == null)
             customColumns = new StringList();

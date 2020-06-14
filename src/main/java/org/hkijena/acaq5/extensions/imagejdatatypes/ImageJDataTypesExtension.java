@@ -4,6 +4,7 @@ import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
+import org.hkijena.acaq5.extensions.imagejdatatypes.algorithms.ImagePropertiesToAnnotationAlgorithm;
 import org.hkijena.acaq5.extensions.imagejdatatypes.algorithms.ImageTypeConverter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.algorithms.ImplicitImageTypeConverter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.compat.*;
@@ -218,6 +219,7 @@ public class ImageJDataTypesExtension extends ACAQPrepackagedDefaultJavaExtensio
 
         // Register algorithms
         registerAlgorithm("convert-imagej-image", ImageTypeConverter.class, UIUtils.getAlgorithmIconURL("image.png"));
+        registerAlgorithm("image-properties-to-annotation", ImagePropertiesToAnnotationAlgorithm.class, UIUtils.getAlgorithmIconURL("annotation-table.png"));
 
         // Register parameter editors
         registerEnumParameterType("import-imagej-bioformats:color-mode", BioFormatsImporter.ColorMode.class,

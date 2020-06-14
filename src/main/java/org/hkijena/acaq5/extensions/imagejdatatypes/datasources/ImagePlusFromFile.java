@@ -16,9 +16,9 @@ import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.filesystem.dataypes.FileData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.acaq5.extensions.parameters.primitives.OptionalStringParameter;
 import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.acaq5.utils.ResourceUtils;
-import org.hkijena.acaq5.utils.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
@@ -35,7 +35,7 @@ import java.util.function.Supplier;
 public class ImagePlusFromFile extends ACAQSimpleIteratingAlgorithm {
 
     private Class<? extends ACAQData> dataClass;
-    private String titleAnnotation = "Image title";
+    private OptionalStringParameter titleAnnotation = new OptionalStringParameter();
 
     /**
      * @param declaration algorithm declaration
@@ -49,6 +49,7 @@ public class ImagePlusFromFile extends ACAQSimpleIteratingAlgorithm {
                         .sealInput()
                         .build());
         this.dataClass = dataClass;
+        titleAnnotation.setContent("Image title");
     }
 
     /**
@@ -59,7 +60,7 @@ public class ImagePlusFromFile extends ACAQSimpleIteratingAlgorithm {
     public ImagePlusFromFile(ImagePlusFromFile other) {
         super(other);
         this.dataClass = other.dataClass;
-        this.titleAnnotation = other.titleAnnotation;
+        this.titleAnnotation = new OptionalStringParameter(other.titleAnnotation);
     }
 
     @Override
@@ -67,21 +68,21 @@ public class ImagePlusFromFile extends ACAQSimpleIteratingAlgorithm {
         FileData fileData = dataInterface.getInputData(getFirstInputSlot(), FileData.class);
         ImagePlusData data = (ImagePlusData) readImageFrom(fileData.getPath());
         List<ACAQAnnotation> traits = new ArrayList<>();
-        if (!StringUtils.isNullOrEmpty(titleAnnotation)) {
-            traits.add(new ACAQAnnotation(titleAnnotation, data.getImage().getTitle()));
+        if (titleAnnotation.isEnabled()) {
+            traits.add(new ACAQAnnotation(titleAnnotation.getContent(), data.getImage().getTitle()));
         }
-        dataInterface.addOutputData(getFirstOutputSlot(), data);
+        dataInterface.addOutputData(getFirstOutputSlot(), data, traits);
     }
 
     @ACAQDocumentation(name = "Title annotation", description = "Optional annotation type where the image title is written.")
     @ACAQParameter("title-annotation")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
-    public String getTitleAnnotation() {
+    public OptionalStringParameter getTitleAnnotation() {
         return titleAnnotation;
     }
 
     @ACAQParameter("title-annotation")
-    public void setTitleAnnotation(String titleAnnotation) {
+    public void setTitleAnnotation(OptionalStringParameter titleAnnotation) {
         this.titleAnnotation = titleAnnotation;
     }
 
@@ -103,5 +104,8 @@ public class ImagePlusFromFile extends ACAQSimpleIteratingAlgorithm {
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
+        if(titleAnnotation.isEnabled()) {
+            report.forCategory("Title annotation").checkNonEmpty(titleAnnotation.getContent(), this);
+        }
     }
 }
