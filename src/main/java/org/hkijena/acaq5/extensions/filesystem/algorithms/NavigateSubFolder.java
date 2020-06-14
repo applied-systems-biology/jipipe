@@ -8,6 +8,7 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.acaq5.utils.ResourceUtils;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -64,7 +65,7 @@ public class NavigateSubFolder extends ACAQSimpleIteratingAlgorithm {
      */
     @ACAQParameter("subfolder")
     @ACAQDocumentation(name = "Subfolder name")
-    @StringParameterSettings(monospace = true, icon = "folder.png")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/folder.png")
     public String getSubFolder() {
         return subFolder;
     }

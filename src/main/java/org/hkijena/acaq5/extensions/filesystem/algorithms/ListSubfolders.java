@@ -10,6 +10,7 @@ import org.hkijena.acaq5.extensions.filesystem.dataypes.FileData;
 import org.hkijena.acaq5.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.acaq5.extensions.parameters.predicates.PathPredicate;
 import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.io.IOException;
@@ -132,7 +133,7 @@ public class ListSubfolders extends ACAQSimpleIteratingAlgorithm {
     @ACAQDocumentation(name = "Subfolder", description = "Optional. If non-empty, all files are extracted from the provided sub-folder. " +
             "The sub-folder navigation is applied before recursive search (if 'Recursive' is enabled).")
     @ACAQParameter("subfolder")
-    @StringParameterSettings(monospace = true, icon = "folder.png")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/folder.png")
     public String getSubFolder() {
         return subFolder;
     }
