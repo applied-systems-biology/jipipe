@@ -9,6 +9,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.filesystem.dataypes.FileData;
 import org.hkijena.acaq5.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.acaq5.extensions.parameters.predicates.PathPredicate;
+import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.io.IOException;
@@ -126,5 +127,41 @@ public class ListSubfolders extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("only-filenames")
     public void setFilterOnlyFolderNames(boolean filterOnlyFolderNames) {
         this.filterOnlyFolderNames = filterOnlyFolderNames;
+    }
+
+    @ACAQDocumentation(name = "Subfolder", description = "Optional. If non-empty, all files are extracted from the provided sub-folder. " +
+            "The sub-folder navigation is applied before recursive search (if 'Recursive' is enabled).")
+    @ACAQParameter("subfolder")
+    @StringParameterSettings(monospace = true, icon = "folder.png")
+    public String getSubFolder() {
+        return subFolder;
+    }
+
+    @ACAQParameter("subfolder")
+    public void setSubFolder(String subFolder) {
+        this.subFolder = subFolder;
+    }
+
+    @ACAQDocumentation(name = "Recursive", description = "If enabled, the search is recursive.")
+    @ACAQParameter("recursive")
+    public boolean isRecursive() {
+        return recursive;
+    }
+
+    @ACAQParameter("recursive")
+    public void setRecursive(boolean recursive) {
+        this.recursive = recursive;
+    }
+
+    @ACAQDocumentation(name = "Recursive search follows links", description = "If enabled, a recursive search follows symbolic links. " +
+            "(Only Windows) Please note that Windows does not create symbolic links by default.")
+    @ACAQParameter("recursive-follows-links")
+    public boolean isRecursiveFollowsLinks() {
+        return recursiveFollowsLinks;
+    }
+
+    @ACAQParameter("recursive-follows-links")
+    public void setRecursiveFollowsLinks(boolean recursiveFollowsLinks) {
+        this.recursiveFollowsLinks = recursiveFollowsLinks;
     }
 }
