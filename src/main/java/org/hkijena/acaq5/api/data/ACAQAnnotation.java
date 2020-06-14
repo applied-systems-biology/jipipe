@@ -112,4 +112,9 @@ public class ACAQAnnotation implements Comparable<ACAQAnnotation> {
             return false;
         return lhs.nameEquals(rhs);
     }
+
+    @Override
+    public String toString() {
+        return name + "=" + value;
+    }
 }
