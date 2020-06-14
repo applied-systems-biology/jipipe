@@ -9,13 +9,16 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.filesystem.dataypes.FileData;
 import org.hkijena.acaq5.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.acaq5.extensions.parameters.predicates.PathPredicate;
+import org.hkijena.acaq5.utils.StringUtils;
 
 import java.io.IOException;
+import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Algorithm that lists files in each folder
@@ -32,6 +35,9 @@ public class ListFiles extends ACAQSimpleIteratingAlgorithm {
 
     private PathPredicate.List filters = new PathPredicate.List();
     private boolean filterOnlyFileNames = true;
+    private String subFolder;
+    private boolean recursive = false;
+    private boolean recursiveFollowsLinks = true;
 
     /**
      * Creates new instance
@@ -51,6 +57,9 @@ public class ListFiles extends ACAQSimpleIteratingAlgorithm {
         super(other);
         this.filterOnlyFileNames = other.filterOnlyFileNames;
         this.filters.clear();
+        this.subFolder = other.subFolder;
+        this.recursive = other.recursive;
+        this.recursiveFollowsLinks = other.recursiveFollowsLinks;
         for (PathPredicate filter : other.filters) {
             this.filters.add(new PathPredicate(filter));
         }
@@ -58,16 +67,31 @@ public class ListFiles extends ACAQSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        FolderData inputFolder = dataInterface.getInputData("Folders", FolderData.class);
+        FolderData inputFolder = dataInterface.getInputData(getFirstInputSlot(), FolderData.class);
+        Path inputPath = inputFolder.getPath();
+        if(!StringUtils.isNullOrEmpty(subFolder)) {
+            inputPath = inputPath.resolve(subFolder);
+        }
         try {
-            for (Path file : Files.list(inputFolder.getPath()).filter(Files::isRegularFile).collect(Collectors.toList())) {
+            Stream<Path> stream;
+            if(recursive) {
+                FileVisitOption[] options;
+                if(recursiveFollowsLinks)
+                    options = new FileVisitOption[] { FileVisitOption.FOLLOW_LINKS };
+                else
+                    options = new FileVisitOption[0];
+                stream = Files.walk(inputPath, options).filter(Files::isRegularFile);
+            }
+            else
+                stream = Files.list(inputPath).filter(Files::isRegularFile);
+            for (Path file : stream.collect(Collectors.toList())) {
                 Path testedFile;
                 if (filterOnlyFileNames)
                     testedFile = file.getFileName();
                 else
                     testedFile = file;
                 if (filters.isEmpty() || filters.stream().anyMatch(f -> f.test(testedFile))) {
-                    dataInterface.addOutputData("Files", new FileData(file));
+                    dataInterface.addOutputData(getFirstOutputSlot(), new FileData(file));
                 }
             }
         } catch (IOException e) {
@@ -102,5 +126,40 @@ public class ListFiles extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("only-filenames")
     public void setFilterOnlyFileNames(boolean filterOnlyFileNames) {
         this.filterOnlyFileNames = filterOnlyFileNames;
+    }
+
+    @ACAQDocumentation(name = "Subfolder", description = "Optional. If non-empty, all files are extracted from the provided sub-folder. " +
+            "The sub-folder navigation is applied before recursive search (if 'Recursive' is enabled).")
+    @ACAQParameter("subfolder")
+    public String getSubFolder() {
+        return subFolder;
+    }
+
+    @ACAQParameter("subfolder")
+    public void setSubFolder(String subFolder) {
+        this.subFolder = subFolder;
+    }
+
+    @ACAQDocumentation(name = "Recursive", description = "If enabled, the search is recursive.")
+    @ACAQParameter("recursive")
+    public boolean isRecursive() {
+        return recursive;
+    }
+
+    @ACAQParameter("recursive")
+    public void setRecursive(boolean recursive) {
+        this.recursive = recursive;
+    }
+
+    @ACAQDocumentation(name = "Recursive search follows links", description = "If enabled, a recursive search follows symbolic links. " +
+            "(Only Windows) Please note that Windows does not create symbolic links by default.")
+    @ACAQParameter("recursive-follows-links")
+    public boolean isRecursiveFollowsLinks() {
+        return recursiveFollowsLinks;
+    }
+
+    @ACAQParameter("recursive-follows-links")
+    public void setRecursiveFollowsLinks(boolean recursiveFollowsLinks) {
+        this.recursiveFollowsLinks = recursiveFollowsLinks;
     }
 }

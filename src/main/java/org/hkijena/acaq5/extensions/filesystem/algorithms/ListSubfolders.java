@@ -6,15 +6,19 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.extensions.filesystem.dataypes.FileData;
 import org.hkijena.acaq5.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.acaq5.extensions.parameters.predicates.PathPredicate;
+import org.hkijena.acaq5.utils.StringUtils;
 
 import java.io.IOException;
+import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Algorithms that lists the sub folders for each input folder
@@ -31,6 +35,9 @@ public class ListSubfolders extends ACAQSimpleIteratingAlgorithm {
 
     private PathPredicate.List filters = new PathPredicate.List();
     private boolean filterOnlyFolderNames = true;
+    private String subFolder;
+    private boolean recursive = false;
+    private boolean recursiveFollowsLinks = true;
 
     /**
      * Creates a new instance
@@ -50,6 +57,9 @@ public class ListSubfolders extends ACAQSimpleIteratingAlgorithm {
         super(other);
         this.filterOnlyFolderNames = other.filterOnlyFolderNames;
         this.filters.clear();
+        this.subFolder = other.subFolder;
+        this.recursive = other.recursive;
+        this.recursiveFollowsLinks = other.recursiveFollowsLinks;
         for (PathPredicate filter : other.filters) {
             this.filters.add(new PathPredicate(filter));
         }
@@ -57,16 +67,31 @@ public class ListSubfolders extends ACAQSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        FolderData inputFolder = dataInterface.getInputData("Folders", FolderData.class);
+        FolderData inputFolder = dataInterface.getInputData(getFirstInputSlot(), FolderData.class);
+        Path inputPath = inputFolder.getPath();
+        if(!StringUtils.isNullOrEmpty(subFolder)) {
+            inputPath = inputPath.resolve(subFolder);
+        }
         try {
-            for (Path path : Files.list(inputFolder.getPath()).filter(Files::isDirectory).collect(Collectors.toList())) {
-                Path testedPath;
-                if (filterOnlyFolderNames)
-                    testedPath = path.getFileName();
+            Stream<Path> stream;
+            if(recursive) {
+                FileVisitOption[] options;
+                if(recursiveFollowsLinks)
+                    options = new FileVisitOption[] { FileVisitOption.FOLLOW_LINKS };
                 else
-                    testedPath = path;
-                if (filters.isEmpty() || filters.stream().anyMatch(f -> f.test(testedPath))) {
-                    dataInterface.addOutputData("Subfolders", new FolderData(path));
+                    options = new FileVisitOption[0];
+                stream = Files.walk(inputPath, options).filter(Files::isDirectory);
+            }
+            else
+                stream = Files.list(inputPath).filter(Files::isDirectory);
+            for (Path file : stream.collect(Collectors.toList())) {
+                Path testedFile;
+                if (filterOnlyFolderNames)
+                    testedFile = file.getFileName();
+                else
+                    testedFile = file;
+                if (filters.isEmpty() || filters.stream().anyMatch(f -> f.test(testedFile))) {
+                    dataInterface.addOutputData(getFirstOutputSlot(), new FileData(file));
                 }
             }
         } catch (IOException e) {
