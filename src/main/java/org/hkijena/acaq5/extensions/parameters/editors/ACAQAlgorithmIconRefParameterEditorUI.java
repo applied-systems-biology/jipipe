@@ -86,7 +86,8 @@ public class ACAQAlgorithmIconRefParameterEditorUI extends ACAQParameterEditorUI
             Set<String> rawIcons = ResourceUtils.walkInternalResourceFolder("icons/algorithms");
             String basePath = ResourceUtils.getResourcePath("icons/algorithms/");
             for (String rawIcon : rawIcons) {
-                availableAlgorithmIcons.add(rawIcon.substring(basePath.length()));
+                if(rawIcon.endsWith(".png"))
+                    availableAlgorithmIcons.add(rawIcon.substring(basePath.length()));
             }
         }
         return availableAlgorithmIcons;
