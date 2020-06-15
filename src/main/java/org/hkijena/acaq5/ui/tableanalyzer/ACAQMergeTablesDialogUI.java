@@ -39,7 +39,7 @@ public class ACAQMergeTablesDialogUI extends JDialog {
         initialize();
 
         for (DocumentTabPane.DocumentTab tab : tableAnalyzerUI.getProjectWorkbench().getDocumentTabPane().getTabs()) {
-            if (tab.getContent() instanceof ACAQTableEditor && tab.getContent() != tableAnalyzerUI) {
+            if (tab.getContent() instanceof ACAQTableEditor) {
                 tableSelection.addItem(tab);
             }
         }
@@ -48,6 +48,7 @@ public class ACAQMergeTablesDialogUI extends JDialog {
     private void initialize() {
         setLayout(new BorderLayout());
         JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
 
         tableSelection = new JComboBox<>();
         tableSelection.setRenderer(new DocumentTabListCellRenderer());

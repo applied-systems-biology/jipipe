@@ -418,10 +418,26 @@ public class ResultsTableData implements ACAQData, TableModel {
      * @param destination Target table
      */
     public void addToTable(ResultsTable destination) {
+        Set<String> existingColumns = new HashSet<>(Arrays.asList(destination.getHeadings()));
+        TIntIntMap columnMap = new TIntIntHashMap();
+        for (int col = 0; col < getColumnCount(); col++) {
+            if(!existingColumns.contains(getColumnName(col))) {
+                columnMap.put(col, destination.getFreeColumn(getColumnName(col)));
+            }
+            else {
+                columnMap.put(col, destination.getColumnIndex(getColumnName(col)));
+            }
+        }
+        int startRow = destination.getCounter();
         for (int row = 0; row < table.size(); ++row) {
             destination.incrementCounter();
-            for (int columnIndex = 0; columnIndex < table.getLastColumn(); ++columnIndex) {
-                destination.addValue(table.getColumnHeading(columnIndex), table.getValue(table.getColumnHeading(columnIndex), row));
+            for (int col = 0; col < getColumnCount(); col++) {
+                if(isNumeric(col)) {
+                    destination.setValue(columnMap.get(col), row + startRow, getValueAsDouble(row, col));
+                }
+                else {
+                    destination.setValue(columnMap.get(col), row + startRow, getValueAsString(row, col));
+                }
             }
         }
     }

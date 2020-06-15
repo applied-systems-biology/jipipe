@@ -15,6 +15,8 @@ package org.hkijena.acaq5.ui.tableanalyzer;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.primitives.Ints;
+import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
+import org.hkijena.acaq5.api.registries.ACAQImageJAdapterRegistry;
 import org.hkijena.acaq5.api.registries.ACAQTableRegistry;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
@@ -85,6 +87,10 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
             JMenuItem importFromCSV = new JMenuItem("from CSV table (*.csv)", UIUtils.getIconFromResources("filetype-csv.png"));
             importFromCSV.addActionListener(e -> importFromCSV());
             exportPopup.add(importFromCSV);
+
+            JMenuItem importFromImageJ = new JMenuItem("from ImageJ", UIUtils.getIconFromResources("imagej.png"));
+            importFromImageJ.addActionListener(e -> importFromImageJ());
+            exportPopup.add(importFromImageJ);
         }
         toolBar.add(openButton);
 
@@ -209,6 +215,10 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
                 () -> {
                 });
         convertSelectedCellsMenu = UIUtils.addPopupMenuToComponent(convertSelectedCellsButton);
+        addActionToPalette("To ImageJ",
+                "Exports the table to ImageJ",
+                UIUtils.getIconFromResources("imagej.png"),
+                this::exportToImageJ);
         palettePanel.addVerticalGlue();
 
         jxTable = new JXTable();
@@ -234,6 +244,24 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
         add(splitPane, BorderLayout.CENTER);
 
         jxTable.getSelectionModel().addListSelectionListener(listSelectionEvent -> updateConvertMenu());
+    }
+
+    private void exportToImageJ() {
+        ACAQImageJAdapterRegistry.getInstance().getAdapterForACAQData(ResultsTableData.class).convertACAQToImageJ(
+                tableModel,
+                true,
+                false,
+                "" + tableModel
+        );
+    }
+
+    private void importFromImageJ() {
+        ACAQOpenTableFromImageJDialogUI dialog = new ACAQOpenTableFromImageJDialogUI(getWorkbench());
+        dialog.setSize(640,480);
+        dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
+        dialog.pack();
+        dialog.setModal(true);
+        dialog.setVisible(true);
     }
 
     private void selectedColumnsToString() {
@@ -480,8 +508,10 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
     }
 
     private void addColumn(boolean stringColumn) {
-        String name = JOptionPane.showInputDialog(this,
-                "Please provide a name for the new column", "Column " + (tableModel.getColumnCount() + 1));
+        String name = UIUtils.getUniqueStringByDialog(this,
+                "Please enter the name of the new column",
+                "Column",
+                tableModel::containsColumn);
         if (name != null && !name.isEmpty()) {
             createUndoSnapshot();
             tableModel.addColumn(name, stringColumn);
@@ -502,7 +532,9 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
                 sourceColumnName, tableModel::containsColumn);
         if (!StringUtils.isNullOrEmpty(newName) && !tableModel.containsColumn(newName)) {
             createUndoSnapshot();
+            jxTable.setModel(new DefaultTableModel());
             tableModel.duplicateColumn(sourceColumn, newName);
+            jxTable.setModel(tableModel);
             refreshTable();
         }
     }
@@ -539,8 +571,10 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
             String oldName = tableModel.getColumnName(jxTable.convertColumnIndexToModel(jxTable.getSelectedColumn()));
             String name = UIUtils.getUniqueStringByDialog(this, "Please input a new name", oldName, tableModel::containsColumn);
             if (!StringUtils.isNullOrEmpty(name) && !Objects.equals(name, oldName)) {
+                jxTable.setModel(new DefaultTableModel());
                 tableModel.renameColumn(oldName, name);
-                refreshTable();
+                jxTable.setModel(tableModel);
+                jxTable.packAll();
             }
         }
     }
@@ -564,7 +598,9 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
                     int modelIndex = jxTable.convertColumnIndexToModel(viewIndex);
                     removedColumns.add(tableModel.getColumnName(modelIndex));
                 }
+                jxTable.setModel(new DefaultTableModel());
                 tableModel.removeColumns(removedColumns);
+                jxTable.setModel(tableModel);
                 jxTable.packAll();
             }
         }

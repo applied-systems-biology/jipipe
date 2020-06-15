@@ -53,6 +53,9 @@ public class ResultsTableDataImageJAdapter implements ImageJDatatypeAdapter {
         if (activate) {
             ResultsTable.getResultsTable().reset();
             ((ResultsTableData) acaqData).addToTable(ResultsTable.getResultsTable());
+            if(!noWindow) {
+                ResultsTable.getResultsTable().show("Results");
+            }
         }
         return resultsTable;
     }
