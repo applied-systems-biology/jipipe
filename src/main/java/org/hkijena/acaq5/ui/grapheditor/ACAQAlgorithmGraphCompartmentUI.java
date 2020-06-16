@@ -6,13 +6,17 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQData;
+import org.hkijena.acaq5.api.grouping.NodeGroup;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.events.AlgorithmUIActionRequestedEvent;
+import org.hkijena.acaq5.ui.events.DefaultAlgorithmUIActionRequestedEvent;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQMultiAlgorithmSelectionPanelUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQSingleAlgorithmSelectionPanelUI;
+import org.hkijena.acaq5.ui.grouping.ACAQNodeGroupUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIAlgorithmRegistry;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -38,7 +42,7 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
      * @param algorithmGraph The graph
      * @param compartment    The compartment
      */
-    public ACAQAlgorithmGraphCompartmentUI(ACAQProjectWorkbench workbenchUI, ACAQAlgorithmGraph algorithmGraph, String compartment) {
+    public ACAQAlgorithmGraphCompartmentUI(ACAQWorkbench workbenchUI, ACAQAlgorithmGraph algorithmGraph, String compartment) {
         super(workbenchUI, algorithmGraph, compartment);
         documentationPanel = new MarkdownReader(false);
         documentationPanel.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md"));
@@ -73,6 +77,17 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
         } else {
             setPropertyPanel(new ACAQMultiAlgorithmSelectionPanelUI((ACAQProjectWorkbench) getWorkbench(), getCanvasUI(),
                     getSelection().stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet())));
+        }
+    }
+
+    @Subscribe
+    public void onDefaultActionRequested(DefaultAlgorithmUIActionRequestedEvent event) {
+        if(event.getUi().getAlgorithm() instanceof NodeGroup) {
+            if(event.getUi().getAlgorithm() instanceof NodeGroup) {
+                if(getWorkbench() instanceof ACAQProjectWorkbench) {
+                    ACAQNodeGroupUI.openGroupNodeGraph(getWorkbench(), (NodeGroup) event.getUi().getAlgorithm(), true);
+                }
+            }
         }
     }
 

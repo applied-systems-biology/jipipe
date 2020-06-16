@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.extensions.parameters.collections;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
@@ -19,11 +20,11 @@ public class ListParameterEditorUI extends ACAQParameterEditorUI {
     /**
      * Creates new instance
      *
-     * @param context         SciJava context
+     * @param workbench        workbench
      * @param parameterAccess Parameter
      */
-    public ListParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
-        super(context, parameterAccess);
+    public ListParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {
+        super(workbench, parameterAccess);
         initialize();
         reload();
     }
@@ -72,7 +73,7 @@ public class ListParameterEditorUI extends ACAQParameterEditorUI {
                     parameter,
                     parameter.getContentClass(),
                     i);
-            ACAQParameterEditorUI ui = ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getContext(), access);
+            ACAQParameterEditorUI ui = ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getWorkbench(), access);
             formPanel.addToForm(ui, removeButton, null);
         }
     }

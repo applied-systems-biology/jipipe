@@ -5,7 +5,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
-import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.GraphWrapperAlgorithmDeclaration;
+import org.hkijena.acaq5.api.grouping.JsonAlgorithmDeclaration;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWindow;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
@@ -18,11 +18,11 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Exports a {@link GraphWrapperAlgorithmDeclaration}
+ * Exports a {@link JsonAlgorithmDeclaration}
  */
 public class ACAQGraphWrapperAlgorithmExporter extends ACAQProjectWorkbenchPanel {
 
-    private GraphWrapperAlgorithmDeclaration algorithmDeclaration;
+    private JsonAlgorithmDeclaration algorithmDeclaration;
     private ParameterPanel parameterAccessUI;
     private JPopupMenu exportMenu;
 
@@ -34,7 +34,7 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQProjectWorkbenchPanel
      */
     public ACAQGraphWrapperAlgorithmExporter(ACAQProjectWorkbench workbenchUI, ACAQAlgorithmGraph wrappedGraph) {
         super(workbenchUI);
-        algorithmDeclaration = new GraphWrapperAlgorithmDeclaration();
+        algorithmDeclaration = new JsonAlgorithmDeclaration();
         algorithmDeclaration.setGraph(wrappedGraph);
         algorithmDeclaration.getMetadata().setName("My algorithm");
         algorithmDeclaration.getMetadata().setDescription("An ACAQ5 algorithm");
@@ -153,7 +153,7 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQProjectWorkbenchPanel
     /**
      * @return The declaration
      */
-    public GraphWrapperAlgorithmDeclaration getAlgorithmDeclaration() {
+    public JsonAlgorithmDeclaration getAlgorithmDeclaration() {
         return algorithmDeclaration;
     }
 }

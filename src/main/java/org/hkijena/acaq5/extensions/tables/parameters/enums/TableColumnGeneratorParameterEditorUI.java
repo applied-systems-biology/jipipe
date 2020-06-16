@@ -6,6 +6,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.extensions.tables.ColumnContentType;
 import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.components.ACAQDataDeclarationListCellRenderer;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -26,11 +27,11 @@ public class TableColumnGeneratorParameterEditorUI extends ACAQParameterEditorUI
     private JToggleButton textColumnToggle;
 
     /**
-     * @param context         SciJava context
+     * @param workbench        workbench
      * @param parameterAccess the parameter
      */
-    public TableColumnGeneratorParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
-        super(context, parameterAccess);
+    public TableColumnGeneratorParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {
+        super(workbench, parameterAccess);
         initialize();
         reload();
     }

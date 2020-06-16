@@ -5,6 +5,8 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.api.registries.ACAQParameterTypeRegistry;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
+import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
 import org.scijava.Context;
 import org.scijava.Contextual;
 
@@ -14,7 +16,7 @@ import java.util.Objects;
 /**
  * A UI for a parameter type
  */
-public abstract class ACAQParameterEditorUI extends JPanel implements Contextual {
+public abstract class ACAQParameterEditorUI extends ACAQWorkbenchPanel implements Contextual {
     private Context context;
     private ACAQParameterAccess parameterAccess;
     private boolean preventReload = false;
@@ -22,11 +24,12 @@ public abstract class ACAQParameterEditorUI extends JPanel implements Contextual
     /**
      * Creates new instance
      *
-     * @param context         SciJava context
+     * @param workbench the workbech
      * @param parameterAccess Parameter
      */
-    public ACAQParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
-        this.context = context;
+    public ACAQParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {
+        super(workbench);
+        this.context = workbench.getContext();
         this.parameterAccess = parameterAccess;
         parameterAccess.getSource().getEventBus().register(this);
     }

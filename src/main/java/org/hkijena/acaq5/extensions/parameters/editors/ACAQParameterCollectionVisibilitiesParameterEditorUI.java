@@ -4,6 +4,7 @@ import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollectionVisibilities;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -25,11 +26,11 @@ public class ACAQParameterCollectionVisibilitiesParameterEditorUI extends ACAQPa
     /**
      * Creates new instance
      *
-     * @param context         SciJava context
+     * @param workbench        workbench
      * @param parameterAccess Parameter
      */
-    public ACAQParameterCollectionVisibilitiesParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
-        super(context, parameterAccess);
+    public ACAQParameterCollectionVisibilitiesParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {
+        super(workbench, parameterAccess);
         initialize();
         reload();
     }
@@ -72,7 +73,7 @@ public class ACAQParameterCollectionVisibilitiesParameterEditorUI extends ACAQPa
                 ACAQParameterAccess parameterAccess = parameters.get(key);
 
                 ACAQParameterEditorUI ui = ACAQDefaultRegistry.getInstance()
-                        .getUIParameterTypeRegistry().createEditorFor(getContext(), parameterAccess);
+                        .getUIParameterTypeRegistry().createEditorFor(getWorkbench(), parameterAccess);
 
                 JPanel labelPanel = new JPanel(new BorderLayout(8, 8));
                 JToggleButton exportParameterToggle = new JToggleButton(UIUtils.getIconFromResources("eye.png"));

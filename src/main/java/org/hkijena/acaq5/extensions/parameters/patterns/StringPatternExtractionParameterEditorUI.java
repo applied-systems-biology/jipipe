@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.extensions.parameters.patterns;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -17,11 +18,11 @@ import java.awt.*;
 public class StringPatternExtractionParameterEditorUI extends ACAQParameterEditorUI {
 
     /**
-     * @param context         SciJava context
+     * @param workbench        workbench
      * @param parameterAccess the parameter
      */
-    public StringPatternExtractionParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
-        super(context, parameterAccess);
+    public StringPatternExtractionParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {
+        super(workbench, parameterAccess);
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         reload();
     }

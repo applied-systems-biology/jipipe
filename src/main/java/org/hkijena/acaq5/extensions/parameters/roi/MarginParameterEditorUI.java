@@ -3,6 +3,7 @@ package org.hkijena.acaq5.extensions.parameters.roi;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQTraversedParameterCollection;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -25,11 +26,11 @@ public class MarginParameterEditorUI extends ACAQParameterEditorUI {
     private ParameterPanel parameterPanel;
 
     /**
-     * @param context         SciJava context
+     * @param workbench        workbench
      * @param parameterAccess the parameter
      */
-    public MarginParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
-        super(context, parameterAccess);
+    public MarginParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {
+        super(workbench, parameterAccess);
         initialize();
         reload();
     }
@@ -47,7 +48,7 @@ public class MarginParameterEditorUI extends ACAQParameterEditorUI {
         JPanel content = new JPanel(new BorderLayout());
         initializeAnchorSelection(content);
 
-        parameterPanel = new ParameterPanel(getContext(), null, null, ParameterPanel.NO_EMPTY_GROUP_HEADERS);
+        parameterPanel = new ParameterPanel(getWorkbench(), null, null, ParameterPanel.NO_EMPTY_GROUP_HEADERS);
         content.add(parameterPanel, BorderLayout.CENTER);
 
         add(content, BorderLayout.CENTER);

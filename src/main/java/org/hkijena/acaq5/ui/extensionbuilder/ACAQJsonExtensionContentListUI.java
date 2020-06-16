@@ -7,7 +7,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.events.ExtensionContentAddedEvent;
 import org.hkijena.acaq5.api.events.ExtensionContentRemovedEvent;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
-import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.GraphWrapperAlgorithmDeclaration;
+import org.hkijena.acaq5.api.grouping.JsonAlgorithmDeclaration;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -90,14 +90,14 @@ public class ACAQJsonExtensionContentListUI extends ACAQJsonExtensionWorkbenchPa
 
     private void removeSelection() {
         for (Object item : ImmutableList.copyOf(list.getSelectedValuesList())) {
-            if (item instanceof GraphWrapperAlgorithmDeclaration) {
-                getProject().removeAlgorithm((GraphWrapperAlgorithmDeclaration) item);
+            if (item instanceof JsonAlgorithmDeclaration) {
+                getProject().removeAlgorithm((JsonAlgorithmDeclaration) item);
             }
         }
     }
 
     private void addAlgorithm() {
-        GraphWrapperAlgorithmDeclaration declaration = new GraphWrapperAlgorithmDeclaration();
+        JsonAlgorithmDeclaration declaration = new JsonAlgorithmDeclaration();
         declaration.getMetadata().setName("");
         declaration.setGraph(new ACAQAlgorithmGraph());
         getProject().addAlgorithm(declaration);
@@ -150,8 +150,8 @@ public class ACAQJsonExtensionContentListUI extends ACAQJsonExtensionWorkbenchPa
         if (currentlySelectedValue != this.currentlySelectedValue) {
             this.currentlySelectedValue = currentlySelectedValue;
             if (currentlySelectedValue != null) {
-                if (currentlySelectedValue instanceof GraphWrapperAlgorithmDeclaration) {
-                    splitPane.setRightComponent(new GraphWrapperAlgorithmDeclarationUI(getExtensionWorkbenchUI(), (GraphWrapperAlgorithmDeclaration) currentlySelectedValue));
+                if (currentlySelectedValue instanceof JsonAlgorithmDeclaration) {
+                    splitPane.setRightComponent(new GraphWrapperAlgorithmDeclarationUI(getExtensionWorkbenchUI(), (JsonAlgorithmDeclaration) currentlySelectedValue));
                 }
             } else {
                 splitPane.setRightComponent(new JPanel());

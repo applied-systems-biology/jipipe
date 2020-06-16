@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.extensions.parameters.generators;
 
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.scijava.Context;
 
 /**
@@ -10,9 +11,9 @@ public class FloatRangeParameterGenerator extends NumberRangeParameterGenerator<
     /**
      * Creates a new instance
      *
-     * @param context the SciJava context
+     * @param workbench the SciJava context
      */
-    public FloatRangeParameterGenerator(Context context) {
-        super(context, Float.class);
+    public FloatRangeParameterGenerator(ACAQWorkbench workbench) {
+        super(workbench, Byte.class);
     }
 }

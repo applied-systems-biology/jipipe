@@ -6,12 +6,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.GraphWrapperAlgorithmDeclaration;
+import org.hkijena.acaq5.api.grouping.JsonAlgorithmDeclaration;
 
 import java.io.IOException;
 
 /**
- * Used by {@link GraphWrapperAlgorithmDeclaration} to setup icons
+ * Used by {@link JsonAlgorithmDeclaration} to setup icons
  */
 @JsonSerialize(using = ACAQAlgorithmIconRef.Serializer.class)
 @JsonDeserialize(using = ACAQAlgorithmIconRef.Deserializer.class)

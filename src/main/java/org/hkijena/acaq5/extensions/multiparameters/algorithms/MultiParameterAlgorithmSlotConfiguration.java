@@ -43,8 +43,8 @@ public class MultiParameterAlgorithmSlotConfiguration extends ACAQMutableSlotCon
         setOutputSealed(false);
         setAllowedInputSlotTypes(getUnhiddenRegisteredDataTypes());
         setAllowedOutputSlotTypes(getUnhiddenRegisteredDataTypes());
-        clearInputSlots();
-        clearOutputSlots();
+        clearInputSlots(true);
+        clearOutputSlots(true);
 
         if (algorithmInstance == null) {
             setInputSealed(true);

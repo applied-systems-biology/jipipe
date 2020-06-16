@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.extensions.parameters.primitives;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.ReflectionUtils;
 import org.scijava.Context;
@@ -20,11 +21,11 @@ public class DynamicEnumParameterEditorUI extends ACAQParameterEditorUI {
     private JComboBox<Object> comboBox;
 
     /**
-     * @param context         SciJava context
+     * @param workbench        workbench
      * @param parameterAccess the parameter
      */
-    public DynamicEnumParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
-        super(context, parameterAccess);
+    public DynamicEnumParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {
+        super(workbench, parameterAccess);
         initialize();
         reload();
     }

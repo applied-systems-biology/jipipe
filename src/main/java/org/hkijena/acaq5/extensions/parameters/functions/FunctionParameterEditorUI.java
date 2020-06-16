@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.extensions.parameters.functions;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
@@ -19,11 +20,11 @@ public class FunctionParameterEditorUI extends ACAQParameterEditorUI {
     /**
      * Creates new instance
      *
-     * @param context         SciJava context
+     * @param workbench        workbench
      * @param parameterAccess Parameter
      */
-    public FunctionParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
-        super(context, parameterAccess);
+    public FunctionParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {
+        super(workbench, parameterAccess);
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEtchedBorder());
         JToolBar toolBar = new JToolBar();
@@ -48,8 +49,8 @@ public class FunctionParameterEditorUI extends ACAQParameterEditorUI {
         FunctionParameterParameterAccess<Object, Object, Object> parameterAccess = new FunctionParameterParameterAccess<>(getParameterAccess());
         FunctionParameterOutputAccess<Object, Object, Object> outputAccess = new FunctionParameterOutputAccess<>(getParameterAccess());
 
-        formPanel.addToForm(ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getContext(), inputAccess), new JLabel(functionParameter.renderInputName()), null);
-        formPanel.addToForm(ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getContext(), parameterAccess), new JLabel(functionParameter.renderParameterName()), null);
-        formPanel.addToForm(ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getContext(), outputAccess), new JLabel(functionParameter.renderOutputName()), null);
+        formPanel.addToForm(ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getWorkbench(), inputAccess), new JLabel(functionParameter.renderInputName()), null);
+        formPanel.addToForm(ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getWorkbench(), parameterAccess), new JLabel(functionParameter.renderParameterName()), null);
+        formPanel.addToForm(ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getWorkbench(), outputAccess), new JLabel(functionParameter.renderOutputName()), null);
     }
 }

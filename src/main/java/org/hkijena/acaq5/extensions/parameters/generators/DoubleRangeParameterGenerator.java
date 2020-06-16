@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.extensions.parameters.generators;
 
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.scijava.Context;
 
 /**
@@ -10,9 +11,9 @@ public class DoubleRangeParameterGenerator extends NumberRangeParameterGenerator
     /**
      * Creates a new instance
      *
-     * @param context the SciJava context
+     * @param workbench the SciJava context
      */
-    public DoubleRangeParameterGenerator(Context context) {
-        super(context, Double.class);
+    public DoubleRangeParameterGenerator(ACAQWorkbench workbench) {
+        super(workbench, Byte.class);
     }
 }

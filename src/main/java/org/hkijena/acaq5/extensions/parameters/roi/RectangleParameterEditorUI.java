@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.extensions.parameters.roi;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.scijava.Context;
 
@@ -19,11 +20,11 @@ public class RectangleParameterEditorUI extends ACAQParameterEditorUI {
     private boolean isReloading = false;
 
     /**
-     * @param context         SciJava context
+     * @param workbench        workbench
      * @param parameterAccess the parameter
      */
-    public RectangleParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
-        super(context, parameterAccess);
+    public RectangleParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {
+        super(workbench, parameterAccess);
         initialize();
         reload();
     }

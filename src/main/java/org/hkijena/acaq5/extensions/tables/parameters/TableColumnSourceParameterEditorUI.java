@@ -2,6 +2,7 @@ package org.hkijena.acaq5.extensions.tables.parameters;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQTraversedParameterCollection;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -19,11 +20,11 @@ public class TableColumnSourceParameterEditorUI extends ACAQParameterEditorUI {
     private JToggleButton generateColumnToggle;
 
     /**
-     * @param context         SciJava context
+     * @param workbench        workbench
      * @param parameterAccess the parameter
      */
-    public TableColumnSourceParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
-        super(context, parameterAccess);
+    public TableColumnSourceParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {
+        super(workbench, parameterAccess);
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         reload();
     }
@@ -48,10 +49,10 @@ public class TableColumnSourceParameterEditorUI extends ACAQParameterEditorUI {
 
         if (parameter.getMode() == TableColumnSourceParameter.Mode.PickColumn) {
             pickColumnToggle.setSelected(true);
-            add(ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getContext(), traversedParameterCollection.getParameters().get("column-source")));
+            add(ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getWorkbench(), traversedParameterCollection.getParameters().get("column-source")));
         } else if (parameter.getMode() == TableColumnSourceParameter.Mode.GenerateColumn) {
             generateColumnToggle.setSelected(true);
-            add(ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getContext(), traversedParameterCollection.getParameters().get("generator-source")));
+            add(ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getWorkbench(), traversedParameterCollection.getParameters().get("generator-source")));
         }
 
         revalidate();

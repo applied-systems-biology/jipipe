@@ -201,6 +201,14 @@ public class ACAQVerticalAlgorithmUI extends ACAQAlgorithmUI {
                 createInputSlots = false;
             }
         }
+        if(!getAlgorithm().renderInputSlots()) {
+            createAddInputSlotButton = false;
+            createInputSlots = false;
+        }
+        if(!getAlgorithm().renderOutputSlots()) {
+            createAddOutputSlotButton = false;
+            createOutputSlots = false;
+        }
 
         final int displayedInputColumns = getDisplayedInputColumns();
         final int displayedOutputColumns = getDisplayedOutputColumns();

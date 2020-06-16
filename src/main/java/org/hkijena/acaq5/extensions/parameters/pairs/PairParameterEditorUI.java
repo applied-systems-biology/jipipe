@@ -1,6 +1,7 @@
 package org.hkijena.acaq5.extensions.parameters.pairs;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
@@ -19,11 +20,11 @@ public class PairParameterEditorUI extends ACAQParameterEditorUI {
     /**
      * Creates new instance
      *
-     * @param context         SciJava context
+     * @param workbench        workbench
      * @param parameterAccess Parameter
      */
-    public PairParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
-        super(context, parameterAccess);
+    public PairParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {
+        super(workbench, parameterAccess);
         reload();
     }
 
@@ -53,8 +54,8 @@ public class PairParameterEditorUI extends ACAQParameterEditorUI {
             singleRowChevron = settings.singleRowWithChevron();
         }
 
-        ACAQParameterEditorUI keyEditor = ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getContext(), keyAccess);
-        ACAQParameterEditorUI valueEditor = ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getContext(), valueAccess);
+        ACAQParameterEditorUI keyEditor = ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getWorkbench(), keyAccess);
+        ACAQParameterEditorUI valueEditor = ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getWorkbench(), valueAccess);
 
         if (singleRow) {
             setLayout(new BoxLayout(this, BoxLayout.X_AXIS));

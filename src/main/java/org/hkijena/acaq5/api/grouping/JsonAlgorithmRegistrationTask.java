@@ -1,11 +1,10 @@
-package org.hkijena.acaq5.extensions.standardalgorithms.api.registries;
+package org.hkijena.acaq5.api.grouping;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDefaultAlgorithmRegistrationTask;
-import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.GraphWrapperAlgorithmDeclaration;
 import org.hkijena.acaq5.ui.registries.ACAQUIAlgorithmRegistry;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.ResourceUtils;
@@ -14,9 +13,9 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * Registers a {@link GraphWrapperAlgorithmDeclaration}
+ * Registers a {@link JsonAlgorithmDeclaration}
  */
-public class GraphWrapperAlgorithmRegistrationTask extends ACAQDefaultAlgorithmRegistrationTask {
+public class JsonAlgorithmRegistrationTask extends ACAQDefaultAlgorithmRegistrationTask {
 
     private JsonNode jsonNode;
     private ACAQDependency source;
@@ -26,7 +25,7 @@ public class GraphWrapperAlgorithmRegistrationTask extends ACAQDefaultAlgorithmR
      * @param jsonNode The JSON serialized graph wrapper algorithm
      * @param source   dependency that registers the algorithm
      */
-    public GraphWrapperAlgorithmRegistrationTask(JsonNode jsonNode, ACAQDependency source) {
+    public JsonAlgorithmRegistrationTask(JsonNode jsonNode, ACAQDependency source) {
         this.jsonNode = jsonNode;
         this.source = source;
         findDependencyAlgorithms();
@@ -46,7 +45,7 @@ public class GraphWrapperAlgorithmRegistrationTask extends ACAQDefaultAlgorithmR
             return;
         alreadyRegistered = true;
         try {
-            GraphWrapperAlgorithmDeclaration declaration = JsonUtils.getObjectMapper().readerFor(GraphWrapperAlgorithmDeclaration.class).readValue(jsonNode);
+            JsonAlgorithmDeclaration declaration = JsonUtils.getObjectMapper().readerFor(JsonAlgorithmDeclaration.class).readValue(jsonNode);
             ACAQAlgorithmRegistry.getInstance().register(declaration, source);
             if (declaration.getIcon().getIconName() != null) {
                 ACAQUIAlgorithmRegistry.getInstance().registerIcon(declaration,

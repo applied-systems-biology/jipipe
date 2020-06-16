@@ -1,5 +1,6 @@
 package org.hkijena.acaq5.extensions.parameters.generators;
 
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.scijava.Context;
 
 /**
@@ -10,9 +11,9 @@ public class ByteRangeParameterGenerator extends NumberRangeParameterGenerator<B
     /**
      * Creates a new instance
      *
-     * @param context the SciJava context
+     * @param workbench the SciJava context
      */
-    public ByteRangeParameterGenerator(Context context) {
-        super(context, Byte.class);
+    public ByteRangeParameterGenerator(ACAQWorkbench workbench) {
+        super(workbench, Byte.class);
     }
 }

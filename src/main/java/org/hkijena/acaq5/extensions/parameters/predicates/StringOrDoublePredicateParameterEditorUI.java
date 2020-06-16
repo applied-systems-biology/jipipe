@@ -3,6 +3,7 @@ package org.hkijena.acaq5.extensions.parameters.predicates;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQTraversedParameterCollection;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -20,11 +21,11 @@ public class StringOrDoublePredicateParameterEditorUI extends ACAQParameterEdito
     private JToggleButton stringToggle;
 
     /**
-     * @param context         SciJava context
+     * @param workbench        workbench
      * @param parameterAccess the parameter
      */
-    public StringOrDoublePredicateParameterEditorUI(Context context, ACAQParameterAccess parameterAccess) {
-        super(context, parameterAccess);
+    public StringOrDoublePredicateParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {
+        super(workbench, parameterAccess);
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         reload();
     }
@@ -50,10 +51,10 @@ public class StringOrDoublePredicateParameterEditorUI extends ACAQParameterEdito
 
         if (parameter.getFilterMode() == StringOrDoublePredicate.FilterMode.Double) {
             doubleToggle.setSelected(true);
-            add(ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getContext(), traversedParameterCollection.getParameters().get("number-filter")));
+            add(ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getWorkbench(), traversedParameterCollection.getParameters().get("number-filter")));
         } else if (parameter.getFilterMode() == StringOrDoublePredicate.FilterMode.String) {
             stringToggle.setSelected(true);
-            add(ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getContext(), traversedParameterCollection.getParameters().get("string-filter")));
+            add(ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getWorkbench(), traversedParameterCollection.getParameters().get("string-filter")));
         }
 
         revalidate();

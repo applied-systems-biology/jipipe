@@ -4,6 +4,7 @@ import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.api.ACAQDefaultDocumentation;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterGeneratorUI;
 import org.scijava.Context;
@@ -40,11 +41,11 @@ public class ACAQUIParameterTypeRegistry {
     /**
      * Creates editor for the parameter
      *
-     * @param context         SciJava context
+     * @param workbench         SciJava context
      * @param parameterAccess the parameter
      * @return Parameter editor UI
      */
-    public ACAQParameterEditorUI createEditorFor(Context context, ACAQParameterAccess parameterAccess) {
+    public ACAQParameterEditorUI createEditorFor(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {
         Class<? extends ACAQParameterEditorUI> uiClass = parameterTypes.getOrDefault(parameterAccess.getFieldClass(), null);
         if (uiClass == null) {
             // Search a matching one
@@ -59,7 +60,7 @@ public class ACAQUIParameterTypeRegistry {
             throw new NullPointerException("Could not find parameter editor for parameter class '" + parameterAccess.getFieldClass() + "'");
         }
         try {
-            return uiClass.getConstructor(Context.class, ACAQParameterAccess.class).newInstance(context, parameterAccess);
+            return uiClass.getConstructor(ACAQWorkbench.class, ACAQParameterAccess.class).newInstance(workbench, parameterAccess);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }

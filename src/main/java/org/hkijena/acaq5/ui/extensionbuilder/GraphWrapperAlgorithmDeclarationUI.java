@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.ui.extensionbuilder;
 
-import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.GraphWrapperAlgorithmDeclaration;
+import org.hkijena.acaq5.api.grouping.JsonAlgorithmDeclaration;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
@@ -13,17 +13,17 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * UI around a {@link GraphWrapperAlgorithmDeclaration}
+ * UI around a {@link JsonAlgorithmDeclaration}
  */
 public class GraphWrapperAlgorithmDeclarationUI extends ACAQJsonExtensionWorkbenchPanel {
 
-    private GraphWrapperAlgorithmDeclaration declaration;
+    private JsonAlgorithmDeclaration declaration;
 
     /**
      * @param workbenchUI the workbench
      * @param declaration the algorithm declaration
      */
-    public GraphWrapperAlgorithmDeclarationUI(ACAQJsonExtensionWorkbench workbenchUI, GraphWrapperAlgorithmDeclaration declaration) {
+    public GraphWrapperAlgorithmDeclarationUI(ACAQJsonExtensionWorkbench workbenchUI, JsonAlgorithmDeclaration declaration) {
         super(workbenchUI);
         this.declaration = declaration;
 
@@ -83,7 +83,7 @@ public class GraphWrapperAlgorithmDeclarationUI extends ACAQJsonExtensionWorkben
         }
     }
 
-    public GraphWrapperAlgorithmDeclaration getDeclaration() {
+    public JsonAlgorithmDeclaration getDeclaration() {
         return declaration;
     }
 }

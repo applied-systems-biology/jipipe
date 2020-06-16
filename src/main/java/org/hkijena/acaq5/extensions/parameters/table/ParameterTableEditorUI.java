@@ -2,6 +2,7 @@ package org.hkijena.acaq5.extensions.parameters.table;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterGeneratorUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
@@ -30,11 +31,11 @@ public class ParameterTableEditorUI extends ACAQParameterEditorUI {
     /**
      * Creates new instance
      *
-     * @param context         SciJava context
+     * @param workbench        workbench
      * @param parameterAccess Parameter
      */
-    public ParameterTableEditorUI(Context context, ACAQParameterAccess parameterAccess) {
-        super(context, parameterAccess);
+    public ParameterTableEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {
+        super(workbench, parameterAccess);
         initialize();
         reload();
     }
@@ -196,7 +197,7 @@ public class ParameterTableEditorUI extends ACAQParameterEditorUI {
                 ParameterTable parameterTable = getParameter(ParameterTable.class);
                 ParameterTableCellAccess access = new ParameterTableCellAccess(getParameterAccess(), parameterTable,
                         currentSelection.x, currentSelection.y);
-                currentEditor = ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getContext(), access);
+                currentEditor = ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getWorkbench(), access);
                 add(currentEditor, BorderLayout.SOUTH);
             }
         }

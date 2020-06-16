@@ -1,4 +1,4 @@
-package org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms;
+package org.hkijena.acaq5.api.grouping;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
@@ -27,9 +27,9 @@ import java.util.stream.Collectors;
 /**
  * Declaration of a {@link GraphWrapperAlgorithm}
  */
-public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQValidatable, ACAQParameterCollection {
+public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQValidatable, ACAQParameterCollection {
 
-    private EventBus eventBus = new EventBus();
+    private final EventBus eventBus = new EventBus();
     private String id;
     private ACAQProjectMetadata metadata = new ACAQProjectMetadata();
     private ACAQAlgorithmCategory category = ACAQAlgorithmCategory.Miscellaneous;
@@ -45,7 +45,7 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
     /**
      * Creates a new declaration
      */
-    public GraphWrapperAlgorithmDeclaration() {
+    public JsonAlgorithmDeclaration() {
         graph.getEventBus().register(this);
     }
 
@@ -69,12 +69,12 @@ public class GraphWrapperAlgorithmDeclaration implements ACAQAlgorithmDeclaratio
 
     @Override
     public Class<? extends ACAQGraphNode> getAlgorithmClass() {
-        return GraphWrapperAlgorithm.class;
+        return JsonAlgorithm.class;
     }
 
     @Override
     public ACAQGraphNode newInstance() {
-        return new GraphWrapperAlgorithm(this);
+        return new JsonAlgorithm(this);
     }
 
     @Override

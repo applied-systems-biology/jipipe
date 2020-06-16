@@ -74,7 +74,7 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
         // Create settings panel
         DocumentTabPane tabbedPane = new DocumentTabPane();
         tabbedPane.addTab("Settings", UIUtils.getIconFromResources("cog.png"),
-                new ParameterPanel(getWorkbench().getContext(),
+                new ParameterPanel(getWorkbench(),
                         this,
                         null,
                         ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SCROLLING),

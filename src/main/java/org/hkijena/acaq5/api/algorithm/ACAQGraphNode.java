@@ -267,15 +267,17 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
      */
     @Subscribe
     public void onSlotAdded(SlotAddedEvent event) {
-        ACAQSlotDefinition definition = slotConfiguration.getSlots().get(event.getSlotName());
-        ACAQDataSlot slot = new ACAQDataSlot(definition, this);
-        slots.put(definition.getName(), slot);
-        if (slot.isInput())
-            inputSlots.add(slot);
-        if (slot.isOutput())
-            outputSlots.add(slot);
-        eventBus.post(new AlgorithmSlotsChangedEvent(this));
-        updateSlotInheritance();
+        if(event.getSlotConfiguration() == getSlotConfiguration()) {
+            ACAQSlotDefinition definition = slotConfiguration.getSlots().get(event.getSlotName());
+            ACAQDataSlot slot = new ACAQDataSlot(definition, this);
+            slots.put(definition.getName(), slot);
+            if (slot.isInput())
+                inputSlots.add(slot);
+            if (slot.isOutput())
+                outputSlots.add(slot);
+            eventBus.post(new AlgorithmSlotsChangedEvent(this));
+            updateSlotInheritance();
+        }
     }
 
     /**
@@ -285,12 +287,14 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
      */
     @Subscribe
     public void onSlotRemoved(SlotRemovedEvent event) {
-        ACAQDataSlot slot = slots.get(event.getSlotName());
-        slots.remove(event.getSlotName());
-        inputSlots.remove(slot);
-        outputSlots.remove(slot);
-        eventBus.post(new AlgorithmSlotsChangedEvent(this));
-        updateSlotInheritance();
+        if(event.getSlotConfiguration() == getSlotConfiguration()) {
+            ACAQDataSlot slot = slots.get(event.getSlotName());
+            slots.remove(event.getSlotName());
+            inputSlots.remove(slot);
+            outputSlots.remove(slot);
+            eventBus.post(new AlgorithmSlotsChangedEvent(this));
+            updateSlotInheritance();
+        }
     }
 
     /**
@@ -300,11 +304,13 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
      */
     @Subscribe
     public void onSlotRenamed(SlotRenamedEvent event) {
-        ACAQDataSlot slot = slots.get(event.getOldSlotName());
-        slots.remove(event.getOldSlotName());
-        slots.put(event.getNewSlotName(), slot);
-        eventBus.post(new AlgorithmSlotsChangedEvent(this));
-        updateSlotInheritance();
+        if(event.getSlotConfiguration() == getSlotConfiguration()) {
+            ACAQDataSlot slot = slots.get(event.getOldSlotName());
+            slots.remove(event.getOldSlotName());
+            slots.put(event.getNewSlotName(), slot);
+            eventBus.post(new AlgorithmSlotsChangedEvent(this));
+            updateSlotInheritance();
+        }
     }
 
     /**
@@ -314,10 +320,12 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
      */
     @Subscribe
     public void onSlotOrderChanged(SlotOrderChangedEvent event) {
-        updateInputSlotList();
-        updateOutputSlotList();
-        eventBus.post(new AlgorithmSlotsChangedEvent(this));
-        updateSlotInheritance();
+        if(event.getConfiguration() == getSlotConfiguration()) {
+            updateInputSlotList();
+            updateOutputSlotList();
+            eventBus.post(new AlgorithmSlotsChangedEvent(this));
+            updateSlotInheritance();
+        }
     }
 
     private void updateOutputSlotList() {
@@ -849,6 +857,24 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
     public boolean hasOutputSlot(String slotName) {
         ACAQDataSlot existing = getSlots().getOrDefault(slotName, null);
         return existing != null && existing.isOutput();
+    }
+
+    /**
+     * Controls whether to render input slots.
+     * If disabled, this achieves the same effect as a compartment output within a foreign compartment.
+     * @return render input slots
+     */
+    public boolean renderInputSlots() {
+        return true;
+    }
+
+    /**
+     * Controls whether to render output slots.
+     * If disabled, this achieves the same effect as a compartment output within the same compartment.
+     * @return render output slots
+     */
+    public boolean renderOutputSlots() {
+        return true;
     }
 
     /**

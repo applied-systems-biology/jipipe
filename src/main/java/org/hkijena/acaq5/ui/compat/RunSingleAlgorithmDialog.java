@@ -12,8 +12,10 @@ import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.extensions.settings.RuntimeSettings;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.components.ACAQAlgorithmDeclarationListCellRenderer;
 import org.hkijena.acaq5.ui.components.AddAlgorithmSlotPanel;
+import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.components.SearchTextField;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
@@ -40,7 +42,7 @@ import java.util.stream.Collectors;
 /**
  * UI for {@link SingleImageJAlgorithmRun}
  */
-public class RunSingleAlgorithmDialog extends JDialog {
+public class RunSingleAlgorithmDialog extends JDialog implements ACAQWorkbench {
     private Context context;
     private boolean canceled = true;
     private SingleImageJAlgorithmRun runSettings;
@@ -49,6 +51,7 @@ public class RunSingleAlgorithmDialog extends JDialog {
     private JSplitPane splitPane;
     private FormPanel formPanel;
     private int numThreads = RuntimeSettings.getInstance().getDefaultRunThreads();
+    private DocumentTabPane tabPane;
 
     /**
      * @param context SciJava context
@@ -79,7 +82,15 @@ public class RunSingleAlgorithmDialog extends JDialog {
         initializeToolbar(listPanel);
         initializeList(listPanel);
         initializeButtonPanel(contentPanel);
-        setContentPane(contentPanel);
+
+        tabPane = new DocumentTabPane();
+        tabPane.addTab("Run single algorithm",
+                UIUtils.getIconFromResources("run.png"),
+                contentPanel,
+                DocumentTabPane.CloseMode.withoutCloseButton,
+                false);
+        setContentPane(tabPane);
+
         reloadAlgorithmList();
     }
 
@@ -180,7 +191,7 @@ public class RunSingleAlgorithmDialog extends JDialog {
 
         // Add parameter editor
         formPanel.addGroupHeader("Algorithm parameters", UIUtils.getIconFromResources("wrench.png"));
-        formPanel.addWideToForm(new ParameterPanel(context, runSettings.getAlgorithm(), null, ParameterPanel.NONE), null);
+        formPanel.addWideToForm(new ParameterPanel(this, runSettings.getAlgorithm(), null, ParameterPanel.NONE), null);
 
         formPanel.addVerticalGlue();
     }
@@ -366,5 +377,19 @@ public class RunSingleAlgorithmDialog extends JDialog {
 
     public void setNumThreads(int numThreads) {
         this.numThreads = numThreads;
+    }
+
+    @Override
+    public void sendStatusBarText(String text) {
+    }
+
+    @Override
+    public Context getContext() {
+        return context;
+    }
+
+    @Override
+    public DocumentTabPane getDocumentTabPane() {
+        return tabPane;
     }
 }

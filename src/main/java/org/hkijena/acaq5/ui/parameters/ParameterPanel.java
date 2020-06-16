@@ -49,6 +49,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
      */
     public static final int WITH_SEARCH_BAR = 512;
 
+    private ACAQWorkbench workbench;
     private Context context;
     private ACAQParameterCollection displayedParameters;
     private boolean noGroupHeaders;
@@ -59,18 +60,19 @@ public class ParameterPanel extends FormPanel implements Contextual {
     private SearchTextField searchField = new SearchTextField();
 
     /**
-     * @param context             SciJava context
+     * @param workbench             SciJava context
      * @param displayedParameters Object containing the parameters. If the object is an {@link ACAQTraversedParameterCollection} and FORCE_TRAVERSE is not set, it will be used directly. Can be null.
      * @param documentation       Optional documentation
      * @param flags               Flags
      */
-    public ParameterPanel(Context context, ACAQParameterCollection displayedParameters, MarkdownDocument documentation, int flags) {
+    public ParameterPanel(ACAQWorkbench workbench, ACAQParameterCollection displayedParameters, MarkdownDocument documentation, int flags) {
         super(documentation, flags);
         this.noGroupHeaders = (flags & NO_GROUP_HEADERS) == NO_GROUP_HEADERS;
         this.noEmptyGroupHeaders = (flags & NO_EMPTY_GROUP_HEADERS) == NO_EMPTY_GROUP_HEADERS;
         this.forceTraverse = (flags & FORCE_TRAVERSE) == FORCE_TRAVERSE;
         this.withSearchBar = (flags & WITH_SEARCH_BAR) == WITH_SEARCH_BAR;
-        this.context = context;
+        this.workbench = workbench;
+        this.context = workbench.getContext();
         this.displayedParameters = displayedParameters;
         initialize();
 
@@ -78,16 +80,6 @@ public class ParameterPanel extends FormPanel implements Contextual {
             reloadForm();
             this.displayedParameters.getEventBus().register(this);
         }
-    }
-
-    /**
-     * @param workbench           a workbench that contains a SciJava context
-     * @param displayedParameters Object containing the parameters
-     * @param documentation       Optional documentation
-     * @param flags               Flags
-     */
-    public ParameterPanel(ACAQWorkbench workbench, ACAQParameterCollection displayedParameters, MarkdownDocument documentation, int flags) {
-        this(workbench.getContext(), displayedParameters, documentation, flags);
     }
 
     private void initialize() {
@@ -179,7 +171,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
             if (!searchStringsMatches(parameterAccess, searchStrings))
                 continue;
 
-            ACAQParameterEditorUI ui = ACAQUIParameterTypeRegistry.getInstance().createEditorFor(getContext(), parameterAccess);
+            ACAQParameterEditorUI ui = ACAQUIParameterTypeRegistry.getInstance().createEditorFor(workbench, parameterAccess);
             uiList.add(ui);
         }
         for (ACAQParameterEditorUI ui : uiList.stream().sorted(Comparator.comparing((ACAQParameterEditorUI u) -> !u.isUILabelEnabled())

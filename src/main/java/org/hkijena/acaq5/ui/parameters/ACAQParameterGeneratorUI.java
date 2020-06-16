@@ -2,6 +2,8 @@ package org.hkijena.acaq5.ui.parameters;
 
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
+import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Context;
 
@@ -14,20 +16,15 @@ import java.util.function.Supplier;
 /**
  * UI that generates a set of parameter values
  */
-public abstract class ACAQParameterGeneratorUI extends JPanel implements Supplier<List<Object>>, ACAQValidatable {
-    private Context context;
+public abstract class ACAQParameterGeneratorUI extends ACAQWorkbenchPanel implements Supplier<List<Object>>, ACAQValidatable {
 
     /**
      * Creates a new instance
      *
-     * @param context the SciJava context
+     * @param workbench the workbench
      */
-    public ACAQParameterGeneratorUI(Context context) {
-        this.context = context;
-    }
-
-    public Context getContext() {
-        return context;
+    public ACAQParameterGeneratorUI(ACAQWorkbench workbench) {
+        super(workbench);
     }
 
     /**

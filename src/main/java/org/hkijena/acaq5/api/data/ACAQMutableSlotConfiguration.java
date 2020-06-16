@@ -504,26 +504,28 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
     /**
      * Removes all input slots
+     * @param user if done by a user
      */
-    public void clearInputSlots() {
-        if (!canModifyInputSlots())
+    public void clearInputSlots(boolean user) {
+        if (user && !canModifyInputSlots())
             throw new UnsupportedOperationException("Cannot modify input slots!");
         for (Map.Entry<String, ACAQSlotDefinition> entry : ImmutableList.copyOf(slots.entrySet())) {
             if (entry.getValue().getSlotType() == ACAQDataSlot.SlotType.Input) {
-                removeSlot(entry.getKey(), false);
+                removeSlot(entry.getKey(), user);
             }
         }
     }
 
     /**
      * Removes all output slots
+     * @param user if done by a user
      */
-    public void clearOutputSlots() {
-        if (!canModifyOutputSlots())
+    public void clearOutputSlots(boolean user) {
+        if (user && !canModifyOutputSlots())
             throw new UnsupportedOperationException("Cannot modify output slots!");
         for (Map.Entry<String, ACAQSlotDefinition> entry : ImmutableList.copyOf(slots.entrySet())) {
             if (entry.getValue().getSlotType() == ACAQDataSlot.SlotType.Output) {
-                removeSlot(entry.getKey(), false);
+                removeSlot(entry.getKey(), user);
             }
         }
     }

@@ -31,7 +31,7 @@ public class ACAQPlotSeriesBuilderUI extends ACAQWorkbenchPanel {
     private void initialize() {
         setBorder(BorderFactory.createLineBorder(Color.GRAY));
         setLayout(new BorderLayout());
-        ParameterPanel parameterPanel = new ParameterPanel(getWorkbench().getContext(),
+        ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),
                 seriesBuilder,
                 null,
                 ParameterPanel.NO_EMPTY_GROUP_HEADERS);

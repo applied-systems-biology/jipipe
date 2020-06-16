@@ -365,16 +365,25 @@ public class FormPanel extends JPanel {
             if (!component.isDisplayable()) {
                 return;
             }
+            if(!component.isVisible()) {
+                return;
+            }
             if (event instanceof MouseEvent) {
                 MouseEvent mouseEvent = (MouseEvent) event;
                 if (((MouseEvent) event).getComponent() == component || SwingUtilities.isDescendingFrom(mouseEvent.getComponent(), component)) {
-                    Point componentLocation = component.getLocationOnScreen();
-                    boolean isInComponent = mouseEvent.getXOnScreen() >= componentLocation.x &&
-                            mouseEvent.getYOnScreen() >= componentLocation.y &&
-                            mouseEvent.getXOnScreen() < (component.getWidth() + componentLocation.x) &&
-                            mouseEvent.getYOnScreen() < (component.getHeight() + componentLocation.y);
-                    if (isInComponent && panel.parameterHelp.getTemporaryDocument() != componentDocument) {
-                        panel.parameterHelp.setTemporaryDocument(componentDocument);
+                    try {
+                        Point componentLocation = component.getLocationOnScreen();
+                        boolean isInComponent = mouseEvent.getXOnScreen() >= componentLocation.x &&
+                                mouseEvent.getYOnScreen() >= componentLocation.y &&
+                                mouseEvent.getXOnScreen() < (component.getWidth() + componentLocation.x) &&
+                                mouseEvent.getYOnScreen() < (component.getHeight() + componentLocation.y);
+                        if (isInComponent && panel.parameterHelp.getTemporaryDocument() != componentDocument) {
+                            panel.parameterHelp.setTemporaryDocument(componentDocument);
+                        }
+                    }
+                    catch (IllegalComponentStateException e) {
+                        // Workaround for Java bug
+                        Toolkit.getDefaultToolkit().removeAWTEventListener(this);
                     }
                 }
             }

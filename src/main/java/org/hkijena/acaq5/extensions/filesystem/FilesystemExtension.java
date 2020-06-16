@@ -15,7 +15,7 @@ import org.hkijena.acaq5.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.acaq5.extensions.filesystem.dataypes.PathData;
 import org.hkijena.acaq5.extensions.filesystem.resultanalysis.FilesystemDataSlotCellUI;
 import org.hkijena.acaq5.extensions.filesystem.resultanalysis.FilesystemDataSlotRowUI;
-import org.hkijena.acaq5.extensions.standardalgorithms.api.registries.GraphWrapperAlgorithmRegistrationTask;
+import org.hkijena.acaq5.api.grouping.JsonAlgorithmRegistrationTask;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -98,7 +98,7 @@ public class FilesystemExtension extends ACAQPrepackagedDefaultJavaExtension {
         for (String resourceFile : algorithmFiles) {
             try {
                 JsonNode node = JsonUtils.getObjectMapper().readValue(ResourceUtils.class.getResource(resourceFile), JsonNode.class);
-                GraphWrapperAlgorithmRegistrationTask task = new GraphWrapperAlgorithmRegistrationTask(node, this);
+                JsonAlgorithmRegistrationTask task = new JsonAlgorithmRegistrationTask(node, this);
                 getRegistry().getAlgorithmRegistry().scheduleRegister(task);
             } catch (IOException e) {
                 throw new RuntimeException(e);

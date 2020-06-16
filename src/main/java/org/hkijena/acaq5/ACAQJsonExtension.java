@@ -16,7 +16,7 @@ import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
-import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.GraphWrapperAlgorithmDeclaration;
+import org.hkijena.acaq5.api.grouping.JsonAlgorithmDeclaration;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 
@@ -39,7 +39,7 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
     private Path jsonFilePath;
     private ACAQDefaultRegistry registry;
 
-    private Set<GraphWrapperAlgorithmDeclaration> algorithmDeclarations = new HashSet<>();
+    private Set<JsonAlgorithmDeclaration> algorithmDeclarations = new HashSet<>();
 
     /**
      * Creates a new instance
@@ -161,7 +161,7 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
      * Registers the content
      */
     public void register() {
-        for (GraphWrapperAlgorithmDeclaration declaration : algorithmDeclarations) {
+        for (JsonAlgorithmDeclaration declaration : algorithmDeclarations) {
             // No internal dependencies: The plugin system can handle this
             ACAQAlgorithmRegistry.getInstance().register(declaration, this);
         }
@@ -183,7 +183,7 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
      *
      * @param algorithmDeclaration The algorithm type
      */
-    public void addAlgorithm(GraphWrapperAlgorithmDeclaration algorithmDeclaration) {
+    public void addAlgorithm(JsonAlgorithmDeclaration algorithmDeclaration) {
         algorithmDeclarations.add(algorithmDeclaration);
         eventBus.post(new ExtensionContentAddedEvent(this, algorithmDeclaration));
     }
@@ -192,7 +192,7 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
      * @return Algorithm declarations
      */
     @JsonGetter("algorithms")
-    public Set<GraphWrapperAlgorithmDeclaration> getAlgorithmDeclarations() {
+    public Set<JsonAlgorithmDeclaration> getAlgorithmDeclarations() {
         return Collections.unmodifiableSet(algorithmDeclarations);
     }
 
@@ -202,7 +202,7 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
      * @param algorithmDeclarations Declarations
      */
     @JsonSetter("algorithms")
-    private void setAlgorithmDeclarations(Set<GraphWrapperAlgorithmDeclaration> algorithmDeclarations) {
+    private void setAlgorithmDeclarations(Set<JsonAlgorithmDeclaration> algorithmDeclarations) {
         this.algorithmDeclarations = algorithmDeclarations;
     }
 
@@ -231,10 +231,10 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
                     "Please provide a meaningful name for your plugin.",
                     this);
         }
-        for (GraphWrapperAlgorithmDeclaration declaration : algorithmDeclarations) {
+        for (JsonAlgorithmDeclaration declaration : algorithmDeclarations) {
             report.forCategory("Algorithms").forCategory(declaration.getName()).report(declaration);
         }
-        if (algorithmDeclarations.size() != algorithmDeclarations.stream().map(GraphWrapperAlgorithmDeclaration::getId).collect(Collectors.toSet()).size()) {
+        if (algorithmDeclarations.size() != algorithmDeclarations.stream().map(JsonAlgorithmDeclaration::getId).collect(Collectors.toSet()).size()) {
             report.forCategory("Algorithms").reportIsInvalid("Duplicate IDs found!",
                     "Algorithm IDs must be unique",
                     "Please make sure that IDs are unique.",
@@ -247,7 +247,7 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
      *
      * @param declaration Algorithm type
      */
-    public void removeAlgorithm(GraphWrapperAlgorithmDeclaration declaration) {
+    public void removeAlgorithm(JsonAlgorithmDeclaration declaration) {
         if (algorithmDeclarations.remove(declaration)) {
             eventBus.post(new ExtensionContentRemovedEvent(this, declaration));
         }

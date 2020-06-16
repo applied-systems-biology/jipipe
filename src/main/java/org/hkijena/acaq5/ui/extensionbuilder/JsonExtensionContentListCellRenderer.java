@@ -1,6 +1,6 @@
 package org.hkijena.acaq5.ui.extensionbuilder;
 
-import org.hkijena.acaq5.extensions.standardalgorithms.api.algorithms.GraphWrapperAlgorithmDeclaration;
+import org.hkijena.acaq5.api.grouping.JsonAlgorithmDeclaration;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -21,8 +21,8 @@ public class JsonExtensionContentListCellRenderer extends JLabel implements List
 
     @Override
     public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-        if (value instanceof GraphWrapperAlgorithmDeclaration) {
-            String name = StringUtils.orElse(((GraphWrapperAlgorithmDeclaration) value).getName(), "&lt;No name&gt;");
+        if (value instanceof JsonAlgorithmDeclaration) {
+            String name = StringUtils.orElse(((JsonAlgorithmDeclaration) value).getName(), "&lt;No name&gt;");
             setText("<html><strong>" + name + "</strong><br/>" + "<i>Algorithm</i>" + "</html>");
             setIcon(UIUtils.getIconFromResources("cogs-32.png"));
         } else {
