@@ -9,7 +9,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 public class JsonAlgorithm extends GraphWrapperAlgorithm {
 
     public JsonAlgorithm(JsonAlgorithmDeclaration declaration) {
-        super(declaration, declaration.getGraph());
+        super(declaration, new ACAQAlgorithmGraph(declaration.getGraph()));
     }
 
     public JsonAlgorithm(GraphWrapperAlgorithm other) {
