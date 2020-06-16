@@ -14,7 +14,7 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
-import org.hkijena.acaq5.api.parameters.ACAQTraversedParameterCollection;
+import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.utils.JsonUtils;
 
@@ -190,7 +190,7 @@ public abstract class ACAQAlgorithm extends ACAQGraphNode {
         public void serialize(ACAQGraphNode algorithm, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("acaq:algorithm-type", algorithm.getDeclaration().getId());
-            ACAQTraversedParameterCollection parameterCollection = new ACAQTraversedParameterCollection(algorithm);
+            ACAQParameterTree parameterCollection = new ACAQParameterTree(algorithm);
             for (Map.Entry<String, ACAQParameterAccess> entry : parameterCollection.getParameters().entrySet()) {
                 if (serializeParameter(entry))
                     jsonGenerator.writeObjectField(entry.getKey(), entry.getValue().get(Object.class));

@@ -12,7 +12,7 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.registries.ACAQParameterTypeRegistry;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.scijava.Priority;
-import org.scijava.util.StringUtils;
+import org.hkijena.acaq5.utils.StringUtils;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;

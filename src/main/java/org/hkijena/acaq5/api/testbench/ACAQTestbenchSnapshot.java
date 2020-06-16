@@ -5,7 +5,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQTraversedParameterCollection;
+import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -96,7 +96,7 @@ public class ACAQTestbenchSnapshot {
         }
 
         private void backupParameters() {
-            Map<String, ACAQParameterAccess> parameters = ACAQTraversedParameterCollection.getParameters(algorithm);
+            Map<String, ACAQParameterAccess> parameters = ACAQParameterTree.getParameters(algorithm);
             for (Map.Entry<String, ACAQParameterAccess> entry : parameters.entrySet()) {
                 parameterBackups.put(entry.getKey(), entry.getValue().get(Object.class));
             }
@@ -124,7 +124,7 @@ public class ACAQTestbenchSnapshot {
          * @param targetAlgorithm the target algorithm
          */
         public void restoreParameters(ACAQGraphNode targetAlgorithm) {
-            Map<String, ACAQParameterAccess> parameters = ACAQTraversedParameterCollection.getParameters(targetAlgorithm);
+            Map<String, ACAQParameterAccess> parameters = ACAQParameterTree.getParameters(targetAlgorithm);
             for (Map.Entry<String, ACAQParameterAccess> entry : parameters.entrySet()) {
                 entry.getValue().set(parameterBackups.get(entry.getKey()));
             }

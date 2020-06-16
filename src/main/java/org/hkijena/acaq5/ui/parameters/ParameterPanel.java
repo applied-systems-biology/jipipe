@@ -15,7 +15,7 @@ import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.Contextual;
-import org.scijava.util.StringUtils;
+import org.hkijena.acaq5.utils.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -56,12 +56,12 @@ public class ParameterPanel extends FormPanel implements Contextual {
     private boolean noEmptyGroupHeaders;
     private boolean forceTraverse;
     private boolean withSearchBar;
-    private ACAQTraversedParameterCollection traversed;
+    private ACAQParameterTree traversed;
     private SearchTextField searchField = new SearchTextField();
 
     /**
      * @param workbench             SciJava context
-     * @param displayedParameters Object containing the parameters. If the object is an {@link ACAQTraversedParameterCollection} and FORCE_TRAVERSE is not set, it will be used directly. Can be null.
+     * @param displayedParameters Object containing the parameters. If the object is an {@link ACAQParameterTree} and FORCE_TRAVERSE is not set, it will be used directly. Can be null.
      * @param documentation       Optional documentation
      * @param flags               Flags
      */
@@ -98,10 +98,10 @@ public class ParameterPanel extends FormPanel implements Contextual {
      * Reloads the form. This re-traverses the parameters and recreates the UI elements
      */
     public void reloadForm() {
-        if (forceTraverse || !(getDisplayedParameters() instanceof ACAQTraversedParameterCollection))
-            traversed = new ACAQTraversedParameterCollection(getDisplayedParameters());
+        if (forceTraverse || !(getDisplayedParameters() instanceof ACAQParameterTree))
+            traversed = new ACAQParameterTree(getDisplayedParameters());
         else
-            traversed = (ACAQTraversedParameterCollection) getDisplayedParameters();
+            traversed = (ACAQParameterTree) getDisplayedParameters();
 
         refreshForm();
     }
@@ -131,7 +131,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
         }
     }
 
-    private void addToForm(ACAQTraversedParameterCollection traversed, ACAQParameterCollection parameterHolder, List<ACAQParameterAccess> parameterAccesses) {
+    private void addToForm(ACAQParameterTree traversed, ACAQParameterCollection parameterHolder, List<ACAQParameterAccess> parameterAccesses) {
         boolean isModifiable = parameterHolder instanceof ACAQDynamicParameterCollection && ((ACAQDynamicParameterCollection) parameterHolder).isAllowUserModification();
 
         if (!isModifiable && parameterAccesses.isEmpty())
@@ -139,7 +139,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
 
         if (!noGroupHeaders) {
             ACAQDocumentation documentation = traversed.getSourceDocumentation(parameterHolder);
-            boolean documentationIsEmpty = documentation == null || (org.scijava.util.StringUtils.isNullOrEmpty(documentation.name()) && org.scijava.util.StringUtils.isNullOrEmpty(documentation.description()));
+            boolean documentationIsEmpty = documentation == null || (StringUtils.isNullOrEmpty(documentation.name()) && StringUtils.isNullOrEmpty(documentation.description()));
 
             if (!noEmptyGroupHeaders || (!documentationIsEmpty && !isModifiable)) {
                 GroupHeaderPanel groupHeaderPanel = addGroupHeader(traversed.getSourceDocumentationName(parameterHolder),

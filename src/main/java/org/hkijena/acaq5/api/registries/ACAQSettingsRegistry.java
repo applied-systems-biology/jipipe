@@ -14,7 +14,7 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQCustomParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
-import org.hkijena.acaq5.api.parameters.ACAQTraversedParameterCollection;
+import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -83,7 +83,7 @@ public class ACAQSettingsRegistry implements ACAQParameterCollection, ACAQCustom
     public Map<String, ACAQParameterAccess> getParameters() {
         Map<String, ACAQParameterAccess> result = new HashMap<>();
         for (Map.Entry<String, Sheet> entry : registeredSheets.entrySet()) {
-            ACAQTraversedParameterCollection traversedParameterCollection = new ACAQTraversedParameterCollection(entry.getValue().getParameterCollection());
+            ACAQParameterTree traversedParameterCollection = new ACAQParameterTree(entry.getValue().getParameterCollection());
             for (Map.Entry<String, ACAQParameterAccess> accessEntry : traversedParameterCollection.getParameters().entrySet()) {
                 result.put(entry.getKey() + "/" + accessEntry.getKey(), accessEntry.getValue());
             }

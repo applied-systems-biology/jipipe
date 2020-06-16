@@ -18,7 +18,7 @@ import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
-import org.hkijena.acaq5.api.parameters.ACAQTraversedParameterCollection;
+import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.api.registries.ACAQImageJAdapterRegistry;
 import org.hkijena.acaq5.utils.JsonUtils;
@@ -123,7 +123,7 @@ public class SingleImageJAlgorithmRun implements ACAQValidatable {
      */
     public void fromJson(JsonNode jsonNode) {
         if (jsonNode.has("parameters")) {
-            Map<String, ACAQParameterAccess> parameters = ACAQTraversedParameterCollection.getParameters(algorithm);
+            Map<String, ACAQParameterAccess> parameters = ACAQParameterTree.getParameters(algorithm);
             for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.get("parameters").fields())) {
                 ACAQParameterAccess access = parameters.getOrDefault(entry.getKey(), null);
                 try {
@@ -249,10 +249,10 @@ public class SingleImageJAlgorithmRun implements ACAQValidatable {
 
         private void serializeParameters(SingleImageJAlgorithmRun run, ACAQParameterCollection comparison, JsonGenerator jsonGenerator) throws IOException {
 
-            Map<String, ACAQParameterAccess> comparisonParameters = ACAQTraversedParameterCollection.getParameters(comparison);
+            Map<String, ACAQParameterAccess> comparisonParameters = ACAQParameterTree.getParameters(comparison);
             Map<String, Object> serializedParameters = new HashMap<>();
 
-            for (Map.Entry<String, ACAQParameterAccess> entry : ACAQTraversedParameterCollection.getParameters(run.getAlgorithm()).entrySet()) {
+            for (Map.Entry<String, ACAQParameterAccess> entry : ACAQParameterTree.getParameters(run.getAlgorithm()).entrySet()) {
                 ACAQParameterAccess originalAccess = comparisonParameters.getOrDefault(entry.getKey(), null);
                 Object originalValue = originalAccess != null ? originalAccess.get(Object.class) : null;
                 Object value = entry.getValue().get(Object.class);

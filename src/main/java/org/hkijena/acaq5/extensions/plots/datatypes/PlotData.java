@@ -234,7 +234,7 @@ public abstract class PlotData implements ACAQData, ACAQParameterCollection, ACA
     public void fromJson(JsonNode node) {
         // Deserialize dynamic parameters
         if (node.has("acaq:dynamic-parameters")) {
-            ACAQTraversedParameterCollection parameterCollection = new ACAQTraversedParameterCollection(this);
+            ACAQParameterTree parameterCollection = new ACAQParameterTree(this);
             Set<ACAQParameterCollection> dynamicParameters = parameterCollection.getRegisteredSources().stream()
                     .filter(src -> src instanceof ACAQDynamicParameterCollection).collect(Collectors.toSet());
             for (ACAQParameterCollection dynamicParameter : dynamicParameters) {
@@ -259,7 +259,7 @@ public abstract class PlotData implements ACAQData, ACAQParameterCollection, ACA
         Set<String> loadedParameters = new HashSet<>();
         while (changedStructure.get()) {
             changedStructure.set(false);
-            ACAQTraversedParameterCollection parameterCollection = new ACAQTraversedParameterCollection(this);
+            ACAQParameterTree parameterCollection = new ACAQParameterTree(this);
             for (ACAQParameterAccess parameterAccess : parameterCollection.getParametersByPriority()) {
                 String key = parameterCollection.getUniqueKey(parameterAccess);
                 if (loadedParameters.contains(key))
@@ -327,7 +327,7 @@ public abstract class PlotData implements ACAQData, ACAQParameterCollection, ACA
             gen.writeStringField("plot-data-type", ACAQDatatypeRegistry.getInstance().getIdOf(value.getClass()));
 
             // Write parameters
-            ACAQTraversedParameterCollection parameterCollection = new ACAQTraversedParameterCollection(value);
+            ACAQParameterTree parameterCollection = new ACAQParameterTree(value);
             for (Map.Entry<String, ACAQParameterAccess> kv : parameterCollection.getParameters().entrySet()) {
                 gen.writeObjectField(kv.getKey(), kv.getValue().get(Object.class));
             }

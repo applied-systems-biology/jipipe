@@ -2,12 +2,11 @@ package org.hkijena.acaq5.extensions.parameters.predicates;
 
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQTraversedParameterCollection;
+import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
-import org.scijava.Context;
 
 import javax.swing.*;
 
@@ -42,7 +41,7 @@ public class StringOrDoublePredicateParameterEditorUI extends ACAQParameterEdito
 
         StringOrDoublePredicate parameter = getParameter(StringOrDoublePredicate.class);
         parameter.getEventBus().register(this);
-        ACAQTraversedParameterCollection traversedParameterCollection = new ACAQTraversedParameterCollection(parameter);
+        ACAQParameterTree traversedParameterCollection = new ACAQParameterTree(parameter);
 
         ButtonGroup buttonGroup = new ButtonGroup();
         doubleToggle = addToggle(buttonGroup, UIUtils.getIconFromResources("number.png"), "Filter a number");

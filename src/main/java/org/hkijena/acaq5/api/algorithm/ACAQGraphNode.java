@@ -390,7 +390,7 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
 
         // Deserialize dynamic parameters
         if (node.has("acaq:dynamic-parameters")) {
-            ACAQTraversedParameterCollection parameterCollection = new ACAQTraversedParameterCollection(this);
+            ACAQParameterTree parameterCollection = new ACAQParameterTree(this);
             Set<ACAQParameterCollection> dynamicParameters = parameterCollection.getRegisteredSources().stream()
                     .filter(src -> src instanceof ACAQDynamicParameterCollection).collect(Collectors.toSet());
             for (ACAQParameterCollection dynamicParameter : dynamicParameters) {
@@ -415,7 +415,7 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
         Set<String> loadedParameters = new HashSet<>();
         while (changedStructure.get()) {
             changedStructure.set(false);
-            ACAQTraversedParameterCollection parameterCollection = new ACAQTraversedParameterCollection(this);
+            ACAQParameterTree parameterCollection = new ACAQParameterTree(this);
             for (ACAQParameterAccess parameterAccess : parameterCollection.getParametersByPriority()) {
                 String key = parameterCollection.getUniqueKey(parameterAccess);
                 if (loadedParameters.contains(key))
@@ -910,7 +910,7 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
             jsonGenerator.writeEndObject();
             jsonGenerator.writeStringField("acaq:algorithm-type", algorithm.getDeclaration().getId());
             jsonGenerator.writeStringField("acaq:algorithm-compartment", algorithm.getCompartment());
-            ACAQTraversedParameterCollection parameterCollection = new ACAQTraversedParameterCollection(algorithm);
+            ACAQParameterTree parameterCollection = new ACAQParameterTree(algorithm);
             for (Map.Entry<String, ACAQParameterAccess> entry : parameterCollection.getParameters().entrySet()) {
                 jsonGenerator.writeObjectField(entry.getKey(), entry.getValue().get(Object.class));
             }

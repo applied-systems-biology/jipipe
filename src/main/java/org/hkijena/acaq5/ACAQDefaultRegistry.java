@@ -8,7 +8,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.events.ExtensionRegisteredEvent;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQTraversedParameterCollection;
+import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 import org.hkijena.acaq5.api.registries.*;
 import org.hkijena.acaq5.ui.registries.*;
 import org.scijava.Context;
@@ -110,7 +110,7 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
         // Check for errors
         for (ACAQAlgorithmDeclaration declaration : algorithmRegistry.getRegisteredAlgorithms().values()) {
             ACAQGraphNode algorithm = declaration.newInstance();
-            ACAQTraversedParameterCollection collection = new ACAQTraversedParameterCollection(algorithm);
+            ACAQParameterTree collection = new ACAQParameterTree(algorithm);
             for (Map.Entry<String, ACAQParameterAccess> entry : collection.getParameters().entrySet()) {
                 if (ACAQParameterTypeRegistry.getInstance().getDeclarationByFieldClass(entry.getValue().getFieldClass()) == null) {
                     throw new UserFriendlyRuntimeException("Unregistered parameter found: " + entry.getValue().getFieldClass() + " @ "

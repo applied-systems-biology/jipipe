@@ -2,7 +2,7 @@ package org.hkijena.acaq5.api.parameters;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
-import org.scijava.util.StringUtils;
+import org.hkijena.acaq5.utils.StringUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;

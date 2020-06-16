@@ -10,7 +10,7 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
-import org.hkijena.acaq5.api.parameters.ACAQTraversedParameterCollection;
+import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 import org.hkijena.acaq5.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQAlgorithmDeclarationRef;
 import org.hkijena.acaq5.extensions.parameters.table.ParameterTable;
@@ -83,7 +83,7 @@ public class ParametersDataTableDefinition extends ACAQAlgorithm {
                 }
 
                 ACAQGraphNode algorithm = targetAlgorithm.getDeclaration().newInstance();
-                Map<String, ACAQParameterAccess> parameters = ACAQTraversedParameterCollection.getParameters(algorithm);
+                Map<String, ACAQParameterAccess> parameters = ACAQParameterTree.getParameters(algorithm);
                 for (Map.Entry<String, Object> entry : data.getParameterData().entrySet()) {
                     parameters.get(entry.getKey()).set(entry.getValue());
                 }
@@ -112,7 +112,7 @@ public class ParametersDataTableDefinition extends ACAQAlgorithm {
             return;
         parameterTable.setRowGenerator(() -> {
             ACAQGraphNode instance = targetAlgorithm.getDeclaration().newInstance();
-            Map<String, ACAQParameterAccess> parameters = ACAQTraversedParameterCollection.getParameters(instance);
+            Map<String, ACAQParameterAccess> parameters = ACAQParameterTree.getParameters(instance);
             List<Object> row = new ArrayList<>();
             for (int col = 0; col < parameterTable.getColumnCount(); ++col) {
                 String key = parameterTable.getColumn(col).getKey();
@@ -138,7 +138,7 @@ public class ParametersDataTableDefinition extends ACAQAlgorithm {
         this.parameterTable = new ParameterTable();
         if (targetAlgorithm != null && targetAlgorithm.getDeclaration() != null) {
             ACAQGraphNode instance = targetAlgorithm.getDeclaration().newInstance();
-            Map<String, ACAQParameterAccess> parameters = ACAQTraversedParameterCollection.getParameters(instance);
+            Map<String, ACAQParameterAccess> parameters = ACAQParameterTree.getParameters(instance);
             for (Map.Entry<String, ACAQParameterAccess> entry : parameters.entrySet()) {
                 ACAQParameterAccess access = entry.getValue();
                 if (!access.getVisibility().isVisibleIn(ACAQParameterVisibility.TransitiveVisible))

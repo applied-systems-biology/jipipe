@@ -1,12 +1,11 @@
 package org.hkijena.acaq5.extensions.tables.parameters;
 
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQTraversedParameterCollection;
+import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
-import org.scijava.Context;
 
 import javax.swing.*;
 
@@ -40,7 +39,7 @@ public class TableColumnSourceParameterEditorUI extends ACAQParameterEditorUI {
         removeAll();
 
         TableColumnSourceParameter parameter = getParameter(TableColumnSourceParameter.class);
-        ACAQTraversedParameterCollection traversedParameterCollection = new ACAQTraversedParameterCollection(parameter);
+        ACAQParameterTree traversedParameterCollection = new ACAQParameterTree(parameter);
 
         ButtonGroup buttonGroup = new ButtonGroup();
         pickColumnToggle = addToggle(buttonGroup, UIUtils.getIconFromResources("select-column.png"), "Pick an existing column");

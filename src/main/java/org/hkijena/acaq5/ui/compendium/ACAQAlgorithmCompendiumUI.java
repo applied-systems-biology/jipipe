@@ -105,7 +105,7 @@ public class ACAQAlgorithmCompendiumUI extends ACAQCompendiumUI<ACAQAlgorithmDec
         // Write parameter documentation
         builder.append("# Parameters").append("\nIn the following section, you will find a description of all parameters.\n\n");
         ACAQGraphNode algorithm = declaration.newInstance();
-        ACAQTraversedParameterCollection traversed = new ACAQTraversedParameterCollection(algorithm);
+        ACAQParameterTree traversed = new ACAQParameterTree(algorithm);
         Map<ACAQParameterCollection, List<ACAQParameterAccess>> groupedBySource =
                 traversed.getParameters().values().stream().collect(Collectors.groupingBy(ACAQParameterAccess::getSource));
 

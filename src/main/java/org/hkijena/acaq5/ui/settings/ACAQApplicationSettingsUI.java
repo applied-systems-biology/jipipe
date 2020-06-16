@@ -1,7 +1,7 @@
 package org.hkijena.acaq5.ui.settings;
 
 import org.hkijena.acaq5.api.ACAQDefaultDocumentation;
-import org.hkijena.acaq5.api.parameters.ACAQTraversedParameterCollection;
+import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 import org.hkijena.acaq5.api.registries.ACAQSettingsRegistry;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
@@ -39,11 +39,11 @@ public class ACAQApplicationSettingsUI extends ACAQWorkbenchPanel {
                 ACAQSettingsRegistry.getInstance().getRegisteredSheets().values().stream().collect(Collectors.groupingBy(ACAQSettingsRegistry.Sheet::getCategory));
         for (String category : byCategory.keySet().stream().sorted().collect(Collectors.toList())) {
             Icon categoryIcon = null;
-            ACAQTraversedParameterCollection traversedParameterCollection = new ACAQTraversedParameterCollection();
+            ACAQParameterTree traversedParameterCollection = new ACAQParameterTree();
             for (ACAQSettingsRegistry.Sheet sheet : byCategory.get(category)) {
                 categoryIcon = sheet.getCategoryIcon();
+                traversedParameterCollection.add(sheet.getParameterCollection(), sheet.getName(), null);
                 traversedParameterCollection.setSourceDocumentation(sheet.getParameterCollection(), new ACAQDefaultDocumentation(sheet.getName(), null));
-                traversedParameterCollection.add(sheet.getParameterCollection(), Collections.emptyList());
             }
 
             ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),

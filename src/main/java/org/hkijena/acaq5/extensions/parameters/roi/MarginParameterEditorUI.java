@@ -2,12 +2,11 @@ package org.hkijena.acaq5.extensions.parameters.roi;
 
 import com.google.common.collect.ImmutableList;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQTraversedParameterCollection;
+import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.utils.UIUtils;
-import org.scijava.Context;
 
 import javax.swing.*;
 import java.awt.*;
@@ -146,7 +145,7 @@ public class MarginParameterEditorUI extends ACAQParameterEditorUI {
         anchorSelectionMap.get(roi.getAnchor()).setSelected(true);
 
         // Update the parameter panel
-        ACAQTraversedParameterCollection traversedParameterCollection = new ACAQTraversedParameterCollection(roi);
+        ACAQParameterTree traversedParameterCollection = new ACAQParameterTree(roi);
         Set<String> relevantParameterKeys = roi.getRelevantParameterKeys();
         for (String s : ImmutableList.copyOf(traversedParameterCollection.getParameters().keySet())) {
             if (!relevantParameterKeys.contains(s)) {
