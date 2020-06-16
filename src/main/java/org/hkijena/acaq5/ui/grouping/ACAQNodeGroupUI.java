@@ -60,7 +60,7 @@ public class ACAQNodeGroupUI extends ACAQWorkbenchPanel {
         if (compartmentUIs.isEmpty()) {
             ACAQNodeGroupUI compartmentUI = new ACAQNodeGroupUI(workbench, nodeGroup);
             DocumentTabPane.DocumentTab documentTab = workbench.getDocumentTabPane().addTab(nodeGroup.getName(),
-                    UIUtils.getIconFromResources("algorithms/cubes.png"),
+                    UIUtils.getIconFromResources("group.png"),
                     compartmentUI,
                     DocumentTabPane.CloseMode.withSilentCloseButton,
                     false);

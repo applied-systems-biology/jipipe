@@ -5,6 +5,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.grouping.NodeGroup;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
@@ -81,6 +82,12 @@ public class ACAQMultiAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPane
             toolBar.add(copyButton);
         }
 
+        JButton groupButton = new JButton(UIUtils.getIconFromResources("group.png"));
+        groupButton.setToolTipText("Move into group");
+        groupButton.setEnabled(algorithms.stream().allMatch(algorithm -> algorithm.getCategory() != ACAQAlgorithmCategory.Internal));
+        groupButton.addActionListener(e -> groupAlgorithms());
+        toolBar.add(groupButton);
+
         JButton exportButton = new JButton(UIUtils.getIconFromResources("export.png"));
         exportButton.setToolTipText("Export custom algorithm");
         exportButton.setEnabled(algorithms.stream().allMatch(algorithm -> algorithm.getCategory() != ACAQAlgorithmCategory.Internal));
@@ -94,6 +101,15 @@ public class ACAQMultiAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPane
         toolBar.add(deleteButton);
 
         add(toolBar, BorderLayout.NORTH);
+    }
+
+    private void groupAlgorithms() {
+        ACAQAlgorithmGraph subGraph = graph.extract(algorithms, false);
+        NodeGroup group = new NodeGroup(subGraph, true);
+        for (ACAQGraphNode algorithm : algorithms) {
+            graph.removeNode(algorithm);
+        }
+        graph.insertNode(group, canvas.getCompartment());
     }
 
     private void exportAlgorithms() {

@@ -605,6 +605,32 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     }
 
     /**
+     * Copies the selected algorithms into a new graph
+     * Connections between the nodes are kept
+     * @param nodes the nodes
+     * @param withInternal also copy internal algorithms
+     * @return graph that only contains the selected algorithms
+     */
+    public ACAQAlgorithmGraph extract(Collection<ACAQGraphNode> nodes, boolean withInternal) {
+        ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
+        for (ACAQGraphNode algorithm : nodes) {
+            if (!withInternal && algorithm.getCategory() == ACAQAlgorithmCategory.Internal)
+                continue;
+            graph.insertNode(algorithm.getIdInGraph(), algorithm.getDeclaration().clone(algorithm), ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
+        }
+        for (Map.Entry<ACAQDataSlot, ACAQDataSlot> entry : getSlotEdges()) {
+            ACAQDataSlot source = entry.getKey();
+            ACAQDataSlot target = entry.getValue();
+            if (nodes.contains(source.getAlgorithm()) && nodes.contains(target.getAlgorithm())) {
+                ACAQDataSlot copySource = graph.getAlgorithmNodes().get(source.getAlgorithm().getIdInGraph()).getSlots().get(source.getName());
+                ACAQDataSlot copyTarget = graph.getAlgorithmNodes().get(target.getAlgorithm().getIdInGraph()).getSlots().get(target.getName());
+                graph.connect(copySource, copyTarget);
+            }
+        }
+        return graph;
+    }
+
+    /**
      * @return The number of all algorithms
      */
     public int getAlgorithmCount() {
@@ -663,6 +689,39 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     public Set<ACAQGraphNode> getDeactivatedAlgorithms() {
         Set<ACAQGraphNode> missing = new HashSet<>();
         for (ACAQGraphNode algorithm : traverseAlgorithms()) {
+            if (algorithm instanceof ACAQAlgorithm) {
+                if (!((ACAQAlgorithm) algorithm).isEnabled()) {
+                    missing.add(algorithm);
+                    continue;
+                }
+            }
+            for (ACAQDataSlot inputSlot : algorithm.getInputSlots()) {
+                ACAQDataSlot sourceSlot = getSourceSlot(inputSlot);
+                if (sourceSlot == null) {
+                    missing.add(algorithm);
+                    break;
+                }
+                if (missing.contains(sourceSlot.getAlgorithm())) {
+                    missing.add(algorithm);
+                    break;
+                }
+            }
+        }
+        return missing;
+    }
+
+    /**
+     * Gets all algorithms and all dependent algorithms that are missing inputs or are deactivated by the user
+     *
+     * @param externallySatisfied list of algorithms that have their input set externally
+     *
+     * @return list of algorithms
+     */
+    public Set<ACAQGraphNode> getDeactivatedAlgorithms(Set<ACAQGraphNode> externallySatisfied) {
+        Set<ACAQGraphNode> missing = new HashSet<>();
+        for (ACAQGraphNode algorithm : traverseAlgorithms()) {
+            if(externallySatisfied.contains(algorithm))
+                continue;
             if (algorithm instanceof ACAQAlgorithm) {
                 if (!((ACAQAlgorithm) algorithm).isEnabled()) {
                     missing.add(algorithm);

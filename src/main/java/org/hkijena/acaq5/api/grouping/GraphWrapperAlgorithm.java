@@ -1,7 +1,10 @@
 package org.hkijena.acaq5.api.grouping;
 
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQDependency;
+import org.hkijena.acaq5.api.ACAQGraphRunner;
+import org.hkijena.acaq5.api.ACAQRunnerStatus;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
@@ -25,6 +28,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm {
     private GraphWrapperAlgorithmInput algorithmInput;
     private GraphWrapperAlgorithmOutput algorithmOutput;
     private IOSlotWatcher ioSlotWatcher;
+    private boolean preventUpdateSlots = false;
     private boolean slotConfigurationIsComplete;
 
     /**
@@ -48,7 +52,9 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm {
     /**
      * Updates the slots from the wrapped graph
      */
-    private void updateSlots() {
+    public void updateGroupSlots() {
+        if(preventUpdateSlots)
+            return;
         ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) getSlotConfiguration();
         ACAQMutableSlotConfiguration inputSlotConfiguration = (ACAQMutableSlotConfiguration) getGroupInput().getSlotConfiguration();
         ACAQMutableSlotConfiguration outputSlotConfiguration = (ACAQMutableSlotConfiguration) getGroupOutput().getSlotConfiguration();
@@ -74,7 +80,13 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm {
         }
     }
 
+    public boolean isPreventUpdateSlots() {
+        return preventUpdateSlots;
+    }
 
+    public void setPreventUpdateSlots(boolean preventUpdateSlots) {
+        this.preventUpdateSlots = preventUpdateSlots;
+    }
 
     /**
      * Gets the graphs's input node
@@ -88,7 +100,8 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm {
                     break;
                 }
             }
-
+        }
+        if(algorithmInput == null) {
             // Create if it doesn't exist
             algorithmInput = ACAQAlgorithm.newInstance("graph-wrapper:input");
             wrappedGraph.insertNode(algorithmInput, ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
@@ -108,7 +121,8 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm {
                     break;
                 }
             }
-
+        }
+        if(algorithmOutput == null) {
             // Create if it doesn't exist
             algorithmOutput = ACAQAlgorithm.newInstance("graph-wrapper:output");
             wrappedGraph.insertNode(algorithmOutput, ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
@@ -118,7 +132,29 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm {
 
     @Override
     public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-       clearWrappedGraphData();
+        // Iterate through own input slots and pass them to the equivalents in group input
+        for (ACAQDataSlot inputSlot : getInputSlots()) {
+            ACAQDataSlot groupInputSlot = getGroupInput().getInputSlot(inputSlot.getName());
+            groupInputSlot.copyFrom(inputSlot);
+        }
+
+        // Run the graph
+        Consumer<ACAQRunnerStatus> subGraphStatus = runnerStatus -> algorithmProgress.accept(subProgress.resolve(String.format("Sub-graph %d/%d: %s",
+                runnerStatus.getProgress(),
+                runnerStatus.getMaxProgress(),
+                runnerStatus.getMessage())));
+        ACAQGraphRunner runner = new ACAQGraphRunner(wrappedGraph);
+        runner.setAlgorithmsWithExternalInput(Collections.singleton(getGroupInput()));
+        runner.run(subGraphStatus, isCancelled);
+
+        // Copy into output
+        for (ACAQDataSlot outputSlot : getOutputSlots()) {
+            ACAQDataSlot groupOutputSlot = getGroupOutput().getOutputSlot("Output " + outputSlot.getName());
+            outputSlot.copyFrom(groupOutputSlot);
+        }
+
+        // Clear all data in the wrapped graph
+        clearWrappedGraphData();
     }
 
     private void clearWrappedGraphData() {
@@ -151,9 +187,14 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm {
 
     public void setWrappedGraph(ACAQAlgorithmGraph wrappedGraph) {
         if(this.wrappedGraph != wrappedGraph) {
+            for (ACAQGraphNode value : wrappedGraph.getAlgorithmNodes().values()) {
+                value.setCompartment(ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
+            }
             this.wrappedGraph = wrappedGraph;
+            this.algorithmInput = null;
+            this.algorithmOutput = null;
             this.ioSlotWatcher = new IOSlotWatcher();
-            updateSlots();
+            updateGroupSlots();
         }
     }
 
@@ -173,7 +214,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm {
          */
         @Subscribe
         public void onSlotAdded(SlotAddedEvent event) {
-            updateSlots();
+            updateGroupSlots();
         }
 
         /**
@@ -183,7 +224,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm {
          */
         @Subscribe
         public void onSlotRemoved(SlotRemovedEvent event) {
-            updateSlots();
+            updateGroupSlots();
         }
 
 
@@ -194,7 +235,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm {
          */
         @Subscribe
         public void onSlotRenamed(SlotRenamedEvent event) {
-            updateSlots();
+            updateGroupSlots();
         }
     }
 }
