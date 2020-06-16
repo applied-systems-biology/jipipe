@@ -70,7 +70,7 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ROIListData inputData = dataInterface.getInputData("ROI", ROIListData.class);
         Map<SliceIndex, List<Roi>> grouped = inputData.groupByPosition(applyPerSlice, applyPerChannel, applyPerFrame);
-        ImagePlus reference = getReferenceImage(dataInterface, subProgress.resolve("Generate refence image"), algorithmProgress, isCancelled);
+        ImagePlus reference = getReferenceImage(dataInterface, subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled);
 
         for (Map.Entry<SliceIndex, List<Roi>> entry : grouped.entrySet()) {
             ROIListData data = new ROIListData(entry.getValue());

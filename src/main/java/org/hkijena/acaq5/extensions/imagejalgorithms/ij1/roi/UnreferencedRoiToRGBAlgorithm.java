@@ -3,6 +3,7 @@ package org.hkijena.acaq5.extensions.imagejalgorithms.ij1.roi;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
+import ij.plugin.filter.Filler;
 import ij.process.ImageProcessor;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
@@ -11,14 +12,17 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure.Measurement;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.acaq5.extensions.parameters.colors.OptionalColorParameter;
 import org.hkijena.acaq5.extensions.parameters.primitives.OptionalDoubleParameter;
 import org.hkijena.acaq5.extensions.parameters.roi.Margin;
 
 import java.awt.*;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -36,8 +40,9 @@ import java.util.stream.Collectors;
 public class UnreferencedRoiToRGBAlgorithm extends ACAQSimpleIteratingAlgorithm {
 
     private Margin imageArea = new Margin();
-    private boolean drawOutline = false;
-    private boolean drawFilledOutline = true;
+    private boolean drawOutline = true;
+    private boolean drawFilledOutline = false;
+    private boolean drawLabel = false;
     private OptionalColorParameter overrideFillColor = new OptionalColorParameter();
     private OptionalColorParameter overrideLineColor = new OptionalColorParameter();
     private OptionalDoubleParameter overrideLineWidth = new OptionalDoubleParameter();
@@ -56,6 +61,7 @@ public class UnreferencedRoiToRGBAlgorithm extends ACAQSimpleIteratingAlgorithm 
         imageArea.getHeight().setUseExactValue(false);
         overrideLineWidth.setContent(1.0);
         overrideFillColor.setContent(Color.RED);
+        overrideLineColor.setContent(Color.YELLOW);
     }
 
     /**
@@ -68,6 +74,7 @@ public class UnreferencedRoiToRGBAlgorithm extends ACAQSimpleIteratingAlgorithm 
         this.imageArea = new Margin(other.imageArea);
         this.drawOutline = other.drawOutline;
         this.drawFilledOutline = other.drawFilledOutline;
+        this.drawLabel = other.drawLabel;
         this.overrideFillColor = new OptionalColorParameter(other.overrideFillColor);
         this.overrideLineColor = new OptionalColorParameter(other.overrideLineColor);
         this.overrideLineWidth = new OptionalDoubleParameter(other.overrideLineWidth);
@@ -93,6 +100,25 @@ public class UnreferencedRoiToRGBAlgorithm extends ACAQSimpleIteratingAlgorithm 
             st = Math.max(st, t);
         }
 
+        // ROI statistics needed for labels
+        Map<Roi, Point> roiCentroids = new HashMap<>();
+        Map<Roi, Integer> roiIndices = new HashMap<>();
+        Filler roiFiller = new Filler();
+        if(drawLabel) {
+            RoiStatisticsAlgorithm statisticsAlgorithm = ACAQAlgorithm.newInstance("ij1-roi-statistics");
+            statisticsAlgorithm.setRequireReferenceImage(false);
+            statisticsAlgorithm.getMeasurements().setNativeValue(Measurement.Centroid.getNativeValue());
+            statisticsAlgorithm.getInputSlot("ROI").addData(inputData);
+            statisticsAlgorithm.run(subProgress.resolve("ROI statistics"), algorithmProgress, isCancelled);
+            ResultsTableData centroids = statisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class);
+            for (int row = 0; row < centroids.getRowCount(); row++) {
+                Point centroid = new Point((int)centroids.getValueAsDouble(row, "X"),
+                        (int)centroids.getValueAsDouble(row, "Y"));
+                roiCentroids.put(inputData.get(row), centroid);
+                roiIndices.put(inputData.get(row), row);
+            }
+        }
+
         ImagePlus result = IJ.createImage("ROIs", "RGB", sx, sy, sc, sz, st);
         Map<Integer, List<Roi>> groupedByStackIndex =
                 inputData.stream().collect(Collectors.groupingBy(roi -> result.getStackIndex(roi.getCPosition(), roi.getZPosition(), roi.getTPosition())));
@@ -110,6 +136,10 @@ public class UnreferencedRoiToRGBAlgorithm extends ACAQSimpleIteratingAlgorithm 
                     processor.setLineWidth(width);
                     processor.setColor(color);
                     roi.drawPixels(processor);
+                }
+                if(drawLabel) {
+                    Point centroid = roiCentroids.get(roi);
+                    roiFiller.drawLabel(result, processor, roiIndices.get(roi), new Rectangle(centroid.x, centroid.y, 0, 0));
                 }
             }
         }
@@ -189,5 +219,16 @@ public class UnreferencedRoiToRGBAlgorithm extends ACAQSimpleIteratingAlgorithm 
     @ACAQParameter("override-line-width")
     public void setOverrideLineWidth(OptionalDoubleParameter overrideLineWidth) {
         this.overrideLineWidth = overrideLineWidth;
+    }
+
+    @ACAQDocumentation(name = "Draw labels", description = "If enabled, draw the ROI labels")
+    @ACAQParameter("draw-label")
+    public boolean isDrawLabel() {
+        return drawLabel;
+    }
+
+    @ACAQParameter("draw-label")
+    public void setDrawLabel(boolean drawLabel) {
+        this.drawLabel = drawLabel;
     }
 }
