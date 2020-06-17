@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 /**
  * Panel that allows to pick {@link org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration}
  */
-public class ACAQAlgorithmPicker extends JPanel {
+public class ACAQAlgorithmDeclarationPicker extends JPanel {
     boolean reloading = false;
     private Mode mode;
     private EventBus eventBus = new EventBus();
@@ -33,7 +33,7 @@ public class ACAQAlgorithmPicker extends JPanel {
      * @param mode                  the mode
      * @param availableDeclarations list of available trait types
      */
-    public ACAQAlgorithmPicker(Mode mode, Set<ACAQAlgorithmDeclaration> availableDeclarations) {
+    public ACAQAlgorithmDeclarationPicker(Mode mode, Set<ACAQAlgorithmDeclaration> availableDeclarations) {
         this.mode = mode;
         this.availableDeclarations = new ArrayList<>();
         this.availableDeclarations.addAll(availableDeclarations.stream().sorted(Comparator.comparing(ACAQAlgorithmDeclaration::getName)).collect(Collectors.toList()));
@@ -182,7 +182,7 @@ public class ACAQAlgorithmPicker extends JPanel {
      */
     public static Set<ACAQAlgorithmDeclaration> showDialog(Component parent, Mode mode, Set<ACAQAlgorithmDeclaration> availableAlgorithms) {
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
-        ACAQAlgorithmPicker picker = new ACAQAlgorithmPicker(mode, availableAlgorithms);
+        ACAQAlgorithmDeclarationPicker picker = new ACAQAlgorithmDeclarationPicker(mode, availableAlgorithms);
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(picker, BorderLayout.CENTER);
@@ -240,16 +240,16 @@ public class ACAQAlgorithmPicker extends JPanel {
      * Generated when a trait is selected
      */
     public static class SelectedTraitsChangedEvent {
-        private ACAQAlgorithmPicker picker;
+        private ACAQAlgorithmDeclarationPicker picker;
 
         /**
          * @param picker event source
          */
-        public SelectedTraitsChangedEvent(ACAQAlgorithmPicker picker) {
+        public SelectedTraitsChangedEvent(ACAQAlgorithmDeclarationPicker picker) {
             this.picker = picker;
         }
 
-        public ACAQAlgorithmPicker getPicker() {
+        public ACAQAlgorithmDeclarationPicker getPicker() {
             return picker;
         }
     }
@@ -288,19 +288,19 @@ public class ACAQAlgorithmPicker extends JPanel {
      * Generated when a trait is selected
      */
     public static class AlgorithmSelectedEvent {
-        private ACAQAlgorithmPicker picker;
+        private ACAQAlgorithmDeclarationPicker picker;
         private ACAQAlgorithmDeclaration declaration;
 
         /**
          * @param picker      event source
          * @param declaration picked trait
          */
-        public AlgorithmSelectedEvent(ACAQAlgorithmPicker picker, ACAQAlgorithmDeclaration declaration) {
+        public AlgorithmSelectedEvent(ACAQAlgorithmDeclarationPicker picker, ACAQAlgorithmDeclaration declaration) {
             this.picker = picker;
             this.declaration = declaration;
         }
 
-        public ACAQAlgorithmPicker getPicker() {
+        public ACAQAlgorithmDeclarationPicker getPicker() {
             return picker;
         }
 
@@ -313,19 +313,19 @@ public class ACAQAlgorithmPicker extends JPanel {
      * Generated when a trait is deselected
      */
     public static class AlgorithmDeselectedEvent {
-        private ACAQAlgorithmPicker picker;
+        private ACAQAlgorithmDeclarationPicker picker;
         private ACAQAlgorithmDeclaration declaration;
 
         /**
          * @param picker      event source
          * @param declaration deselected trait
          */
-        public AlgorithmDeselectedEvent(ACAQAlgorithmPicker picker, ACAQAlgorithmDeclaration declaration) {
+        public AlgorithmDeselectedEvent(ACAQAlgorithmDeclarationPicker picker, ACAQAlgorithmDeclaration declaration) {
             this.picker = picker;
             this.declaration = declaration;
         }
 
-        public ACAQAlgorithmPicker getPicker() {
+        public ACAQAlgorithmDeclarationPicker getPicker() {
             return picker;
         }
 

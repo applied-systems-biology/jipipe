@@ -7,7 +7,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQAlgorithmDeclarationRef;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
-import org.hkijena.acaq5.ui.components.ACAQAlgorithmPicker;
+import org.hkijena.acaq5.ui.components.ACAQAlgorithmDeclarationPicker;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  */
 public class ACAQAlgorithmDeclarationRefParameterEditorUI extends ACAQParameterEditorUI {
 
-    private ACAQAlgorithmPicker picker;
+    private ACAQAlgorithmDeclarationPicker picker;
     private JButton currentlyDisplayed;
     private JDialog pickerDialog;
 
@@ -79,7 +79,7 @@ public class ACAQAlgorithmDeclarationRefParameterEditorUI extends ACAQParameterE
     }
 
     private void initializePicker() {
-        picker = new ACAQAlgorithmPicker(ACAQAlgorithmPicker.Mode.Single, ACAQAlgorithmRegistry.getInstance().getRegisteredAlgorithms().values().stream()
+        picker = new ACAQAlgorithmDeclarationPicker(ACAQAlgorithmDeclarationPicker.Mode.Single, ACAQAlgorithmRegistry.getInstance().getRegisteredAlgorithms().values().stream()
                 .filter(d -> d.getCategory() != ACAQAlgorithmCategory.Internal).collect(Collectors.toSet()));
         picker.getEventBus().register(this);
     }
@@ -97,7 +97,7 @@ public class ACAQAlgorithmDeclarationRefParameterEditorUI extends ACAQParameterE
      * @param event Generated event
      */
     @Subscribe
-    public void onAlgorithmSelected(ACAQAlgorithmPicker.AlgorithmSelectedEvent event) {
+    public void onAlgorithmSelected(ACAQAlgorithmDeclarationPicker.AlgorithmSelectedEvent event) {
         if (pickerDialog.isVisible()) {
             ACAQAlgorithmDeclarationRef declarationRef = getParameter(ACAQAlgorithmDeclarationRef.class);
             declarationRef.setDeclaration(event.getDeclaration());

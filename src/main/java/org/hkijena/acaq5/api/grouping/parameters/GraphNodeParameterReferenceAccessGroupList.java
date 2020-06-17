@@ -22,8 +22,9 @@ public class GraphNodeParameterReferenceAccessGroupList implements ACAQParameter
      *
      * @param parameters the parameters
      * @param tree       tree of the referenced graph
+     * @param persistent if values are persistent
      */
-    public GraphNodeParameterReferenceAccessGroupList(GraphNodeParameters parameters, ACAQParameterTree tree) {
+    public GraphNodeParameterReferenceAccessGroupList(GraphNodeParameters parameters, ACAQParameterTree tree, boolean persistent) {
 
         Set<ACAQParameterAccess> existingParameters = new HashSet<>();
         for (GraphNodeParameterReferenceGroup group : parameters.getParameterReferenceGroups()) {
@@ -32,7 +33,7 @@ public class GraphNodeParameterReferenceAccessGroupList implements ACAQParameter
             for (GraphNodeParameterReference reference : group.getContent()) {
                 ACAQParameterAccess access = reference.resolve(tree);
                 if (access != null && !existingParameters.contains(access)) {
-                    GraphNodeParameterReferenceAccess wrappedAccess = new GraphNodeParameterReferenceAccess(reference, tree, collection);
+                    GraphNodeParameterReferenceAccess wrappedAccess = new GraphNodeParameterReferenceAccess(reference, tree, collection, persistent);
                     String key = StringUtils.makeUniqueString(access.getKey(), "-", collection.getParameters()::containsKey);
                     collection.getParameters().put(key, wrappedAccess);
                     existingParameters.add(access);

@@ -6,6 +6,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQDefaultDocumentation;
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.utils.StringUtils;
@@ -420,6 +421,15 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
         Node node = nodeMap.get(source);
         node.setName(documentation.name());
         node.setDescription(documentation.description());
+    }
+
+    /**
+     * Returns the node of a collection
+     * @param collection the collection
+     * @return node or null
+     */
+    public Node getSourceNode(ACAQParameterCollection collection) {
+        return nodeMap.get(collection);
     }
 
     /**

@@ -1,15 +1,23 @@
 package org.hkijena.acaq5.api.grouping.parameters;
 
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.grouping.events.ParameterReferencesChangedEvent;
+import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
+import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.FormPanel;
+import org.hkijena.acaq5.ui.components.PickAlgorithmDialog;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
 
 /**
  * Editor component for {@link GraphNodeParameters}
@@ -43,6 +51,11 @@ public class GraphNodeParametersUI extends ACAQWorkbenchPanel {
         toolBar.setFloatable(false);
         toolBar.add(Box.createHorizontalGlue());
 
+        JButton autoAddAlgorithmButton = new JButton("Auto add algorithm", UIUtils.getIconFromResources("cog.png"));
+        autoAddAlgorithmButton.setToolTipText("Adds a group based on an algorithm");
+        autoAddAlgorithmButton.addActionListener(e -> autoAddAlgorithm());
+        toolBar.add(autoAddAlgorithmButton);
+
         JButton addEmptyGroupButton = new JButton("Add group", UIUtils.getIconFromResources("add.png"));
         addEmptyGroupButton.setToolTipText("Adds a new group");
         addEmptyGroupButton.addActionListener(e -> addEmptyGroup());
@@ -54,8 +67,40 @@ public class GraphNodeParametersUI extends ACAQWorkbenchPanel {
         add(content, BorderLayout.CENTER);
     }
 
+    private void autoAddAlgorithm() {
+        ACAQGraphNode algorithm = PickAlgorithmDialog.showDialog(this,
+                parameters.getGraph().getAlgorithmNodes().values(),
+                "Add parameters of algorithm");
+        if (algorithm != null) {
+            List<GraphNodeParameterReferenceGroup> groupList = new ArrayList<>();
+            Stack<ACAQParameterCollection> collectionStack = new Stack<>();
+            collectionStack.push(algorithm);
+            while (!collectionStack.isEmpty()) {
+                ACAQParameterCollection top = collectionStack.pop();
+                GraphNodeParameterReferenceGroup group = new GraphNodeParameterReferenceGroup();
+                group.setName(algorithm.getName());
+                group.setDescription(algorithm.getCustomDescription());
+
+                ACAQParameterTree.Node node = tree.getSourceNode(top);
+                for (ACAQParameterAccess parameter : node.getParameters().values()) {
+                    if (parameter.getVisibility().isVisibleIn(ACAQParameterVisibility.TransitiveVisible)) {
+                        GraphNodeParameterReference reference = new GraphNodeParameterReference(parameter, tree);
+                        group.addContent(reference);
+                    }
+                }
+                for (ACAQParameterTree.Node childNode : node.getChildren().values()) {
+                    collectionStack.push(childNode.getCollection());
+                }
+
+                groupList.add(group);
+            }
+
+            parameters.addGroups(groupList);
+        }
+    }
+
     private void addEmptyGroup() {
-        parameters.addGroup();
+        parameters.addNewGroup();
     }
 
     private void refreshContent() {

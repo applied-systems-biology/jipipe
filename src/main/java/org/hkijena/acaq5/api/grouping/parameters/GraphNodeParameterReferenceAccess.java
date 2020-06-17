@@ -17,6 +17,7 @@ public class GraphNodeParameterReferenceAccess implements ACAQParameterAccess {
     private final ACAQParameterTree tree;
     private final ACAQParameterCollection alternativeSource;
     private final ACAQParameterAccess target;
+    private final boolean persistent;
 
 
     /**
@@ -25,10 +26,12 @@ public class GraphNodeParameterReferenceAccess implements ACAQParameterAccess {
      * @param reference         the reference
      * @param tree              the tree that is referenced
      * @param alternativeSource the source they are attached to
+     * @param persistent        if the values are persistent (saved by the algorithm)
      */
-    public GraphNodeParameterReferenceAccess(GraphNodeParameterReference reference, ACAQParameterTree tree, ACAQParameterCollection alternativeSource) {
+    public GraphNodeParameterReferenceAccess(GraphNodeParameterReference reference, ACAQParameterTree tree, ACAQParameterCollection alternativeSource, boolean persistent) {
         this.reference = reference;
         this.tree = tree;
+        this.persistent = persistent;
         this.target = reference.resolve(tree);
         this.alternativeSource = alternativeSource;
     }
@@ -95,6 +98,6 @@ public class GraphNodeParameterReferenceAccess implements ACAQParameterAccess {
 
     @Override
     public boolean isPersistent() {
-        return false;
+        return persistent;
     }
 }

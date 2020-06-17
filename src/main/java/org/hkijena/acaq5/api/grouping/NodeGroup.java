@@ -135,7 +135,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements ACAQCustomParame
     public Map<String, ACAQParameterCollection> getChildParameterCollections() {
         this.exportedParameters.setGraph(getWrappedGraph());
         Map<String, ACAQParameterCollection> result = new HashMap<>();
-        result.put("exported", new GraphNodeParameterReferenceAccessGroupList(exportedParameters, getWrappedGraph().getParameterTree()));
+        result.put("exported", new GraphNodeParameterReferenceAccessGroupList(exportedParameters, getWrappedGraph().getParameterTree(), false));
         return result;
     }
 }

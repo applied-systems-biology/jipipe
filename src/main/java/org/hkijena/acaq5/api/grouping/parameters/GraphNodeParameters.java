@@ -10,6 +10,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -69,13 +70,26 @@ public class GraphNodeParameters {
      *
      * @return the group
      */
-    public GraphNodeParameterReferenceGroup addGroup() {
+    public GraphNodeParameterReferenceGroup addNewGroup() {
         GraphNodeParameterReferenceGroup instance = new GraphNodeParameterReferenceGroup();
         instance.setName("New group");
         parameterReferenceGroups.add(instance);
         instance.getEventBus().register(this);
         eventBus.post(new ParameterReferencesChangedEvent());
         return instance;
+    }
+
+    /**
+     * Adds multiple groups
+     *
+     * @param groups groups
+     */
+    public void addGroups(Collection<GraphNodeParameterReferenceGroup> groups) {
+        for (GraphNodeParameterReferenceGroup group : groups) {
+            parameterReferenceGroups.add(group);
+            group.getEventBus().register(this);
+        }
+        eventBus.post(new ParameterReferencesChangedEvent());
     }
 
     @JsonGetter("parameter-reference-groups")

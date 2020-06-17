@@ -185,6 +185,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm {
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
+        super.reportValidity(report);
         report.forCategory("Wrapped graph").report(wrappedGraph);
         if (!slotConfigurationIsComplete) {
             report.forCategory("Slots").reportIsInvalid("Could not create some output slots!",
