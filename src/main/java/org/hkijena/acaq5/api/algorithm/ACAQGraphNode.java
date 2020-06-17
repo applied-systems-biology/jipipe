@@ -4,8 +4,10 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -364,6 +366,52 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
      */
     public void setLocationWithin(String compartment, Point location, String visualMode) {
         this.locations.put(compartment + "{" + visualMode + "}", location);
+    }
+
+    /**
+     * Saves this algorithm to JSON.
+     * Override this method to apply your own modifications
+     * @param jsonGenerator the JSON generator
+     * @throws JsonProcessingException thrown by JSON methods
+     */
+    public void toJson(JsonGenerator jsonGenerator) throws IOException, JsonProcessingException {
+        jsonGenerator.writeStartObject();
+        jsonGenerator.writeObjectField("acaq:slot-configuration", slotConfiguration);
+        jsonGenerator.writeFieldName("acaq:algorithm-ui-location");
+        jsonGenerator.writeStartObject();
+        for (Map.Entry<String, Point> entry : locations.entrySet()) {
+            if (entry.getValue() != null) {
+                jsonGenerator.writeFieldName(entry.getKey());
+                jsonGenerator.writeStartObject();
+                jsonGenerator.writeNumberField("x", entry.getValue().x);
+                jsonGenerator.writeNumberField("y", entry.getValue().y);
+                jsonGenerator.writeEndObject();
+            }
+        }
+        jsonGenerator.writeEndObject();
+        jsonGenerator.writeStringField("acaq:algorithm-type", getDeclaration().getId());
+        jsonGenerator.writeStringField("acaq:algorithm-compartment", getCompartment());
+        ACAQParameterTree parameterCollection = new ACAQParameterTree(this);
+        for (Map.Entry<String, ACAQParameterAccess> entry : parameterCollection.getParameters().entrySet()) {
+            if(entry.getValue().isPersistent()) {
+                jsonGenerator.writeObjectField(entry.getKey(), entry.getValue().get(Object.class));
+            }
+        }
+
+        // Save dynamic parameter storage
+        Set<ACAQParameterCollection> dynamicParameters = parameterCollection.getRegisteredSources().stream()
+                .filter(src -> src instanceof ACAQDynamicParameterCollection).collect(Collectors.toSet());
+        if (!dynamicParameters.isEmpty()) {
+            jsonGenerator.writeFieldName("acaq:dynamic-parameters");
+            jsonGenerator.writeStartObject();
+            for (ACAQParameterCollection dynamicParameter : dynamicParameters) {
+                String key = parameterCollection.getSourceKey(dynamicParameter);
+                jsonGenerator.writeObjectField(key, dynamicParameter);
+            }
+            jsonGenerator.writeEndObject();
+        }
+
+        jsonGenerator.writeEndObject();
     }
 
     /**
@@ -896,43 +944,7 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
     public static class Serializer extends JsonSerializer<ACAQGraphNode> {
         @Override
         public void serialize(ACAQGraphNode algorithm, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
-            jsonGenerator.writeStartObject();
-            jsonGenerator.writeObjectField("acaq:slot-configuration", algorithm.slotConfiguration);
-            jsonGenerator.writeFieldName("acaq:algorithm-ui-location");
-            jsonGenerator.writeStartObject();
-            for (Map.Entry<String, Point> entry : algorithm.locations.entrySet()) {
-                if (entry.getValue() != null) {
-                    jsonGenerator.writeFieldName(entry.getKey());
-                    jsonGenerator.writeStartObject();
-                    jsonGenerator.writeNumberField("x", entry.getValue().x);
-                    jsonGenerator.writeNumberField("y", entry.getValue().y);
-                    jsonGenerator.writeEndObject();
-                }
-            }
-            jsonGenerator.writeEndObject();
-            jsonGenerator.writeStringField("acaq:algorithm-type", algorithm.getDeclaration().getId());
-            jsonGenerator.writeStringField("acaq:algorithm-compartment", algorithm.getCompartment());
-            ACAQParameterTree parameterCollection = new ACAQParameterTree(algorithm);
-            for (Map.Entry<String, ACAQParameterAccess> entry : parameterCollection.getParameters().entrySet()) {
-                if(entry.getValue().isPersistent()) {
-                    jsonGenerator.writeObjectField(entry.getKey(), entry.getValue().get(Object.class));
-                }
-            }
-
-            // Save dynamic parameter storage
-            Set<ACAQParameterCollection> dynamicParameters = parameterCollection.getRegisteredSources().stream()
-                    .filter(src -> src instanceof ACAQDynamicParameterCollection).collect(Collectors.toSet());
-            if (!dynamicParameters.isEmpty()) {
-                jsonGenerator.writeFieldName("acaq:dynamic-parameters");
-                jsonGenerator.writeStartObject();
-                for (ACAQParameterCollection dynamicParameter : dynamicParameters) {
-                    String key = parameterCollection.getSourceKey(dynamicParameter);
-                    jsonGenerator.writeObjectField(key, dynamicParameter);
-                }
-                jsonGenerator.writeEndObject();
-            }
-
-            jsonGenerator.writeEndObject();
+           algorithm.toJson(jsonGenerator);
         }
     }
 }
