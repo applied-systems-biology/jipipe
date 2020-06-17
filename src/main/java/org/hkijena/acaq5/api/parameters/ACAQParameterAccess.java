@@ -102,6 +102,15 @@ public interface ACAQParameterAccess {
     int getUIOrder();
 
     /**
+     * Controls if this parameter should be saved. By default true.
+     * This is used by {@link org.hkijena.acaq5.api.algorithm.ACAQGraphNode} and maybe other placed to skip parameters.
+     * @return if the parameter is saved.
+     */
+    default boolean isPersistent() {
+        return true;
+    }
+
+    /**
      * Compares the priority
      *
      * @param lhs access

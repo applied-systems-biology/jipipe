@@ -22,9 +22,25 @@ import java.util.stream.Collectors;
  */
 public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomParameterCollection {
 
+    /**
+     * No flags
+     */
     public static final int NONE = 0;
+
+    /**
+     * Whether to ignore all reflection parameters
+     */
     public static final int IGNORE_REFLECTION = 1;
-    public static final int IGNORE_CUSTOM = 2;
+
+    /**
+     * Whether to force reflection
+     */
+    public static final int FORCE_REFLECTION = 2;
+
+    /**
+     * Whether to ignore all custom parameters
+     */
+    public static final int IGNORE_CUSTOM = 4;
 
     private EventBus eventBus = new EventBus();
     private Node root = new Node(null, null);
@@ -52,12 +68,14 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
     /**
      * Creates a new instance with a predefined root parameter
      * @param rootParameter the root parameter
+     * @param flags additional flags
      */
     public ACAQParameterTree(ACAQParameterCollection rootParameter, int flags) {
         this.root = new Node(null, rootParameter);
         this.nodeMap.put(rootParameter, root);
         this.ignoreReflectionParameters = (flags & IGNORE_REFLECTION) == IGNORE_REFLECTION;
         this.ignoreCustomParameters = (flags & IGNORE_CUSTOM) == IGNORE_CUSTOM;
+        this.forceReflection = (flags & FORCE_REFLECTION) == FORCE_REFLECTION;
         merge(rootParameter, root);
     }
 
@@ -121,6 +139,16 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
                 return;
             for (Map.Entry<String, ACAQParameterAccess> entry : ((ACAQCustomParameterCollection) source).getParameters().entrySet()) {
                 addParameter(entry.getKey(), entry.getValue(), target);
+            }
+            for (Map.Entry<String, ACAQParameterCollection> entry : ((ACAQCustomParameterCollection) source).getChildParameterCollections().entrySet()) {
+                String key = entry.getKey();
+                ACAQParameterCollection child = entry.getValue();
+                Node childNode = new Node(target, child);
+                childNode.setKey(key);
+                target.addChild(key, childNode);
+                nodeMap.put(child, childNode);
+
+                merge(child, childNode);
             }
         } else {
             if (ignoreReflectionParameters)
@@ -319,6 +347,11 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
         return root;
     }
 
+    /**
+     * Gets unique source key
+     * @param collection source
+     * @return key
+     */
     public String getSourceKey(ACAQParameterCollection collection) {
         return String.join("/", nodeMap.get(collection).getPath());
     }
@@ -327,10 +360,20 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
         return nodeMap.keySet();
     }
 
+    /**
+     * Gets source UI order
+     * @param source source
+     * @return ui order
+     */
    public int getUISourceOrder(ACAQParameterCollection source) {
         return nodeMap.get(source).getUiOrder();
    }
 
+    /**
+     * Gets source name
+     * @param source source
+     * @return name
+     */
    public String getSourceDocumentationName(ACAQParameterCollection source) {
        Node node = nodeMap.get(source);
        if(!StringUtils.isNullOrEmpty(node.getName())) {
@@ -341,14 +384,29 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
        }
    }
 
+    /**
+     * Gets source visibility
+     * @param source source
+     * @return visibility
+     */
    public ACAQParameterVisibility getSourceVisibility(ACAQParameterCollection source) {
         return nodeMap.get(source).getVisibility();
    }
 
+    /**
+     * Gets source UI order
+     * @param source source
+     * @return source UI order
+     */
    public int getSourceUIOrder(ACAQParameterCollection source) {
         return nodeMap.get(source).getUiOrder();
    }
 
+    /**
+     * Gets source documentation
+     * @param source source
+     * @return source documentation
+     */
     public ACAQDocumentation getSourceDocumentation(ACAQParameterCollection source) {
         Node node = nodeMap.get(source);
         String name = getSourceDocumentationName(source);
@@ -356,6 +414,11 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
         return new ACAQDefaultDocumentation(name, description);
     }
 
+    /**
+     * Sets source documentation
+     * @param source source
+     * @param documentation documentation
+     */
     public void setSourceDocumentation(ACAQParameterCollection source, ACAQDefaultDocumentation documentation) {
         Node node = nodeMap.get(source);
         node.setName(documentation.name());
@@ -416,6 +479,9 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
         }
     }
 
+    /**
+     * A node
+     */
     public static class Node {
         private Node parent;
         private ACAQParameterCollection collection;
@@ -428,9 +494,18 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
         private BiMap<String, ACAQParameterAccess> parameters = HashBiMap.create();
         private BiMap<String, Node> children = HashBiMap.create();
 
+        /**
+         * Creates a node
+         * @param parent the parent
+         * @param collection the collection
+         */
         public Node(Node parent, ACAQParameterCollection collection) {
             this.parent = parent;
             this.collection = collection;
+            if(collection instanceof ACAQNamedParameterCollection) {
+                this.name = ((ACAQNamedParameterCollection) collection).getDefaultParameterCollectionName();
+                this.description = ((ACAQNamedParameterCollection) collection).getDefaultParameterCollectionDescription();
+            }
         }
 
         public List<String> getPath() {
@@ -529,3 +604,4 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
         }
     }
 }
+

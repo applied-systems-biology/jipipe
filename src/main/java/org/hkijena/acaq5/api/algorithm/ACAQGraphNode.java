@@ -417,6 +417,8 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
             changedStructure.set(false);
             ACAQParameterTree parameterCollection = new ACAQParameterTree(this);
             for (ACAQParameterAccess parameterAccess : parameterCollection.getParametersByPriority()) {
+                if(!parameterAccess.isPersistent())
+                    continue;
                 String key = parameterCollection.getUniqueKey(parameterAccess);
                 if (loadedParameters.contains(key))
                     continue;
@@ -912,7 +914,9 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
             jsonGenerator.writeStringField("acaq:algorithm-compartment", algorithm.getCompartment());
             ACAQParameterTree parameterCollection = new ACAQParameterTree(algorithm);
             for (Map.Entry<String, ACAQParameterAccess> entry : parameterCollection.getParameters().entrySet()) {
-                jsonGenerator.writeObjectField(entry.getKey(), entry.getValue().get(Object.class));
+                if(entry.getValue().isPersistent()) {
+                    jsonGenerator.writeObjectField(entry.getKey(), entry.getValue().get(Object.class));
+                }
             }
 
             // Save dynamic parameter storage

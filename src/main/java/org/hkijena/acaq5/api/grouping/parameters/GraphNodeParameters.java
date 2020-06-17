@@ -6,10 +6,12 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.grouping.events.ParameterReferencesChangedEvent;
+import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
+import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
+import org.hkijena.acaq5.utils.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Contains a list of {@link GraphNodeParameterReferenceGroup} and {@link GraphNodeParameterCollectionReference}
@@ -106,4 +108,16 @@ public class GraphNodeParameters {
         parameterReferenceGroups.remove(group);
         eventBus.post(new ParameterReferencesChangedEvent());
     }
+
+    /**
+     * Converts the references into actual parameter collections
+     * @return referenced parameters
+     * @param tree the tree of the referenced parameters
+     */
+    public List<ACAQParameterCollection> build(ACAQParameterTree tree) {
+        List<ACAQParameterCollection> result = new ArrayList<>();
+
+        return result;
+    }
+
 }

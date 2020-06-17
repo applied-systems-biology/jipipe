@@ -9,12 +9,14 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
 import org.hkijena.acaq5.api.grouping.parameters.GraphNodeParameters;
 import org.hkijena.acaq5.api.grouping.parameters.NodeGroupContents;
-import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.utils.StringUtils;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -22,7 +24,7 @@ import java.util.Map;
  */
 @ACAQDocumentation(name = "Group", description = "A sub-graph that contains its own pipeline.")
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Miscellaneous)
-public class NodeGroup extends GraphWrapperAlgorithm {
+public class NodeGroup extends GraphWrapperAlgorithm implements ACAQCustomParameterCollection {
 
     private NodeGroupContents contents;
     private GraphNodeParameters exportedParameters = new GraphNodeParameters();
@@ -47,8 +49,9 @@ public class NodeGroup extends GraphWrapperAlgorithm {
      * Creates a copy
      * @param other the original
      */
-    public NodeGroup(GraphWrapperAlgorithm other) {
+    public NodeGroup(NodeGroup other) {
         super(other);
+        this.exportedParameters = new GraphNodeParameters(other.exportedParameters);
         initializeContents();
     }
 
@@ -118,5 +121,20 @@ public class NodeGroup extends GraphWrapperAlgorithm {
     public void setExportedParameters(GraphNodeParameters exportedParameters) {
         this.exportedParameters = exportedParameters;
         this.exportedParameters.setGraph(getWrappedGraph());
+    }
+
+    @Override
+    public Map<String, ACAQParameterAccess> getParameters() {
+        ACAQParameterTree standardParameters = new ACAQParameterTree(this,
+                ACAQParameterTree.IGNORE_CUSTOM | ACAQParameterTree.FORCE_REFLECTION);
+        return standardParameters.getParameters();
+    }
+
+    @Override
+    public Map<String, ACAQParameterCollection> getChildParameterCollections() {
+        this.exportedParameters.setGraph(getWrappedGraph());
+        Map<String, ACAQParameterCollection> result = new HashMap<>();
+        result.put("exported", new GraphNodeParameterReferenceAccessGroupList(exportedParameters, getWrappedGraph().getParameterTree()));
+        return result;
     }
 }
