@@ -9,6 +9,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.grouping.parameters.GraphNodeParameters;
 import org.hkijena.acaq5.api.grouping.parameters.NodeGroupContents;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
@@ -24,6 +25,7 @@ import java.util.Map;
 public class NodeGroup extends GraphWrapperAlgorithm {
 
     private NodeGroupContents contents;
+    private GraphNodeParameters exportedParameters = new GraphNodeParameters();
 
     /**
      * Creates a new instance
@@ -37,6 +39,7 @@ public class NodeGroup extends GraphWrapperAlgorithm {
     private void initializeContents() {
         contents = new NodeGroupContents();
         contents.setWrappedGraph(getWrappedGraph());
+        exportedParameters.setGraph(contents.getWrappedGraph());
         contents.setParent(this);
     }
 
@@ -102,6 +105,18 @@ public class NodeGroup extends GraphWrapperAlgorithm {
         this.contents = contents;
         contents.setParent(this);
         setWrappedGraph(contents.getWrappedGraph());
+        exportedParameters.setGraph(contents.getWrappedGraph());
     }
 
+    @ACAQDocumentation(name = "Exported parameters", description = "Allows you to export parameters from the group into the group node")
+    @ACAQParameter("exported-parameters")
+    public GraphNodeParameters getExportedParameters() {
+        return exportedParameters;
+    }
+
+    @ACAQParameter("exported-parameters")
+    public void setExportedParameters(GraphNodeParameters exportedParameters) {
+        this.exportedParameters = exportedParameters;
+        this.exportedParameters.setGraph(getWrappedGraph());
+    }
 }

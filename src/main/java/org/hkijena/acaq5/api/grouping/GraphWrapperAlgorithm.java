@@ -33,6 +33,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm {
 
     /**
      * @param declaration the declaration
+     * @param wrappedGraph the graph wrapper
      */
     public GraphWrapperAlgorithm(ACAQAlgorithmDeclaration declaration, ACAQAlgorithmGraph wrappedGraph) {
         super(declaration, new ACAQMutableSlotConfiguration());

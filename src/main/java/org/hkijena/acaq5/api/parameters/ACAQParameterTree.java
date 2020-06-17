@@ -75,8 +75,6 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
         return result;
     }
 
-
-
     /**
      * Gets the unique key of an parameter access
      *
@@ -94,6 +92,7 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
      * @param child    the added collection
      * @param key  the unique key within the parent node
      * @param parent the parent node. Can be null (then defaults to root)
+     * @return the created node
      */
     public Node add(ACAQParameterCollection child, String key, Node parent) {
         if (nodeMap.containsKey(child))

@@ -1,12 +1,17 @@
 package org.hkijena.acaq5.api.grouping;
 
 import org.hkijena.acaq5.ACAQJavaExtension;
+import org.hkijena.acaq5.api.grouping.parameters.GraphNodeParameterEditorUI;
+import org.hkijena.acaq5.api.grouping.parameters.GraphNodeParameters;
 import org.hkijena.acaq5.api.grouping.parameters.NodeGroupContents;
 import org.hkijena.acaq5.api.grouping.parameters.NodeGroupContentsParameterEditorUI;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.plugin.Plugin;
 
+/**
+ * Extension for anything that is related to {@link GraphWrapperAlgorithm}
+ */
 @Plugin(type = ACAQJavaExtension.class)
 public class GroupingExtension extends ACAQPrepackagedDefaultJavaExtension {
     @Override
@@ -32,6 +37,13 @@ public class GroupingExtension extends ACAQPrepackagedDefaultJavaExtension {
                 "Group content",
                 "Node group contents",
                 NodeGroupContentsParameterEditorUI.class);
+        registerParameterType("graph-node-parameters",
+                GraphNodeParameters.class,
+                null,
+                null,
+                "Exported parameters",
+                "Organizes parameters sourced from another graph",
+                GraphNodeParameterEditorUI.class);
     }
 
     @Override
