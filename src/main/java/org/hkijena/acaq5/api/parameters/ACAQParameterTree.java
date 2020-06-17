@@ -277,6 +277,35 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
     }
 
     /**
+     * Returns all child parameters of the entry
+     * If the entry is an {@link ACAQParameterAccess}, it is returned. Otherwise all children of the {@link ACAQParameterCollection} are returned.
+     * @param entry the entry.
+     * @return all parameters that are children of the entry or the entry itself
+     */
+    public List<ACAQParameterAccess> getAllChildParameters(Object entry) {
+        if(entry instanceof ACAQParameterAccess) {
+            return Collections.singletonList((ACAQParameterAccess)entry);
+        }
+        else if(entry instanceof ACAQParameterTree.Node) {
+            List<ACAQParameterAccess> result = new ArrayList<>();
+            Stack<Node> stack = new Stack<>();
+            stack.push((Node) entry);
+            while(!stack.isEmpty()) {
+                Node top = stack.pop();
+                result.addAll(top.getParameters().values());
+
+                for (Node child : top.getChildren().values()) {
+                    stack.push(child);
+                }
+            }
+            return result;
+        }
+        else {
+            return Collections.emptyList();
+        }
+    }
+
+    /**
      * Accesses the parameters of a collection
      *
      * @param collection the collection

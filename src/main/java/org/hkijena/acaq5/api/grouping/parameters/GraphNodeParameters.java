@@ -3,6 +3,7 @@ package org.hkijena.acaq5.api.grouping.parameters;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.grouping.events.ParameterReferencesChangedEvent;
 
@@ -31,7 +32,9 @@ public class GraphNodeParameters {
      */
     public GraphNodeParameters(GraphNodeParameters other) {
         for (GraphNodeParameterReferenceGroup group : other.parameterReferenceGroups) {
-            this.parameterReferenceGroups.add(new GraphNodeParameterReferenceGroup(group));
+            GraphNodeParameterReferenceGroup copy = new GraphNodeParameterReferenceGroup(group);
+            this.parameterReferenceGroups.add(copy);
+            copy.getEventBus().register(this);
         }
     }
 
@@ -63,6 +66,8 @@ public class GraphNodeParameters {
     public GraphNodeParameterReferenceGroup addGroup() {
         GraphNodeParameterReferenceGroup instance = new GraphNodeParameterReferenceGroup();
         instance.setName("New group");
+        parameterReferenceGroups.add(instance);
+        instance.getEventBus().register(this);
         eventBus.post(new ParameterReferencesChangedEvent());
         return instance;
     }
@@ -74,7 +79,31 @@ public class GraphNodeParameters {
 
     @JsonSetter("parameter-reference-groups")
     public void setParameterReferenceGroups(List<GraphNodeParameterReferenceGroup> parameterReferenceGroups) {
+        for (GraphNodeParameterReferenceGroup group : this.parameterReferenceGroups) {
+            group.getEventBus().unregister(this);
+        }
         this.parameterReferenceGroups = parameterReferenceGroups;
+        for (GraphNodeParameterReferenceGroup group : this.parameterReferenceGroups) {
+            group.getEventBus().register(this);
+        }
+        eventBus.post(new ParameterReferencesChangedEvent());
+    }
+
+    /**
+     * Triggered when some parameters were changed down the line
+     * @param event the event
+     */
+    @Subscribe
+    public void onReferencesChanged(ParameterReferencesChangedEvent event) {
+        eventBus.post(event);
+    }
+
+    /**
+     * Removes the group
+     * @param group the group
+     */
+    public void removeGroup(GraphNodeParameterReferenceGroup group) {
+        parameterReferenceGroups.remove(group);
         eventBus.post(new ParameterReferencesChangedEvent());
     }
 }

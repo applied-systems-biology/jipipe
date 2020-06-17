@@ -1,0 +1,92 @@
+package org.hkijena.acaq5.api.grouping.parameters;
+
+import com.google.common.eventbus.Subscribe;
+import org.hkijena.acaq5.api.grouping.events.ParameterReferencesChangedEvent;
+import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
+import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
+import org.hkijena.acaq5.ui.components.FormPanel;
+import org.hkijena.acaq5.utils.UIUtils;
+
+import javax.swing.*;
+import java.awt.*;
+
+/**
+ * Editor component for {@link GraphNodeParameters}
+ */
+public class GraphNodeParametersUI extends ACAQWorkbenchPanel {
+
+    private final GraphNodeParameters parameters;
+    private FormPanel content;
+    private ACAQParameterTree tree;
+
+    /**
+     * @param workbench the workbench
+     * @param parameters the parameters to edit
+     */
+    public GraphNodeParametersUI(ACAQWorkbench workbench, GraphNodeParameters parameters) {
+        super(workbench);
+        this.parameters = parameters;
+        parameters.getEventBus().register(this);
+        initialize();
+        refreshContent();
+    }
+
+    public GraphNodeParameters getParameters() {
+        return parameters;
+    }
+
+    private void initialize() {
+        setLayout(new BorderLayout());
+
+        JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
+        toolBar.add(Box.createHorizontalGlue());
+
+        JButton addEmptyGroupButton = new JButton("Add group", UIUtils.getIconFromResources("add.png"));
+        addEmptyGroupButton.setToolTipText("Adds a new group");
+        addEmptyGroupButton.addActionListener(e -> addEmptyGroup());
+        toolBar.add(addEmptyGroupButton);
+
+        add(toolBar, BorderLayout.NORTH);
+
+        content = new FormPanel(null, FormPanel.WITH_SCROLLING);
+        add(content, BorderLayout.CENTER);
+    }
+
+    private void addEmptyGroup() {
+        parameters.addGroup();
+    }
+
+    private void refreshContent() {
+        tree = getParameters().getGraph().getParameterTree();
+        int scrollValue = content.getScrollPane().getVerticalScrollBar().getValue();
+        content.clear();
+        for (GraphNodeParameterReferenceGroup referenceGroup : parameters.getParameterReferenceGroups()) {
+            GraphNodeParameterReferenceGroupUI groupUI =new GraphNodeParameterReferenceGroupUI(this, referenceGroup);
+            JButton removeButton = new JButton(UIUtils.getIconFromResources("close-tab.png"));
+            UIUtils.makeBorderlessWithoutMargin(removeButton);
+            removeButton.addActionListener(e -> parameters.removeGroup(referenceGroup));
+            content.addToForm(groupUI, removeButton, null);
+        }
+        content.addVerticalGlue();
+        SwingUtilities.invokeLater(() -> content.getScrollPane().getVerticalScrollBar().setValue(scrollValue));
+    }
+
+    /**
+     * Triggered when the references were changed
+     * @param event the event
+     */
+    @Subscribe
+    public void onParameterReferenceChanged(ParameterReferencesChangedEvent event) {
+        refreshContent();
+    }
+
+    /**
+     *
+     * @return The current parameter tree that was generated for this refresh cycle
+     */
+    public ACAQParameterTree getTree() {
+        return tree;
+    }
+}

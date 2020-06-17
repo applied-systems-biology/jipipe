@@ -7,6 +7,7 @@ import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.grouping.events.ParameterReferencesChangedEvent;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -69,11 +70,27 @@ public class GraphNodeParameterReferenceGroup {
     }
 
     /**
-     * Adds a new element into the group
+     * Adds a new element into the group. Will not add duplicate elements.
      * @param reference the reference
      */
     public void addContent(GraphNodeParameterReference reference) {
-        this.content.add(reference);
+        if(!content.contains(reference))
+            this.content.add(reference);
+        eventBus.post(new ParameterReferencesChangedEvent());
+    }
+
+    /**
+     * Adds multiple elements. Will not add duplicate elements.
+     * @param references the references
+     */
+    public void addContent(Collection<GraphNodeParameterReference> references) {
+        if(references.isEmpty())
+            return;
+        for (GraphNodeParameterReference reference : references) {
+            if(!content.contains(reference)) {
+                this.content.add(reference);
+            }
+        }
         eventBus.post(new ParameterReferencesChangedEvent());
     }
 

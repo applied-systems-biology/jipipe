@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
+import org.hkijena.acaq5.utils.StringUtils;
+
+import java.util.Objects;
 
 /**
  * References a parameter in a graph
@@ -36,6 +39,49 @@ public class GraphNodeParameterReference {
      */
     public GraphNodeParameterReference(ACAQParameterAccess access, ACAQParameterTree tree) {
         this.path = tree.getUniqueKey(access);
+    }
+
+    /**
+     * Gets the name in the original graph
+     * @param tree the tree
+     * @return name
+     */
+    public String getOriginalName(ACAQParameterTree tree) {
+        String name = tree.getParameters().get(path).getName();
+        if(name == null)
+            name = tree.getParameters().get(path).getKey();
+        return name;
+    }
+
+    /**
+     * Gets the name or custom name
+     * @param tree the tree
+     * @return name or custom name
+     */
+    public String getName(ACAQParameterTree tree) {
+        if(StringUtils.isNullOrEmpty(customName)) {
+            String name = tree.getParameters().get(path).getName();
+            if(name == null)
+                name = tree.getParameters().get(path).getKey();
+            return name;
+        }
+        else {
+            return customName;
+        }
+    }
+
+    /**
+     * Gets the name or custom name
+     * @param tree the tree
+     * @return name or custom name
+     */
+    public String getDescription(ACAQParameterTree tree) {
+        if(StringUtils.isNullOrEmpty(customDescription)) {
+            return tree.getParameters().get(path).getDescription();
+        }
+        else {
+            return customDescription;
+        }
     }
 
     /**
@@ -75,5 +121,18 @@ public class GraphNodeParameterReference {
     @JsonSetter("path")
     public void setPath(String path) {
         this.path = path;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GraphNodeParameterReference reference = (GraphNodeParameterReference) o;
+        return Objects.equals(path, reference.path);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(path);
     }
 }

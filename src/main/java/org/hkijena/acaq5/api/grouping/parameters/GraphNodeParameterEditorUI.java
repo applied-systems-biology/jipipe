@@ -33,14 +33,14 @@ public class GraphNodeParameterEditorUI extends ACAQParameterEditorUI {
 
     private void editParameters() {
         GraphNodeParameters parameters = getParameter(GraphNodeParameters.class);
-        GraphNodeParametersEditorPanel panel = new GraphNodeParametersEditorPanel(getWorkbench(), parameters);
+        GraphNodeParametersUI panel = new GraphNodeParametersUI(getWorkbench(), parameters);
         JDialog editorDialog = new JDialog();
         editorDialog.setTitle("Edit parameters");
         editorDialog.setContentPane(panel);
         editorDialog.setModal(false);
-        editorDialog.setSize(480, 640);
-        editorDialog.setLocationRelativeTo(this);
         editorDialog.pack();
+        editorDialog.setSize(480, 640);
+        editorDialog.setLocationRelativeTo(getParent());
         editorDialog.setVisible(true);
     }
 

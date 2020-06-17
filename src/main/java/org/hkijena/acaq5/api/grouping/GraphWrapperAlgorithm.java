@@ -144,9 +144,23 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm {
                 runnerStatus.getProgress(),
                 runnerStatus.getMaxProgress(),
                 runnerStatus.getMessage())));
-        ACAQGraphRunner runner = new ACAQGraphRunner(wrappedGraph);
-        runner.setAlgorithmsWithExternalInput(Collections.singleton(getGroupInput()));
-        runner.run(subGraphStatus, isCancelled);
+        try {
+            for (ACAQGraphNode value : wrappedGraph.getAlgorithmNodes().values()) {
+                if(value instanceof ACAQAlgorithm) {
+                    ((ACAQAlgorithm) value).setThreadPool(getThreadPool());
+                }
+            }
+            ACAQGraphRunner runner = new ACAQGraphRunner(wrappedGraph);
+            runner.setAlgorithmsWithExternalInput(Collections.singleton(getGroupInput()));
+            runner.run(subGraphStatus, isCancelled);
+        }
+       finally {
+            for (ACAQGraphNode value : wrappedGraph.getAlgorithmNodes().values()) {
+                if(value instanceof ACAQAlgorithm) {
+                    ((ACAQAlgorithm) value).setThreadPool(null);
+                }
+            }
+        }
 
         // Copy into output
         for (ACAQDataSlot outputSlot : getOutputSlots()) {

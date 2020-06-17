@@ -16,6 +16,8 @@ import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.*;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
+import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.extensions.settings.RuntimeSettings;
@@ -265,6 +267,20 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         getEventBus().post(new AlgorithmGraphConnectedEvent(this, source, target));
         source.getAlgorithm().onSlotConnected(new AlgorithmGraphConnectedEvent(this, source, target));
         target.getAlgorithm().onSlotConnected(new AlgorithmGraphConnectedEvent(this, source, target));
+    }
+
+    /**
+     * Extracts all parameters as tree
+     * @return the tree
+     */
+    public ACAQParameterTree getParameterTree() {
+        ACAQParameterTree tree = new ACAQParameterTree();
+        for (Map.Entry<String, ACAQGraphNode> entry : getAlgorithmNodes().entrySet()) {
+            ACAQParameterTree.Node node = tree.add(entry.getValue(), entry.getKey(), null);
+            node.setName(entry.getValue().getName());
+            node.setDescription(entry.getValue().getCustomDescription());
+        }
+        return tree;
     }
 
     /**
