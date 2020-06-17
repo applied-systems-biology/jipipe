@@ -1,10 +1,7 @@
 package org.hkijena.acaq5.ui.grouping;
 
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
-import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.grouping.NodeGroup;
-import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
-import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
 import org.hkijena.acaq5.ui.compartments.ACAQCompartmentUI;
@@ -12,7 +9,7 @@ import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCompartmentUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,8 +24,9 @@ public class ACAQNodeGroupUI extends ACAQWorkbenchPanel {
 
     /**
      * Creates a new editor
-     *  @param workbenchUI the workbench UI
-     * @param nodeGroup the compartment
+     *
+     * @param workbenchUI the workbench UI
+     * @param nodeGroup   the compartment
      */
     public ACAQNodeGroupUI(ACAQWorkbench workbenchUI, NodeGroup nodeGroup) {
         super(workbenchUI);
@@ -52,7 +50,7 @@ public class ACAQNodeGroupUI extends ACAQWorkbenchPanel {
     /**
      * Opens the graph editor for specified compartment
      *
-     * @param nodeGroup The compartment
+     * @param nodeGroup   The compartment
      * @param switchToTab If true, switch to the tab
      */
     public static void openGroupNodeGraph(ACAQWorkbench workbench, NodeGroup nodeGroup, boolean switchToTab) {

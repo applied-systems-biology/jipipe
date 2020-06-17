@@ -18,7 +18,6 @@ import ij.text.TextWindow;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
-import org.hkijena.acaq5.ui.components.DocumentTabListCellRenderer;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.ResultsTableDataListCellRenderer;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -50,16 +49,16 @@ public class ACAQOpenTableFromImageJDialogUI extends JDialog {
     private void refreshList() {
         DefaultComboBoxModel<ResultsTableData> model = new DefaultComboBoxModel<>();
         for (Window window : WindowManager.getAllNonImageWindows()) {
-            if(window instanceof TextWindow) {
+            if (window instanceof TextWindow) {
                 ResultsTable resultsTable = ((TextWindow) window).getResultsTable();
-                if(resultsTable != null) {
+                if (resultsTable != null) {
                     ResultsTableData tableData = new ResultsTableData(resultsTable);
                     model.addElement(tableData);
                 }
             }
         }
         tableSelection.setModel(model);
-        if(model.getSize() > 0) {
+        if (model.getSize() > 0) {
             tableSelection.setSelectedItem(model.getElementAt(0));
             refreshPreview();
         }
@@ -110,7 +109,7 @@ public class ACAQOpenTableFromImageJDialogUI extends JDialog {
     }
 
     private void open() {
-        if(tableSelection.getSelectedItem() instanceof ResultsTableData) {
+        if (tableSelection.getSelectedItem() instanceof ResultsTableData) {
             ResultsTableData tableData = (ResultsTableData) tableSelection.getSelectedItem();
             ACAQTableEditor tableAnalyzerUI = new ACAQTableEditor((ACAQProjectWorkbench) workbench, tableData);
             workbench.getDocumentTabPane().addTab("Table", UIUtils.getIconFromResources("data-types/results-table.png"),

@@ -20,7 +20,6 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusCol
 import org.hkijena.acaq5.extensions.parameters.colors.OptionalColorParameter;
 import org.hkijena.acaq5.extensions.parameters.primitives.OptionalDoubleParameter;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
@@ -101,7 +100,7 @@ public class RoiToRGBAlgorithm extends ACAQIteratingAlgorithm {
         Map<Roi, Point> roiCentroids = new HashMap<>();
         Map<Roi, Integer> roiIndices = new HashMap<>();
         Filler roiFiller = new Filler();
-        if(drawLabel) {
+        if (drawLabel) {
             RoiStatisticsAlgorithm statisticsAlgorithm = ACAQAlgorithm.newInstance("ij1-roi-statistics");
             statisticsAlgorithm.setRequireReferenceImage(true);
             statisticsAlgorithm.getMeasurements().setNativeValue(Measurement.Centroid.getNativeValue());
@@ -110,8 +109,8 @@ public class RoiToRGBAlgorithm extends ACAQIteratingAlgorithm {
             statisticsAlgorithm.run(subProgress.resolve("ROI statistics"), algorithmProgress, isCancelled);
             ResultsTableData centroids = statisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class);
             for (int row = 0; row < centroids.getRowCount(); row++) {
-                Point centroid = new Point((int)centroids.getValueAsDouble(row, "X"),
-                        (int)centroids.getValueAsDouble(row, "Y"));
+                Point centroid = new Point((int) centroids.getValueAsDouble(row, "X"),
+                        (int) centroids.getValueAsDouble(row, "Y"));
                 roiCentroids.put(inputData.get(row), centroid);
                 roiIndices.put(inputData.get(row), row);
             }
@@ -141,7 +140,7 @@ public class RoiToRGBAlgorithm extends ACAQIteratingAlgorithm {
                     processor.setColor(color);
                     roi.drawPixels(processor);
                 }
-                if(drawLabel) {
+                if (drawLabel) {
                     Point centroid = roiCentroids.get(roi);
                     roiFiller.drawLabel(result, processor, roiIndices.get(roi), new Rectangle(centroid.x, centroid.y, 0, 0));
                 }

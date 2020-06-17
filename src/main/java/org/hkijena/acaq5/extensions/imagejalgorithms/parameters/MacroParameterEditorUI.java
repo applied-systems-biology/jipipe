@@ -6,7 +6,6 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
-import org.scijava.Context;
 import org.scijava.ui.swing.script.EditorPane;
 
 import javax.swing.*;
@@ -22,7 +21,7 @@ public class MacroParameterEditorUI extends ACAQParameterEditorUI {
     private EditorPane textArea;
 
     /**
-     * @param workbench        workbench
+     * @param workbench       workbench
      * @param parameterAccess the parameter
      */
     public MacroParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {

@@ -1,7 +1,6 @@
 package org.hkijena.acaq5.extensions.parameters.generators;
 
 import org.hkijena.acaq5.ui.ACAQWorkbench;
-import org.scijava.Context;
 
 /**
  * Generates {@link Long}

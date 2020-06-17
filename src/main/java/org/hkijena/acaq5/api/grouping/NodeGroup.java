@@ -31,6 +31,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements ACAQCustomParame
 
     /**
      * Creates a new instance
+     *
      * @param declaration the declaration
      */
     public NodeGroup(ACAQAlgorithmDeclaration declaration) {
@@ -38,15 +39,9 @@ public class NodeGroup extends GraphWrapperAlgorithm implements ACAQCustomParame
         initializeContents();
     }
 
-    private void initializeContents() {
-        contents = new NodeGroupContents();
-        contents.setWrappedGraph(getWrappedGraph());
-        exportedParameters.setGraph(contents.getWrappedGraph());
-        contents.setParent(this);
-    }
-
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public NodeGroup(NodeGroup other) {
@@ -57,7 +52,8 @@ public class NodeGroup extends GraphWrapperAlgorithm implements ACAQCustomParame
 
     /**
      * Initializes from an existing graph
-     * @param graph algorithms to be added
+     *
+     * @param graph           algorithms to be added
      * @param autoCreateSlots automatically create input and output slots
      */
     public NodeGroup(ACAQAlgorithmGraph graph, boolean autoCreateSlots) {
@@ -65,17 +61,16 @@ public class NodeGroup extends GraphWrapperAlgorithm implements ACAQCustomParame
         setWrappedGraph(graph);
         initializeContents();
 
-        if(autoCreateSlots) {
+        if (autoCreateSlots) {
             setPreventUpdateSlots(true);
             ACAQMutableSlotConfiguration inputSlotConfiguration = (ACAQMutableSlotConfiguration) getGroupInput().getSlotConfiguration();
             ACAQMutableSlotConfiguration outputSlotConfiguration = (ACAQMutableSlotConfiguration) getGroupOutput().getSlotConfiguration();
             BiMap<ACAQDataSlot, String> slotNames = HashBiMap.create();
             for (ACAQDataSlot slot : getWrappedGraph().getUnconnectedSlots()) {
                 String uniqueName = StringUtils.makeUniqueString(slot.getName(), " ", slotNames::containsValue);
-                if(slot.isInput()) {
+                if (slot.isInput()) {
                     inputSlotConfiguration.addSlot(uniqueName, slot.getDefinition(), false);
-                }
-                else if(slot.isOutput()) {
+                } else if (slot.isOutput()) {
                     outputSlotConfiguration.addSlot(uniqueName, slot.getDefinition(), false);
                 }
                 slotNames.put(slot, uniqueName);
@@ -85,16 +80,22 @@ public class NodeGroup extends GraphWrapperAlgorithm implements ACAQCustomParame
 
             for (Map.Entry<ACAQDataSlot, String> entry : slotNames.entrySet()) {
                 ACAQDataSlot slot = entry.getKey();
-                if(slot.isInput()) {
+                if (slot.isInput()) {
                     ACAQDataSlot source = getGroupInput().getOutputSlot("Output " + entry.getValue());
                     getWrappedGraph().connect(source, slot);
-                }
-                else if(slot.isOutput()) {
+                } else if (slot.isOutput()) {
                     ACAQDataSlot target = getGroupOutput().getInputSlot(entry.getValue());
                     getWrappedGraph().connect(slot, target);
                 }
             }
         }
+    }
+
+    private void initializeContents() {
+        contents = new NodeGroupContents();
+        contents.setWrappedGraph(getWrappedGraph());
+        exportedParameters.setGraph(contents.getWrappedGraph());
+        contents.setParent(this);
     }
 
     @ACAQDocumentation(name = "Wrapped graph", description = "The graph that is wrapped inside this node")

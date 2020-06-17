@@ -6,7 +6,6 @@ import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
-import org.scijava.Context;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,7 +19,7 @@ public class ListParameterEditorUI extends ACAQParameterEditorUI {
     /**
      * Creates new instance
      *
-     * @param workbench        workbench
+     * @param workbench       workbench
      * @param parameterAccess Parameter
      */
     public ListParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {

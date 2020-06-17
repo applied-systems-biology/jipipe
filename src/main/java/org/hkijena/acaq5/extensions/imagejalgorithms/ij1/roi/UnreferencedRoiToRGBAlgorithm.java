@@ -104,7 +104,7 @@ public class UnreferencedRoiToRGBAlgorithm extends ACAQSimpleIteratingAlgorithm 
         Map<Roi, Point> roiCentroids = new HashMap<>();
         Map<Roi, Integer> roiIndices = new HashMap<>();
         Filler roiFiller = new Filler();
-        if(drawLabel) {
+        if (drawLabel) {
             RoiStatisticsAlgorithm statisticsAlgorithm = ACAQAlgorithm.newInstance("ij1-roi-statistics");
             statisticsAlgorithm.setRequireReferenceImage(false);
             statisticsAlgorithm.getMeasurements().setNativeValue(Measurement.Centroid.getNativeValue());
@@ -112,8 +112,8 @@ public class UnreferencedRoiToRGBAlgorithm extends ACAQSimpleIteratingAlgorithm 
             statisticsAlgorithm.run(subProgress.resolve("ROI statistics"), algorithmProgress, isCancelled);
             ResultsTableData centroids = statisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class);
             for (int row = 0; row < centroids.getRowCount(); row++) {
-                Point centroid = new Point((int)centroids.getValueAsDouble(row, "X"),
-                        (int)centroids.getValueAsDouble(row, "Y"));
+                Point centroid = new Point((int) centroids.getValueAsDouble(row, "X"),
+                        (int) centroids.getValueAsDouble(row, "Y"));
                 roiCentroids.put(inputData.get(row), centroid);
                 roiIndices.put(inputData.get(row), row);
             }
@@ -137,7 +137,7 @@ public class UnreferencedRoiToRGBAlgorithm extends ACAQSimpleIteratingAlgorithm 
                     processor.setColor(color);
                     roi.drawPixels(processor);
                 }
-                if(drawLabel) {
+                if (drawLabel) {
                     Point centroid = roiCentroids.get(roi);
                     roiFiller.drawLabel(result, processor, roiIndices.get(roi), new Rectangle(centroid.x, centroid.y, 0, 0));
                 }

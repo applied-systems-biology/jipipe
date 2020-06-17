@@ -7,7 +7,6 @@ import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.plotbuilder.PlotDataSeriesColumnListCellRenderer;
-import org.scijava.Context;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,7 +22,7 @@ public class UIPlotDataSeriesColumnEnumParameterEditorUI extends ACAQParameterEd
     private JComboBox<TableColumn> comboBox;
 
     /**
-     * @param workbench        workbench
+     * @param workbench       workbench
      * @param parameterAccess the parameter
      */
     public UIPlotDataSeriesColumnEnumParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {

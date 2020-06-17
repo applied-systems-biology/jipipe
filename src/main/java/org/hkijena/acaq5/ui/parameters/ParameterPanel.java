@@ -12,10 +12,10 @@ import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.SearchTextField;
 import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
 import org.hkijena.acaq5.utils.ResourceUtils;
+import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.Contextual;
-import org.hkijena.acaq5.utils.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -60,7 +60,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
     private SearchTextField searchField = new SearchTextField();
 
     /**
-     * @param workbench             SciJava context
+     * @param workbench           SciJava context
      * @param displayedParameters Object containing the parameters. If the object is an {@link ACAQParameterTree} and FORCE_TRAVERSE is not set, it will be used directly. Can be null.
      * @param documentation       Optional documentation
      * @param flags               Flags

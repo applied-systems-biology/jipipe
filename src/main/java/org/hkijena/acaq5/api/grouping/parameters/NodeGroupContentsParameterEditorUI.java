@@ -1,15 +1,13 @@
 package org.hkijena.acaq5.api.grouping.parameters;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.grouping.ACAQNodeGroupUI;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
-import org.scijava.Context;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 
 /**
  * Editor for {@link NodeGroupContents}
@@ -19,7 +17,7 @@ public class NodeGroupContentsParameterEditorUI extends ACAQParameterEditorUI {
     /**
      * Creates new instance
      *
-     * @param workbench        workbench
+     * @param workbench       workbench
      * @param parameterAccess Parameter
      */
     public NodeGroupContentsParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {

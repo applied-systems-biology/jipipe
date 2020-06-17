@@ -8,7 +8,6 @@ import org.hkijena.acaq5.ui.parameters.ACAQParameterGeneratorUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
-import org.scijava.Context;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -31,7 +30,7 @@ public class ParameterTableEditorUI extends ACAQParameterEditorUI {
     /**
      * Creates new instance
      *
-     * @param workbench        workbench
+     * @param workbench       workbench
      * @param parameterAccess Parameter
      */
     public ParameterTableEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {

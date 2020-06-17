@@ -188,11 +188,11 @@ public class ACAQHorizontalAlgorithmUI extends ACAQAlgorithmUI {
                 createInputSlots = false;
             }
         }
-        if(!getAlgorithm().renderInputSlots()) {
+        if (!getAlgorithm().renderInputSlots()) {
             createAddInputSlotButton = false;
             createInputSlots = false;
         }
-        if(!getAlgorithm().renderOutputSlots()) {
+        if (!getAlgorithm().renderOutputSlots()) {
             createAddOutputSlotButton = false;
             createOutputSlots = false;
         }

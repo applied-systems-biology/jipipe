@@ -4,7 +4,6 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.ReflectionUtils;
-import org.scijava.Context;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,7 +18,7 @@ public class EnumParameterEditorUI extends ACAQParameterEditorUI {
     private JComboBox<Object> comboBox;
 
     /**
-     * @param workbench        workbench
+     * @param workbench       workbench
      * @param parameterAccess the parameter
      */
     public EnumParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {

@@ -5,7 +5,6 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 import org.hkijena.acaq5.api.registries.ACAQParameterTypeRegistry;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.components.FancyTextField;
-import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -21,8 +20,9 @@ public class GraphNodeParameterReferenceUI extends JPanel {
 
     /**
      * Creates a new instance
+     *
      * @param referenceGroupUI the parent
-     * @param reference the reference to edit
+     * @param reference        the reference to edit
      */
     public GraphNodeParameterReferenceUI(GraphNodeParameterReferenceGroupUI referenceGroupUI, GraphNodeParameterReference reference) {
         this.referenceGroupUI = referenceGroupUI;
@@ -31,7 +31,7 @@ public class GraphNodeParameterReferenceUI extends JPanel {
     }
 
     private void initialize() {
-        setLayout(new BorderLayout(4,0));
+        setLayout(new BorderLayout(4, 0));
         ACAQParameterTree tree = referenceGroupUI.getParametersUI().getTree();
 
         JLabel infoLabel = new JLabel(UIUtils.getIconFromResources("parameters.png"));
@@ -69,7 +69,7 @@ public class GraphNodeParameterReferenceUI extends JPanel {
         ACAQParameterTree tree = referenceGroupUI.getParametersUI().getTree();
         String currentDescription = reference.getDescription(tree);
         String newDescription = UIUtils.getMultiLineStringByDialog(this, "Set description", "Please enter a new description:", currentDescription);
-        if(newDescription != null) {
+        if (newDescription != null) {
             reference.setCustomDescription(newDescription);
         }
     }

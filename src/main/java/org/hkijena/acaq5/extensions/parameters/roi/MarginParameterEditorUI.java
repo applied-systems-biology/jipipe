@@ -25,7 +25,7 @@ public class MarginParameterEditorUI extends ACAQParameterEditorUI {
     private ParameterPanel parameterPanel;
 
     /**
-     * @param workbench        workbench
+     * @param workbench       workbench
      * @param parameterAccess the parameter
      */
     public MarginParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {

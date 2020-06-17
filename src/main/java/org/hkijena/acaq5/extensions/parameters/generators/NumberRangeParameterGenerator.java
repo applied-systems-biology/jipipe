@@ -10,7 +10,6 @@ import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterGeneratorUI;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
-import org.scijava.Context;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -31,7 +30,7 @@ public class NumberRangeParameterGenerator<T extends Number & Comparable<T>> ext
     /**
      * Creates a new instance
      *
-     * @param workbench     the workbench
+     * @param workbench   the workbench
      * @param numberClass the Number class that is created
      */
     public NumberRangeParameterGenerator(ACAQWorkbench workbench, Class<? extends Number> numberClass) {

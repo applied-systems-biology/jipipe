@@ -16,7 +16,6 @@ import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.*;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
@@ -271,6 +270,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
     /**
      * Extracts all parameters as tree
+     *
      * @return the tree
      */
     public ACAQParameterTree getParameterTree() {
@@ -623,7 +623,8 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     /**
      * Copies the selected algorithms into a new graph
      * Connections between the nodes are kept
-     * @param nodes the nodes
+     *
+     * @param nodes        the nodes
      * @param withInternal also copy internal algorithms
      * @return graph that only contains the selected algorithms
      */
@@ -730,13 +731,12 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * Gets all algorithms and all dependent algorithms that are missing inputs or are deactivated by the user
      *
      * @param externallySatisfied list of algorithms that have their input set externally
-     *
      * @return list of algorithms
      */
     public Set<ACAQGraphNode> getDeactivatedAlgorithms(Set<ACAQGraphNode> externallySatisfied) {
         Set<ACAQGraphNode> missing = new HashSet<>();
         for (ACAQGraphNode algorithm : traverseAlgorithms()) {
-            if(externallySatisfied.contains(algorithm))
+            if (externallySatisfied.contains(algorithm))
                 continue;
             if (algorithm instanceof ACAQAlgorithm) {
                 if (!((ACAQAlgorithm) algorithm).isEnabled()) {

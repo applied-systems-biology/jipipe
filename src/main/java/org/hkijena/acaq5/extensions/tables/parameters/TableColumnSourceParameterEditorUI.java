@@ -19,7 +19,7 @@ public class TableColumnSourceParameterEditorUI extends ACAQParameterEditorUI {
     private JToggleButton generateColumnToggle;
 
     /**
-     * @param workbench        workbench
+     * @param workbench       workbench
      * @param parameterAccess the parameter
      */
     public TableColumnSourceParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {

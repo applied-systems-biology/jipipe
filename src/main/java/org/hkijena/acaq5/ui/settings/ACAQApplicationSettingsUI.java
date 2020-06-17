@@ -11,7 +11,6 @@ import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;

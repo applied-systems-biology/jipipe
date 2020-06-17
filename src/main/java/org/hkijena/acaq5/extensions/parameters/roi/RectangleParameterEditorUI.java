@@ -3,7 +3,6 @@ package org.hkijena.acaq5.extensions.parameters.roi;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
-import org.scijava.Context;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,7 +19,7 @@ public class RectangleParameterEditorUI extends ACAQParameterEditorUI {
     private boolean isReloading = false;
 
     /**
-     * @param workbench        workbench
+     * @param workbench       workbench
      * @param parameterAccess the parameter
      */
     public RectangleParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {

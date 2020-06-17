@@ -2,6 +2,7 @@ package org.hkijena.acaq5.extensions.filesystem;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.acaq5.ACAQJavaExtension;
+import org.hkijena.acaq5.api.grouping.JsonAlgorithmRegistrationTask;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.filesystem.algorithms.*;
 import org.hkijena.acaq5.extensions.filesystem.compat.PathDataImageJAdapter;
@@ -15,7 +16,6 @@ import org.hkijena.acaq5.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.acaq5.extensions.filesystem.dataypes.PathData;
 import org.hkijena.acaq5.extensions.filesystem.resultanalysis.FilesystemDataSlotCellUI;
 import org.hkijena.acaq5.extensions.filesystem.resultanalysis.FilesystemDataSlotRowUI;
-import org.hkijena.acaq5.api.grouping.JsonAlgorithmRegistrationTask;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.UIUtils;

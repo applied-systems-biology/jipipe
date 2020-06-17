@@ -30,10 +30,11 @@ public class NodeGroupContents {
 
     /**
      * Makes a copy
+     *
      * @param other the original
      */
     public NodeGroupContents(NodeGroupContents other) {
-        if(other.wrappedGraph != null)
+        if (other.wrappedGraph != null)
             this.wrappedGraph = new ACAQAlgorithmGraph(other.wrappedGraph);
     }
 
@@ -56,10 +57,10 @@ public class NodeGroupContents {
     public static class Serializer extends JsonSerializer<NodeGroupContents> {
         @Override
         public void serialize(NodeGroupContents nodeGroupContents, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
-            if(nodeGroupContents.getParent() != null)
-             jsonGenerator.writeObject(nodeGroupContents.getParent().getWrappedGraph());
+            if (nodeGroupContents.getParent() != null)
+                jsonGenerator.writeObject(nodeGroupContents.getParent().getWrappedGraph());
             else
-            jsonGenerator.writeObject(nodeGroupContents.getWrappedGraph());
+                jsonGenerator.writeObject(nodeGroupContents.getWrappedGraph());
         }
     }
 

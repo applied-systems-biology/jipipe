@@ -4,7 +4,6 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.components.PathEditor;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
-import org.scijava.Context;
 
 import java.awt.*;
 import java.nio.file.Path;
@@ -19,7 +18,7 @@ public class FilePathParameterEditorUI extends ACAQParameterEditorUI {
     private PathEditor pathEditor;
 
     /**
-     * @param workbench        workbench
+     * @param workbench       workbench
      * @param parameterAccess the parameter
      */
     public FilePathParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {

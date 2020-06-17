@@ -6,7 +6,6 @@ import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.components.FancyTextField;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.StringUtils;
-import org.scijava.Context;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -23,7 +22,7 @@ public class StringParameterEditorUI extends ACAQParameterEditorUI {
     private boolean isReloading = false;
 
     /**
-     * @param workbench        workbench
+     * @param workbench       workbench
      * @param parameterAccess the parameter
      */
     public StringParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {

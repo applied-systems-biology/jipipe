@@ -421,10 +421,9 @@ public class ResultsTableData implements ACAQData, TableModel {
         Set<String> existingColumns = new HashSet<>(Arrays.asList(destination.getHeadings()));
         TIntIntMap columnMap = new TIntIntHashMap();
         for (int col = 0; col < getColumnCount(); col++) {
-            if(!existingColumns.contains(getColumnName(col))) {
+            if (!existingColumns.contains(getColumnName(col))) {
                 columnMap.put(col, destination.getFreeColumn(getColumnName(col)));
-            }
-            else {
+            } else {
                 columnMap.put(col, destination.getColumnIndex(getColumnName(col)));
             }
         }
@@ -432,10 +431,9 @@ public class ResultsTableData implements ACAQData, TableModel {
         for (int row = 0; row < table.size(); ++row) {
             destination.incrementCounter();
             for (int col = 0; col < getColumnCount(); col++) {
-                if(isNumeric(col)) {
+                if (isNumeric(col)) {
                     destination.setValue(columnMap.get(col), row + startRow, getValueAsDouble(row, col));
-                }
-                else {
+                } else {
                     destination.setValue(columnMap.get(col), row + startRow, getValueAsString(row, col));
                 }
             }

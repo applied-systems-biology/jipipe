@@ -365,7 +365,7 @@ public class FormPanel extends JPanel {
             if (!component.isDisplayable()) {
                 return;
             }
-            if(!component.isVisible()) {
+            if (!component.isVisible()) {
                 return;
             }
             if (event instanceof MouseEvent) {
@@ -380,8 +380,7 @@ public class FormPanel extends JPanel {
                         if (isInComponent && panel.parameterHelp.getTemporaryDocument() != componentDocument) {
                             panel.parameterHelp.setTemporaryDocument(componentDocument);
                         }
-                    }
-                    catch (IllegalComponentStateException e) {
+                    } catch (IllegalComponentStateException e) {
                         // Workaround for Java bug
                         Toolkit.getDefaultToolkit().removeAWTEventListener(this);
                     }

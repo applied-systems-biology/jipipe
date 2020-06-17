@@ -6,7 +6,6 @@ import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTextField;
-import org.scijava.Context;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -18,7 +17,7 @@ import java.awt.*;
 public class StringPatternExtractionParameterEditorUI extends ACAQParameterEditorUI {
 
     /**
-     * @param workbench        workbench
+     * @param workbench       workbench
      * @param parameterAccess the parameter
      */
     public StringPatternExtractionParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {

@@ -23,9 +23,8 @@ public class GraphNodeParameterReferenceGroupUI extends JPanel {
     private FormPanel contentPanel;
 
     /**
-     *
      * @param parametersUI the parent
-     * @param group the group
+     * @param group        the group
      */
     public GraphNodeParameterReferenceGroupUI(GraphNodeParametersUI parametersUI, GraphNodeParameterReferenceGroup group) {
         super(new BorderLayout());
@@ -38,7 +37,7 @@ public class GraphNodeParameterReferenceGroupUI extends JPanel {
     private void initialize() {
         setBorder(BorderFactory.createLineBorder(Color.GRAY, 1, true));
         GroupMetadataEditor groupMetadataEditor = new GroupMetadataEditor(this, group);
-        groupMetadataEditor.setBorder(BorderFactory.createMatteBorder(0,0,1,0, Color.GRAY));
+        groupMetadataEditor.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.GRAY));
         add(groupMetadataEditor, BorderLayout.NORTH);
 
         contentPanel = new FormPanel(null, FormPanel.NONE);
@@ -66,7 +65,7 @@ public class GraphNodeParameterReferenceGroupUI extends JPanel {
         List<Object> selected = ParameterTreeUI.showPickerDialog(this, tree, "Add parameter");
         List<GraphNodeParameterReference> referenceList = new ArrayList<>();
         for (Object parameter : selected) {
-            if(parameter != null) {
+            if (parameter != null) {
                 for (ACAQParameterAccess child : tree.getAllChildParameters(parameter)) {
                     referenceList.add(new GraphNodeParameterReference(child, tree));
                 }
@@ -86,9 +85,8 @@ public class GraphNodeParameterReferenceGroupUI extends JPanel {
         private final GraphNodeParameterReferenceGroup group;
 
         /**
-         *
          * @param parent the parent
-         * @param group the group to be edited
+         * @param group  the group to be edited
          */
         public GroupMetadataEditor(GraphNodeParameterReferenceGroupUI parent, GraphNodeParameterReferenceGroup group) {
             this.group = group;
@@ -119,7 +117,7 @@ public class GraphNodeParameterReferenceGroupUI extends JPanel {
         private void changeDescription() {
             String currentDescription = group.getDescription();
             String newDescription = UIUtils.getMultiLineStringByDialog(this, "Set description", "Please enter a new description:", currentDescription);
-            if(newDescription != null) {
+            if (newDescription != null) {
                 group.setDescription(newDescription);
             }
         }

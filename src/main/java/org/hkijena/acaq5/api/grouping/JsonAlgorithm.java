@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.api.grouping;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 
 /**

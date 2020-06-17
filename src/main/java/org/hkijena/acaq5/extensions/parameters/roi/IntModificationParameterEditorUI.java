@@ -4,7 +4,6 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
-import org.scijava.Context;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,7 +17,7 @@ public class IntModificationParameterEditorUI extends ACAQParameterEditorUI {
     private boolean isReloading = false;
 
     /**
-     * @param workbench        workbench
+     * @param workbench       workbench
      * @param parameterAccess the parameter
      */
     public IntModificationParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {

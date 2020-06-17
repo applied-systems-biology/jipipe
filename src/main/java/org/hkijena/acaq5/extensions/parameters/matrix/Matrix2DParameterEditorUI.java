@@ -5,7 +5,6 @@ import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
-import org.scijava.Context;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -22,7 +21,7 @@ public class Matrix2DParameterEditorUI extends ACAQParameterEditorUI {
     /**
      * Creates new instance
      *
-     * @param workbench        workbench
+     * @param workbench       workbench
      * @param parameterAccess Parameter
      */
     public Matrix2DParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {

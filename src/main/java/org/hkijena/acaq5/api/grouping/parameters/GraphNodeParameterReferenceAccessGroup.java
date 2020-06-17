@@ -20,6 +20,7 @@ public class GraphNodeParameterReferenceAccessGroup implements ACAQParameterColl
 
     /**
      * Creates a new instance
+     *
      * @param group the group
      */
     public GraphNodeParameterReferenceAccessGroup(GraphNodeParameterReferenceGroup group) {

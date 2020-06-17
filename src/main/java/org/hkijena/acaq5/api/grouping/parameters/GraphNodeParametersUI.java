@@ -21,7 +21,7 @@ public class GraphNodeParametersUI extends ACAQWorkbenchPanel {
     private ACAQParameterTree tree;
 
     /**
-     * @param workbench the workbench
+     * @param workbench  the workbench
      * @param parameters the parameters to edit
      */
     public GraphNodeParametersUI(ACAQWorkbench workbench, GraphNodeParameters parameters) {
@@ -63,7 +63,7 @@ public class GraphNodeParametersUI extends ACAQWorkbenchPanel {
         int scrollValue = content.getScrollPane().getVerticalScrollBar().getValue();
         content.clear();
         for (GraphNodeParameterReferenceGroup referenceGroup : parameters.getParameterReferenceGroups()) {
-            GraphNodeParameterReferenceGroupUI groupUI =new GraphNodeParameterReferenceGroupUI(this, referenceGroup);
+            GraphNodeParameterReferenceGroupUI groupUI = new GraphNodeParameterReferenceGroupUI(this, referenceGroup);
             JButton removeButton = new JButton(UIUtils.getIconFromResources("close-tab.png"));
             UIUtils.makeBorderlessWithoutMargin(removeButton);
             removeButton.addActionListener(e -> parameters.removeGroup(referenceGroup));
@@ -75,6 +75,7 @@ public class GraphNodeParametersUI extends ACAQWorkbenchPanel {
 
     /**
      * Triggered when the references were changed
+     *
      * @param event the event
      */
     @Subscribe
@@ -83,7 +84,6 @@ public class GraphNodeParametersUI extends ACAQWorkbenchPanel {
     }
 
     /**
-     *
      * @return The current parameter tree that was generated for this refresh cycle
      */
     public ACAQParameterTree getTree() {

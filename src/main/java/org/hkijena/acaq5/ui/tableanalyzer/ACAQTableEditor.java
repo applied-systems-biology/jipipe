@@ -15,7 +15,6 @@ package org.hkijena.acaq5.ui.tableanalyzer;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.primitives.Ints;
-import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.api.registries.ACAQImageJAdapterRegistry;
 import org.hkijena.acaq5.api.registries.ACAQTableRegistry;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
@@ -257,7 +256,7 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
 
     private void importFromImageJ() {
         ACAQOpenTableFromImageJDialogUI dialog = new ACAQOpenTableFromImageJDialogUI(getWorkbench());
-        dialog.setSize(640,480);
+        dialog.setSize(640, 480);
         dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
         dialog.pack();
         dialog.setModal(true);

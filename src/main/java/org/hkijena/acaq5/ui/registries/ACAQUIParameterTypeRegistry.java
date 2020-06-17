@@ -7,7 +7,6 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterGeneratorUI;
-import org.scijava.Context;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -41,7 +40,7 @@ public class ACAQUIParameterTypeRegistry {
     /**
      * Creates editor for the parameter
      *
-     * @param workbench         SciJava context
+     * @param workbench       SciJava context
      * @param parameterAccess the parameter
      * @return Parameter editor UI
      */

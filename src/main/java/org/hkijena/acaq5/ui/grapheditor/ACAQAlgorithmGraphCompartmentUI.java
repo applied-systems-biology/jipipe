@@ -82,9 +82,9 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
 
     @Subscribe
     public void onDefaultActionRequested(DefaultAlgorithmUIActionRequestedEvent event) {
-        if(event.getUi().getAlgorithm() instanceof NodeGroup) {
-            if(event.getUi().getAlgorithm() instanceof NodeGroup) {
-                if(getWorkbench() instanceof ACAQProjectWorkbench) {
+        if (event.getUi().getAlgorithm() instanceof NodeGroup) {
+            if (event.getUi().getAlgorithm() instanceof NodeGroup) {
+                if (getWorkbench() instanceof ACAQProjectWorkbench) {
                     ACAQNodeGroupUI.openGroupNodeGraph(getWorkbench(), (NodeGroup) event.getUi().getAlgorithm(), true);
                 }
             }

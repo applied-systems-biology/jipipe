@@ -24,6 +24,7 @@ public class GraphNodeParameterReference {
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public GraphNodeParameterReference(GraphNodeParameterReference other) {
@@ -34,8 +35,9 @@ public class GraphNodeParameterReference {
 
     /**
      * Instantiates with an existing access within a tree
+     *
      * @param access the access
-     * @param tree the tree
+     * @param tree   the tree
      */
     public GraphNodeParameterReference(ACAQParameterAccess access, ACAQParameterTree tree) {
         this.path = tree.getUniqueKey(access);
@@ -43,49 +45,51 @@ public class GraphNodeParameterReference {
 
     /**
      * Gets the name in the original graph
+     *
      * @param tree the tree
      * @return name
      */
     public String getOriginalName(ACAQParameterTree tree) {
         String name = tree.getParameters().get(path).getName();
-        if(name == null)
+        if (name == null)
             name = tree.getParameters().get(path).getKey();
         return name;
     }
 
     /**
      * Gets the name or custom name
+     *
      * @param tree the tree
      * @return name or custom name
      */
     public String getName(ACAQParameterTree tree) {
-        if(StringUtils.isNullOrEmpty(customName)) {
+        if (StringUtils.isNullOrEmpty(customName)) {
             String name = tree.getParameters().get(path).getName();
-            if(name == null)
+            if (name == null)
                 name = tree.getParameters().get(path).getKey();
             return name;
-        }
-        else {
+        } else {
             return customName;
         }
     }
 
     /**
      * Gets the name or custom name
+     *
      * @param tree the tree
      * @return name or custom name
      */
     public String getDescription(ACAQParameterTree tree) {
-        if(StringUtils.isNullOrEmpty(customDescription)) {
+        if (StringUtils.isNullOrEmpty(customDescription)) {
             return tree.getParameters().get(path).getDescription();
-        }
-        else {
+        } else {
             return customDescription;
         }
     }
 
     /**
      * Tries to resolve the path
+     *
      * @param tree the tree
      * @return the parameter access or null if it does not exist
      */

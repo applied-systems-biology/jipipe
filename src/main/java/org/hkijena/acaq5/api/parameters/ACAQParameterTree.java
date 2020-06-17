@@ -57,6 +57,7 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
 
     /**
      * Creates a new instance with a predefined root parameter
+     *
      * @param rootParameter the root parameter
      */
     public ACAQParameterTree(ACAQParameterCollection rootParameter) {
@@ -67,8 +68,9 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
 
     /**
      * Creates a new instance with a predefined root parameter
+     *
      * @param rootParameter the root parameter
-     * @param flags additional flags
+     * @param flags         additional flags
      */
     public ACAQParameterTree(ACAQParameterCollection rootParameter, int flags) {
         this.root = new Node(null, rootParameter);
@@ -107,15 +109,15 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
      * Adds a new {@link ACAQParameterCollection} into this collection.
      * Ignores sources that have already been added
      *
-     * @param child    the added collection
-     * @param key  the unique key within the parent node
+     * @param child  the added collection
+     * @param key    the unique key within the parent node
      * @param parent the parent node. Can be null (then defaults to root)
      * @return the created node
      */
     public Node add(ACAQParameterCollection child, String key, Node parent) {
         if (nodeMap.containsKey(child))
             return nodeMap.get(child);
-        if(parent == null)
+        if (parent == null)
             parent = root;
 
         // Add the new child into the tree
@@ -130,6 +132,7 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
 
     /**
      * Merges parameters into a given node
+     *
      * @param source the parameters
      * @param target the target node
      */
@@ -225,11 +228,10 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
                         continue;
 
                     Node childNode = add(subParameters, entry.getKey(), parent);
-                    if(pair.getDocumentation() != null) {
+                    if (pair.getDocumentation() != null) {
                         childNode.setName(pair.getDocumentation().name());
                         childNode.setDescription(pair.getDocumentation().description());
-                    }
-                    else
+                    } else
                         childNode.setName(entry.getKey());
 
                     childNode.setUiOrder(entry.getValue().getUIOrder());
@@ -307,18 +309,18 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
     /**
      * Returns all child parameters of the entry
      * If the entry is an {@link ACAQParameterAccess}, it is returned. Otherwise all children of the {@link ACAQParameterCollection} are returned.
+     *
      * @param entry the entry.
      * @return all parameters that are children of the entry or the entry itself
      */
     public List<ACAQParameterAccess> getAllChildParameters(Object entry) {
-        if(entry instanceof ACAQParameterAccess) {
-            return Collections.singletonList((ACAQParameterAccess)entry);
-        }
-        else if(entry instanceof ACAQParameterTree.Node) {
+        if (entry instanceof ACAQParameterAccess) {
+            return Collections.singletonList((ACAQParameterAccess) entry);
+        } else if (entry instanceof ACAQParameterTree.Node) {
             List<ACAQParameterAccess> result = new ArrayList<>();
             Stack<Node> stack = new Stack<>();
             stack.push((Node) entry);
-            while(!stack.isEmpty()) {
+            while (!stack.isEmpty()) {
                 Node top = stack.pop();
                 result.addAll(top.getParameters().values());
 
@@ -327,20 +329,9 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
                 }
             }
             return result;
-        }
-        else {
+        } else {
             return Collections.emptyList();
         }
-    }
-
-    /**
-     * Accesses the parameters of a collection
-     *
-     * @param collection the collection
-     * @return traversed parameters
-     */
-    public static Map<String, ACAQParameterAccess> getParameters(ACAQParameterCollection collection) {
-        return (new ACAQParameterTree(collection)).getParameters();
     }
 
     public Node getRoot() {
@@ -349,6 +340,7 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
 
     /**
      * Gets unique source key
+     *
      * @param collection source
      * @return key
      */
@@ -362,48 +354,52 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
 
     /**
      * Gets source UI order
+     *
      * @param source source
      * @return ui order
      */
-   public int getUISourceOrder(ACAQParameterCollection source) {
+    public int getUISourceOrder(ACAQParameterCollection source) {
         return nodeMap.get(source).getUiOrder();
-   }
+    }
 
     /**
      * Gets source name
+     *
      * @param source source
      * @return name
      */
-   public String getSourceDocumentationName(ACAQParameterCollection source) {
-       Node node = nodeMap.get(source);
-       if(!StringUtils.isNullOrEmpty(node.getName())) {
-           return node.getName();
-       }
-       else {
-           return String.join("/", node.getPath());
-       }
-   }
+    public String getSourceDocumentationName(ACAQParameterCollection source) {
+        Node node = nodeMap.get(source);
+        if (!StringUtils.isNullOrEmpty(node.getName())) {
+            return node.getName();
+        } else {
+            return String.join("/", node.getPath());
+        }
+    }
 
     /**
      * Gets source visibility
+     *
      * @param source source
      * @return visibility
      */
-   public ACAQParameterVisibility getSourceVisibility(ACAQParameterCollection source) {
+    public ACAQParameterVisibility getSourceVisibility(ACAQParameterCollection source) {
         return nodeMap.get(source).getVisibility();
-   }
+    }
 
     /**
      * Gets source UI order
+     *
      * @param source source
      * @return source UI order
      */
-   public int getSourceUIOrder(ACAQParameterCollection source) {
+    public int getSourceUIOrder(ACAQParameterCollection source) {
         return nodeMap.get(source).getUiOrder();
-   }
+    }
 
     /**
      * Gets source documentation
+     *
      * @param source source
      * @return source documentation
      */
@@ -416,13 +412,24 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
 
     /**
      * Sets source documentation
-     * @param source source
+     *
+     * @param source        source
      * @param documentation documentation
      */
     public void setSourceDocumentation(ACAQParameterCollection source, ACAQDefaultDocumentation documentation) {
         Node node = nodeMap.get(source);
         node.setName(documentation.name());
         node.setDescription(documentation.description());
+    }
+
+    /**
+     * Accesses the parameters of a collection
+     *
+     * @param collection the collection
+     * @return traversed parameters
+     */
+    public static Map<String, ACAQParameterAccess> getParameters(ACAQParameterCollection collection) {
+        return (new ACAQParameterTree(collection)).getParameters();
     }
 
     /**
@@ -496,13 +503,14 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
 
         /**
          * Creates a node
-         * @param parent the parent
+         *
+         * @param parent     the parent
          * @param collection the collection
          */
         public Node(Node parent, ACAQParameterCollection collection) {
             this.parent = parent;
             this.collection = collection;
-            if(collection instanceof ACAQNamedParameterCollection) {
+            if (collection instanceof ACAQNamedParameterCollection) {
                 this.name = ((ACAQNamedParameterCollection) collection).getDefaultParameterCollectionName();
                 this.description = ((ACAQNamedParameterCollection) collection).getDefaultParameterCollectionDescription();
             }
@@ -515,7 +523,7 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
         }
 
         private void constructPathFast(List<String> path) {
-            if(parent != null) {
+            if (parent != null) {
                 parent.constructPathFast(path);
                 path.add(key);
             }
@@ -581,14 +589,14 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
             return children;
         }
 
-        public void addChild(String key, Node child) {
-            if(children.containsKey(key))
-                throw new RuntimeException("Already contains child with key '" + key + "'!");
-            children.put(key, child);
-        }
-
         public void setChildren(BiMap<String, Node> children) {
             this.children = children;
+        }
+
+        public void addChild(String key, Node child) {
+            if (children.containsKey(key))
+                throw new RuntimeException("Already contains child with key '" + key + "'!");
+            children.put(key, child);
         }
 
         public Node getParent() {

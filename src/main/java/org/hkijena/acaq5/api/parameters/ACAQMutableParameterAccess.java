@@ -11,8 +11,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.registries.ACAQParameterTypeRegistry;
 import org.hkijena.acaq5.utils.JsonUtils;
-import org.scijava.Priority;
 import org.hkijena.acaq5.utils.StringUtils;
+import org.scijava.Priority;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;

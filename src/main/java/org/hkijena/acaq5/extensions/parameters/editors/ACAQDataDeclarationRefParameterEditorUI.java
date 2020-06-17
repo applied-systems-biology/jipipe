@@ -12,7 +12,6 @@ import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
-import org.scijava.Context;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,7 +30,7 @@ public class ACAQDataDeclarationRefParameterEditorUI extends ACAQParameterEditor
     private boolean isReloading = false;
 
     /**
-     * @param workbench        workbench
+     * @param workbench       workbench
      * @param parameterAccess the parameter
      */
     public ACAQDataDeclarationRefParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {

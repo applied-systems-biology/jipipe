@@ -6,12 +6,12 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.grouping.events.ParameterReferencesChangedEvent;
-import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
-import org.hkijena.acaq5.utils.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Contains a list of {@link GraphNodeParameterReferenceGroup} and {@link GraphNodeParameterCollectionReference}
@@ -30,6 +30,7 @@ public class GraphNodeParameters {
 
     /**
      * Makes a copy
+     *
      * @param other the original
      */
     public GraphNodeParameters(GraphNodeParameters other) {
@@ -43,6 +44,7 @@ public class GraphNodeParameters {
     /**
      * Returns the reference to the graph. This will be accessed by the editor component to pick new parameters
      * and resolve them.
+     *
      * @return reference to the graph if available
      */
     public ACAQAlgorithmGraph getGraph() {
@@ -55,6 +57,7 @@ public class GraphNodeParameters {
 
     /**
      * Event bus that triggers {@link org.hkijena.acaq5.api.grouping.events.ParameterReferencesChangedEvent}
+     *
      * @return event bus
      */
     public EventBus getEventBus() {
@@ -63,6 +66,7 @@ public class GraphNodeParameters {
 
     /**
      * Adds a new empty group
+     *
      * @return the group
      */
     public GraphNodeParameterReferenceGroup addGroup() {
@@ -93,6 +97,7 @@ public class GraphNodeParameters {
 
     /**
      * Triggered when some parameters were changed down the line
+     *
      * @param event the event
      */
     @Subscribe
@@ -102,6 +107,7 @@ public class GraphNodeParameters {
 
     /**
      * Removes the group
+     *
      * @param group the group
      */
     public void removeGroup(GraphNodeParameterReferenceGroup group) {
@@ -111,8 +117,9 @@ public class GraphNodeParameters {
 
     /**
      * Converts the references into actual parameter collections
-     * @return referenced parameters
+     *
      * @param tree the tree of the referenced parameters
+     * @return referenced parameters
      */
     public List<ACAQParameterCollection> build(ACAQParameterTree tree) {
         List<ACAQParameterCollection> result = new ArrayList<>();

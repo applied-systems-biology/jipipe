@@ -9,7 +9,6 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.events.CompartmentRemovedEvent;
-import org.hkijena.acaq5.api.grouping.NodeGroup;
 import org.hkijena.acaq5.extensions.settings.GeneralUISettings;
 import org.hkijena.acaq5.extensions.settings.ProjectsSettings;
 import org.hkijena.acaq5.ui.cache.ACAQCacheBrowserUI;

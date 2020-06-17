@@ -8,7 +8,6 @@ import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
-import org.scijava.Context;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,7 +24,7 @@ public class ACAQAlgorithmIconRefParameterEditorUI extends ACAQParameterEditorUI
     private JButton currentlyDisplayed;
 
     /**
-     * @param workbench        workbench
+     * @param workbench       workbench
      * @param parameterAccess the parameter
      */
     public ACAQAlgorithmIconRefParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {
@@ -87,7 +86,7 @@ public class ACAQAlgorithmIconRefParameterEditorUI extends ACAQParameterEditorUI
             Set<String> rawIcons = ResourceUtils.walkInternalResourceFolder("icons/algorithms");
             String basePath = ResourceUtils.getResourcePath("icons/algorithms/");
             for (String rawIcon : rawIcons) {
-                if(rawIcon.endsWith(".png"))
+                if (rawIcon.endsWith(".png"))
                     availableAlgorithmIcons.add(rawIcon.substring(basePath.length()));
             }
         }

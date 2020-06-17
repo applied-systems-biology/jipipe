@@ -504,6 +504,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
     /**
      * Removes all input slots
+     *
      * @param user if done by a user
      */
     public void clearInputSlots(boolean user) {
@@ -518,6 +519,7 @@ public class ACAQMutableSlotConfiguration extends ACAQSlotConfiguration {
 
     /**
      * Removes all output slots
+     *
      * @param user if done by a user
      */
     public void clearOutputSlots(boolean user) {

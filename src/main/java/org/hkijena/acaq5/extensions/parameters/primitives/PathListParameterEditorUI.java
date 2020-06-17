@@ -6,7 +6,6 @@ import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.components.PathEditor;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
-import org.scijava.Context;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,7 +23,7 @@ public class PathListParameterEditorUI extends ACAQParameterEditorUI {
     private PathEditor.PathMode pathMode = PathEditor.PathMode.FilesOnly;
 
     /**
-     * @param workbench        workbench
+     * @param workbench       workbench
      * @param parameterAccess the parameter
      */
     public PathListParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {

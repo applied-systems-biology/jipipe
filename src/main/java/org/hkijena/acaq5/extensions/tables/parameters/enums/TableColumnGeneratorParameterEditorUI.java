@@ -10,7 +10,6 @@ import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.components.ACAQDataDeclarationListCellRenderer;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
-import org.scijava.Context;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -27,7 +26,7 @@ public class TableColumnGeneratorParameterEditorUI extends ACAQParameterEditorUI
     private JToggleButton textColumnToggle;
 
     /**
-     * @param workbench        workbench
+     * @param workbench       workbench
      * @param parameterAccess the parameter
      */
     public TableColumnGeneratorParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {

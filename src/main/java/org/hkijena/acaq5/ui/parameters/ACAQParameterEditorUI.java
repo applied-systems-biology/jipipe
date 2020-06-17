@@ -10,7 +10,6 @@ import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
 import org.scijava.Context;
 import org.scijava.Contextual;
 
-import javax.swing.*;
 import java.util.Objects;
 
 /**
@@ -24,7 +23,7 @@ public abstract class ACAQParameterEditorUI extends ACAQWorkbenchPanel implement
     /**
      * Creates new instance
      *
-     * @param workbench the workbech
+     * @param workbench       the workbech
      * @param parameterAccess Parameter
      */
     public ACAQParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {

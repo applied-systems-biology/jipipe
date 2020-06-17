@@ -1,7 +1,10 @@
 package org.hkijena.acaq5.api.grouping.parameters;
 
 import com.google.common.eventbus.EventBus;
-import org.hkijena.acaq5.api.parameters.*;
+import org.hkijena.acaq5.api.parameters.ACAQCustomParameterCollection;
+import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
+import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.*;
@@ -16,8 +19,9 @@ public class GraphNodeParameterReferenceAccessGroupList implements ACAQParameter
 
     /**
      * Creates a new instance
+     *
      * @param parameters the parameters
-     * @param tree tree of the referenced graph
+     * @param tree       tree of the referenced graph
      */
     public GraphNodeParameterReferenceAccessGroupList(GraphNodeParameters parameters, ACAQParameterTree tree) {
 
@@ -27,7 +31,7 @@ public class GraphNodeParameterReferenceAccessGroupList implements ACAQParameter
 
             for (GraphNodeParameterReference reference : group.getContent()) {
                 ACAQParameterAccess access = reference.resolve(tree);
-                if(access != null && !existingParameters.contains(access)) {
+                if (access != null && !existingParameters.contains(access)) {
                     GraphNodeParameterReferenceAccess wrappedAccess = new GraphNodeParameterReferenceAccess(reference, tree, collection);
                     String key = StringUtils.makeUniqueString(access.getKey(), "-", collection.getParameters()::containsKey);
                     collection.getParameters().put(key, wrappedAccess);

@@ -67,7 +67,7 @@ public class ACAQTestBench implements ACAQRunnable, ACAQValidatable {
     @Override
     public void run(Consumer<ACAQRunnerStatus> onProgress, Supplier<Boolean> isCancelled) {
         // Remove the benched algorithm from cache. This is a workaround.
-        if(settings.isLoadFromCache()) {
+        if (settings.isLoadFromCache()) {
             getProject().getCache().clear((ACAQAlgorithm) projectAlgorithm);
         }
 

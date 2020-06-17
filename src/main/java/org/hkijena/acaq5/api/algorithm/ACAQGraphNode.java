@@ -4,10 +4,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -269,7 +267,7 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
      */
     @Subscribe
     public void onSlotAdded(SlotAddedEvent event) {
-        if(event.getSlotConfiguration() == getSlotConfiguration()) {
+        if (event.getSlotConfiguration() == getSlotConfiguration()) {
             ACAQSlotDefinition definition = slotConfiguration.getSlots().get(event.getSlotName());
             ACAQDataSlot slot = new ACAQDataSlot(definition, this);
             slots.put(definition.getName(), slot);
@@ -289,7 +287,7 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
      */
     @Subscribe
     public void onSlotRemoved(SlotRemovedEvent event) {
-        if(event.getSlotConfiguration() == getSlotConfiguration()) {
+        if (event.getSlotConfiguration() == getSlotConfiguration()) {
             ACAQDataSlot slot = slots.get(event.getSlotName());
             slots.remove(event.getSlotName());
             inputSlots.remove(slot);
@@ -306,7 +304,7 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
      */
     @Subscribe
     public void onSlotRenamed(SlotRenamedEvent event) {
-        if(event.getSlotConfiguration() == getSlotConfiguration()) {
+        if (event.getSlotConfiguration() == getSlotConfiguration()) {
             ACAQDataSlot slot = slots.get(event.getOldSlotName());
             slots.remove(event.getOldSlotName());
             slots.put(event.getNewSlotName(), slot);
@@ -322,7 +320,7 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
      */
     @Subscribe
     public void onSlotOrderChanged(SlotOrderChangedEvent event) {
-        if(event.getConfiguration() == getSlotConfiguration()) {
+        if (event.getConfiguration() == getSlotConfiguration()) {
             updateInputSlotList();
             updateOutputSlotList();
             eventBus.post(new AlgorithmSlotsChangedEvent(this));
@@ -371,6 +369,7 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
     /**
      * Saves this algorithm to JSON.
      * Override this method to apply your own modifications
+     *
      * @param jsonGenerator the JSON generator
      * @throws JsonProcessingException thrown by JSON methods
      */
@@ -393,7 +392,7 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
         jsonGenerator.writeStringField("acaq:algorithm-compartment", getCompartment());
         ACAQParameterTree parameterCollection = new ACAQParameterTree(this);
         for (Map.Entry<String, ACAQParameterAccess> entry : parameterCollection.getParameters().entrySet()) {
-            if(entry.getValue().isPersistent()) {
+            if (entry.getValue().isPersistent()) {
                 jsonGenerator.writeObjectField(entry.getKey(), entry.getValue().get(Object.class));
             }
         }
@@ -465,7 +464,7 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
             changedStructure.set(false);
             ACAQParameterTree parameterCollection = new ACAQParameterTree(this);
             for (ACAQParameterAccess parameterAccess : parameterCollection.getParametersByPriority()) {
-                if(!parameterAccess.isPersistent())
+                if (!parameterAccess.isPersistent())
                     continue;
                 String key = parameterCollection.getUniqueKey(parameterAccess);
                 if (loadedParameters.contains(key))
@@ -912,6 +911,7 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
     /**
      * Controls whether to render input slots.
      * If disabled, this achieves the same effect as a compartment output within a foreign compartment.
+     *
      * @return render input slots
      */
     public boolean renderInputSlots() {
@@ -921,6 +921,7 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
     /**
      * Controls whether to render output slots.
      * If disabled, this achieves the same effect as a compartment output within the same compartment.
+     *
      * @return render output slots
      */
     public boolean renderOutputSlots() {
@@ -944,7 +945,7 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
     public static class Serializer extends JsonSerializer<ACAQGraphNode> {
         @Override
         public void serialize(ACAQGraphNode algorithm, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
-           algorithm.toJson(jsonGenerator);
+            algorithm.toJson(jsonGenerator);
         }
     }
 }

@@ -19,6 +19,7 @@ public interface ACAQCustomParameterCollection extends ACAQParameterCollection {
 
     /**
      * Returns all sub-parameter collections
+     *
      * @return Map from unique collection ID to the collection.
      */
     default Map<String, ACAQParameterCollection> getChildParameterCollections() {

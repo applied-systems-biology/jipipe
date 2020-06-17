@@ -20,7 +20,7 @@ public class StringOrDoublePredicateParameterEditorUI extends ACAQParameterEdito
     private JToggleButton stringToggle;
 
     /**
-     * @param workbench        workbench
+     * @param workbench       workbench
      * @param parameterAccess the parameter
      */
     public StringOrDoublePredicateParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {

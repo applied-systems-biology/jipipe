@@ -353,9 +353,10 @@ public class UIUtils {
 
     /**
      * Gets a multiline string by dialog
-     * @param parent the parent component
-     * @param title the title
-     * @param message message
+     *
+     * @param parent       the parent component
+     * @param title        the title
+     * @param message      message
      * @param initialValue initial value
      * @return value or null
      */
@@ -365,14 +366,14 @@ public class UIUtils {
         JScrollPane pane = new JScrollPane(area);
         int result = JOptionPane.showOptionDialog(
                 parent,
-                new Object[] {message, pane},
+                new Object[]{message, pane},
                 title,
                 JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.QUESTION_MESSAGE,
                 null, null, null);
 
         if (result == JOptionPane.OK_OPTION) {
-           return area.getText();
+            return area.getText();
         }
         return null;
     }

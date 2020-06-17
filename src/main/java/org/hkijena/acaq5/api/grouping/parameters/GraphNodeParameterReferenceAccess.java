@@ -21,8 +21,9 @@ public class GraphNodeParameterReferenceAccess implements ACAQParameterAccess {
 
     /**
      * Creates a new instance
-     * @param reference the reference
-     * @param tree the tree that is referenced
+     *
+     * @param reference         the reference
+     * @param tree              the tree that is referenced
      * @param alternativeSource the source they are attached to
      */
     public GraphNodeParameterReferenceAccess(GraphNodeParameterReference reference, ACAQParameterTree tree, ACAQParameterCollection alternativeSource) {

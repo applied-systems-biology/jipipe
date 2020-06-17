@@ -6,7 +6,6 @@ import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
-import org.scijava.Context;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,7 +21,7 @@ public class ColorParameterEditorUI extends ACAQParameterEditorUI {
 
 
     /**
-     * @param workbench        workbench
+     * @param workbench       workbench
      * @param parameterAccess the parameter
      */
     public ColorParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {

@@ -24,6 +24,7 @@ public class ACAQGraphRunner implements ACAQRunnable {
 
     /**
      * Creates a new instance
+     *
      * @param algorithmGraph the algorithm graph to run
      */
     public ACAQGraphRunner(ACAQAlgorithmGraph algorithmGraph) {
@@ -56,7 +57,7 @@ public class ACAQGraphRunner implements ACAQRunnable {
                     statusMessage + " | " + s));
 
             if (slot.isInput()) {
-                if(!algorithmsWithExternalInput.contains(slot.getAlgorithm())) {
+                if (!algorithmsWithExternalInput.contains(slot.getAlgorithm())) {
                     // Copy data from source
                     ACAQDataSlot sourceSlot = algorithmGraph.getSourceSlot(slot);
                     slot.copyFrom(sourceSlot);
@@ -66,16 +67,16 @@ public class ACAQGraphRunner implements ACAQRunnable {
                 if (!executedAlgorithms.contains(slot.getAlgorithm())) {
                     onProgress.accept(new ACAQRunnerStatus(index, traversedSlots.size(), statusMessage));
 
-                        try {
-                            slot.getAlgorithm().run(new ACAQRunnerSubStatus(), algorithmProgress, isCancelled);
-                        } catch (Exception e) {
-                            throw new UserFriendlyRuntimeException("Algorithm " + slot.getAlgorithm() + " raised an exception!",
-                                    e,
-                                    "An error occurred during processing",
-                                    "On running the algorithm '" + slot.getAlgorithm().getName() + "', within graph '" + algorithmGraph + "'",
-                                    "Please refer to the other error messages.",
-                                    "Please follow the instructions for the other error messages.");
-                        }
+                    try {
+                        slot.getAlgorithm().run(new ACAQRunnerSubStatus(), algorithmProgress, isCancelled);
+                    } catch (Exception e) {
+                        throw new UserFriendlyRuntimeException("Algorithm " + slot.getAlgorithm() + " raised an exception!",
+                                e,
+                                "An error occurred during processing",
+                                "On running the algorithm '" + slot.getAlgorithm().getName() + "', within graph '" + algorithmGraph + "'",
+                                "Please refer to the other error messages.",
+                                "Please follow the instructions for the other error messages.");
+                    }
 
                     executedAlgorithms.add(slot.getAlgorithm());
                 }
@@ -92,7 +93,6 @@ public class ACAQGraphRunner implements ACAQRunnable {
     }
 
     /**
-     *
      * @return Algorithms that have an external input and therefore are not invalid and are runnable
      */
     public Set<ACAQGraphNode> getAlgorithmsWithExternalInput() {

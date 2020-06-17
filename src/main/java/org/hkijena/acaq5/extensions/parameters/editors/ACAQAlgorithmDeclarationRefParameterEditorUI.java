@@ -11,7 +11,6 @@ import org.hkijena.acaq5.ui.components.ACAQAlgorithmPicker;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
-import org.scijava.Context;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,7 +27,7 @@ public class ACAQAlgorithmDeclarationRefParameterEditorUI extends ACAQParameterE
     private JDialog pickerDialog;
 
     /**
-     * @param workbench        workbench
+     * @param workbench       workbench
      * @param parameterAccess the parameter
      */
     public ACAQAlgorithmDeclarationRefParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {

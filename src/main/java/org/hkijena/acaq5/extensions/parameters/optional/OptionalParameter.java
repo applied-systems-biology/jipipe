@@ -120,11 +120,10 @@ public abstract class OptionalParameter<T> {
 
             ObjectReader objectReader = JsonUtils.getObjectMapper().readerFor(parameter.getContentClass());
 
-            if(root.isObject() && root.has("enabled")) {
+            if (root.isObject() && root.has("enabled")) {
                 parameter.setEnabled(root.get("enabled").booleanValue());
                 parameter.setContent(objectReader.readValue(root.get("content")));
-            }
-            else {
+            } else {
                 // Fallback for conversion from content to optional parameter
                 parameter.setContent(objectReader.readValue(root));
             }

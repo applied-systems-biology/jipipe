@@ -4,7 +4,6 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
-import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.ui.registries.ACAQUIAlgorithmRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -14,8 +13,8 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Displays the contents of {@link ACAQParameterTree}.
@@ -34,6 +33,7 @@ public class ParameterTreeUI extends JTree {
 
     /**
      * Creates a new instance
+     *
      * @param tree the tree
      */
     public ParameterTreeUI(ACAQParameterTree tree) {
@@ -75,9 +75,10 @@ public class ParameterTreeUI extends JTree {
 
     /**
      * Picks a node or parameter
+     *
      * @param parent the parent component
-     * @param tree the tree
-     * @param title the title
+     * @param tree   the tree
+     * @param title  the title
      * @return selected object or null if not was selected
      */
     public static List<Object> showPickerDialog(Component parent, ACAQParameterTree tree, String title) {
@@ -85,7 +86,7 @@ public class ParameterTreeUI extends JTree {
         UIUtils.expandAllTree(ui);
         JPanel contentPanel = new JPanel(new BorderLayout());
 
-        JDialog dialog =new JDialog(SwingUtilities.getWindowAncestor(parent));
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
         dialog.setTitle(title);
         dialog.setContentPane(contentPanel);
 
@@ -95,29 +96,29 @@ public class ParameterTreeUI extends JTree {
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton cancelButton =new JButton("Cancel", UIUtils.getIconFromResources("remove.png"));
+        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("remove.png"));
         cancelButton.addActionListener(e -> {
             ui.clearSelection();
             dialog.setVisible(false);
         });
         buttonPanel.add(cancelButton);
 
-        JButton pickButton =new JButton("Select", UIUtils.getIconFromResources("pick.png"));
+        JButton pickButton = new JButton("Select", UIUtils.getIconFromResources("pick.png"));
         pickButton.addActionListener(e -> dialog.setVisible(false));
         buttonPanel.add(pickButton);
 
         contentPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         dialog.pack();
-        dialog.setSize(300,400);
+        dialog.setSize(300, 400);
         dialog.setLocationRelativeTo(parent);
         dialog.setModal(true);
         dialog.setVisible(true);
 
         List<Object> selected = new ArrayList<>();
-        if(ui.getSelectionPaths() != null) {
+        if (ui.getSelectionPaths() != null) {
             for (TreePath selectionPath : ui.getSelectionPaths()) {
-                if(selectionPath != null) {
+                if (selectionPath != null) {
                     Object lastPathComponent = selectionPath.getLastPathComponent();
                     if (lastPathComponent instanceof DefaultMutableTreeNode) {
                         selected.add(((DefaultMutableTreeNode) lastPathComponent).getUserObject());
@@ -144,30 +145,29 @@ public class ParameterTreeUI extends JTree {
         @Override
         public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
 
-            if(value instanceof DefaultMutableTreeNode) {
+            if (value instanceof DefaultMutableTreeNode) {
                 DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) value;
                 Object userObject = treeNode.getUserObject();
-                if(userObject instanceof ACAQParameterTree.Node) {
+                if (userObject instanceof ACAQParameterTree.Node) {
                     ACAQParameterTree.Node node = (ACAQParameterTree.Node) userObject;
                     Icon icon = null;
-                    if(node.getCollection() instanceof ACAQGraphNode) {
+                    if (node.getCollection() instanceof ACAQGraphNode) {
                         ACAQAlgorithmDeclaration declaration = ((ACAQGraphNode) node.getCollection()).getDeclaration();
                         icon = ACAQUIAlgorithmRegistry.getInstance().getIconFor(declaration);
                     }
-                    if(icon == null) {
+                    if (icon == null) {
                         UIUtils.getIconFromResources("object.png");
                     }
                     setIcon(icon);
                     String name = node.getName();
-                    if(name == null)
+                    if (name == null)
                         name = node.getKey();
                     setText(name);
-                }
-                else if(userObject instanceof ACAQParameterAccess) {
+                } else if (userObject instanceof ACAQParameterAccess) {
                     ACAQParameterAccess access = (ACAQParameterAccess) userObject;
                     setIcon(UIUtils.getIconFromResources("parameters.png"));
                     String name = access.getName();
-                    if(name == null)
+                    if (name == null)
                         name = access.getKey();
                     setText(name);
                 }
