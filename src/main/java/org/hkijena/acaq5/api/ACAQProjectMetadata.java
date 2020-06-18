@@ -8,6 +8,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.extensions.parameters.primitives.StringList;
 import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.acaq5.utils.ResourceUtils;
 
 /**
  * JSON-serializable project metadata
@@ -127,6 +128,7 @@ public class ACAQProjectMetadata implements ACAQParameterCollection {
      */
     @ACAQParameter("website")
     @JsonSetter("website")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/filetype-html.png")
     public void setWebsite(String website) {
         this.website = website;
         getEventBus().post(new ParameterChangedEvent(this, "website"));

@@ -29,7 +29,7 @@ import java.util.*;
 /**
  * Declaration of a {@link GraphWrapperAlgorithm}
  */
-public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQValidatable, ACAQParameterCollection {
+public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQValidatable, ACAQParameterCollection, ACAQNamedParameterCollection {
 
     private final EventBus eventBus = new EventBus();
     private String id;
@@ -380,5 +380,15 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
     public void setIcon(ACAQAlgorithmIconRef icon) {
         this.icon = icon;
         getEventBus().post(new ParameterChangedEvent(this, "icon"));
+    }
+
+    @Override
+    public String getDefaultParameterCollectionName() {
+        return "Technical settings";
+    }
+
+    @Override
+    public String getDefaultParameterCollectionDescription() {
+        return "The following settings are ";
     }
 }
