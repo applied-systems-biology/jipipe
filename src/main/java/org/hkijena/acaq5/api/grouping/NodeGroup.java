@@ -7,6 +7,8 @@ import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
+import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
@@ -58,6 +60,16 @@ public class NodeGroup extends GraphWrapperAlgorithm implements ACAQCustomParame
      */
     public NodeGroup(ACAQAlgorithmGraph graph, boolean autoCreateSlots) {
         super(ACAQAlgorithmRegistry.getInstance().getDeclarationById("node-group"), new ACAQAlgorithmGraph());
+
+        // Replace project compartment with IOInterface
+        // Also clear locations
+        for (ACAQGraphNode node : graph.getAlgorithmNodes().values()) {
+            node.clearLocations();
+            if(node instanceof ACAQCompartmentOutput) {
+                node.setDeclaration(ACAQAlgorithmRegistry.getInstance().getDeclarationById("io-interface"));
+            }
+        }
+
         setWrappedGraph(graph);
         initializeContents();
 

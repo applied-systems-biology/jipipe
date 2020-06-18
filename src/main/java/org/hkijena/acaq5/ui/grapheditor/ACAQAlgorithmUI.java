@@ -9,6 +9,7 @@ import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
+import org.hkijena.acaq5.api.grouping.JsonAlgorithm;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.AddAlgorithmSlotPanel;
@@ -150,6 +151,13 @@ public abstract class ACAQAlgorithmUI extends ACAQWorkbenchPanel {
             enableDisableContextMenuButton = new JMenuItem("Enable/Disable algorithm", UIUtils.getIconFromResources("block.png"));
             enableDisableContextMenuButton.addActionListener(e -> a.setEnabled(!a.isEnabled()));
             contextMenu.add(enableDisableContextMenuButton);
+        }
+
+        if(algorithm instanceof JsonAlgorithm) {
+            JMenuItem unpackItem = new JMenuItem("Convert to group", UIUtils.getIconFromResources("archive-extract.png"));
+            unpackItem.setToolTipText("Converts the algorithm into a group that can be edited");
+            unpackItem.addActionListener(e -> JsonAlgorithm.unpackToNodeGroup((JsonAlgorithm) algorithm));
+            contextMenu.add(unpackItem);
         }
 
         if (algorithm instanceof ACAQProjectCompartment) {

@@ -4,7 +4,6 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
-import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.grouping.NodeGroup;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
@@ -12,14 +11,13 @@ import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
-import org.hkijena.acaq5.ui.settings.ACAQGraphWrapperAlgorithmExporter;
+import org.hkijena.acaq5.ui.extensionbuilder.ACAQGraphWrapperAlgorithmExporter;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.Comparator;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -107,7 +105,8 @@ public class ACAQMultiAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPane
         ACAQAlgorithmGraph subGraph = graph.extract(algorithms, false);
         NodeGroup group = new NodeGroup(subGraph, true);
         for (ACAQGraphNode algorithm : algorithms) {
-            graph.removeNode(algorithm);
+            if(algorithm.getCategory() != ACAQAlgorithmCategory.Internal)
+                graph.removeNode(algorithm);
         }
         graph.insertNode(group, canvas.getCompartment());
     }
@@ -122,23 +121,9 @@ public class ACAQMultiAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPane
             return;
         }
 
-        ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
-        for (ACAQGraphNode algorithm : algorithms) {
-            if (algorithm.getCategory() == ACAQAlgorithmCategory.Internal)
-                continue;
-            graph.insertNode(algorithm.getIdInGraph(), algorithm.getDeclaration().clone(algorithm), ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
-        }
-        for (Map.Entry<ACAQDataSlot, ACAQDataSlot> entry : getProject().getGraph().getSlotEdges()) {
-            ACAQDataSlot source = entry.getKey();
-            ACAQDataSlot target = entry.getValue();
-            if (algorithms.contains(source.getAlgorithm()) && algorithms.contains(target.getAlgorithm())) {
-                ACAQDataSlot copySource = graph.getAlgorithmNodes().get(source.getAlgorithm().getIdInGraph()).getSlots().get(source.getName());
-                ACAQDataSlot copyTarget = graph.getAlgorithmNodes().get(target.getAlgorithm().getIdInGraph()).getSlots().get(target.getName());
-                graph.connect(copySource, copyTarget);
-            }
-        }
-
-        ACAQGraphWrapperAlgorithmExporter exporter = new ACAQGraphWrapperAlgorithmExporter(getProjectWorkbench(), graph);
+        ACAQAlgorithmGraph graph = getProject().getGraph().extract(algorithms, true);
+        NodeGroup group = new NodeGroup(graph, true);
+        ACAQGraphWrapperAlgorithmExporter exporter = new ACAQGraphWrapperAlgorithmExporter(getProjectWorkbench(), group);
         getProjectWorkbench().getDocumentTabPane().addTab("Export custom algorithm",
                 UIUtils.getIconFromResources("export.png"),
                 exporter,

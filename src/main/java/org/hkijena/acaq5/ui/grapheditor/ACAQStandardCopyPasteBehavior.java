@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableSet;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
+import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
+import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonExtensionAlgorithmGraphUI;
 import org.hkijena.acaq5.utils.JsonUtils;
 
@@ -32,7 +34,7 @@ public class ACAQStandardCopyPasteBehavior implements ACAQAlgorithmGraphCopyPast
 
     @Override
     public void copy(Set<ACAQGraphNode> algorithms) {
-        ACAQAlgorithmGraph graph = ACAQAlgorithmGraph.getIsolatedGraph(editorUI.getAlgorithmGraph(), algorithms, true);
+        ACAQAlgorithmGraph graph = editorUI.getAlgorithmGraph().extract(algorithms, true);
         try {
             String json = JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(graph);
             StringSelection selection = new StringSelection(json);
@@ -57,6 +59,14 @@ public class ACAQStandardCopyPasteBehavior implements ACAQAlgorithmGraphCopyPast
             String json = getStringFromClipboard();
             if (json != null) {
                 ACAQAlgorithmGraph graph = JsonUtils.getObjectMapper().readValue(json, ACAQAlgorithmGraph.class);
+
+                // Replace project compartment with IOInterface
+                for (ACAQGraphNode node : graph.getAlgorithmNodes().values()) {
+                    if(node instanceof ACAQCompartmentOutput) {
+                        node.setDeclaration(ACAQAlgorithmRegistry.getInstance().getDeclarationById("io-interface"));
+                    }
+                }
+
                 String compartment = editorUI.getCompartment();
                 for (ACAQGraphNode algorithm : graph.getAlgorithmNodes().values()) {
                     algorithm.setCompartment(compartment);

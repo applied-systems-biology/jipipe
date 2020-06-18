@@ -344,6 +344,14 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
         }
     }
 
+    public void setLocations(Map<String, Point> locations) {
+        this.locations = locations;
+    }
+
+    public Map<String, Point> getLocations() {
+        return locations;
+    }
+
     /**
      * Returns the location within the specified compartment or null if none is set
      *
@@ -537,6 +545,18 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
      */
     public ACAQAlgorithmDeclaration getDeclaration() {
         return declaration;
+    }
+
+    /**
+     * Sets the {@link ACAQAlgorithmDeclaration} that describes this algorithm.
+     * Please note that this function can be very dangerous and break everything.
+     * This will affect how ACAQ5 (and especially the UI) handles this algorithm.
+     * A use case is to convert algorithms from internal representations to their public variants (e.g. {@link org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput}
+     * to {@link org.hkijena.acaq5.api.compartments.algorithms.IOInterfaceAlgorithm}
+     * @param declaration
+     */
+    public void setDeclaration(ACAQAlgorithmDeclaration declaration) {
+        this.declaration = declaration;
     }
 
     /**

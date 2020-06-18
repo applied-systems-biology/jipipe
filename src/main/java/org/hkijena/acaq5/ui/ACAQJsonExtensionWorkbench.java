@@ -28,7 +28,7 @@ import java.util.Set;
  */
 public class ACAQJsonExtensionWorkbench extends JPanel implements ACAQWorkbench {
     private final ACAQJsonExtensionWindow window;
-    private final ACAQGUICommand command;
+    private final Context context;
     private final ACAQJsonExtension project;
     public DocumentTabPane documentTabPane;
     private JLabel statusText;
@@ -36,12 +36,12 @@ public class ACAQJsonExtensionWorkbench extends JPanel implements ACAQWorkbench 
 
     /**
      * @param window  The parent window
-     * @param command The command that executed the UI
+     * @param context The SciJava context
      * @param project The project
      */
-    public ACAQJsonExtensionWorkbench(ACAQJsonExtensionWindow window, ACAQGUICommand command, ACAQJsonExtension project) {
+    public ACAQJsonExtensionWorkbench(ACAQJsonExtensionWindow window, Context context, ACAQJsonExtension project) {
         this.window = window;
-        this.command = command;
+        this.context = context;
         this.project = project;
         initialize();
 
@@ -229,7 +229,7 @@ public class ACAQJsonExtensionWorkbench extends JPanel implements ACAQWorkbench 
      */
     @Override
     public Context getContext() {
-        return command.getContext();
+        return context;
     }
 
     /**

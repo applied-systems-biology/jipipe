@@ -5,7 +5,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.ACAQExportedCompartment;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
-import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.grouping.NodeGroup;
 import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
@@ -15,7 +15,7 @@ import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQSlotEditorUI;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
-import org.hkijena.acaq5.ui.settings.ACAQGraphWrapperAlgorithmExporter;
+import org.hkijena.acaq5.ui.extensionbuilder.ACAQGraphWrapperAlgorithmExporter;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -136,31 +136,9 @@ public class ACAQSingleCompartmentSelectionPanelUI extends ACAQProjectWorkbenchP
             return;
         }
 
-        ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
-        for (Map.Entry<String, ACAQGraphNode> entry : getProject().getGraph().getAlgorithmNodes().entrySet()) {
-            if (Objects.equals(entry.getValue().getCompartment(), compartmentId)) {
-                ACAQGraphNode algorithm = entry.getValue().duplicate();
-                algorithm.setCompartment(ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
-                graph.insertNode(entry.getKey(), algorithm, compartmentId);
-            }
-        }
-        for (Map.Entry<ACAQDataSlot, ACAQDataSlot> edge : getProject().getGraph().getSlotEdges()) {
-            if (Objects.equals(edge.getKey().getAlgorithm().getCompartment(), compartmentId) &&
-                    Objects.equals(edge.getValue().getAlgorithm().getCompartment(), compartmentId)) {
-                ACAQDataSlot source = graph.getEquivalentSlot(edge.getKey());
-                ACAQDataSlot target = graph.getEquivalentSlot(edge.getValue());
-                graph.connect(source, target);
-            }
-        }
-
-        ACAQGraphWrapperAlgorithmExporter exporter = new ACAQGraphWrapperAlgorithmExporter(getProjectWorkbench(), graph);
-        exporter.getAlgorithmDeclaration().getMetadata().setName(compartment.getName());
-        exporter.getAlgorithmDeclaration().getMetadata().setDescription(compartment.getCustomDescription());
-        getProjectWorkbench().getDocumentTabPane().addTab("Export algorithm '" + compartment.getName() + "'",
-                UIUtils.getIconFromResources("export.png"),
-                exporter,
-                DocumentTabPane.CloseMode.withAskOnCloseButton);
-        getProjectWorkbench().getDocumentTabPane().switchToLastTab();
+        ACAQAlgorithmGraph extractedGraph = getProject().getGraph().extract(getProject().getGraph().getAlgorithmsWithCompartment(compartmentId), true);
+        NodeGroup nodeGroup = new NodeGroup(extractedGraph, true);
+        ACAQGraphWrapperAlgorithmExporter.createExporter(getProjectWorkbench(), nodeGroup, compartment.getName(), compartment.getCustomDescription());
     }
 
     private void exportCompartmentToJSON() {

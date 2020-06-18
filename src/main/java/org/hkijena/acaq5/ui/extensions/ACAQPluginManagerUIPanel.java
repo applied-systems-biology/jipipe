@@ -11,6 +11,7 @@ import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.utils.UIUtils;
 
+import javax.naming.Context;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
@@ -23,14 +24,12 @@ public class ACAQPluginManagerUIPanel extends ACAQProjectWorkbenchPanel {
 
     private JList<ACAQDependency> dependencyJList;
     private JSplitPane splitPane;
-    private ACAQGUICommand command;
 
     /**
      * @param ui The project UI
      */
     public ACAQPluginManagerUIPanel(ACAQProjectWorkbench ui) {
         super(ui);
-        this.command = ui.getCommand();
         initialize();
         reload();
         ACAQDefaultRegistry.getInstance().getEventBus().register(this);
@@ -76,7 +75,7 @@ public class ACAQPluginManagerUIPanel extends ACAQProjectWorkbenchPanel {
 
         JButton newExtensionButton = new JButton("New extension ...", UIUtils.getIconFromResources("new.png"));
         newExtensionButton.addActionListener(e -> {
-            ACAQJsonExtensionWindow window = ACAQJsonExtensionWindow.newWindow(command, new ACAQJsonExtension());
+            ACAQJsonExtensionWindow window = ACAQJsonExtensionWindow.newWindow(getWorkbench().getContext(), new ACAQJsonExtension());
             window.setTitle("New project");
         });
         toolBar.add(newExtensionButton);

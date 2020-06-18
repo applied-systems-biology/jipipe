@@ -13,6 +13,7 @@ import org.hkijena.acaq5.ui.project.UnsatisfiedDependenciesDialog;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
+import org.scijava.Context;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,7 +31,7 @@ import java.util.Set;
 public class ACAQJsonExtensionWindow extends JFrame {
 
     private static Set<ACAQJsonExtensionWindow> OPEN_WINDOWS = new HashSet<>();
-    private ACAQGUICommand command;
+    private Context context;
     private ACAQJsonExtension project;
     private ACAQJsonExtensionWorkbench projectUI;
     private Path projectSavePath;
@@ -38,12 +39,12 @@ public class ACAQJsonExtensionWindow extends JFrame {
     /**
      * Creates a new instance
      *
-     * @param command The command that issued the UI
+     * @param context The command that issued the UI
      * @param project The project
      */
-    public ACAQJsonExtensionWindow(ACAQGUICommand command, ACAQJsonExtension project) {
+    public ACAQJsonExtensionWindow(Context context, ACAQJsonExtension project) {
         OPEN_WINDOWS.add(this);
-        this.command = command;
+        this.context = context;
         initialize();
         loadProject(project);
         if (project.getJsonFilePath() != null)
@@ -77,7 +78,7 @@ public class ACAQJsonExtensionWindow extends JFrame {
      */
     public void loadProject(ACAQJsonExtension project) {
         this.project = project;
-        this.projectUI = new ACAQJsonExtensionWorkbench(this, command, project);
+        this.projectUI = new ACAQJsonExtensionWorkbench(this, context, project);
         setContentPane(projectUI);
     }
 
@@ -173,7 +174,7 @@ public class ACAQJsonExtensionWindow extends JFrame {
                 loadProject(project);
                 return this;
             case JOptionPane.NO_OPTION:
-                return newWindow(command, project);
+                return newWindow(context, project);
         }
         return null;
     }
@@ -181,8 +182,8 @@ public class ACAQJsonExtensionWindow extends JFrame {
     /**
      * @return The command that issued the GUI
      */
-    public ACAQGUICommand getCommand() {
-        return command;
+    public Context getContext() {
+        return context;
     }
 
     /**
@@ -209,12 +210,12 @@ public class ACAQJsonExtensionWindow extends JFrame {
     /**
      * Opens a new window
      *
-     * @param command The command that issued the GUI
+     * @param context The context
      * @param project The project
      * @return The window
      */
-    public static ACAQJsonExtensionWindow newWindow(ACAQGUICommand command, ACAQJsonExtension project) {
-        ACAQJsonExtensionWindow frame = new ACAQJsonExtensionWindow(command, project);
+    public static ACAQJsonExtensionWindow newWindow(Context context, ACAQJsonExtension project) {
+        ACAQJsonExtensionWindow frame = new ACAQJsonExtensionWindow(context, project);
         frame.pack();
         frame.setSize(1024, 768);
         frame.setVisible(true);

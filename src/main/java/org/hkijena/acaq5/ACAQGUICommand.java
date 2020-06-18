@@ -54,7 +54,7 @@ public class ACAQGUICommand implements Command {
             }
             ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
             ToolTipManager.sharedInstance().setInitialDelay(1000);
-            ACAQProjectWindow window = ACAQProjectWindow.newWindow(this, new ACAQProject());
+            ACAQProjectWindow window = ACAQProjectWindow.newWindow(getContext(), new ACAQProject());
             window.setTitle("New project");
         });
     }

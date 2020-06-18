@@ -57,7 +57,7 @@ public class ACAQCompartmentGraphCopyPasteBehavior implements ACAQAlgorithmGraph
         if (algorithms.isEmpty())
             return;
 
-        ACAQAlgorithmGraph graph = ACAQAlgorithmGraph.getIsolatedGraph(sourceGraph, algorithms, false);
+        ACAQAlgorithmGraph graph = sourceGraph.extract(algorithms, false);
         try {
             String json = JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(graph);
             StringSelection selection = new StringSelection(json);

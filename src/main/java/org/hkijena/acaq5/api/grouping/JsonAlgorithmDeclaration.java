@@ -11,6 +11,8 @@ import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
@@ -41,12 +43,26 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
     private StringList menuPath = new StringList();
     private boolean hidden = false;
     private ACAQAlgorithmIconRef icon = new ACAQAlgorithmIconRef();
+    private GraphWrapperAlgorithmInput algorithmInput;
+    private GraphWrapperAlgorithmOutput algorithmOutput;
 
     /**
      * Creates a new declaration
      */
     public JsonAlgorithmDeclaration() {
         graph.getEventBus().register(this);
+    }
+
+    /**
+     * Creates a new {@link JsonAlgorithmDeclaration} from a {@link NodeGroup}
+     * @param group the node group. The graph will NOT be copied.
+     */
+    public JsonAlgorithmDeclaration(NodeGroup group) {
+        graph = new ACAQAlgorithmGraph(group.getWrappedGraph());
+        graph.getEventBus().register(this);
+        metadata.setName(group.getName());
+        metadata.setDescription(group.getCustomDescription());
+        updateSlots();
     }
 
     @ACAQDocumentation(name = "Algorithm ID", description = "An unique identifier for the algorithm. " +
@@ -182,25 +198,72 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
     private void updateSlots() {
         inputSlots.clear();
         outputSlots.clear();
-
-        Set<String> existingSlots = new HashSet<>();
-        Map<ACAQGraphNode, List<ACAQDataSlot>> groupedByAlgorithm = graph.getUnconnectedSlots().stream().collect(Collectors.groupingBy(ACAQDataSlot::getAlgorithm));
-        exportedSlotNames.clear();
-        for (Map.Entry<ACAQGraphNode, List<ACAQDataSlot>> entry : groupedByAlgorithm.entrySet()) {
-            for (ACAQDataSlot slot : entry.getValue()) {
-                if (slot.isInput()) {
-                    String name = StringUtils.makeUniqueString(slot.getName(), " ", existingSlots::contains);
-                    inputSlots.add(new DefaultAlgorithmInputSlot(slot.getAcceptedDataType(), name, false));
-                    existingSlots.add(name);
-                    exportedSlotNames.put(slot, name);
-                } else if (slot.isOutput()) {
-                    String name = StringUtils.makeUniqueString(slot.getName(), " ", existingSlots::contains);
-                    outputSlots.add(new DefaultAlgorithmOutputSlot(slot.getAcceptedDataType(), name, "", false));
-                    existingSlots.add(name);
-                    exportedSlotNames.put(slot, name);
+        Set<String> usedSlotNames = new HashSet<>();
+        ACAQMutableSlotConfiguration inputSlotConfiguration = (ACAQMutableSlotConfiguration) getGroupInput().getSlotConfiguration();
+        ACAQMutableSlotConfiguration outputSlotConfiguration = (ACAQMutableSlotConfiguration) getGroupOutput().getSlotConfiguration();
+        for (Map.Entry<String, ACAQSlotDefinition> entry : inputSlotConfiguration.getSlots().entrySet()) {
+            if (entry.getValue().getSlotType() == ACAQDataSlot.SlotType.Input) {
+                inputSlots.add(new DefaultAlgorithmInputSlot(entry.getValue().getDataClass(),
+                        entry.getKey(),
+                        true));
+                usedSlotNames.add(entry.getKey());
+            }
+        }
+        for (Map.Entry<String, ACAQSlotDefinition> entry : outputSlotConfiguration.getSlots().entrySet()) {
+            if (entry.getValue().getSlotType() == ACAQDataSlot.SlotType.Output) {
+                String name = entry.getKey().substring("Output ".length());
+                if (!usedSlotNames.contains(name)) {
+                    outputSlots.add(new DefaultAlgorithmOutputSlot(entry.getValue().getDataClass(),
+                            entry.getKey(),
+                            null,
+                            true));
                 }
             }
         }
+    }
+
+    /**
+     * Gets the graphs's input node
+     *
+     * @return the graph's input node
+     */
+    public GraphWrapperAlgorithmInput getGroupInput() {
+        if (algorithmInput == null) {
+            for (ACAQGraphNode node : graph.getAlgorithmNodes().values()) {
+                if (node instanceof GraphWrapperAlgorithmInput) {
+                    algorithmInput = (GraphWrapperAlgorithmInput) node;
+                    break;
+                }
+            }
+        }
+        if (algorithmInput == null) {
+            // Create if it doesn't exist
+            algorithmInput = ACAQAlgorithm.newInstance("graph-wrapper:input");
+            graph.insertNode(algorithmInput, ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
+        }
+        return algorithmInput;
+    }
+
+    /**
+     * Gets the graphs's output node
+     *
+     * @return the graph's output node
+     */
+    public GraphWrapperAlgorithmOutput getGroupOutput() {
+        if (algorithmOutput == null) {
+            for (ACAQGraphNode node : graph.getAlgorithmNodes().values()) {
+                if (node instanceof GraphWrapperAlgorithmOutput) {
+                    algorithmOutput = (GraphWrapperAlgorithmOutput) node;
+                    break;
+                }
+            }
+        }
+        if (algorithmOutput == null) {
+            // Create if it doesn't exist
+            algorithmOutput = ACAQAlgorithm.newInstance("graph-wrapper:output");
+            graph.insertNode(algorithmOutput, ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
+        }
+        return algorithmOutput;
     }
 
     /**

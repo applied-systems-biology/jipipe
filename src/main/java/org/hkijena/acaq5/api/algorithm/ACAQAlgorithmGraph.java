@@ -635,13 +635,11 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
                 continue;
             graph.insertNode(algorithm.getIdInGraph(), algorithm.getDeclaration().clone(algorithm), ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
         }
-        for (Map.Entry<ACAQDataSlot, ACAQDataSlot> entry : getSlotEdges()) {
-            ACAQDataSlot source = entry.getKey();
-            ACAQDataSlot target = entry.getValue();
+        for (Map.Entry<ACAQDataSlot, ACAQDataSlot> edge : getSlotEdges()) {
+            ACAQDataSlot source = edge.getKey();
+            ACAQDataSlot target = edge.getValue();
             if (nodes.contains(source.getAlgorithm()) && nodes.contains(target.getAlgorithm())) {
-                ACAQDataSlot copySource = graph.getAlgorithmNodes().get(source.getAlgorithm().getIdInGraph()).getSlots().get(source.getName());
-                ACAQDataSlot copyTarget = graph.getAlgorithmNodes().get(target.getAlgorithm().getIdInGraph()).getSlots().get(target.getName());
-                graph.connect(copySource, copyTarget);
+                graph.connect(graph.getEquivalentSlot(source), graph.getEquivalentSlot(target));
             }
         }
         return graph;
@@ -966,32 +964,6 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
                 result.add(algorithm);
         }
         return result;
-    }
-
-    /**
-     * Copies the algorithms and edges between them into a new graph.
-     * Edges outside of the set are ignored.
-     *
-     * @param sourceGraph    the graph that contains the algorithms
-     * @param algorithms     the algorithms
-     * @param ignoreInternal if true, internal nodes are ignored
-     * @return The isolated graph
-     */
-    public static ACAQAlgorithmGraph getIsolatedGraph(ACAQAlgorithmGraph sourceGraph, Set<ACAQGraphNode> algorithms, boolean ignoreInternal) {
-        ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
-        for (ACAQGraphNode algorithm : algorithms) {
-            if (ignoreInternal && algorithm.getCategory() == ACAQAlgorithmCategory.Internal)
-                continue;
-            graph.insertNode(algorithm.getIdInGraph(), algorithm.duplicate(), ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
-        }
-        for (Map.Entry<ACAQDataSlot, ACAQDataSlot> edge : sourceGraph.getSlotEdges()) {
-            ACAQDataSlot source = edge.getKey();
-            ACAQDataSlot target = edge.getValue();
-            if (algorithms.contains(source.getAlgorithm()) && algorithms.contains(target.getAlgorithm())) {
-                graph.connect(graph.getEquivalentSlot(source), graph.getEquivalentSlot(target));
-            }
-        }
-        return graph;
     }
 
     /**

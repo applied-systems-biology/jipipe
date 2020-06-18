@@ -12,6 +12,7 @@ import org.hkijena.acaq5.ui.project.UnsatisfiedDependenciesDialog;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQResultUI;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.UIUtils;
+import org.scijava.Context;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,17 +29,17 @@ import java.util.Set;
 public class ACAQProjectWindow extends JFrame {
 
     private static Set<ACAQProjectWindow> OPEN_WINDOWS = new HashSet<>();
-    private ACAQGUICommand command;
+    private Context context;
     private ACAQProject project;
     private ACAQProjectWorkbench projectUI;
     private Path projectSavePath;
 
     /**
-     * @param command GUI command
+     * @param context context
      * @param project The project
      */
-    public ACAQProjectWindow(ACAQGUICommand command, ACAQProject project) {
-        this.command = command;
+    public ACAQProjectWindow(Context context, ACAQProject project) {
+        this.context = context;
         OPEN_WINDOWS.add(this);
         initialize();
         loadProject(project);
@@ -69,7 +70,7 @@ public class ACAQProjectWindow extends JFrame {
      */
     public void loadProject(ACAQProject project) {
         this.project = project;
-        this.projectUI = new ACAQProjectWorkbench(this, command, project);
+        this.projectUI = new ACAQProjectWorkbench(this, context, project);
         setContentPane(projectUI);
     }
 
@@ -207,7 +208,7 @@ public class ACAQProjectWindow extends JFrame {
                 loadProject(project);
                 return this;
             case JOptionPane.NO_OPTION:
-                return newWindow(command, project);
+                return newWindow(context, project);
         }
         return null;
     }
@@ -215,8 +216,8 @@ public class ACAQProjectWindow extends JFrame {
     /**
      * @return GUI command
      */
-    public ACAQGUICommand getCommand() {
-        return command;
+    public Context getContext() {
+        return context;
     }
 
     /**
@@ -243,12 +244,12 @@ public class ACAQProjectWindow extends JFrame {
     /**
      * Creates a new window
      *
-     * @param command GUI command
+     * @param context context
      * @param project The project
      * @return The window
      */
-    public static ACAQProjectWindow newWindow(ACAQGUICommand command, ACAQProject project) {
-        ACAQProjectWindow frame = new ACAQProjectWindow(command, project);
+    public static ACAQProjectWindow newWindow(Context context, ACAQProject project) {
+        ACAQProjectWindow frame = new ACAQProjectWindow(context, project);
         frame.pack();
         frame.setSize(1024, 768);
         frame.setVisible(true);

@@ -6,9 +6,9 @@ import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
-import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.events.CompartmentRemovedEvent;
+import org.hkijena.acaq5.api.grouping.NodeGroup;
 import org.hkijena.acaq5.extensions.settings.GeneralUISettings;
 import org.hkijena.acaq5.extensions.settings.ProjectsSettings;
 import org.hkijena.acaq5.ui.cache.ACAQCacheBrowserUI;
@@ -24,7 +24,7 @@ import org.hkijena.acaq5.ui.extensions.ACAQPluginValidityCheckerPanel;
 import org.hkijena.acaq5.ui.running.ACAQRunSettingsUI;
 import org.hkijena.acaq5.ui.running.ACAQRunnerQueueUI;
 import org.hkijena.acaq5.ui.settings.ACAQApplicationSettingsUI;
-import org.hkijena.acaq5.ui.settings.ACAQGraphWrapperAlgorithmExporter;
+import org.hkijena.acaq5.ui.extensionbuilder.ACAQGraphWrapperAlgorithmExporter;
 import org.hkijena.acaq5.ui.settings.ACAQProjectSettingsUI;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXStatusBar;
@@ -48,7 +48,6 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
     public DocumentTabPane documentTabPane;
     private ACAQProjectWindow window;
     private ACAQProject project;
-    private ACAQGUICommand command;
     private JLabel statusText;
     private Context context;
     private ReloadableValidityChecker validityCheckerPanel;
@@ -56,14 +55,13 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
 
     /**
      * @param window  Parent window
-     * @param command GUI command
+     * @param context SciJava context
      * @param project The project
      */
-    public ACAQProjectWorkbench(ACAQProjectWindow window, ACAQGUICommand command, ACAQProject project) {
+    public ACAQProjectWorkbench(ACAQProjectWindow window, Context context, ACAQProject project) {
         this.window = window;
         this.project = project;
-        this.command = command;
-        this.context = command.getContext();
+        this.context = context;
         initialize();
         initializeDefaultProject();
         project.getEventBus().register(this);
@@ -307,7 +305,7 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
         JMenuItem newPluginButton = new JMenuItem("New JSON extension ...", UIUtils.getIconFromResources("new.png"));
         newPluginButton.setToolTipText("Opens the extension builder");
         newPluginButton.addActionListener(e -> {
-            ACAQJsonExtensionWindow window = ACAQJsonExtensionWindow.newWindow(command, new ACAQJsonExtension());
+            ACAQJsonExtensionWindow window = ACAQJsonExtensionWindow.newWindow(context, new ACAQJsonExtension());
             window.setTitle("New extension");
         });
         pluginsMenu.add(newPluginButton);
@@ -404,11 +402,8 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
             UIUtils.openValidityReportDialog(this, report, false);
             return;
         }
-        ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph(getProject().getGraph());
-        for (ACAQGraphNode algorithm : graph.getAlgorithmNodes().values()) {
-            algorithm.setCompartment(ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
-        }
-        ACAQGraphWrapperAlgorithmExporter exporter = new ACAQGraphWrapperAlgorithmExporter(this, graph);
+        NodeGroup nodeGroup = new NodeGroup(new ACAQAlgorithmGraph(getProject().getGraph()), true);
+        ACAQGraphWrapperAlgorithmExporter exporter = new ACAQGraphWrapperAlgorithmExporter(this, nodeGroup);
         exporter.getAlgorithmDeclaration().getMetadata().setName("Custom algorithm");
         exporter.getAlgorithmDeclaration().getMetadata().setDescription("A custom algorithm");
         getDocumentTabPane().addTab("Export custom algorithm",
@@ -507,14 +502,8 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
     /**
      * @return SciJava context
      */
+    @Override
     public Context getContext() {
         return context;
-    }
-
-    /**
-     * @return GUI command
-     */
-    public ACAQGUICommand getCommand() {
-        return command;
     }
 }
