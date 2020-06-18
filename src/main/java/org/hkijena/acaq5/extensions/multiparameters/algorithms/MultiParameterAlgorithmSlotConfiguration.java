@@ -1,9 +1,9 @@
 package org.hkijena.acaq5.extensions.multiparameters.algorithms;
 
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
-import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
+import org.hkijena.acaq5.api.data.ACAQSlotType;
 import org.hkijena.acaq5.extensions.multiparameters.datatypes.ParametersData;
 
 import java.util.HashMap;
@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * Slot configuration for {@link MultiParameterAlgorithm}
  */
-public class MultiParameterAlgorithmSlotConfiguration extends ACAQMutableSlotConfiguration {
+public class MultiParameterAlgorithmSlotConfiguration extends ACAQDefaultMutableSlotConfiguration {
 
     private ACAQGraphNode algorithmInstance;
     private boolean isLoading = false;
@@ -28,7 +28,7 @@ public class MultiParameterAlgorithmSlotConfiguration extends ACAQMutableSlotCon
         if (definition.getDataClass() != ParametersData.class) {
             if (!isLoading) {
                 // Add slots to the wrapped algorithm
-                ACAQMutableSlotConfiguration instanceSlotConfiguration = (ACAQMutableSlotConfiguration) algorithmInstance.getSlotConfiguration();
+                ACAQDefaultMutableSlotConfiguration instanceSlotConfiguration = (ACAQDefaultMutableSlotConfiguration) algorithmInstance.getSlotConfiguration();
                 instanceSlotConfiguration.addSlot(name, definition, false);
             }
             name = "Data " + name;
@@ -53,32 +53,39 @@ public class MultiParameterAlgorithmSlotConfiguration extends ACAQMutableSlotCon
         }
 
         // Add the parameter input slot
-        addSlot("Parameters", new ACAQSlotDefinition(ParametersData.class, ACAQDataSlot.SlotType.Input), false);
+        addSlot("Parameters", new ACAQSlotDefinition(ParametersData.class, ACAQSlotType.Input), false);
 
         // Load configuration from wrapped algorithm
-        ACAQMutableSlotConfiguration instanceSlotConfiguration = (ACAQMutableSlotConfiguration) algorithmInstance.getSlotConfiguration();
+        ACAQDefaultMutableSlotConfiguration instanceSlotConfiguration = (ACAQDefaultMutableSlotConfiguration) algorithmInstance.getSlotConfiguration();
         setAllowInheritedOutputSlots(instanceSlotConfiguration.isAllowInheritedOutputSlots());
         setAllowedInputSlotTypes(instanceSlotConfiguration.getAllowedInputSlotTypes());
         setAllowedOutputSlotTypes(instanceSlotConfiguration.getAllowedOutputSlotTypes());
         setMaxInputSlots(instanceSlotConfiguration.getMaxInputSlots() + 1); // For the parameter slot
         setMaxOutputSlots(instanceSlotConfiguration.getMaxOutputSlots());
-        for (Map.Entry<String, ACAQSlotDefinition> entry : instanceSlotConfiguration.getSlots().entrySet()) {
-            ACAQSlotDefinition original = entry.getValue();
-            String inheritedSlot = original.getInheritedSlot();
-            if (inheritedSlot != null && !inheritedSlot.isEmpty() && !"*".equals(inheritedSlot)) {
-                inheritedSlot = "Data " + inheritedSlot;
-            }
-            ACAQSlotDefinition copy = new ACAQSlotDefinition(original.getDataClass(),
-                    original.getSlotType(),
-                    original.getName(),
-                    inheritedSlot);
-            copy.setInheritanceConversions(new HashMap<>(original.getInheritanceConversions()));
-            addSlot(entry.getKey(), copy, false);
+        for (Map.Entry<String, ACAQSlotDefinition> entry : instanceSlotConfiguration.getInputSlots().entrySet()) {
+            addDataSlot(entry);
+        }
+        for (Map.Entry<String, ACAQSlotDefinition> entry : instanceSlotConfiguration.getOutputSlots().entrySet()) {
+            addDataSlot(entry);
         }
         setInputSealed(instanceSlotConfiguration.isInputSlotsSealed());
         setOutputSealed(instanceSlotConfiguration.isOutputSlotsSealed());
 
         isLoading = false;
+    }
+
+    private void addDataSlot(Map.Entry<String, ACAQSlotDefinition> entry) {
+        ACAQSlotDefinition original = entry.getValue();
+        String inheritedSlot = original.getInheritedSlot();
+        if (inheritedSlot != null && !inheritedSlot.isEmpty() && !"*".equals(inheritedSlot)) {
+            inheritedSlot = "Data " + inheritedSlot;
+        }
+        ACAQSlotDefinition copy = new ACAQSlotDefinition(original.getDataClass(),
+                original.getSlotType(),
+                original.getName(),
+                inheritedSlot);
+        copy.setInheritanceConversions(new HashMap<>(original.getInheritanceConversions()));
+        addSlot(entry.getKey(), copy, false);
     }
 
     public ACAQGraphNode getAlgorithmInstance() {

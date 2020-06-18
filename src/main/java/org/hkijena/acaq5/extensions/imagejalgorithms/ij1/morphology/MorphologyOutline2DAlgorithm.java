@@ -7,7 +7,7 @@ import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.acaq5.utils.ImageJUtils;
@@ -31,7 +31,7 @@ public class MorphologyOutline2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
      * @param declaration the declaration
      */
     public MorphologyOutline2DAlgorithm(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscaleMaskData.class)
+        super(declaration, ACAQDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscaleMaskData.class)
                 .addOutputSlot("Output", ImagePlusGreyscaleMaskData.class, "Input")
                 .allowOutputSlotInheritance(true)
                 .seal()

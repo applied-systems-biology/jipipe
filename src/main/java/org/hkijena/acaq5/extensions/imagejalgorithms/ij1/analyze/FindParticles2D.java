@@ -10,7 +10,7 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQAnnotation;
-import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure.ImageStatisticsParameters;
@@ -55,7 +55,7 @@ public class FindParticles2D extends ACAQSimpleIteratingAlgorithm {
      */
     public FindParticles2D(ACAQAlgorithmDeclaration declaration) {
         super(declaration,
-                ACAQMutableSlotConfiguration.builder().addInputSlot("Mask", ImagePlusGreyscaleMaskData.class)
+                ACAQDefaultMutableSlotConfiguration.builder().addInputSlot("Mask", ImagePlusGreyscaleMaskData.class)
                         .addOutputSlot("ROI", ROIListData.class, null)
                         .addOutputSlot("Measurements", ResultsTableData.class, null)
                         .seal()

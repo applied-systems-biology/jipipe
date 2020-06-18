@@ -7,7 +7,7 @@ import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.acaq5.utils.ImageJUtils;
@@ -34,7 +34,7 @@ public class MedianBlurGreyscale8U2DAlgorithm extends ACAQSimpleIteratingAlgorit
      * @param declaration the declaration
      */
     public MedianBlurGreyscale8U2DAlgorithm(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale8UData.class)
+        super(declaration, ACAQDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale8UData.class)
                 .addOutputSlot("Output", ImagePlusGreyscale8UData.class, "Input", REMOVE_MASK_QUALIFIER)
                 .allowOutputSlotInheritance(true)
                 .seal()

@@ -7,7 +7,7 @@ import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.fft.ImagePlusFFT2DData;
 
@@ -29,7 +29,7 @@ public class FFT2DForwardTransform extends ACAQSimpleIteratingAlgorithm {
      * @param declaration the algorithm declaration
      */
     public FFT2DForwardTransform(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlus2DData.class)
+        super(declaration, ACAQDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlus2DData.class)
                 .addOutputSlot("Output", ImagePlusFFT2DData.class, null)
                 .allowOutputSlotInheritance(false)
                 .seal()

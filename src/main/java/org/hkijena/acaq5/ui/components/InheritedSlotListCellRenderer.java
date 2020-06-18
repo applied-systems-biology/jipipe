@@ -39,7 +39,7 @@ public class InheritedSlotListCellRenderer extends JLabel implements ListCellRen
             }
             setText("<First data slot>");
         } else {
-            ACAQDataSlot slotInstance = algorithm.getSlots().getOrDefault(value, null);
+            ACAQDataSlot slotInstance = algorithm.getInputSlotMap().getOrDefault(value, null);
             if (slotInstance != null && slotInstance.isInput()) {
                 setIcon(ACAQUIDatatypeRegistry.getInstance().getIconFor(slotInstance.getAcceptedDataType()));
             }

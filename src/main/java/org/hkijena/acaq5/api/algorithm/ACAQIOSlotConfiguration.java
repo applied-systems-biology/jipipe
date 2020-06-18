@@ -1,14 +1,21 @@
 package org.hkijena.acaq5.api.algorithm;
 
-import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.google.common.collect.ImmutableList;
+import org.hkijena.acaq5.api.data.*;
+import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.acaq5.utils.JsonUtils;
+
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Slot configuration that always ensures 1:1 relation between input and output slots
  */
-public class ACAQIOSlotConfiguration extends ACAQMutableSlotConfiguration {
-
+public class ACAQIOSlotConfiguration extends ACAQDefaultMutableSlotConfiguration {
     /**
      * Creates a new instance
      */
@@ -17,39 +24,27 @@ public class ACAQIOSlotConfiguration extends ACAQMutableSlotConfiguration {
 
     @Override
     public ACAQSlotDefinition addSlot(String name, ACAQSlotDefinition definition, boolean user) {
-        if (definition.getSlotType() == ACAQDataSlot.SlotType.Output) {
-            if (!name.startsWith("Output "))
-                name = "Output " + name;
-            String inputName = name.substring("Output ".length());
-            if (!getSlots().containsKey(inputName)) {
-                return addSlot(inputName, new ACAQSlotDefinition(definition.getDataClass(), ACAQDataSlot.SlotType.Input, inputName, null), false);
-            }
+        ACAQSlotDefinition newSlot = super.addSlot(name, definition, user);
+        if(newSlot.isInput()) {
+            ACAQSlotDefinition sisterSlot = new ACAQSlotDefinition(definition.getDataClass(), ACAQSlotType.Output, null);
+            super.addSlot(name, sisterSlot, user);
         }
-        ACAQSlotDefinition result = super.addSlot(name, definition, user);
-        if (definition.getSlotType() == ACAQDataSlot.SlotType.Input) {
-            String outputName = "Output " + name;
-            if (!getSlots().containsKey(outputName)) {
-                return addSlot(outputName, new ACAQSlotDefinition(definition.getDataClass(), ACAQDataSlot.SlotType.Output, outputName, null), false);
-            }
+        else if(newSlot.isOutput()) {
+            ACAQSlotDefinition sisterSlot = new ACAQSlotDefinition(definition.getDataClass(), ACAQSlotType.Input, null);
+            super.addSlot(name, sisterSlot, user);
         }
-        return result;
+        return newSlot;
     }
 
     @Override
-    public void removeSlot(String name, boolean user) {
-        ACAQSlotDefinition slot = getSlots().get(name);
-        super.removeSlot(name, user);
+    public void removeInputSlot(String name, boolean user) {
+        super.removeInputSlot(name, user);
+        super.removeOutputSlot(name, user);
+    }
 
-        if (slot.getSlotType() == ACAQDataSlot.SlotType.Input) {
-            String outputName = "Output " + name;
-            if (hasSlot(outputName)) {
-                super.removeSlot(outputName, user);
-            }
-        } else if (slot.getSlotType() == ACAQDataSlot.SlotType.Output) {
-            String inputName = name.substring("Output ".length());
-            if (hasSlot(inputName)) {
-                super.removeSlot(inputName, user);
-            }
-        }
+    @Override
+    public void removeOutputSlot(String name, boolean user) {
+        super.removeOutputSlot(name, user);
+        super.removeInputSlot(name, user);
     }
 }

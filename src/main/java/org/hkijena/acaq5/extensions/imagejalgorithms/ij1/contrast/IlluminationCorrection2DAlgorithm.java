@@ -7,7 +7,7 @@ import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.blur.GaussianBlur2DAlgorithm;
@@ -41,7 +41,7 @@ public class IlluminationCorrection2DAlgorithm extends ACAQSimpleIteratingAlgori
      * @param declaration the algorithm declaration
      */
     public IlluminationCorrection2DAlgorithm(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale32FData.class)
+        super(declaration, ACAQDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale32FData.class)
                 .addOutputSlot("Output", ImagePlusGreyscale32FData.class, null)
                 .allowOutputSlotInheritance(true)
                 .seal()

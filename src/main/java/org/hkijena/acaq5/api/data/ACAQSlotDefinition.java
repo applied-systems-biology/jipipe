@@ -18,10 +18,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Defines an {@link ACAQGraphNode} data slot.
@@ -32,7 +29,7 @@ import java.util.Set;
 public class ACAQSlotDefinition implements ACAQParameterCollection {
     private EventBus eventBus = new EventBus();
     private Class<? extends ACAQData> dataClass;
-    private ACAQDataSlot.SlotType slotType;
+    private ACAQSlotType slotType;
     private String name;
     private String inheritedSlot;
     private Map<ACAQDataDeclaration, ACAQDataDeclaration> inheritanceConversions = new HashMap<>();
@@ -44,39 +41,64 @@ public class ACAQSlotDefinition implements ACAQParameterCollection {
      * @param name          unique slot name
      * @param inheritedSlot only relevant if output slot. Can be an input slot name or '*' to automatically select the first input slot
      */
-    public ACAQSlotDefinition(Class<? extends ACAQData> dataClass, ACAQDataSlot.SlotType slotType, String name, String inheritedSlot) {
+    public ACAQSlotDefinition(Class<? extends ACAQData> dataClass, ACAQSlotType slotType, String name, String inheritedSlot) {
         this.dataClass = dataClass;
         this.slotType = slotType;
         this.name = name;
         this.inheritedSlot = inheritedSlot;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ACAQSlotDefinition that = (ACAQSlotDefinition) o;
+        return Objects.equals(dataClass, that.dataClass) &&
+                slotType == that.slotType &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(inheritedSlot, that.inheritedSlot) &&
+                Objects.equals(inheritanceConversions, that.inheritanceConversions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(dataClass, slotType, name, inheritedSlot, inheritanceConversions);
+    }
+
     /**
      * Creates an unnamed slot.
-     * The name is assigned from the {@link ACAQMutableSlotConfiguration}
+     * The name is assigned from the {@link ACAQDefaultMutableSlotConfiguration}
      *
      * @param dataClass     slot data class
      * @param slotType      slot type
      * @param inheritedSlot only relevant if output slot. Can be an input slot name or '*' to automatically select the first input slot
      */
-    public ACAQSlotDefinition(Class<? extends ACAQData> dataClass, ACAQDataSlot.SlotType slotType, String inheritedSlot) {
+    public ACAQSlotDefinition(Class<? extends ACAQData> dataClass, ACAQSlotType slotType, String inheritedSlot) {
         this.dataClass = dataClass;
         this.slotType = slotType;
         this.inheritedSlot = inheritedSlot;
+    }
+
+    public boolean isInput() {
+        return slotType == ACAQSlotType.Input;
+    }
+
+    public boolean isOutput() {
+        return slotType == ACAQSlotType.Output;
     }
 
     /**
      * @param slot Imported annotation
      */
     public ACAQSlotDefinition(AlgorithmInputSlot slot) {
-        this(slot.value(), ACAQDataSlot.SlotType.Input, slot.slotName(), null);
+        this(slot.value(), ACAQSlotType.Input, slot.slotName(), null);
     }
 
     /**
      * @param slot Imported annotation
      */
     public ACAQSlotDefinition(AlgorithmOutputSlot slot) {
-        this(slot.value(), ACAQDataSlot.SlotType.Output, slot.slotName(), null);
+        this(slot.value(), ACAQSlotType.Output, slot.slotName(), null);
     }
 
     /**
@@ -99,7 +121,7 @@ public class ACAQSlotDefinition implements ACAQParameterCollection {
      * @param dataClass slot data class
      * @param slotType  slot type
      */
-    public ACAQSlotDefinition(Class<? extends ACAQData> dataClass, ACAQDataSlot.SlotType slotType) {
+    public ACAQSlotDefinition(Class<? extends ACAQData> dataClass, ACAQSlotType slotType) {
         this(dataClass, slotType, null);
     }
 
@@ -117,7 +139,7 @@ public class ACAQSlotDefinition implements ACAQParameterCollection {
         return dataClass;
     }
 
-    public ACAQDataSlot.SlotType getSlotType() {
+    public ACAQSlotType getSlotType() {
         return slotType;
     }
 
@@ -176,7 +198,7 @@ public class ACAQSlotDefinition implements ACAQParameterCollection {
      *
      * @param other other slot
      */
-    public void setTo(ACAQSlotDefinition other) {
+    public void copyMetadata(ACAQSlotDefinition other) {
         setCustomName(other.getCustomName());
     }
 
@@ -281,7 +303,7 @@ public class ACAQSlotDefinition implements ACAQParameterCollection {
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
             JsonNode inheritedSlotNode = node.path("inherited-slot");
             ACAQSlotDefinition definition = new ACAQSlotDefinition(ACAQDatatypeRegistry.getInstance().getById(node.get("slot-data-type").asText()),
-                    ACAQDataSlot.SlotType.valueOf(node.get("slot-type").asText()),
+                    ACAQSlotType.valueOf(node.get("slot-type").asText()),
                     node.get("name").asText(),
                     inheritedSlotNode.isMissingNode() ? "" : inheritedSlotNode.asText(null));
             JsonNode conversionsNode = node.path("inheritance-conversions");

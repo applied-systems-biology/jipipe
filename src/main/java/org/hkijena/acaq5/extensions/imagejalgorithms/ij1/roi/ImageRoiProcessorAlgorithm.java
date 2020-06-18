@@ -7,10 +7,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQDataInterface;
 import org.hkijena.acaq5.api.algorithm.ACAQIteratingAlgorithm;
-import org.hkijena.acaq5.api.data.ACAQData;
-import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
+import org.hkijena.acaq5.api.data.*;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -41,7 +38,7 @@ public abstract class ImageRoiProcessorAlgorithm extends ACAQIteratingAlgorithm 
      * @param outputName  name of the output slot
      */
     public ImageRoiProcessorAlgorithm(ACAQAlgorithmDeclaration declaration, Class<? extends ACAQData> output, String outputName) {
-        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("ROI", ROIListData.class)
+        super(declaration, ACAQDefaultMutableSlotConfiguration.builder().addInputSlot("ROI", ROIListData.class)
                 .addInputSlot("Reference", ImagePlusData.class)
                 .addOutputSlot(outputName, output, null)
                 .seal()
@@ -105,11 +102,11 @@ public abstract class ImageRoiProcessorAlgorithm extends ACAQIteratingAlgorithm 
     }
 
     private void updateSlots() {
-        ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) getSlotConfiguration();
-        if (requireReferenceImage && !getSlots().containsKey("Reference")) {
-            slotConfiguration.addSlot("Reference", new ACAQSlotDefinition(ImagePlusData.class, ACAQDataSlot.SlotType.Input, null), false);
-        } else if (!requireReferenceImage && getSlots().containsKey("Reference")) {
-            slotConfiguration.removeSlot("Reference", false);
+        ACAQDefaultMutableSlotConfiguration slotConfiguration = (ACAQDefaultMutableSlotConfiguration) getSlotConfiguration();
+        if (requireReferenceImage && !getInputSlotMap().containsKey("Reference")) {
+            slotConfiguration.addSlot("Reference", new ACAQSlotDefinition(ImagePlusData.class, ACAQSlotType.Input, null), false);
+        } else if (!requireReferenceImage && getInputSlotMap().containsKey("Reference")) {
+            slotConfiguration.removeInputSlot("Reference", false);
         }
     }
 }

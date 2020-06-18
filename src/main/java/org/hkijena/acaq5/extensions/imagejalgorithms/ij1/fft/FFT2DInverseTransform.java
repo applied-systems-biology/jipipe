@@ -7,7 +7,7 @@ import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.fft.ImagePlusFFT2DData;
 
@@ -29,7 +29,7 @@ public class FFT2DInverseTransform extends ACAQSimpleIteratingAlgorithm {
      * @param declaration the algorithm declaration
      */
     public FFT2DInverseTransform(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusFFT2DData.class)
+        super(declaration, ACAQDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusFFT2DData.class)
                 .addOutputSlot("Output", ImagePlus2DData.class, null)
                 .allowOutputSlotInheritance(false)
                 .seal()

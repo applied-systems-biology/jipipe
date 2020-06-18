@@ -63,7 +63,8 @@ public class ACAQExportedCompartment {
                 continue;
             if (!copyTarget.getCompartment().equals(compartmentId))
                 continue;
-            graph.connect(copySource.getSlots().get(edge.getKey().getName()), copyTarget.getSlots().get(edge.getValue().getName()));
+            graph.connect(copySource.getOutputSlotMap().get(edge.getKey().getName()),
+                    copyTarget.getInputSlotMap().get(edge.getValue().getName()));
         }
     }
 
@@ -113,7 +114,8 @@ public class ACAQExportedCompartment {
         for (Map.Entry<ACAQDataSlot, ACAQDataSlot> edge : graph.getSlotEdges()) {
             ACAQGraphNode copySource = copies.get(edge.getKey().getAlgorithm().getIdInGraph());
             ACAQGraphNode copyTarget = copies.get(edge.getValue().getAlgorithm().getIdInGraph());
-            project.getGraph().connect(copySource.getSlots().get(edge.getKey().getName()), copyTarget.getSlots().get(edge.getValue().getName()));
+            project.getGraph().connect(copySource.getOutputSlotMap().get(edge.getKey().getName()),
+                    copyTarget.getInputSlotMap().get(edge.getValue().getName()));
         }
     }
 

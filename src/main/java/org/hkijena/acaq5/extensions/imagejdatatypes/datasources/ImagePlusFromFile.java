@@ -12,7 +12,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQDataInterface;
 import org.hkijena.acaq5.api.algorithm.ACAQSimpleIteratingAlgorithm;
 import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.api.data.ACAQData;
-import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.filesystem.dataypes.FileData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -43,7 +43,7 @@ public class ImagePlusFromFile extends ACAQSimpleIteratingAlgorithm {
      */
     public ImagePlusFromFile(ACAQAlgorithmDeclaration declaration, Class<? extends ACAQData> dataClass) {
         super(declaration,
-                ACAQMutableSlotConfiguration.builder().addInputSlot("Files", FileData.class)
+                ACAQDefaultMutableSlotConfiguration.builder().addInputSlot("Files", FileData.class)
                         .addOutputSlot("Image", dataClass, "")
                         .sealOutput()
                         .sealInput()

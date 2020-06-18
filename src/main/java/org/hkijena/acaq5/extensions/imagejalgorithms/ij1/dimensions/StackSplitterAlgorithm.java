@@ -9,7 +9,7 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQAnnotation;
-import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
@@ -51,7 +51,7 @@ public class StackSplitterAlgorithm extends ACAQSimpleIteratingAlgorithm {
      * @param declaration the declaration
      */
     public StackSplitterAlgorithm(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, ACAQMutableSlotConfiguration.builder()
+        super(declaration, ACAQDefaultMutableSlotConfiguration.builder()
                 .addInputSlot("Input", ImagePlusData.class)
                 .restrictOutputTo(ImageJDataTypesExtension.IMAGE_TYPES)
                 .allowOutputSlotInheritance(true)

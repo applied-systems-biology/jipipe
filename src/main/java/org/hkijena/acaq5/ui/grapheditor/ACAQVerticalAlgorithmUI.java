@@ -5,6 +5,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQSlotType;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.registries.ACAQUIAlgorithmRegistry;
 import org.hkijena.acaq5.utils.PointRange;
@@ -250,7 +251,7 @@ public class ACAQVerticalAlgorithmUI extends ACAQAlgorithmUI {
             int rightBorder = 0;
             if (createdInputSlots < displayedInputColumns - 1)
                 rightBorder = 1;
-            JButton addInputSlotButton = createAddSlotButton(ACAQDataSlot.SlotType.Input);
+            JButton addInputSlotButton = createAddSlotButton(ACAQSlotType.Input);
             JPanel panel = new JPanel(new BorderLayout());
             panel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, rightBorder, getBorderColor()));
             panel.add(addInputSlotButton, BorderLayout.CENTER);
@@ -260,7 +261,7 @@ public class ACAQVerticalAlgorithmUI extends ACAQAlgorithmUI {
             int rightBorder = 0;
             if (createdOutputSlots < displayedOutputColumns - 1)
                 rightBorder = 1;
-            JButton addOutputSlotButton = createAddSlotButton(ACAQDataSlot.SlotType.Output);
+            JButton addOutputSlotButton = createAddSlotButton(ACAQSlotType.Output);
             JPanel panel = new JPanel(new BorderLayout());
             panel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, rightBorder, getBorderColor()));
             panel.add(addOutputSlotButton, BorderLayout.CENTER);

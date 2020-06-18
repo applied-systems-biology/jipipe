@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 /**
  * Parameter that holds a value for each data slot
  */
-public class SlotMapParameterCollection extends ACAQDynamicParameterCollection {
+public abstract class SlotMapParameterCollection extends ACAQDynamicParameterCollection {
     private ACAQGraphNode algorithm;
     private Class<?> dataClass;
     private Supplier<Object> newInstanceGenerator;
@@ -48,28 +48,7 @@ public class SlotMapParameterCollection extends ACAQDynamicParameterCollection {
     /**
      * Method that adds missing entries, or removes invalid entries based on the algorithm's slot configuration
      */
-    public void updateSlots() {
-        if (algorithm != null) {
-            Set<String> toRemove = new HashSet<>();
-            for (String slotName : getParameters().keySet()) {
-                if (!algorithm.getSlots().containsKey(slotName)) {
-                    toRemove.add(slotName);
-                }
-            }
-            for (String slotName : toRemove) {
-                removeParameter(slotName);
-            }
-            for (String slotName : algorithm.getSlots().keySet()) {
-                if (!containsKey(slotName)) {
-                    ACAQMutableParameterAccess access = addParameter(slotName, dataClass);
-                    if (getNewInstanceGenerator() != null)
-                        access.set(getNewInstanceGenerator().get());
-                    else
-                        access.set(ReflectionUtils.newInstance(dataClass));
-                }
-            }
-        }
-    }
+    public abstract void updateSlots();
 
     /**
      * Triggered when algorithm slots are changed

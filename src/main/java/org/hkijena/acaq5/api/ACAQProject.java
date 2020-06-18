@@ -22,9 +22,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.compartments.datatypes.ACAQCompartmentOutputData;
-import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
+import org.hkijena.acaq5.api.data.*;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.CompartmentRemovedEvent;
 import org.hkijena.acaq5.api.events.WorkDirectoryChangedEvent;
@@ -149,8 +147,8 @@ public class ACAQProject implements ACAQValidatable {
         List<ACAQDataSlot> openInputSlots = target.getOpenInputSlots();
         if (openInputSlots.isEmpty()) {
             ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) target.getSlotConfiguration();
-            ACAQSlotDefinition slotDefinition = new ACAQSlotDefinition(ACAQCompartmentOutputData.class, ACAQDataSlot.SlotType.Input,
-                    StringUtils.makeUniqueString(source.getName(), " ", slotConfiguration::hasSlot),
+            ACAQSlotDefinition slotDefinition = new ACAQSlotDefinition(ACAQCompartmentOutputData.class, ACAQSlotType.Input,
+                    StringUtils.makeUniqueString(source.getName(), " ", slotConfiguration::hasInputSlot),
                     null);
             slotConfiguration.addSlot(slotDefinition.getName(), slotDefinition, false);
             openInputSlots = target.getOpenInputSlots();

@@ -117,7 +117,7 @@ public class ACAQCompartmentGraphCopyPasteBehavior implements ACAQAlgorithmGraph
                     if (edge.getValue().getAlgorithm() instanceof ACAQCompartmentOutput) {
                         String sourceCompartment = edge.getValue().getAlgorithm().getCompartment();
                         ACAQCompartmentOutput outputNode = compartmentNodeMap.get(sourceCompartment).getOutputNode();
-                        ACAQDataSlot outputNodeSlot = outputNode.getSlots().get(edge.getValue().getName());
+                        ACAQDataSlot outputNodeSlot = outputNode.getInputSlotMap().get(edge.getValue().getName());
 
                         targetGraph.connect(edge.getKey(), outputNodeSlot);
                     } else {

@@ -22,7 +22,7 @@ public class ACAQDataSlot implements TableModel {
     private ACAQSlotDefinition definition;
     private String name;
     private Class<? extends ACAQData> acceptedDataType;
-    private SlotType slotType;
+    private ACAQSlotType slotType;
     private Path storagePath;
     private boolean uniqueData = true;
     private EventBus eventBus = new EventBus();
@@ -292,7 +292,7 @@ public class ACAQDataSlot implements TableModel {
     /**
      * @return The slot type
      */
-    public SlotType getSlotType() {
+    public ACAQSlotType getSlotType() {
         return slotType;
     }
 
@@ -484,11 +484,4 @@ public class ACAQDataSlot implements TableModel {
         return String.format("%s: %s (%d rows, %d annotation columns)", getSlotType(), getName(), getRowCount(), getAnnotationColumns().size());
     }
 
-    /**
-     * The slot type
-     */
-    public enum SlotType {
-        Input,
-        Output
-    }
 }

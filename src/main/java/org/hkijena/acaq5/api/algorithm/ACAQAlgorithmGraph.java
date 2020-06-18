@@ -74,8 +74,8 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
             String targetAlgorithmName = other.algorithms.inverse().get(edge.getValue().getAlgorithm());
             ACAQGraphNode sourceAlgorithm = algorithms.get(sourceAlgorithmName);
             ACAQGraphNode targetAlgorithm = algorithms.get(targetAlgorithmName);
-            connect(sourceAlgorithm.getSlots().get(edge.getKey().getName()),
-                    targetAlgorithm.getSlots().get(edge.getValue().getName()));
+            connect(sourceAlgorithm.getOutputSlotMap().get(edge.getKey().getName()),
+                    targetAlgorithm.getInputSlotMap().get(edge.getValue().getName()));
         }
     }
 
@@ -103,7 +103,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         repairGraph();
 
         // Sometimes we have algorithms with no slots, so trigger manually
-        if (algorithm.getSlots().isEmpty()) {
+        if (algorithm.getInputSlots().isEmpty() && algorithm.getOutputSlots().isEmpty()) {
             getEventBus().post(new AlgorithmGraphChangedEvent(this));
         }
     }
@@ -585,10 +585,30 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
 
         // Load edges
         for (JsonNode edgeNode : ImmutableList.copyOf(node.get("edges").elements())) {
-            ACAQGraphNode sourceAlgorithm = algorithms.get(StringUtils.jsonify(edgeNode.get("source-algorithm").asText()));
-            ACAQGraphNode targetAlgorithm = algorithms.get(StringUtils.jsonify(edgeNode.get("target-algorithm").asText()));
-            ACAQDataSlot source = sourceAlgorithm.getSlots().get(StringUtils.makeFilesystemCompatible(edgeNode.get("source-slot").asText()));
-            ACAQDataSlot target = targetAlgorithm.getSlots().get(StringUtils.makeFilesystemCompatible(edgeNode.get("target-slot").asText()));
+            String sourceAlgorithmName = edgeNode.get("source-algorithm").asText();
+            String targetAlgorithmName = edgeNode.get("target-algorithm").asText();
+            ACAQGraphNode sourceAlgorithm = algorithms.get(sourceAlgorithmName);
+            ACAQGraphNode targetAlgorithm = algorithms.get(targetAlgorithmName);
+            if(sourceAlgorithm == null) {
+                System.err.println("Unable to find algorithm with ID '" + sourceAlgorithmName + "'. Skipping this instruction.");
+                continue;
+            }
+            if(targetAlgorithm == null) {
+                System.err.println("Unable to find algorithm with ID '" + targetAlgorithmName + "'. Skipping this instruction.");
+                continue;
+            }
+            String sourceSlotName = edgeNode.get("source-slot").asText();
+            String targetSlotName = edgeNode.get("target-slot").asText();
+            ACAQDataSlot source = sourceAlgorithm.getOutputSlotMap().get(sourceSlotName);
+            ACAQDataSlot target = targetAlgorithm.getInputSlotMap().get(targetSlotName);
+            if(source == null) {
+                System.err.println("Unable to find data slot '" + sourceSlotName + "' in algorithm '"  + sourceAlgorithmName + "'. Skipping this instruction.");
+                continue;
+            }
+            if(target == null) {
+                System.err.println("Unable to find data slot '" + targetSlotName + "' in algorithm '"  + targetAlgorithmName + "'. Skipping this instruction.");
+                continue;
+            }
             if (!graph.containsEdge(source, target) && graph.inDegreeOf(target) > 0) {
                 System.err.println("Detected invalid edge from " + source.getAlgorithm().getIdInGraph() + "/" + source.getName() + " -> "
                         + target.getAlgorithm().getIdInGraph() + "/" + target.getName() + "! Input slot already has a source. Skipping this instruction.");
@@ -615,7 +635,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         for (Map.Entry<ACAQDataSlot, ACAQDataSlot> edge : otherGraph.getSlotEdges()) {
             ACAQGraphNode copySource = copies.get(edge.getKey().getAlgorithm().getIdInGraph());
             ACAQGraphNode copyTarget = copies.get(edge.getValue().getAlgorithm().getIdInGraph());
-            connect(copySource.getSlots().get(edge.getKey().getName()), copyTarget.getSlots().get(edge.getValue().getName()));
+            connect(copySource.getOutputSlotMap().get(edge.getKey().getName()), copyTarget.getInputSlotMap().get(edge.getValue().getName()));
         }
         return copies;
     }
@@ -684,8 +704,14 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      */
     public List<ACAQGraphNode> getPredecessorAlgorithms(ACAQGraphNode target, List<ACAQGraphNode> traversed) {
         Set<ACAQGraphNode> predecessors = new HashSet<>();
-        for (ACAQDataSlot predecessor : GraphUtils.getAllPredecessors(graph, target.getSlots().values().iterator().next())) {
-            predecessors.add(predecessor.getAlgorithm());
+        ACAQDataSlot startingSlot = null;
+        if(!target.getInputSlots().isEmpty()) {
+            startingSlot = target.getFirstInputSlot();
+        }
+        if(startingSlot != null) {
+            for (ACAQDataSlot predecessor : GraphUtils.getAllPredecessors(graph, startingSlot)) {
+                predecessors.add(predecessor.getAlgorithm());
+            }
         }
         predecessors.remove(target);
         List<ACAQGraphNode> output = new ArrayList<>();
@@ -919,7 +945,10 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * @return slot with the same name within the algorithm with the same ID
      */
     public ACAQDataSlot getEquivalentSlot(ACAQDataSlot foreign) {
-        return getAlgorithmNodes().get(foreign.getAlgorithm().getIdInGraph()).getSlots().get(foreign.getName());
+        if(foreign.isInput())
+            return getAlgorithmNodes().get(foreign.getAlgorithm().getIdInGraph()).getInputSlotMap().get(foreign.getName());
+        else
+            return getAlgorithmNodes().get(foreign.getAlgorithm().getIdInGraph()).getOutputSlotMap().get(foreign.getName());
     }
 
     /**

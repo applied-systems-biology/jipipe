@@ -2,10 +2,7 @@ package org.hkijena.acaq5.ui.components;
 
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.algorithm.ACAQIOSlotConfiguration;
-import org.hkijena.acaq5.api.data.ACAQDataDeclaration;
-import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
+import org.hkijena.acaq5.api.data.*;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -34,7 +31,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
     private static ACAQDataDeclaration lastSelectedType = null;
 
     private ACAQGraphNode algorithm;
-    private ACAQDataSlot.SlotType slotType;
+    private ACAQSlotType slotType;
     private SearchTextField searchField;
     private JList<ACAQDataDeclaration> datatypeList;
     private JComboBox<String> inheritedSlotList;
@@ -50,7 +47,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
      * @param algorithm the target algorithm
      * @param slotType  the slot type to be created
      */
-    public AddAlgorithmSlotPanel(ACAQGraphNode algorithm, ACAQDataSlot.SlotType slotType) {
+    public AddAlgorithmSlotPanel(ACAQGraphNode algorithm, ACAQSlotType slotType) {
         this.algorithm = algorithm;
         this.slotType = slotType;
         initialize();
@@ -76,12 +73,16 @@ public class AddAlgorithmSlotPanel extends JPanel {
             initialValue = "Data";
         }
 
-        initialValue = StringUtils.makeUniqueString(initialValue, " ", s -> algorithm.getSlots().containsKey(s));
+        if(slotType == ACAQSlotType.Input)
+            initialValue = StringUtils.makeUniqueString(initialValue, " ", s -> algorithm.getInputSlotMap().containsKey(s));
+        else
+            initialValue = StringUtils.makeUniqueString(initialValue, " ", s -> algorithm.getOutputSlotMap().containsKey(s));
+
         nameEditor.setText(initialValue);
     }
 
     private void initialize() {
-        ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
+        ACAQDefaultMutableSlotConfiguration slotConfiguration = (ACAQDefaultMutableSlotConfiguration) algorithm.getSlotConfiguration();
         setLayout(new BorderLayout());
         initializeToolBar();
 
@@ -114,7 +115,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
         });
         formPanel.addToForm(nameEditor, new JLabel("Slot name"), null);
 
-        if (slotType == ACAQDataSlot.SlotType.Output && slotConfiguration.isAllowInheritedOutputSlots()) {
+        if (slotType == ACAQSlotType.Output && slotConfiguration.isAllowInheritedOutputSlots()) {
             formPanel.addGroupHeader("Inheritance", UIUtils.getIconFromResources("cog.png"));
             inheritedSlotList = new JComboBox<>();
             inheritedSlotList.setRenderer(new InheritedSlotListCellRenderer(algorithm));
@@ -178,11 +179,11 @@ public class AddAlgorithmSlotPanel extends JPanel {
         if (!canAddSlot())
             return;
         String slotName = nameEditor.getText().trim();
-        ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
+        ACAQDefaultMutableSlotConfiguration slotConfiguration = (ACAQDefaultMutableSlotConfiguration) algorithm.getSlotConfiguration();
         ACAQSlotDefinition slotDefinition;
-        if (slotType == ACAQDataSlot.SlotType.Input) {
+        if (slotType == ACAQSlotType.Input) {
             slotDefinition = new ACAQSlotDefinition(selectedDeclaration.getDataClass(), slotType, slotName, null);
-        } else if (slotType == ACAQDataSlot.SlotType.Output) {
+        } else if (slotType == ACAQSlotType.Output) {
             String inheritedSlot = null;
             if (inheritedSlotList != null && inheritedSlotList.getSelectedItem() != null) {
                 inheritedSlot = inheritedSlotList.getSelectedItem().toString();
@@ -214,9 +215,17 @@ public class AddAlgorithmSlotPanel extends JPanel {
             nameEditor.setToolTipText("Only alphanumeric names are allowed!");
             return false;
         }
-        if (algorithm.getSlots().containsKey(slotName)) {
-            nameEditor.setToolTipText("The slot name already exists!");
-            return false;
+        if(slotType == ACAQSlotType.Input) {
+            if (algorithm.getInputSlotMap().containsKey(slotName)) {
+                nameEditor.setToolTipText("The slot name already exists!");
+                return false;
+            }
+        }
+        else {
+            if (algorithm.getOutputSlotMap().containsKey(slotName)) {
+                nameEditor.setToolTipText("The slot name already exists!");
+                return false;
+            }
         }
         nameEditor.setToolTipText(null);
         return true;
@@ -250,11 +259,11 @@ public class AddAlgorithmSlotPanel extends JPanel {
     }
 
     private void initializeAvailableDeclarations() {
-        ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
-        if (slotType == ACAQDataSlot.SlotType.Input) {
+        ACAQDefaultMutableSlotConfiguration slotConfiguration = (ACAQDefaultMutableSlotConfiguration) algorithm.getSlotConfiguration();
+        if (slotType == ACAQSlotType.Input) {
             availableTypes = slotConfiguration.getAllowedInputSlotTypes()
                     .stream().map(ACAQDataDeclaration::getInstance).collect(Collectors.toSet());
-        } else if (slotType == ACAQDataSlot.SlotType.Output) {
+        } else if (slotType == ACAQSlotType.Output) {
             availableTypes = slotConfiguration.getAllowedOutputSlotTypes()
                     .stream().map(ACAQDataDeclaration::getInstance).collect(Collectors.toSet());
         } else {
@@ -319,7 +328,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
      * @param algorithm target algorithm
      * @param slotType  slot type to be created
      */
-    public static void showDialog(Component parent, ACAQGraphNode algorithm, ACAQDataSlot.SlotType slotType) {
+    public static void showDialog(Component parent, ACAQGraphNode algorithm, ACAQSlotType slotType) {
         JDialog dialog = new JDialog();
         AddAlgorithmSlotPanel panel = new AddAlgorithmSlotPanel(algorithm, slotType);
         panel.setDialog(dialog);

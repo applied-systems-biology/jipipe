@@ -10,7 +10,7 @@ import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure.Measurement;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -56,7 +56,7 @@ public class RoiToRGBAlgorithm extends ACAQIteratingAlgorithm {
      * @param declaration the declaration
      */
     public RoiToRGBAlgorithm(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("ROI", ROIListData.class)
+        super(declaration, ACAQDefaultMutableSlotConfiguration.builder().addInputSlot("ROI", ROIListData.class)
                 .addInputSlot("Image", ImagePlusData.class)
                 .addOutputSlot("Output", ImagePlusColorRGBData.class, null)
                 .seal()

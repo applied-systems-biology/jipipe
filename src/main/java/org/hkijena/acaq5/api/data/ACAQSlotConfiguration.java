@@ -20,98 +20,78 @@ import java.util.Map;
  * This is required to allow multiple algorithms to share their slots.
  */
 @JsonSerialize(using = ACAQSlotConfiguration.Serializer.class)
-public abstract class ACAQSlotConfiguration {
-    private EventBus eventBus = new EventBus();
-
-    /**
-     * @return the slots
-     */
-    public abstract Map<String, ACAQSlotDefinition> getSlots();
-
+public interface ACAQSlotConfiguration {
     /**
      * @return the input slot order
      */
-    public abstract List<String> getInputSlotOrder();
+    List<String> getInputSlotOrder();
 
     /**
      * @return the output slot order
      */
-    public abstract List<String> getOutputSlotOrder();
+    List<String> getOutputSlotOrder();
 
     /**
      * @return the event bus
      */
-    public EventBus getEventBus() {
-        return eventBus;
-    }
+    EventBus getEventBus();
 
     /**
      * @return the input slots
      */
-    public Map<String, ACAQSlotDefinition> getInputSlots() {
-        Map<String, ACAQSlotDefinition> result = new HashMap<>();
-        for (Map.Entry<String, ACAQSlotDefinition> kv : getSlots().entrySet()) {
-            if (kv.getValue().getSlotType() == ACAQDataSlot.SlotType.Input)
-                result.put(kv.getKey(), kv.getValue());
-        }
-        return result;
-    }
+    Map<String, ACAQSlotDefinition> getInputSlots() ;
 
     /**
      * @return the output slots
      */
-    public Map<String, ACAQSlotDefinition> getOutputSlots() {
-        Map<String, ACAQSlotDefinition> result = new HashMap<>();
-        for (Map.Entry<String, ACAQSlotDefinition> kv : getSlots().entrySet()) {
-            if (kv.getValue().getSlotType() == ACAQDataSlot.SlotType.Output)
-                result.put(kv.getKey(), kv.getValue());
-        }
-        return result;
-    }
-
-    /**
-     * Returns the maximum of number(input slot) and number(output slots)
-     *
-     * @return maximum number of rows
-     */
-    public int getRows() {
-        return Math.max(getInputSlots().size(), getOutputSlots().size());
-    }
+    Map<String, ACAQSlotDefinition> getOutputSlots();
 
     /**
      * Makes this slot configuration equivalent to the provided one
      *
      * @param configuration the configuration
      */
-    public abstract void setTo(ACAQSlotConfiguration configuration);
+    void setTo(ACAQSlotConfiguration configuration);
 
     /**
      * Loads this configuration from JSON
      *
      * @param jsonNode JSON data
      */
-    public abstract void fromJson(JsonNode jsonNode);
+    void fromJson(JsonNode jsonNode);
 
+    /**
+     * Saves this configuration to JSON.
+     * @param generator the Json generator
+     * @throws JsonProcessingException thrown by Json
+     */
+    void toJson(JsonGenerator generator) throws IOException, JsonProcessingException;
+
+    /**
+     * Return true if there is an input slot with given name
+     * @param name the name
+     * @return if there is an input slot with given name
+     */
+    default boolean hasInputSlot(String name) {
+        return getInputSlots().containsKey(name);
+    }
+
+    /**
+     * Return true if there is an output slot with given name
+     * @param name the name
+     * @return if there is an output slot with given name
+     */
+    default boolean hasOutputSlot(String name) {
+        return getOutputSlots().containsKey(name);
+    }
     /**
      * Serializes the configuration
      */
-    public static class Serializer extends JsonSerializer<ACAQSlotConfiguration> {
+    class Serializer extends JsonSerializer<ACAQSlotConfiguration> {
 
         @Override
         public void serialize(ACAQSlotConfiguration slotConfiguration, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
-            jsonGenerator.writeStartObject();
-
-            Map<String, ACAQSlotDefinition> inputSlots = slotConfiguration.getInputSlots();
-            Map<String, ACAQSlotDefinition> outputSlots = slotConfiguration.getOutputSlots();
-
-            for (String key : slotConfiguration.getInputSlotOrder()) {
-                jsonGenerator.writeObjectField(key, inputSlots.get(key));
-            }
-            for (String key : slotConfiguration.getOutputSlotOrder()) {
-                jsonGenerator.writeObjectField(key, outputSlots.get(key));
-            }
-
-            jsonGenerator.writeEndObject();
+           slotConfiguration.toJson(jsonGenerator);
         }
     }
 }

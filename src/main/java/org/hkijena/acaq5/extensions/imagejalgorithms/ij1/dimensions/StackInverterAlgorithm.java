@@ -8,7 +8,7 @@ import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
 
 import java.util.function.Consumer;
@@ -29,7 +29,7 @@ public class StackInverterAlgorithm extends ACAQSimpleIteratingAlgorithm {
      * @param declaration the declaration
      */
     public StackInverterAlgorithm(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlus3DData.class)
+        super(declaration, ACAQDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlus3DData.class)
                 .addOutputSlot("Output", ImagePlus3DData.class, "Input")
                 .allowOutputSlotInheritance(true)
                 .seal()

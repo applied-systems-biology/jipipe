@@ -8,7 +8,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -24,7 +24,7 @@ public class MergeDataSlots extends ACAQAlgorithm {
      * @param declaration the algorithm declaration
      */
     public MergeDataSlots(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, ACAQMutableSlotConfiguration.builder()
+        super(declaration, ACAQDefaultMutableSlotConfiguration.builder()
                 .restrictOutputSlotCount(1)
                 .build());
     }

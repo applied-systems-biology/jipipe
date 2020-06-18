@@ -4,6 +4,7 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.ui.events.AlgorithmFinderSuccessEvent;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
@@ -101,8 +102,8 @@ public class ACAQAlgorithmFinderSlotUI extends JPanel {
     }
 
     private void deleteSlot() {
-        ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) inputSlot.getAlgorithm().getSlotConfiguration();
-        slotConfiguration.removeSlot(inputSlot.getName(), true);
+        ACAQDefaultMutableSlotConfiguration slotConfiguration = (ACAQDefaultMutableSlotConfiguration) inputSlot.getAlgorithm().getSlotConfiguration();
+        slotConfiguration.removeInputSlot(inputSlot.getName(), true);
     }
 
     private void connectToNewInstance() {

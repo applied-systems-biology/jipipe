@@ -9,7 +9,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.compartments.datatypes.ACAQCompartmentOutputData;
-import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 
@@ -115,7 +115,7 @@ public class ACAQProjectCompartment extends ACAQGraphNode {
      * @return Slot configuration for {@link ACAQProjectCompartment}
      */
     public static ACAQSlotConfiguration createSlotConfiguration() {
-        return ACAQMutableSlotConfiguration.builder()
+        return ACAQDefaultMutableSlotConfiguration.builder()
                 .restrictInputTo(ACAQCompartmentOutputData.class)
                 .restrictOutputTo(ACAQCompartmentOutputData.class)
                 .addOutputSlot("Output", ACAQCompartmentOutputData.class, "")

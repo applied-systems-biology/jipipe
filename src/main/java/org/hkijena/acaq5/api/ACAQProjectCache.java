@@ -216,7 +216,7 @@ public class ACAQProjectCache {
                             }
                         } else {
                             for (String slotName : stateEntry.getValue().keySet()) {
-                                if (!algorithm.getSlots().containsKey(slotName) || !algorithm.getSlots().get(slotName).isOutput()) {
+                                if (!algorithm.getOutputSlotMap().containsKey(slotName) || !algorithm.getOutputSlotMap().get(slotName).isOutput()) {
                                     clear(algorithm, stateEntry.getKey());
                                     break;
                                 }

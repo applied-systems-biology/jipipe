@@ -10,6 +10,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
 import org.hkijena.acaq5.api.grouping.parameters.GraphNodeParameters;
@@ -93,7 +94,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements ACAQCustomParame
             for (Map.Entry<ACAQDataSlot, String> entry : slotNames.entrySet()) {
                 ACAQDataSlot slot = entry.getKey();
                 if (slot.isInput()) {
-                    ACAQDataSlot source = getGroupInput().getOutputSlot("Output " + entry.getValue());
+                    ACAQDataSlot source = getGroupInput().getOutputSlot(entry.getValue());
                     getWrappedGraph().connect(source, slot);
                 } else if (slot.isOutput()) {
                     ACAQDataSlot target = getGroupOutput().getInputSlot(entry.getValue());

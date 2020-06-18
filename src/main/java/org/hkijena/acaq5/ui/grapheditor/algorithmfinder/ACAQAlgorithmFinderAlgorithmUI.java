@@ -7,6 +7,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQSlotType;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.acaq5.ui.events.AlgorithmFinderSuccessEvent;
@@ -137,7 +138,7 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
         }
 
         if (createAddInputSlotButton) {
-            JButton addInputSlotButton = createAddSlotButton(ACAQDataSlot.SlotType.Input);
+            JButton addInputSlotButton = createAddSlotButton(ACAQSlotType.Input);
             addInputSlotButton.setPreferredSize(new Dimension(25, SLOT_UI_HEIGHT));
             JPanel panel = new JPanel(new BorderLayout());
 //            panel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,0,0,1, getAlgorithmBorderColor()),
@@ -150,7 +151,7 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
         slotPanel.repaint();
     }
 
-    private JButton createAddSlotButton(ACAQDataSlot.SlotType slotType) {
+    private JButton createAddSlotButton(ACAQSlotType slotType) {
         JButton button = new JButton(UIUtils.getIconFromResources("add.png"));
         UIUtils.makeFlat(button);
         button.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, algorithm, slotType));

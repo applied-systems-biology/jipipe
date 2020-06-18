@@ -7,6 +7,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.data.ACAQSlotType;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.grouping.JsonAlgorithm;
@@ -210,7 +211,7 @@ public abstract class ACAQAlgorithmUI extends ACAQWorkbenchPanel {
      * @param slotType slot type
      * @return the button
      */
-    protected JButton createAddSlotButton(ACAQDataSlot.SlotType slotType) {
+    protected JButton createAddSlotButton(ACAQSlotType slotType) {
         JButton button = new JButton(UIUtils.getIconFromResources("add.png"));
         button.setPreferredSize(new Dimension(25, SLOT_UI_HEIGHT));
         UIUtils.makeFlat(button);

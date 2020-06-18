@@ -10,9 +10,7 @@ import org.hkijena.acaq5.api.ACAQProjectMetadata;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
+import org.hkijena.acaq5.api.data.*;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
@@ -24,7 +22,6 @@ import org.hkijena.acaq5.extensions.parameters.references.ACAQAlgorithmIconRef;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Declaration of a {@link GraphWrapperAlgorithm}
@@ -201,18 +198,17 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
         Set<String> usedSlotNames = new HashSet<>();
         ACAQMutableSlotConfiguration inputSlotConfiguration = (ACAQMutableSlotConfiguration) getGroupInput().getSlotConfiguration();
         ACAQMutableSlotConfiguration outputSlotConfiguration = (ACAQMutableSlotConfiguration) getGroupOutput().getSlotConfiguration();
-        for (Map.Entry<String, ACAQSlotDefinition> entry : inputSlotConfiguration.getSlots().entrySet()) {
-            if (entry.getValue().getSlotType() == ACAQDataSlot.SlotType.Input) {
+        for (Map.Entry<String, ACAQSlotDefinition> entry : inputSlotConfiguration.getInputSlots().entrySet()) {
+            if (entry.getValue().getSlotType() == ACAQSlotType.Input) {
                 inputSlots.add(new DefaultAlgorithmInputSlot(entry.getValue().getDataClass(),
                         entry.getKey(),
                         true));
                 usedSlotNames.add(entry.getKey());
             }
         }
-        for (Map.Entry<String, ACAQSlotDefinition> entry : outputSlotConfiguration.getSlots().entrySet()) {
-            if (entry.getValue().getSlotType() == ACAQDataSlot.SlotType.Output) {
-                String name = entry.getKey().substring("Output ".length());
-                if (!usedSlotNames.contains(name)) {
+        for (Map.Entry<String, ACAQSlotDefinition> entry : outputSlotConfiguration.getOutputSlots().entrySet()) {
+            if (entry.getValue().getSlotType() == ACAQSlotType.Output) {
+                if (!usedSlotNames.contains(entry.getKey())) {
                     outputSlots.add(new DefaultAlgorithmOutputSlot(entry.getValue().getDataClass(),
                             entry.getKey(),
                             null,

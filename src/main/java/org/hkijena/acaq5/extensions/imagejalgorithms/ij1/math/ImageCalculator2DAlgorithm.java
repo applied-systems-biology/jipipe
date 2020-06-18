@@ -7,7 +7,7 @@ import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
@@ -48,7 +48,7 @@ public class ImageCalculator2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
      * @param declaration the declaration
      */
     public ImageCalculator2DAlgorithm(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, ACAQMutableSlotConfiguration.builder()
+        super(declaration, ACAQDefaultMutableSlotConfiguration.builder()
                 .addInputSlot("Input 1", ImagePlusData.class)
                 .addInputSlot("Input 2", ImagePlusData.class)
                 .addOutputSlot("Output", ImagePlusData.class, "Input 1")

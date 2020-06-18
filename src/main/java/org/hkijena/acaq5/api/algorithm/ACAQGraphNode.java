@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -49,6 +51,8 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
     private Map<String, ACAQDataSlot> slots = new HashMap<>();
     private List<ACAQDataSlot> inputSlots = new ArrayList<>();
     private List<ACAQDataSlot> outputSlots = new ArrayList<>();
+    private BiMap<String, ACAQDataSlot> inputSlotMap = HashBiMap.create();
+    private BiMap<String, ACAQDataSlot> outputSlotMap = HashBiMap.create();
     private EventBus eventBus = new EventBus();
     private Map<String, Point> locations = new HashMap<>();
     private Path internalStoragePath;
@@ -69,7 +73,7 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
     public ACAQGraphNode(ACAQAlgorithmDeclaration declaration, ACAQSlotConfiguration slotConfiguration) {
         this.declaration = declaration;
         if (slotConfiguration == null) {
-            ACAQMutableSlotConfiguration.Builder builder = ACAQMutableSlotConfiguration.builder();
+            ACAQDefaultMutableSlotConfiguration.Builder builder = ACAQDefaultMutableSlotConfiguration.builder();
 
             for (AlgorithmInputSlot slot : getClass().getAnnotationsByType(AlgorithmInputSlot.class)) {
                 if (slot.autoCreate()) {
@@ -90,7 +94,80 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
 
         this.slotConfiguration = slotConfiguration;
         slotConfiguration.getEventBus().register(this);
-        initialize();
+        updateGraphNodeSlots();
+    }
+
+    /**
+     * Synchronizes the slots with the slot definition
+     */
+    public void updateGraphNodeSlots() {
+        boolean changed = false;
+
+        // This loop handles add & replace
+        for (Map.Entry<String, ACAQSlotDefinition> entry : slotConfiguration.getInputSlots().entrySet()) {
+            changed = updateAddAndModifySlots(changed, entry, inputSlotMap, inputSlots);
+        }
+        for (Map.Entry<String, ACAQSlotDefinition> entry : slotConfiguration.getOutputSlots().entrySet()) {
+            changed = updateAddAndModifySlots(changed, entry, outputSlotMap, outputSlots);
+        }
+
+        // This loop handles remove
+        changed = updateRemoveSlots(changed, slotConfiguration.getInputSlots(), inputSlotMap, inputSlots);
+        changed = updateRemoveSlots(changed, slotConfiguration.getOutputSlots(), outputSlotMap, outputSlots);
+
+        // Update according to slot order
+        updateSlotOrder(slotConfiguration.getInputSlotOrder(), inputSlotMap, inputSlots);
+        updateSlotOrder(slotConfiguration.getOutputSlotOrder(), outputSlotMap, outputSlots);
+
+        if(changed) {
+            eventBus.post(new AlgorithmSlotsChangedEvent(this));
+            updateSlotInheritance();
+        }
+    }
+
+    private void updateSlotOrder(List<String> configurationOrder, BiMap<String, ACAQDataSlot> slotMap, List<ACAQDataSlot> slots) {
+        slots.clear();
+        for (String name : configurationOrder) {
+            ACAQDataSlot instance = slotMap.getOrDefault(name, null);
+            if(instance != null) {
+                slots.add(instance);
+            }
+        }
+        for (ACAQDataSlot instance : slotMap.values()) {
+            if(!slots.contains(instance)) {
+                slots.add(instance);
+            }
+        }
+    }
+
+    private boolean updateRemoveSlots(boolean changed, Map<String, ACAQSlotDefinition> definedSlots, BiMap<String, ACAQDataSlot> slotMap, List<ACAQDataSlot> slots) {
+        for (String name : ImmutableList.copyOf(slotMap.keySet())) {
+            if(!definedSlots.containsKey(name)) {
+                ACAQDataSlot existing = slotMap.get(name);
+                slotMap.remove(name);
+                slots.remove(existing);
+                changed = true;
+            }
+        }
+        return changed;
+    }
+
+    private boolean updateAddAndModifySlots(boolean changed, Map.Entry<String, ACAQSlotDefinition> entry, BiMap<String, ACAQDataSlot> slotMap, List<ACAQDataSlot> slots) {
+        ACAQDataSlot existing = slotMap.getOrDefault(entry.getKey(), null);
+        if(existing != null) {
+            if(!Objects.equals(existing.getDefinition(), entry.getValue())) {
+                slotMap.remove(entry.getKey());
+                slots.remove(existing);
+                existing = null;
+            }
+        }
+        if(existing == null) {
+            existing = new ACAQDataSlot(entry.getValue(), this);
+            slotMap.put(entry.getKey(), existing);
+            slots.add(existing);
+            changed = true;
+        }
+        return changed;
     }
 
     /**
@@ -115,8 +192,8 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
         this.visibleCompartments = new HashSet<>(other.visibleCompartments);
         this.customName = other.customName;
         this.customDescription = other.customDescription;
+        updateGraphNodeSlots();
         slotConfiguration.getEventBus().register(this);
-        initialize();
     }
 
     /**
@@ -127,20 +204,9 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
      * @return Copy
      */
     protected ACAQSlotConfiguration copySlotConfiguration(ACAQGraphNode other) {
-        ACAQMutableSlotConfiguration configuration = ACAQMutableSlotConfiguration.builder().build();
+        ACAQDefaultMutableSlotConfiguration configuration = ACAQDefaultMutableSlotConfiguration.builder().build();
         configuration.setTo(other.slotConfiguration);
         return configuration;
-    }
-
-    /**
-     * Initializes the algorithm
-     */
-    private void initialize() {
-        for (Map.Entry<String, ACAQSlotDefinition> kv : slotConfiguration.getSlots().entrySet()) {
-            slots.put(kv.getKey(), new ACAQDataSlot(kv.getValue(), this));
-        }
-        updateInputSlotList();
-        updateOutputSlotList();
     }
 
     /**
@@ -203,12 +269,21 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
     }
 
     /**
-     * Gets all slot instances
+     * Gets all input slot instances
      *
      * @return Current algorithm slots
      */
-    public Map<String, ACAQDataSlot> getSlots() {
-        return Collections.unmodifiableMap(slots);
+    public Map<String, ACAQDataSlot> getInputSlotMap() {
+        return Collections.unmodifiableMap(inputSlotMap);
+    }
+
+    /**
+     * Gets all output slot instances
+     *
+     * @return Current algorithm slots
+     */
+    public Map<String, ACAQDataSlot> getOutputSlotMap() {
+        return Collections.unmodifiableMap(outputSlotMap);
     }
 
     /**
@@ -266,66 +341,10 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
      * @param event The event
      */
     @Subscribe
-    public void onSlotAdded(SlotAddedEvent event) {
-        if (event.getSlotConfiguration() == getSlotConfiguration()) {
-            ACAQSlotDefinition definition = slotConfiguration.getSlots().get(event.getSlotName());
-            ACAQDataSlot slot = new ACAQDataSlot(definition, this);
-            slots.put(definition.getName(), slot);
-            if (slot.isInput())
-                inputSlots.add(slot);
-            if (slot.isOutput())
-                outputSlots.add(slot);
-            eventBus.post(new AlgorithmSlotsChangedEvent(this));
-            updateSlotInheritance();
-        }
-    }
-
-    /**
-     * Should be triggered when a slot is removed from the slot configuration
-     *
-     * @param event The event
-     */
-    @Subscribe
-    public void onSlotRemoved(SlotRemovedEvent event) {
-        if (event.getSlotConfiguration() == getSlotConfiguration()) {
-            ACAQDataSlot slot = slots.get(event.getSlotName());
-            slots.remove(event.getSlotName());
-            inputSlots.remove(slot);
-            outputSlots.remove(slot);
-            eventBus.post(new AlgorithmSlotsChangedEvent(this));
-            updateSlotInheritance();
-        }
-    }
-
-    /**
-     * Should be triggered when a slot is renamed in the slot configuration
-     *
-     * @param event The event
-     */
-    @Subscribe
-    public void onSlotRenamed(SlotRenamedEvent event) {
-        if (event.getSlotConfiguration() == getSlotConfiguration()) {
-            ACAQDataSlot slot = slots.get(event.getOldSlotName());
-            slots.remove(event.getOldSlotName());
-            slots.put(event.getNewSlotName(), slot);
-            eventBus.post(new AlgorithmSlotsChangedEvent(this));
-            updateSlotInheritance();
-        }
-    }
-
-    /**
-     * Should be triggered when slots are reordered in the slot configuration
-     *
-     * @param event The event
-     */
-    @Subscribe
-    public void onSlotOrderChanged(SlotOrderChangedEvent event) {
-        if (event.getConfiguration() == getSlotConfiguration()) {
-            updateInputSlotList();
-            updateOutputSlotList();
-            eventBus.post(new AlgorithmSlotsChangedEvent(this));
-            updateSlotInheritance();
-        }
+    public void onSlotConfigurationChanged(SlotsChangedEvent event) {
+       if(event.getConfiguration() == getSlotConfiguration()) {
+           updateGraphNodeSlots();
+       }
     }
 
     private void updateOutputSlotList() {
@@ -787,8 +806,8 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
             inheritedSlotName = getInputSlotOrder().get(0);
         }
 
-        ACAQDataSlot inheritedSlot = getSlots().getOrDefault(inheritedSlotName, null);
-        if (inheritedSlot == null || inheritedSlot.getSlotType() != ACAQDataSlot.SlotType.Input)
+        ACAQDataSlot inheritedSlot = inputSlotMap.getOrDefault(inheritedSlotName, null);
+        if (inheritedSlot == null || inheritedSlot.getSlotType() != ACAQSlotType.Input)
             return slotInstance.getAcceptedDataType();
 
         // Inherit from the inherited slot if there is no graph connection
@@ -806,8 +825,8 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
         if (graph != null) {
             boolean modified = false;
             for (Map.Entry<String, ACAQSlotDefinition> entry : getSlotConfiguration().getOutputSlots().entrySet()) {
-                ACAQDataSlot slotInstance = getSlots().getOrDefault(entry.getKey(), null);
-                if (slotInstance == null || slotInstance.getSlotType() != ACAQDataSlot.SlotType.Output)
+                ACAQDataSlot slotInstance = outputSlotMap.getOrDefault(entry.getKey(), null);
+                if (slotInstance == null || slotInstance.getSlotType() != ACAQSlotType.Output)
                     continue;
 
                 Class<? extends ACAQData> expectedSlotDataType = getExpectedSlotDataType(entry.getValue(), slotInstance);
@@ -912,7 +931,7 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
      * @return if the algorithm contains an input slot with given name.
      */
     public boolean hasInputSlot(String slotName) {
-        ACAQDataSlot existing = getSlots().getOrDefault(slotName, null);
+        ACAQDataSlot existing = inputSlotMap.getOrDefault(slotName, null);
         return existing != null && existing.isInput();
     }
 
@@ -924,7 +943,7 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
      * @return if the algorithm contains an output slot with given name.
      */
     public boolean hasOutputSlot(String slotName) {
-        ACAQDataSlot existing = getSlots().getOrDefault(slotName, null);
+        ACAQDataSlot existing = outputSlotMap.getOrDefault(slotName, null);
         return existing != null && existing.isOutput();
     }
 

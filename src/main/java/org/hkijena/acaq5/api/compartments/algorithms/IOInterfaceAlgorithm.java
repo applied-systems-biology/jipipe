@@ -39,7 +39,7 @@ public class IOInterfaceAlgorithm extends ACAQAlgorithm {
     @Override
     public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         for (ACAQDataSlot inputSlot : getInputSlots()) {
-            ACAQDataSlot outputSlot = getSlots().get("Output " + inputSlot.getName());
+            ACAQDataSlot outputSlot = getOutputSlot(inputSlot.getName());
             outputSlot.copyFrom(inputSlot);
         }
     }

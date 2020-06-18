@@ -5,7 +5,7 @@ import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
 
 import java.util.function.Consumer;
@@ -31,7 +31,7 @@ public class MergeRoiListsAlgorithm extends ACAQMergingAlgorithm {
      * @param declaration the declaration
      */
     public MergeRoiListsAlgorithm(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, ACAQMutableSlotConfiguration.builder().addInputSlot("Input", ROIListData.class)
+        super(declaration, ACAQDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ROIListData.class)
                 .addOutputSlot("Output", ROIListData.class, null)
                 .seal()
                 .build());

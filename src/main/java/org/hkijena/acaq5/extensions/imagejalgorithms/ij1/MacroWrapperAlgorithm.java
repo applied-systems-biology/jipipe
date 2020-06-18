@@ -14,7 +14,7 @@ import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
@@ -76,7 +76,7 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
      * @param declaration the declaration
      */
     public MacroWrapperAlgorithm(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, ACAQMutableSlotConfiguration.builder()
+        super(declaration, ACAQDefaultMutableSlotConfiguration.builder()
                 .allowOutputSlotInheritance(true)
                 .restrictInputTo(getCompatibleTypes())
                 .restrictOutputTo(getCompatibleTypes())

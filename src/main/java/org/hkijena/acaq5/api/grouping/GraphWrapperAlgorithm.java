@@ -11,11 +11,10 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
-import org.hkijena.acaq5.api.events.SlotAddedEvent;
-import org.hkijena.acaq5.api.events.SlotRemovedEvent;
-import org.hkijena.acaq5.api.events.SlotRenamedEvent;
+import org.hkijena.acaq5.api.events.SlotsChangedEvent;
 
 import java.util.Collections;
 import java.util.Map;
@@ -40,7 +39,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm {
      * @param wrappedGraph the graph wrapper
      */
     public GraphWrapperAlgorithm(ACAQAlgorithmDeclaration declaration, ACAQAlgorithmGraph wrappedGraph) {
-        super(declaration, new ACAQMutableSlotConfiguration());
+        super(declaration, new ACAQDefaultMutableSlotConfiguration());
         this.setWrappedGraph(wrappedGraph);
     }
 
@@ -60,7 +59,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm {
     public void updateGroupSlots() {
         if (preventUpdateSlots)
             return;
-        ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) getSlotConfiguration();
+        ACAQDefaultMutableSlotConfiguration slotConfiguration = (ACAQDefaultMutableSlotConfiguration) getSlotConfiguration();
         ACAQMutableSlotConfiguration inputSlotConfiguration = (ACAQMutableSlotConfiguration) getGroupInput().getSlotConfiguration();
         ACAQMutableSlotConfiguration outputSlotConfiguration = (ACAQMutableSlotConfiguration) getGroupOutput().getSlotConfiguration();
 
@@ -70,18 +69,14 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm {
         slotConfiguration.clearInputSlots(false);
         slotConfiguration.clearOutputSlots(false);
         slotConfigurationIsComplete = true;
-        for (Map.Entry<String, ACAQSlotDefinition> entry : inputSlotConfiguration.getSlots().entrySet()) {
-            if (entry.getValue().getSlotType() == ACAQDataSlot.SlotType.Input)
+        for (Map.Entry<String, ACAQSlotDefinition> entry : inputSlotConfiguration.getInputSlots().entrySet()) {
                 slotConfiguration.addSlot(entry.getKey(), entry.getValue(), false);
         }
-        for (Map.Entry<String, ACAQSlotDefinition> entry : outputSlotConfiguration.getSlots().entrySet()) {
-            if (entry.getValue().getSlotType() == ACAQDataSlot.SlotType.Output) {
-                String name = entry.getKey().substring("Output ".length());
-                if (!slotConfiguration.getSlots().containsKey(name))
-                    slotConfiguration.addSlot(name, entry.getValue(), false);
-                else
-                    slotConfigurationIsComplete = false;
-            }
+        for (Map.Entry<String, ACAQSlotDefinition> entry : outputSlotConfiguration.getOutputSlots().entrySet()) {
+            if (!slotConfiguration.getInputSlots().containsKey(entry.getKey()))
+                slotConfiguration.addSlot(entry.getKey(), entry.getValue(), false);
+            else
+                slotConfigurationIsComplete = false;
         }
     }
 
@@ -169,7 +164,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm {
 
         // Copy into output
         for (ACAQDataSlot outputSlot : getOutputSlots()) {
-            ACAQDataSlot groupOutputSlot = getGroupOutput().getOutputSlot("Output " + outputSlot.getName());
+            ACAQDataSlot groupOutputSlot = getGroupOutput().getOutputSlot(outputSlot.getName());
             outputSlot.copyFrom(groupOutputSlot);
         }
 
@@ -229,33 +224,12 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm {
         }
 
         /**
-         * Should be triggered when a slot is added to the slot configuration
+         * Should be triggered the slot configuration was changed
          *
          * @param event The event
          */
         @Subscribe
-        public void onSlotAdded(SlotAddedEvent event) {
-            updateGroupSlots();
-        }
-
-        /**
-         * Should be triggered when a slot is removed from the slot configuration
-         *
-         * @param event The event
-         */
-        @Subscribe
-        public void onSlotRemoved(SlotRemovedEvent event) {
-            updateGroupSlots();
-        }
-
-
-        /**
-         * Should be triggered when a slot is renamed in the slot configuration
-         *
-         * @param event The event
-         */
-        @Subscribe
-        public void onSlotRenamed(SlotRenamedEvent event) {
+        public void onIOSlotsChanged(SlotsChangedEvent event) {
             updateGroupSlots();
         }
     }

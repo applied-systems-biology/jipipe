@@ -6,7 +6,7 @@ import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -38,7 +38,7 @@ public class ReferencedDefineRectangularRoiAlgorithm extends ACAQIteratingAlgori
      * @param declaration the declaration
      */
     public ReferencedDefineRectangularRoiAlgorithm(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, ACAQMutableSlotConfiguration.builder()
+        super(declaration, ACAQDefaultMutableSlotConfiguration.builder()
                 .addInputSlot("Reference", ImagePlusData.class)
                 .addOutputSlot("Output", ROIListData.class, null)
                 .seal()

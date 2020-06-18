@@ -5,6 +5,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
@@ -194,7 +195,10 @@ public abstract class ACAQDataSlotUI extends ACAQWorkbenchPanel {
 
     private void deleteSlot() {
         ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) slot.getAlgorithm().getSlotConfiguration();
-        slotConfiguration.removeSlot(slot.getName(), true);
+        if(slot.isInput())
+            slotConfiguration.removeInputSlot(slot.getName(), true);
+        else if(slot.isOutput())
+            slotConfiguration.removeOutputSlot(slot.getName(), true);
     }
 
     private void findAlgorithm(ACAQDataSlot slot) {
@@ -260,15 +264,7 @@ public abstract class ACAQDataSlotUI extends ACAQWorkbenchPanel {
         if (hasCustomName) {
             return slot.getDefinition().getCustomName();
         }
-        if (slot.getAlgorithm() instanceof IOInterfaceAlgorithm) {
-            if (slot.isOutput()) {
-                return slot.getName().substring("Output ".length());
-            } else {
-                return slot.getName();
-            }
-        } else {
-            return slot.getName();
-        }
+        return slot.getName();
     }
 
     /**

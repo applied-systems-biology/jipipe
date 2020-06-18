@@ -7,7 +7,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -86,7 +86,7 @@ public class ImageTypeConverter extends ACAQAlgorithm {
      * @return The appropriate slot configuration for {@link ImageTypeConverter}
      */
     public static ACAQSlotConfiguration createConfiguration() {
-        ACAQMutableSlotConfiguration slotConfiguration = new ACAQMutableSlotConfiguration();
+        ACAQDefaultMutableSlotConfiguration slotConfiguration = new ACAQDefaultMutableSlotConfiguration();
         slotConfiguration.setMaxInputSlots(1);
         slotConfiguration.setMaxOutputSlots(1);
         Set<Class<? extends ACAQData>> allowedTypes = new HashSet<>();

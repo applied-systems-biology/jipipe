@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQSlotType;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.ui.components.AddAlgorithmSlotPanel;
@@ -72,7 +73,7 @@ public class ACAQSlotEditorUI extends JPanel {
         if (canModifyInputSlots()) {
             JButton addInputButton = new JButton("Add input", UIUtils.getIconFromResources("database.png"));
             addInputButton.addActionListener(e -> {
-                AddAlgorithmSlotPanel.showDialog(this, algorithm, ACAQDataSlot.SlotType.Input);
+                AddAlgorithmSlotPanel.showDialog(this, algorithm, ACAQSlotType.Input);
             });
             toolBar.add(addInputButton);
         }
@@ -80,7 +81,7 @@ public class ACAQSlotEditorUI extends JPanel {
         if (canModifyOutputSlots()) {
             JButton addOutputButton = new JButton("Add output", UIUtils.getIconFromResources("database.png"));
             addOutputButton.addActionListener(e -> {
-                AddAlgorithmSlotPanel.showDialog(this, algorithm, ACAQDataSlot.SlotType.Output);
+                AddAlgorithmSlotPanel.showDialog(this, algorithm, ACAQSlotType.Output);
             });
             toolBar.add(addOutputButton);
         }
@@ -123,9 +124,9 @@ public class ACAQSlotEditorUI extends JPanel {
     private void editSlot() {
         ACAQDataSlot slot = getSelectedSlot();
         if (slot != null) {
-            if (slot.getSlotType() == ACAQDataSlot.SlotType.Input && canModifyInputSlots()) {
+            if (slot.getSlotType() == ACAQSlotType.Input && canModifyInputSlots()) {
                 EditAlgorithmSlotPanel.showDialog(this, slot);
-            } else if (slot.getSlotType() == ACAQDataSlot.SlotType.Output && canModifyOutputSlots()) {
+            } else if (slot.getSlotType() == ACAQSlotType.Output && canModifyOutputSlots()) {
                 EditAlgorithmSlotPanel.showDialog(this, slot);
             }
         }
@@ -144,14 +145,14 @@ public class ACAQSlotEditorUI extends JPanel {
     private void moveSlotDown() {
         ACAQDataSlot slot = getSelectedSlot();
         if (slot != null) {
-            ((ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration()).moveDown(slot.getName());
+            ((ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration()).moveDown(slot.getName(), slot.getSlotType());
         }
     }
 
     private void moveSlotUp() {
         ACAQDataSlot slot = getSelectedSlot();
         if (slot != null) {
-            ((ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration()).moveUp(slot.getName());
+            ((ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration()).moveUp(slot.getName(), slot.getSlotType());
         }
     }
 
@@ -196,7 +197,10 @@ public class ACAQSlotEditorUI extends JPanel {
         }
         ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
         for (ACAQDataSlot sample : toRemove) {
-            slotConfiguration.removeSlot(sample.getName(), true);
+            if(sample.isInput())
+                slotConfiguration.removeInputSlot(sample.getName(), true);
+            else
+                slotConfiguration.removeOutputSlot(sample.getName(), true);
         }
     }
 

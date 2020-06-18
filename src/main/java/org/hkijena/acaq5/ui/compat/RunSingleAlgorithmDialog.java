@@ -8,7 +8,9 @@ import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compat.ImageJDatatypeImporter;
 import org.hkijena.acaq5.api.compat.SingleImageJAlgorithmRun;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQSlotType;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.extensions.settings.RuntimeSettings;
@@ -207,12 +209,12 @@ public class RunSingleAlgorithmDialog extends JDialog implements ACAQWorkbench {
         boolean inputSlotsAreMutable = getAlgorithm().getSlotConfiguration() instanceof ACAQMutableSlotConfiguration;
         boolean inputSlotsAreRemovable = false;
         if (inputSlotsAreMutable) {
-            ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) getAlgorithm().getSlotConfiguration();
+            ACAQDefaultMutableSlotConfiguration slotConfiguration = (ACAQDefaultMutableSlotConfiguration) getAlgorithm().getSlotConfiguration();
             if (slotConfiguration.canAddInputSlot()) {
                 JButton addButton = new JButton(UIUtils.getIconFromResources("add.png"));
                 addButton.setToolTipText("Add new input");
                 UIUtils.makeFlat25x25(addButton);
-                addButton.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, getAlgorithm(), ACAQDataSlot.SlotType.Input));
+                addButton.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, getAlgorithm(), ACAQSlotType.Input));
                 inputDataHeaderPanel.addColumn(addButton);
             }
             if (slotConfiguration.canModifyInputSlots()) {
@@ -228,7 +230,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements ACAQWorkbench {
                 JButton removeButton = new JButton(UIUtils.getIconFromResources("close-tab.png"));
                 UIUtils.makeBorderlessWithoutMargin(removeButton);
                 removeButton.setToolTipText("Remove input slot");
-                removeButton.addActionListener(e -> slotConfiguration.removeSlot(entry.getKey(), true));
+                removeButton.addActionListener(e -> slotConfiguration.removeInputSlot(entry.getKey(), true));
                 panel.add(removeButton, BorderLayout.WEST);
                 panel.add(new JLabel(entry.getKey(),
                         ACAQUIDatatypeRegistry.getInstance().getIconFor(entry.getValue().getAdapter().getACAQDatatype()),
@@ -253,7 +255,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements ACAQWorkbench {
                 JButton addButton = new JButton(UIUtils.getIconFromResources("add.png"));
                 addButton.setToolTipText("Add new output");
                 UIUtils.makeFlat25x25(addButton);
-                addButton.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, getAlgorithm(), ACAQDataSlot.SlotType.Input));
+                addButton.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, getAlgorithm(), ACAQSlotType.Input));
                 outputDataHeaderPanel.addColumn(addButton);
             }
             if (slotConfiguration.canModifyInputSlots()) {
@@ -268,7 +270,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements ACAQWorkbench {
                 JButton removeButton = new JButton(UIUtils.getIconFromResources("close-tab.png"));
                 UIUtils.makeBorderlessWithoutMargin(removeButton);
                 removeButton.setToolTipText("Remove output slot");
-                removeButton.addActionListener(e -> slotConfiguration.removeSlot(outputSlot.getName(), true));
+                removeButton.addActionListener(e -> slotConfiguration.removeOutputSlot(outputSlot.getName(), true));
                 panel.add(removeButton, BorderLayout.WEST);
                 panel.add(new JLabel(outputSlot.getName(),
                         ACAQUIDatatypeRegistry.getInstance().getIconFor(outputSlot.getAcceptedDataType()),
