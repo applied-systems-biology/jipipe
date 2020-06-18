@@ -2,6 +2,7 @@ package org.hkijena.acaq5.api.grouping;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableList;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
@@ -9,8 +10,8 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
+import org.hkijena.acaq5.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
 import org.hkijena.acaq5.api.grouping.parameters.GraphNodeParameters;
@@ -62,15 +63,26 @@ public class NodeGroup extends GraphWrapperAlgorithm implements ACAQCustomParame
     public NodeGroup(ACAQAlgorithmGraph graph, boolean autoCreateSlots) {
         super(ACAQAlgorithmRegistry.getInstance().getDeclarationById("node-group"), new ACAQAlgorithmGraph());
 
-        // Replace project compartment with IOInterface
-        // Also clear locations
-        for (ACAQGraphNode node : graph.getAlgorithmNodes().values()) {
-            node.clearLocations();
-            if(node instanceof ACAQCompartmentOutput) {
-                node.setDeclaration(ACAQAlgorithmRegistry.getInstance().getDeclarationById("io-interface"));
+        // Remove all algorithms with no i/o
+        for (ACAQGraphNode node : ImmutableList.copyOf(graph.getAlgorithmNodes().values())) {
+            if (node.getInputSlots().isEmpty() && node.getOutputSlots().isEmpty()) {
+                graph.removeNode(node);
             }
         }
 
+        // Clear locations
+        for (ACAQGraphNode node : graph.getAlgorithmNodes().values()) {
+            node.clearLocations();
+        }
+
+        // Replace all ACAQCompartmentOutput by IOInterfaceAlgorithm
+        for (ACAQGraphNode node : ImmutableList.copyOf(graph.getAlgorithmNodes().values())) {
+            if (node instanceof ACAQCompartmentOutput) {
+                IOInterfaceAlgorithm.replaceCompartmentOutput((ACAQCompartmentOutput) node);
+            }
+        }
+
+        // Second copy
         setWrappedGraph(graph);
         initializeContents();
 
@@ -78,28 +90,35 @@ public class NodeGroup extends GraphWrapperAlgorithm implements ACAQCustomParame
             setPreventUpdateSlots(true);
             ACAQMutableSlotConfiguration inputSlotConfiguration = (ACAQMutableSlotConfiguration) getGroupInput().getSlotConfiguration();
             ACAQMutableSlotConfiguration outputSlotConfiguration = (ACAQMutableSlotConfiguration) getGroupOutput().getSlotConfiguration();
-            BiMap<ACAQDataSlot, String> slotNames = HashBiMap.create();
+            BiMap<ACAQDataSlot, String> exportedInputSlotNames = HashBiMap.create();
+            BiMap<ACAQDataSlot, String> exportedOutputSlotNames = HashBiMap.create();
             for (ACAQDataSlot slot : getWrappedGraph().getUnconnectedSlots()) {
-                String uniqueName = StringUtils.makeUniqueString(slot.getName(), " ", slotNames::containsValue);
                 if (slot.isInput()) {
+                    String uniqueName = StringUtils.makeUniqueString(slot.getName(), " ", exportedInputSlotNames::containsValue);
                     inputSlotConfiguration.addSlot(uniqueName, slot.getDefinition(), false);
+                    exportedInputSlotNames.put(slot, uniqueName);
                 } else if (slot.isOutput()) {
+                    String uniqueName = StringUtils.makeUniqueString(slot.getName(), " ", exportedOutputSlotNames::containsValue);
                     outputSlotConfiguration.addSlot(uniqueName, slot.getDefinition(), false);
+                    exportedOutputSlotNames.put(slot, uniqueName);
                 }
-                slotNames.put(slot, uniqueName);
             }
             setPreventUpdateSlots(false);
             updateGroupSlots();
 
-            for (Map.Entry<ACAQDataSlot, String> entry : slotNames.entrySet()) {
-                ACAQDataSlot slot = entry.getKey();
-                if (slot.isInput()) {
-                    ACAQDataSlot source = getGroupInput().getOutputSlot(entry.getValue());
-                    getWrappedGraph().connect(source, slot);
-                } else if (slot.isOutput()) {
-                    ACAQDataSlot target = getGroupOutput().getInputSlot(entry.getValue());
-                    getWrappedGraph().connect(slot, target);
-                }
+            // Internal input slot -> Connect to group output
+            for (Map.Entry<ACAQDataSlot, String> entry : exportedInputSlotNames.entrySet()) {
+                ACAQDataSlot internalSlot = entry.getKey();
+                String exportedName = entry.getValue();
+                ACAQDataSlot source = getGroupInput().getOutputSlot(exportedName);
+                getWrappedGraph().connect(source, internalSlot);
+            }
+            // Internal output slot -> Connect to group input
+            for (Map.Entry<ACAQDataSlot, String> entry : exportedOutputSlotNames.entrySet()) {
+                ACAQDataSlot internalSlot = entry.getKey();
+                String exportedName = entry.getValue();
+                ACAQDataSlot target = getGroupOutput().getInputSlot(exportedName);
+                getWrappedGraph().connect(internalSlot, target);
             }
         }
     }

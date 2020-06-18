@@ -13,6 +13,11 @@ import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.events.DefaultAlgorithmUIActionRequestedEvent;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphEditorUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
+import org.hkijena.acaq5.ui.grapheditor.contextmenu.AddToSelectionAlgorithmContextMenuFeature;
+import org.hkijena.acaq5.ui.grapheditor.contextmenu.CutCopyAlgorithmContextMenuFeature;
+import org.hkijena.acaq5.ui.grapheditor.contextmenu.DeleteCompartmentContextMenuFeature;
+import org.hkijena.acaq5.ui.grapheditor.contextmenu.OpenSettingsAlgorithmContextMenuFeature;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -20,6 +25,7 @@ import org.hkijena.acaq5.utils.UIUtils;
 import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import static org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph.COMPARTMENT_DEFAULT;
@@ -49,6 +55,16 @@ public class ACAQCompartmentGraphUI extends ACAQAlgorithmGraphEditorUI {
         getMenuBar().removeAll();
         initializeAddNodesMenus();
         initializeCommonActions();
+    }
+
+    @Override
+    public void installNodeUIFeatures(ACAQAlgorithmUI ui) {
+        ui.installContextMenu(Arrays.asList(
+                new OpenSettingsAlgorithmContextMenuFeature(),
+                new AddToSelectionAlgorithmContextMenuFeature(),
+                new CutCopyAlgorithmContextMenuFeature(),
+                new DeleteCompartmentContextMenuFeature()
+        ));
     }
 
     @Override

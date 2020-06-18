@@ -2,7 +2,10 @@ package org.hkijena.acaq5.ui.components;
 
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.algorithm.ACAQIOSlotConfiguration;
-import org.hkijena.acaq5.api.data.*;
+import org.hkijena.acaq5.api.data.ACAQDataDeclaration;
+import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
+import org.hkijena.acaq5.api.data.ACAQSlotType;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -73,7 +76,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
             initialValue = "Data";
         }
 
-        if(slotType == ACAQSlotType.Input)
+        if (slotType == ACAQSlotType.Input)
             initialValue = StringUtils.makeUniqueString(initialValue, " ", s -> algorithm.getInputSlotMap().containsKey(s));
         else
             initialValue = StringUtils.makeUniqueString(initialValue, " ", s -> algorithm.getOutputSlotMap().containsKey(s));
@@ -215,13 +218,12 @@ public class AddAlgorithmSlotPanel extends JPanel {
             nameEditor.setToolTipText("Only alphanumeric names are allowed!");
             return false;
         }
-        if(slotType == ACAQSlotType.Input) {
+        if (slotType == ACAQSlotType.Input) {
             if (algorithm.getInputSlotMap().containsKey(slotName)) {
                 nameEditor.setToolTipText("The slot name already exists!");
                 return false;
             }
-        }
-        else {
+        } else {
             if (algorithm.getOutputSlotMap().containsKey(slotName)) {
                 nameEditor.setToolTipText("The slot name already exists!");
                 return false;

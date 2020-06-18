@@ -1,23 +1,21 @@
 package org.hkijena.acaq5.ui.extensionbuilder;
 
-import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.grouping.JsonAlgorithmDeclaration;
 import org.hkijena.acaq5.api.grouping.NodeGroup;
-import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
-import org.hkijena.acaq5.ui.ACAQJsonExtensionWindow;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
-import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
-import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphEditorUI;
-import org.hkijena.acaq5.ui.parameters.ParameterPanel;
-import org.hkijena.acaq5.utils.StringUtils;
+import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
+import org.hkijena.acaq5.ui.grapheditor.contextmenu.AddToSelectionAlgorithmContextMenuFeature;
+import org.hkijena.acaq5.ui.grapheditor.contextmenu.CollapseIOInterfaceAlgorithmContextMenuFeature;
+import org.hkijena.acaq5.ui.grapheditor.contextmenu.DeleteAlgorithmContextMenuFeature;
+import org.hkijena.acaq5.ui.grapheditor.contextmenu.SeparatorAlgorithmContextMenuFeature;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.util.Arrays;
 
 /**
  * Exports a {@link JsonAlgorithmDeclaration}
@@ -30,8 +28,8 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQAlgorithmGraphEditorU
     /**
      * Creates a new UI
      *
-     * @param workbenchUI  The workbench UI
-     * @param group the node group that will be converted into an algorithm
+     * @param workbenchUI The workbench UI
+     * @param group       the node group that will be converted into an algorithm
      */
     public ACAQGraphWrapperAlgorithmExporter(ACAQProjectWorkbench workbenchUI, NodeGroup group) {
         super(workbenchUI, group.getWrappedGraph(), ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
@@ -39,6 +37,16 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQAlgorithmGraphEditorU
         algorithmDeclaration.getMetadata().setName(group.getName());
         algorithmDeclaration.getMetadata().setDescription(group.getCustomDescription());
 //        initialize();
+    }
+
+    @Override
+    public void installNodeUIFeatures(ACAQAlgorithmUI ui) {
+        ui.installContextMenu(Arrays.asList(
+                new AddToSelectionAlgorithmContextMenuFeature(),
+                new SeparatorAlgorithmContextMenuFeature(),
+                new CollapseIOInterfaceAlgorithmContextMenuFeature(),
+                new DeleteAlgorithmContextMenuFeature()
+        ));
     }
 
 //    private void initialize() {
@@ -127,10 +135,18 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQAlgorithmGraphEditorU
     }
 
     /**
+     * @return The declaration
+     */
+    public JsonAlgorithmDeclaration getAlgorithmDeclaration() {
+        return algorithmDeclaration;
+    }
+
+    /**
      * Creates a new exporter tab
-     * @param workbench the workbench
-     * @param nodeGroup the exported algorithm. Will be copied.
-     * @param name predefined name
+     *
+     * @param workbench   the workbench
+     * @param nodeGroup   the exported algorithm. Will be copied.
+     * @param name        predefined name
      * @param description predefined description
      */
     public static void createExporter(ACAQProjectWorkbench workbench, NodeGroup nodeGroup, String name, String description) {
@@ -142,12 +158,5 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQAlgorithmGraphEditorU
                 exporter,
                 DocumentTabPane.CloseMode.withAskOnCloseButton);
         workbench.getDocumentTabPane().switchToLastTab();
-    }
-
-    /**
-     * @return The declaration
-     */
-    public JsonAlgorithmDeclaration getAlgorithmDeclaration() {
-        return algorithmDeclaration;
     }
 }

@@ -10,6 +10,7 @@ public class SlotsChangedEvent {
 
     /**
      * Creates a new instance
+     *
      * @param configuration the configuration
      */
     public SlotsChangedEvent(ACAQSlotConfiguration configuration) {

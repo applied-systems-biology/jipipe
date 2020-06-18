@@ -1,7 +1,6 @@
 package org.hkijena.acaq5.ui;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.ACAQGUICommand;
 import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.ACAQValidityReport;
@@ -19,12 +18,12 @@ import org.hkijena.acaq5.ui.compendium.ACAQAlgorithmCompendiumUI;
 import org.hkijena.acaq5.ui.components.SplashScreen;
 import org.hkijena.acaq5.ui.components.*;
 import org.hkijena.acaq5.ui.extension.MenuTarget;
+import org.hkijena.acaq5.ui.extensionbuilder.ACAQGraphWrapperAlgorithmExporter;
 import org.hkijena.acaq5.ui.extensions.ACAQPluginManagerUIPanel;
 import org.hkijena.acaq5.ui.extensions.ACAQPluginValidityCheckerPanel;
 import org.hkijena.acaq5.ui.running.ACAQRunSettingsUI;
 import org.hkijena.acaq5.ui.running.ACAQRunnerQueueUI;
 import org.hkijena.acaq5.ui.settings.ACAQApplicationSettingsUI;
-import org.hkijena.acaq5.ui.extensionbuilder.ACAQGraphWrapperAlgorithmExporter;
 import org.hkijena.acaq5.ui.settings.ACAQProjectSettingsUI;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXStatusBar;

@@ -3,7 +3,6 @@ package org.hkijena.acaq5.ui.extensions;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.ACAQDependency;
-import org.hkijena.acaq5.ACAQGUICommand;
 import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.api.events.ExtensionRegisteredEvent;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWindow;
@@ -11,7 +10,6 @@ import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.utils.UIUtils;
 
-import javax.naming.Context;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;

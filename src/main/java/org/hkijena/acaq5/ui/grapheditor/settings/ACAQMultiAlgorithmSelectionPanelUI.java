@@ -10,8 +10,8 @@ import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.extensionbuilder.ACAQGraphWrapperAlgorithmExporter;
+import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -105,7 +105,7 @@ public class ACAQMultiAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPane
         ACAQAlgorithmGraph subGraph = graph.extract(algorithms, false);
         NodeGroup group = new NodeGroup(subGraph, true);
         for (ACAQGraphNode algorithm : algorithms) {
-            if(algorithm.getCategory() != ACAQAlgorithmCategory.Internal)
+            if (algorithm.getCategory() != ACAQAlgorithmCategory.Internal)
                 graph.removeNode(algorithm);
         }
         graph.insertNode(group, canvas.getCompartment());

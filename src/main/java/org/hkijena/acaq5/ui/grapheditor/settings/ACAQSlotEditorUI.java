@@ -197,7 +197,7 @@ public class ACAQSlotEditorUI extends JPanel {
         }
         ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
         for (ACAQDataSlot sample : toRemove) {
-            if(sample.isInput())
+            if (sample.isInput())
                 slotConfiguration.removeInputSlot(sample.getName(), true);
             else
                 slotConfiguration.removeOutputSlot(sample.getName(), true);

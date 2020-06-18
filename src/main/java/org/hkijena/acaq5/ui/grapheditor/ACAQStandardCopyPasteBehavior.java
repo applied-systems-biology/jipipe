@@ -62,7 +62,7 @@ public class ACAQStandardCopyPasteBehavior implements ACAQAlgorithmGraphCopyPast
 
                 // Replace project compartment with IOInterface
                 for (ACAQGraphNode node : graph.getAlgorithmNodes().values()) {
-                    if(node instanceof ACAQCompartmentOutput) {
+                    if (node instanceof ACAQCompartmentOutput) {
                         node.setDeclaration(ACAQAlgorithmRegistry.getInstance().getDeclarationById("io-interface"));
                     }
                 }

@@ -14,6 +14,7 @@ import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.events.AlgorithmUIActionRequestedEvent;
 import org.hkijena.acaq5.ui.events.DefaultAlgorithmUIActionRequestedEvent;
+import org.hkijena.acaq5.ui.grapheditor.contextmenu.*;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQMultiAlgorithmSelectionPanelUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQSingleAlgorithmSelectionPanelUI;
 import org.hkijena.acaq5.ui.grouping.ACAQNodeGroupUI;
@@ -22,6 +23,7 @@ import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -52,6 +54,23 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
         getCanvasUI().setDragAndDropBehavior(new ACAQStandardDragAndDropBehavior());
         getCanvasUI().setCopyPasteBehavior(new ACAQStandardCopyPasteBehavior(this));
         updateContextMenu();
+    }
+
+    @Override
+    public void installNodeUIFeatures(ACAQAlgorithmUI ui) {
+        ui.installContextMenu(Arrays.asList(
+                new OpenSettingsAlgorithmContextMenuFeature(),
+                new AddToSelectionAlgorithmContextMenuFeature(),
+                new SeparatorAlgorithmContextMenuFeature(),
+                new RunAndShowResultsAlgorithmContextMenuFeature(),
+                new SeparatorAlgorithmContextMenuFeature(),
+                new CutCopyAlgorithmContextMenuFeature(),
+                new SeparatorAlgorithmContextMenuFeature(),
+                new EnableDisablePassThroughAlgorithmContextMenuFeature(),
+                new SeparatorAlgorithmContextMenuFeature(),
+                new CollapseIOInterfaceAlgorithmContextMenuFeature(),
+                new DeleteAlgorithmContextMenuFeature()
+        ));
     }
 
 

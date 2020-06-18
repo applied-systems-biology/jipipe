@@ -12,10 +12,10 @@ import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
+import org.hkijena.acaq5.ui.extensionbuilder.ACAQGraphWrapperAlgorithmExporter;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQSlotEditorUI;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
-import org.hkijena.acaq5.ui.extensionbuilder.ACAQGraphWrapperAlgorithmExporter;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 

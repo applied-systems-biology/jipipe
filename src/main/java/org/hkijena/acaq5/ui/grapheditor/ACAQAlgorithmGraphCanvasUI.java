@@ -35,6 +35,7 @@ import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * UI that displays an {@link ACAQAlgorithmGraph}
@@ -57,6 +58,7 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
     private ACAQAlgorithmGraphCopyPasteBehavior copyPasteBehavior;
     private Point cursor;
     private long lastTimeExpandedNegative = 0;
+    private Consumer<ACAQAlgorithmUI> uiPostprocessing;
 
     /**
      * Used to store the minimum dimensions of the canvas to reduce user disruption
@@ -66,7 +68,7 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
     /**
      * Creates a new UI
      *
-     * @param workbench
+     * @param workbench      the workbench
      * @param algorithmGraph The algorithm graph
      * @param compartment    The compartment to show
      */
@@ -216,6 +218,9 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
                     removeComponentOverlaps();
                 }
             });
+            if (uiPostprocessing != null) {
+                uiPostprocessing.accept(ui);
+            }
         }
         revalidate();
         repaint();
@@ -1051,7 +1056,7 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
                 }
                 y += rowHeights.getOrDefault(row, 0);
             }
-            x += columnWidths.get(column);
+            x += columnWidths.getOrDefault(column, 0);
         }
 
         repaint();
@@ -1192,6 +1197,22 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
     public void setGraphEditorCursor(Point cursor) {
         this.cursor = cursor;
         repaint();
+    }
+
+    public Consumer<ACAQAlgorithmUI> getUiPostprocessing() {
+        return uiPostprocessing;
+    }
+
+    public void setUiPostprocessing(Consumer<ACAQAlgorithmUI> uiPostprocessing) {
+        this.uiPostprocessing = uiPostprocessing;
+    }
+
+    /**
+     * Removes all UIs and adds them back in
+     */
+    public void fullRedraw() {
+        removeAllNodes();
+        addNewNodes();
     }
 
     /**

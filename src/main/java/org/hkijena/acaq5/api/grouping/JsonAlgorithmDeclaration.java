@@ -10,7 +10,10 @@ import org.hkijena.acaq5.api.ACAQProjectMetadata;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
-import org.hkijena.acaq5.api.data.*;
+import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
+import org.hkijena.acaq5.api.data.ACAQSlotType;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
@@ -52,6 +55,7 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
 
     /**
      * Creates a new {@link JsonAlgorithmDeclaration} from a {@link NodeGroup}
+     *
      * @param group the node group. The graph will NOT be copied.
      */
     public JsonAlgorithmDeclaration(NodeGroup group) {

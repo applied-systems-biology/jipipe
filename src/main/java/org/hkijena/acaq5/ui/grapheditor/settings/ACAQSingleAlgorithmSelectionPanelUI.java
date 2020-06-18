@@ -14,9 +14,9 @@ import org.hkijena.acaq5.ui.cache.ACAQAlgorithmCacheBrowserUI;
 import org.hkijena.acaq5.ui.compendium.ACAQAlgorithmCompendiumUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
+import org.hkijena.acaq5.ui.extensionbuilder.ACAQGraphWrapperAlgorithmExporter;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
-import org.hkijena.acaq5.ui.extensionbuilder.ACAQGraphWrapperAlgorithmExporter;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -129,7 +129,7 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPan
             toolBar.add(copyButton);
         }
 
-        if(algorithm instanceof JsonAlgorithm) {
+        if (algorithm instanceof JsonAlgorithm) {
             JButton toGroupButton = new JButton(UIUtils.getIconFromResources("archive-extract.png"));
             toGroupButton.setToolTipText("Convert into group");
             toGroupButton.addActionListener(e -> unpackAlgorithm());
@@ -168,7 +168,7 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPan
     }
 
     private void unpackAlgorithm() {
-        if(algorithm instanceof JsonAlgorithm) {
+        if (algorithm instanceof JsonAlgorithm) {
             JsonAlgorithm.unpackToNodeGroup((JsonAlgorithm) algorithm);
         }
     }
@@ -182,10 +182,9 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPan
         }
 
         NodeGroup group;
-        if(algorithm instanceof NodeGroup) {
+        if (algorithm instanceof NodeGroup) {
             group = (NodeGroup) algorithm.duplicate();
-        }
-        else {
+        } else {
             ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
             graph.insertNode(algorithm.getDeclaration().clone(algorithm), ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
             group = new NodeGroup(graph, true);

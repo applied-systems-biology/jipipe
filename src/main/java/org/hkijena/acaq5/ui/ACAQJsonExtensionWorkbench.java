@@ -1,7 +1,6 @@
 package org.hkijena.acaq5.ui;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.ACAQGUICommand;
 import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.events.ExtensionContentRemovedEvent;

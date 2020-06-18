@@ -10,7 +10,6 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +38,7 @@ public interface ACAQSlotConfiguration {
     /**
      * @return the input slots
      */
-    Map<String, ACAQSlotDefinition> getInputSlots() ;
+    Map<String, ACAQSlotDefinition> getInputSlots();
 
     /**
      * @return the output slots
@@ -62,6 +61,7 @@ public interface ACAQSlotConfiguration {
 
     /**
      * Saves this configuration to JSON.
+     *
      * @param generator the Json generator
      * @throws JsonProcessingException thrown by Json
      */
@@ -69,6 +69,7 @@ public interface ACAQSlotConfiguration {
 
     /**
      * Return true if there is an input slot with given name
+     *
      * @param name the name
      * @return if there is an input slot with given name
      */
@@ -78,12 +79,14 @@ public interface ACAQSlotConfiguration {
 
     /**
      * Return true if there is an output slot with given name
+     *
      * @param name the name
      * @return if there is an output slot with given name
      */
     default boolean hasOutputSlot(String name) {
         return getOutputSlots().containsKey(name);
     }
+
     /**
      * Serializes the configuration
      */
@@ -91,7 +94,7 @@ public interface ACAQSlotConfiguration {
 
         @Override
         public void serialize(ACAQSlotConfiguration slotConfiguration, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
-           slotConfiguration.toJson(jsonGenerator);
+            slotConfiguration.toJson(jsonGenerator);
         }
     }
 }

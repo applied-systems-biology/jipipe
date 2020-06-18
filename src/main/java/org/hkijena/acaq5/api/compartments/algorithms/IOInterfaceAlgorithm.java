@@ -7,6 +7,10 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -47,5 +51,73 @@ public class IOInterfaceAlgorithm extends ACAQAlgorithm {
     @Override
     public void reportValidity(ACAQValidityReport report) {
 
+    }
+
+    /**
+     * Removes the interface and directly connects the inputs and outputs
+     *
+     * @param algorithm the algorithm
+     */
+    public static void collapse(IOInterfaceAlgorithm algorithm) {
+        ACAQAlgorithmGraph graph = algorithm.getGraph();
+        Map<String, ACAQDataSlot> inputSourceMap = new HashMap<>();
+        Map<String, Set<ACAQDataSlot>> outputTargetMap = new HashMap<>();
+        for (ACAQDataSlot inputSlot : algorithm.getInputSlots()) {
+            ACAQDataSlot sourceSlot = graph.getSourceSlot(inputSlot);
+            if (sourceSlot != null) {
+                inputSourceMap.put(inputSlot.getName(), sourceSlot);
+            }
+        }
+        for (ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
+            outputTargetMap.put(outputSlot.getName(), graph.getTargetSlots(outputSlot));
+        }
+
+        graph.removeNode(algorithm);
+
+        for (Map.Entry<String, ACAQDataSlot> entry : inputSourceMap.entrySet()) {
+            ACAQDataSlot source = entry.getValue();
+            for (ACAQDataSlot target : outputTargetMap.getOrDefault(entry.getKey(), Collections.emptySet())) {
+                graph.connect(source, target);
+            }
+        }
+
+    }
+
+    /**
+     * Replaces a {@link ACAQCompartmentOutput} by an equivalent {@link IOInterfaceAlgorithm}
+     *
+     * @param compartmentOutput the output to be replaced
+     */
+    public static void replaceCompartmentOutput(ACAQCompartmentOutput compartmentOutput) {
+        ACAQAlgorithmGraph graph = compartmentOutput.getGraph();
+        String id = compartmentOutput.getIdInGraph();
+        IOInterfaceAlgorithm ioInterfaceAlgorithm = ACAQAlgorithm.newInstance("io-interface");
+        ioInterfaceAlgorithm.setCustomName(compartmentOutput.getName());
+        ioInterfaceAlgorithm.setCustomDescription(compartmentOutput.getCustomDescription());
+        ioInterfaceAlgorithm.getSlotConfiguration().setTo(compartmentOutput.getSlotConfiguration());
+
+        Map<String, ACAQDataSlot> inputSourceMap = new HashMap<>();
+        Map<String, Set<ACAQDataSlot>> outputTargetMap = new HashMap<>();
+        for (ACAQDataSlot inputSlot : compartmentOutput.getInputSlots()) {
+            ACAQDataSlot sourceSlot = graph.getSourceSlot(inputSlot);
+            if (sourceSlot != null) {
+                inputSourceMap.put(inputSlot.getName(), sourceSlot);
+            }
+        }
+        for (ACAQDataSlot outputSlot : compartmentOutput.getOutputSlots()) {
+            outputTargetMap.put(outputSlot.getName(), graph.getTargetSlots(outputSlot));
+        }
+        graph.removeNode(compartmentOutput);
+        graph.insertNode(id, ioInterfaceAlgorithm, compartmentOutput.getCompartment());
+        for (Map.Entry<String, ACAQDataSlot> entry : inputSourceMap.entrySet()) {
+            ACAQDataSlot target = ioInterfaceAlgorithm.getInputSlot(entry.getKey());
+            graph.connect(entry.getValue(), target);
+        }
+        for (Map.Entry<String, Set<ACAQDataSlot>> entry : outputTargetMap.entrySet()) {
+            ACAQDataSlot source = ioInterfaceAlgorithm.getOutputSlot(entry.getKey());
+            for (ACAQDataSlot target : entry.getValue()) {
+                graph.connect(source, target);
+            }
+        }
     }
 }

@@ -130,12 +130,10 @@ public class ACAQDefaultMutableSlotConfiguration implements ACAQMutableSlotConfi
         if (definition.getSlotType() == ACAQSlotType.Input) {
             inputSlots.put(name, definition);
             inputSlotOrder.add(name);
-        }
-        else if (definition.getSlotType() == ACAQSlotType.Output) {
+        } else if (definition.getSlotType() == ACAQSlotType.Output) {
             outputSlots.put(name, definition);
             outputSlotOrder.add(name);
-        }
-        else
+        } else
             throw new IllegalArgumentException("Unknown slot type!");
         getEventBus().post(new SlotsChangedEvent(this));
 
@@ -146,7 +144,7 @@ public class ACAQDefaultMutableSlotConfiguration implements ACAQMutableSlotConfi
     public void toJson(JsonGenerator jsonGenerator) throws IOException, JsonProcessingException {
         jsonGenerator.writeStartObject();
 
-        if(!inputSlotsSealed) {
+        if (!inputSlotsSealed) {
             jsonGenerator.writeFieldName("input");
             jsonGenerator.writeStartObject();
             for (String key : getInputSlotOrder()) {
@@ -154,7 +152,7 @@ public class ACAQDefaultMutableSlotConfiguration implements ACAQMutableSlotConfi
             }
             jsonGenerator.writeEndObject();
         }
-        if(!outputSlotsSealed) {
+        if (!outputSlotsSealed) {
             jsonGenerator.writeFieldName("output");
             jsonGenerator.writeStartObject();
             for (String key : getOutputSlotOrder()) {
@@ -263,15 +261,14 @@ public class ACAQDefaultMutableSlotConfiguration implements ACAQMutableSlotConfi
         ObjectReader objectReader = JsonUtils.getObjectMapper().readerFor(ACAQSlotDefinition.class);
         JsonNode inputsNode = node.path("input");
         JsonNode outputsNode = node.path("output");
-        if(!inputSlotsSealed && !inputsNode.isMissingNode()) {
+        if (!inputSlotsSealed && !inputsNode.isMissingNode()) {
             for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(inputsNode.fields())) {
                 try {
                     ACAQSlotDefinition slotDefinition = objectReader.readValue(entry.getValue());
                     ACAQSlotDefinition existing = inputSlots.getOrDefault(entry.getKey(), null);
-                    if(existing != null) {
+                    if (existing != null) {
                         existing.copyMetadata(slotDefinition);
-                    }
-                    else {
+                    } else {
                         addSlot(entry.getKey(), slotDefinition, false);
                     }
                 } catch (IOException e) {
@@ -280,15 +277,14 @@ public class ACAQDefaultMutableSlotConfiguration implements ACAQMutableSlotConfi
                 }
             }
         }
-        if(!outputSlotsSealed && !outputsNode.isMissingNode()) {
+        if (!outputSlotsSealed && !outputsNode.isMissingNode()) {
             for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(outputsNode.fields())) {
                 try {
                     ACAQSlotDefinition slotDefinition = objectReader.readValue(entry.getValue());
                     ACAQSlotDefinition existing = outputSlots.getOrDefault(entry.getKey(), null);
-                    if(existing != null) {
+                    if (existing != null) {
                         existing.copyMetadata(slotDefinition);
-                    }
-                    else {
+                    } else {
                         addSlot(entry.getKey(), slotDefinition, false);
                     }
                 } catch (IOException e) {
@@ -297,27 +293,25 @@ public class ACAQDefaultMutableSlotConfiguration implements ACAQMutableSlotConfi
                 }
             }
         }
-        if(inputsNode.isMissingNode() && outputsNode.isMissingNode()) {
+        if (inputsNode.isMissingNode() && outputsNode.isMissingNode()) {
             ImmutableList<Map.Entry<String, JsonNode>> entries = ImmutableList.copyOf(node.fields());
-            if(!entries.isEmpty()) {
+            if (!entries.isEmpty()) {
                 System.err.println("DefaultMutableSlotConfiguration attempts to import slot configuration via legacy method. This is a result of refactoring during development.");
                 try {
                     for (Map.Entry<String, JsonNode> entry : entries) {
                         ACAQSlotDefinition slotDefinition = objectReader.readValue(entry.getValue());
                         ACAQSlotDefinition existing;
-                        if(slotDefinition.isInput())
+                        if (slotDefinition.isInput())
                             existing = inputSlots.getOrDefault(entry.getKey(), null);
                         else
                             existing = outputSlots.getOrDefault(entry.getKey(), null);
-                        if(existing != null) {
+                        if (existing != null) {
                             existing.copyMetadata(slotDefinition);
-                        }
-                        else {
+                        } else {
                             addSlot(entry.getKey(), slotDefinition, false);
                         }
                     }
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }

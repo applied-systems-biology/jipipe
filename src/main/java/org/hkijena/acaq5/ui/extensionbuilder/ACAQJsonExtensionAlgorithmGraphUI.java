@@ -6,7 +6,9 @@ import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.grapheditor.*;
+import org.hkijena.acaq5.ui.grapheditor.contextmenu.*;
 
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 /**
@@ -47,6 +49,19 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQAlgorithmGraphEditorU
         updateNavigation();
     }
 
+    @Override
+    public void installNodeUIFeatures(ACAQAlgorithmUI ui) {
+        ui.installContextMenu(Arrays.asList(
+                new OpenSettingsAlgorithmContextMenuFeature(),
+                new AddToSelectionAlgorithmContextMenuFeature(),
+                new SeparatorAlgorithmContextMenuFeature(),
+                new CutCopyAlgorithmContextMenuFeature(),
+                new SeparatorAlgorithmContextMenuFeature(),
+                new EnableDisablePassThroughAlgorithmContextMenuFeature(),
+                new SeparatorAlgorithmContextMenuFeature(),
+                new DeleteAlgorithmContextMenuFeature()
+        ));
+    }
 
     @Override
     protected void updateSelection() {

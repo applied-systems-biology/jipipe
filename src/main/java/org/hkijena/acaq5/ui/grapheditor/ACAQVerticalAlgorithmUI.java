@@ -39,7 +39,6 @@ public class ACAQVerticalAlgorithmUI extends ACAQAlgorithmUI {
     public ACAQVerticalAlgorithmUI(ACAQWorkbench workbench, ACAQAlgorithmGraphCanvasUI graphUI, ACAQGraphNode algorithm) {
         super(workbench, graphUI, algorithm, ACAQAlgorithmGraphCanvasUI.ViewMode.Vertical);
         initialize();
-        initializeContextMenu();
         updateAlgorithmSlotUIs();
     }
 

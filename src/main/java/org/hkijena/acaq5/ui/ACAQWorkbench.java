@@ -1,6 +1,5 @@
 package org.hkijena.acaq5.ui;
 
-import org.hkijena.acaq5.ACAQGUICommand;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.scijava.Context;
 

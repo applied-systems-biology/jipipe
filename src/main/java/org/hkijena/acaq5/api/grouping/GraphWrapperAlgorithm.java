@@ -70,7 +70,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm {
         slotConfiguration.clearOutputSlots(false);
         slotConfigurationIsComplete = true;
         for (Map.Entry<String, ACAQSlotDefinition> entry : inputSlotConfiguration.getInputSlots().entrySet()) {
-                slotConfiguration.addSlot(entry.getKey(), entry.getValue(), false);
+            slotConfiguration.addSlot(entry.getKey(), entry.getValue(), false);
         }
         for (Map.Entry<String, ACAQSlotDefinition> entry : outputSlotConfiguration.getOutputSlots().entrySet()) {
             if (!slotConfiguration.getInputSlots().containsKey(entry.getKey()))

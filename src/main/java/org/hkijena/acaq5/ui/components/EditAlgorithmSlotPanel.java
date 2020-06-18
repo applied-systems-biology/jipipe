@@ -191,7 +191,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
         slotOrder.set(slotOrder.indexOf(existingSlot.getName()), slotName);
 
         // Remove the existing slot
-        if(existingSlot.isInput())
+        if (existingSlot.isInput())
             slotConfiguration.removeInputSlot(existingSlot.getName(), true);
         else
             slotConfiguration.removeOutputSlot(existingSlot.getName(), true);
@@ -205,7 +205,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
         }
 
         ACAQDataSlot newSlot;
-        if(existingSlot.isInput())
+        if (existingSlot.isInput())
             newSlot = algorithm.getInputSlot(slotName);
         else
             newSlot = algorithm.getOutputSlot(slotName);

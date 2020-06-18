@@ -3,7 +3,6 @@ package org.hkijena.acaq5.ui;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.ACAQDependency;
-import org.hkijena.acaq5.ACAQGUICommand;
 import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.extensions.jsonextensionloader.JsonExtensionLoaderExtension;

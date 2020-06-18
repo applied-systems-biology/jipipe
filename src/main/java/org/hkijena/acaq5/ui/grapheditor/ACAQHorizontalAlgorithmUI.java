@@ -39,7 +39,6 @@ public class ACAQHorizontalAlgorithmUI extends ACAQAlgorithmUI {
     public ACAQHorizontalAlgorithmUI(ACAQWorkbench workbench, ACAQAlgorithmGraphCanvasUI graphUI, ACAQGraphNode algorithm) {
         super(workbench, graphUI, algorithm, ACAQAlgorithmGraphCanvasUI.ViewMode.Horizontal);
         initialize();
-        initializeContextMenu();
         updateAlgorithmSlotUIs();
     }
 

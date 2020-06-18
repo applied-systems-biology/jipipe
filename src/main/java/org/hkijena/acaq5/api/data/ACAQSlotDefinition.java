@@ -48,23 +48,6 @@ public class ACAQSlotDefinition implements ACAQParameterCollection {
         this.inheritedSlot = inheritedSlot;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ACAQSlotDefinition that = (ACAQSlotDefinition) o;
-        return Objects.equals(dataClass, that.dataClass) &&
-                slotType == that.slotType &&
-                Objects.equals(name, that.name) &&
-                Objects.equals(inheritedSlot, that.inheritedSlot) &&
-                Objects.equals(inheritanceConversions, that.inheritanceConversions);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(dataClass, slotType, name, inheritedSlot, inheritanceConversions);
-    }
-
     /**
      * Creates an unnamed slot.
      * The name is assigned from the {@link ACAQDefaultMutableSlotConfiguration}
@@ -77,14 +60,6 @@ public class ACAQSlotDefinition implements ACAQParameterCollection {
         this.dataClass = dataClass;
         this.slotType = slotType;
         this.inheritedSlot = inheritedSlot;
-    }
-
-    public boolean isInput() {
-        return slotType == ACAQSlotType.Input;
-    }
-
-    public boolean isOutput() {
-        return slotType == ACAQSlotType.Output;
     }
 
     /**
@@ -123,6 +98,31 @@ public class ACAQSlotDefinition implements ACAQParameterCollection {
      */
     public ACAQSlotDefinition(Class<? extends ACAQData> dataClass, ACAQSlotType slotType) {
         this(dataClass, slotType, null);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ACAQSlotDefinition that = (ACAQSlotDefinition) o;
+        return Objects.equals(dataClass, that.dataClass) &&
+                slotType == that.slotType &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(inheritedSlot, that.inheritedSlot) &&
+                Objects.equals(inheritanceConversions, that.inheritanceConversions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(dataClass, slotType, name, inheritedSlot, inheritanceConversions);
+    }
+
+    public boolean isInput() {
+        return slotType == ACAQSlotType.Input;
+    }
+
+    public boolean isOutput() {
+        return slotType == ACAQSlotType.Output;
     }
 
     /**

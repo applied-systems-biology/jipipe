@@ -4,11 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
-import org.hkijena.acaq5.api.parameters.ACAQMutableParameterAccess;
-import org.hkijena.acaq5.utils.ReflectionUtils;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.function.Supplier;
 
 /**

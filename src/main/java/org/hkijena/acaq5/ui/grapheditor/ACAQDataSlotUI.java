@@ -2,10 +2,8 @@ package org.hkijena.acaq5.ui.grapheditor;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
-import org.hkijena.acaq5.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
@@ -195,9 +193,9 @@ public abstract class ACAQDataSlotUI extends ACAQWorkbenchPanel {
 
     private void deleteSlot() {
         ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) slot.getAlgorithm().getSlotConfiguration();
-        if(slot.isInput())
+        if (slot.isInput())
             slotConfiguration.removeInputSlot(slot.getName(), true);
-        else if(slot.isOutput())
+        else if (slot.isOutput())
             slotConfiguration.removeOutputSlot(slot.getName(), true);
     }
 

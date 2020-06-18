@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
  * A panel around {@link ACAQAlgorithmGraphCanvasUI} that comes with scrolling/panning, properties panel,
  * and a menu bar
  */
-public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements MouseListener, MouseMotionListener {
+public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements MouseListener, MouseMotionListener {
 
     protected JMenuBar menuBar = new JMenuBar();
     private ACAQAlgorithmGraphCanvasUI canvasUI;
@@ -88,6 +88,13 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
         return canvasUI;
     }
 
+    /**
+     * Postprocessing for {@link ACAQAlgorithmUI}
+     *
+     * @param ui the ui
+     */
+    public abstract void installNodeUIFeatures(ACAQAlgorithmUI ui);
+
     private void initialize() {
         setLayout(new BorderLayout());
         splitPane = new JSplitPane();
@@ -102,6 +109,8 @@ public class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements Mo
         });
 
         canvasUI = new ACAQAlgorithmGraphCanvasUI(getWorkbench(), algorithmGraph, compartment);
+        canvasUI.setUiPostprocessing(this::installNodeUIFeatures);
+        canvasUI.fullRedraw();
         canvasUI.getEventBus().register(this);
         canvasUI.addMouseListener(this);
         canvasUI.addMouseMotionListener(this);
