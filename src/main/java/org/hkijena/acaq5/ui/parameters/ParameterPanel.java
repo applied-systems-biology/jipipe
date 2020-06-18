@@ -82,6 +82,26 @@ public class ParameterPanel extends FormPanel implements Contextual {
         }
     }
 
+    /**
+     * @param workbench           SciJava context
+     * @param traversed Traversed parameters
+     * @param documentation       Optional documentation
+     * @param flags               Flags
+     */
+    public ParameterPanel(ACAQWorkbench workbench, ACAQParameterTree traversed, MarkdownDocument documentation, int flags) {
+        super(documentation, flags);
+        this.noGroupHeaders = (flags & NO_GROUP_HEADERS) == NO_GROUP_HEADERS;
+        this.noEmptyGroupHeaders = (flags & NO_EMPTY_GROUP_HEADERS) == NO_EMPTY_GROUP_HEADERS;
+        this.forceTraverse = (flags & FORCE_TRAVERSE) == FORCE_TRAVERSE;
+        this.withSearchBar = (flags & WITH_SEARCH_BAR) == WITH_SEARCH_BAR;
+        this.workbench = workbench;
+        this.context = workbench.getContext();
+        this.displayedParameters = null;
+        this.traversed = traversed;
+        initialize();
+        reloadForm();
+    }
+
     private void initialize() {
         if (withSearchBar) {
             JToolBar toolBar = new JToolBar();
@@ -98,11 +118,12 @@ public class ParameterPanel extends FormPanel implements Contextual {
      * Reloads the form. This re-traverses the parameters and recreates the UI elements
      */
     public void reloadForm() {
-        if (forceTraverse || !(getDisplayedParameters() instanceof ACAQParameterTree))
-            traversed = new ACAQParameterTree(getDisplayedParameters());
-        else
-            traversed = (ACAQParameterTree) getDisplayedParameters();
-
+        if(displayedParameters != null) {
+            if (forceTraverse || !(getDisplayedParameters() instanceof ACAQParameterTree))
+                traversed = new ACAQParameterTree(getDisplayedParameters());
+            else
+                traversed = (ACAQParameterTree) getDisplayedParameters();
+        }
         refreshForm();
     }
 

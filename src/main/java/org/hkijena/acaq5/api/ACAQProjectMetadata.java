@@ -48,7 +48,7 @@ public class ACAQProjectMetadata implements ACAQParameterCollection {
      * @return Gets the name
      */
     @ACAQDocumentation(name = "Name")
-    @ACAQParameter("name")
+    @ACAQParameter(value = "name", uiOrder = 0)
     @JsonGetter("name")
     public String getName() {
         return name;
@@ -70,7 +70,7 @@ public class ACAQProjectMetadata implements ACAQParameterCollection {
      * @return the description
      */
     @ACAQDocumentation(name = "Description")
-    @ACAQParameter("description")
+    @ACAQParameter(value = "description", uiOrder = 1)
     @StringParameterSettings(multiline = true)
     @JsonGetter("description")
     public String getDescription() {
@@ -93,7 +93,7 @@ public class ACAQProjectMetadata implements ACAQParameterCollection {
      * @return The authors
      */
     @ACAQDocumentation(name = "Authors")
-    @ACAQParameter("authors")
+    @ACAQParameter(value = "authors", uiOrder = 2)
     @JsonGetter("authors")
     public String getAuthors() {
         return authors;
@@ -115,7 +115,7 @@ public class ACAQProjectMetadata implements ACAQParameterCollection {
      * @return the website
      */
     @ACAQDocumentation(name = "Website")
-    @ACAQParameter("website")
+    @ACAQParameter(value = "website", uiOrder = 3)
     @JsonGetter("website")
     public String getWebsite() {
         return website;
@@ -138,7 +138,7 @@ public class ACAQProjectMetadata implements ACAQParameterCollection {
      * @return the license
      */
     @ACAQDocumentation(name = "License")
-    @ACAQParameter("license")
+    @ACAQParameter(value = "license", uiOrder = 6)
     @JsonGetter("license")
     public String getLicense() {
         return license;
@@ -160,7 +160,7 @@ public class ACAQProjectMetadata implements ACAQParameterCollection {
      * @return the citation
      */
     @ACAQDocumentation(name = "Citation")
-    @ACAQParameter("citation")
+    @ACAQParameter(value = "citation", uiOrder = 4)
     @JsonGetter("citation")
     public String getCitation() {
         return citation;
@@ -184,7 +184,7 @@ public class ACAQProjectMetadata implements ACAQParameterCollection {
     }
 
     @ACAQDocumentation(name = "Dependency citations", description = "Use this field to cite external work.")
-    @ACAQParameter("dependency-citations")
+    @ACAQParameter(value = "dependency-citations", uiOrder = 5)
     public StringList getDependencyCitations() {
         return dependencyCitations;
     }

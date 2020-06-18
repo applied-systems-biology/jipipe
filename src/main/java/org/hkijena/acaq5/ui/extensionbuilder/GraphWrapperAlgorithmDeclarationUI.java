@@ -1,9 +1,14 @@
 package org.hkijena.acaq5.ui.extensionbuilder;
 
+import com.google.common.eventbus.Subscribe;
+import org.hkijena.acaq5.api.ACAQDefaultDocumentation;
 import org.hkijena.acaq5.api.grouping.JsonAlgorithmDeclaration;
+import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
+import org.hkijena.acaq5.ui.components.FormPanel;
+import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.TooltipUtils;
@@ -33,9 +38,10 @@ public class GraphWrapperAlgorithmDeclarationUI extends ACAQJsonExtensionWorkben
     private void initialize() {
         setLayout(new BorderLayout());
 
-        ParameterPanel parameterAccessUI = new ParameterPanel(getExtensionWorkbenchUI(), declaration,
-                null, ParameterPanel.WITH_SCROLLING);
-        add(parameterAccessUI, BorderLayout.CENTER);
+        FormPanel parameterEditor = new FormPanel(MarkdownDocument.fromPluginResource("documentation/algorithm-extension.md"),
+                FormPanel.WITH_SCROLLING | FormPanel.WITH_DOCUMENTATION);
+        initializeParameterEditor(parameterEditor);
+        add(parameterEditor, BorderLayout.CENTER);
 
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
@@ -56,6 +62,28 @@ public class GraphWrapperAlgorithmDeclarationUI extends ACAQJsonExtensionWorkben
         toolBar.add(deleteButton);
 
         add(toolBar, BorderLayout.NORTH);
+    }
+
+    private void initializeParameterEditor(FormPanel parameterEditor) {
+        ParameterPanel declarationParameterEditor = new ParameterPanel(getWorkbench(),
+                declaration,
+                null,
+                ParameterPanel.NO_GROUP_HEADERS);
+        FormPanel.GroupHeaderPanel metadataHeader = parameterEditor.addGroupHeader("Algorithm metadata", UIUtils.getIconFromResources("info.png"));
+        metadataHeader.setDescription("Please provide following metadata:");
+        parameterEditor.addWideToForm(declarationParameterEditor, null);
+        declarationParameterEditor.getEventBus().register(new Object() {
+            @Subscribe
+            public void onHoverHelp(FormPanel.HoverHelpEvent event) {
+                parameterEditor.getParameterHelp().setDocument(event.getDocument());
+            }
+        });
+
+        FormPanel.GroupHeaderPanel parameterHeader = parameterEditor.addGroupHeader("Parameters", UIUtils.getIconFromResources("parameters.png"));
+        parameterHeader.setDescription("You can use the following settings to export parameters to ");
+
+
+        parameterEditor.addVerticalGlue();
     }
 
     private void editAlgorithm() {

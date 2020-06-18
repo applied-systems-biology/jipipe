@@ -403,8 +403,8 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
         }
         NodeGroup nodeGroup = new NodeGroup(new ACAQAlgorithmGraph(getProject().getGraph()), true);
         ACAQGraphWrapperAlgorithmExporter exporter = new ACAQGraphWrapperAlgorithmExporter(this, nodeGroup);
-        exporter.getAlgorithmDeclaration().getMetadata().setName("Custom algorithm");
-        exporter.getAlgorithmDeclaration().getMetadata().setDescription("A custom algorithm");
+        exporter.getAlgorithmDeclaration().setName("Custom algorithm");
+        exporter.getAlgorithmDeclaration().setDescription("A custom algorithm");
         getDocumentTabPane().addTab("Export custom algorithm",
                 UIUtils.getIconFromResources("export.png"),
                 exporter,

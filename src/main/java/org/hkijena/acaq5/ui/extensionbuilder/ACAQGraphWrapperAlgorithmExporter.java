@@ -43,8 +43,8 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQAlgorithmGraphEditorU
     public ACAQGraphWrapperAlgorithmExporter(ACAQProjectWorkbench workbenchUI, NodeGroup group) {
         super(workbenchUI, group.getWrappedGraph(), ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
         algorithmDeclaration = new JsonAlgorithmDeclaration(group);
-        algorithmDeclaration.getMetadata().setName(group.getName());
-        algorithmDeclaration.getMetadata().setDescription(group.getCustomDescription());
+        algorithmDeclaration.setName(group.getName());
+        algorithmDeclaration.setDescription(group.getCustomDescription());
         initialize();
     }
 
@@ -173,8 +173,8 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQAlgorithmGraphEditorU
      */
     public static void createExporter(ACAQProjectWorkbench workbench, NodeGroup nodeGroup, String name, String description) {
         ACAQGraphWrapperAlgorithmExporter exporter = new ACAQGraphWrapperAlgorithmExporter(workbench, (NodeGroup) nodeGroup.duplicate());
-        exporter.getAlgorithmDeclaration().getMetadata().setName(name);
-        exporter.getAlgorithmDeclaration().getMetadata().setDescription(description);
+        exporter.getAlgorithmDeclaration().setName(name);
+        exporter.getAlgorithmDeclaration().setDescription(description);
         workbench.getDocumentTabPane().addTab("Export algorithm '" + name + "'",
                 UIUtils.getIconFromResources("export.png"),
                 exporter,

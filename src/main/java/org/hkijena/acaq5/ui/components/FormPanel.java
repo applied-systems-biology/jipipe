@@ -1,5 +1,7 @@
 package org.hkijena.acaq5.ui.components;
 
+import com.google.common.eventbus.EventBus;
+import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -37,6 +39,7 @@ public class FormPanel extends JPanel {
      */
     public static final int DOCUMENTATION_BELOW = 4;
 
+    private final EventBus eventBus = new EventBus();
     private int numRows = 0;
     private JPanel forms = new JPanel();
     private MarkdownReader parameterHelp;
@@ -102,6 +105,7 @@ public class FormPanel extends JPanel {
                 public void mouseEntered(MouseEvent e) {
                     super.mouseEntered(e);
                     parameterHelp.setTemporaryDocument(componentDocument);
+                    getEventBus().post(new HoverHelpEvent(componentDocument));
                 }
             });
             component.addFocusListener(new FocusAdapter() {
@@ -109,6 +113,7 @@ public class FormPanel extends JPanel {
                 public void focusGained(FocusEvent e) {
                     super.focusGained(e);
                     parameterHelp.setTemporaryDocument(componentDocument);
+                    getEventBus().post(new HoverHelpEvent(componentDocument));
                 }
             });
         }
@@ -258,6 +263,10 @@ public class FormPanel extends JPanel {
         return parameterHelp;
     }
 
+    public EventBus getEventBus() {
+        return eventBus;
+    }
+
     /**
      * Panel that contains a group header
      */
@@ -337,6 +346,15 @@ public class FormPanel extends JPanel {
         public JTextArea getDescriptionArea() {
             return descriptionArea;
         }
+
+        /**
+         * Sets the description and sets the visibility
+         * @param description the description
+         */
+        public void setDescription(String description) {
+            descriptionArea.setText(description);
+            descriptionArea.setVisible(!StringUtils.isNullOrEmpty(description));
+        }
     }
 
     /**
@@ -379,6 +397,7 @@ public class FormPanel extends JPanel {
                                 mouseEvent.getYOnScreen() < (component.getHeight() + componentLocation.y);
                         if (isInComponent && panel.parameterHelp.getTemporaryDocument() != componentDocument) {
                             panel.parameterHelp.setTemporaryDocument(componentDocument);
+                            panel.getEventBus().post(new HoverHelpEvent(componentDocument));
                         }
                     } catch (IllegalComponentStateException e) {
                         // Workaround for Java bug
@@ -386,6 +405,25 @@ public class FormPanel extends JPanel {
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Event triggered when the user triggers a hover-help
+     */
+    public static class HoverHelpEvent {
+        private final MarkdownDocument document;
+
+        /**
+         * Creates a new instance
+         * @param document the document
+         */
+        public HoverHelpEvent(MarkdownDocument document) {
+            this.document = document;
+        }
+
+        public MarkdownDocument getDocument() {
+            return document;
         }
     }
 }

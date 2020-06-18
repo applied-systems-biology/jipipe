@@ -29,15 +29,15 @@ import java.util.*;
 /**
  * Declaration of a {@link GraphWrapperAlgorithm}
  */
-public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQValidatable, ACAQParameterCollection, ACAQNamedParameterCollection {
+public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQValidatable, ACAQParameterCollection {
 
     private final EventBus eventBus = new EventBus();
     private String id;
-    private ACAQProjectMetadata metadata = new ACAQProjectMetadata();
+    private String name;
+    private String description;
     private ACAQAlgorithmCategory category = ACAQAlgorithmCategory.Miscellaneous;
     private List<AlgorithmInputSlot> inputSlots = new ArrayList<>();
     private List<AlgorithmOutputSlot> outputSlots = new ArrayList<>();
-    private ACAQParameterCollectionVisibilities parameterCollectionVisibilities = new ACAQParameterCollectionVisibilities();
     private ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
     private Map<ACAQDataSlot, String> exportedSlotNames = new HashMap<>();
     private StringList menuPath = new StringList();
@@ -61,8 +61,8 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
     public JsonAlgorithmDeclaration(NodeGroup group) {
         graph = new ACAQAlgorithmGraph(group.getWrappedGraph());
         graph.getEventBus().register(this);
-        metadata.setName(group.getName());
-        metadata.setDescription(group.getCustomDescription());
+        setName(group.getName());
+        setDescription(group.getCustomDescription());
         updateSlots();
     }
 
@@ -104,17 +104,25 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
     }
 
     @Override
+    @ACAQDocumentation(name = "Name", description = "The algorithm name")
+    @ACAQParameter(value = "name", uiOrder = 0)
+    @JsonGetter("name")
     public String getName() {
-        return metadata.getName();
+        return name;
     }
 
     @Override
+    @ACAQDocumentation(name = "Description", description = "A description for the algorithm. You can use " +
+            "HTML for your descriptions.")
+    @ACAQParameter(value = "description", uiOrder = 10)
+    @JsonGetter("description")
     public String getDescription() {
-        return metadata.getDescription();
+        return description;
     }
 
-    @ACAQDocumentation(name = "Algorithm category", description = "A general category for the algorithm.")
-    @ACAQParameter("category")
+    @ACAQDocumentation(name = "Category", description = "A general category for the algorithm. " +
+            "This will influence in which menu the algorithm is put.")
+    @ACAQParameter(value = "category", uiOrder = 20)
     @JsonGetter("category")
     @Override
     public ACAQAlgorithmCategory getCategory() {
@@ -143,16 +151,16 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
         return new HashSet<>(graph.getDependencies());
     }
 
-    @JsonGetter("metadata")
-    @ACAQParameter("metadata")
-    @ACAQDocumentation(name = "Algorithm metadata", description = "Use the following settings to provide some general metadata about the algorithm.")
-    public ACAQProjectMetadata getMetadata() {
-        return metadata;
+    @JsonSetter("name")
+    @ACAQParameter("name")
+    public void setName(String name) {
+        this.name = name;
     }
 
-    @JsonSetter("metadata")
-    public void setMetadata(ACAQProjectMetadata metadata) {
-        this.metadata = metadata;
+    @JsonSetter("description")
+    @ACAQParameter("description")
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @JsonGetter("graph")
@@ -180,8 +188,6 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
     @Subscribe
     public void onGraphChanged(AlgorithmGraphChangedEvent event) {
         updateSlots();
-        parameterCollectionVisibilities.setAvailableParameters(getAvailableParameters());
-        getEventBus().post(new ParameterChangedEvent(this, "parameter-visibilities"));
     }
 
     /**
@@ -192,8 +198,6 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
      */
     @Subscribe
     public void onGraphParameterStructureChanged(ParameterStructureChangedEvent event) {
-        parameterCollectionVisibilities.setAvailableParameters(getAvailableParameters());
-        getEventBus().post(new ParameterChangedEvent(this, "parameter-visibilities"));
     }
 
     private void updateSlots() {
@@ -308,22 +312,6 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
         }
     }
 
-    @ACAQDocumentation(name = "Exported parameters", description = "Determines which parameters are exported to the users.")
-    @ACAQParameter("parameter-visibilities")
-    @JsonGetter("parameter-visibilities")
-    public ACAQParameterCollectionVisibilities getParameterCollectionVisibilities() {
-        if (graph != null && parameterCollectionVisibilities.getAvailableParameters() == null)
-            parameterCollectionVisibilities.setAvailableParameters(getAvailableParameters());
-        return parameterCollectionVisibilities;
-    }
-
-    @ACAQParameter("parameter-visibilities")
-    @JsonSetter("parameter-visibilities")
-    public void setParameterCollectionVisibilities(ACAQParameterCollectionVisibilities parameterCollectionVisibilities) {
-        this.parameterCollectionVisibilities = parameterCollectionVisibilities;
-        getEventBus().post(new ParameterChangedEvent(this, "parameter-visibilities"));
-    }
-
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -342,7 +330,7 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
         menuPath.addAll(Arrays.asList(StringUtils.getCleanedMenuPath(value).split("\n")));
     }
 
-    @ACAQParameter("menu-path")
+    @ACAQParameter(value = "menu-path", uiOrder = 30)
     @ACAQDocumentation(name = "Menu path", description = "Menu path where the algorithm is placed. " +
             "If you leave this empty, the menu item will be placed in the category's root menu.")
     public StringList getMenuPathList() {
@@ -356,7 +344,7 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
         getEventBus().post(new ParameterChangedEvent(this, "menu-path"));
     }
 
-    @ACAQParameter("hidden")
+    @ACAQParameter(value = "hidden", uiOrder = 40)
     @ACAQDocumentation(name = "Is hidden", description = "If the algorithm should not appear in the list of available algorithms.")
     @Override
     public boolean isHidden() {
@@ -370,7 +358,7 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
     }
 
     @ACAQDocumentation(name = "Icon", description = "A custom algorithm icon")
-    @ACAQParameter("icon")
+    @ACAQParameter(value = "icon",uiOrder = 25)
     @JsonGetter("icon")
     public ACAQAlgorithmIconRef getIcon() {
         return icon;
@@ -380,15 +368,5 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
     public void setIcon(ACAQAlgorithmIconRef icon) {
         this.icon = icon;
         getEventBus().post(new ParameterChangedEvent(this, "icon"));
-    }
-
-    @Override
-    public String getDefaultParameterCollectionName() {
-        return "Technical settings";
-    }
-
-    @Override
-    public String getDefaultParameterCollectionDescription() {
-        return "The following settings are ";
     }
 }

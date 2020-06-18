@@ -28,7 +28,8 @@ public class ACAQJsonExtensionContentListUI extends ACAQJsonExtensionWorkbenchPa
     private Object currentlySelectedValue;
 
     /**
-     * Creates new instance      *      * @param workbenchUI The workbench UI
+     * Creates new instance
+     * @param workbenchUI the workbench
      */
     public ACAQJsonExtensionContentListUI(ACAQJsonExtensionWorkbench workbenchUI) {
         super(workbenchUI);
@@ -98,10 +99,10 @@ public class ACAQJsonExtensionContentListUI extends ACAQJsonExtensionWorkbenchPa
 
     private void addAlgorithm() {
         JsonAlgorithmDeclaration declaration = new JsonAlgorithmDeclaration();
-        declaration.getMetadata().setName("");
+        declaration.setName("");
         declaration.setGraph(new ACAQAlgorithmGraph());
         getProject().addAlgorithm(declaration);
-        declaration.getMetadata().getEventBus().register(this);
+        declaration.getEventBus().register(this);
     }
 
     /**
