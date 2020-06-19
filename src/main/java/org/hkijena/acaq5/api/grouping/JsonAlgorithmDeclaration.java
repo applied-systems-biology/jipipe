@@ -48,6 +48,7 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
     private GraphWrapperAlgorithmOutput algorithmOutput;
     private GraphNodeParameters exportedParameters;
 
+
     /**
      * Creates a new declaration
      */
@@ -317,11 +318,6 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
             report.reportIsInvalid("ID is null or empty!",
                     "Algorithms must have a unique and non-empty ID.",
                     "Please provide a valid algorithm ID.",
-                    this);
-        } else if (ACAQAlgorithmRegistry.getInstance().hasAlgorithmWithId(id) && ACAQAlgorithmRegistry.getInstance().getDeclarationById(id) != this) {
-            report.reportIsInvalid("The ID already exists!",
-                    "Algorithms must have a unique and non-empty ID.",
-                    "Please provide a unique ID.",
                     this);
         }
         if (category == ACAQAlgorithmCategory.Internal) {

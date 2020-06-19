@@ -72,7 +72,6 @@ public class FilesystemExtension extends ACAQPrepackagedDefaultJavaExtension {
         registerImageJDataAdapter(new PathDataImageJAdapter(FolderData.class), PathDataImporterUI.class);
 
         registerAlgorithms();
-        registerAlgorithmResources();
     }
 
     private void registerAlgorithms() {
@@ -92,19 +91,5 @@ public class FilesystemExtension extends ACAQPrepackagedDefaultJavaExtension {
 
         registerAlgorithm("annotation-table-to-paths", AnnotationTableToPaths.class, UIUtils.getAlgorithmIconURL("path.png"));
     }
-
-    private void registerAlgorithmResources() {
-        Set<String> algorithmFiles = ResourceUtils.walkInternalResourceFolder("extensions/filesystem/api/algorithms");
-        for (String resourceFile : algorithmFiles) {
-            try {
-                JsonNode node = JsonUtils.getObjectMapper().readValue(ResourceUtils.class.getResource(resourceFile), JsonNode.class);
-                JsonAlgorithmRegistrationTask task = new JsonAlgorithmRegistrationTask(node, this);
-                getRegistry().getAlgorithmRegistry().scheduleRegister(task);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
 
 }

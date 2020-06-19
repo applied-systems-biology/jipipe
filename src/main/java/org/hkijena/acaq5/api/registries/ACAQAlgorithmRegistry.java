@@ -24,6 +24,8 @@ public class ACAQAlgorithmRegistry implements ACAQValidatable {
     private Map<String, ACAQAlgorithmDeclaration> registeredAlgorithms = new HashMap<>();
     private Set<ACAQAlgorithmRegistrationTask> registrationTasks = new HashSet<>();
     private Map<String, ACAQDependency> registeredAlgorithmSources = new HashMap<>();
+    private boolean stateChanged;
+    private boolean isRunning;
     private EventBus eventBus = new EventBus();
 
     /**
@@ -49,19 +51,25 @@ public class ACAQAlgorithmRegistry implements ACAQValidatable {
     public void runRegistrationTasks() {
         if (registrationTasks.isEmpty())
             return;
-        System.out.println("There are still " + registrationTasks.size() + " unregistered algorithms waiting for dependencies");
-        boolean changed = true;
-        while (changed) {
-            changed = false;
+        stateChanged = true;
+        run();
+    }
 
+    private void run() {
+        if(isRunning)
+            return;
+        isRunning = true;
+        while(stateChanged) {
+            stateChanged = false;
             for (ACAQAlgorithmRegistrationTask task : ImmutableList.copyOf(registrationTasks)) {
                 if (task.canRegister()) {
                     registrationTasks.remove(task);
                     task.register();
-                    changed = true;
+                    stateChanged = true;
                 }
             }
         }
+        isRunning = false;
     }
 
     /**

@@ -39,6 +39,10 @@ public class JsonAlgorithm extends GraphWrapperAlgorithm {
     public static void unpackToNodeGroup(JsonAlgorithm algorithm) {
         ACAQAlgorithmGraph graph = algorithm.getGraph();
         NodeGroup group = ACAQAlgorithm.newInstance("node-group");
+        group.setCustomName(algorithm.getName());
+        group.setCustomDescription(algorithm.getCustomDescription());
+        group.setEnabled(algorithm.isEnabled());
+        group.setPassThrough(algorithm.isPassThrough());
         group.setWrappedGraph(new ACAQAlgorithmGraph(algorithm.getWrappedGraph()));
         group.setLocations(algorithm.getLocations());
 

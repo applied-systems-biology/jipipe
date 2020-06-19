@@ -68,6 +68,7 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
                 new SeparatorAlgorithmContextMenuFeature(),
                 new EnableDisablePassThroughAlgorithmContextMenuFeature(),
                 new SeparatorAlgorithmContextMenuFeature(),
+                new JsonAlgorithmToGroupAlgorithmContextMenuFeature(),
                 new CollapseIOInterfaceAlgorithmContextMenuFeature(),
                 new DeleteAlgorithmContextMenuFeature()
         ));

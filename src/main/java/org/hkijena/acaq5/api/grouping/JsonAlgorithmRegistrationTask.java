@@ -2,7 +2,7 @@ package org.hkijena.acaq5.api.grouping;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
-import org.hkijena.acaq5.ACAQDependency;
+import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDefaultAlgorithmRegistrationTask;
 import org.hkijena.acaq5.ui.registries.ACAQUIAlgorithmRegistry;
@@ -17,15 +17,15 @@ import java.util.Map;
  */
 public class JsonAlgorithmRegistrationTask extends ACAQDefaultAlgorithmRegistrationTask {
 
-    private JsonNode jsonNode;
-    private ACAQDependency source;
+    private final JsonNode jsonNode;
+    private final ACAQJsonExtension source;
     private boolean alreadyRegistered = false;
 
     /**
      * @param jsonNode The JSON serialized graph wrapper algorithm
      * @param source   dependency that registers the algorithm
      */
-    public JsonAlgorithmRegistrationTask(JsonNode jsonNode, ACAQDependency source) {
+    public JsonAlgorithmRegistrationTask(JsonNode jsonNode, ACAQJsonExtension source) {
         this.jsonNode = jsonNode;
         this.source = source;
         findDependencyAlgorithms();

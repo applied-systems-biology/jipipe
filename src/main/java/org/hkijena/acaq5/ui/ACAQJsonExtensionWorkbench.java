@@ -9,6 +9,7 @@ import org.hkijena.acaq5.ui.components.*;
 import org.hkijena.acaq5.ui.extension.MenuTarget;
 import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonExtensionAlgorithmGraphUI;
 import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonExtensionContentListUI;
+import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonExtensionProjectValidation;
 import org.hkijena.acaq5.ui.settings.ACAQJsonExtensionSettingsUI;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXStatusBar;
@@ -67,7 +68,7 @@ public class ACAQJsonExtensionWorkbench extends JPanel implements ACAQWorkbench 
                 UIUtils.getIconFromResources("module.png"),
                 new ACAQJsonExtensionContentListUI(this),
                 false);
-        validityCheckerPanel = new ReloadableValidityChecker(project);
+        validityCheckerPanel = new ReloadableValidityChecker(new ACAQJsonExtensionProjectValidation(project));
         documentTabPane.addSingletonTab("VALIDITY_CHECK",
                 "Project validation",
                 UIUtils.getIconFromResources("checkmark.png"),

@@ -8,8 +8,10 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.extensions.parameters.collections.ListParameter;
 import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.acaq5.utils.StringUtils;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Models an author with affiliations
@@ -94,6 +96,11 @@ public class ACAQAuthorMetadata implements ACAQParameterCollection {
     }
 
     @Override
+    public String toString() {
+        return StringUtils.nullToEmpty(firstName) + " " + StringUtils.nullToEmpty(lastName);
+    }
+
+    @Override
     public EventBus getEventBus() {
         return eventBus;
     }
@@ -116,6 +123,11 @@ public class ACAQAuthorMetadata implements ACAQParameterCollection {
             for (ACAQAuthorMetadata metadata : other) {
                 add(new ACAQAuthorMetadata(metadata));
             }
+        }
+
+        @Override
+        public String toString() {
+            return this.stream().map(ACAQAuthorMetadata::toString).collect(Collectors.joining(", "));
         }
     }
 }
