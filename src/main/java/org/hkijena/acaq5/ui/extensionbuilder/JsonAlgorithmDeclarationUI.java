@@ -1,11 +1,8 @@
 package org.hkijena.acaq5.ui.extensionbuilder;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.api.ACAQDefaultDocumentation;
 import org.hkijena.acaq5.api.grouping.JsonAlgorithmDeclaration;
-import org.hkijena.acaq5.api.grouping.parameters.GraphNodeParameterEditorUI;
 import org.hkijena.acaq5.api.grouping.parameters.GraphNodeParametersUI;
-import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;

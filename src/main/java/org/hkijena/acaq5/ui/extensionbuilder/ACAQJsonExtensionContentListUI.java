@@ -29,6 +29,7 @@ public class ACAQJsonExtensionContentListUI extends ACAQJsonExtensionWorkbenchPa
 
     /**
      * Creates new instance
+     *
      * @param workbenchUI the workbench
      */
     public ACAQJsonExtensionContentListUI(ACAQJsonExtensionWorkbench workbenchUI) {

@@ -52,13 +52,12 @@ public class GraphNodeParameterReference {
      */
     public String getOriginalName(ACAQParameterTree tree) {
         ACAQParameterAccess access = resolve(tree);
-        if(access != null) {
+        if (access != null) {
             String name = access.getName();
             if (name == null)
                 name = access.getKey();
             return name;
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -72,13 +71,12 @@ public class GraphNodeParameterReference {
     public String getName(ACAQParameterTree tree) {
         if (StringUtils.isNullOrEmpty(customName)) {
             ACAQParameterAccess access = resolve(tree);
-            if(access != null) {
+            if (access != null) {
                 String name = access.getName();
                 if (name == null)
                     name = access.getKey();
                 return name;
-            }
-            else {
+            } else {
                 return "[No name]";
             }
         } else {
@@ -96,10 +94,9 @@ public class GraphNodeParameterReference {
     public String getDescription(ACAQParameterTree tree) {
         if (StringUtils.isNullOrEmpty(customDescription)) {
             ACAQParameterAccess access = resolve(tree);
-            if(access != null) {
+            if (access != null) {
                 return access.getDescription();
-            }
-            else {
+            } else {
                 return null;
             }
         } else {

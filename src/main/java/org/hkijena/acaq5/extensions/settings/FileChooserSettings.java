@@ -41,80 +41,6 @@ public class FileChooserSettings implements ACAQParameterCollection {
     private Path lastProjectsDirectory;
     private Path lastParametersDirectory;
 
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
-    @ACAQDocumentation(name = "Use native file chooser", description = "If enabled, ACAQ5 will use the system-specific file chooser instead of the one provided by Java. " +
-            "If you have any issues, disable this setting. Please note that there is no native dialog available for all selectable path types. " +
-            "In such cases, ACAQ5 will fall back to the Java file dialogs.")
-    @ACAQParameter("use-native-chooser")
-    public boolean isUseNativeChooser() {
-        return useNativeChooser;
-    }
-
-    @ACAQParameter("use-native-chooser")
-    public void setUseNativeChooser(boolean useNativeChooser) {
-        this.useNativeChooser = useNativeChooser;
-    }
-
-    /**
-     * Gets the last directory by key
-     *
-     * @param key the key
-     * @return the last path or Paths.get() (home directory)
-     */
-    public Path getLastDirectoryBy(String key) {
-        if (KEY_PROJECT.equals(key))
-            return getLastProjectsDirectory();
-        else
-            return getLastParametersDirectory();
-    }
-
-    /**
-     * Sets the last directory according to the key
-     *
-     * @param key           the key
-     * @param lastDirectory directory or file
-     */
-    public void setLastDirectoryBy(String key, Path lastDirectory) {
-        if (Files.isRegularFile(lastDirectory))
-            lastDirectory = lastDirectory.getParent();
-        if (KEY_PROJECT.equals(key))
-            setLastProjectsDirectory(lastDirectory);
-        else
-            setLastParametersDirectory(lastDirectory);
-    }
-
-    @ACAQDocumentation(name = "Last projects directory", description = "The file chooser will open in this folder when opening a project.")
-    @ACAQParameter("last-projects-directory")
-    public Path getLastProjectsDirectory() {
-        if (lastProjectsDirectory == null)
-            lastProjectsDirectory = Paths.get("").toAbsolutePath();
-        return lastProjectsDirectory;
-    }
-
-    @ACAQParameter("last-projects-directory")
-    public void setLastProjectsDirectory(Path lastProjectsDirectory) {
-        this.lastProjectsDirectory = lastProjectsDirectory;
-        getEventBus().post(new ParameterChangedEvent(this, "last-projects-directory"));
-    }
-
-    @ACAQDocumentation(name = "Last directory", description = "The file chooser will open in this folder when changing a parameter.")
-    @ACAQParameter("last-parameters-directory")
-    public Path getLastParametersDirectory() {
-        if (lastParametersDirectory == null)
-            lastParametersDirectory = Paths.get("").toAbsolutePath();
-        return lastParametersDirectory;
-    }
-
-    @ACAQParameter("last-parameters-directory")
-    public void setLastParametersDirectory(Path lastParametersDirectory) {
-        this.lastParametersDirectory = lastParametersDirectory;
-        getEventBus().post(new ParameterChangedEvent(this, "last-parameters-directory"));
-    }
-
     private static FileDialog createFileDialog(Component parent, String title, int mode) {
         Window windowAncestor = SwingUtilities.getWindowAncestor(parent);
         if (windowAncestor instanceof Frame) {
@@ -480,6 +406,80 @@ public class FileChooserSettings implements ACAQParameterCollection {
 
     public static FileChooserSettings getInstance() {
         return ACAQSettingsRegistry.getInstance().getSettings(ID, FileChooserSettings.class);
+    }
+
+    @Override
+    public EventBus getEventBus() {
+        return eventBus;
+    }
+
+    @ACAQDocumentation(name = "Use native file chooser", description = "If enabled, ACAQ5 will use the system-specific file chooser instead of the one provided by Java. " +
+            "If you have any issues, disable this setting. Please note that there is no native dialog available for all selectable path types. " +
+            "In such cases, ACAQ5 will fall back to the Java file dialogs.")
+    @ACAQParameter("use-native-chooser")
+    public boolean isUseNativeChooser() {
+        return useNativeChooser;
+    }
+
+    @ACAQParameter("use-native-chooser")
+    public void setUseNativeChooser(boolean useNativeChooser) {
+        this.useNativeChooser = useNativeChooser;
+    }
+
+    /**
+     * Gets the last directory by key
+     *
+     * @param key the key
+     * @return the last path or Paths.get() (home directory)
+     */
+    public Path getLastDirectoryBy(String key) {
+        if (KEY_PROJECT.equals(key))
+            return getLastProjectsDirectory();
+        else
+            return getLastParametersDirectory();
+    }
+
+    /**
+     * Sets the last directory according to the key
+     *
+     * @param key           the key
+     * @param lastDirectory directory or file
+     */
+    public void setLastDirectoryBy(String key, Path lastDirectory) {
+        if (Files.isRegularFile(lastDirectory))
+            lastDirectory = lastDirectory.getParent();
+        if (KEY_PROJECT.equals(key))
+            setLastProjectsDirectory(lastDirectory);
+        else
+            setLastParametersDirectory(lastDirectory);
+    }
+
+    @ACAQDocumentation(name = "Last projects directory", description = "The file chooser will open in this folder when opening a project.")
+    @ACAQParameter("last-projects-directory")
+    public Path getLastProjectsDirectory() {
+        if (lastProjectsDirectory == null)
+            lastProjectsDirectory = Paths.get("").toAbsolutePath();
+        return lastProjectsDirectory;
+    }
+
+    @ACAQParameter("last-projects-directory")
+    public void setLastProjectsDirectory(Path lastProjectsDirectory) {
+        this.lastProjectsDirectory = lastProjectsDirectory;
+        getEventBus().post(new ParameterChangedEvent(this, "last-projects-directory"));
+    }
+
+    @ACAQDocumentation(name = "Last directory", description = "The file chooser will open in this folder when changing a parameter.")
+    @ACAQParameter("last-parameters-directory")
+    public Path getLastParametersDirectory() {
+        if (lastParametersDirectory == null)
+            lastParametersDirectory = Paths.get("").toAbsolutePath();
+        return lastParametersDirectory;
+    }
+
+    @ACAQParameter("last-parameters-directory")
+    public void setLastParametersDirectory(Path lastParametersDirectory) {
+        this.lastParametersDirectory = lastParametersDirectory;
+        getEventBus().post(new ParameterChangedEvent(this, "last-parameters-directory"));
     }
 
 }

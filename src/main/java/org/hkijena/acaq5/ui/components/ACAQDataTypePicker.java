@@ -40,6 +40,50 @@ public class ACAQDataTypePicker extends JPanel {
         refreshTraitList();
     }
 
+    /**
+     * Shows a dialog to pick traits
+     *
+     * @param parent          parent component
+     * @param mode            mode
+     * @param availableTraits list of available traits
+     * @return picked traits
+     */
+    public static Set<ACAQDataDeclaration> showDialog(Component parent, Mode mode, Set<ACAQDataDeclaration> availableTraits) {
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
+        ACAQDataTypePicker picker = new ACAQDataTypePicker(mode, availableTraits);
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(picker, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        buttonPanel.add(Box.createHorizontalGlue());
+
+        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("remove.png"));
+        cancelButton.addActionListener(e -> {
+            picker.setSelectedDataTypes(Collections.emptySet());
+            dialog.setVisible(false);
+        });
+        buttonPanel.add(cancelButton);
+
+        JButton confirmButton = new JButton("Pick", UIUtils.getIconFromResources("checkmark.png"));
+        confirmButton.addActionListener(e -> dialog.setVisible(false));
+        buttonPanel.add(confirmButton);
+
+        panel.add(buttonPanel, BorderLayout.SOUTH);
+
+        dialog.setContentPane(panel);
+        dialog.setTitle("Pick annotation");
+        dialog.setModal(true);
+        dialog.pack();
+        dialog.setSize(new Dimension(500, 600));
+        dialog.setLocationRelativeTo(parent);
+        UIUtils.addEscapeListener(dialog);
+        dialog.setVisible(true);
+
+        return picker.getSelectedDataTypes();
+    }
+
     private void initialize() {
         setLayout(new BorderLayout());
         JToolBar toolBar = new JToolBar();
@@ -156,50 +200,6 @@ public class ACAQDataTypePicker extends JPanel {
         this.selectedDataTypes = new HashSet<>(traits);
         eventBus.post(new SelectedDataTypesChangedEvent(this));
         refreshTraitList();
-    }
-
-    /**
-     * Shows a dialog to pick traits
-     *
-     * @param parent          parent component
-     * @param mode            mode
-     * @param availableTraits list of available traits
-     * @return picked traits
-     */
-    public static Set<ACAQDataDeclaration> showDialog(Component parent, Mode mode, Set<ACAQDataDeclaration> availableTraits) {
-        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
-        ACAQDataTypePicker picker = new ACAQDataTypePicker(mode, availableTraits);
-
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(picker, BorderLayout.CENTER);
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-        buttonPanel.add(Box.createHorizontalGlue());
-
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("remove.png"));
-        cancelButton.addActionListener(e -> {
-            picker.setSelectedDataTypes(Collections.emptySet());
-            dialog.setVisible(false);
-        });
-        buttonPanel.add(cancelButton);
-
-        JButton confirmButton = new JButton("Pick", UIUtils.getIconFromResources("checkmark.png"));
-        confirmButton.addActionListener(e -> dialog.setVisible(false));
-        buttonPanel.add(confirmButton);
-
-        panel.add(buttonPanel, BorderLayout.SOUTH);
-
-        dialog.setContentPane(panel);
-        dialog.setTitle("Pick annotation");
-        dialog.setModal(true);
-        dialog.pack();
-        dialog.setSize(new Dimension(500, 600));
-        dialog.setLocationRelativeTo(parent);
-        UIUtils.addEscapeListener(dialog);
-        dialog.setVisible(true);
-
-        return picker.getSelectedDataTypes();
     }
 
     /**

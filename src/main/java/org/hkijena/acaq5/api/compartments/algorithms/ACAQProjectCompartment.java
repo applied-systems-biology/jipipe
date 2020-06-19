@@ -47,6 +47,18 @@ public class ACAQProjectCompartment extends ACAQGraphNode {
     }
 
     /**
+     * @return Slot configuration for {@link ACAQProjectCompartment}
+     */
+    public static ACAQSlotConfiguration createSlotConfiguration() {
+        return ACAQDefaultMutableSlotConfiguration.builder()
+                .restrictInputTo(ACAQCompartmentOutputData.class)
+                .restrictOutputTo(ACAQCompartmentOutputData.class)
+                .addOutputSlot("Output", ACAQCompartmentOutputData.class, "")
+                .sealOutput()
+                .build();
+    }
+
+    /**
      * @return The compartment ID
      */
     public String getProjectCompartmentId() {
@@ -109,17 +121,5 @@ public class ACAQProjectCompartment extends ACAQGraphNode {
      */
     public void setOutputNode(ACAQCompartmentOutput outputNode) {
         this.outputNode = outputNode;
-    }
-
-    /**
-     * @return Slot configuration for {@link ACAQProjectCompartment}
-     */
-    public static ACAQSlotConfiguration createSlotConfiguration() {
-        return ACAQDefaultMutableSlotConfiguration.builder()
-                .restrictInputTo(ACAQCompartmentOutputData.class)
-                .restrictOutputTo(ACAQCompartmentOutputData.class)
-                .addOutputSlot("Output", ACAQCompartmentOutputData.class, "")
-                .sealOutput()
-                .build();
     }
 }

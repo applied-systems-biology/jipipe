@@ -22,6 +22,10 @@ public class ProjectsSettings implements ACAQParameterCollection {
     private PathList recentJsonExtensionProjects = new PathList();
     private StarterProject starterProject = StarterProject.PreprocessingAnalysisPostprocessing;
 
+    public static ProjectsSettings getInstance() {
+        return ACAQDefaultRegistry.getInstance().getSettingsRegistry().getSettings(ID, ProjectsSettings.class);
+    }
+
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -95,10 +99,6 @@ public class ProjectsSettings implements ACAQParameterCollection {
     public void setStarterProject(StarterProject starterProject) {
         this.starterProject = starterProject;
         eventBus.post(new ParameterChangedEvent(this, "starter-project"));
-    }
-
-    public static ProjectsSettings getInstance() {
-        return ACAQDefaultRegistry.getInstance().getSettingsRegistry().getSettings(ID, ProjectsSettings.class);
     }
 
     /**

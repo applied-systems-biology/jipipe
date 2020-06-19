@@ -205,9 +205,14 @@ public class ACAQJsonExtensionWorkbench extends JPanel implements ACAQWorkbench 
         ACAQValidityReport report = validityCheckerPanel.getReport();
         if (!report.isValid()) {
             validateProject();
-        } else {
-            ACAQJsonExtensionWindow.installExtension(this, getProject());
+            if (JOptionPane.showConfirmDialog(this, "The extension builder found potential issues with the extension. Install anyways?",
+                    "Install extension",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION)
+                return;
         }
+
+        ACAQJsonExtensionWindow.installExtension(this, getProject());
     }
 
     /**

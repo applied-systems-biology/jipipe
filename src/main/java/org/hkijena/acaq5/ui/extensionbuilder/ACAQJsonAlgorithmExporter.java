@@ -1,7 +1,6 @@
 package org.hkijena.acaq5.ui.extensionbuilder;
 
 import org.hkijena.acaq5.ACAQJsonExtension;
-import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.grouping.JsonAlgorithmDeclaration;
 import org.hkijena.acaq5.api.grouping.NodeGroup;
@@ -47,6 +46,25 @@ public class ACAQJsonAlgorithmExporter extends ACAQAlgorithmGraphEditorUI {
         algorithmDeclaration.setDescription(group.getCustomDescription());
         initialize();
         updateSelection();
+    }
+
+    /**
+     * Creates a new exporter tab
+     *
+     * @param workbench   the workbench
+     * @param nodeGroup   the exported algorithm. Will be copied.
+     * @param name        predefined name
+     * @param description predefined description
+     */
+    public static void createExporter(ACAQProjectWorkbench workbench, NodeGroup nodeGroup, String name, String description) {
+        ACAQJsonAlgorithmExporter exporter = new ACAQJsonAlgorithmExporter(workbench, (NodeGroup) nodeGroup.duplicate());
+        exporter.getAlgorithmDeclaration().setName(name);
+        exporter.getAlgorithmDeclaration().setDescription(description);
+        workbench.getDocumentTabPane().addTab("Export algorithm '" + name + "'",
+                UIUtils.getIconFromResources("export.png"),
+                exporter,
+                DocumentTabPane.CloseMode.withAskOnCloseButton);
+        workbench.getDocumentTabPane().switchToLastTab();
     }
 
     @Override
@@ -129,15 +147,13 @@ public class ACAQJsonAlgorithmExporter extends ACAQAlgorithmGraphEditorUI {
     @Override
     protected void updateSelection() {
         super.updateSelection();
-        if(getSelection().isEmpty()) {
+        if (getSelection().isEmpty()) {
             setPropertyPanel(exportPanel);
-        }
-        else if(getSelection().size() == 1) {
+        } else if (getSelection().size() == 1) {
             setPropertyPanel(new ACAQJsonAlgorithmExporterSingleSelectionPanelUI(getWorkbench(),
                     getCanvasUI(),
                     getSelection().iterator().next().getAlgorithm()));
-        }
-        else {
+        } else {
             setPropertyPanel(new ACAQJsonAlgorithmExporterMultiSelectionPanelUI(getWorkbench(),
                     getCanvasUI(),
                     getSelection().stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet())));
@@ -149,24 +165,5 @@ public class ACAQJsonAlgorithmExporter extends ACAQAlgorithmGraphEditorUI {
      */
     public JsonAlgorithmDeclaration getAlgorithmDeclaration() {
         return algorithmDeclaration;
-    }
-
-    /**
-     * Creates a new exporter tab
-     *
-     * @param workbench   the workbench
-     * @param nodeGroup   the exported algorithm. Will be copied.
-     * @param name        predefined name
-     * @param description predefined description
-     */
-    public static void createExporter(ACAQProjectWorkbench workbench, NodeGroup nodeGroup, String name, String description) {
-        ACAQJsonAlgorithmExporter exporter = new ACAQJsonAlgorithmExporter(workbench, (NodeGroup) nodeGroup.duplicate());
-        exporter.getAlgorithmDeclaration().setName(name);
-        exporter.getAlgorithmDeclaration().setDescription(description);
-        workbench.getDocumentTabPane().addTab("Export algorithm '" + name + "'",
-                UIUtils.getIconFromResources("export.png"),
-                exporter,
-                DocumentTabPane.CloseMode.withAskOnCloseButton);
-        workbench.getDocumentTabPane().switchToLastTab();
     }
 }

@@ -46,6 +46,8 @@ public class JsonAlgorithmRegistrationTask extends ACAQDefaultAlgorithmRegistrat
         alreadyRegistered = true;
         try {
             JsonAlgorithmDeclaration declaration = JsonUtils.getObjectMapper().readerFor(JsonAlgorithmDeclaration.class).readValue(jsonNode);
+            if (declaration == null)
+                throw new NullPointerException("Algorithm is null!");
             ACAQAlgorithmRegistry.getInstance().register(declaration, source);
             if (declaration.getIcon().getIconName() != null) {
                 ACAQUIAlgorithmRegistry.getInstance().registerIcon(declaration,

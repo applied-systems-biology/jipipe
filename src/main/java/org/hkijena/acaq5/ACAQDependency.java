@@ -18,37 +18,6 @@ import java.util.Set;
 @JsonDeserialize(as = ACAQMutableDependency.class)
 public interface ACAQDependency extends ACAQParameterCollection, ACAQValidatable {
     /**
-     * @return The dependency metadata
-     */
-    @JsonGetter("metadata")
-    ACAQMetadata getMetadata();
-
-    @Override
-    EventBus getEventBus();
-
-    /**
-     * @return The unique dependency ID
-     */
-    @JsonGetter("id")
-    String getDependencyId();
-
-    /**
-     * @return The dependency version
-     */
-    @JsonGetter("version")
-    String getDependencyVersion();
-
-    /**
-     * Gets the location of the JAR/JSON that defined the dependency
-     *
-     * @return location of the JAR/JSON that defined the dependency
-     */
-    Path getDependencyLocation();
-
-    @Override
-    void reportValidity(ACAQValidityReport report);
-
-    /**
      * Exports the dependency to an HTML element (without the root tag)
      *
      * @param dependency Dependency instance
@@ -86,4 +55,35 @@ public interface ACAQDependency extends ACAQParameterCollection, ACAQValidatable
         }
         return result;
     }
+
+    /**
+     * @return The dependency metadata
+     */
+    @JsonGetter("metadata")
+    ACAQMetadata getMetadata();
+
+    @Override
+    EventBus getEventBus();
+
+    /**
+     * @return The unique dependency ID
+     */
+    @JsonGetter("id")
+    String getDependencyId();
+
+    /**
+     * @return The dependency version
+     */
+    @JsonGetter("version")
+    String getDependencyVersion();
+
+    /**
+     * Gets the location of the JAR/JSON that defined the dependency
+     *
+     * @return location of the JAR/JSON that defined the dependency
+     */
+    Path getDependencyLocation();
+
+    @Override
+    void reportValidity(ACAQValidityReport report);
 }

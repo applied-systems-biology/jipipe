@@ -37,6 +37,25 @@ public class ACAQSettingsRegistry implements ACAQParameterCollection, ACAQCustom
     private BiMap<String, Sheet> registeredSheets = HashBiMap.create();
     private boolean isLoading = false;
 
+    public static ACAQSettingsRegistry getInstance() {
+        return ACAQDefaultRegistry.getInstance().getSettingsRegistry();
+    }
+
+    /**
+     * @return The location of the file where the settings are stored
+     */
+    public static Path getPropertyFile() {
+        Path imageJDir = Paths.get(Prefs.getImageJDir());
+        if (!Files.isDirectory(imageJDir)) {
+            try {
+                Files.createDirectories(imageJDir);
+            } catch (IOException e) {
+                IJ.handleException(e);
+            }
+        }
+        return imageJDir.resolve("acaq5.properties.json");
+    }
+
     /**
      * Registers a new settings sheet
      *
@@ -158,25 +177,6 @@ public class ACAQSettingsRegistry implements ACAQParameterCollection, ACAQCustom
      */
     public void reload() {
         load(getPropertyFile());
-    }
-
-    public static ACAQSettingsRegistry getInstance() {
-        return ACAQDefaultRegistry.getInstance().getSettingsRegistry();
-    }
-
-    /**
-     * @return The location of the file where the settings are stored
-     */
-    public static Path getPropertyFile() {
-        Path imageJDir = Paths.get(Prefs.getImageJDir());
-        if (!Files.isDirectory(imageJDir)) {
-            try {
-                Files.createDirectories(imageJDir);
-            } catch (IOException e) {
-                IJ.handleException(e);
-            }
-        }
-        return imageJDir.resolve("acaq5.properties.json");
     }
 
     /**

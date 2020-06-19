@@ -44,6 +44,29 @@ public class ACAQProjectWindow extends JFrame {
         loadProject(project);
     }
 
+    /**
+     * Creates a new window
+     *
+     * @param context context
+     * @param project The project
+     * @return The window
+     */
+    public static ACAQProjectWindow newWindow(Context context, ACAQProject project) {
+        ACAQProjectWindow frame = new ACAQProjectWindow(context, project);
+        frame.pack();
+        frame.setSize(1024, 768);
+        frame.setVisible(true);
+//        frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+        return frame;
+    }
+
+    /**
+     * @return All open project windows
+     */
+    public static Set<ACAQProjectWindow> getOpenWindows() {
+        return Collections.unmodifiableSet(OPEN_WINDOWS);
+    }
+
     private void initialize() {
         getContentPane().setLayout(new BorderLayout(8, 8));
         super.setTitle("ACAQ5");
@@ -238,28 +261,5 @@ public class ACAQProjectWindow extends JFrame {
      */
     public Path getProjectSavePath() {
         return projectSavePath;
-    }
-
-    /**
-     * Creates a new window
-     *
-     * @param context context
-     * @param project The project
-     * @return The window
-     */
-    public static ACAQProjectWindow newWindow(Context context, ACAQProject project) {
-        ACAQProjectWindow frame = new ACAQProjectWindow(context, project);
-        frame.pack();
-        frame.setSize(1024, 768);
-        frame.setVisible(true);
-//        frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
-        return frame;
-    }
-
-    /**
-     * @return All open project windows
-     */
-    public static Set<ACAQProjectWindow> getOpenWindows() {
-        return Collections.unmodifiableSet(OPEN_WINDOWS);
     }
 }

@@ -33,6 +33,19 @@ public class ACAQAlgorithmIconRefParameterEditorUI extends ACAQParameterEditorUI
         reload();
     }
 
+    public static Set<String> getAvailableAlgorithmIcons() {
+        if (availableAlgorithmIcons == null) {
+            availableAlgorithmIcons = new HashSet<>();
+            Set<String> rawIcons = ResourceUtils.walkInternalResourceFolder("icons/algorithms");
+            String basePath = ResourceUtils.getResourcePath("icons/algorithms/");
+            for (String rawIcon : rawIcons) {
+                if (rawIcon.endsWith(".png"))
+                    availableAlgorithmIcons.add(rawIcon.substring(basePath.length()));
+            }
+        }
+        return availableAlgorithmIcons;
+    }
+
     private void initialize() {
         setLayout(new BorderLayout());
 
@@ -78,18 +91,5 @@ public class ACAQAlgorithmIconRefParameterEditorUI extends ACAQParameterEditorUI
             currentlyDisplayed.setText("<None selected>");
             currentlyDisplayed.setIcon(UIUtils.getIconFromResources("cog.png"));
         }
-    }
-
-    public static Set<String> getAvailableAlgorithmIcons() {
-        if (availableAlgorithmIcons == null) {
-            availableAlgorithmIcons = new HashSet<>();
-            Set<String> rawIcons = ResourceUtils.walkInternalResourceFolder("icons/algorithms");
-            String basePath = ResourceUtils.getResourcePath("icons/algorithms/");
-            for (String rawIcon : rawIcons) {
-                if (rawIcon.endsWith(".png"))
-                    availableAlgorithmIcons.add(rawIcon.substring(basePath.length()));
-            }
-        }
-        return availableAlgorithmIcons;
     }
 }

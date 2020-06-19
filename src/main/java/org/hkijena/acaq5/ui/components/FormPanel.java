@@ -3,6 +3,8 @@ package org.hkijena.acaq5.ui.components;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
+import org.jdesktop.swingx.JXPanel;
+import org.jdesktop.swingx.ScrollableSizeHint;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,7 +16,7 @@ import static org.hkijena.acaq5.utils.UIUtils.UI_PADDING;
 /**
  * Organizes UI in a form layout with integrated help functionality, and grouping with conditional visibility
  */
-public class FormPanel extends JPanel {
+public class FormPanel extends JXPanel {
 
     /**
      * Flag that indicates no modifications, meaning (1) No documentation, and (2) no scrolling
@@ -59,6 +61,9 @@ public class FormPanel extends JPanel {
         parameterHelp = new MarkdownReader(false);
         parameterHelp.setDocument(document);
         helpPanel.add(parameterHelp, BorderLayout.CENTER);
+
+        setScrollableWidthHint(ScrollableSizeHint.FIT);
+        setScrollableHeightHint(ScrollableSizeHint.PREFERRED_STRETCH);
 
         Component content;
         if ((flags & WITH_SCROLLING) == WITH_SCROLLING) {
@@ -267,6 +272,27 @@ public class FormPanel extends JPanel {
     }
 
     /**
+     * Adds a vertical glue component
+     *
+     * @param component the component
+     * @param document  optional documentation
+     */
+    public void addVerticalGlue(Component component, MarkdownDocument document) {
+        forms.add(component, new GridBagConstraints() {
+            {
+                anchor = GridBagConstraints.WEST;
+                gridx = 0;
+                gridy = numRows;
+                fill = GridBagConstraints.VERTICAL;
+                weightx = 0;
+                weighty = 1;
+            }
+        });
+        documentComponent(component, document);
+        ++numRows;
+    }
+
+    /**
      * Panel that contains a group header
      */
     public static class GroupHeaderPanel extends JPanel {
@@ -348,6 +374,7 @@ public class FormPanel extends JPanel {
 
         /**
          * Sets the description and sets the visibility
+         *
          * @param description the description
          */
         public void setDescription(String description) {
@@ -415,6 +442,7 @@ public class FormPanel extends JPanel {
 
         /**
          * Creates a new instance
+         *
          * @param document the document
          */
         public HoverHelpEvent(MarkdownDocument document) {

@@ -8,7 +8,6 @@ import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.grouping.events.ParameterReferencesChangedEvent;
-import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 
 import java.util.ArrayList;
@@ -133,12 +132,12 @@ public class GraphNodeParameters implements ACAQValidatable {
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        if(graph != null) {
+        if (graph != null) {
             ACAQParameterTree tree = graph.getParameterTree();
             for (GraphNodeParameterReferenceGroup parameterReferenceGroup : parameterReferenceGroups) {
                 ACAQValidityReport group = report.forCategory(parameterReferenceGroup.getName());
                 for (GraphNodeParameterReference reference : parameterReferenceGroup.getContent()) {
-                    if(reference.resolve(tree) == null) {
+                    if (reference.resolve(tree) == null) {
                         group.forCategory(reference.getName(tree)).reportIsInvalid("Could not find parameter!",
                                 "There is a an exported parameter referencing the internal ID '" + reference.getPath() + "'. " +
                                         "It could not be found.",

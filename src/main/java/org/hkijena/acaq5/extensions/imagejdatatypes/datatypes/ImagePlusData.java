@@ -51,6 +51,20 @@ public class ImagePlusData implements ACAQData {
         this.image = image;
     }
 
+    /**
+     * Gets the dimensionality of {@link ImagePlusData}
+     *
+     * @param klass the class
+     * @return the dimensionality
+     */
+    public static int getDimensionalityOf(Class<? extends ImagePlusData> klass) {
+        try {
+            return klass.getDeclaredField("DIMENSIONALITY").getInt(null);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public void flush() {
 //        // Completely remove all references
@@ -80,19 +94,5 @@ public class ImagePlusData implements ACAQData {
     @Override
     public String toString() {
         return ACAQDataDeclaration.getInstance(getClass()).getName() + " (" + image + ")";
-    }
-
-    /**
-     * Gets the dimensionality of {@link ImagePlusData}
-     *
-     * @param klass the class
-     * @return the dimensionality
-     */
-    public static int getDimensionalityOf(Class<? extends ImagePlusData> klass) {
-        try {
-            return klass.getDeclaredField("DIMENSIONALITY").getInt(null);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

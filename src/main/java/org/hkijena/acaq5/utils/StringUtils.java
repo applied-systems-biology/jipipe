@@ -294,6 +294,7 @@ public class StringUtils {
 
     /**
      * Returns an empty string if s is null otherwise returns s
+     *
      * @param s the string
      * @return an empty string if s is null otherwise returns s
      */

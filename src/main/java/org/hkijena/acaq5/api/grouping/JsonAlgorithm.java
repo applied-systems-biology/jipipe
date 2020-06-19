@@ -3,15 +3,24 @@ package org.hkijena.acaq5.api.grouping;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
+import org.hkijena.acaq5.api.grouping.parameters.GraphNodeParameters;
+import org.hkijena.acaq5.api.parameters.ACAQCustomParameterCollection;
+import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
+import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
  * An algorithm that was imported from a Json extension.
  */
-public class JsonAlgorithm extends GraphWrapperAlgorithm {
+public class JsonAlgorithm extends GraphWrapperAlgorithm implements ACAQCustomParameterCollection {
+
+    private GraphNodeParameters exportedParameters = new GraphNodeParameters();
 
     /**
      * Creates a new instance
@@ -20,6 +29,7 @@ public class JsonAlgorithm extends GraphWrapperAlgorithm {
      */
     public JsonAlgorithm(JsonAlgorithmDeclaration declaration) {
         super(declaration, new ACAQAlgorithmGraph(declaration.getGraph()));
+        exportedParameters = new GraphNodeParameters(declaration.getExportedParameters());
     }
 
     /**
@@ -68,5 +78,24 @@ public class JsonAlgorithm extends GraphWrapperAlgorithm {
             }
         }
 
+    }
+
+    public GraphNodeParameters getExportedParameters() {
+        return exportedParameters;
+    }
+
+    @Override
+    public Map<String, ACAQParameterAccess> getParameters() {
+        ACAQParameterTree standardParameters = new ACAQParameterTree(this,
+                ACAQParameterTree.IGNORE_CUSTOM | ACAQParameterTree.FORCE_REFLECTION);
+        return standardParameters.getParameters();
+    }
+
+    @Override
+    public Map<String, ACAQParameterCollection> getChildParameterCollections() {
+        this.exportedParameters.setGraph(getWrappedGraph());
+        Map<String, ACAQParameterCollection> result = new HashMap<>();
+        result.put("exported", new GraphNodeParameterReferenceAccessGroupList(exportedParameters, getWrappedGraph().getParameterTree(), true));
+        return result;
     }
 }

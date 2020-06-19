@@ -32,8 +32,9 @@ public class ACAQAuthorMetadata implements ACAQParameterCollection {
 
     /**
      * Initializes the instance
-     * @param firstName first name
-     * @param lastName last name
+     *
+     * @param firstName    first name
+     * @param lastName     last name
      * @param affiliations affiliations
      */
     public ACAQAuthorMetadata(String firstName, String lastName, String affiliations) {
@@ -44,6 +45,7 @@ public class ACAQAuthorMetadata implements ACAQParameterCollection {
 
     /**
      * Makes a copy
+     *
      * @param other the original
      */
     public ACAQAuthorMetadata(ACAQAuthorMetadata other) {
@@ -116,6 +118,7 @@ public class ACAQAuthorMetadata implements ACAQParameterCollection {
 
         /**
          * Makes a copy
+         *
          * @param other the original
          */
         public List(Collection<ACAQAuthorMetadata> other) {

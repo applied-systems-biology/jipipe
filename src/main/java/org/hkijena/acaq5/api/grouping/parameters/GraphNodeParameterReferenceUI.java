@@ -37,7 +37,7 @@ public class GraphNodeParameterReferenceUI extends JPanel {
         JLabel infoLabel = new JLabel(UIUtils.getIconFromResources("parameters.png"));
 
         ACAQParameterAccess referencedParameter = reference.resolve(tree);
-        if(referencedParameter != null) {
+        if (referencedParameter != null) {
             infoLabel.setToolTipText(String.format("<html><strong>Reference to parameter '%s'</strong><br/><br/>" +
                             "Type <strong>'%s'</strong><br/>" +
                             "Unique key <strong>%s</strong><br/><br/>%s</html>",
@@ -61,11 +61,10 @@ public class GraphNodeParameterReferenceUI extends JPanel {
             changeDescriptionButton.setToolTipText("Change description");
             changeDescriptionButton.addActionListener(e -> changeDescription());
             add(changeDescriptionButton, BorderLayout.EAST);
-        }
-        else {
+        } else {
             infoLabel.setIcon(UIUtils.getIconFromResources("error.png"));
             infoLabel.setText("Not found");
-            infoLabel.setToolTipText("The parameter '" + reference.getPath() +"' was not found. Please remove this item.");
+            infoLabel.setToolTipText("The parameter '" + reference.getPath() + "' was not found. Please remove this item.");
         }
         add(infoLabel, BorderLayout.WEST);
     }

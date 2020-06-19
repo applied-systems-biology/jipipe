@@ -55,6 +55,33 @@ public class GenerateColumnAlgorithm extends ACAQSimpleIteratingAlgorithm {
         this.columns = new TableColumnGeneratorProcessorParameterList(other.columns);
     }
 
+    /**
+     * Used for generating a new generator entry
+     *
+     * @param definition the parameter definition
+     * @return generated parameter
+     */
+    public static ACAQMutableParameterAccess generateColumnParameter(ACAQDynamicParameterCollection.UserParameterDefinition definition) {
+        ACAQMutableParameterAccess result = new ACAQMutableParameterAccess(definition.getSource(), definition.getName(), definition.getFieldClass());
+        result.setKey(definition.getName());
+
+        StringBuilder markdown = new StringBuilder();
+        markdown.append("You can select from one of the following generators: ");
+        markdown.append("<table>");
+        for (Class<? extends ACAQData> klass : ACAQDatatypeRegistry.getInstance().getRegisteredDataTypes().values()) {
+            if (TableColumn.isGeneratingTableColumn(klass)) {
+                ACAQDataDeclaration declaration = ACAQDataDeclaration.getInstance(klass);
+                markdown.append("<tr><td><strong>").append(HtmlEscapers.htmlEscaper().escape(declaration.getName())).append("</strong></td><td>")
+                        .append(HtmlEscapers.htmlEscaper().escape(declaration.getDescription())).append("</td></tr>");
+            }
+        }
+
+        markdown.append("</table>");
+        result.setDescription(markdown.toString());
+
+        return result;
+    }
+
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ResultsTableData table = (ResultsTableData) dataInterface.getInputData(getFirstInputSlot(), ResultsTableData.class).duplicate();
@@ -108,32 +135,5 @@ public class GenerateColumnAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("columns")
     public void setColumns(TableColumnGeneratorProcessorParameterList columns) {
         this.columns = columns;
-    }
-
-    /**
-     * Used for generating a new generator entry
-     *
-     * @param definition the parameter definition
-     * @return generated parameter
-     */
-    public static ACAQMutableParameterAccess generateColumnParameter(ACAQDynamicParameterCollection.UserParameterDefinition definition) {
-        ACAQMutableParameterAccess result = new ACAQMutableParameterAccess(definition.getSource(), definition.getName(), definition.getFieldClass());
-        result.setKey(definition.getName());
-
-        StringBuilder markdown = new StringBuilder();
-        markdown.append("You can select from one of the following generators: ");
-        markdown.append("<table>");
-        for (Class<? extends ACAQData> klass : ACAQDatatypeRegistry.getInstance().getRegisteredDataTypes().values()) {
-            if (TableColumn.isGeneratingTableColumn(klass)) {
-                ACAQDataDeclaration declaration = ACAQDataDeclaration.getInstance(klass);
-                markdown.append("<tr><td><strong>").append(HtmlEscapers.htmlEscaper().escape(declaration.getName())).append("</strong></td><td>")
-                        .append(HtmlEscapers.htmlEscaper().escape(declaration.getDescription())).append("</td></tr>");
-            }
-        }
-
-        markdown.append("</table>");
-        result.setDescription(markdown.toString());
-
-        return result;
     }
 }

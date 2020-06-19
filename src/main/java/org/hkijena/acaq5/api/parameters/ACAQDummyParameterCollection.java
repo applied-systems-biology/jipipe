@@ -12,7 +12,7 @@ import java.util.function.Supplier;
  */
 public class ACAQDummyParameterCollection implements ACAQParameterCollection, Consumer<Object>, Supplier<Object> {
 
-    private final  EventBus eventBus = new EventBus();
+    private final EventBus eventBus = new EventBus();
     private Object value;
 
     @Override

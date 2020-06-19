@@ -42,6 +42,15 @@ public class ACAQRunAlgorithmCommand extends DynamicCommand implements Initializ
     @Parameter(persist = false)
     private int threads = RuntimeSettings.getInstance().getDefaultRunThreads();
 
+    /**
+     * @param args ignored
+     */
+    public static void main(String[] args) {
+        final ImageJ ij = new ImageJ();
+        ij.ui().showUI();
+        ij.command().run(ACAQRunAlgorithmCommand.class, true);
+    }
+
     @Override
     public void initialize() {
         resolveInput("algorithmId");
@@ -116,14 +125,5 @@ public class ACAQRunAlgorithmCommand extends DynamicCommand implements Initializ
         }
         IJ.showProgress(3, 3);
         settings.pullOutput();
-    }
-
-    /**
-     * @param args ignored
-     */
-    public static void main(String[] args) {
-        final ImageJ ij = new ImageJ();
-        ij.ui().showUI();
-        ij.command().run(ACAQRunAlgorithmCommand.class, true);
     }
 }

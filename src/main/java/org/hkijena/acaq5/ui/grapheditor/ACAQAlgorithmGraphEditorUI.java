@@ -74,6 +74,24 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
         algorithmGraph.getEventBus().register(this);
     }
 
+    private static boolean filterNavigationEntry(Object entry, String searchString) {
+        String haystack = "";
+        ACAQAlgorithmDeclaration algorithmDeclaration = null;
+        if (entry instanceof ACAQAlgorithmUI) {
+            haystack += ((ACAQAlgorithmUI) entry).getAlgorithm().getName();
+            algorithmDeclaration = ((ACAQAlgorithmUI) entry).getAlgorithm().getDeclaration();
+        } else if (entry instanceof ACAQAlgorithmDeclaration) {
+            if (((ACAQAlgorithmDeclaration) entry).isHidden())
+                return false;
+            algorithmDeclaration = (ACAQAlgorithmDeclaration) entry;
+        }
+        if (algorithmDeclaration != null) {
+            haystack += algorithmDeclaration.getName() + algorithmDeclaration.getDescription()
+                    + algorithmDeclaration.getMenuPath();
+        }
+        return haystack.toLowerCase().contains(searchString.toLowerCase());
+    }
+
     /**
      * Changes properties of the context menu.
      * You should not add new items, unless you always replace them
@@ -267,7 +285,6 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
     public ACAQAlgorithmGraph getAlgorithmGraph() {
         return algorithmGraph;
     }
-
 
     private void createScreenshotSVG() {
         SVGGraphics2D screenshot = canvasUI.createScreenshotSVG();
@@ -553,24 +570,6 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
                 .sorted(Comparator.comparing(ACAQAlgorithmDeclaration::getName)).collect(Collectors.toList())) {
             model.addElement(declaration);
         }
-    }
-
-    private static boolean filterNavigationEntry(Object entry, String searchString) {
-        String haystack = "";
-        ACAQAlgorithmDeclaration algorithmDeclaration = null;
-        if (entry instanceof ACAQAlgorithmUI) {
-            haystack += ((ACAQAlgorithmUI) entry).getAlgorithm().getName();
-            algorithmDeclaration = ((ACAQAlgorithmUI) entry).getAlgorithm().getDeclaration();
-        } else if (entry instanceof ACAQAlgorithmDeclaration) {
-            if (((ACAQAlgorithmDeclaration) entry).isHidden())
-                return false;
-            algorithmDeclaration = (ACAQAlgorithmDeclaration) entry;
-        }
-        if (algorithmDeclaration != null) {
-            haystack += algorithmDeclaration.getName() + algorithmDeclaration.getDescription()
-                    + algorithmDeclaration.getMenuPath();
-        }
-        return haystack.toLowerCase().contains(searchString.toLowerCase());
     }
 
     /**

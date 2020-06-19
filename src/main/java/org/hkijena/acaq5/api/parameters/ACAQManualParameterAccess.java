@@ -8,7 +8,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -34,6 +33,15 @@ public class ACAQManualParameterAccess implements ACAQParameterAccess {
 
     }
 
+    /**
+     * Creates a new builder
+     *
+     * @return the builder
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
     @Override
     public String getKey() {
         return key;
@@ -56,7 +64,7 @@ public class ACAQManualParameterAccess implements ACAQParameterAccess {
 
     @Override
     public <T extends Annotation> T getAnnotationOfType(Class<T> klass) {
-        return (T)annotations.getOrDefault(klass, null);
+        return (T) annotations.getOrDefault(klass, null);
     }
 
     @Override
@@ -95,14 +103,6 @@ public class ACAQManualParameterAccess implements ACAQParameterAccess {
     }
 
     /**
-     * Creates a new builder
-     * @return the builder
-     */
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    /**
      * A builder for {@link ACAQManualParameterAccess}
      */
     public static class Builder {
@@ -110,6 +110,7 @@ public class ACAQManualParameterAccess implements ACAQParameterAccess {
 
         /**
          * Sets the parameter source
+         *
          * @param source the source
          * @return this
          */
@@ -120,6 +121,7 @@ public class ACAQManualParameterAccess implements ACAQParameterAccess {
 
         /**
          * Sets the priority
+         *
          * @param priority
          * @return this
          */
@@ -130,6 +132,7 @@ public class ACAQManualParameterAccess implements ACAQParameterAccess {
 
         /**
          * Sets the UI order
+         *
          * @param uiOrder the ui order
          * @return this
          */
@@ -140,6 +143,7 @@ public class ACAQManualParameterAccess implements ACAQParameterAccess {
 
         /**
          * Sets the field class
+         *
          * @param fieldClass the field class
          * @return this
          */
@@ -150,6 +154,7 @@ public class ACAQManualParameterAccess implements ACAQParameterAccess {
 
         /**
          * Sets the name
+         *
          * @param name the name
          * @return this
          */
@@ -160,6 +165,7 @@ public class ACAQManualParameterAccess implements ACAQParameterAccess {
 
         /**
          * Sets the description
+         *
          * @param description the description
          * @return this
          */
@@ -170,6 +176,7 @@ public class ACAQManualParameterAccess implements ACAQParameterAccess {
 
         /**
          * Sets the short key
+         *
          * @param shortKey the sort key
          * @return this
          */
@@ -180,6 +187,7 @@ public class ACAQManualParameterAccess implements ACAQParameterAccess {
 
         /**
          * Sets the visibility
+         *
          * @param visibility the visibility
          * @return this
          */
@@ -190,6 +198,7 @@ public class ACAQManualParameterAccess implements ACAQParameterAccess {
 
         /**
          * Sets the getter
+         *
          * @param getter the getter
          * @return this
          */
@@ -200,6 +209,7 @@ public class ACAQManualParameterAccess implements ACAQParameterAccess {
 
         /**
          * Sets the setter
+         *
          * @param setter the setter
          * @return this
          */
@@ -211,6 +221,7 @@ public class ACAQManualParameterAccess implements ACAQParameterAccess {
         /**
          * Sets up access via reflection
          * The field class is extracted from the getter return type
+         *
          * @param source the source object
          * @param getter the getter method
          * @param setter the setter method
@@ -246,6 +257,7 @@ public class ACAQManualParameterAccess implements ACAQParameterAccess {
         /**
          * Sets up a dummy access.
          * The source is set to an {@link ACAQDummyParameterCollection} instance.
+         *
          * @param fieldClass the field class to store
          * @return this
          */
@@ -255,24 +267,24 @@ public class ACAQManualParameterAccess implements ACAQParameterAccess {
                 Method getter = ACAQDummyParameterCollection.class.getDeclaredMethod("get");
                 Method setter = ACAQDummyParameterCollection.class.getDeclaredMethod("accept", Object.class);
                 return setFieldClass(fieldClass).reflectionAccess(collection, getter, setter);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
 
         /**
          * Returns the finished object
+         *
          * @return the finished object
          */
         public ACAQManualParameterAccess build() {
-            if(access.source == null)
+            if (access.source == null)
                 throw new IllegalArgumentException("The source is null!");
-            if(access.fieldClass == null)
+            if (access.fieldClass == null)
                 throw new IllegalArgumentException("The field class is null!");
-            if(access.getter == null)
+            if (access.getter == null)
                 throw new IllegalArgumentException("The getter is null!");
-            if(access.setter == null)
+            if (access.setter == null)
                 throw new IllegalArgumentException("The setter is null!");
             return access;
         }

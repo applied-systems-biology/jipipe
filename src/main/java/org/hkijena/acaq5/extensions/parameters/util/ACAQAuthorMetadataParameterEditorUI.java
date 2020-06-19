@@ -2,17 +2,14 @@ package org.hkijena.acaq5.extensions.parameters.util;
 
 import org.hkijena.acaq5.api.ACAQAuthorMetadata;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
-import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import java.awt.Font;
 
 public class ACAQAuthorMetadataParameterEditorUI extends ACAQParameterEditorUI {
 
@@ -72,7 +69,7 @@ public class ACAQAuthorMetadataParameterEditorUI extends ACAQParameterEditorUI {
             String newAffiliations = UIUtils.getMultiLineStringByDialog(this, "Edit affiliations for " + parameter.getFirstName() + " " + parameter.getLastName(),
                     "Please insert the new affiliations:",
                     parameter.getAffiliations());
-            if(newAffiliations != null) {
+            if (newAffiliations != null) {
                 parameter.setAffiliations(newAffiliations);
                 editAffiliationsButton.setToolTipText("<html>Edit the affiliations<br/><br/>" + parameter.getAffiliations() + "</html>");
             }

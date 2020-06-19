@@ -44,6 +44,25 @@ public class ImageTypeConverter extends ACAQAlgorithm {
         super(other);
     }
 
+    /**
+     * @return The appropriate slot configuration for {@link ImageTypeConverter}
+     */
+    public static ACAQSlotConfiguration createConfiguration() {
+        ACAQDefaultMutableSlotConfiguration slotConfiguration = new ACAQDefaultMutableSlotConfiguration();
+        slotConfiguration.setMaxInputSlots(1);
+        slotConfiguration.setMaxOutputSlots(1);
+        Set<Class<? extends ACAQData>> allowedTypes = new HashSet<>();
+        for (Class<? extends ACAQData> type : ACAQDatatypeRegistry.getInstance().getRegisteredDataTypes().values()) {
+            if (ImagePlusData.class.isAssignableFrom(type)) {
+                allowedTypes.add(type);
+            }
+        }
+        slotConfiguration.setAllowedInputSlotTypes(allowedTypes);
+        slotConfiguration.setAllowedOutputSlotTypes(allowedTypes);
+
+        return slotConfiguration;
+    }
+
     @Override
     public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ACAQDataSlot inputSlot = getFirstInputSlot();
@@ -80,24 +99,5 @@ public class ImageTypeConverter extends ACAQAlgorithm {
                 }
             }
         }
-    }
-
-    /**
-     * @return The appropriate slot configuration for {@link ImageTypeConverter}
-     */
-    public static ACAQSlotConfiguration createConfiguration() {
-        ACAQDefaultMutableSlotConfiguration slotConfiguration = new ACAQDefaultMutableSlotConfiguration();
-        slotConfiguration.setMaxInputSlots(1);
-        slotConfiguration.setMaxOutputSlots(1);
-        Set<Class<? extends ACAQData>> allowedTypes = new HashSet<>();
-        for (Class<? extends ACAQData> type : ACAQDatatypeRegistry.getInstance().getRegisteredDataTypes().values()) {
-            if (ImagePlusData.class.isAssignableFrom(type)) {
-                allowedTypes.add(type);
-            }
-        }
-        slotConfiguration.setAllowedInputSlotTypes(allowedTypes);
-        slotConfiguration.setAllowedOutputSlotTypes(allowedTypes);
-
-        return slotConfiguration;
     }
 }

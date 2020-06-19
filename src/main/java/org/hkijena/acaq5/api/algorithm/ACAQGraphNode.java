@@ -123,6 +123,17 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
     }
 
     /**
+     * Utility function to create an algorithm instance from its id
+     *
+     * @param id  Algorithm ID
+     * @param <T> Algorithm class
+     * @return Algorithm instance
+     */
+    public static <T extends ACAQGraphNode> T newInstance(String id) {
+        return (T) ACAQAlgorithmRegistry.getInstance().getDeclarationById(id).newInstance();
+    }
+
+    /**
      * Synchronizes the slots with the slot definition
      */
     public void updateGraphNodeSlots() {
@@ -946,17 +957,6 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
      */
     public boolean renderOutputSlots() {
         return true;
-    }
-
-    /**
-     * Utility function to create an algorithm instance from its id
-     *
-     * @param id  Algorithm ID
-     * @param <T> Algorithm class
-     * @return Algorithm instance
-     */
-    public static <T extends ACAQGraphNode> T newInstance(String id) {
-        return (T) ACAQAlgorithmRegistry.getInstance().getDeclarationById(id).newInstance();
     }
 
     /**

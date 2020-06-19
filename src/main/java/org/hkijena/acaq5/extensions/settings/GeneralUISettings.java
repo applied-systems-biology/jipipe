@@ -21,6 +21,10 @@ public class GeneralUISettings implements ACAQParameterCollection {
     private boolean neverAskOnClosingTabs = false;
     private boolean validateOnSave = true;
 
+    public static GeneralUISettings getInstance() {
+        return ACAQDefaultRegistry.getInstance().getSettingsRegistry().getSettings(ID, GeneralUISettings.class);
+    }
+
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -85,10 +89,6 @@ public class GeneralUISettings implements ACAQParameterCollection {
     public void setValidateOnSave(boolean validateOnSave) {
         this.validateOnSave = validateOnSave;
         getEventBus().post(new ParameterChangedEvent(this, "validate-on-save"));
-    }
-
-    public static GeneralUISettings getInstance() {
-        return ACAQDefaultRegistry.getInstance().getSettingsRegistry().getSettings(ID, GeneralUISettings.class);
     }
 
     /**

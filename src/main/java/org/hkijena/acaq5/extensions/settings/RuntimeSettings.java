@@ -33,6 +33,57 @@ public class RuntimeSettings implements ACAQParameterCollection {
     public RuntimeSettings() {
     }
 
+    public static RuntimeSettings getInstance() {
+        return ACAQDefaultRegistry.getInstance().getSettingsRegistry().getSettings(ID, RuntimeSettings.class);
+    }
+
+    /**
+     * Generates a temporary directory
+     *
+     * @param baseName optional base name
+     * @return a temporary directory
+     */
+    public static Path generateTempDirectory(String baseName) {
+        OptionalPathParameter tempDirectory = getInstance().getTempDirectory();
+        if (tempDirectory.isEnabled()) {
+            try {
+                return Files.createTempDirectory(tempDirectory.getContent(), "ACAQ5" + baseName);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            try {
+                return Files.createTempDirectory("ACAQ5" + baseName);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    /**
+     * Generates a temporary directory
+     *
+     * @param prefix prefix
+     * @param suffix suffix
+     * @return a temporary directory
+     */
+    public static Path generateTempFile(String prefix, String suffix) {
+        OptionalPathParameter tempDirectory = getInstance().getTempDirectory();
+        if (tempDirectory.isEnabled()) {
+            try {
+                return Files.createTempFile(tempDirectory.getContent(), "ACAQ5" + prefix, suffix);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            try {
+                return Files.createTempFile("ACAQ5" + prefix, suffix);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -119,56 +170,5 @@ public class RuntimeSettings implements ACAQParameterCollection {
         this.defaultTestBenchThreads = defaultTestBenchThreads;
         eventBus.post(new ParameterChangedEvent(this, "default-test-bench-threads"));
         return true;
-    }
-
-    public static RuntimeSettings getInstance() {
-        return ACAQDefaultRegistry.getInstance().getSettingsRegistry().getSettings(ID, RuntimeSettings.class);
-    }
-
-    /**
-     * Generates a temporary directory
-     *
-     * @param baseName optional base name
-     * @return a temporary directory
-     */
-    public static Path generateTempDirectory(String baseName) {
-        OptionalPathParameter tempDirectory = getInstance().getTempDirectory();
-        if (tempDirectory.isEnabled()) {
-            try {
-                return Files.createTempDirectory(tempDirectory.getContent(), "ACAQ5" + baseName);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            try {
-                return Files.createTempDirectory("ACAQ5" + baseName);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    /**
-     * Generates a temporary directory
-     *
-     * @param prefix prefix
-     * @param suffix suffix
-     * @return a temporary directory
-     */
-    public static Path generateTempFile(String prefix, String suffix) {
-        OptionalPathParameter tempDirectory = getInstance().getTempDirectory();
-        if (tempDirectory.isEnabled()) {
-            try {
-                return Files.createTempFile(tempDirectory.getContent(), "ACAQ5" + prefix, suffix);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            try {
-                return Files.createTempFile("ACAQ5" + prefix, suffix);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 }

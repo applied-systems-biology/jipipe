@@ -18,8 +18,10 @@ import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.grouping.parameters.GraphNodeParameters;
-import org.hkijena.acaq5.api.parameters.*;
-import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
+import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
+import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 import org.hkijena.acaq5.extensions.parameters.primitives.StringList;
 import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQAlgorithmIconRef;
@@ -118,6 +120,12 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
         return name;
     }
 
+    @JsonSetter("name")
+    @ACAQParameter("name")
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     @ACAQDocumentation(name = "Description", description = "A description for the algorithm. You can use " +
             "HTML for your descriptions.")
@@ -125,6 +133,12 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
     @JsonGetter("description")
     public String getDescription() {
         return description;
+    }
+
+    @JsonSetter("description")
+    @ACAQParameter("description")
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @ACAQDocumentation(name = "Category", description = "A general category for the algorithm. " +
@@ -158,18 +172,6 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
         return new HashSet<>(graph.getDependencies());
     }
 
-    @JsonSetter("name")
-    @ACAQParameter("name")
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @JsonSetter("description")
-    @ACAQParameter("description")
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     @JsonGetter("graph")
     public ACAQAlgorithmGraph getGraph() {
         return graph;
@@ -182,7 +184,7 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
                 this.graph.getEventBus().unregister(this);
             }
             this.graph = graph;
-            if(exportedParameters != null) {
+            if (exportedParameters != null) {
                 exportedParameters.setGraph(graph);
             }
             updateSlots();
@@ -190,7 +192,7 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
         }
     }
 
-    @JsonSetter("exported-parameters")
+    @JsonGetter("exported-parameters")
     public GraphNodeParameters getExportedParameters() {
         return exportedParameters;
     }
@@ -379,7 +381,7 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
     }
 
     @ACAQDocumentation(name = "Icon", description = "A custom algorithm icon")
-    @ACAQParameter(value = "icon",uiOrder = 25)
+    @ACAQParameter(value = "icon", uiOrder = 25)
     @JsonGetter("icon")
     public ACAQAlgorithmIconRef getIcon() {
         return icon;

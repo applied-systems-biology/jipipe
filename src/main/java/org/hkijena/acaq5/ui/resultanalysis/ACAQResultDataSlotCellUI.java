@@ -18,15 +18,6 @@ public abstract class ACAQResultDataSlotCellUI extends JLabel {
     }
 
     /**
-     * Renders the data slot row
-     *
-     * @param workbenchUI the workbench
-     * @param slot        The data slot
-     * @param row         The data slot row
-     */
-    public abstract void render(ACAQProjectWorkbench workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row);
-
-    /**
      * Returns the compartment name of the algorithm that generated the data
      *
      * @param workbenchUI The workbench
@@ -69,4 +60,13 @@ public abstract class ACAQResultDataSlotCellUI extends JLabel {
     public static Path getRowStorageFolder(ACAQDataSlot slot, ACAQExportedDataTable.Row row) {
         return slot.getStoragePath().resolve(row.getLocation());
     }
+
+    /**
+     * Renders the data slot row
+     *
+     * @param workbenchUI the workbench
+     * @param slot        The data slot
+     * @param row         The data slot row
+     */
+    public abstract void render(ACAQProjectWorkbench workbenchUI, ACAQDataSlot slot, ACAQExportedDataTable.Row row);
 }

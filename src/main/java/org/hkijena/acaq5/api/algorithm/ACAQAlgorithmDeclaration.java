@@ -12,6 +12,37 @@ import java.util.stream.Collectors;
 public interface ACAQAlgorithmDeclaration {
 
     /**
+     * Gets the registered algorithms, grouped by their menu paths
+     *
+     * @param declarations The declarations to group
+     * @return Map from menu path to algorithms with this menu path
+     */
+    static Map<String, Set<ACAQAlgorithmDeclaration>> groupByMenuPaths(Set<ACAQAlgorithmDeclaration> declarations) {
+        Map<String, Set<ACAQAlgorithmDeclaration>> result = new HashMap<>();
+        for (ACAQAlgorithmDeclaration declaration : declarations) {
+            String menuPath = StringUtils.getCleanedMenuPath(declaration.getMenuPath());
+            Set<ACAQAlgorithmDeclaration> group = result.getOrDefault(menuPath, null);
+            if (group == null) {
+                group = new HashSet<>();
+                result.put(menuPath, group);
+            }
+            group.add(declaration);
+        }
+
+        return result;
+    }
+
+    /**
+     * Gets a sorted list of algorithms
+     *
+     * @param entries the algorithms to sort
+     * @return sorted list
+     */
+    static List<ACAQAlgorithmDeclaration> getSortedList(Set<ACAQAlgorithmDeclaration> entries) {
+        return entries.stream().sorted(Comparator.comparing(ACAQAlgorithmDeclaration::getName)).collect(Collectors.toList());
+    }
+
+    /**
      * Generates an Id for this declaration
      *
      * @return The ID
@@ -98,35 +129,4 @@ public interface ACAQAlgorithmDeclaration {
      * @return if this algorithm should not appear in the list of available algorithms
      */
     boolean isHidden();
-
-    /**
-     * Gets the registered algorithms, grouped by their menu paths
-     *
-     * @param declarations The declarations to group
-     * @return Map from menu path to algorithms with this menu path
-     */
-    static Map<String, Set<ACAQAlgorithmDeclaration>> groupByMenuPaths(Set<ACAQAlgorithmDeclaration> declarations) {
-        Map<String, Set<ACAQAlgorithmDeclaration>> result = new HashMap<>();
-        for (ACAQAlgorithmDeclaration declaration : declarations) {
-            String menuPath = StringUtils.getCleanedMenuPath(declaration.getMenuPath());
-            Set<ACAQAlgorithmDeclaration> group = result.getOrDefault(menuPath, null);
-            if (group == null) {
-                group = new HashSet<>();
-                result.put(menuPath, group);
-            }
-            group.add(declaration);
-        }
-
-        return result;
-    }
-
-    /**
-     * Gets a sorted list of algorithms
-     *
-     * @param entries the algorithms to sort
-     * @return sorted list
-     */
-    static List<ACAQAlgorithmDeclaration> getSortedList(Set<ACAQAlgorithmDeclaration> entries) {
-        return entries.stream().sorted(Comparator.comparing(ACAQAlgorithmDeclaration::getName)).collect(Collectors.toList());
-    }
 }

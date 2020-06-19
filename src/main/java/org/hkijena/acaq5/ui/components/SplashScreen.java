@@ -16,6 +16,17 @@ public class SplashScreen extends JFrame {
         initialize();
     }
 
+    public static void main(String[] args) {
+        getInstance().showSplash();
+    }
+
+    public static SplashScreen getInstance() {
+        if (instance == null) {
+            instance = new SplashScreen();
+        }
+        return instance;
+    }
+
     private void initialize() {
         setSize(640, 480);
         JPanel contentPane = new JPanel(new BorderLayout());
@@ -40,16 +51,5 @@ public class SplashScreen extends JFrame {
 
     public void hideSplash() {
         setVisible(false);
-    }
-
-    public static void main(String[] args) {
-        getInstance().showSplash();
-    }
-
-    public static SplashScreen getInstance() {
-        if (instance == null) {
-            instance = new SplashScreen();
-        }
-        return instance;
     }
 }

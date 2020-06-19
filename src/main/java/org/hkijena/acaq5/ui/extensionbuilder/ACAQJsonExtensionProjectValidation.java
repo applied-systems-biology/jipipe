@@ -15,6 +15,7 @@ public class ACAQJsonExtensionProjectValidation implements ACAQValidatable {
 
     /**
      * Creates a new instance
+     *
      * @param extension the extension
      */
     public ACAQJsonExtensionProjectValidation(ACAQJsonExtension extension) {
@@ -25,8 +26,8 @@ public class ACAQJsonExtensionProjectValidation implements ACAQValidatable {
     public void reportValidity(ACAQValidityReport report) {
         extension.reportValidity(report);
         for (JsonAlgorithmDeclaration declaration : extension.getAlgorithmDeclarations()) {
-            if(!StringUtils.isNullOrEmpty(declaration.getId())) {
-                if(ACAQAlgorithmRegistry.getInstance().hasAlgorithmWithId(declaration.getId())) {
+            if (!StringUtils.isNullOrEmpty(declaration.getId())) {
+                if (ACAQAlgorithmRegistry.getInstance().hasAlgorithmWithId(declaration.getId())) {
                     report.forCategory("Algorithms").forCategory(declaration.getName()).reportIsInvalid("Already registered: " + declaration.getId(),
                             "Currently there is already an algorithm with the same ID.",
                             "If this is intenional, you do not need to do something. If not, please assign an unique identifier.",

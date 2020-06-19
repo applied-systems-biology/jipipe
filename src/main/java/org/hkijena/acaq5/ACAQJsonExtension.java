@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -54,6 +53,22 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
      * Creates a new instance
      */
     public ACAQJsonExtension() {
+    }
+
+    /**
+     * Loads a {@link ACAQJsonExtension} from JSON
+     *
+     * @param jsonData JSON data
+     * @return Loaded instance
+     */
+    public static ACAQJsonExtension loadProject(JsonNode jsonData) {
+        try {
+            return JsonUtils.getObjectMapper().readerFor(ACAQJsonExtension.class).readValue(jsonData);
+        } catch (IOException e) {
+            throw new UserFriendlyRuntimeException(e, "Could not load JSON plugin.",
+                    "ACAQ JSON extension loader", "The plugin file was corrupted, so ACAQ5 does not know how to load some essential information. Or you are using an older ACAQ5 version.",
+                    "Try to update ACAQ5. If this does not work, contact the plugin's author.");
+        }
     }
 
     @Override
@@ -195,7 +210,7 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
      * @param algorithmDeclaration The algorithm type
      */
     public void addAlgorithm(JsonAlgorithmDeclaration algorithmDeclaration) {
-        if(algorithmDeclarations == null)
+        if (algorithmDeclarations == null)
             deserializeAlgorithmDeclarations();
         algorithmDeclarations.add(algorithmDeclaration);
         eventBus.post(new ExtensionContentAddedEvent(this, algorithmDeclaration));
@@ -205,8 +220,9 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
      * Responsible for deserializing the algorithms
      */
     private void deserializeAlgorithmDeclarations() {
-        if(algorithmDeclarations == null) {
-            TypeReference<HashSet<JsonAlgorithmDeclaration>> typeReference = new TypeReference<HashSet<JsonAlgorithmDeclaration>>() {};
+        if (algorithmDeclarations == null) {
+            TypeReference<HashSet<JsonAlgorithmDeclaration>> typeReference = new TypeReference<HashSet<JsonAlgorithmDeclaration>>() {
+            };
             try {
                 algorithmDeclarations = JsonUtils.getObjectMapper().readerFor(typeReference).readValue(serializedJson.get("algorithms"));
             } catch (IOException e) {
@@ -220,7 +236,7 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
      */
     @JsonGetter("algorithms")
     public Set<JsonAlgorithmDeclaration> getAlgorithmDeclarations() {
-        if(algorithmDeclarations == null)
+        if (algorithmDeclarations == null)
             deserializeAlgorithmDeclarations();
         return Collections.unmodifiableSet(algorithmDeclarations);
     }
@@ -260,7 +276,7 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
                     "Please provide a meaningful name for your plugin.",
                     this);
         }
-        if(algorithmDeclarations == null)
+        if (algorithmDeclarations == null)
             deserializeAlgorithmDeclarations();
         for (JsonAlgorithmDeclaration declaration : algorithmDeclarations) {
             report.forCategory("Algorithms").forCategory(declaration.getName()).report(declaration);
@@ -279,26 +295,10 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
      * @param declaration Algorithm type
      */
     public void removeAlgorithm(JsonAlgorithmDeclaration declaration) {
-        if(algorithmDeclarations == null)
+        if (algorithmDeclarations == null)
             deserializeAlgorithmDeclarations();
         if (algorithmDeclarations.remove(declaration)) {
             eventBus.post(new ExtensionContentRemovedEvent(this, declaration));
-        }
-    }
-
-    /**
-     * Loads a {@link ACAQJsonExtension} from JSON
-     *
-     * @param jsonData JSON data
-     * @return Loaded instance
-     */
-    public static ACAQJsonExtension loadProject(JsonNode jsonData) {
-        try {
-            return JsonUtils.getObjectMapper().readerFor(ACAQJsonExtension.class).readValue(jsonData);
-        } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Could not load JSON plugin.",
-                    "ACAQ JSON extension loader", "The plugin file was corrupted, so ACAQ5 does not know how to load some essential information. Or you are using an older ACAQ5 version.",
-                    "Try to update ACAQ5. If this does not work, contact the plugin's author.");
         }
     }
 

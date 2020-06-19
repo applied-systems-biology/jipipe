@@ -20,6 +20,10 @@ public class GraphEditorUISettings implements ACAQParameterCollection {
     private boolean switchPanningDirection = false;
     private boolean enableLayoutHelper = true;
 
+    public static GraphEditorUISettings getInstance() {
+        return ACAQDefaultRegistry.getInstance().getSettingsRegistry().getSettings(ID, GraphEditorUISettings.class);
+    }
+
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -61,9 +65,5 @@ public class GraphEditorUISettings implements ACAQParameterCollection {
     public void setEnableLayoutHelper(boolean enableLayoutHelper) {
         this.enableLayoutHelper = enableLayoutHelper;
         getEventBus().post(new ParameterChangedEvent(this, "enable-layout-helper"));
-    }
-
-    public static GraphEditorUISettings getInstance() {
-        return ACAQDefaultRegistry.getInstance().getSettingsRegistry().getSettings(ID, GraphEditorUISettings.class);
     }
 }

@@ -865,13 +865,13 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      *
      * @param report     the report
      * @param targetNode the target node
-     * @param satisfied all algorithms that are considered to have a satisfied input
+     * @param satisfied  all algorithms that are considered to have a satisfied input
      */
     public void reportValidity(ACAQValidityReport report, ACAQGraphNode targetNode, Set<ACAQGraphNode> satisfied) {
         List<ACAQGraphNode> predecessorAlgorithms = getPredecessorAlgorithms(targetNode, traverseAlgorithms());
         predecessorAlgorithms.add(targetNode);
         for (ACAQGraphNode node : predecessorAlgorithms) {
-            if(satisfied.contains(node))
+            if (satisfied.contains(node))
                 continue;
             if (node instanceof ACAQAlgorithm) {
                 ACAQAlgorithm algorithm = (ACAQAlgorithm) node;

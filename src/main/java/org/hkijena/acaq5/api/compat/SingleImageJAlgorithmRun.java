@@ -45,6 +45,31 @@ public class SingleImageJAlgorithmRun implements ACAQValidatable {
         algorithm.getEventBus().register(this);
     }
 
+    /**
+     * Returns true if an algorithm can be run in a single ImageJ algorithm run
+     *
+     * @param declaration the algorithm type
+     * @return if the algorithm is compatible
+     */
+    public static boolean isCompatible(ACAQAlgorithmDeclaration declaration) {
+        switch (declaration.getCategory()) {
+            case Internal:
+            case Annotation:
+                return false;
+        }
+        ACAQGraphNode algorithm = declaration.newInstance();
+        for (ACAQDataSlot inputSlot : algorithm.getInputSlots()) {
+            if (!ACAQImageJAdapterRegistry.getInstance().supportsACAQData(inputSlot.getAcceptedDataType()))
+                return false;
+        }
+        for (ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
+            if (!ACAQImageJAdapterRegistry.getInstance().supportsACAQData(outputSlot.getAcceptedDataType()))
+                return false;
+        }
+
+        return true;
+    }
+
     @Override
     public void reportValidity(ACAQValidityReport report) {
         if (algorithm == null) {
@@ -164,31 +189,6 @@ public class SingleImageJAlgorithmRun implements ACAQValidatable {
 
     public EventBus getEventBus() {
         return eventBus;
-    }
-
-    /**
-     * Returns true if an algorithm can be run in a single ImageJ algorithm run
-     *
-     * @param declaration the algorithm type
-     * @return if the algorithm is compatible
-     */
-    public static boolean isCompatible(ACAQAlgorithmDeclaration declaration) {
-        switch (declaration.getCategory()) {
-            case Internal:
-            case Annotation:
-                return false;
-        }
-        ACAQGraphNode algorithm = declaration.newInstance();
-        for (ACAQDataSlot inputSlot : algorithm.getInputSlots()) {
-            if (!ACAQImageJAdapterRegistry.getInstance().supportsACAQData(inputSlot.getAcceptedDataType()))
-                return false;
-        }
-        for (ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
-            if (!ACAQImageJAdapterRegistry.getInstance().supportsACAQData(outputSlot.getAcceptedDataType()))
-                return false;
-        }
-
-        return true;
     }
 
     /**

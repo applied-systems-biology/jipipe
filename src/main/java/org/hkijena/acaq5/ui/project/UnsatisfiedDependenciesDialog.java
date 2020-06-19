@@ -31,6 +31,24 @@ public class UnsatisfiedDependenciesDialog extends JDialog {
         initialize();
     }
 
+    /**
+     * Shows the dialog
+     *
+     * @param parent        the parent
+     * @param fileName      the project file or folder. Only for informational purposes
+     * @param dependencySet the unsatisfied dependencies
+     * @return if loading should be continued anyways
+     */
+    public static boolean showDialog(Component parent, Path fileName, Set<ACAQDependency> dependencySet) {
+        UnsatisfiedDependenciesDialog dialog = new UnsatisfiedDependenciesDialog(parent, fileName, dependencySet);
+        dialog.setModal(true);
+        dialog.pack();
+        dialog.setSize(640, 480);
+        dialog.setLocationRelativeTo(parent);
+        dialog.setVisible(true);
+        return dialog.continueLoading;
+    }
+
     private void initialize() {
         setTitle("Missing dependencies detected");
         JPanel content = new JPanel(new BorderLayout(8, 8));
@@ -73,23 +91,5 @@ public class UnsatisfiedDependenciesDialog extends JDialog {
 
     public boolean isContinueLoading() {
         return continueLoading;
-    }
-
-    /**
-     * Shows the dialog
-     *
-     * @param parent        the parent
-     * @param fileName      the project file or folder. Only for informational purposes
-     * @param dependencySet the unsatisfied dependencies
-     * @return if loading should be continued anyways
-     */
-    public static boolean showDialog(Component parent, Path fileName, Set<ACAQDependency> dependencySet) {
-        UnsatisfiedDependenciesDialog dialog = new UnsatisfiedDependenciesDialog(parent, fileName, dependencySet);
-        dialog.setModal(true);
-        dialog.pack();
-        dialog.setSize(640, 480);
-        dialog.setLocationRelativeTo(parent);
-        dialog.setVisible(true);
-        return dialog.continueLoading;
     }
 }

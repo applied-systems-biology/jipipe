@@ -68,6 +68,27 @@ public class AddAlgorithmSlotPanel extends JPanel {
         }
     }
 
+    /**
+     * Shows a dialog for adding slots
+     *
+     * @param parent    parent component
+     * @param algorithm target algorithm
+     * @param slotType  slot type to be created
+     */
+    public static void showDialog(Component parent, ACAQGraphNode algorithm, ACAQSlotType slotType) {
+        JDialog dialog = new JDialog();
+        AddAlgorithmSlotPanel panel = new AddAlgorithmSlotPanel(algorithm, slotType);
+        panel.setDialog(dialog);
+        dialog.setContentPane(panel);
+        dialog.setTitle("Add slot");
+        dialog.setModal(true);
+        dialog.pack();
+        dialog.setSize(new Dimension(500, 600));
+        dialog.setLocationRelativeTo(parent);
+        UIUtils.addEscapeListener(dialog);
+        dialog.setVisible(true);
+    }
+
     private void setInitialName() {
         String initialValue = slotType + " data";
 
@@ -99,7 +120,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
             }
         });
         JScrollPane scrollPane = new JScrollPane(datatypeList);
-        formPanel.addWideToForm(scrollPane, null);
+        formPanel.addVerticalGlue(scrollPane, null);
 
         nameEditor = new JXTextField();
         nameEditor.addKeyListener(new KeyAdapter() {
@@ -321,26 +342,5 @@ public class AddAlgorithmSlotPanel extends JPanel {
 
     public void setDialog(JDialog dialog) {
         this.dialog = dialog;
-    }
-
-    /**
-     * Shows a dialog for adding slots
-     *
-     * @param parent    parent component
-     * @param algorithm target algorithm
-     * @param slotType  slot type to be created
-     */
-    public static void showDialog(Component parent, ACAQGraphNode algorithm, ACAQSlotType slotType) {
-        JDialog dialog = new JDialog();
-        AddAlgorithmSlotPanel panel = new AddAlgorithmSlotPanel(algorithm, slotType);
-        panel.setDialog(dialog);
-        dialog.setContentPane(panel);
-        dialog.setTitle("Add slot");
-        dialog.setModal(true);
-        dialog.pack();
-        dialog.setSize(new Dimension(500, 600));
-        dialog.setLocationRelativeTo(parent);
-        UIUtils.addEscapeListener(dialog);
-        dialog.setVisible(true);
     }
 }

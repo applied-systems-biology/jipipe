@@ -134,6 +134,7 @@ public class GraphNodeParametersUI extends ACAQWorkbenchPanel {
 
     /**
      * Triggered when the parameter structure was changed
+     *
      * @param event the event
      */
     @Subscribe
@@ -143,6 +144,7 @@ public class GraphNodeParametersUI extends ACAQWorkbenchPanel {
 
     /**
      * Triggered when the algorithm graph was changed
+     *
      * @param event the event
      */
     @Subscribe

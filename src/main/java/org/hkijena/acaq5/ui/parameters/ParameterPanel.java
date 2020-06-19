@@ -89,6 +89,10 @@ public class ParameterPanel extends FormPanel implements Contextual {
         }
     }
 
+    private static List<String> getParameterKeysSortedByParameterName(Map<String, ACAQParameterAccess> parameters, Collection<String> keys) {
+        return keys.stream().sorted(Comparator.comparing(k0 -> parameters.get(k0).getName())).collect(Collectors.toList());
+    }
+
     private void initialize() {
         if (withSearchBar) {
             JToolBar toolBar = new JToolBar();
@@ -105,7 +109,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
      * Reloads the form. This re-traverses the parameters and recreates the UI elements
      */
     public void reloadForm() {
-        if(displayedParameters != null) {
+        if (displayedParameters != null) {
             if (forceTraverse || !(getDisplayedParameters() instanceof ACAQParameterTree))
                 traversed = new ACAQParameterTree(getDisplayedParameters());
             else
@@ -183,11 +187,10 @@ public class ParameterPanel extends FormPanel implements Contextual {
             uiList.add(ui);
         }
         Comparator<ACAQParameterEditorUI> comparator;
-        if(withoutLabelSeparation) {
+        if (withoutLabelSeparation) {
             comparator = Comparator.comparing((ACAQParameterEditorUI u) -> u.getParameterAccess().getUIOrder())
                     .thenComparing(u -> u.getParameterAccess().getName());
-        }
-        else {
+        } else {
             comparator = Comparator.comparing((ACAQParameterEditorUI u) -> !u.isUILabelEnabled())
                     .thenComparing(u -> u.getParameterAccess().getUIOrder())
                     .thenComparing(u -> u.getParameterAccess().getName());
@@ -320,9 +323,5 @@ public class ParameterPanel extends FormPanel implements Contextual {
     @Override
     public Context context() {
         return context;
-    }
-
-    private static List<String> getParameterKeysSortedByParameterName(Map<String, ACAQParameterAccess> parameters, Collection<String> keys) {
-        return keys.stream().sorted(Comparator.comparing(k0 -> parameters.get(k0).getName())).collect(Collectors.toList());
     }
 }

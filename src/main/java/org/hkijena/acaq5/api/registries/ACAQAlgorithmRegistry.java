@@ -36,6 +36,13 @@ public class ACAQAlgorithmRegistry implements ACAQValidatable {
     }
 
     /**
+     * @return Singleton instance
+     */
+    public static ACAQAlgorithmRegistry getInstance() {
+        return ACAQDefaultRegistry.getInstance().getAlgorithmRegistry();
+    }
+
+    /**
      * Schedules registration after all dependencies of the registration task are satisfied
      *
      * @param task A registration task
@@ -56,10 +63,10 @@ public class ACAQAlgorithmRegistry implements ACAQValidatable {
     }
 
     private void run() {
-        if(isRunning)
+        if (isRunning)
             return;
         isRunning = true;
-        while(stateChanged) {
+        while (stateChanged) {
             stateChanged = false;
             for (ACAQAlgorithmRegistrationTask task : ImmutableList.copyOf(registrationTasks)) {
                 if (task.canRegister()) {
@@ -220,13 +227,6 @@ public class ACAQAlgorithmRegistry implements ACAQValidatable {
         for (ACAQAlgorithmRegistrationTask task : registrationTasks) {
             report.forCategory("Unregistered algorithms").forCategory(task.toString()).report(task);
         }
-    }
-
-    /**
-     * @return Singleton instance
-     */
-    public static ACAQAlgorithmRegistry getInstance() {
-        return ACAQDefaultRegistry.getInstance().getAlgorithmRegistry();
     }
 
 }

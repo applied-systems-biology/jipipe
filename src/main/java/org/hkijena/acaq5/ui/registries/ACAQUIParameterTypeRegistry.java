@@ -27,6 +27,10 @@ public class ACAQUIParameterTypeRegistry {
 
     }
 
+    public static ACAQUIParameterTypeRegistry getInstance() {
+        return ACAQDefaultRegistry.getInstance().getUIParameterTypeRegistry();
+    }
+
     /**
      * Registers a new parameter type
      *
@@ -111,9 +115,5 @@ public class ACAQUIParameterTypeRegistry {
      */
     public ACAQDocumentation getGeneratorDocumentationFor(Class<? extends ACAQParameterGeneratorUI> generatorClass) {
         return parameterGeneratorDocumentations.get(generatorClass);
-    }
-
-    public static ACAQUIParameterTypeRegistry getInstance() {
-        return ACAQDefaultRegistry.getInstance().getUIParameterTypeRegistry();
     }
 }

@@ -36,6 +36,27 @@ public class ACAQCompartmentGraphCopyPasteBehavior implements ACAQAlgorithmGraph
         this.editorUI = editorUI;
     }
 
+    private static String getStringFromClipboard() {
+        String ret = "";
+        Clipboard sysClip = Toolkit.getDefaultToolkit().getSystemClipboard();
+
+        Transferable clipTf = sysClip.getContents(null);
+
+        if (clipTf != null) {
+
+            if (clipTf.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+                try {
+                    ret = (String) clipTf
+                            .getTransferData(DataFlavor.stringFlavor);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return ret;
+    }
+
     @Override
     public void copy(Set<ACAQGraphNode> compartmentNodes) {
         // This copy action converts the selection of ACAQProjectCompartment into one large graph
@@ -129,26 +150,5 @@ public class ACAQCompartmentGraphCopyPasteBehavior implements ACAQAlgorithmGraph
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private static String getStringFromClipboard() {
-        String ret = "";
-        Clipboard sysClip = Toolkit.getDefaultToolkit().getSystemClipboard();
-
-        Transferable clipTf = sysClip.getContents(null);
-
-        if (clipTf != null) {
-
-            if (clipTf.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-                try {
-                    ret = (String) clipTf
-                            .getTransferData(DataFlavor.stringFlavor);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        return ret;
     }
 }
