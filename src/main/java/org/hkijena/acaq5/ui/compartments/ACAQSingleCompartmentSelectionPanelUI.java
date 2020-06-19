@@ -12,7 +12,7 @@ import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
-import org.hkijena.acaq5.ui.extensionbuilder.ACAQGraphWrapperAlgorithmExporter;
+import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonAlgorithmExporter;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQSlotEditorUI;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
@@ -138,7 +138,7 @@ public class ACAQSingleCompartmentSelectionPanelUI extends ACAQProjectWorkbenchP
 
         ACAQAlgorithmGraph extractedGraph = getProject().getGraph().extract(getProject().getGraph().getAlgorithmsWithCompartment(compartmentId), true);
         NodeGroup nodeGroup = new NodeGroup(extractedGraph, true);
-        ACAQGraphWrapperAlgorithmExporter.createExporter(getProjectWorkbench(), nodeGroup, compartment.getName(), compartment.getCustomDescription());
+        ACAQJsonAlgorithmExporter.createExporter(getProjectWorkbench(), nodeGroup, compartment.getName(), compartment.getCustomDescription());
     }
 
     private void exportCompartmentToJSON() {

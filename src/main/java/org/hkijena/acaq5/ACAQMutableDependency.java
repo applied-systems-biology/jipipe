@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.ACAQDocumentation;
-import org.hkijena.acaq5.api.ACAQProjectMetadata;
+import org.hkijena.acaq5.api.ACAQMetadata;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 
@@ -15,7 +15,7 @@ import java.nio.file.Path;
  * {@link ACAQDependency} is deserialize to this type.
  */
 public class ACAQMutableDependency implements ACAQDependency {
-    private ACAQProjectMetadata metadata = new ACAQProjectMetadata();
+    private ACAQMetadata metadata = new ACAQMetadata();
     private String dependencyId;
     private String dependencyVersion = "1.0.0";
     private EventBus eventBus = new EventBus();
@@ -32,7 +32,7 @@ public class ACAQMutableDependency implements ACAQDependency {
      * @param other the original
      */
     public ACAQMutableDependency(ACAQDependency other) {
-        this.metadata = new ACAQProjectMetadata(other.getMetadata());
+        this.metadata = new ACAQMetadata(other.getMetadata());
         this.dependencyId = other.getDependencyId();
         this.dependencyVersion = other.getDependencyVersion();
     }
@@ -41,7 +41,7 @@ public class ACAQMutableDependency implements ACAQDependency {
     @JsonGetter("metadata")
     @ACAQParameter("metadata")
     @ACAQDocumentation(name = "Metadata")
-    public ACAQProjectMetadata getMetadata() {
+    public ACAQMetadata getMetadata() {
         return metadata;
     }
 
@@ -51,7 +51,7 @@ public class ACAQMutableDependency implements ACAQDependency {
      * @param metadata The metadata
      */
     @JsonSetter("metadata")
-    public void setMetadata(ACAQProjectMetadata metadata) {
+    public void setMetadata(ACAQMetadata metadata) {
         this.metadata = metadata;
     }
 

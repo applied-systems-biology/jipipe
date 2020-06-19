@@ -3,6 +3,8 @@ package org.hkijena.acaq5.ui.extensionbuilder;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQDefaultDocumentation;
 import org.hkijena.acaq5.api.grouping.JsonAlgorithmDeclaration;
+import org.hkijena.acaq5.api.grouping.parameters.GraphNodeParameterEditorUI;
+import org.hkijena.acaq5.api.grouping.parameters.GraphNodeParametersUI;
 import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
@@ -20,7 +22,7 @@ import java.awt.*;
 /**
  * UI around a {@link JsonAlgorithmDeclaration}
  */
-public class GraphWrapperAlgorithmDeclarationUI extends ACAQJsonExtensionWorkbenchPanel {
+public class JsonAlgorithmDeclarationUI extends ACAQJsonExtensionWorkbenchPanel {
 
     private JsonAlgorithmDeclaration declaration;
 
@@ -28,7 +30,7 @@ public class GraphWrapperAlgorithmDeclarationUI extends ACAQJsonExtensionWorkben
      * @param workbenchUI the workbench
      * @param declaration the algorithm declaration
      */
-    public GraphWrapperAlgorithmDeclarationUI(ACAQJsonExtensionWorkbench workbenchUI, JsonAlgorithmDeclaration declaration) {
+    public JsonAlgorithmDeclarationUI(ACAQJsonExtensionWorkbench workbenchUI, JsonAlgorithmDeclaration declaration) {
         super(workbenchUI);
         this.declaration = declaration;
 
@@ -79,9 +81,13 @@ public class GraphWrapperAlgorithmDeclarationUI extends ACAQJsonExtensionWorkben
             }
         });
 
-        FormPanel.GroupHeaderPanel parameterHeader = parameterEditor.addGroupHeader("Parameters", UIUtils.getIconFromResources("parameters.png"));
-        parameterHeader.setDescription("You can use the following settings to export parameters to ");
-
+        FormPanel.GroupHeaderPanel parameterHeader = parameterEditor.addGroupHeader("Exported parameters", UIUtils.getIconFromResources("parameters.png"));
+        parameterHeader.setDescription("You can use the following settings to export parameters that then can be changed by users. Parameters are organized in groups " +
+                "with a customizable name and description. You can either manually define groups or add all available parameters of a selected algorithm. " +
+                "If you want to edit the parameter default values, you can find them in 'Edit algorithm'.");
+        GraphNodeParametersUI exportedParametersEditor = new GraphNodeParametersUI(getWorkbench(), declaration.getExportedParameters());
+        exportedParametersEditor.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        parameterEditor.addWideToForm(exportedParametersEditor, null);
 
         parameterEditor.addVerticalGlue();
     }

@@ -291,4 +291,13 @@ public class StringUtils {
         }
         return true;
     }
+
+    /**
+     * Returns an empty string if s is null otherwise returns s
+     * @param s the string
+     * @return an empty string if s is null otherwise returns s
+     */
+    public static String nullToEmpty(String s) {
+        return s == null ? "" : s;
+    }
 }

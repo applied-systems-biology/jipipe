@@ -49,6 +49,11 @@ public class ParameterPanel extends FormPanel implements Contextual {
      */
     public static final int WITH_SEARCH_BAR = 512;
 
+    /**
+     * With this flag, parameters that do not show a label are not put below anymore
+     */
+    public static final int WITHOUT_LABEL_SEPARATION = 1024;
+
     private ACAQWorkbench workbench;
     private Context context;
     private ACAQParameterCollection displayedParameters;
@@ -56,6 +61,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
     private boolean noEmptyGroupHeaders;
     private boolean forceTraverse;
     private boolean withSearchBar;
+    private boolean withoutLabelSeparation;
     private ACAQParameterTree traversed;
     private SearchTextField searchField = new SearchTextField();
 
@@ -71,6 +77,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
         this.noEmptyGroupHeaders = (flags & NO_EMPTY_GROUP_HEADERS) == NO_EMPTY_GROUP_HEADERS;
         this.forceTraverse = (flags & FORCE_TRAVERSE) == FORCE_TRAVERSE;
         this.withSearchBar = (flags & WITH_SEARCH_BAR) == WITH_SEARCH_BAR;
+        this.withoutLabelSeparation = (flags & WITHOUT_LABEL_SEPARATION) == WITHOUT_LABEL_SEPARATION;
         this.workbench = workbench;
         this.context = workbench.getContext();
         this.displayedParameters = displayedParameters;
@@ -80,26 +87,6 @@ public class ParameterPanel extends FormPanel implements Contextual {
             reloadForm();
             this.displayedParameters.getEventBus().register(this);
         }
-    }
-
-    /**
-     * @param workbench           SciJava context
-     * @param traversed Traversed parameters
-     * @param documentation       Optional documentation
-     * @param flags               Flags
-     */
-    public ParameterPanel(ACAQWorkbench workbench, ACAQParameterTree traversed, MarkdownDocument documentation, int flags) {
-        super(documentation, flags);
-        this.noGroupHeaders = (flags & NO_GROUP_HEADERS) == NO_GROUP_HEADERS;
-        this.noEmptyGroupHeaders = (flags & NO_EMPTY_GROUP_HEADERS) == NO_EMPTY_GROUP_HEADERS;
-        this.forceTraverse = (flags & FORCE_TRAVERSE) == FORCE_TRAVERSE;
-        this.withSearchBar = (flags & WITH_SEARCH_BAR) == WITH_SEARCH_BAR;
-        this.workbench = workbench;
-        this.context = workbench.getContext();
-        this.displayedParameters = null;
-        this.traversed = traversed;
-        initialize();
-        reloadForm();
     }
 
     private void initialize() {
@@ -195,9 +182,17 @@ public class ParameterPanel extends FormPanel implements Contextual {
             ACAQParameterEditorUI ui = ACAQUIParameterTypeRegistry.getInstance().createEditorFor(workbench, parameterAccess);
             uiList.add(ui);
         }
-        for (ACAQParameterEditorUI ui : uiList.stream().sorted(Comparator.comparing((ACAQParameterEditorUI u) -> !u.isUILabelEnabled())
-                .thenComparing(u -> u.getParameterAccess().getUIOrder())
-                .thenComparing(u -> u.getParameterAccess().getName())).collect(Collectors.toList())) {
+        Comparator<ACAQParameterEditorUI> comparator;
+        if(withoutLabelSeparation) {
+            comparator = Comparator.comparing((ACAQParameterEditorUI u) -> u.getParameterAccess().getUIOrder())
+                    .thenComparing(u -> u.getParameterAccess().getName());
+        }
+        else {
+            comparator = Comparator.comparing((ACAQParameterEditorUI u) -> !u.isUILabelEnabled())
+                    .thenComparing(u -> u.getParameterAccess().getUIOrder())
+                    .thenComparing(u -> u.getParameterAccess().getName());
+        }
+        for (ACAQParameterEditorUI ui : uiList.stream().sorted(comparator).collect(Collectors.toList())) {
             ACAQParameterAccess parameterAccess = ui.getParameterAccess();
             JPanel labelPanel = new JPanel(new BorderLayout());
             if (ui.isUILabelEnabled())

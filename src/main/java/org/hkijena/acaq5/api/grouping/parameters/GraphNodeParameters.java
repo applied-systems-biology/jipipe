@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.acaq5.api.ACAQValidatable;
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.grouping.events.ParameterReferencesChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
@@ -18,7 +20,7 @@ import java.util.List;
  * Contains a list of {@link GraphNodeParameterReferenceGroup} and {@link GraphNodeParameterCollectionReference}
  * Stores references to parameters within an {@link org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph}
  */
-public class GraphNodeParameters {
+public class GraphNodeParameters implements ACAQValidatable {
     private final EventBus eventBus = new EventBus();
     private ACAQAlgorithmGraph graph;
     private List<GraphNodeParameterReferenceGroup> parameterReferenceGroups = new ArrayList<>();
@@ -129,16 +131,22 @@ public class GraphNodeParameters {
         eventBus.post(new ParameterReferencesChangedEvent());
     }
 
-    /**
-     * Converts the references into actual parameter collections
-     *
-     * @param tree the tree of the referenced parameters
-     * @return referenced parameters
-     */
-    public List<ACAQParameterCollection> build(ACAQParameterTree tree) {
-        List<ACAQParameterCollection> result = new ArrayList<>();
-
-        return result;
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+        if(graph != null) {
+            ACAQParameterTree tree = graph.getParameterTree();
+            for (GraphNodeParameterReferenceGroup parameterReferenceGroup : parameterReferenceGroups) {
+                ACAQValidityReport group = report.forCategory(parameterReferenceGroup.getName());
+                for (GraphNodeParameterReference reference : parameterReferenceGroup.getContent()) {
+                    if(reference.resolve(tree) == null) {
+                        group.forCategory(reference.getName(tree)).reportIsInvalid("Could not find parameter!",
+                                "There is a an exported parameter referencing the internal ID '" + reference.getPath() + "'. " +
+                                        "It could not be found.",
+                                "Please check if you did not delete the node that contains the referenced parameter.",
+                                this);
+                    }
+                }
+            }
+        }
     }
-
 }

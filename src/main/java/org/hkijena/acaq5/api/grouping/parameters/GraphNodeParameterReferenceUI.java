@@ -37,32 +37,37 @@ public class GraphNodeParameterReferenceUI extends JPanel {
         JLabel infoLabel = new JLabel(UIUtils.getIconFromResources("parameters.png"));
 
         ACAQParameterAccess referencedParameter = reference.resolve(tree);
-        infoLabel.setToolTipText(String.format("<html><strong>Reference to parameter '%s'</strong><br/><br/>" +
-                        "Type <strong>'%s'</strong><br/>" +
-                        "Unique key <strong>%s</strong><br/><br/>%s</html>",
-                reference.getOriginalName(tree),
-                ACAQParameterTypeRegistry.getInstance().getDeclarationByFieldClass(referencedParameter.getFieldClass()).getName(),
-                reference.getPath(),
-                referencedParameter.getDescription()));
+        if(referencedParameter != null) {
+            infoLabel.setToolTipText(String.format("<html><strong>Reference to parameter '%s'</strong><br/><br/>" +
+                            "Type <strong>'%s'</strong><br/>" +
+                            "Unique key <strong>%s</strong><br/><br/>%s</html>",
+                    reference.getOriginalName(tree),
+                    ACAQParameterTypeRegistry.getInstance().getDeclarationByFieldClass(referencedParameter.getFieldClass()).getName(),
+                    reference.getPath(),
+                    referencedParameter.getDescription()));
+            FancyTextField nameEditor = new FancyTextField(new JLabel(UIUtils.getIconFromResources("cog.png")),
+                    reference.getOriginalName(tree));
+            nameEditor.setText(reference.getName(tree));
+            nameEditor.getTextField().getDocument().addDocumentListener(new DocumentChangeListener() {
+                @Override
+                public void changed(DocumentEvent documentEvent) {
+                    reference.setCustomName(nameEditor.getText());
+                }
+            });
+            add(nameEditor, BorderLayout.CENTER);
+
+            JButton changeDescriptionButton = new JButton(UIUtils.getIconFromResources("text2.png"));
+            UIUtils.makeFlat(changeDescriptionButton);
+            changeDescriptionButton.setToolTipText("Change description");
+            changeDescriptionButton.addActionListener(e -> changeDescription());
+            add(changeDescriptionButton, BorderLayout.EAST);
+        }
+        else {
+            infoLabel.setIcon(UIUtils.getIconFromResources("error.png"));
+            infoLabel.setText("Not found");
+            infoLabel.setToolTipText("The parameter '" + reference.getPath() +"' was not found. Please remove this item.");
+        }
         add(infoLabel, BorderLayout.WEST);
-
-
-        FancyTextField nameEditor = new FancyTextField(new JLabel(UIUtils.getIconFromResources("cog.png")),
-                reference.getOriginalName(tree));
-        nameEditor.setText(reference.getName(tree));
-        nameEditor.getTextField().getDocument().addDocumentListener(new DocumentChangeListener() {
-            @Override
-            public void changed(DocumentEvent documentEvent) {
-                reference.setCustomName(nameEditor.getText());
-            }
-        });
-        add(nameEditor, BorderLayout.CENTER);
-
-        JButton changeDescriptionButton = new JButton(UIUtils.getIconFromResources("text2.png"));
-        UIUtils.makeFlat(changeDescriptionButton);
-        changeDescriptionButton.setToolTipText("Change description");
-        changeDescriptionButton.addActionListener(e -> changeDescription());
-        add(changeDescriptionButton, BorderLayout.EAST);
     }
 
     private void changeDescription() {

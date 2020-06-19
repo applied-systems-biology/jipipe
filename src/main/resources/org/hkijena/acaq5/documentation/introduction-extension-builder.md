@@ -2,22 +2,14 @@
 
 # ACAQ5 Extension Builder
 
-ACAQ5 supports two types of extensions:
-
-<table>
-<tr><td><img src="image://icons/module-java-32.png"/></td><td>Java extensions</td></tr>
-<tr><td><img src="image://icons/module-json-32.png"/></td><td>JSON extensions</td></tr>
-</table>
-
-While Java extensions need to be developed as ImageJ java plugin, JSON extensions can be created without
-programming via this user interface.
+The extension builder allows you to publish one or multiple pipelines into a custom algorithm node without the need for
+programming.
 
 On opening the extension builder, you will see three additional tabs:
 
 <table>
 <tr><td><img src="image://icons/wrench.png"/></td><td>Extension settings</td></tr>
 <tr><td><img src="image://icons/module.png"/></td><td>Extension contents</td></tr>
-<tr><td><img src="image://icons/connect.png"/></td><td>Annotations</td></tr>
 </table>
 
 ## Extension settings
@@ -27,12 +19,8 @@ uniquely identifies your extension to allow other projects to trace back depende
 
 ## Extension contents
 
-This tab contains all algorithms and annotation types defined in the extension. You can use it to 
+This tab contains all algorithms types defined in the extension. You can use it to 
 add more content, or delete entries.
-
-## Annotations
-
-A graphical editor to create annotation types, and setup a hierarchy of annotation types.
 
 ## Installation
 

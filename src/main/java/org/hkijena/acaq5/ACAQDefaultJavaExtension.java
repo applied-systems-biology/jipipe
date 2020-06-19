@@ -1,7 +1,8 @@
 package org.hkijena.acaq5;
 
 import com.google.common.eventbus.EventBus;
-import org.hkijena.acaq5.api.ACAQProjectMetadata;
+import org.hkijena.acaq5.api.ACAQAuthorMetadata;
+import org.hkijena.acaq5.api.ACAQMetadata;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
@@ -31,6 +32,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -40,17 +42,17 @@ import java.util.function.Supplier;
 public abstract class ACAQDefaultJavaExtension extends AbstractService implements ACAQJavaExtension {
 
     private EventBus eventBus = new EventBus();
-    private ACAQProjectMetadata metadata;
+    private ACAQMetadata metadata;
     private ACAQDefaultRegistry registry;
 
     /**
      * Creates a new instance
      */
     public ACAQDefaultJavaExtension() {
-        metadata = new ACAQProjectMetadata();
+        metadata = new ACAQMetadata();
         metadata.setName(getName());
         metadata.setDescription(getDescription());
-        metadata.setAuthors(getAuthors());
+        metadata.setAuthors(new ACAQAuthorMetadata.List(getAuthors()));
         metadata.setCitation(getCitation());
         metadata.setLicense(getLicense());
         metadata.setWebsite(getWebsite());
@@ -62,7 +64,7 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
     public abstract String getCitation();
 
     @Override
-    public ACAQProjectMetadata getMetadata() {
+    public ACAQMetadata getMetadata() {
         return metadata;
     }
 
@@ -84,7 +86,7 @@ public abstract class ACAQDefaultJavaExtension extends AbstractService implement
     /**
      * @return The extension authors
      */
-    public abstract String getAuthors();
+    public abstract List<ACAQAuthorMetadata> getAuthors();
 
     /**
      * @return The extension website

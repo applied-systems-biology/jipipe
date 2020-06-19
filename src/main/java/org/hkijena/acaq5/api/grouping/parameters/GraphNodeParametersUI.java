@@ -2,6 +2,8 @@ package org.hkijena.acaq5.api.grouping.parameters;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
+import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
+import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.grouping.events.ParameterReferencesChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
@@ -36,6 +38,7 @@ public class GraphNodeParametersUI extends ACAQWorkbenchPanel {
         super(workbench);
         this.parameters = parameters;
         parameters.getEventBus().register(this);
+        parameters.getGraph().getEventBus().register(this);
         initialize();
         refreshContent();
     }
@@ -64,6 +67,7 @@ public class GraphNodeParametersUI extends ACAQWorkbenchPanel {
         add(toolBar, BorderLayout.NORTH);
 
         content = new FormPanel(null, FormPanel.WITH_SCROLLING);
+        content.setBorder(null);
         add(content, BorderLayout.CENTER);
     }
 
@@ -125,6 +129,24 @@ public class GraphNodeParametersUI extends ACAQWorkbenchPanel {
      */
     @Subscribe
     public void onParameterReferenceChanged(ParameterReferencesChangedEvent event) {
+        refreshContent();
+    }
+
+    /**
+     * Triggered when the parameter structure was changed
+     * @param event the event
+     */
+    @Subscribe
+    public void onParameterStructureChanged(ParameterStructureChangedEvent event) {
+        refreshContent();
+    }
+
+    /**
+     * Triggered when the algorithm graph was changed
+     * @param event the event
+     */
+    @Subscribe
+    public void onGraphStructureChanged(AlgorithmGraphChangedEvent event) {
         refreshContent();
     }
 

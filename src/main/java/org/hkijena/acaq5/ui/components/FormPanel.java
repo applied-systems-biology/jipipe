@@ -92,7 +92,6 @@ public class FormPanel extends JPanel {
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
-
     }
 
     private void documentComponent(Component component, MarkdownDocument componentDocument) {

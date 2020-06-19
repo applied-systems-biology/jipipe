@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.acaq5.api.ACAQProject;
-import org.hkijena.acaq5.api.ACAQProjectMetadata;
+import org.hkijena.acaq5.api.ACAQMetadata;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
@@ -27,7 +27,7 @@ import java.util.Map;
 @JsonSerialize(using = ACAQExportedCompartment.Serializer.class)
 @JsonDeserialize(using = ACAQExportedCompartment.Deserializer.class)
 public class ACAQExportedCompartment {
-    private ACAQProjectMetadata metadata = new ACAQProjectMetadata();
+    private ACAQMetadata metadata = new ACAQMetadata();
     private ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
 
     /**
@@ -132,7 +132,7 @@ public class ACAQExportedCompartment {
     /**
      * @return Metadata
      */
-    public ACAQProjectMetadata getMetadata() {
+    public ACAQMetadata getMetadata() {
         return metadata;
     }
 
@@ -141,7 +141,7 @@ public class ACAQExportedCompartment {
      *
      * @param metadata The metadata
      */
-    public void setMetadata(ACAQProjectMetadata metadata) {
+    public void setMetadata(ACAQMetadata metadata) {
         this.metadata = metadata;
     }
 
@@ -170,7 +170,7 @@ public class ACAQExportedCompartment {
             JsonNode node = jsonParser.readValueAsTree();
             exportedCompartment.graph.fromJson(node.get("graph"));
             if (node.has("metadata"))
-                exportedCompartment.metadata = JsonUtils.getObjectMapper().readerFor(ACAQProjectMetadata.class).readValue(node.get("metadata"));
+                exportedCompartment.metadata = JsonUtils.getObjectMapper().readerFor(ACAQMetadata.class).readValue(node.get("metadata"));
 
             return exportedCompartment;
         }

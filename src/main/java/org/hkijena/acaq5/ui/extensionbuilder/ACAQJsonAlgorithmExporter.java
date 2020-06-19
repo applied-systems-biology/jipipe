@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 /**
  * Exports a {@link JsonAlgorithmDeclaration}
  */
-public class ACAQGraphWrapperAlgorithmExporter extends ACAQAlgorithmGraphEditorUI {
+public class ACAQJsonAlgorithmExporter extends ACAQAlgorithmGraphEditorUI {
 
     private final JsonAlgorithmDeclaration algorithmDeclaration;
     private JPopupMenu exportMenu;
@@ -40,12 +40,13 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQAlgorithmGraphEditorU
      * @param workbenchUI The workbench UI
      * @param group       the node group that will be converted into an algorithm
      */
-    public ACAQGraphWrapperAlgorithmExporter(ACAQProjectWorkbench workbenchUI, NodeGroup group) {
+    public ACAQJsonAlgorithmExporter(ACAQProjectWorkbench workbenchUI, NodeGroup group) {
         super(workbenchUI, group.getWrappedGraph(), ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
         algorithmDeclaration = new JsonAlgorithmDeclaration(group);
         algorithmDeclaration.setName(group.getName());
         algorithmDeclaration.setDescription(group.getCustomDescription());
         initialize();
+        updateSelection();
     }
 
     @Override
@@ -69,7 +70,7 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQAlgorithmGraphEditorU
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        JButton createRandomIdButton = new JButton("Create random ID", UIUtils.getIconFromResources("random.png"));
+        JButton createRandomIdButton = new JButton("Create random algorithm ID", UIUtils.getIconFromResources("random.png"));
         createRandomIdButton.addActionListener(e -> createRandomId());
         toolBar.add(createRandomIdButton);
 
@@ -104,15 +105,11 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQAlgorithmGraphEditorU
     }
 
     private void exportToExtension(ACAQJsonExtension extension) {
-        if (!checkValidity())
-            return;
         extension.addAlgorithm(algorithmDeclaration);
         getWorkbench().getDocumentTabPane().remove(this);
     }
 
     private void exportToNewExtension() {
-        if (!checkValidity())
-            return;
         ACAQJsonExtension extension = new ACAQJsonExtension();
         extension.addAlgorithm(algorithmDeclaration);
         getWorkbench().getDocumentTabPane().remove(this);
@@ -129,15 +126,6 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQAlgorithmGraphEditorU
         algorithmDeclaration.setId(name);
     }
 
-    private boolean checkValidity() {
-        ACAQValidityReport report = new ACAQValidityReport();
-        algorithmDeclaration.reportValidity(report);
-        if (!report.isValid()) {
-            UIUtils.openValidityReportDialog(this, report, false);
-        }
-        return report.isValid();
-    }
-
     @Override
     protected void updateSelection() {
         super.updateSelection();
@@ -145,12 +133,12 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQAlgorithmGraphEditorU
             setPropertyPanel(exportPanel);
         }
         else if(getSelection().size() == 1) {
-            setPropertyPanel(new ACAQGraphWrapperAlgorithmExporterSingleSelectionPanelUI(getWorkbench(),
+            setPropertyPanel(new ACAQJsonAlgorithmExporterSingleSelectionPanelUI(getWorkbench(),
                     getCanvasUI(),
                     getSelection().iterator().next().getAlgorithm()));
         }
         else {
-            setPropertyPanel(new ACAQGraphWrapperAlgorithmExporterMultiSelectionPanelUI(getWorkbench(),
+            setPropertyPanel(new ACAQJsonAlgorithmExporterMultiSelectionPanelUI(getWorkbench(),
                     getCanvasUI(),
                     getSelection().stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet())));
         }
@@ -172,7 +160,7 @@ public class ACAQGraphWrapperAlgorithmExporter extends ACAQAlgorithmGraphEditorU
      * @param description predefined description
      */
     public static void createExporter(ACAQProjectWorkbench workbench, NodeGroup nodeGroup, String name, String description) {
-        ACAQGraphWrapperAlgorithmExporter exporter = new ACAQGraphWrapperAlgorithmExporter(workbench, (NodeGroup) nodeGroup.duplicate());
+        ACAQJsonAlgorithmExporter exporter = new ACAQJsonAlgorithmExporter(workbench, (NodeGroup) nodeGroup.duplicate());
         exporter.getAlgorithmDeclaration().setName(name);
         exporter.getAlgorithmDeclaration().setDescription(description);
         workbench.getDocumentTabPane().addTab("Export algorithm '" + name + "'",

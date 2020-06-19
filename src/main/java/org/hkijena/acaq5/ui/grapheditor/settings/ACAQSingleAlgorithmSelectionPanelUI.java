@@ -14,7 +14,7 @@ import org.hkijena.acaq5.ui.cache.ACAQAlgorithmCacheBrowserUI;
 import org.hkijena.acaq5.ui.compendium.ACAQAlgorithmCompendiumUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
-import org.hkijena.acaq5.ui.extensionbuilder.ACAQGraphWrapperAlgorithmExporter;
+import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonAlgorithmExporter;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.utils.TooltipUtils;
@@ -190,7 +190,7 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPan
             group = new NodeGroup(graph, true);
         }
 
-        ACAQGraphWrapperAlgorithmExporter.createExporter(getProjectWorkbench(), group, algorithm.getName(), algorithm.getCustomDescription());
+        ACAQJsonAlgorithmExporter.createExporter(getProjectWorkbench(), group, algorithm.getName(), algorithm.getCustomDescription());
     }
 
     private void deleteAlgorithm() {

@@ -3,8 +3,10 @@ package org.hkijena.acaq5.api.grouping;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
@@ -154,6 +156,15 @@ public class NodeGroup extends GraphWrapperAlgorithm implements ACAQCustomParame
     public void setExportedParameters(GraphNodeParameters exportedParameters) {
         this.exportedParameters = exportedParameters;
         this.exportedParameters.setGraph(getWrappedGraph());
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+        super.reportValidity(report);
+        report.forCategory("Exported parameters").report(exportedParameters);
+
+        // Only check if the graph creates a valid group output
+        getWrappedGraph().reportValidity(report.forCategory("Wrapped graph"), getGroupOutput(), Sets.newHashSet(getGroupInput()));
     }
 
     @Override

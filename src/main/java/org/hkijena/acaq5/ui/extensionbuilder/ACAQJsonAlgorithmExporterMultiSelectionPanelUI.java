@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 /**
  * Panel shown when multiple algorithms are selected
  */
-public class ACAQGraphWrapperAlgorithmExporterMultiSelectionPanelUI extends ACAQWorkbenchPanel {
+public class ACAQJsonAlgorithmExporterMultiSelectionPanelUI extends ACAQWorkbenchPanel {
     private ACAQAlgorithmGraph graph;
     private ACAQAlgorithmGraphCanvasUI canvas;
     private Set<ACAQGraphNode> algorithms;
@@ -28,7 +28,7 @@ public class ACAQGraphWrapperAlgorithmExporterMultiSelectionPanelUI extends ACAQ
      * @param canvas      The graph
      * @param algorithms  Selected algorithms
      */
-    public ACAQGraphWrapperAlgorithmExporterMultiSelectionPanelUI(ACAQWorkbench workbenchUI, ACAQAlgorithmGraphCanvasUI canvas, Set<ACAQGraphNode> algorithms) {
+    public ACAQJsonAlgorithmExporterMultiSelectionPanelUI(ACAQWorkbench workbenchUI, ACAQAlgorithmGraphCanvasUI canvas, Set<ACAQGraphNode> algorithms) {
         super(workbenchUI);
         this.graph = canvas.getAlgorithmGraph();
         this.canvas = canvas;

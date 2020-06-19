@@ -54,7 +54,7 @@ public class ACAQProject implements ACAQValidatable {
     private ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
     private ACAQAlgorithmGraph compartmentGraph = new ACAQAlgorithmGraph();
     private BiMap<String, ACAQProjectCompartment> compartments = HashBiMap.create();
-    private ACAQProjectMetadata metadata = new ACAQProjectMetadata();
+    private ACAQMetadata metadata = new ACAQMetadata();
     private Path workDirectory;
     private ACAQProjectCache cache;
 
@@ -259,7 +259,7 @@ public class ACAQProject implements ACAQValidatable {
     /**
      * @return Project metadata
      */
-    public ACAQProjectMetadata getMetadata() {
+    public ACAQMetadata getMetadata() {
         return metadata;
     }
 
@@ -372,7 +372,7 @@ public class ACAQProject implements ACAQValidatable {
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
 
             if (node.has("metadata")) {
-                project.metadata = JsonUtils.getObjectMapper().readerFor(ACAQProjectMetadata.class).readValue(node.get("metadata"));
+                project.metadata = JsonUtils.getObjectMapper().readerFor(ACAQMetadata.class).readValue(node.get("metadata"));
             }
 
             // We must first load the graph, as we can infer compartments later

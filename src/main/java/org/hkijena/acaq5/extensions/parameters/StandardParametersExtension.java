@@ -2,6 +2,7 @@ package org.hkijena.acaq5.extensions.parameters;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.hkijena.acaq5.ACAQJavaExtension;
+import org.hkijena.acaq5.api.ACAQAuthorMetadata;
 import org.hkijena.acaq5.api.algorithm.ACAQIteratingAlgorithm;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollectionVisibilities;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
@@ -32,6 +33,7 @@ import org.hkijena.acaq5.extensions.parameters.references.ACAQDataDeclarationRef
 import org.hkijena.acaq5.extensions.parameters.roi.*;
 import org.hkijena.acaq5.extensions.parameters.table.ParameterTable;
 import org.hkijena.acaq5.extensions.parameters.table.ParameterTableEditorUI;
+import org.hkijena.acaq5.extensions.parameters.util.ACAQAuthorMetadataParameterEditorUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.scijava.Priority;
@@ -72,7 +74,7 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
     public void register() {
         registerPrimitives();
         registerCommonJavaTypes();
-        registerACAQ5ReferenceTypes();
+        registerACAQTypes();
         registerFilterParameters();
         registerGeneratingParameters();
         registerPairParameters();
@@ -383,7 +385,7 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 StringOrDoublePredicateParameterEditorUI.class);
     }
 
-    private void registerACAQ5ReferenceTypes() {
+    private void registerACAQTypes() {
         // ACAQ5 registry reference types
         registerParameterType("data-type",
                 ACAQDataDeclarationRef.class,
@@ -408,6 +410,16 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 "Algorithm type icon",
                 "Reference to an algorithm type icon",
                 ACAQAlgorithmIconRefParameterEditorUI.class);
+
+        // Metadata
+        registerParameterType("author",
+                ACAQAuthorMetadata.class,
+                ACAQAuthorMetadata.List.class,
+                null,
+                null,
+                "Author",
+                "An author with affiliations",
+                ACAQAuthorMetadataParameterEditorUI.class);
     }
 
     private void registerCommonJavaTypes() {

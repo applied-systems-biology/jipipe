@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.ACAQDocumentation;
-import org.hkijena.acaq5.api.ACAQProjectMetadata;
+import org.hkijena.acaq5.api.ACAQMetadata;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
@@ -34,8 +34,8 @@ import java.util.stream.Collectors;
 public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
     private EventBus eventBus = new EventBus();
     private String id;
-    private String version;
-    private ACAQProjectMetadata metadata = new ACAQProjectMetadata();
+    private String version = "1.0.0";
+    private ACAQMetadata metadata = new ACAQMetadata();
     private Path jsonFilePath;
     private ACAQDefaultRegistry registry;
 
@@ -51,7 +51,7 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
     @JsonGetter("metadata")
     @ACAQParameter("metadata")
     @ACAQDocumentation(name = "Metadata", description = "Additional extension metadata")
-    public ACAQProjectMetadata getMetadata() {
+    public ACAQMetadata getMetadata() {
         return metadata;
     }
 
@@ -61,7 +61,7 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
      * @param metadata Metadata
      */
     @JsonSetter("metadata")
-    public void setMetadata(ACAQProjectMetadata metadata) {
+    public void setMetadata(ACAQMetadata metadata) {
         this.metadata = metadata;
     }
 
@@ -74,7 +74,8 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
     @JsonGetter("id")
     @ACAQParameter("id")
     @StringParameterSettings(monospace = true)
-    @ACAQDocumentation(name = "ID", description = "A unique identifier")
+    @ACAQDocumentation(name = "Unique extension ID", description = "A unique identifier for the extension. It must have following format: " +
+            "[Author]:[Extension] where [Author] contains information about who developed the extension. An example is <i>org.hkijena:my-extension</i>")
     public String getDependencyId() {
         return id;
     }
@@ -93,7 +94,8 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
     @Override
     @JsonGetter("version")
     @ACAQParameter("version")
-    @ACAQDocumentation(name = "Version", description = "The version of this extension")
+    @StringParameterSettings(monospace = true)
+    @ACAQDocumentation(name = "Version", description = "The version of this extension. A common format is x.y.z or x.y.z.w")
     public String getDependencyVersion() {
         return version;
     }

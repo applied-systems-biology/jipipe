@@ -3,7 +3,7 @@ package org.hkijena.acaq5;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.eventbus.EventBus;
-import org.hkijena.acaq5.api.ACAQProjectMetadata;
+import org.hkijena.acaq5.api.ACAQMetadata;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
@@ -21,7 +21,7 @@ public interface ACAQDependency extends ACAQParameterCollection, ACAQValidatable
      * @return The dependency metadata
      */
     @JsonGetter("metadata")
-    ACAQProjectMetadata getMetadata();
+    ACAQMetadata getMetadata();
 
     @Override
     EventBus getEventBus();

@@ -1,9 +1,12 @@
 package org.hkijena.acaq5.extensions;
 
 import org.hkijena.acaq5.ACAQDefaultJavaExtension;
+import org.hkijena.acaq5.api.ACAQAuthorMetadata;
 import org.hkijena.acaq5.utils.ResourceUtils;
 
 import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * {@link ACAQDefaultJavaExtension} for internal usage
@@ -11,8 +14,11 @@ import java.net.URL;
 public abstract class ACAQPrepackagedDefaultJavaExtension extends ACAQDefaultJavaExtension {
 
     @Override
-    public String getAuthors() {
-        return "Zoltán Cseresnyés, Ruman Gerst";
+    public List<ACAQAuthorMetadata> getAuthors() {
+        final String HKI = "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany";
+        final String uniJena = "Faculty of Biological Sciences, Friedrich-Schiller-University Jena, Germany";
+        return Arrays.asList(new ACAQAuthorMetadata("Zoltán", "Cseresnyés", HKI),
+                new ACAQAuthorMetadata("Ruman", "Gerst", HKI + "\n" + uniJena));
     }
 
     @Override

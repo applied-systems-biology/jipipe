@@ -10,7 +10,7 @@ import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
-import org.hkijena.acaq5.ui.extensionbuilder.ACAQGraphWrapperAlgorithmExporter;
+import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonAlgorithmExporter;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -123,7 +123,7 @@ public class ACAQMultiAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPane
 
         ACAQAlgorithmGraph graph = getProject().getGraph().extract(algorithms, true);
         NodeGroup group = new NodeGroup(graph, true);
-        ACAQGraphWrapperAlgorithmExporter exporter = new ACAQGraphWrapperAlgorithmExporter(getProjectWorkbench(), group);
+        ACAQJsonAlgorithmExporter exporter = new ACAQJsonAlgorithmExporter(getProjectWorkbench(), group);
         getProjectWorkbench().getDocumentTabPane().addTab("Export custom algorithm",
                 UIUtils.getIconFromResources("export.png"),
                 exporter,

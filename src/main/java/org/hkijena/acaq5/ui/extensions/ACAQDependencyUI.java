@@ -2,6 +2,7 @@ package org.hkijena.acaq5.ui.extensions;
 
 import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.ACAQJsonExtension;
+import org.hkijena.acaq5.api.ACAQAuthorMetadata;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.data.ACAQDataDeclaration;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
@@ -49,7 +50,13 @@ public class ACAQDependencyUI extends JPanel {
         formPanel.addToForm(UIUtils.makeReadonlyTextField(dependency.getMetadata().getName()), new JLabel("Name"), null);
         formPanel.addToForm(UIUtils.makeReadonlyTextField(dependency.getDependencyId()), new JLabel("ID"), null);
         formPanel.addToForm(UIUtils.makeReadonlyTextField(dependency.getDependencyVersion()), new JLabel("Version"), null);
-        formPanel.addToForm(UIUtils.makeReadonlyTextField(dependency.getMetadata().getAuthors()), new JLabel("Authors"), null);
+        for (ACAQAuthorMetadata author : dependency.getMetadata().getAuthors()) {
+            JTextPane field = UIUtils.makeReadonlyTextPane(String.format("<html><strong>%s %s</strong><br/>%s</html>",
+                    author.getFirstName(),
+                    author.getLastName(),
+                    StringUtils.nullToEmpty(author.getAffiliations()).replace("\n", "<br/>")));
+            formPanel.addToForm(field, new JLabel("Author"), null);
+        }
         if (!StringUtils.isNullOrEmpty(dependency.getMetadata().getWebsite()))
             formPanel.addToForm(UIUtils.makeURLLabel(dependency.getMetadata().getWebsite()), new JLabel("Website"), null);
         if (!StringUtils.isNullOrEmpty(dependency.getMetadata().getCitation()))

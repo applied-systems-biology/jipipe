@@ -19,7 +19,7 @@ import java.util.Collections;
 /**
  * Shown when one algorithm is selected
  */
-public class ACAQGraphWrapperAlgorithmExporterSingleSelectionPanelUI extends ACAQWorkbenchPanel {
+public class ACAQJsonAlgorithmExporterSingleSelectionPanelUI extends ACAQWorkbenchPanel {
     private ACAQAlgorithmGraph graph;
     private ACAQAlgorithmGraphCanvasUI canvas;
     private ACAQGraphNode algorithm;
@@ -29,7 +29,7 @@ public class ACAQGraphWrapperAlgorithmExporterSingleSelectionPanelUI extends ACA
      * @param canvas      The algorithm graph
      * @param algorithm   The algorithm
      */
-    public ACAQGraphWrapperAlgorithmExporterSingleSelectionPanelUI(ACAQWorkbench workbenchUI, ACAQAlgorithmGraphCanvasUI canvas, ACAQGraphNode algorithm) {
+    public ACAQJsonAlgorithmExporterSingleSelectionPanelUI(ACAQWorkbench workbenchUI, ACAQAlgorithmGraphCanvasUI canvas, ACAQGraphNode algorithm) {
         super(workbenchUI);
         this.graph = canvas.getAlgorithmGraph();
         this.canvas = canvas;

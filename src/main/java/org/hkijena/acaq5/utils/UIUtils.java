@@ -460,6 +460,7 @@ public class UIUtils {
 
     /**
      * Creates a readonly text area
+     * Cannot do HTML.
      *
      * @param text text
      * @return text area
@@ -472,6 +473,21 @@ public class UIUtils {
         textArea.setWrapStyleWord(true);
         textArea.setText(text);
         return textArea;
+    }
+
+    /**
+     * Creates a readonly text pane (that can do HTML)
+     *
+     * @param text text
+     * @return text area
+     */
+    public static JTextPane makeReadonlyTextPane(String text) {
+        JTextPane textPane = new JTextPane();
+        textPane.setBorder(BorderFactory.createEtchedBorder());
+        textPane.setEditable(false);
+        textPane.setContentType("text/html");
+        textPane.setText(text);
+        return textPane;
     }
 
     /**

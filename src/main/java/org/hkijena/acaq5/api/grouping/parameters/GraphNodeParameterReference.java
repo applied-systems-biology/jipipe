@@ -45,15 +45,22 @@ public class GraphNodeParameterReference {
 
     /**
      * Gets the name in the original graph
+     * Returns null if resolve() is unsuccessful
      *
      * @param tree the tree
      * @return name
      */
     public String getOriginalName(ACAQParameterTree tree) {
-        String name = tree.getParameters().get(path).getName();
-        if (name == null)
-            name = tree.getParameters().get(path).getKey();
-        return name;
+        ACAQParameterAccess access = resolve(tree);
+        if(access != null) {
+            String name = access.getName();
+            if (name == null)
+                name = access.getKey();
+            return name;
+        }
+        else {
+            return null;
+        }
     }
 
     /**
@@ -64,24 +71,37 @@ public class GraphNodeParameterReference {
      */
     public String getName(ACAQParameterTree tree) {
         if (StringUtils.isNullOrEmpty(customName)) {
-            String name = tree.getParameters().get(path).getName();
-            if (name == null)
-                name = tree.getParameters().get(path).getKey();
-            return name;
+            ACAQParameterAccess access = resolve(tree);
+            if(access != null) {
+                String name = access.getName();
+                if (name == null)
+                    name = access.getKey();
+                return name;
+            }
+            else {
+                return "[No name]";
+            }
         } else {
             return customName;
         }
     }
 
     /**
-     * Gets the name or custom name
+     * Gets the name or custom name.
+     * Returns null if resolve() is unsuccessful and no custom description is set
      *
      * @param tree the tree
      * @return name or custom name
      */
     public String getDescription(ACAQParameterTree tree) {
         if (StringUtils.isNullOrEmpty(customDescription)) {
-            return tree.getParameters().get(path).getDescription();
+            ACAQParameterAccess access = resolve(tree);
+            if(access != null) {
+                return access.getDescription();
+            }
+            else {
+                return null;
+            }
         } else {
             return customDescription;
         }

@@ -152,7 +152,7 @@ public class ACAQJsonExtensionContentListUI extends ACAQJsonExtensionWorkbenchPa
             this.currentlySelectedValue = currentlySelectedValue;
             if (currentlySelectedValue != null) {
                 if (currentlySelectedValue instanceof JsonAlgorithmDeclaration) {
-                    splitPane.setRightComponent(new GraphWrapperAlgorithmDeclarationUI(getExtensionWorkbenchUI(), (JsonAlgorithmDeclaration) currentlySelectedValue));
+                    splitPane.setRightComponent(new JsonAlgorithmDeclarationUI(getExtensionWorkbenchUI(), (JsonAlgorithmDeclaration) currentlySelectedValue));
                 }
             } else {
                 splitPane.setRightComponent(new JPanel());

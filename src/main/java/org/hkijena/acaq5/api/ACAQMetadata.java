@@ -13,11 +13,11 @@ import org.hkijena.acaq5.utils.ResourceUtils;
 /**
  * JSON-serializable project metadata
  */
-public class ACAQProjectMetadata implements ACAQParameterCollection {
+public class ACAQMetadata implements ACAQParameterCollection {
     private EventBus eventBus = new EventBus();
     private String name = "New project";
     private String description = "An ACAQ5 project";
-    private String authors = "";
+    private ACAQAuthorMetadata.List authors = new ACAQAuthorMetadata.List();
     private String website = "";
     private String license = "";
     private String citation = "";
@@ -26,7 +26,7 @@ public class ACAQProjectMetadata implements ACAQParameterCollection {
     /**
      * Creates new empty instance
      */
-    public ACAQProjectMetadata() {
+    public ACAQMetadata() {
     }
 
     /**
@@ -34,7 +34,7 @@ public class ACAQProjectMetadata implements ACAQParameterCollection {
      *
      * @param other The original metadata
      */
-    public ACAQProjectMetadata(ACAQProjectMetadata other) {
+    public ACAQMetadata(ACAQMetadata other) {
         this.name = other.name;
         this.description = other.description;
         this.authors = other.authors;
@@ -47,7 +47,7 @@ public class ACAQProjectMetadata implements ACAQParameterCollection {
     /**
      * @return Gets the name
      */
-    @ACAQDocumentation(name = "Name")
+    @ACAQDocumentation(name = "Name", description = "A name")
     @ACAQParameter(value = "name", uiOrder = 0)
     @JsonGetter("name")
     public String getName() {
@@ -69,7 +69,7 @@ public class ACAQProjectMetadata implements ACAQParameterCollection {
     /**
      * @return the description
      */
-    @ACAQDocumentation(name = "Description")
+    @ACAQDocumentation(name = "Description", description = "A description")
     @ACAQParameter(value = "description", uiOrder = 1)
     @StringParameterSettings(multiline = true)
     @JsonGetter("description")
@@ -92,10 +92,10 @@ public class ACAQProjectMetadata implements ACAQParameterCollection {
     /**
      * @return The authors
      */
-    @ACAQDocumentation(name = "Authors")
+    @ACAQDocumentation(name = "Authors", description = "The list of authors and their affiliations")
     @ACAQParameter(value = "authors", uiOrder = 2)
     @JsonGetter("authors")
-    public String getAuthors() {
+    public ACAQAuthorMetadata.List getAuthors() {
         return authors;
     }
 
@@ -106,7 +106,7 @@ public class ACAQProjectMetadata implements ACAQParameterCollection {
      */
     @ACAQParameter("authors")
     @JsonSetter("authors")
-    public void setAuthors(String authors) {
+    public void setAuthors(ACAQAuthorMetadata.List authors) {
         this.authors = authors;
         getEventBus().post(new ParameterChangedEvent(this, "authors"));
     }
@@ -114,7 +114,7 @@ public class ACAQProjectMetadata implements ACAQParameterCollection {
     /**
      * @return the website
      */
-    @ACAQDocumentation(name = "Website")
+    @ACAQDocumentation(name = "Website", description = "The website")
     @ACAQParameter(value = "website", uiOrder = 3)
     @JsonGetter("website")
     public String getWebsite() {
@@ -137,7 +137,7 @@ public class ACAQProjectMetadata implements ACAQParameterCollection {
     /**
      * @return the license
      */
-    @ACAQDocumentation(name = "License")
+    @ACAQDocumentation(name = "License", description = "A license name like GPL v2 or BSD 2-Clause. We recommend Open Source licenses.")
     @ACAQParameter(value = "license", uiOrder = 6)
     @JsonGetter("license")
     public String getLicense() {
@@ -159,8 +159,9 @@ public class ACAQProjectMetadata implements ACAQParameterCollection {
     /**
      * @return the citation
      */
-    @ACAQDocumentation(name = "Citation")
+    @ACAQDocumentation(name = "Citation", description = "Reference to the work where the project is published")
     @ACAQParameter(value = "citation", uiOrder = 4)
+    @StringParameterSettings(monospace = true)
     @JsonGetter("citation")
     public String getCitation() {
         return citation;
@@ -183,8 +184,9 @@ public class ACAQProjectMetadata implements ACAQParameterCollection {
         return eventBus;
     }
 
-    @ACAQDocumentation(name = "Dependency citations", description = "Use this field to cite external work.")
+    @ACAQDocumentation(name = "Dependency citations", description = "A list of external work to cite")
     @ACAQParameter(value = "dependency-citations", uiOrder = 5)
+    @StringParameterSettings(monospace = true)
     public StringList getDependencyCitations() {
         return dependencyCitations;
     }

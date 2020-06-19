@@ -24,7 +24,7 @@ public class ACAQJsonExtensionSettingsUI extends ACAQJsonExtensionWorkbenchPanel
         ParameterPanel metadataUI = new ParameterPanel(getExtensionWorkbenchUI(),
                 getProject(),
                 MarkdownDocument.fromPluginResource("documentation/project-settings.md"),
-                ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING);
+                ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING | ParameterPanel.WITHOUT_LABEL_SEPARATION);
         add(metadataUI, BorderLayout.CENTER);
     }
 }

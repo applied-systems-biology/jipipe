@@ -62,7 +62,7 @@ public class ACAQJsonExtensionWindow extends JFrame {
         getContentPane().setLayout(new BorderLayout(8, 8));
         super.setTitle("ACAQ5 extension builder");
         setIconImage(UIUtils.getIconFromResources("acaq5-128.png").getImage());
-        UIUtils.setToAskOnClose(this, "Do you really want to close ACAQ5?", "Close window");
+        UIUtils.setToAskOnClose(this, "Do you really want to close this ACAQ5 extension builder?", "Close window");
     }
 
     @Override

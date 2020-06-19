@@ -2,6 +2,7 @@ package org.hkijena.acaq5.ui.compendium;
 
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.acaq5.ACAQDependency;
+import org.hkijena.acaq5.api.ACAQAuthorMetadata;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
@@ -142,7 +143,9 @@ public class ACAQAlgorithmCompendiumUI extends ACAQCompendiumUI<ACAQAlgorithmDec
             builder.append("# Developer information\n\n");
             builder.append("<table>");
             builder.append("<tr><td><strong>Plugin name</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(source.getMetadata().getName())).append("</td></tr>");
-            builder.append("<tr><td><strong>Plugin authors</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(source.getMetadata().getAuthors())).append("</td></tr>");
+            for (ACAQAuthorMetadata author : source.getMetadata().getAuthors()) {
+                builder.append("<tr><td><strong>Plugin author</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(author.getFirstName() + " " + author.getLastName())).append("</td></tr>");
+            }
             builder.append("<tr><td><strong>Plugin website</strong></td><td><a href=\"").append(source.getMetadata().getWebsite()).append("\">")
                     .append(HtmlEscapers.htmlEscaper().escape(source.getMetadata().getWebsite())).append("</a></td></tr>");
             builder.append("<tr><td><strong>Plugin citation</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(source.getMetadata().getCitation())).append("</td></tr>");

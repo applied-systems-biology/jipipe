@@ -2,11 +2,11 @@ package org.hkijena.acaq5.api.grouping;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.ACAQDocumentation;
-import org.hkijena.acaq5.api.ACAQProjectMetadata;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.*;
@@ -17,6 +17,7 @@ import org.hkijena.acaq5.api.data.ACAQSlotType;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
+import org.hkijena.acaq5.api.grouping.parameters.GraphNodeParameters;
 import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.extensions.parameters.primitives.StringList;
@@ -45,11 +46,14 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
     private ACAQAlgorithmIconRef icon = new ACAQAlgorithmIconRef();
     private GraphWrapperAlgorithmInput algorithmInput;
     private GraphWrapperAlgorithmOutput algorithmOutput;
+    private GraphNodeParameters exportedParameters;
 
     /**
      * Creates a new declaration
      */
     public JsonAlgorithmDeclaration() {
+        exportedParameters = new GraphNodeParameters();
+        exportedParameters.setGraph(getGraph());
         graph.getEventBus().register(this);
     }
 
@@ -60,6 +64,8 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
      */
     public JsonAlgorithmDeclaration(NodeGroup group) {
         graph = new ACAQAlgorithmGraph(group.getWrappedGraph());
+        exportedParameters = new GraphNodeParameters();
+        exportedParameters.setGraph(getGraph());
         graph.getEventBus().register(this);
         setName(group.getName());
         setDescription(group.getCustomDescription());
@@ -96,7 +102,7 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
 
     @Override
     public ACAQGraphNode clone(ACAQGraphNode algorithm) {
-        return new GraphWrapperAlgorithm((GraphWrapperAlgorithm) algorithm);
+        return new JsonAlgorithm((GraphWrapperAlgorithm) algorithm);
     }
 
     public Map<ACAQDataSlot, String> getExportedSlotNames() {
@@ -175,9 +181,23 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
                 this.graph.getEventBus().unregister(this);
             }
             this.graph = graph;
+            if(exportedParameters != null) {
+                exportedParameters.setGraph(graph);
+            }
             updateSlots();
             this.graph.getEventBus().register(this);
         }
+    }
+
+    @JsonSetter("exported-parameters")
+    public GraphNodeParameters getExportedParameters() {
+        return exportedParameters;
+    }
+
+    @JsonSetter("exported-parameters")
+    public void setExportedParameters(GraphNodeParameters exportedParameters) {
+        this.exportedParameters = exportedParameters;
+        exportedParameters.setGraph(getGraph());
     }
 
     /**
@@ -310,6 +330,10 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
                     "Please choose another algorithm category.",
                     this);
         }
+        report.forCategory("Exported parameters").report(exportedParameters);
+
+        // Only check if the graph creates a valid group output
+        getGraph().reportValidity(report.forCategory("Wrapped graph"), getGroupOutput(), Sets.newHashSet(getGroupInput()));
     }
 
     @Override
@@ -333,6 +357,7 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
     @ACAQParameter(value = "menu-path", uiOrder = 30)
     @ACAQDocumentation(name = "Menu path", description = "Menu path where the algorithm is placed. " +
             "If you leave this empty, the menu item will be placed in the category's root menu.")
+    @StringParameterSettings(monospace = true)
     public StringList getMenuPathList() {
         return menuPath;
     }
