@@ -73,7 +73,7 @@ public class JsonAlgorithm extends GraphWrapperAlgorithm implements ACAQCustomPa
                 graph.connect(source, edge.getValue());
             } else if (edge.getValue().getAlgorithm() == algorithm) {
                 // Input node
-                ACAQDataSlot target = group.getInputSlot(edge.getKey().getName());
+                ACAQDataSlot target = group.getInputSlot(edge.getValue().getName());
                 graph.connect(edge.getKey(), target);
             }
         }
