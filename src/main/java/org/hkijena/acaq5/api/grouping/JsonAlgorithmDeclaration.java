@@ -130,6 +130,7 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
     @ACAQDocumentation(name = "Description", description = "A description for the algorithm. You can use " +
             "HTML for your descriptions.")
     @ACAQParameter(value = "description", uiOrder = 10)
+    @StringParameterSettings(multiline = true)
     @JsonGetter("description")
     public String getDescription() {
         return description;
