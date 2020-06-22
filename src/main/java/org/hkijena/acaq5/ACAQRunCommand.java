@@ -32,7 +32,7 @@ public class ACAQRunCommand implements Command {
     private PluginService pluginService;
 
     @Parameter(label = "Project file (*.json)")
-    private File parameterFile;
+    private File projectFile;
 
     @Parameter(label = "Output directory", style = "directory")
     private File outputDirectory;
@@ -45,11 +45,11 @@ public class ACAQRunCommand implements Command {
         ACAQDefaultRegistry.instantiate(context);
         ACAQProject project;
         try {
-            project = ACAQProject.loadProject(parameterFile.toPath());
-            project.setWorkDirectory(parameterFile.toPath().getParent());
+            project = ACAQProject.loadProject(projectFile.toPath());
+            project.setWorkDirectory(projectFile.toPath().getParent());
 
         } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Could not load project from '" + parameterFile.toString() + "'!",
+            throw new UserFriendlyRuntimeException(e, "Could not load project from '" + projectFile.toString() + "'!",
                     "Run ACAQ5 project", "Either the provided parameter file does not exist or is inaccessible, or it was corrupted.",
                     "Try to load the parameter file in the ACAQ5 GUI.");
         }
