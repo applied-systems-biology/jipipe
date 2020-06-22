@@ -38,7 +38,7 @@ public class ACAQRunCommand implements Command {
     private File outputDirectory;
 
     @Parameter(label = "Number of threads")
-    private int threads = RuntimeSettings.getInstance().getDefaultRunThreads();
+    private int threads = 1;
 
     @Override
     public void run() {

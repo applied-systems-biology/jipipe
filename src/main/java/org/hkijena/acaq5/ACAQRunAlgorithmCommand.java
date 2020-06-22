@@ -40,7 +40,7 @@ public class ACAQRunAlgorithmCommand extends DynamicCommand implements Initializ
     private String algorithmParameters = "";
 
     @Parameter(persist = false)
-    private int threads = RuntimeSettings.getInstance().getDefaultRunThreads();
+    private int threads = 1;
 
     @Override
     public void initialize() {
