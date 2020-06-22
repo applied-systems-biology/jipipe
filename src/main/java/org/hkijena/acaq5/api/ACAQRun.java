@@ -9,6 +9,7 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.utils.StringUtils;
 
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -232,6 +233,13 @@ public class ACAQRun implements ACAQRunnable {
                                 ((ACAQAlgorithm) slot.getAlgorithm()).setThreadPool(threadPool);
                             }
                             slot.getAlgorithm().run(new ACAQRunnerSubStatus(), algorithmProgress, isCancelled);
+                        } catch (HeadlessException e) {
+                            throw new UserFriendlyRuntimeException("Algorithm " + slot.getAlgorithm() + " does not work in a headless environment!",
+                                    e,
+                                    "An error occurred during processing",
+                                    "On running the algorithm '" + slot.getAlgorithm().getName() + "', within compartment '" + getProject().getCompartments().get(slot.getAlgorithm().getCompartment()).getName() + "'",
+                                    "The algorithm raised an error, as it is not compatible with a headless environment.",
+                                    "Please contact the plugin developers about this issue. If this happens in an ImageJ method, please contact the ImageJ developers.");
                         } catch (Exception e) {
                             throw new UserFriendlyRuntimeException("Algorithm " + slot.getAlgorithm() + " raised an exception!",
                                     e,

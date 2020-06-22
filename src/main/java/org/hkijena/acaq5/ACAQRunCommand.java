@@ -67,5 +67,6 @@ public class ACAQRunCommand implements Command {
     private void onProgress(ACAQRunnerStatus runStatus) {
         status.showProgress(runStatus.getProgress(), runStatus.getMaxProgress());
         status.showStatus("ACAQ5: " + runStatus.getMessage());
+        System.out.println("[" + runStatus.getProgress() + "/" +runStatus.getMaxProgress() + "] " + runStatus.getMessage());
     }
 }
