@@ -62,6 +62,8 @@ public class ACAQRunCommand implements Command {
         RuntimeSettings.getInstance().setDefaultRunThreads(threads);
         ACAQRun run = new ACAQRun(project, configuration);
         run.run(this::onProgress, () -> false);
+        System.out.println("ACAQ5 run finished. Outputs are stored in: " + outputDirectory);
+        status.showProgress(0,0);
     }
 
     private void onProgress(ACAQRunnerStatus runStatus) {
