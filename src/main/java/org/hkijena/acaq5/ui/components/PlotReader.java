@@ -18,6 +18,8 @@ import org.jfree.chart.JFreeChart;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 /**
  * Displays a plot
@@ -48,6 +50,11 @@ public class PlotReader extends JPanel {
 
         chartPanel = new ChartPanel(null);
         add(chartPanel, BorderLayout.CENTER);
+
+        chartPanel.setMinimumDrawWidth(0);
+        chartPanel.setMaximumDrawWidth(Integer.MAX_VALUE);
+        chartPanel.setMinimumDrawHeight(0);
+        chartPanel.setMaximumDrawHeight(Integer.MAX_VALUE);
     }
 
     private void exportPlot() {
