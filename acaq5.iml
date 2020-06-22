@@ -13,16 +13,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: edu.berkeley:Hough_Circle_Transform:1.0.0-RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: sc.fiji:Feature_Detection:2.0.2" level="project" />
-    <orderEntry type="library" name="Maven: sc.fiji:legacy-imglib1:1.1.9" level="project" />
-    <orderEntry type="library" name="Maven: org.scijava:vecmath:1.6.0-scijava-2" level="project" />
-    <orderEntry type="library" name="Maven: mpicbg:mpicbg:1.3.0" level="project" />
-    <orderEntry type="library" name="Maven: com.formdev:flatlaf:0.35" level="project" />
-    <orderEntry type="library" name="Maven: sc.fiji:Feature_Detection:2.0.2" level="project" />
-    <orderEntry type="library" name="Maven: sc.fiji:legacy-imglib1:1.1.9" level="project" />
-    <orderEntry type="library" name="Maven: org.scijava:vecmath:1.6.0-scijava-2" level="project" />
-    <orderEntry type="library" name="Maven: mpicbg:mpicbg:1.3.0" level="project" />
-    <orderEntry type="library" name="Maven: com.formdev:flatlaf:0.35" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej:2.0.0-rc-72" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-common:0.31.0" level="project" />
     <orderEntry type="library" name="Maven: edu.ucar:udunits:4.3.18" level="project" />
@@ -183,13 +173,9 @@
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.9" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-simple:1.7.9" level="project" />
     <orderEntry type="library" name="Maven: mpicbg:mpicbg:1.3.0" level="project" />
-    <orderEntry type="library" name="Maven: org.swinglabs.swingx:swingx-core:1.6.5-1" level="project" />
-    <orderEntry type="library" name="Maven: org.swinglabs.swingx:swingx-autocomplete:1.6.5-1" level="project" />
-    <orderEntry type="library" name="Maven: org.swinglabs.swingx:swingx-common:1.6.5-1" level="project" />
-    <orderEntry type="library" name="Maven: org.swinglabs.swingx:swingx-action:1.6.5-1" level="project" />
-    <orderEntry type="library" name="Maven: org.swinglabs.swingx:swingx-plaf:1.6.5-1" level="project" />
-    <orderEntry type="library" name="Maven: org.swinglabs.swingx:swingx-graphics:1.6.5-1" level="project" />
-    <orderEntry type="library" name="Maven: org.swinglabs.swingx:swingx-painters:1.6.5-1" level="project" />
+    <orderEntry type="library" name="Maven: org.swinglabs:swingx:1.6.1" level="project" />
+    <orderEntry type="library" name="Maven: com.jhlabs:filters:2.0.235" level="project" />
+    <orderEntry type="library" name="Maven: org.swinglabs:swing-worker:1.1" level="project" />
     <orderEntry type="library" name="Maven: com.vladsch.flexmark:flexmark:0.18.5" level="project" />
     <orderEntry type="library" name="Maven: com.vladsch.flexmark:flexmark-ext-tables:0.18.5" level="project" />
     <orderEntry type="library" name="Maven: com.vladsch.flexmark:flexmark-formatter:0.18.5" level="project" />

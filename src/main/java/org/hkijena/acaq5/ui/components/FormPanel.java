@@ -63,7 +63,7 @@ public class FormPanel extends JXPanel {
         helpPanel.add(parameterHelp, BorderLayout.CENTER);
 
         setScrollableWidthHint(ScrollableSizeHint.FIT);
-        setScrollableHeightHint(ScrollableSizeHint.PREFERRED_STRETCH);
+        setScrollableHeightHint(ScrollableSizeHint.VERTICAL_STRETCH);
 
         Component content;
         if ((flags & WITH_SCROLLING) == WITH_SCROLLING) {
