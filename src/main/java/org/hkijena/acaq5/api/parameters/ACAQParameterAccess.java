@@ -10,17 +10,6 @@ import java.lang.annotation.Annotation;
 public interface ACAQParameterAccess {
 
     /**
-     * Compares the priority
-     *
-     * @param lhs access
-     * @param rhs access
-     * @return the order
-     */
-    static int comparePriority(ACAQParameterAccess lhs, ACAQParameterAccess rhs) {
-        return -Double.compare(lhs.getPriority(), rhs.getPriority());
-    }
-
-    /**
      * Returns the unique ID of this parameter
      *
      * @return Unique parameter key
@@ -120,5 +109,16 @@ public interface ACAQParameterAccess {
      */
     default boolean isPersistent() {
         return true;
+    }
+
+    /**
+     * Compares the priority
+     *
+     * @param lhs access
+     * @param rhs access
+     * @return the order
+     */
+    static int comparePriority(ACAQParameterAccess lhs, ACAQParameterAccess rhs) {
+        return -Double.compare(lhs.getPriority(), rhs.getPriority());
     }
 }

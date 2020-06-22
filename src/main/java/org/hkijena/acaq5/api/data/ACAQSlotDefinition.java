@@ -100,70 +100,6 @@ public class ACAQSlotDefinition implements ACAQParameterCollection {
         this(dataClass, slotType, null);
     }
 
-    /**
-     * Applies inheritance conversion.
-     * This is a text replacement system with termination condition of never visiting the same time twice.
-     *
-     * @param definition The slot definition
-     * @param dataClass  The slot data
-     * @return The converted data
-     */
-    public static Class<? extends ACAQData> applyInheritanceConversion(ACAQSlotDefinition definition, Class<? extends ACAQData> dataClass) {
-        Set<ACAQDataDeclaration> visited = new HashSet<>();
-        ACAQDataDeclaration currentData = ACAQDataDeclaration.getInstance(dataClass);
-        ACAQDataDeclaration lastData = currentData;
-        visited.add(currentData);
-        while (true) {
-            currentData = definition.inheritanceConversions.getOrDefault(currentData, null);
-            if (currentData == null)
-                return lastData.getDataClass();
-            lastData = currentData;
-            if (visited.contains(currentData))
-                return currentData.getDataClass();
-            visited.add(currentData);
-        }
-    }
-
-    /**
-     * Creates the composition of two inheritance conversions.
-     * The result is outer(inner(x))
-     *
-     * @param outer the outer conversion
-     * @param inner the inner conversion
-     * @return Inheritance conversion that is outer(inner(x))
-     */
-    public static Map<Class<? extends ACAQData>, Class<? extends ACAQData>> composeRawInheritanceConversions(Map<Class<? extends ACAQData>, Class<? extends ACAQData>> outer,
-                                                                                                             Map<Class<? extends ACAQData>, Class<? extends ACAQData>> inner) {
-        Map<Class<? extends ACAQData>, Class<? extends ACAQData>> result = new HashMap<>(inner);
-        for (Map.Entry<Class<? extends ACAQData>, Class<? extends ACAQData>> entry : result.entrySet()) {
-            Class<? extends ACAQData> transformed = outer.getOrDefault(entry.getValue(), null);
-            if (transformed != null) {
-                entry.setValue(transformed);
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Creates the composition of two inheritance conversions.
-     * The result is outer(inner(x))
-     *
-     * @param outer the outer conversion
-     * @param inner the inner conversion
-     * @return Inheritance conversion that is outer(inner(x))
-     */
-    public static Map<ACAQDataDeclaration, ACAQDataDeclaration> composeInheritanceConversions(Map<ACAQDataDeclaration, ACAQDataDeclaration> outer,
-                                                                                              Map<ACAQDataDeclaration, ACAQDataDeclaration> inner) {
-        Map<ACAQDataDeclaration, ACAQDataDeclaration> result = new HashMap<>(inner);
-        for (Map.Entry<ACAQDataDeclaration, ACAQDataDeclaration> entry : result.entrySet()) {
-            ACAQDataDeclaration transformed = outer.getOrDefault(entry.getValue(), null);
-            if (transformed != null) {
-                entry.setValue(transformed);
-            }
-        }
-        return result;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -269,6 +205,70 @@ public class ACAQSlotDefinition implements ACAQParameterCollection {
     @Override
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    /**
+     * Applies inheritance conversion.
+     * This is a text replacement system with termination condition of never visiting the same time twice.
+     *
+     * @param definition The slot definition
+     * @param dataClass  The slot data
+     * @return The converted data
+     */
+    public static Class<? extends ACAQData> applyInheritanceConversion(ACAQSlotDefinition definition, Class<? extends ACAQData> dataClass) {
+        Set<ACAQDataDeclaration> visited = new HashSet<>();
+        ACAQDataDeclaration currentData = ACAQDataDeclaration.getInstance(dataClass);
+        ACAQDataDeclaration lastData = currentData;
+        visited.add(currentData);
+        while (true) {
+            currentData = definition.inheritanceConversions.getOrDefault(currentData, null);
+            if (currentData == null)
+                return lastData.getDataClass();
+            lastData = currentData;
+            if (visited.contains(currentData))
+                return currentData.getDataClass();
+            visited.add(currentData);
+        }
+    }
+
+    /**
+     * Creates the composition of two inheritance conversions.
+     * The result is outer(inner(x))
+     *
+     * @param outer the outer conversion
+     * @param inner the inner conversion
+     * @return Inheritance conversion that is outer(inner(x))
+     */
+    public static Map<Class<? extends ACAQData>, Class<? extends ACAQData>> composeRawInheritanceConversions(Map<Class<? extends ACAQData>, Class<? extends ACAQData>> outer,
+                                                                                                             Map<Class<? extends ACAQData>, Class<? extends ACAQData>> inner) {
+        Map<Class<? extends ACAQData>, Class<? extends ACAQData>> result = new HashMap<>(inner);
+        for (Map.Entry<Class<? extends ACAQData>, Class<? extends ACAQData>> entry : result.entrySet()) {
+            Class<? extends ACAQData> transformed = outer.getOrDefault(entry.getValue(), null);
+            if (transformed != null) {
+                entry.setValue(transformed);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Creates the composition of two inheritance conversions.
+     * The result is outer(inner(x))
+     *
+     * @param outer the outer conversion
+     * @param inner the inner conversion
+     * @return Inheritance conversion that is outer(inner(x))
+     */
+    public static Map<ACAQDataDeclaration, ACAQDataDeclaration> composeInheritanceConversions(Map<ACAQDataDeclaration, ACAQDataDeclaration> outer,
+                                                                                              Map<ACAQDataDeclaration, ACAQDataDeclaration> inner) {
+        Map<ACAQDataDeclaration, ACAQDataDeclaration> result = new HashMap<>(inner);
+        for (Map.Entry<ACAQDataDeclaration, ACAQDataDeclaration> entry : result.entrySet()) {
+            ACAQDataDeclaration transformed = outer.getOrDefault(entry.getValue(), null);
+            if (transformed != null) {
+                entry.setValue(transformed);
+            }
+        }
+        return result;
     }
 
     /**

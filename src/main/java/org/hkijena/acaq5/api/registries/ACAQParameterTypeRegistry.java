@@ -13,10 +13,6 @@ public class ACAQParameterTypeRegistry {
     private BiMap<String, ACAQParameterTypeDeclaration> registeredParameters = HashBiMap.create();
     private BiMap<Class<?>, ACAQParameterTypeDeclaration> registeredParameterClasses = HashBiMap.create();
 
-    public static ACAQParameterTypeRegistry getInstance() {
-        return ACAQDefaultRegistry.getInstance().getParameterTypeRegistry();
-    }
-
     /**
      * Registers a new parameter type
      *
@@ -53,5 +49,9 @@ public class ACAQParameterTypeRegistry {
      */
     public ACAQParameterTypeDeclaration getDeclarationByFieldClass(Class<?> fieldClass) {
         return registeredParameterClasses.get(fieldClass);
+    }
+
+    public static ACAQParameterTypeRegistry getInstance() {
+        return ACAQDefaultRegistry.getInstance().getParameterTypeRegistry();
     }
 }

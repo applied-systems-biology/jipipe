@@ -33,25 +33,6 @@ public class ACAQDatatypeRegistry {
     }
 
     /**
-     * Returns true if the input data type can be trivially converted into the output data type.
-     * A trivial conversion is applied when the input data is the same as the output data type or inherits from it.
-     *
-     * @param inputDataType  the input data type
-     * @param outputDataType the output data type
-     * @return if the output data type can be assigned from the input data type without any explicit conversion rules
-     */
-    public static boolean isTriviallyConvertible(Class<? extends ACAQData> inputDataType, Class<? extends ACAQData> outputDataType) {
-        return outputDataType.isAssignableFrom(inputDataType);
-    }
-
-    /**
-     * @return Singleton instance
-     */
-    public static ACAQDatatypeRegistry getInstance() {
-        return ACAQDefaultRegistry.getInstance().getDatatypeRegistry();
-    }
-
-    /**
      * Registers a data converter that allows implicit conversion between data types
      *
      * @param converter the converter
@@ -264,5 +245,24 @@ public class ACAQDatatypeRegistry {
                 result.add(ACAQDataDeclaration.getInstance(entry.getValue()));
         }
         return result;
+    }
+
+    /**
+     * Returns true if the input data type can be trivially converted into the output data type.
+     * A trivial conversion is applied when the input data is the same as the output data type or inherits from it.
+     *
+     * @param inputDataType  the input data type
+     * @param outputDataType the output data type
+     * @return if the output data type can be assigned from the input data type without any explicit conversion rules
+     */
+    public static boolean isTriviallyConvertible(Class<? extends ACAQData> inputDataType, Class<? extends ACAQData> outputDataType) {
+        return outputDataType.isAssignableFrom(inputDataType);
+    }
+
+    /**
+     * @return Singleton instance
+     */
+    public static ACAQDatatypeRegistry getInstance() {
+        return ACAQDefaultRegistry.getInstance().getDatatypeRegistry();
     }
 }

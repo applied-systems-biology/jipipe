@@ -46,22 +46,6 @@ public class ACAQDefaultMutableSlotConfiguration implements ACAQMutableSlotConfi
     }
 
     /**
-     * Returns a collection of all unhidden slot data types
-     *
-     * @return the collection
-     */
-    public static Set<Class<? extends ACAQData>> getUnhiddenRegisteredDataTypes() {
-        return new HashSet<>(ACAQDatatypeRegistry.getInstance().getUnhiddenRegisteredDataTypes().values());
-    }
-
-    /**
-     * @return A builder for creating a configuration
-     */
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    /**
      * Returns true if there is an input slot with name
      *
      * @param name The name
@@ -638,6 +622,22 @@ public class ACAQDefaultMutableSlotConfiguration implements ACAQMutableSlotConfi
     @Override
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    /**
+     * Returns a collection of all unhidden slot data types
+     *
+     * @return the collection
+     */
+    public static Set<Class<? extends ACAQData>> getUnhiddenRegisteredDataTypes() {
+        return new HashSet<>(ACAQDatatypeRegistry.getInstance().getUnhiddenRegisteredDataTypes().values());
+    }
+
+    /**
+     * @return A builder for creating a configuration
+     */
+    public static Builder builder() {
+        return new Builder();
     }
 
     /**

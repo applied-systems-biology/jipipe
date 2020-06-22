@@ -16,10 +16,6 @@ import java.util.*;
 public class ACAQUIMenuServiceRegistry {
     private Map<MenuTarget, List<Class<? extends MenuExtension>>> registeredExtensions = new HashMap<>();
 
-    public static ACAQUIMenuServiceRegistry getInstance() {
-        return ACAQDefaultRegistry.getInstance().getUIMenuServiceRegistry();
-    }
-
     /**
      * Registers a new extension
      *
@@ -54,5 +50,9 @@ public class ACAQUIMenuServiceRegistry {
 
     public Map<MenuTarget, List<Class<? extends MenuExtension>>> getRegisteredExtensions() {
         return Collections.unmodifiableMap(registeredExtensions);
+    }
+
+    public static ACAQUIMenuServiceRegistry getInstance() {
+        return ACAQDefaultRegistry.getInstance().getUIMenuServiceRegistry();
     }
 }

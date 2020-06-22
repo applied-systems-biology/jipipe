@@ -16,10 +16,6 @@ import java.util.Map;
 public class ACAQUIImageJDatatypeAdapterRegistry {
     private Map<Class<?>, Class<? extends ImageJDatatypeImporterUI>> registeredImporters = new HashMap<>();
 
-    public static ACAQUIImageJDatatypeAdapterRegistry getInstance() {
-        return ACAQDefaultRegistry.getInstance().getUIImageJDatatypeAdapterRegistry();
-    }
-
     /**
      * @param imageJDataType imageJ data type
      * @param importerClass  importer UI class
@@ -65,5 +61,9 @@ public class ACAQUIImageJDatatypeAdapterRegistry {
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static ACAQUIImageJDatatypeAdapterRegistry getInstance() {
+        return ACAQDefaultRegistry.getInstance().getUIImageJDatatypeAdapterRegistry();
     }
 }

@@ -48,25 +48,6 @@ public class ACAQJsonAlgorithmExporter extends ACAQAlgorithmGraphEditorUI {
         updateSelection();
     }
 
-    /**
-     * Creates a new exporter tab
-     *
-     * @param workbench   the workbench
-     * @param nodeGroup   the exported algorithm. Will be copied.
-     * @param name        predefined name
-     * @param description predefined description
-     */
-    public static void createExporter(ACAQProjectWorkbench workbench, NodeGroup nodeGroup, String name, String description) {
-        ACAQJsonAlgorithmExporter exporter = new ACAQJsonAlgorithmExporter(workbench, (NodeGroup) nodeGroup.duplicate());
-        exporter.getAlgorithmDeclaration().setName(name);
-        exporter.getAlgorithmDeclaration().setDescription(description);
-        workbench.getDocumentTabPane().addTab("Export algorithm '" + name + "'",
-                UIUtils.getIconFromResources("export.png"),
-                exporter,
-                DocumentTabPane.CloseMode.withAskOnCloseButton);
-        workbench.getDocumentTabPane().switchToLastTab();
-    }
-
     @Override
     public void installNodeUIFeatures(ACAQAlgorithmUI ui) {
         ui.installContextMenu(Arrays.asList(
@@ -165,5 +146,24 @@ public class ACAQJsonAlgorithmExporter extends ACAQAlgorithmGraphEditorUI {
      */
     public JsonAlgorithmDeclaration getAlgorithmDeclaration() {
         return algorithmDeclaration;
+    }
+
+    /**
+     * Creates a new exporter tab
+     *
+     * @param workbench   the workbench
+     * @param nodeGroup   the exported algorithm. Will be copied.
+     * @param name        predefined name
+     * @param description predefined description
+     */
+    public static void createExporter(ACAQProjectWorkbench workbench, NodeGroup nodeGroup, String name, String description) {
+        ACAQJsonAlgorithmExporter exporter = new ACAQJsonAlgorithmExporter(workbench, (NodeGroup) nodeGroup.duplicate());
+        exporter.getAlgorithmDeclaration().setName(name);
+        exporter.getAlgorithmDeclaration().setDescription(description);
+        workbench.getDocumentTabPane().addTab("Export algorithm '" + name + "'",
+                UIUtils.getIconFromResources("export.png"),
+                exporter,
+                DocumentTabPane.CloseMode.withAskOnCloseButton);
+        workbench.getDocumentTabPane().switchToLastTab();
     }
 }

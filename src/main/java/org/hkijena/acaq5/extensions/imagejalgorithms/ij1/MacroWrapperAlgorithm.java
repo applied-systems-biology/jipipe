@@ -96,10 +96,6 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
         this.macroParameters.getEventBus().register(this);
     }
 
-    public static Class[] getCompatibleTypes() {
-        return ACAQImageJAdapterRegistry.getInstance().getSupportedACAQDataTypes().toArray(new Class[0]);
-    }
-
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         backupWindows();
@@ -327,6 +323,12 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
         this.strictMode = strictMode;
     }
 
+    @ACAQParameter("macro-parameters")
+    @ACAQDocumentation(name = "Macro parameters", description = "The parameter are passed as variables to the macro.")
+    public ACAQDynamicParameterCollection getMacroParameters() {
+        return macroParameters;
+    }
+
 //    @ACAQDocumentation(name = "Batch mode", description = "If enabled, the macro might be able to run on servers.\n" +
 //            "Requires that there is exactly one input and one output image.")
 //    @ACAQParameter("batch-mode")
@@ -339,10 +341,8 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
 //        this.batchMode = batchMode;
 //    }
 
-    @ACAQParameter("macro-parameters")
-    @ACAQDocumentation(name = "Macro parameters", description = "The parameter are passed as variables to the macro.")
-    public ACAQDynamicParameterCollection getMacroParameters() {
-        return macroParameters;
+    public static Class[] getCompatibleTypes() {
+        return ACAQImageJAdapterRegistry.getInstance().getSupportedACAQDataTypes().toArray(new Class[0]);
     }
 }
 

@@ -41,61 +41,6 @@ public class ACAQAlgorithmDeclarationPicker extends JPanel {
         refreshTraitList();
     }
 
-    /**
-     * Shows a dialog to pick traits
-     *
-     * @param parent              parent component
-     * @param mode                mode
-     * @param availableAlgorithms list of available traits
-     * @return picked traits
-     */
-    public static Set<ACAQAlgorithmDeclaration> showDialog(Component parent, Mode mode, Set<ACAQAlgorithmDeclaration> availableAlgorithms) {
-        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
-        ACAQAlgorithmDeclarationPicker picker = new ACAQAlgorithmDeclarationPicker(mode, availableAlgorithms);
-
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(picker, BorderLayout.CENTER);
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-        buttonPanel.add(Box.createHorizontalGlue());
-
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("remove.png"));
-        cancelButton.addActionListener(e -> {
-            picker.setSelectedDeclarations(Collections.emptySet());
-            dialog.setVisible(false);
-        });
-        buttonPanel.add(cancelButton);
-
-        JButton confirmButton = new JButton("Pick", UIUtils.getIconFromResources("checkmark.png"));
-        confirmButton.addActionListener(e -> dialog.setVisible(false));
-        buttonPanel.add(confirmButton);
-
-        panel.add(buttonPanel, BorderLayout.SOUTH);
-
-        picker.declarationList.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    if (picker.declarationList.getSelectedValue() != null) {
-                        dialog.setVisible(false);
-                    }
-                }
-            }
-        });
-
-        dialog.setContentPane(panel);
-        dialog.setTitle("Pick algorithm");
-        dialog.setModal(true);
-        dialog.pack();
-        dialog.setSize(new Dimension(500, 600));
-        dialog.setLocationRelativeTo(parent);
-        UIUtils.addEscapeListener(dialog);
-        dialog.setVisible(true);
-
-        return picker.getSelectedDeclarations();
-    }
-
     public JList<ACAQAlgorithmDeclaration> getDeclarationList() {
         return declarationList;
     }
@@ -225,6 +170,61 @@ public class ACAQAlgorithmDeclarationPicker extends JPanel {
         this.selectedDeclarations = new HashSet<>(traits);
         eventBus.post(new SelectedTraitsChangedEvent(this));
         refreshTraitList();
+    }
+
+    /**
+     * Shows a dialog to pick traits
+     *
+     * @param parent              parent component
+     * @param mode                mode
+     * @param availableAlgorithms list of available traits
+     * @return picked traits
+     */
+    public static Set<ACAQAlgorithmDeclaration> showDialog(Component parent, Mode mode, Set<ACAQAlgorithmDeclaration> availableAlgorithms) {
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
+        ACAQAlgorithmDeclarationPicker picker = new ACAQAlgorithmDeclarationPicker(mode, availableAlgorithms);
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(picker, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        buttonPanel.add(Box.createHorizontalGlue());
+
+        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("remove.png"));
+        cancelButton.addActionListener(e -> {
+            picker.setSelectedDeclarations(Collections.emptySet());
+            dialog.setVisible(false);
+        });
+        buttonPanel.add(cancelButton);
+
+        JButton confirmButton = new JButton("Pick", UIUtils.getIconFromResources("checkmark.png"));
+        confirmButton.addActionListener(e -> dialog.setVisible(false));
+        buttonPanel.add(confirmButton);
+
+        panel.add(buttonPanel, BorderLayout.SOUTH);
+
+        picker.declarationList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    if (picker.declarationList.getSelectedValue() != null) {
+                        dialog.setVisible(false);
+                    }
+                }
+            }
+        });
+
+        dialog.setContentPane(panel);
+        dialog.setTitle("Pick algorithm");
+        dialog.setModal(true);
+        dialog.pack();
+        dialog.setSize(new Dimension(500, 600));
+        dialog.setLocationRelativeTo(parent);
+        UIUtils.addEscapeListener(dialog);
+        dialog.setVisible(true);
+
+        return picker.getSelectedDeclarations();
     }
 
     /**

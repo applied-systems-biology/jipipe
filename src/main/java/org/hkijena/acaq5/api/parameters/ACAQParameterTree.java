@@ -82,16 +82,6 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
     }
 
     /**
-     * Accesses the parameters of a collection
-     *
-     * @param collection the collection
-     * @return traversed parameters
-     */
-    public static Map<String, ACAQParameterAccess> getParameters(ACAQParameterCollection collection) {
-        return (new ACAQParameterTree(collection)).getParameters();
-    }
-
-    /**
      * Gets the parameters grouped by the source
      *
      * @return all parameters grouped by source
@@ -440,6 +430,16 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
      */
     public Node getSourceNode(ACAQParameterCollection collection) {
         return nodeMap.get(collection);
+    }
+
+    /**
+     * Accesses the parameters of a collection
+     *
+     * @param collection the collection
+     * @return traversed parameters
+     */
+    public static Map<String, ACAQParameterAccess> getParameters(ACAQParameterCollection collection) {
+        return (new ACAQParameterTree(collection)).getParameters();
     }
 
     /**

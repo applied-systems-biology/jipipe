@@ -23,10 +23,6 @@ public class ACAQUIAlgorithmRegistry {
 
     }
 
-    public static ACAQUIAlgorithmRegistry getInstance() {
-        return ACAQDefaultRegistry.getInstance().getUIAlgorithmRegistry();
-    }
-
     /**
      * Registers a custom icon for a trait
      *
@@ -70,5 +66,9 @@ public class ACAQUIAlgorithmRegistry {
             uri = defaultIcon;
         }
         return new ImageIcon(uri);
+    }
+
+    public static ACAQUIAlgorithmRegistry getInstance() {
+        return ACAQDefaultRegistry.getInstance().getUIAlgorithmRegistry();
     }
 }

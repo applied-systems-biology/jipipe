@@ -32,27 +32,6 @@ public class ACAQStandardCopyPasteBehavior implements ACAQAlgorithmGraphCopyPast
         this.editorUI = editorUI;
     }
 
-    private static String getStringFromClipboard() {
-        String ret = "";
-        Clipboard sysClip = Toolkit.getDefaultToolkit().getSystemClipboard();
-
-        Transferable clipTf = sysClip.getContents(null);
-
-        if (clipTf != null) {
-
-            if (clipTf.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-                try {
-                    ret = (String) clipTf
-                            .getTransferData(DataFlavor.stringFlavor);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        return ret;
-    }
-
     @Override
     public void copy(Set<ACAQGraphNode> algorithms) {
         ACAQAlgorithmGraph graph = editorUI.getAlgorithmGraph().extract(algorithms, true);
@@ -102,5 +81,26 @@ public class ACAQStandardCopyPasteBehavior implements ACAQAlgorithmGraphCopyPast
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static String getStringFromClipboard() {
+        String ret = "";
+        Clipboard sysClip = Toolkit.getDefaultToolkit().getSystemClipboard();
+
+        Transferable clipTf = sysClip.getContents(null);
+
+        if (clipTf != null) {
+
+            if (clipTf.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+                try {
+                    ret = (String) clipTf
+                            .getTransferData(DataFlavor.stringFlavor);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return ret;
     }
 }

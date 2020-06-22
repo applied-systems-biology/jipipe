@@ -40,6 +40,19 @@ public class IOInterfaceAlgorithm extends ACAQAlgorithm {
         super(other);
     }
 
+    @Override
+    public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        for (ACAQDataSlot inputSlot : getInputSlots()) {
+            ACAQDataSlot outputSlot = getOutputSlot(inputSlot.getName());
+            outputSlot.copyFrom(inputSlot);
+        }
+    }
+
+    @Override
+    public void reportValidity(ACAQValidityReport report) {
+
+    }
+
     /**
      * Removes the interface and directly connects the inputs and outputs
      *
@@ -106,18 +119,5 @@ public class IOInterfaceAlgorithm extends ACAQAlgorithm {
                 graph.connect(source, target);
             }
         }
-    }
-
-    @Override
-    public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        for (ACAQDataSlot inputSlot : getInputSlots()) {
-            ACAQDataSlot outputSlot = getOutputSlot(inputSlot.getName());
-            outputSlot.copyFrom(inputSlot);
-        }
-    }
-
-    @Override
-    public void reportValidity(ACAQValidityReport report) {
-
     }
 }

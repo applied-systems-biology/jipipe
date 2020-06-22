@@ -59,30 +59,6 @@ public class AnnotationTableData extends ResultsTableData {
     }
 
     /**
-     * Returns the annotation column name of the annotation type
-     *
-     * @param traitDeclaration the annotation type
-     * @return column name
-     */
-    public static String getAnnotationColumnName(String traitDeclaration) {
-        return "annotation:" + traitDeclaration;
-    }
-
-    /**
-     * Returns the trait declaration from a column name. If the annotation type does not exist or
-     * the column is not an annotation column, null is returned
-     *
-     * @param columnName the column name
-     * @return annotation type or null if not an annotation column name or the annotation type does not exist
-     */
-    public static String getAnnotationTypeFromColumnName(String columnName) {
-        if (columnName.startsWith("annotation:")) {
-            return columnName.substring("annotation:".length());
-        }
-        return null;
-    }
-
-    /**
      * Adds a new column that contains annotation data and returns its index-
      * If the column already exists, its index is returned.
      *
@@ -127,5 +103,29 @@ public class AnnotationTableData extends ResultsTableData {
     @Override
     public String toString() {
         return "Annotation table (" + getRowCount() + "x" + getColumnCount() + ")";
+    }
+
+    /**
+     * Returns the annotation column name of the annotation type
+     *
+     * @param traitDeclaration the annotation type
+     * @return column name
+     */
+    public static String getAnnotationColumnName(String traitDeclaration) {
+        return "annotation:" + traitDeclaration;
+    }
+
+    /**
+     * Returns the trait declaration from a column name. If the annotation type does not exist or
+     * the column is not an annotation column, null is returned
+     *
+     * @param columnName the column name
+     * @return annotation type or null if not an annotation column name or the annotation type does not exist
+     */
+    public static String getAnnotationTypeFromColumnName(String columnName) {
+        if (columnName.startsWith("annotation:")) {
+            return columnName.substring("annotation:".length());
+        }
+        return null;
     }
 }

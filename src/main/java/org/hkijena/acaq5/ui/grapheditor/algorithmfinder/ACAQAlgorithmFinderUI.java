@@ -53,39 +53,6 @@ public class ACAQAlgorithmFinderUI extends JPanel {
         reloadAlgorithmList();
     }
 
-    /**
-     * Scores how well an algorithm fits to the specified target slot
-     *
-     * @param declaration The algorithm
-     * @param slot        The target slot
-     * @param graph       The algorithm graph
-     * @return Non-normalized score
-     */
-    public static int scoreAlgorithmForOutputSlot(ACAQAlgorithmDeclaration declaration, ACAQDataSlot slot, ACAQAlgorithmGraph graph) {
-        int score = 0;
-        return score;
-    }
-
-    /**
-     * Finds all algorithms that fit to the slot according to the information in {@link ACAQAlgorithmDeclaration}
-     *
-     * @param slot The target slot
-     * @return Unsorted list of algorithm declarations
-     */
-    public static List<ACAQAlgorithmDeclaration> findCompatibleTargetAlgorithms(ACAQDataSlot slot) {
-        Class<? extends ACAQData> outputSlotDataClass = slot.getAcceptedDataType();
-        List<ACAQAlgorithmDeclaration> result = new ArrayList<>();
-        for (ACAQAlgorithmDeclaration declaration : ACAQAlgorithmRegistry.getInstance().getRegisteredAlgorithms().values()) {
-            for (Class<? extends ACAQData> inputSlotDataClass : declaration.getInputSlots().stream().map(AlgorithmInputSlot::value).collect(Collectors.toList())) {
-                if (ACAQDatatypeRegistry.getInstance().isConvertible(outputSlotDataClass, inputSlotDataClass)) {
-                    result.add(declaration);
-                    break;
-                }
-            }
-        }
-        return result;
-    }
-
     private void initialize() {
         setLayout(new BorderLayout());
         initializeToolBar();
@@ -226,5 +193,38 @@ public class ACAQAlgorithmFinderUI extends JPanel {
      */
     public String getCompartment() {
         return compartment;
+    }
+
+    /**
+     * Scores how well an algorithm fits to the specified target slot
+     *
+     * @param declaration The algorithm
+     * @param slot        The target slot
+     * @param graph       The algorithm graph
+     * @return Non-normalized score
+     */
+    public static int scoreAlgorithmForOutputSlot(ACAQAlgorithmDeclaration declaration, ACAQDataSlot slot, ACAQAlgorithmGraph graph) {
+        int score = 0;
+        return score;
+    }
+
+    /**
+     * Finds all algorithms that fit to the slot according to the information in {@link ACAQAlgorithmDeclaration}
+     *
+     * @param slot The target slot
+     * @return Unsorted list of algorithm declarations
+     */
+    public static List<ACAQAlgorithmDeclaration> findCompatibleTargetAlgorithms(ACAQDataSlot slot) {
+        Class<? extends ACAQData> outputSlotDataClass = slot.getAcceptedDataType();
+        List<ACAQAlgorithmDeclaration> result = new ArrayList<>();
+        for (ACAQAlgorithmDeclaration declaration : ACAQAlgorithmRegistry.getInstance().getRegisteredAlgorithms().values()) {
+            for (Class<? extends ACAQData> inputSlotDataClass : declaration.getInputSlots().stream().map(AlgorithmInputSlot::value).collect(Collectors.toList())) {
+                if (ACAQDatatypeRegistry.getInstance().isConvertible(outputSlotDataClass, inputSlotDataClass)) {
+                    result.add(declaration);
+                    break;
+                }
+            }
+        }
+        return result;
     }
 }

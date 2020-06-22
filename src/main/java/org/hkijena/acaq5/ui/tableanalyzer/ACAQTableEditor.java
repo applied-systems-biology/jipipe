@@ -72,23 +72,6 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
         initialize();
     }
 
-    /**
-     * Imports a table from CSV and creates a new {@link ACAQTableEditor} tab
-     *
-     * @param fileName    CSV file
-     * @param workbenchUI workbench
-     */
-    public static void importTableFromCSV(Path fileName, ACAQProjectWorkbench workbenchUI) {
-        try {
-            ResultsTableData tableData = ResultsTableData.fromCSV(fileName);
-            // Create table analyzer
-            workbenchUI.getDocumentTabPane().addTab(fileName.getFileName().toString(), UIUtils.getIconFromResources("table.png"),
-                    new ACAQTableEditor(workbenchUI, tableData), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     private void initialize() {
         setLayout(new BorderLayout());
 
@@ -687,6 +670,23 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
 
     public ResultsTableData getTableModel() {
         return tableModel;
+    }
+
+    /**
+     * Imports a table from CSV and creates a new {@link ACAQTableEditor} tab
+     *
+     * @param fileName    CSV file
+     * @param workbenchUI workbench
+     */
+    public static void importTableFromCSV(Path fileName, ACAQProjectWorkbench workbenchUI) {
+        try {
+            ResultsTableData tableData = ResultsTableData.fromCSV(fileName);
+            // Create table analyzer
+            workbenchUI.getDocumentTabPane().addTab(fileName.getFileName().toString(), UIUtils.getIconFromResources("table.png"),
+                    new ACAQTableEditor(workbenchUI, tableData), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

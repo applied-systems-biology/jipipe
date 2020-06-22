@@ -46,6 +46,20 @@ public class PointRange {
     }
 
     /**
+     * Adds the point's x and y coordinates to all points
+     *
+     * @param point shift coordinate
+     */
+    public void add(Point point) {
+        center.x += point.x;
+        center.y += point.y;
+        min.x += point.x;
+        min.y += point.y;
+        max.x += point.x;
+        max.y += point.y;
+    }
+
+    /**
      * Gets a point within the range that is closest to the target point
      *
      * @param pointRange the point range
@@ -80,19 +94,5 @@ public class PointRange {
     public static void tighten(PointRange p0, PointRange p1) {
         p0.center = getTightenedTo(p0, p1);
         p1.center = getTightenedTo(p1, p0);
-    }
-
-    /**
-     * Adds the point's x and y coordinates to all points
-     *
-     * @param point shift coordinate
-     */
-    public void add(Point point) {
-        center.x += point.x;
-        center.y += point.y;
-        min.x += point.x;
-        min.y += point.y;
-        max.x += point.x;
-        max.y += point.y;
     }
 }

@@ -41,6 +41,25 @@ public class JsonAlgorithm extends GraphWrapperAlgorithm implements ACAQCustomPa
         super(other);
     }
 
+    public GraphNodeParameters getExportedParameters() {
+        return exportedParameters;
+    }
+
+    @Override
+    public Map<String, ACAQParameterAccess> getParameters() {
+        ACAQParameterTree standardParameters = new ACAQParameterTree(this,
+                ACAQParameterTree.IGNORE_CUSTOM | ACAQParameterTree.FORCE_REFLECTION);
+        return standardParameters.getParameters();
+    }
+
+    @Override
+    public Map<String, ACAQParameterCollection> getChildParameterCollections() {
+        this.exportedParameters.setGraph(getWrappedGraph());
+        Map<String, ACAQParameterCollection> result = new HashMap<>();
+        result.put("exported", new GraphNodeParameterReferenceAccessGroupList(exportedParameters, getWrappedGraph().getParameterTree(), true));
+        return result;
+    }
+
     /**
      * Replaces the targeted {@link JsonAlgorithm} by a {@link NodeGroup}
      *
@@ -78,24 +97,5 @@ public class JsonAlgorithm extends GraphWrapperAlgorithm implements ACAQCustomPa
             }
         }
 
-    }
-
-    public GraphNodeParameters getExportedParameters() {
-        return exportedParameters;
-    }
-
-    @Override
-    public Map<String, ACAQParameterAccess> getParameters() {
-        ACAQParameterTree standardParameters = new ACAQParameterTree(this,
-                ACAQParameterTree.IGNORE_CUSTOM | ACAQParameterTree.FORCE_REFLECTION);
-        return standardParameters.getParameters();
-    }
-
-    @Override
-    public Map<String, ACAQParameterCollection> getChildParameterCollections() {
-        this.exportedParameters.setGraph(getWrappedGraph());
-        Map<String, ACAQParameterCollection> result = new HashMap<>();
-        result.put("exported", new GraphNodeParameterReferenceAccessGroupList(exportedParameters, getWrappedGraph().getParameterTree(), true));
-        return result;
     }
 }

@@ -39,35 +39,6 @@ public class ACAQDataDeclaration implements Comparable<ACAQDataDeclaration> {
     }
 
     /**
-     * Returns a {@link ACAQDataDeclaration} instance for the data class.
-     * Does not require the data type to be registered.
-     * Instances are cached.
-     *
-     * @param klass The data class
-     * @return The declaration instance
-     */
-    public static ACAQDataDeclaration getInstance(Class<? extends ACAQData> klass) {
-        ACAQDataDeclaration declaration = cache.getOrDefault(klass, null);
-        if (declaration == null) {
-            declaration = new ACAQDataDeclaration(klass);
-            cache.put(klass, declaration);
-        }
-        return declaration;
-    }
-
-    /**
-     * Returns a {@link ACAQDataDeclaration} instance for the data type ID.
-     * Requires that the data type ID is registered.
-     * Instances are cached.
-     *
-     * @param id Data type ID
-     * @return The declaration instance
-     */
-    public static ACAQDataDeclaration getInstance(String id) {
-        return ACAQDataDeclaration.getInstance(ACAQDatatypeRegistry.getInstance().getById(id));
-    }
-
-    /**
      * @return The data class
      */
     public Class<? extends ACAQData> getDataClass() {
@@ -130,6 +101,35 @@ public class ACAQDataDeclaration implements Comparable<ACAQDataDeclaration> {
      */
     public String getId() {
         return ACAQDatatypeRegistry.getInstance().getIdOf(dataClass);
+    }
+
+    /**
+     * Returns a {@link ACAQDataDeclaration} instance for the data class.
+     * Does not require the data type to be registered.
+     * Instances are cached.
+     *
+     * @param klass The data class
+     * @return The declaration instance
+     */
+    public static ACAQDataDeclaration getInstance(Class<? extends ACAQData> klass) {
+        ACAQDataDeclaration declaration = cache.getOrDefault(klass, null);
+        if (declaration == null) {
+            declaration = new ACAQDataDeclaration(klass);
+            cache.put(klass, declaration);
+        }
+        return declaration;
+    }
+
+    /**
+     * Returns a {@link ACAQDataDeclaration} instance for the data type ID.
+     * Requires that the data type ID is registered.
+     * Instances are cached.
+     *
+     * @param id Data type ID
+     * @return The declaration instance
+     */
+    public static ACAQDataDeclaration getInstance(String id) {
+        return ACAQDataDeclaration.getInstance(ACAQDatatypeRegistry.getInstance().getById(id));
     }
 
     /**

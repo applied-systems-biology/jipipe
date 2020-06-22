@@ -30,15 +30,6 @@ public class ACAQRunnerQueue {
     }
 
     /**
-     * @return Singleton instance
-     */
-    public static ACAQRunnerQueue getInstance() {
-        if (instance == null)
-            instance = new ACAQRunnerQueue();
-        return instance;
-    }
-
-    /**
      * Schedules a new runnable
      *
      * @param run The runnable
@@ -145,5 +136,14 @@ public class ACAQRunnerQueue {
      */
     public ACAQRunnable getCurrentRun() {
         return currentlyRunningWorker != null ? currentlyRunningWorker.getRun() : null;
+    }
+
+    /**
+     * @return Singleton instance
+     */
+    public static ACAQRunnerQueue getInstance() {
+        if (instance == null)
+            instance = new ACAQRunnerQueue();
+        return instance;
     }
 }

@@ -36,10 +36,6 @@ public class ACAQUIDatatypeRegistry {
 
     }
 
-    public static ACAQUIDatatypeRegistry getInstance() {
-        return ACAQDefaultRegistry.getInstance().getUIDatatypeRegistry();
-    }
-
     /**
      * Registers a custom icon for a datatype
      *
@@ -152,5 +148,9 @@ public class ACAQUIDatatypeRegistry {
      */
     public URL getIconURLFor(ACAQDataDeclaration declaration) {
         return getIconURLFor(declaration.getDataClass());
+    }
+
+    public static ACAQUIDatatypeRegistry getInstance() {
+        return ACAQDefaultRegistry.getInstance().getUIDatatypeRegistry();
     }
 }

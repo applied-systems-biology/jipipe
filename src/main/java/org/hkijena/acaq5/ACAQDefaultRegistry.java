@@ -54,51 +54,6 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
     }
 
     /**
-     * @return Singleton instance
-     */
-    public static ACAQDefaultRegistry getInstance() {
-        return instance;
-    }
-
-    public static boolean isInstantiated() {
-        return instance != null;
-    }
-
-    /**
-     * Instantiates the plugin service. This is done within {@link ACAQGUICommand}
-     *
-     * @param context the SciJava context
-     */
-    public static void instantiate(Context context) {
-        if (instance == null) {
-            try {
-                PluginService pluginService = context.getService(PluginService.class);
-                instance = (ACAQDefaultRegistry) pluginService.getPlugin(ACAQDefaultRegistry.class).createInstance();
-                context.inject(instance);
-                instance.setContext(context);
-                instance.installEvents();
-                instance.discover();
-            } catch (InstantiableException e) {
-                throw new UserFriendlyRuntimeException(e, "Could not create essential ACAQ5 data structures.",
-                        "ACAQ plugin registry", "There seems to be an issue either with ACAQ5 or your ImageJ installation.",
-                        "Try to install ACAQ5 into a new ImageJ distribution and one-by-one install additional plugins. " +
-                                "Contact the ACAQ5 or plugin author if you cannot resolve the issue.");
-            }
-        }
-    }
-
-    /**
-     * Compares two plugins and sorts them by priority
-     *
-     * @param p0 Plugin
-     * @param p1 Plugin
-     * @return Comparator result
-     */
-    public static int comparePlugins(PluginInfo<?> p0, PluginInfo<?> p1) {
-        return -Double.compare(p0.getPriority(), p1.getPriority());
-    }
-
-    /**
      * Clears all registries and reloads them
      */
     public void reload() {
@@ -276,5 +231,50 @@ public class ACAQDefaultRegistry extends AbstractService implements ACAQRegistry
     @Override
     public ACAQUIAlgorithmRegistry getUIAlgorithmRegistry() {
         return acaquiAlgorithmRegistry;
+    }
+
+    /**
+     * @return Singleton instance
+     */
+    public static ACAQDefaultRegistry getInstance() {
+        return instance;
+    }
+
+    public static boolean isInstantiated() {
+        return instance != null;
+    }
+
+    /**
+     * Instantiates the plugin service. This is done within {@link ACAQGUICommand}
+     *
+     * @param context the SciJava context
+     */
+    public static void instantiate(Context context) {
+        if (instance == null) {
+            try {
+                PluginService pluginService = context.getService(PluginService.class);
+                instance = (ACAQDefaultRegistry) pluginService.getPlugin(ACAQDefaultRegistry.class).createInstance();
+                context.inject(instance);
+                instance.setContext(context);
+                instance.installEvents();
+                instance.discover();
+            } catch (InstantiableException e) {
+                throw new UserFriendlyRuntimeException(e, "Could not create essential ACAQ5 data structures.",
+                        "ACAQ plugin registry", "There seems to be an issue either with ACAQ5 or your ImageJ installation.",
+                        "Try to install ACAQ5 into a new ImageJ distribution and one-by-one install additional plugins. " +
+                                "Contact the ACAQ5 or plugin author if you cannot resolve the issue.");
+            }
+        }
+    }
+
+    /**
+     * Compares two plugins and sorts them by priority
+     *
+     * @param p0 Plugin
+     * @param p1 Plugin
+     * @return Comparator result
+     */
+    public static int comparePlugins(PluginInfo<?> p0, PluginInfo<?> p1) {
+        return -Double.compare(p0.getPriority(), p1.getPriority());
     }
 }

@@ -98,17 +98,6 @@ public class ResultsTableData implements ACAQData, TableModel {
         this.table = (ResultsTable) other.table.clone();
     }
 
-    /**
-     * Loads a table from CSV
-     *
-     * @param file the file
-     * @return the table
-     * @throws IOException thrown by {@link ResultsTable}
-     */
-    public static ResultsTableData fromCSV(Path file) throws IOException {
-        return new ResultsTableData(ResultsTable.open(file.toString()));
-    }
-
     private void importFromColumns(Map<String, TableColumn> columns) {
         this.table = new ResultsTable();
 
@@ -827,6 +816,17 @@ public class ResultsTableData implements ACAQData, TableModel {
     @Override
     public String toString() {
         return "Table (" + getRowCount() + " rows, " + getColumnCount() + " columns): " + String.join(", ", getColumnNames());
+    }
+
+    /**
+     * Loads a table from CSV
+     *
+     * @param file the file
+     * @return the table
+     * @throws IOException thrown by {@link ResultsTable}
+     */
+    public static ResultsTableData fromCSV(Path file) throws IOException {
+        return new ResultsTableData(ResultsTable.open(file.toString()));
     }
 
     /**

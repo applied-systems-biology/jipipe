@@ -67,52 +67,6 @@ public class ACAQProject implements ACAQValidatable {
     }
 
     /**
-     * Loads a project from a file
-     *
-     * @param fileName JSON file
-     * @return Loaded project
-     * @throws IOException Triggered by {@link ObjectMapper}
-     */
-    public static ACAQProject loadProject(Path fileName) throws IOException {
-        return JsonUtils.getObjectMapper().readerFor(ACAQProject.class).readValue(fileName.toFile());
-    }
-
-    /**
-     * Loads a project from JSON data
-     *
-     * @param node JSON data
-     * @return Loaded project
-     * @throws IOException Triggered by {@link ObjectMapper}
-     */
-    public static ACAQProject loadProject(JsonNode node) throws IOException {
-        return JsonUtils.getObjectMapper().readerFor(ACAQProject.class).readValue(node);
-    }
-
-    /**
-     * Deserializes the set of project dependencies from JSON.
-     * Does not require the dependencies to be actually registered.
-     *
-     * @param node JSON node
-     * @return The dependencies as {@link org.hkijena.acaq5.ACAQMutableDependency}
-     */
-    public static Set<ACAQDependency> loadDependenciesFromJson(JsonNode node) {
-        node = node.path("dependencies");
-        if (node.isMissingNode())
-            return new HashSet<>();
-        TypeReference<HashSet<ACAQDependency>> typeReference = new TypeReference<HashSet<ACAQDependency>>() {
-        };
-        try {
-            return JsonUtils.getObjectMapper().readerFor(typeReference).readValue(node);
-        } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Could not load dependencies from ACAQ5 project",
-                    "Project", "The JSON data that describes the project dependencies is missing essential information",
-                    "Open the file in a text editor and compare the dependencies with a valid project. You can also try " +
-                            "to delete the whole dependencies section - you just have to make sure that they are actually satisfied. " +
-                            "To do this, use the plugin manager in ACAQ5's GUI.");
-        }
-    }
-
-    /**
      * Returns the state ID of a graph node
      * The state ID is a unique representation of how the algorithm's output was generated.
      * This is used by the data cache.
@@ -339,6 +293,52 @@ public class ACAQProject implements ACAQValidatable {
         Set<ACAQDependency> dependencies = graph.getDependencies();
         dependencies.addAll(compartmentGraph.getDependencies());
         return dependencies;
+    }
+
+    /**
+     * Loads a project from a file
+     *
+     * @param fileName JSON file
+     * @return Loaded project
+     * @throws IOException Triggered by {@link ObjectMapper}
+     */
+    public static ACAQProject loadProject(Path fileName) throws IOException {
+        return JsonUtils.getObjectMapper().readerFor(ACAQProject.class).readValue(fileName.toFile());
+    }
+
+    /**
+     * Loads a project from JSON data
+     *
+     * @param node JSON data
+     * @return Loaded project
+     * @throws IOException Triggered by {@link ObjectMapper}
+     */
+    public static ACAQProject loadProject(JsonNode node) throws IOException {
+        return JsonUtils.getObjectMapper().readerFor(ACAQProject.class).readValue(node);
+    }
+
+    /**
+     * Deserializes the set of project dependencies from JSON.
+     * Does not require the dependencies to be actually registered.
+     *
+     * @param node JSON node
+     * @return The dependencies as {@link org.hkijena.acaq5.ACAQMutableDependency}
+     */
+    public static Set<ACAQDependency> loadDependenciesFromJson(JsonNode node) {
+        node = node.path("dependencies");
+        if (node.isMissingNode())
+            return new HashSet<>();
+        TypeReference<HashSet<ACAQDependency>> typeReference = new TypeReference<HashSet<ACAQDependency>>() {
+        };
+        try {
+            return JsonUtils.getObjectMapper().readerFor(typeReference).readValue(node);
+        } catch (IOException e) {
+            throw new UserFriendlyRuntimeException(e, "Could not load dependencies from ACAQ5 project",
+                    "Project", "The JSON data that describes the project dependencies is missing essential information",
+                    "Open the file in a text editor and compare the dependencies with a valid project. You can also try " +
+                            "to delete the whole dependencies section - you just have to make sure that they are actually satisfied. " +
+                            "To do this, use the plugin manager in ACAQ5's GUI.");
+        }
     }
 
     /**

@@ -1,9 +1,11 @@
 package org.hkijena.acaq5.ui;
 
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.events.ExtensionContentRemovedEvent;
+import org.hkijena.acaq5.api.events.ExtensionRegisteredEvent;
 import org.hkijena.acaq5.ui.components.SplashScreen;
 import org.hkijena.acaq5.ui.components.*;
 import org.hkijena.acaq5.ui.extension.MenuTarget;
@@ -46,7 +48,18 @@ public class ACAQJsonExtensionWorkbench extends JPanel implements ACAQWorkbench 
         initialize();
 
         this.project.getEventBus().register(this);
+        ACAQDefaultRegistry.getInstance().getEventBus().register(this);
         SplashScreen.getInstance().hideSplash();
+    }
+
+    /**
+     * Informs the user about registered extensions.
+     *
+     * @param event the event
+     */
+    @Subscribe
+    public void onExtensionRegistered(ExtensionRegisteredEvent event) {
+        sendStatusBarText("Registered extension: '" + event.getExtension().getMetadata().getName() + "' with id '" + event.getExtension().getDependencyId() + "'. We recommend to restart ImageJ.");
     }
 
     private void initialize() {

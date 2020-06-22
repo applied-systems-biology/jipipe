@@ -55,22 +55,6 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
     public ACAQJsonExtension() {
     }
 
-    /**
-     * Loads a {@link ACAQJsonExtension} from JSON
-     *
-     * @param jsonData JSON data
-     * @return Loaded instance
-     */
-    public static ACAQJsonExtension loadProject(JsonNode jsonData) {
-        try {
-            return JsonUtils.getObjectMapper().readerFor(ACAQJsonExtension.class).readValue(jsonData);
-        } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Could not load JSON plugin.",
-                    "ACAQ JSON extension loader", "The plugin file was corrupted, so ACAQ5 does not know how to load some essential information. Or you are using an older ACAQ5 version.",
-                    "Try to update ACAQ5. If this does not work, contact the plugin's author.");
-        }
-    }
-
     @Override
     @JsonGetter("metadata")
     @ACAQParameter("metadata")
@@ -299,6 +283,22 @@ public class ACAQJsonExtension implements ACAQDependency, ACAQValidatable {
             deserializeAlgorithmDeclarations();
         if (algorithmDeclarations.remove(declaration)) {
             eventBus.post(new ExtensionContentRemovedEvent(this, declaration));
+        }
+    }
+
+    /**
+     * Loads a {@link ACAQJsonExtension} from JSON
+     *
+     * @param jsonData JSON data
+     * @return Loaded instance
+     */
+    public static ACAQJsonExtension loadProject(JsonNode jsonData) {
+        try {
+            return JsonUtils.getObjectMapper().readerFor(ACAQJsonExtension.class).readValue(jsonData);
+        } catch (IOException e) {
+            throw new UserFriendlyRuntimeException(e, "Could not load JSON plugin.",
+                    "ACAQ JSON extension loader", "The plugin file was corrupted, so ACAQ5 does not know how to load some essential information. Or you are using an older ACAQ5 version.",
+                    "Try to update ACAQ5. If this does not work, contact the plugin's author.");
         }
     }
 

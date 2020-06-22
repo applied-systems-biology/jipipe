@@ -43,6 +43,42 @@ public class ACAQJavaAlgorithmDeclaration extends ACAQMutableAlgorithmDeclaratio
         initializeSlots();
     }
 
+    private void initializeSlots() {
+        for (AlgorithmInputSlot slot : getAlgorithmClass().getAnnotationsByType(AlgorithmInputSlot.class)) {
+            getInputSlots().add(slot);
+        }
+        for (AlgorithmOutputSlot slot : getAlgorithmClass().getAnnotationsByType(AlgorithmOutputSlot.class)) {
+            getOutputSlots().add(slot);
+        }
+    }
+
+    @Override
+    public ACAQGraphNode clone(ACAQGraphNode algorithm) {
+        try {
+            return ConstructorUtils.getMatchingAccessibleConstructor(getAlgorithmClass(), algorithm.getClass()).newInstance(algorithm);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new UserFriendlyRuntimeException(e, "Unable to copy algorithm '" + algorithm.getName() + "'!",
+                    "Undefined", "There is a programming error in the algorithm's code.",
+                    "Please contact the developer of the plugin that created the algorithm.");
+        }
+    }
+
+    @Override
+    public Set<ACAQDependency> getDependencies() {
+        return Collections.emptySet();
+    }
+
+    @Override
+    public ACAQGraphNode newInstance() {
+        try {
+            return getAlgorithmClass().getConstructor(ACAQAlgorithmDeclaration.class).newInstance(this);
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            throw new UserFriendlyRuntimeException(e, "Unable to create an algorithm instance!",
+                    "Undefined", "There is a programming error in an algorithm's code.",
+                    "Please contact the developer of the plugin that created the algorithm.");
+        }
+    }
+
     /**
      * Returns the name of an algorithm
      *
@@ -100,42 +136,6 @@ public class ACAQJavaAlgorithmDeclaration extends ACAQMutableAlgorithmDeclaratio
             return annotations[0].menuPath();
         } else {
             return "";
-        }
-    }
-
-    private void initializeSlots() {
-        for (AlgorithmInputSlot slot : getAlgorithmClass().getAnnotationsByType(AlgorithmInputSlot.class)) {
-            getInputSlots().add(slot);
-        }
-        for (AlgorithmOutputSlot slot : getAlgorithmClass().getAnnotationsByType(AlgorithmOutputSlot.class)) {
-            getOutputSlots().add(slot);
-        }
-    }
-
-    @Override
-    public ACAQGraphNode clone(ACAQGraphNode algorithm) {
-        try {
-            return ConstructorUtils.getMatchingAccessibleConstructor(getAlgorithmClass(), algorithm.getClass()).newInstance(algorithm);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new UserFriendlyRuntimeException(e, "Unable to copy algorithm '" + algorithm.getName() + "'!",
-                    "Undefined", "There is a programming error in the algorithm's code.",
-                    "Please contact the developer of the plugin that created the algorithm.");
-        }
-    }
-
-    @Override
-    public Set<ACAQDependency> getDependencies() {
-        return Collections.emptySet();
-    }
-
-    @Override
-    public ACAQGraphNode newInstance() {
-        try {
-            return getAlgorithmClass().getConstructor(ACAQAlgorithmDeclaration.class).newInstance(this);
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            throw new UserFriendlyRuntimeException(e, "Unable to create an algorithm instance!",
-                    "Undefined", "There is a programming error in an algorithm's code.",
-                    "Please contact the developer of the plugin that created the algorithm.");
         }
     }
 

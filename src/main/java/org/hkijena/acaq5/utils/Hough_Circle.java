@@ -138,27 +138,6 @@ public class Hough_Circle extends SwingWorker<Integer, String> {
     // </editor-fold>
 
     /**
-     * Start all given threads and wait on each of them until all are done.
-     * From Stephan Preibisch's Multithreading.java class. See:
-     * http://repo.or.cz/w/trakem2.git?a=blob;f=mpi/fruitfly/general/MultiThreading.java;hb=HEAD
-     *
-     * @param threads
-     */
-    public static void startAndJoin(Thread[] threads) {
-        for (int ithread = 0; ithread < threads.length; ++ithread) {
-            threads[ithread].setPriority(Thread.NORM_PRIORITY);
-            threads[ithread].start();
-        }
-
-        try {
-            for (int ithread = 0; ithread < threads.length; ++ithread)
-                threads[ithread].join();
-        } catch (InterruptedException ie) {
-            throw new RuntimeException(ie);
-        }
-    }
-
-    /**
      * Import values from GUI class before starting the analysis thread
      *
      * @param radiusMin
@@ -694,10 +673,6 @@ public class Hough_Circle extends SwingWorker<Integer, String> {
         return maxLUT;
     }
 
-    //The local Hough is an inversion of the inertial reference frame used in the full Hough
-    //In the full Hough the image is seach for pixels with a value > 1, and if this is true
-    //then the pixel is projected in a circle about that point.
-
     //OPTIMIZED - cancellable
     private void houghTransform() {
         //Update progress bar string with current task
@@ -772,6 +747,10 @@ public class Hough_Circle extends SwingWorker<Integer, String> {
         }
         startAndJoin(threads);
     }
+
+    //The local Hough is an inversion of the inertial reference frame used in the full Hough
+    //In the full Hough the image is seach for pixels with a value > 1, and if this is true
+    //then the pixel is projected in a circle about that point.
 
     //OPTMIZED - cancellable
     //To reduce the necessary transform space,
@@ -1272,8 +1251,6 @@ public class Hough_Circle extends SwingWorker<Integer, String> {
         }
     }
 
-    //OPTMIZED - cancellable
-
     private boolean outOfBounds(int y, int x) {
         if (x >= width)
             return (true);
@@ -1285,6 +1262,8 @@ public class Hough_Circle extends SwingWorker<Integer, String> {
             return (true);
         return (false);
     }
+
+    //OPTMIZED - cancellable
 
     /**
      * Search for a fixed number of circles.
@@ -1430,10 +1409,6 @@ public class Hough_Circle extends SwingWorker<Integer, String> {
         }
     }
 
-    ;
-
-    //OPTIMIZED - Not time limiting, even with large circles - cancellable
-
     //OPTMIZED
     private void collapseLocalResult() {
         //search for indeces containing circles (i.e. index != -1)
@@ -1471,6 +1446,10 @@ public class Hough_Circle extends SwingWorker<Integer, String> {
         //Update nCircles to reflect the new found number of circles
         nCircles = indexCounter;
     }
+
+    ;
+
+    //OPTIMIZED - Not time limiting, even with large circles - cancellable
 
     /**
      * Clear, from the Hough Space, all the counter that are near (radius/2) a previously found circle C.
@@ -1536,5 +1515,26 @@ public class Hough_Circle extends SwingWorker<Integer, String> {
     //Flags that all active child threads should stop when cancel button is pressed in GUI class
     public void interruptThreads(boolean a) {
         this.cancelThread = a;
+    }
+
+    /**
+     * Start all given threads and wait on each of them until all are done.
+     * From Stephan Preibisch's Multithreading.java class. See:
+     * http://repo.or.cz/w/trakem2.git?a=blob;f=mpi/fruitfly/general/MultiThreading.java;hb=HEAD
+     *
+     * @param threads
+     */
+    public static void startAndJoin(Thread[] threads) {
+        for (int ithread = 0; ithread < threads.length; ++ithread) {
+            threads[ithread].setPriority(Thread.NORM_PRIORITY);
+            threads[ithread].start();
+        }
+
+        try {
+            for (int ithread = 0; ithread < threads.length; ++ithread)
+                threads[ithread].join();
+        } catch (InterruptedException ie) {
+            throw new RuntimeException(ie);
+        }
     }
 }

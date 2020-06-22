@@ -79,59 +79,6 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
     }
 
     /**
-     * Loads a set of ROI from a zip file
-     *
-     * @param fileName the zip file
-     * @return the Roi list
-     */
-    public static List<Roi> loadRoiListFromFile(Path fileName) {
-        // Code adapted from ImageJ RoiManager
-        List<Roi> result = new ArrayList<>();
-        ZipInputStream in = null;
-        ByteArrayOutputStream out = null;
-        int nRois = 0;
-        try {
-            in = new ZipInputStream(new FileInputStream(fileName.toFile()));
-            byte[] buf = new byte[1024];
-            int len;
-            ZipEntry entry = in.getNextEntry();
-            while (entry != null) {
-                String name = entry.getName();
-                if (name.endsWith(".roi")) {
-                    out = new ByteArrayOutputStream();
-                    while ((len = in.read(buf)) > 0)
-                        out.write(buf, 0, len);
-                    out.close();
-                    byte[] bytes = out.toByteArray();
-                    RoiDecoder rd = new RoiDecoder(bytes, name);
-                    Roi roi = rd.getRoi();
-                    if (roi != null) {
-                        name = name.substring(0, name.length() - 4);
-                        result.add(roi);
-                        nRois++;
-                    }
-                }
-                entry = in.getNextEntry();
-            }
-            in.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (in != null)
-                try {
-                    in.close();
-                } catch (IOException e) {
-                }
-            if (out != null)
-                try {
-                    out.close();
-                } catch (IOException e) {
-                }
-        }
-        return result;
-    }
-
-    /**
      * Groups the ROI by their image positions
      *
      * @param perSlice   group per slice
@@ -523,6 +470,59 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
 //                result.mergeWith(forRoi);
 //            }
 //        }
+        return result;
+    }
+
+    /**
+     * Loads a set of ROI from a zip file
+     *
+     * @param fileName the zip file
+     * @return the Roi list
+     */
+    public static List<Roi> loadRoiListFromFile(Path fileName) {
+        // Code adapted from ImageJ RoiManager
+        List<Roi> result = new ArrayList<>();
+        ZipInputStream in = null;
+        ByteArrayOutputStream out = null;
+        int nRois = 0;
+        try {
+            in = new ZipInputStream(new FileInputStream(fileName.toFile()));
+            byte[] buf = new byte[1024];
+            int len;
+            ZipEntry entry = in.getNextEntry();
+            while (entry != null) {
+                String name = entry.getName();
+                if (name.endsWith(".roi")) {
+                    out = new ByteArrayOutputStream();
+                    while ((len = in.read(buf)) > 0)
+                        out.write(buf, 0, len);
+                    out.close();
+                    byte[] bytes = out.toByteArray();
+                    RoiDecoder rd = new RoiDecoder(bytes, name);
+                    Roi roi = rd.getRoi();
+                    if (roi != null) {
+                        name = name.substring(0, name.length() - 4);
+                        result.add(roi);
+                        nRois++;
+                    }
+                }
+                entry = in.getNextEntry();
+            }
+            in.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (in != null)
+                try {
+                    in.close();
+                } catch (IOException e) {
+                }
+            if (out != null)
+                try {
+                    out.close();
+                } catch (IOException e) {
+                }
+        }
         return result;
     }
 }

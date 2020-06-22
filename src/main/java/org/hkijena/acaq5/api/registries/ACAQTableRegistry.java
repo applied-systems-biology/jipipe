@@ -13,10 +13,6 @@ import java.util.Map;
 public class ACAQTableRegistry {
     private Map<String, ColumnOperationEntry> registeredColumnOperations = new HashMap<>();
 
-    public static ACAQTableRegistry getInstance() {
-        return ACAQDefaultRegistry.getInstance().getTableRegistry();
-    }
-
     /**
      * @return all registered column operations
      */
@@ -62,6 +58,10 @@ public class ACAQTableRegistry {
         }
 
         return result;
+    }
+
+    public static ACAQTableRegistry getInstance() {
+        return ACAQDefaultRegistry.getInstance().getTableRegistry();
     }
 
     /**

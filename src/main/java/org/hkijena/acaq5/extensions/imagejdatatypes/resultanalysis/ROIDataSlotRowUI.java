@@ -34,6 +34,30 @@ public class ROIDataSlotRowUI extends ACAQDefaultResultDataSlotRowUI {
         super(workbenchUI, slot, row);
     }
 
+    private Path findROIFile() {
+        if (getRowStorageFolder() != null && Files.isDirectory(getRowStorageFolder())) {
+            return PathUtils.findFileByExtensionIn(getRowStorageFolder(), ".zip");
+        }
+        return null;
+    }
+
+    @Override
+    protected void registerActions() {
+        super.registerActions();
+
+        Path roiFile = findROIFile();
+        if (roiFile != null) {
+            registerAction("Import into current image", "Annotates the currently open image with the ROI annotations.",
+                    UIUtils.getIconFromResources("data-types/roi.png"), e -> {
+                        if (IJ.getImage() == null) {
+                            JOptionPane.showMessageDialog(this, "There is no current image open in ImageJ!", "Import ROI", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                        importROI(roiFile);
+                    });
+        }
+    }
+
     /**
      * Imports and displays a ROI on the current image
      *
@@ -60,30 +84,6 @@ public class ROIDataSlotRowUI extends ACAQDefaultResultDataSlotRowUI {
             roiManager.add(imp, roi, -1);
         }
         roiManager.runCommand("show all with labels");
-    }
-
-    private Path findROIFile() {
-        if (getRowStorageFolder() != null && Files.isDirectory(getRowStorageFolder())) {
-            return PathUtils.findFileByExtensionIn(getRowStorageFolder(), ".zip");
-        }
-        return null;
-    }
-
-    @Override
-    protected void registerActions() {
-        super.registerActions();
-
-        Path roiFile = findROIFile();
-        if (roiFile != null) {
-            registerAction("Import into current image", "Annotates the currently open image with the ROI annotations.",
-                    UIUtils.getIconFromResources("data-types/roi.png"), e -> {
-                        if (IJ.getImage() == null) {
-                            JOptionPane.showMessageDialog(this, "There is no current image open in ImageJ!", "Import ROI", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                        importROI(roiFile);
-                    });
-        }
     }
 
 }

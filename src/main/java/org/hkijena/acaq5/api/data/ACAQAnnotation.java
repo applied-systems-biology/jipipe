@@ -30,20 +30,6 @@ public class ACAQAnnotation implements Comparable<ACAQAnnotation> {
         this.value = value;
     }
 
-    /**
-     * Returns true if both have the same name.
-     * Returns false if either are null
-     *
-     * @param lhs the first
-     * @param rhs the second
-     * @return if both have the same name and are not null
-     */
-    public static boolean nameEquals(ACAQAnnotation lhs, ACAQAnnotation rhs) {
-        if (lhs == null || rhs == null)
-            return false;
-        return lhs.nameEquals(rhs);
-    }
-
     @JsonGetter("name")
     public String getName() {
         if (name == null)
@@ -116,5 +102,19 @@ public class ACAQAnnotation implements Comparable<ACAQAnnotation> {
     @Override
     public String toString() {
         return name + "=" + value;
+    }
+
+    /**
+     * Returns true if both have the same name.
+     * Returns false if either are null
+     *
+     * @param lhs the first
+     * @param rhs the second
+     * @return if both have the same name and are not null
+     */
+    public static boolean nameEquals(ACAQAnnotation lhs, ACAQAnnotation rhs) {
+        if (lhs == null || rhs == null)
+            return false;
+        return lhs.nameEquals(rhs);
     }
 }

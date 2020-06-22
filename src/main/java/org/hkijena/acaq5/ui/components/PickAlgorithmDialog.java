@@ -35,29 +35,6 @@ public class PickAlgorithmDialog extends JDialog {
         reloadTypeList();
     }
 
-    /**
-     * Shows a dialog for selecting an algorithm
-     *
-     * @param parent     parent component
-     * @param algorithms available algorithms
-     * @param title      the dialog title
-     * @return the selected  algorithm or null of none was selected
-     */
-    public static ACAQGraphNode showDialog(Component parent, Set<ACAQGraphNode> algorithms, String title) {
-        PickAlgorithmDialog dialog = new PickAlgorithmDialog(SwingUtilities.getWindowAncestor(parent), algorithms);
-        dialog.setTitle(title);
-        dialog.setModal(true);
-        dialog.pack();
-        dialog.setSize(new Dimension(500, 500));
-        dialog.setLocationRelativeTo(parent);
-        UIUtils.addEscapeListener(dialog);
-        dialog.setVisible(true);
-        if (!dialog.canceled)
-            return dialog.getSelectedAlgorithm();
-        else
-            return null;
-    }
-
     private void initialize() {
         setContentPane(new JPanel(new BorderLayout(8, 8)));
         initializeToolBar();
@@ -163,5 +140,28 @@ public class PickAlgorithmDialog extends JDialog {
 
     public void setSelectedAlgorithm(ACAQGraphNode selectedAlgorithm) {
         this.selectedAlgorithm = selectedAlgorithm;
+    }
+
+    /**
+     * Shows a dialog for selecting an algorithm
+     *
+     * @param parent     parent component
+     * @param algorithms available algorithms
+     * @param title      the dialog title
+     * @return the selected  algorithm or null of none was selected
+     */
+    public static ACAQGraphNode showDialog(Component parent, Set<ACAQGraphNode> algorithms, String title) {
+        PickAlgorithmDialog dialog = new PickAlgorithmDialog(SwingUtilities.getWindowAncestor(parent), algorithms);
+        dialog.setTitle(title);
+        dialog.setModal(true);
+        dialog.pack();
+        dialog.setSize(new Dimension(500, 500));
+        dialog.setLocationRelativeTo(parent);
+        UIUtils.addEscapeListener(dialog);
+        dialog.setVisible(true);
+        if (!dialog.canceled)
+            return dialog.getSelectedAlgorithm();
+        else
+            return null;
     }
 }

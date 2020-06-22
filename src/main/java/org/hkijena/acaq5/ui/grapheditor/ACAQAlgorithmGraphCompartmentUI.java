@@ -56,6 +56,81 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
         updateContextMenu();
     }
 
+    @Override
+    public void installNodeUIFeatures(ACAQAlgorithmUI ui) {
+        ui.installContextMenu(Arrays.asList(
+                new OpenSettingsAlgorithmContextMenuFeature(),
+                new AddToSelectionAlgorithmContextMenuFeature(),
+                new SeparatorAlgorithmContextMenuFeature(),
+                new RunAndShowResultsAlgorithmContextMenuFeature(),
+                new SeparatorAlgorithmContextMenuFeature(),
+                new CutCopyAlgorithmContextMenuFeature(),
+                new SeparatorAlgorithmContextMenuFeature(),
+                new EnableDisablePassThroughAlgorithmContextMenuFeature(),
+                new SeparatorAlgorithmContextMenuFeature(),
+                new JsonAlgorithmToGroupAlgorithmContextMenuFeature(),
+                new CollapseIOInterfaceAlgorithmContextMenuFeature(),
+                new DeleteAlgorithmContextMenuFeature()
+        ));
+    }
+
+    @Override
+    public void reloadMenuBar() {
+        getMenuBar().removeAll();
+        getAddableAlgorithms().clear();
+        initializeAddNodesMenus(getMenuBar(), getAlgorithmGraph(), getCompartment(), getAddableAlgorithms());
+        initializeCommonActions();
+        updateNavigation();
+    }
+
+    @Override
+    protected void updateSelection() {
+        super.updateSelection();
+        if (disableUpdateOnSelection)
+            return;
+        if (getSelection().isEmpty()) {
+            setPropertyPanel(documentationPanel);
+        } else if (getSelection().size() == 1) {
+            ACAQAlgorithmUI ui = getSelection().iterator().next();
+            setPropertyPanel(new ACAQSingleAlgorithmSelectionPanelUI((ACAQProjectWorkbench) getWorkbench(), getCanvasUI(), ui.getAlgorithm()));
+        } else {
+            setPropertyPanel(new ACAQMultiAlgorithmSelectionPanelUI((ACAQProjectWorkbench) getWorkbench(), getCanvasUI(),
+                    getSelection().stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet())));
+        }
+    }
+
+    @Subscribe
+    public void onDefaultActionRequested(DefaultAlgorithmUIActionRequestedEvent event) {
+        if (event.getUi().getAlgorithm() instanceof NodeGroup) {
+            if (event.getUi().getAlgorithm() instanceof NodeGroup) {
+                if (getWorkbench() instanceof ACAQProjectWorkbench) {
+                    ACAQNodeGroupUI.openGroupNodeGraph(getWorkbench(), (NodeGroup) event.getUi().getAlgorithm(), true);
+                }
+            }
+        }
+    }
+
+    /**
+     * Listens to events of algorithms requesting some action
+     *
+     * @param event the event
+     */
+    @Subscribe
+    public void onAlgorithmActionRequested(AlgorithmUIActionRequestedEvent event) {
+        if (Objects.equals(event.getAction(), ACAQAlgorithmUI.REQUEST_RUN_AND_SHOW_RESULTS) ||
+                Objects.equals(event.getAction(), ACAQAlgorithmUI.REQUEST_RUN_ONLY)) {
+            disableUpdateOnSelection = true;
+            selectOnly(event.getUi());
+            ACAQSingleAlgorithmSelectionPanelUI panel = new ACAQSingleAlgorithmSelectionPanelUI((ACAQProjectWorkbench) getWorkbench(),
+                    getCanvasUI(),
+                    event.getUi().getAlgorithm());
+            setPropertyPanel(panel);
+            panel.runTestBench(Objects.equals(event.getAction(), ACAQAlgorithmUI.REQUEST_RUN_AND_SHOW_RESULTS),
+                    Objects.equals(event.getAction(), ACAQAlgorithmUI.REQUEST_RUN_ONLY));
+            SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
+        }
+    }
+
     /**
      * Initializes the "Add nodes" menus
      *
@@ -174,81 +249,6 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
                 if (isEmpty)
                     dataMenu.setVisible(false);
             }
-        }
-    }
-
-    @Override
-    public void installNodeUIFeatures(ACAQAlgorithmUI ui) {
-        ui.installContextMenu(Arrays.asList(
-                new OpenSettingsAlgorithmContextMenuFeature(),
-                new AddToSelectionAlgorithmContextMenuFeature(),
-                new SeparatorAlgorithmContextMenuFeature(),
-                new RunAndShowResultsAlgorithmContextMenuFeature(),
-                new SeparatorAlgorithmContextMenuFeature(),
-                new CutCopyAlgorithmContextMenuFeature(),
-                new SeparatorAlgorithmContextMenuFeature(),
-                new EnableDisablePassThroughAlgorithmContextMenuFeature(),
-                new SeparatorAlgorithmContextMenuFeature(),
-                new JsonAlgorithmToGroupAlgorithmContextMenuFeature(),
-                new CollapseIOInterfaceAlgorithmContextMenuFeature(),
-                new DeleteAlgorithmContextMenuFeature()
-        ));
-    }
-
-    @Override
-    public void reloadMenuBar() {
-        getMenuBar().removeAll();
-        getAddableAlgorithms().clear();
-        initializeAddNodesMenus(getMenuBar(), getAlgorithmGraph(), getCompartment(), getAddableAlgorithms());
-        initializeCommonActions();
-        updateNavigation();
-    }
-
-    @Override
-    protected void updateSelection() {
-        super.updateSelection();
-        if (disableUpdateOnSelection)
-            return;
-        if (getSelection().isEmpty()) {
-            setPropertyPanel(documentationPanel);
-        } else if (getSelection().size() == 1) {
-            ACAQAlgorithmUI ui = getSelection().iterator().next();
-            setPropertyPanel(new ACAQSingleAlgorithmSelectionPanelUI((ACAQProjectWorkbench) getWorkbench(), getCanvasUI(), ui.getAlgorithm()));
-        } else {
-            setPropertyPanel(new ACAQMultiAlgorithmSelectionPanelUI((ACAQProjectWorkbench) getWorkbench(), getCanvasUI(),
-                    getSelection().stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet())));
-        }
-    }
-
-    @Subscribe
-    public void onDefaultActionRequested(DefaultAlgorithmUIActionRequestedEvent event) {
-        if (event.getUi().getAlgorithm() instanceof NodeGroup) {
-            if (event.getUi().getAlgorithm() instanceof NodeGroup) {
-                if (getWorkbench() instanceof ACAQProjectWorkbench) {
-                    ACAQNodeGroupUI.openGroupNodeGraph(getWorkbench(), (NodeGroup) event.getUi().getAlgorithm(), true);
-                }
-            }
-        }
-    }
-
-    /**
-     * Listens to events of algorithms requesting some action
-     *
-     * @param event the event
-     */
-    @Subscribe
-    public void onAlgorithmActionRequested(AlgorithmUIActionRequestedEvent event) {
-        if (Objects.equals(event.getAction(), ACAQAlgorithmUI.REQUEST_RUN_AND_SHOW_RESULTS) ||
-                Objects.equals(event.getAction(), ACAQAlgorithmUI.REQUEST_RUN_ONLY)) {
-            disableUpdateOnSelection = true;
-            selectOnly(event.getUi());
-            ACAQSingleAlgorithmSelectionPanelUI panel = new ACAQSingleAlgorithmSelectionPanelUI((ACAQProjectWorkbench) getWorkbench(),
-                    getCanvasUI(),
-                    event.getUi().getAlgorithm());
-            setPropertyPanel(panel);
-            panel.runTestBench(Objects.equals(event.getAction(), ACAQAlgorithmUI.REQUEST_RUN_AND_SHOW_RESULTS),
-                    Objects.equals(event.getAction(), ACAQAlgorithmUI.REQUEST_RUN_ONLY));
-            SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
         }
     }
 }

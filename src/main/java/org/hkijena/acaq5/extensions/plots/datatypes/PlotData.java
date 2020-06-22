@@ -75,37 +75,6 @@ public abstract class PlotData implements ACAQData, ACAQParameterCollection, ACA
         }
     }
 
-    /**
-     * Loads data from a folder
-     *
-     * @param folder folder
-     * @return loaded data
-     */
-    public static PlotData fromFolder(Path folder) {
-        PlotData result;
-        try {
-            JsonNode node = JsonUtils.getObjectMapper().readValue(folder.resolve("plot-metadata.json").toFile(), JsonNode.class);
-            Class<? extends ACAQData> dataClass = ACAQDatatypeRegistry.getInstance().getById(node.get("plot-data-type").textValue());
-            result = (PlotData) ACAQData.createInstance(dataClass);
-
-            // Load metadata
-            result.fromJson(node);
-
-            // Load series
-            for (JsonNode element : ImmutableList.copyOf(node.get("plot-series").elements())) {
-                PlotDataSeries series = JsonUtils.getObjectMapper().readerFor(PlotDataSeries.class).readValue(element.get("metadata"));
-                Path fileName = folder.resolve(element.get("file-name").textValue());
-                ResultsTableData tableData = new ResultsTableData(ResultsTable.open(fileName.toString()));
-                series.setTable(tableData.getTable());
-                result.addSeries(series);
-            }
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return result;
-    }
-
     @Override
     public void display(String displayName, ACAQWorkbench workbench) {
         ACAQPlotBuilderUI plotBuilderUI = new ACAQPlotBuilderUI(workbench);
@@ -315,6 +284,37 @@ public abstract class PlotData implements ACAQData, ACAQParameterCollection, ACA
                 }
             }
         }
+    }
+
+    /**
+     * Loads data from a folder
+     *
+     * @param folder folder
+     * @return loaded data
+     */
+    public static PlotData fromFolder(Path folder) {
+        PlotData result;
+        try {
+            JsonNode node = JsonUtils.getObjectMapper().readValue(folder.resolve("plot-metadata.json").toFile(), JsonNode.class);
+            Class<? extends ACAQData> dataClass = ACAQDatatypeRegistry.getInstance().getById(node.get("plot-data-type").textValue());
+            result = (PlotData) ACAQData.createInstance(dataClass);
+
+            // Load metadata
+            result.fromJson(node);
+
+            // Load series
+            for (JsonNode element : ImmutableList.copyOf(node.get("plot-series").elements())) {
+                PlotDataSeries series = JsonUtils.getObjectMapper().readerFor(PlotDataSeries.class).readValue(element.get("metadata"));
+                Path fileName = folder.resolve(element.get("file-name").textValue());
+                ResultsTableData tableData = new ResultsTableData(ResultsTable.open(fileName.toString()));
+                series.setTable(tableData.getTable());
+                result.addSeries(series);
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return result;
     }
 
     /**

@@ -89,10 +89,6 @@ public class ParameterPanel extends FormPanel implements Contextual {
         }
     }
 
-    private static List<String> getParameterKeysSortedByParameterName(Map<String, ACAQParameterAccess> parameters, Collection<String> keys) {
-        return keys.stream().sorted(Comparator.comparing(k0 -> parameters.get(k0).getName())).collect(Collectors.toList());
-    }
-
     private void initialize() {
         if (withSearchBar) {
             JToolBar toolBar = new JToolBar();
@@ -323,5 +319,9 @@ public class ParameterPanel extends FormPanel implements Contextual {
     @Override
     public Context context() {
         return context;
+    }
+
+    private static List<String> getParameterKeysSortedByParameterName(Map<String, ACAQParameterAccess> parameters, Collection<String> keys) {
+        return keys.stream().sorted(Comparator.comparing(k0 -> parameters.get(k0).getName())).collect(Collectors.toList());
     }
 }

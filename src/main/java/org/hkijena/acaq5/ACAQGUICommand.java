@@ -28,15 +28,6 @@ public class ACAQGUICommand implements Command {
     @Parameter
     private Context context;
 
-    /**
-     * @param args ignored
-     */
-    public static void main(final String... args) {
-        final ImageJ ij = new ImageJ();
-        ij.ui().showUI();
-        ij.command().run(ACAQGUICommand.class, true);
-    }
-
     @Override
     public void run() {
         if (!ACAQDefaultRegistry.isInstantiated()) {
@@ -73,5 +64,14 @@ public class ACAQGUICommand implements Command {
      */
     public Context getContext() {
         return context;
+    }
+
+    /**
+     * @param args ignored
+     */
+    public static void main(final String... args) {
+        final ImageJ ij = new ImageJ();
+        ij.ui().showUI();
+        ij.command().run(ACAQGUICommand.class, true);
     }
 }

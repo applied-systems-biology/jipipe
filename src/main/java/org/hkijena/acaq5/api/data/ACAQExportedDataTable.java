@@ -56,22 +56,6 @@ public class ACAQExportedDataTable implements TableModel {
     }
 
     /**
-     * Loads the table from JSON
-     *
-     * @param fileName JSON file
-     * @return Loaded table
-     */
-    public static ACAQExportedDataTable loadFromJson(Path fileName) {
-        try {
-            return JsonUtils.getObjectMapper().readerFor(ACAQExportedDataTable.class).readValue(fileName.toFile());
-        } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Unable to load data table from '" + fileName + "'!",
-                    "Load ACAQ5 results", "Either the file is inaccessible, or corrupt.",
-                    "Check if the file is readable and contains valid JSON data.");
-        }
-    }
-
-    /**
      * @return Gets the algorithm ID
      */
     @JsonGetter("algorithm-id")
@@ -271,6 +255,22 @@ public class ACAQExportedDataTable implements TableModel {
     @Override
     public void removeTableModelListener(TableModelListener l) {
 
+    }
+
+    /**
+     * Loads the table from JSON
+     *
+     * @param fileName JSON file
+     * @return Loaded table
+     */
+    public static ACAQExportedDataTable loadFromJson(Path fileName) {
+        try {
+            return JsonUtils.getObjectMapper().readerFor(ACAQExportedDataTable.class).readValue(fileName.toFile());
+        } catch (IOException e) {
+            throw new UserFriendlyRuntimeException(e, "Unable to load data table from '" + fileName + "'!",
+                    "Load ACAQ5 results", "Either the file is inaccessible, or corrupt.",
+                    "Check if the file is readable and contains valid JSON data.");
+        }
     }
 
     /**

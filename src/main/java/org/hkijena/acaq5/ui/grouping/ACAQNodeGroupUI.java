@@ -34,6 +34,19 @@ public class ACAQNodeGroupUI extends ACAQWorkbenchPanel {
         initialize();
     }
 
+    private void initialize() {
+        setLayout(new BorderLayout());
+        graphUI = new ACAQAlgorithmGraphCompartmentUI(getWorkbench(), nodeGroup.getWrappedGraph(), ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
+        add(graphUI, BorderLayout.CENTER);
+    }
+
+    /**
+     * @return The displayed compartment
+     */
+    public NodeGroup getNodeGroup() {
+        return nodeGroup;
+    }
+
     /**
      * Opens the graph editor for specified compartment
      *
@@ -71,18 +84,5 @@ public class ACAQNodeGroupUI extends ACAQWorkbenchPanel {
             }
         }
         return result;
-    }
-
-    private void initialize() {
-        setLayout(new BorderLayout());
-        graphUI = new ACAQAlgorithmGraphCompartmentUI(getWorkbench(), nodeGroup.getWrappedGraph(), ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
-        add(graphUI, BorderLayout.CENTER);
-    }
-
-    /**
-     * @return The displayed compartment
-     */
-    public NodeGroup getNodeGroup() {
-        return nodeGroup;
     }
 }
