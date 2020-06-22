@@ -231,17 +231,22 @@ public class ACAQJsonExtensionWindow extends JFrame {
     public static void installExtensions(Component parent) {
         List<Path> files = FileChooserSettings.openFiles(parent, FileChooserSettings.KEY_PROJECT, "Open ACAQ5 JSON extension (*.json)");
         for (Path selectedFile : files) {
-            installExtensionFromFile(parent, selectedFile);
+            installExtensionFromFile(parent, selectedFile, true);
+        }
+        if(!files.isEmpty()) {
+            JOptionPane.showMessageDialog(parent, "The extensions were copied into the plugin directory. Please check if any errors occurred. " +
+                    "We recommend to restart ImageJ, " +
+                    "especially if you updated an existing extension.", "Extensions copied", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
     /**
      * Loads a project and installs it
-     *
-     * @param parent   The parent component
+     *  @param parent   The parent component
      * @param filePath The file path
+     * @param silent
      */
-    public static void installExtensionFromFile(Component parent, Path filePath) {
+    public static void installExtensionFromFile(Component parent, Path filePath, boolean silent) {
         try {
             JsonNode jsonData = JsonUtils.getObjectMapper().readValue(filePath.toFile(), JsonNode.class);
             Set<ACAQDependency> dependencySet = ACAQProject.loadDependenciesFromJson(jsonData);
@@ -252,7 +257,12 @@ public class ACAQJsonExtensionWindow extends JFrame {
             }
 
             ACAQJsonExtension project = ACAQJsonExtension.loadProject(jsonData);
-            installExtension(parent, project);
+            installExtension(parent, project, true);
+
+            if(!silent) {
+                JOptionPane.showMessageDialog(parent, "The extension was installed. We recommend to restart ImageJ, " +
+                        "especially if you updated an existing extension.", "Extension installed", JOptionPane.INFORMATION_MESSAGE);
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -260,11 +270,11 @@ public class ACAQJsonExtensionWindow extends JFrame {
 
     /**
      * Installs a loaded project
-     *
-     * @param parent    The parent component
+     *  @param parent    The parent component
      * @param extension The extension
+     * @param silent whether to show a dialog confirming the installation
      */
-    public static void installExtension(Component parent, ACAQJsonExtension extension) {
+    public static void installExtension(Component parent, ACAQJsonExtension extension, boolean silent) {
         boolean alreadyExists = ACAQDefaultRegistry.getInstance().getRegisteredExtensionIds().contains(extension.getDependencyId());
         if (alreadyExists) {
             if (JOptionPane.showConfirmDialog(parent, "There already exists an extension with ID '"
@@ -312,6 +322,10 @@ public class ACAQJsonExtensionWindow extends JFrame {
         try {
             ACAQJsonExtension loadedExtension = JsonUtils.getObjectMapper().readValue(selectedPath.toFile(), ACAQJsonExtension.class);
             ACAQDefaultRegistry.getInstance().register(loadedExtension);
+            if(!silent) {
+                JOptionPane.showMessageDialog(parent, "The extension was installed. We recommend to restart ImageJ, " +
+                        "especially if you updated an existing extension.", "Extension installed", JOptionPane.INFORMATION_MESSAGE);
+            }
         } catch (Exception e) {
             IJ.handleException(e);
         }

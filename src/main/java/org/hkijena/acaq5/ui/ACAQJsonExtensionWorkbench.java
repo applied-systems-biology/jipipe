@@ -225,7 +225,7 @@ public class ACAQJsonExtensionWorkbench extends JPanel implements ACAQWorkbench 
                 return;
         }
 
-        ACAQJsonExtensionWindow.installExtension(this, getProject());
+        ACAQJsonExtensionWindow.installExtension(this, getProject(), true);
     }
 
     /**
