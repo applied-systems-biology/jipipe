@@ -53,7 +53,7 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
     private BiMap<String, ACAQDataSlot> inputSlotMap = HashBiMap.create();
     private BiMap<String, ACAQDataSlot> outputSlotMap = HashBiMap.create();
     private EventBus eventBus = new EventBus();
-    private Map<String, Point> locations = new HashMap<>();
+    private Map<String, Map<String, Point>> locations = new HashMap<>();
     private Path internalStoragePath;
     private Path storagePath;
     private String customName;
@@ -337,11 +337,11 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
         }
     }
 
-    public Map<String, Point> getLocations() {
+    public Map<String, Map<String, Point>> getLocations() {
         return locations;
     }
 
-    public void setLocations(Map<String, Point> locations) {
+    public void setLocations(Map<String, Map<String, Point>> locations) {
         this.locations = locations;
     }
 
@@ -353,7 +353,11 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
      * @return The UI location or null if unset
      */
     public Point getLocationWithin(String compartment, String visualMode) {
-        return locations.getOrDefault(compartment + "{" + visualMode + "}", null);
+        Map<String, Point> visualModeMap = locations.getOrDefault(compartment, null);
+        if(visualModeMap != null) {
+            return visualModeMap.getOrDefault(visualMode, null);
+        }
+        return null;
     }
 
     /**
@@ -364,7 +368,12 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
      * @param visualMode  Used to differentiate between different visual modes
      */
     public void setLocationWithin(String compartment, Point location, String visualMode) {
-        this.locations.put(compartment + "{" + visualMode + "}", location);
+        Map<String, Point> visualModeMap = locations.getOrDefault(compartment, null);
+        if(visualModeMap == null) {
+            visualModeMap = new HashMap<>();
+            locations.put(compartment, visualModeMap);
+        }
+        visualModeMap.put(visualMode, location);
     }
 
     /**
@@ -379,14 +388,17 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
         jsonGenerator.writeObjectField("acaq:slot-configuration", slotConfiguration);
         jsonGenerator.writeFieldName("acaq:algorithm-ui-location");
         jsonGenerator.writeStartObject();
-        for (Map.Entry<String, Point> entry : locations.entrySet()) {
-            if (entry.getValue() != null) {
+        for (Map.Entry<String, Map<String, Point>> visualModeEntry : locations.entrySet()) {
+            jsonGenerator.writeFieldName(visualModeEntry.getKey());
+            jsonGenerator.writeStartObject();
+            for (Map.Entry<String, Point> entry : visualModeEntry.getValue().entrySet()) {
                 jsonGenerator.writeFieldName(entry.getKey());
                 jsonGenerator.writeStartObject();
                 jsonGenerator.writeNumberField("x", entry.getValue().x);
                 jsonGenerator.writeNumberField("y", entry.getValue().y);
                 jsonGenerator.writeEndObject();
             }
+            jsonGenerator.writeEndObject();
         }
         jsonGenerator.writeEndObject();
         jsonGenerator.writeStringField("acaq:algorithm-type", getDeclaration().getId());
@@ -427,11 +439,14 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
         if (node.has("acaq:slot-configuration"))
             slotConfiguration.fromJson(node.get("acaq:slot-configuration"));
         if (node.has("acaq:algorithm-ui-location")) {
-            for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(node.get("acaq:algorithm-ui-location").fields())) {
-                JsonNode xValue = entry.getValue().path("x");
-                JsonNode yValue = entry.getValue().path("y");
-                if (!xValue.isMissingNode() && !yValue.isMissingNode()) {
-                    locations.put(entry.getKey(), new Point(xValue.asInt(), yValue.asInt()));
+            for (Map.Entry<String, JsonNode> visualModeEntry : ImmutableList.copyOf(node.get("acaq:algorithm-ui-location").fields())) {
+                String compartment = visualModeEntry.getKey();
+                for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(visualModeEntry.getValue().fields())) {
+                    JsonNode xValue = entry.getValue().path("x");
+                    JsonNode yValue = entry.getValue().path("y");
+                    if (!xValue.isMissingNode() && !yValue.isMissingNode()) {
+                        setLocationWithin(compartment,  new Point(xValue.asInt(), yValue.asInt()), entry.getKey());
+                    }
                 }
             }
         }

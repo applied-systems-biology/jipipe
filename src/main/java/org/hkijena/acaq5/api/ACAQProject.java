@@ -33,12 +33,16 @@ import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 
+import java.awt.Point;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -347,6 +351,7 @@ public class ACAQProject implements ACAQValidatable {
     public static class Serializer extends JsonSerializer<ACAQProject> {
         @Override
         public void serialize(ACAQProject project, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+            project.cleanupGraph();
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("acaq:project-type", "project");
             jsonGenerator.writeObjectField("metadata", project.metadata);
@@ -358,6 +363,40 @@ public class ACAQProject implements ACAQValidatable {
             jsonGenerator.writeEndObject();
             jsonGenerator.writeEndObject();
         }
+    }
+
+    /**
+     * Re-assigns graph node Ids based on their name
+     */
+    public void cleanupGraph() {
+        Map<String, String> compartmentRenames = compartmentGraph.cleanupIds();
+        Map<String, Set<ACAQGraphNode>> compartmentNodes = new HashMap<>();
+        for (Map.Entry<String, String> entry : compartmentRenames.entrySet()) {
+            Set<ACAQGraphNode> nodes = graph.getAlgorithmNodes().values().stream().filter(node -> Objects.equals(node.getCompartment(), entry.getKey())).collect(Collectors.toSet());
+            compartmentNodes.put(entry.getKey(), nodes);
+        }
+        for (Map.Entry<String, Set<ACAQGraphNode>> entry : compartmentNodes.entrySet()) {
+            String newCompartment = compartmentRenames.get(entry.getKey());
+            for (ACAQGraphNode node : entry.getValue()) {
+                
+                // Rename own compartment
+                node.setCompartment(newCompartment);
+            }
+        }
+        for (ACAQGraphNode node : graph.getAlgorithmNodes().values()) {
+            // Rename visible compartments
+            node.setVisibleCompartments(node.getVisibleCompartments().stream().map(compartmentRenames::get).collect(Collectors.toSet()));
+
+            // Rename locations
+            ImmutableList<Map.Entry<String, Map<String, Point>>> locationEntries = ImmutableList.copyOf(node.getLocations().entrySet());
+            node.getLocations().clear();
+            for (Map.Entry<String, Map<String, Point>> entry : locationEntries) {
+                String newId = compartmentRenames.get(entry.getKey());
+                node.getLocations().put(newId, entry.getValue());
+            }
+        }
+
+        graph.cleanupIds();
     }
 
     /**
@@ -392,6 +431,9 @@ public class ACAQProject implements ACAQValidatable {
 
             // Update node visibilities
             project.updateCompartmentVisibility();
+
+            // Apply some clean-up
+            project.cleanupGraph();
 
             return project;
         }

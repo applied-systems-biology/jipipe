@@ -13,6 +13,9 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: edu.berkeley:Hough_Circle_Transform:1.0.0-RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.swinglabs:swingx:1.6.1" level="project" />
+    <orderEntry type="library" name="Maven: com.jhlabs:filters:2.0.235" level="project" />
+    <orderEntry type="library" name="Maven: org.swinglabs:swing-worker:1.1" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej:2.0.0-rc-72" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-common:0.31.0" level="project" />
     <orderEntry type="library" name="Maven: edu.ucar:udunits:4.3.18" level="project" />

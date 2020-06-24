@@ -30,6 +30,7 @@ import org.jgrapht.traverse.TopologicalOrderIterator;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -116,8 +117,38 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * @param compartment The compartment where the algorithm will be placed
      */
     public void insertNode(ACAQGraphNode algorithm, String compartment) {
-        String uniqueName = StringUtils.makeUniqueString(StringUtils.jsonify(compartment + "-" + algorithm.getName()), " ", algorithms.keySet());
+        String name;
+        if(Objects.equals(compartment, COMPARTMENT_DEFAULT))
+            name = algorithm.getName();
+        else
+            name = compartment + "-" + algorithm.getName();
+        String uniqueName = StringUtils.makeUniqueString(StringUtils.jsonify(name), " ", algorithms.keySet());
         insertNode(uniqueName, algorithm, compartment);
+    }
+
+    /**
+     * Re-assigns new Ids to the all nodes
+     * @return how old Ids are assigned to new Ids
+     */
+    public Map<String, String> cleanupIds() {
+        Map<String, String> renaming = new HashMap<>();
+        List<ACAQGraphNode> traversedAlgorithms = traverseAlgorithms();
+        ImmutableBiMap<String, ACAQGraphNode> oldIds = ImmutableBiMap.copyOf(algorithms);
+        algorithms.clear();
+        for (ACAQGraphNode algorithm : traversedAlgorithms) {
+            String compartment = algorithm.getCompartment();
+            String name;
+            if(Objects.equals(compartment, COMPARTMENT_DEFAULT))
+                name = algorithm.getName();
+            else
+                name = compartment + "-" + algorithm.getName();
+            String newId = StringUtils.makeUniqueString(StringUtils.jsonify(name), " ", algorithms.keySet());
+            algorithms.put(newId, algorithm);
+            String oldId = oldIds.inverse().get(algorithm);
+            renaming.put(oldId, newId);
+        }
+        eventBus.post(new AlgorithmGraphChangedEvent(this));
+        return renaming;
     }
 
     /**
