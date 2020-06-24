@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ACAQ5 for ImageJ</title>
+    
+      <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="revised" content="2020-06-24T13:25:45 CEST">
+<title>Multi-parameter algorithms :: ACAQ5 for ImageJ</title>
+<link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
+<link href="../../../css/font-awesome.min.css" rel="stylesheet">
+<link href="../../../css/nucleus.css" rel="stylesheet">
+<link href="../../../theme-flex/style.css" rel="stylesheet">
+
+<link rel="stylesheet" href="../../../css/bootstrap.min.css">
+<script src="../../../js/jquery-2.x.min.js"></script>
+<script type="text/javascript">
+      var baseurl = "https:\/\/applied-systems-biology.github.io\/acaq5\/";
+</script>
+<link rel="stylesheet" href="../../../css/custom.css">
+
+
+    
+  </head>
+  <body data-url="/documentation/standard-library/multi-parameter/">
+    
+      <header>
+  <div class="logo">
+    
+	
+  
+    <p><a href="../../../" target="_self"><img src="../../../img/logo.svg" /></a><span style="font-size: 80%;">by <a href="https://www.leibniz-hki.de/en/applied-systems-biology.html" target="_blank">Applied Systems Biology, HKI Jena, Germany</a></span></p>
+
+  
+
+
+  </div>
+  <div class="burger"><a href="javascript:void(0);" style="font-size:15px;">&#9776;</a></div>
+    <nav class="shortcuts">
+            <li class="" role="">
+                <a href="../../../download"  rel="noopener">
+                  <i class='fa fa-cloud-download'></i> <label>Download</label>
+                </a>
+            </li>
+            <li class="" role="">
+                <a href="../../../citation"  rel="noopener">
+                  <i class='fa fa-paragraph'></i> <label>Citation</label>
+                </a>
+            </li>
+    </nav>
+</header>
+<article>
+  <aside>
+    <ul class="menu">
+          <li data-nav-id="/" class="dd-item">
+          <a href="../../../">
+            <i class="fa fa-fw fa-home"></i>
+          </a>
+          </li>
+    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/download/" class="dd-item
+        ">
+      <div>
+      <a href="../../../download/">Download</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+    </li>
+    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/examples/" class="dd-item
+        ">
+      <div>
+      <a href="../../../examples/">Examples</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+    </li>
+    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/tutorials/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/">Tutorials</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/tutorials/analysis/" class="dd-item">
+        <div>
+          <a href="../../../tutorials/analysis/">
+            Image analysis pipeline
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/tutorials/analysis_video/" class="dd-item">
+        <div>
+          <a href="../../../tutorials/analysis_video/">
+            Image analysis pipeline (Video)
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/tutorials/extension/" class="dd-item">
+        <div>
+          <a href="../../../tutorials/extension/">
+            Creating an extension
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/" class="dd-item parent haschildren
+        ">
+      <div>
+      <a href="../../../documentation/">Documentation</a>
+            <i class="fa fa-angle-down fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/batch-pipelines/" class="dd-item">
+        <div>
+          <a href="../../../documentation/batch-pipelines/">
+            Batch pipelines
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/graph-editor/" class="dd-item">
+        <div>
+          <a href="../../../documentation/graph-editor/">
+            Pipeline editor
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/graph-compartment/" class="dd-item">
+        <div>
+          <a href="../../../documentation/graph-compartment/">
+            Graph compartments
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/result-analysis/" class="dd-item">
+        <div>
+          <a href="../../../documentation/result-analysis/">
+            Running a pipeline
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/quick-run/" class="dd-item">
+        <div>
+          <a href="../../../documentation/quick-run/">
+            Testing algorithm parameters
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/cache/" class="dd-item">
+        <div>
+          <a href="../../../documentation/cache/">
+            Data caching
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/imagej-integration/" class="dd-item">
+        <div>
+          <a href="../../../documentation/imagej-integration/">
+            ImageJ integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/plugins/" class="dd-item">
+        <div>
+          <a href="../../../documentation/plugins/">
+            Managing plugins
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/standard-library/" class="dd-item parent haschildren
+        ">
+      <div>
+      <a href="../../../documentation/standard-library/">Standard library</a>
+            <i class="fa fa-angle-down fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/standard-library/imagej-integration/" class="dd-item">
+        <div>
+          <a href="../../../documentation/standard-library/imagej-integration/">
+            ImageJ integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/standard-library/multi-parameter/" class="dd-item active">
+        <div>
+          <a href="../../../documentation/standard-library/multi-parameter/">
+            Multi-parameter algorithms
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/standard-library/filesystem/" class="dd-item">
+        <div>
+          <a href="../../../documentation/standard-library/filesystem/">
+            Filesystem algorithms
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/standard-library/annotations/" class="dd-item">
+        <div>
+          <a href="../../../documentation/standard-library/annotations/">
+            Data annotation algorithms
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/standard-library/plots-tables/" class="dd-item">
+        <div>
+          <a href="../../../documentation/standard-library/plots-tables/">
+            Plots and tables
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/create-json-extensions/" class="dd-item
+        ">
+      <div>
+      <a href="../../../documentation/create-json-extensions/">Extension builder</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../documentation-java-api/">Java API documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/javadocs/" class="dd-item">
+        <div>
+          <a href="../../../documentation-java-api/javadocs/">
+            JavaDocs
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/create-extension/" class="dd-item">
+        <div>
+          <a href="../../../documentation-java-api/create-extension/">
+            Creating an extension project
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../documentation-java-api/algorithm/">Creating an algorithm</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/iterating-algorithms/" class="dd-item">
+        <div>
+          <a href="../../../documentation-java-api/algorithm/iterating-algorithms/">
+            Handling multiple inputs
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/merging-algorithms/" class="dd-item">
+        <div>
+          <a href="../../../documentation-java-api/algorithm/merging-algorithms/">
+            Merging input data
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/slot-configuration/" class="dd-item">
+        <div>
+          <a href="../../../documentation-java-api/algorithm/slot-configuration/">
+            Customizing slots
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/parameters/" class="dd-item">
+        <div>
+          <a href="../../../documentation-java-api/algorithm/parameters/">
+            Parameters
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/parallelization/" class="dd-item">
+        <div>
+          <a href="../../../documentation-java-api/algorithm/parallelization/">
+            Parallelization
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/custom-declaration/" class="dd-item">
+        <div>
+          <a href="../../../documentation-java-api/algorithm/custom-declaration/">
+            Custom algorithm declaration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/data-type/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../documentation-java-api/data-type/">Creating a data type</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/data-type/result-ui/" class="dd-item">
+        <div>
+          <a href="../../../documentation-java-api/data-type/result-ui/">
+            Result view
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/data-type/cell-ui/" class="dd-item">
+        <div>
+          <a href="../../../documentation-java-api/data-type/cell-ui/">
+            Table cell view
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/parameter-type/" class="dd-item
+        ">
+      <div>
+      <a href="../../../documentation-java-api/parameter-type/">Creating a parameter type</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../documentation-json-api/">JSON API documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/algorithm-node/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/algorithm-node/">
+            Algorithm node
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/algorithm/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/algorithm/">
+            Algorithm type
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/dependency/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/dependency/">
+            Dependency
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/graph-edge/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/graph-edge/">
+            Graph Edge
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/graph/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/graph/">
+            Algorithm graph
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/json-extension/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/json-extension/">
+            Extension
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/metadata/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/metadata/">
+            Metadata
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/point/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/point/">
+            Point
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/project/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/project/">
+            Project
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/slot-definition/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/slot-definition/">
+            Slot definition
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/citation/" class="dd-item
+        ">
+      <div>
+      <a href="../../../citation/">Citation</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+    </li>
+
+
+
+
+    </ul>
+    <section>
+    </section>
+  </aside>
+  <section class="page">
+    
+    <div class="nav-select">
+      <center>Navigation : 
+        <select onchange="javascript:location.href = this.value;">
+          
+    <option value="/download/" >
+   Download</option>
+    <option value="/examples/" >
+   Examples</option>
+    <option value="/tutorials/" >
+   Tutorials</option>
+    <option value="/documentation/" >
+   Documentation</option> 
+      <option value="/documentation/batch-pipelines/" >- Batch pipelines</option>
+      <option value="/documentation/graph-editor/" >- Pipeline editor</option>
+      <option value="/documentation/graph-compartment/" >- Graph compartments</option>
+      <option value="/documentation/result-analysis/" >- Running a pipeline</option>
+      <option value="/documentation/quick-run/" >- Testing algorithm parameters</option>
+      <option value="/documentation/cache/" >- Data caching</option>
+      <option value="/documentation/imagej-integration/" >- ImageJ integration</option>
+      <option value="/documentation/plugins/" >- Managing plugins</option>
+    <option value="/documentation/standard-library/" >
+  - 
+   Standard library</option> 
+      <option value="/documentation/standard-library/imagej-integration/" >-- ImageJ integration</option>
+      <option value="/documentation/standard-library/multi-parameter/"  selected>-- Multi-parameter algorithms</option>
+      <option value="/documentation/standard-library/filesystem/" >-- Filesystem algorithms</option>
+      <option value="/documentation/standard-library/annotations/" >-- Data annotation algorithms</option>
+      <option value="/documentation/standard-library/plots-tables/" >-- Plots and tables</option>
+  
+    <option value="/documentation/create-json-extensions/" >
+  - 
+   Extension builder</option>
+  
+    <option value="/documentation-java-api/" >
+   Java API documentation</option>
+    <option value="/documentation-json-api/" >
+   JSON API documentation</option>
+    <option value="/citation/" >
+   Citation</option>
+
+
+
+        </select>
+      </center>
+    </div>
+      <div>
+        <div class="searchbox">
+          <input data-search-input id="search-by" type="text" placeholder="Search...">
+        </div>
+        <script type="text/javascript" src="../../../js/lunr.min.js"></script>
+        <script type="text/javascript" src="../../../js/auto-complete.js"></script>
+        <link href="../../../css/auto-complete.css" rel="stylesheet">
+        <script type="text/javascript">
+          
+              var baseurl = "https:\/\/applied-systems-biology.github.io\/acaq5\/";
+          
+        </script>
+        <script type="text/javascript" src="../../../js/search.js"></script>
+      </div>
+    
+
+    <h1>Multi-parameter algorithms</h1>
+    
+    
+    
+    <p>The ACAQ5 standard library comes with algorithms that can create and manage parameter sets.
+An algorithm called <code>Apply parameters</code> then consumes those parameters and
+applies each one to the specified algorithm. Like any ACAQ5 data, parameter sets can
+be split and merged. We also provide an easy way to create a table of parameters, including
+ways to generate multiple parameter sets at once.</p>
+<p><img src="../../../img/documentation/multi-parameters.png" alt="Multi-parameter algorithm"></p>
+<p>The parameter data types can be found in <code>Add data &gt; Parameters</code>. There are currently two
+data source algorithms available:</p>
+<ol>
+<li><strong>Define parameter</strong> defines a single set of parameters</li>
+<li><strong>Define multiple parameters</strong> lets you define a table of parameters</li>
+</ol>
+
+<div class="notices tip" ><p><p>Use Process &gt; Merge &gt; Merge slots to merge multiple parameter sets.</p>
+</p></div>
+
+<h1 id="defining-parameters">Defining parameters</h1>
+<p>Independent of the data source, you have to select which kind of algorithm the parameters should be generated for.
+If you are defining a single parameter, you can just input the parameters directly.</p>
+<p>If you are defining multiple parameters at once, create or generate additional rows.
+Select a table cell to open the parameter editor below the table.</p>
+<p>There are following buttons available:</p>
+<ul>
+<li><strong>Add row</strong> adds a new row with standard parameters</li>
+<li><strong>Generate row</strong> allows you to create new rows where one column is generated by the selected generator</li>
+<li><strong>Replace cells</strong> allows you to replace the selected cells in one column with a set of generated parameters</li>
+</ul>
+<p><img src="../../../img/documentation/multi-parameter-definition.png" alt="Multi-parameter algorithm"></p>
+<h1 id="applying-parameters">Applying parameters</h1>
+<p>The <code>Apply parameters</code> algorithm wrap around another algorithm and executes it with each parameter set.
+It comes with a set of standard parameters that are used if a parameter is not defined by an incoming parameter data.</p>
+<p>Just connect the input and output slots as usual.</p>
+<p>
+<div class="notices info" ><p><p>Parameter data does not store the information about which algorithm it is intended for, meaning that you can mix and match parameters.
+Parameters that are not existing in the selected algorithm are ignored by the &lsquo;Apply parameters&rsquo; node.
+Just be sure that the parameter data types match - otherwise this can cause crashes or unexpected behavior.</p>
+</p></div>
+
+
+<div class="notices info" ><p><p>Some algorithms have complicated data slot rules that might not work with the &lsquo;Apply parameters&rsquo; node.</p>
+</p></div>
+</p>
+
+
+    
+    
+        <div class="chevrons">
+    <div id="navigation">
+<a class="nav nav-prev" href="../../../documentation/standard-library/imagej-integration/" title="ImageJ integration"> <i class="fa fa-chevron-left"></i><label>ImageJ integration</label></a>
+    <a class="nav nav-next" href="../../../documentation/standard-library/filesystem/" title="Filesystem algorithms" style="margin-right: 0px;"><label>Filesystem algorithms</label><i class="fa fa-chevron-right"></i></a></div>
+  </div>
+
+  </section>
+</article>
+
+<footer>
+
+<div class="footline">
+    
+
+    
+    <div class="author">
+        <i class='fa fa-user'></i> <a href="mailto:ruman.gerst@leibniz-hki.de">Ruman Gerst</a>
+    </div>
+    
+
+    
+
+    
+  </div>
+
+
+	<div>
+
+
+  
+    <p>By <a href="https://www.leibniz-hki.de/en/applied-systems-biology.html">Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans Knöll Institute (HKI), Jena, Germany</a></p>
+
+  
+
+
+
+	</div>
+</footer>
+
+<script src="../../../js/clipboard.min.js"></script>
+
+<link href="../../../css/featherlight.min.css" rel="stylesheet">
+<script src="../../../js/featherlight.min.js"></script>
+
+
+
+<script src="../../../theme-flex/script.js"></script>
+
+
+    
+
+    
+    
+
+    
+  </body>
+</html>

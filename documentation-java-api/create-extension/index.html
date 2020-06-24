@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ACAQ5 for ImageJ</title>
+    
+      <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="revised" content="2020-06-24T13:25:45 CEST">
+<title>Creating an extension project :: ACAQ5 for ImageJ</title>
+<link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
+<link href="../../css/font-awesome.min.css" rel="stylesheet">
+<link href="../../css/nucleus.css" rel="stylesheet">
+<link href="../../theme-flex/style.css" rel="stylesheet">
+
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+<script src="../../js/jquery-2.x.min.js"></script>
+<script type="text/javascript">
+      var baseurl = "https:\/\/applied-systems-biology.github.io\/acaq5\/";
+</script>
+<link rel="stylesheet" href="../../css/custom.css">
+
+
+    
+  </head>
+  <body data-url="/documentation-java-api/create-extension/">
+    
+      <header>
+  <div class="logo">
+    
+	
+  
+    <p><a href="../../" target="_self"><img src="../../img/logo.svg" /></a><span style="font-size: 80%;">by <a href="https://www.leibniz-hki.de/en/applied-systems-biology.html" target="_blank">Applied Systems Biology, HKI Jena, Germany</a></span></p>
+
+  
+
+
+  </div>
+  <div class="burger"><a href="javascript:void(0);" style="font-size:15px;">&#9776;</a></div>
+    <nav class="shortcuts">
+            <li class="" role="">
+                <a href="../../download"  rel="noopener">
+                  <i class='fa fa-cloud-download'></i> <label>Download</label>
+                </a>
+            </li>
+            <li class="" role="">
+                <a href="../../citation"  rel="noopener">
+                  <i class='fa fa-paragraph'></i> <label>Citation</label>
+                </a>
+            </li>
+    </nav>
+</header>
+<article>
+  <aside>
+    <ul class="menu">
+          <li data-nav-id="/" class="dd-item">
+          <a href="../../">
+            <i class="fa fa-fw fa-home"></i>
+          </a>
+          </li>
+    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/download/" class="dd-item
+        ">
+      <div>
+      <a href="../../download/">Download</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+    </li>
+    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/examples/" class="dd-item
+        ">
+      <div>
+      <a href="../../examples/">Examples</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+    </li>
+    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/tutorials/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../tutorials/">Tutorials</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/tutorials/analysis/" class="dd-item">
+        <div>
+          <a href="../../tutorials/analysis/">
+            Image analysis pipeline
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/tutorials/analysis_video/" class="dd-item">
+        <div>
+          <a href="../../tutorials/analysis_video/">
+            Image analysis pipeline (Video)
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/tutorials/extension/" class="dd-item">
+        <div>
+          <a href="../../tutorials/extension/">
+            Creating an extension
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/" class="dd-item parent haschildren
+        ">
+      <div>
+      <a href="../../documentation/">Documentation</a>
+            <i class="fa fa-angle-down fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/batch-pipelines/" class="dd-item">
+        <div>
+          <a href="../../documentation/batch-pipelines/">
+            Batch pipelines
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/graph-editor/" class="dd-item">
+        <div>
+          <a href="../../documentation/graph-editor/">
+            Pipeline editor
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/graph-compartment/" class="dd-item">
+        <div>
+          <a href="../../documentation/graph-compartment/">
+            Graph compartments
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/result-analysis/" class="dd-item">
+        <div>
+          <a href="../../documentation/result-analysis/">
+            Running a pipeline
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/quick-run/" class="dd-item">
+        <div>
+          <a href="../../documentation/quick-run/">
+            Testing algorithm parameters
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/cache/" class="dd-item">
+        <div>
+          <a href="../../documentation/cache/">
+            Data caching
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/imagej-integration/" class="dd-item">
+        <div>
+          <a href="../../documentation/imagej-integration/">
+            ImageJ integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/plugins/" class="dd-item">
+        <div>
+          <a href="../../documentation/plugins/">
+            Managing plugins
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/standard-library/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../documentation/standard-library/">Standard library</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/standard-library/imagej-integration/" class="dd-item">
+        <div>
+          <a href="../../documentation/standard-library/imagej-integration/">
+            ImageJ integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/standard-library/multi-parameter/" class="dd-item">
+        <div>
+          <a href="../../documentation/standard-library/multi-parameter/">
+            Multi-parameter algorithms
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/standard-library/filesystem/" class="dd-item">
+        <div>
+          <a href="../../documentation/standard-library/filesystem/">
+            Filesystem algorithms
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/standard-library/annotations/" class="dd-item">
+        <div>
+          <a href="../../documentation/standard-library/annotations/">
+            Data annotation algorithms
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/standard-library/plots-tables/" class="dd-item">
+        <div>
+          <a href="../../documentation/standard-library/plots-tables/">
+            Plots and tables
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/create-json-extensions/" class="dd-item
+        ">
+      <div>
+      <a href="../../documentation/create-json-extensions/">Extension builder</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/" class="dd-item parent haschildren
+        ">
+      <div>
+      <a href="../../documentation-java-api/">Java API documentation</a>
+            <i class="fa fa-angle-down fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/javadocs/" class="dd-item">
+        <div>
+          <a href="../../documentation-java-api/javadocs/">
+            JavaDocs
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/create-extension/" class="dd-item active">
+        <div>
+          <a href="../../documentation-java-api/create-extension/">
+            Creating an extension project
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../documentation-java-api/algorithm/">Creating an algorithm</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/iterating-algorithms/" class="dd-item">
+        <div>
+          <a href="../../documentation-java-api/algorithm/iterating-algorithms/">
+            Handling multiple inputs
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/merging-algorithms/" class="dd-item">
+        <div>
+          <a href="../../documentation-java-api/algorithm/merging-algorithms/">
+            Merging input data
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/slot-configuration/" class="dd-item">
+        <div>
+          <a href="../../documentation-java-api/algorithm/slot-configuration/">
+            Customizing slots
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/parameters/" class="dd-item">
+        <div>
+          <a href="../../documentation-java-api/algorithm/parameters/">
+            Parameters
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/parallelization/" class="dd-item">
+        <div>
+          <a href="../../documentation-java-api/algorithm/parallelization/">
+            Parallelization
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/custom-declaration/" class="dd-item">
+        <div>
+          <a href="../../documentation-java-api/algorithm/custom-declaration/">
+            Custom algorithm declaration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/data-type/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../documentation-java-api/data-type/">Creating a data type</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/data-type/result-ui/" class="dd-item">
+        <div>
+          <a href="../../documentation-java-api/data-type/result-ui/">
+            Result view
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/data-type/cell-ui/" class="dd-item">
+        <div>
+          <a href="../../documentation-java-api/data-type/cell-ui/">
+            Table cell view
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/parameter-type/" class="dd-item
+        ">
+      <div>
+      <a href="../../documentation-java-api/parameter-type/">Creating a parameter type</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../documentation-json-api/">JSON API documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/algorithm-node/" class="dd-item">
+        <div>
+          <a href="../../documentation-json-api/algorithm-node/">
+            Algorithm node
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/algorithm/" class="dd-item">
+        <div>
+          <a href="../../documentation-json-api/algorithm/">
+            Algorithm type
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/dependency/" class="dd-item">
+        <div>
+          <a href="../../documentation-json-api/dependency/">
+            Dependency
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/graph-edge/" class="dd-item">
+        <div>
+          <a href="../../documentation-json-api/graph-edge/">
+            Graph Edge
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/graph/" class="dd-item">
+        <div>
+          <a href="../../documentation-json-api/graph/">
+            Algorithm graph
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/json-extension/" class="dd-item">
+        <div>
+          <a href="../../documentation-json-api/json-extension/">
+            Extension
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/metadata/" class="dd-item">
+        <div>
+          <a href="../../documentation-json-api/metadata/">
+            Metadata
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/point/" class="dd-item">
+        <div>
+          <a href="../../documentation-json-api/point/">
+            Point
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/project/" class="dd-item">
+        <div>
+          <a href="../../documentation-json-api/project/">
+            Project
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/slot-definition/" class="dd-item">
+        <div>
+          <a href="../../documentation-json-api/slot-definition/">
+            Slot definition
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/citation/" class="dd-item
+        ">
+      <div>
+      <a href="../../citation/">Citation</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+    </li>
+
+
+
+
+    </ul>
+    <section>
+    </section>
+  </aside>
+  <section class="page">
+    
+    <div class="nav-select">
+      <center>Navigation : 
+        <select onchange="javascript:location.href = this.value;">
+          
+    <option value="/download/" >
+   Download</option>
+    <option value="/examples/" >
+   Examples</option>
+    <option value="/tutorials/" >
+   Tutorials</option>
+    <option value="/documentation/" >
+   Documentation</option> 
+      <option value="/documentation/batch-pipelines/" >- Batch pipelines</option>
+      <option value="/documentation/graph-editor/" >- Pipeline editor</option>
+      <option value="/documentation/graph-compartment/" >- Graph compartments</option>
+      <option value="/documentation/result-analysis/" >- Running a pipeline</option>
+      <option value="/documentation/quick-run/" >- Testing algorithm parameters</option>
+      <option value="/documentation/cache/" >- Data caching</option>
+      <option value="/documentation/imagej-integration/" >- ImageJ integration</option>
+      <option value="/documentation/plugins/" >- Managing plugins</option>
+    <option value="/documentation/standard-library/" >
+  - 
+   Standard library</option>
+    <option value="/documentation/create-json-extensions/" >
+  - 
+   Extension builder</option>
+  
+    <option value="/documentation-java-api/" >
+   Java API documentation</option> 
+      <option value="/documentation-java-api/javadocs/" >- JavaDocs</option>
+      <option value="/documentation-java-api/create-extension/"  selected>- Creating an extension project</option>
+    <option value="/documentation-java-api/algorithm/" >
+  - 
+   Creating an algorithm</option>
+    <option value="/documentation-java-api/data-type/" >
+  - 
+   Creating a data type</option>
+    <option value="/documentation-java-api/parameter-type/" >
+  - 
+   Creating a parameter type</option>
+  
+    <option value="/documentation-json-api/" >
+   JSON API documentation</option>
+    <option value="/citation/" >
+   Citation</option>
+
+
+
+        </select>
+      </center>
+    </div>
+      <div>
+        <div class="searchbox">
+          <input data-search-input id="search-by" type="text" placeholder="Search...">
+        </div>
+        <script type="text/javascript" src="../../js/lunr.min.js"></script>
+        <script type="text/javascript" src="../../js/auto-complete.js"></script>
+        <link href="../../css/auto-complete.css" rel="stylesheet">
+        <script type="text/javascript">
+          
+              var baseurl = "https:\/\/applied-systems-biology.github.io\/acaq5\/";
+          
+        </script>
+        <script type="text/javascript" src="../../js/search.js"></script>
+      </div>
+    
+
+    <h1>Creating an extension project</h1>
+    
+    
+    
+    <h1 id="prerequisities">Prerequisities</h1>
+<ul>
+<li>Java 8 (Java 9+ are not working)
+<ul>
+<li>If you are using Windows or a Linux distribution without Java 8, we recommend <a href="https://adoptopenjdk.net/">AdoptOpenJDK</a> (Please choose <code>OpenJDK 8</code>)</li>
+</ul>
+</li>
+<li><a href="https://maven.apache.org/">Maven</a></li>
+</ul>
+<h1 id="creating-the-project">Creating the project</h1>
+<p>The project should have following structure:</p>
+<pre><code>Project root
+└── pom.xml
+└── src
+    └── main
+        ├── java
+        └── resources
+</code></pre><p>Both the <code>java</code> and <code>resources</code> folder should contain a folder structure that is equivalent
+the <code>groupId</code> and <code>artifactId</code> of the project. This is done to prevent conflicts with other
+plugins.</p>
+<p>ACAQ5 is based on <a href="https://scijava.org">SciJava</a> and requires libraries provided
+by the <a href="https://maven.scijava.org/">SciJava Maven repository</a>.</p>
+<p>Here is an example <code>*.pom</code> file that makes use of SciJava:</p>
+<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#75715e">&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;</span>
+<span style="color:#f92672">&lt;project</span> <span style="color:#75af00">xmlns:xsi=</span><span style="color:#d88200">&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span>
+         <span style="color:#75af00">xmlns=</span><span style="color:#d88200">&#34;http://maven.apache.org/POM/4.0.0&#34;</span>
+         <span style="color:#75af00">xsi:schemaLocation=</span><span style="color:#d88200">&#34;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&#34;</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;modelVersion&gt;</span>4.0.0<span style="color:#f92672">&lt;/modelVersion&gt;</span>
+
+    <span style="color:#f92672">&lt;groupId&gt;</span><span style="color:#75715e">&lt;!-- Please insert a value --&gt;</span><span style="color:#f92672">&lt;/groupId&gt;</span>
+    <span style="color:#f92672">&lt;artifactId&gt;</span><span style="color:#75715e">&lt;!-- Please insert a value --&gt;</span><span style="color:#f92672">&lt;/artifactId&gt;</span>
+    <span style="color:#f92672">&lt;version&gt;</span><span style="color:#75715e">&lt;!-- Please insert a value --&gt;</span><span style="color:#f92672">&lt;/version&gt;</span>
+    <span style="color:#f92672">&lt;name&gt;</span><span style="color:#75715e">&lt;!-- Please insert a value --&gt;</span><span style="color:#f92672">&lt;/name&gt;</span>
+    <span style="color:#f92672">&lt;description&gt;</span><span style="color:#75715e">&lt;!-- Please insert a value --&gt;</span><span style="color:#f92672">&lt;/description&gt;</span>
+    <span style="color:#f92672">&lt;url&gt;</span><span style="color:#75715e">&lt;!-- Please insert a value --&gt;</span><span style="color:#f92672">&lt;/url&gt;</span>
+    <span style="color:#f92672">&lt;inceptionYear&gt;</span>2020<span style="color:#f92672">&lt;/inceptionYear&gt;</span>
+    <span style="color:#f92672">&lt;organization&gt;</span>
+        <span style="color:#f92672">&lt;name&gt;</span><span style="color:#75715e">&lt;!-- Please insert a value --&gt;</span><span style="color:#f92672">&lt;/name&gt;</span>
+        <span style="color:#f92672">&lt;url&gt;</span><span style="color:#75715e">&lt;!-- Please insert a value --&gt;</span><span style="color:#f92672">&lt;/url&gt;</span>
+    <span style="color:#f92672">&lt;/organization&gt;</span>
+    <span style="color:#f92672">&lt;licenses&gt;</span>
+        <span style="color:#f92672">&lt;license&gt;</span>
+            <span style="color:#f92672">&lt;name&gt;</span><span style="color:#75715e">&lt;!-- Please insert a value --&gt;</span><span style="color:#f92672">&lt;/name&gt;</span>
+            <span style="color:#f92672">&lt;url&gt;</span><span style="color:#75715e">&lt;!-- Please insert a value --&gt;</span><span style="color:#f92672">&lt;/url&gt;</span>
+            <span style="color:#f92672">&lt;distribution&gt;</span><span style="color:#75715e">&lt;!-- Please insert a value --&gt;</span><span style="color:#f92672">&lt;/distribution&gt;</span>
+        <span style="color:#f92672">&lt;/license&gt;</span>
+    <span style="color:#f92672">&lt;/licenses&gt;</span>
+    <span style="color:#f92672">&lt;developers&gt;</span>
+        <span style="color:#f92672">&lt;developer&gt;</span>
+            <span style="color:#f92672">&lt;id&gt;</span><span style="color:#75715e">&lt;!-- Please insert a value --&gt;</span><span style="color:#f92672">&lt;/id&gt;</span>
+            <span style="color:#f92672">&lt;name&gt;</span><span style="color:#75715e">&lt;!-- Please insert a value --&gt;</span><span style="color:#f92672">&lt;/name&gt;</span>
+            <span style="color:#f92672">&lt;url&gt;</span><span style="color:#75715e">&lt;!-- Please insert a value --&gt;</span><span style="color:#f92672">&lt;/url&gt;</span>
+        <span style="color:#f92672">&lt;/developer&gt;</span>
+    <span style="color:#f92672">&lt;/developers&gt;</span>
+    <span style="color:#f92672">&lt;contributors&gt;</span>
+        <span style="color:#f92672">&lt;contributor&gt;</span>
+            <span style="color:#f92672">&lt;name&gt;</span><span style="color:#75715e">&lt;!-- Please insert a value --&gt;</span><span style="color:#f92672">&lt;/name&gt;</span>
+        <span style="color:#f92672">&lt;/contributor&gt;</span>
+    <span style="color:#f92672">&lt;/contributors&gt;</span>
+    <span style="color:#f92672">&lt;mailingLists&gt;</span>
+        <span style="color:#f92672">&lt;mailingList&gt;</span>
+            <span style="color:#f92672">&lt;name&gt;</span><span style="color:#75715e">&lt;!-- Please insert a value --&gt;</span><span style="color:#f92672">&lt;/name&gt;</span>
+            <span style="color:#f92672">&lt;archive&gt;</span><span style="color:#75715e">&lt;!-- Please insert a value --&gt;</span><span style="color:#f92672">&lt;/archive&gt;</span>
+        <span style="color:#f92672">&lt;/mailingList&gt;</span>
+    <span style="color:#f92672">&lt;/mailingLists&gt;</span>
+    <span style="color:#f92672">&lt;scm&gt;</span>
+        <span style="color:#f92672">&lt;connection&gt;</span><span style="color:#75715e">&lt;!-- Please insert a value --&gt;</span><span style="color:#f92672">&lt;/connection&gt;</span>
+        <span style="color:#f92672">&lt;developerConnection&gt;</span><span style="color:#75715e">&lt;!-- Please insert a value --&gt;</span><span style="color:#f92672">&lt;/developerConnection&gt;</span>
+        <span style="color:#f92672">&lt;tag&gt;</span><span style="color:#75715e">&lt;!-- Please insert a value --&gt;</span><span style="color:#f92672">&lt;/tag&gt;</span>
+        <span style="color:#f92672">&lt;url&gt;</span><span style="color:#75715e">&lt;!-- Please insert a value --&gt;</span><span style="color:#f92672">&lt;/url&gt;</span>
+    <span style="color:#f92672">&lt;/scm&gt;</span>
+    <span style="color:#f92672">&lt;issueManagement&gt;</span>
+        <span style="color:#f92672">&lt;system&gt;</span><span style="color:#75715e">&lt;!-- Please insert a value --&gt;</span><span style="color:#f92672">&lt;/system&gt;</span>
+        <span style="color:#f92672">&lt;url&gt;</span><span style="color:#75715e">&lt;!-- Please insert a value --&gt;</span><span style="color:#f92672">&lt;/url&gt;</span>
+    <span style="color:#f92672">&lt;/issueManagement&gt;</span>
+    <span style="color:#f92672">&lt;ciManagement&gt;</span>
+        <span style="color:#f92672">&lt;system&gt;</span><span style="color:#75715e">&lt;!-- Please insert a value --&gt;</span><span style="color:#f92672">&lt;/system&gt;</span>
+        <span style="color:#f92672">&lt;url&gt;</span><span style="color:#75715e">&lt;!-- Please insert a value --&gt;</span><span style="color:#f92672">&lt;/url&gt;</span>
+    <span style="color:#f92672">&lt;/ciManagement&gt;</span>
+
+    <span style="color:#f92672">&lt;parent&gt;</span>
+        <span style="color:#f92672">&lt;groupId&gt;</span>org.scijava<span style="color:#f92672">&lt;/groupId&gt;</span>
+        <span style="color:#f92672">&lt;artifactId&gt;</span>pom-scijava<span style="color:#f92672">&lt;/artifactId&gt;</span>
+        <span style="color:#f92672">&lt;version&gt;</span>28.0.0<span style="color:#f92672">&lt;/version&gt;</span>
+        <span style="color:#f92672">&lt;relativePath/&gt;</span>
+    <span style="color:#f92672">&lt;/parent&gt;</span>
+
+    <span style="color:#f92672">&lt;repositories&gt;</span>
+        <span style="color:#f92672">&lt;repository&gt;</span>
+            <span style="color:#f92672">&lt;id&gt;</span>imagej.public<span style="color:#f92672">&lt;/id&gt;</span>
+            <span style="color:#f92672">&lt;url&gt;</span>http://maven.imagej.net/content/groups/public<span style="color:#f92672">&lt;/url&gt;</span>
+        <span style="color:#f92672">&lt;/repository&gt;</span>
+        <span style="color:#f92672">&lt;repository&gt;</span>
+            <span style="color:#f92672">&lt;id&gt;</span>external-jars<span style="color:#f92672">&lt;/id&gt;</span>
+            <span style="color:#f92672">&lt;name&gt;</span>External JAR files<span style="color:#f92672">&lt;/name&gt;</span>
+            <span style="color:#f92672">&lt;url&gt;</span>file://${project.basedir}/external-dependencies<span style="color:#f92672">&lt;/url&gt;</span>
+        <span style="color:#f92672">&lt;/repository&gt;</span>
+    <span style="color:#f92672">&lt;/repositories&gt;</span>
+
+    <span style="color:#f92672">&lt;dependencies&gt;</span>
+        <span style="color:#f92672">&lt;dependency&gt;</span>
+            <span style="color:#f92672">&lt;groupId&gt;</span>net.imagej<span style="color:#f92672">&lt;/groupId&gt;</span>
+            <span style="color:#f92672">&lt;artifactId&gt;</span>imagej<span style="color:#f92672">&lt;/artifactId&gt;</span>
+        <span style="color:#f92672">&lt;/dependency&gt;</span>
+        <span style="color:#f92672">&lt;dependency&gt;</span>
+            <span style="color:#f92672">&lt;groupId&gt;</span>net.imglib2<span style="color:#f92672">&lt;/groupId&gt;</span>
+            <span style="color:#f92672">&lt;artifactId&gt;</span>imglib2-ij<span style="color:#f92672">&lt;/artifactId&gt;</span>
+        <span style="color:#f92672">&lt;/dependency&gt;</span>
+        <span style="color:#f92672">&lt;dependency&gt;</span>
+            <span style="color:#f92672">&lt;groupId&gt;</span>net.imagej<span style="color:#f92672">&lt;/groupId&gt;</span>
+            <span style="color:#f92672">&lt;artifactId&gt;</span>imagej-legacy<span style="color:#f92672">&lt;/artifactId&gt;</span>
+        <span style="color:#f92672">&lt;/dependency&gt;</span>
+        <span style="color:#f92672">&lt;dependency&gt;</span>
+            <span style="color:#f92672">&lt;groupId&gt;</span>org.scijava<span style="color:#f92672">&lt;/groupId&gt;</span>
+            <span style="color:#f92672">&lt;artifactId&gt;</span>scijava-log-slf4j<span style="color:#f92672">&lt;/artifactId&gt;</span>
+        <span style="color:#f92672">&lt;/dependency&gt;</span>
+        <span style="color:#75715e">&lt;!-- ACAQ5 plugin --&gt;</span>
+        <span style="color:#f92672">&lt;dependency&gt;</span>
+            <span style="color:#f92672">&lt;groupId&gt;</span>org.hkijena<span style="color:#f92672">&lt;/groupId&gt;</span>
+            <span style="color:#f92672">&lt;artifactId&gt;</span>acaq5<span style="color:#f92672">&lt;/artifactId&gt;</span>
+        <span style="color:#f92672">&lt;/dependency&gt;</span>
+    <span style="color:#f92672">&lt;/dependencies&gt;</span>
+
+    <span style="color:#f92672">&lt;properties&gt;</span>
+        <span style="color:#f92672">&lt;maven.compiler.source&gt;</span>1.8<span style="color:#f92672">&lt;/maven.compiler.source&gt;</span>
+        <span style="color:#f92672">&lt;maven.compiler.target&gt;</span>1.8<span style="color:#f92672">&lt;/maven.compiler.target&gt;</span>
+        <span style="color:#f92672">&lt;license.licenseName&gt;</span>BSD-2-Clause<span style="color:#f92672">&lt;/license.licenseName&gt;</span>
+        <span style="color:#f92672">&lt;license.copyrightOwners&gt;</span>N/A<span style="color:#f92672">&lt;/license.copyrightOwners&gt;</span>
+        <span style="color:#f92672">&lt;license.projectName&gt;</span>MISA ImageJ<span style="color:#f92672">&lt;/license.projectName&gt;</span>
+    <span style="color:#f92672">&lt;/properties&gt;</span>
+
+    <span style="color:#f92672">&lt;build&gt;</span>
+        <span style="color:#f92672">&lt;plugins&gt;</span>
+           <span style="color:#75715e">&lt;!-- This plugin can be useful to create a manually-installable package --&gt;</span>
+            <span style="color:#f92672">&lt;plugin&gt;</span>
+                <span style="color:#f92672">&lt;groupId&gt;</span>org.apache.maven.plugins<span style="color:#f92672">&lt;/groupId&gt;</span>
+                <span style="color:#f92672">&lt;artifactId&gt;</span>maven-dependency-plugin<span style="color:#f92672">&lt;/artifactId&gt;</span>
+                <span style="color:#f92672">&lt;version&gt;</span>3.1.1<span style="color:#f92672">&lt;/version&gt;</span>
+                <span style="color:#f92672">&lt;executions&gt;</span>
+                    <span style="color:#f92672">&lt;execution&gt;</span>
+                        <span style="color:#f92672">&lt;id&gt;</span>copy-dependencies<span style="color:#f92672">&lt;/id&gt;</span>
+                        <span style="color:#f92672">&lt;phase&gt;</span>package<span style="color:#f92672">&lt;/phase&gt;</span>
+                        <span style="color:#f92672">&lt;goals&gt;</span>
+                            <span style="color:#f92672">&lt;goal&gt;</span>copy-dependencies<span style="color:#f92672">&lt;/goal&gt;</span>
+                        <span style="color:#f92672">&lt;/goals&gt;</span>
+                        <span style="color:#f92672">&lt;configuration&gt;</span>
+                            <span style="color:#f92672">&lt;outputDirectory&gt;</span>${project.build.directory}/dependencies<span style="color:#f92672">&lt;/outputDirectory&gt;</span>
+                            <span style="color:#f92672">&lt;overWriteReleases&gt;</span>false<span style="color:#f92672">&lt;/overWriteReleases&gt;</span>
+                            <span style="color:#f92672">&lt;overWriteSnapshots&gt;</span>false<span style="color:#f92672">&lt;/overWriteSnapshots&gt;</span>
+                            <span style="color:#f92672">&lt;overWriteIfNewer&gt;</span>true<span style="color:#f92672">&lt;/overWriteIfNewer&gt;</span>
+                            <span style="color:#f92672">&lt;excludeGroupIds&gt;</span>net.imagej, net.imglib2, org.scijava, com.google.code.gson,
+                                com.google.guava, org.swinglabs, ome
+                            <span style="color:#f92672">&lt;/excludeGroupIds&gt;</span>
+                        <span style="color:#f92672">&lt;/configuration&gt;</span>
+                    <span style="color:#f92672">&lt;/execution&gt;</span>
+                <span style="color:#f92672">&lt;/executions&gt;</span>
+            <span style="color:#f92672">&lt;/plugin&gt;</span>
+            <span style="color:#f92672">&lt;plugin&gt;</span>
+                <span style="color:#f92672">&lt;groupId&gt;</span>org.scijava<span style="color:#f92672">&lt;/groupId&gt;</span>
+                <span style="color:#f92672">&lt;artifactId&gt;</span>scijava-maven-plugin<span style="color:#f92672">&lt;/artifactId&gt;</span>
+                <span style="color:#f92672">&lt;version&gt;</span>1.1.0<span style="color:#f92672">&lt;/version&gt;</span>
+                <span style="color:#f92672">&lt;executions&gt;</span>
+                    <span style="color:#f92672">&lt;execution&gt;</span>
+                        <span style="color:#f92672">&lt;id&gt;</span>set-rootdir<span style="color:#f92672">&lt;/id&gt;</span>
+                        <span style="color:#f92672">&lt;phase&gt;</span>validate<span style="color:#f92672">&lt;/phase&gt;</span>
+                        <span style="color:#f92672">&lt;goals&gt;</span>
+                            <span style="color:#f92672">&lt;goal&gt;</span>set-rootdir<span style="color:#f92672">&lt;/goal&gt;</span>
+                        <span style="color:#f92672">&lt;/goals&gt;</span>
+                    <span style="color:#f92672">&lt;/execution&gt;</span>
+                    <span style="color:#f92672">&lt;execution&gt;</span>
+                        <span style="color:#f92672">&lt;id&gt;</span>copy-jars<span style="color:#f92672">&lt;/id&gt;</span>
+                        <span style="color:#f92672">&lt;phase&gt;</span>install<span style="color:#f92672">&lt;/phase&gt;</span>
+                        <span style="color:#f92672">&lt;goals&gt;</span>
+                            <span style="color:#f92672">&lt;goal&gt;</span>copy-jars<span style="color:#f92672">&lt;/goal&gt;</span>
+                        <span style="color:#f92672">&lt;/goals&gt;</span>
+                    <span style="color:#f92672">&lt;/execution&gt;</span>
+                <span style="color:#f92672">&lt;/executions&gt;</span>
+            <span style="color:#f92672">&lt;/plugin&gt;</span>
+            <span style="color:#f92672">&lt;plugin&gt;</span>
+                <span style="color:#f92672">&lt;groupId&gt;</span>org.apache.maven.plugins<span style="color:#f92672">&lt;/groupId&gt;</span>
+                <span style="color:#f92672">&lt;artifactId&gt;</span>maven-javadoc-plugin<span style="color:#f92672">&lt;/artifactId&gt;</span>
+                <span style="color:#f92672">&lt;executions&gt;</span>
+                    <span style="color:#f92672">&lt;execution&gt;</span>
+                        <span style="color:#f92672">&lt;id&gt;</span>attach-javadocs<span style="color:#f92672">&lt;/id&gt;</span>
+                        <span style="color:#f92672">&lt;goals&gt;</span>
+                            <span style="color:#f92672">&lt;goal&gt;</span>jar<span style="color:#f92672">&lt;/goal&gt;</span>
+                        <span style="color:#f92672">&lt;/goals&gt;</span>
+                    <span style="color:#f92672">&lt;/execution&gt;</span>
+                <span style="color:#f92672">&lt;/executions&gt;</span>
+            <span style="color:#f92672">&lt;/plugin&gt;</span>
+        <span style="color:#f92672">&lt;/plugins&gt;</span>
+    <span style="color:#f92672">&lt;/build&gt;</span>
+
+<span style="color:#f92672">&lt;/project&gt;</span>
+
+</code></pre></div><h1 id="creating-an-extension-service">Creating an extension service</h1>
+<p>ACAQ5 uses the SciJava plugin API to register Java extensions. In your project,
+you can create as many extensions as you want.</p>
+<p>Java extension inherit from <a href="../../external/apidocs/org/hkijena/acaq5/ACAQJavaExtension.html">ACAQJavaExtension</a> and require a <a href="https://javadoc.scijava.org/SciJava/org/scijava/plugin/Plugin.html">@Plugin</a> annotation.</p>
+<p>We recommend to inherit from <a href="../../external/apidocs/org/hkijena/acaq5/ACAQDefaultJavaExtension.html">ACAQDefaultJavaExtension</a> that comes with some convenience-functions.</p>
+<p>A minimal extension can be found here:</p>
+<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75af00">@Plugin</span><span style="color:#f92672">(</span><span style="color:#111">type</span> <span style="color:#f92672">=</span> <span style="color:#111">ACAQJavaExtension</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
+<span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyExtension</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">ACAQDefaultJavaExtension</span> <span style="color:#f92672">{</span>
+
+    <span style="color:#75af00">@Override</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">getName</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#00a8c8">return</span> <span style="color:#d88200">&#34;My extension&#34;</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75af00">@Override</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">getDescription</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#00a8c8">return</span> <span style="color:#d88200">&#34;A Java extension&#34;</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75af00">@Override</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">getDependencyId</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// We recommend the following structure: &lt;groupId&gt;.&lt;artifactId&gt;:&lt;dependencyId&gt;
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// (!) The dependency Id should be unique for your plugin (!)
+</span><span style="color:#75715e"></span>        <span style="color:#00a8c8">return</span> <span style="color:#d88200">&#34;org.hkijena.acaq5:my-extension&#34;</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75af00">@Override</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">getDependencyVersion</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#00a8c8">return</span> <span style="color:#d88200">&#34;1.0.0&#34;</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75af00">@Override</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">getAuthors</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#00a8c8">return</span> <span style="color:#d88200">&#34;Ruman Gerst&#34;</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75af00">@Override</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">getWebsite</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#00a8c8">return</span> <span style="color:#d88200">&#34;https://applied-systems-biology.github.io/acaq5/&#34;</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75af00">@Override</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">getLicense</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#00a8c8">return</span> <span style="color:#d88200">&#34;BSD-2&#34;</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75af00">@Override</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#111">URL</span> <span style="color:#75af00">getLogo</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// This code loads the default ACAQ5 logo from ACAQ5 resources
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// You can replace it with your own logo if you want
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// Just do not use ACAQ5&#39;s ResourceUtils for this, as its always pointing to ACAQ resource directories
+</span><span style="color:#75715e"></span>        <span style="color:#00a8c8">return</span> <span style="color:#111">ResourceUtils</span><span style="color:#f92672">.</span><span style="color:#75af00">getPluginResource</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;logo-400.png&#34;</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75af00">@Override</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">getCitation</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// Here you can enter a citation for your publication
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// It will be displayed in the plugin manager
+</span><span style="color:#75715e"></span>        <span style="color:#00a8c8">return</span> <span style="color:#d88200">&#34;&#34;</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75af00">@Override</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">register</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// Content is registered here
+</span><span style="color:#75715e"></span>    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h1 id="testing-your-extension">Testing your extension</h1>
+<p>Use following code to create an ImageJ2 instance that immediately loads ACAQ5:</p>
+<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#00a8c8">final</span> <span style="color:#111">String</span><span style="color:#f92672">...</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#00a8c8">final</span> <span style="color:#111">ImageJ</span> <span style="color:#111">ij</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">ImageJ</span><span style="color:#f92672">();</span>
+    <span style="color:#111">ij</span><span style="color:#f92672">.</span><span style="color:#75af00">ui</span><span style="color:#f92672">().</span><span style="color:#75af00">showUI</span><span style="color:#f92672">();</span>
+    <span style="color:#111">ij</span><span style="color:#f92672">.</span><span style="color:#75af00">command</span><span style="color:#f92672">().</span><span style="color:#75af00">run</span><span style="color:#f92672">(</span><span style="color:#111">ACAQGUICommand</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#00a8c8">true</span><span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>
+</code></pre></div>
+
+    
+    
+        <div class="chevrons">
+    <div id="navigation">
+<a class="nav nav-prev" href="../../documentation-java-api/javadocs/" title="JavaDocs"> <i class="fa fa-chevron-left"></i><label>JavaDocs</label></a>
+    <a class="nav nav-next" href="../../documentation-java-api/algorithm/" title="Creating an algorithm" style="margin-right: 0px;"><label>Creating an algorithm</label><i class="fa fa-chevron-right"></i></a></div>
+  </div>
+
+  </section>
+</article>
+
+<footer>
+
+<div class="footline">
+    
+
+    
+    <div class="author">
+        <i class='fa fa-user'></i> <a href="mailto:ruman.gerst@leibniz-hki.de">Ruman Gerst</a>
+    </div>
+    
+
+    
+
+    
+  </div>
+
+
+	<div>
+
+
+  
+    <p>By <a href="https://www.leibniz-hki.de/en/applied-systems-biology.html">Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans Knöll Institute (HKI), Jena, Germany</a></p>
+
+  
+
+
+
+	</div>
+</footer>
+
+<script src="../../js/clipboard.min.js"></script>
+
+<link href="../../css/featherlight.min.css" rel="stylesheet">
+<script src="../../js/featherlight.min.js"></script>
+
+
+
+<script src="../../theme-flex/script.js"></script>
+
+
+    
+
+    
+    
+
+    
+  </body>
+</html>

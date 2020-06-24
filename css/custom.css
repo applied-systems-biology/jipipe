@@ -1,0 +1,375 @@
+.inline-image {
+  display: inline!important;
+  margin: 0!important;
+}
+
+.icon-image {
+  width: 16!important;
+  height: 16!important;
+  display: inline!important;
+  margin: 0!important;
+}
+
+.video-container {
+    position: relative;
+    padding-bottom: 56.25%;
+    padding-top: 30px;
+    height: 0;
+    overflow: hidden;
+}
+
+.video-container iframe,
+.video-container object,
+.video-container embed {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.features-container {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.features-container > div {
+    width: 50%;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.features-container > div > a {
+  width: 300px;
+  flex-shrink: 0;
+}
+
+.btn-large {
+  padding: 16px;
+}
+
+.json-schema-description:before {
+  font-weight: bold;
+  color: #555;
+  text-transform: uppercase;
+  content: "Description";
+  padding-bottom: .5em;
+  display: block
+}
+
+.json-schema-description:not(:last-child) {
+  padding-bottom: 1.5em
+}
+
+.json-schema-properties:before {
+  font-weight: bold;
+  color: #555;
+  text-transform: uppercase;
+  content: "Properties";
+  padding-bottom: .5em;
+  display: block
+}
+
+.json-schema-properties:not(:last-child) {
+  padding-bottom: 1.5em
+}
+
+.json-schema-properties dd:not(:last-child) {
+  padding-bottom: 1em
+}
+
+.json-schema-properties dl {
+  margin: 0
+}
+
+.json-schema-example:before {
+  font-weight: bold;
+  color: #555;
+  text-transform: uppercase;
+  content: "Example";
+  padding-bottom: .5em;
+  display: block
+}
+
+.json-schema-example:not(:last-child) {
+  padding-bottom: 1.5em
+}
+
+.json-schema-array-items:before {
+  font-weight: bold;
+  color: #555;
+  text-transform: uppercase;
+  content: "Items";
+  padding-bottom: .5em;
+  display: block
+}
+
+.json-schema-array-items:not(:last-child) {
+  padding-bottom: 1.5em
+}
+
+.json-schema-allOf-inherited:before {
+  font-weight: bold;
+  color: #555;
+  text-transform: uppercase;
+  content: "Inherited";
+  padding-bottom: .5em;
+  display: block
+}
+
+.json-schema-allOf-inherited:not(:last-child) {
+  padding-bottom: 1.5em
+}
+
+.json-schema-allOf-inherited ul {
+  padding-left: 0;
+  list-style: none
+}
+
+.json-schema-anyOf>dl {
+  border-left: 2px solid #a2a2a2;
+  padding-left: 1em
+}
+
+.json-schema-anyOf>dl dt:not(:first-child):before {
+  content: "or "
+}
+
+.json-schema-anyOf>dl dt:first-child:before {
+  content: "either "
+}
+
+.json-schema-additionalProperties:before {
+  font-weight: bold;
+  color: #555;
+  text-transform: uppercase;
+  content: "Additional properties";
+  padding-bottom: .5em;
+  display: block
+}
+
+.json-schema-additionalProperties:not(:last-child) {
+  padding-bottom: 1.5em
+}
+
+.json-inner-schema .json-schema-properties, .json-inner-schema .json-schema-array-items, .json-inner-schema .json-schema-description, .json-inner-schema .json-schema-example {
+  padding-left: 1em;
+  margin-top: .5em;
+  padding-bottom: .5em;
+  border-left: 2px solid #a2a2a2
+}
+
+.json-property-discriminator:before {
+  display: inline;
+  padding: .2em .6em .3em;
+  font-size: 75%;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: .25em;
+  background-color: #777;
+  content: "discriminator"
+}
+
+a.json-property-discriminator:before:hover, a.json-property-discriminator:before:focus {
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer
+}
+
+.json-property-discriminator:before:empty {
+  display: none
+}
+
+.btn .json-property-discriminator:before {
+  position: relative;
+  top: -1px
+}
+
+.json-property-discriminator:before[href]:hover, .json-property-discriminator:before[href]:focus {
+  background-color: #5e5e5e
+}
+
+.json-property-required:before {
+  display: inline;
+  padding: .2em .6em .3em;
+  font-size: 75%;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: .25em;
+  background-color: #777;
+  content: "required"
+}
+
+a.json-property-required:before:hover, a.json-property-required:before:focus {
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer
+}
+
+.json-property-required:before:empty {
+  display: none
+}
+
+.btn .json-property-required:before {
+  position: relative;
+  top: -1px
+}
+
+.json-property-required:before[href]:hover, .json-property-required:before[href]:focus {
+  background-color: #5e5e5e
+}
+
+.json-property-read-only:before {
+  display: inline;
+  padding: .2em .6em .3em;
+  font-size: 75%;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: .25em;
+  background-color: #777;
+  content: "read only"
+}
+
+a.json-property-read-only:before:hover, a.json-property-read-only:before:focus {
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer
+}
+
+.json-property-read-only:before:empty {
+  display: none
+}
+
+.btn .json-property-read-only:before {
+  position: relative;
+  top: -1px
+}
+
+.json-property-read-only:before[href]:hover, .json-property-read-only:before[href]:focus {
+  background-color: #5e5e5e
+}
+
+.json-property-pattern {
+  font-weight: lighter;
+  font-size: small
+}
+
+.json-schema--regex:before, .json-schema--regex:after {
+  color: #808080;
+  content: '/'
+}
+
+.json-property-type {
+  font-style: italic;
+  font-weight: 100
+}
+
+.json-property-format {
+  font-size: smaller
+}
+
+.json-property-enum {
+  font-weight: lighter;
+  font-size: small
+}
+
+.json-property-default-value {
+  font-weight: lighter;
+  font-size: small
+}
+
+.json-property-default-value:before {
+  content: '(default: "'
+}
+
+.json-property-default-value:after {
+  content: '")'
+}
+
+.json-property-enum-item {
+  font-weight: lighter;
+  font-size: small
+}
+
+.json-property-enum-item:before, .json-property-enum-item:after {
+  content: "\""
+}
+
+.json-schema--reference {
+  font-size: 90%
+}
+
+.tutorial-item {
+  display: flex;
+  flex-grow: 0;
+  flex-wrap: wrap;
+}
+
+.tutorial-item-img {
+  flex: 50%;
+}
+
+.tutorial-item-content {
+  padding-top: 25px;
+  flex: 50%;
+}
+
+.tutorial-item-content .thumbnail {
+  display: inline!important;
+  margin: 0!important;
+  width: 25%;
+}
+
+@media (max-width: 600px) {
+  .tutorial-item-img {
+    flex: 1 1 auto;
+  }
+  .tutorial-item-content {
+    flex: 1 1 auto;
+  }
+}
+
+/*
+  Example items
+*/
+
+.example-item {
+  display: flex;
+  flex-grow: 0;
+  flex-wrap: wrap;
+}
+
+.example-item-img {
+  flex: 12%;
+}
+
+.example-item-img img {
+  padding: 10px;
+}
+
+.example-item-content {
+  padding-top: 25px;
+  flex: 76%;
+}
+
+@media (max-width: 600px) {
+  .example-item-img {
+    flex: 1 1 auto;
+  }
+  .example-item-content {
+    flex: 1 1 auto;
+  }
+}

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Creating an algorithm on ACAQ5 for ImageJ</title>
+    <link>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/</link>
+    <description>Recent content in Creating an algorithm on ACAQ5 for ImageJ</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Handling multiple inputs</title>
+      <link>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/iterating-algorithms/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/iterating-algorithms/</guid>
+      <description>ACAQ data slots store multiple data rows. This means that algorithms have to iterate their workload for each input row and generate equivalent output in the respective output slots.
+There can be issues if data from multiple input slots need to be combined (e.g. merge channels into RGB, see user documentation). ACAQAlgorithm has no capabilities to help with such cases.
+A solution can be ACAQIteratingAlgorithm or ACAQSimpleIteratingAlgorithm that use the annotation attached during processing to find data rows that belong to the same data set.</description>
+    </item>
+    
+    <item>
+      <title>Merging input data</title>
+      <link>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/merging-algorithms/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/merging-algorithms/</guid>
+      <description>You might need to develop an algorithm that does not simply iterate through its input(s), but organize it into groups to be merged. ACAQ5 comes with ACAQMergingAlgorithm that uses the annotation attached during processing to find data rows that belong to the same data set. The implementation creates ACAQMultiDataInterface instances that represent multiple data rows merged into one group.
+Please access data via the data interface.
+ The only difference to ACAQAlgorithm is that you need to override a different function called runIteration.</description>
+    </item>
+    
+    <item>
+      <title>Customizing slots</title>
+      <link>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/slot-configuration/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/slot-configuration/</guid>
+      <description>In the previous examples, we used the @AlgorithmInputSlot and @AlgorithmOutputSlot annotations with autoCreate = true to automatically configure the slots.
+This is not sufficient for more complicated algorithms that require
+ Restricting the number of slots Restricting the allowed data types Users to add more slots or remove existing ones  A custom ACAQSlotConfiguration can be used to implement such more advanced behaviors.
+For many cases, the default implementation ACAQMutableSlotConfiguration is sufficient.</description>
+    </item>
+    
+    <item>
+      <title>Parameters</title>
+      <link>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/parameters/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/parameters/</guid>
+      <description>You can add parameters to your algorithm by creating a property with a getter and setter. Then you annotate the getter and setter with the same @ACAQParameter keys. Also add an @ACAQDocumentation annotation to either the getter or setter.
+Parameters are automatically serialized and deserialized.
+Please make sure to send an event when the parameter is set, so the UI can update.
+// ... see previous tutorials public class MyAlgorithm extends ACAQIteratingAlgorithm { float roundness = 0.</description>
+    </item>
+    
+    <item>
+      <title>Parallelization</title>
+      <link>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/parallelization/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/parallelization/</guid>
+      <description>The current version of ACAQ5 supports parallelization via a fixed thread pool. Parallelization is done on an per-algorithm-level, meaning that the algorithms are responsible for providing parallelization capabilities.
+The included base algorithms ACAQIteratingAlgorithm, ACAQSimpleIteratingAlgorithm, and ACAQMergingAlgorithm already come with support for parallelization that has to be manually enabled via code. The inherit from ACAQParallelizedAlgorithm and completely apply parallelization automatically.
+Automated parallelization (ACAQParallelizedAlgorithm) The automated parallelization is controlled by three factors:</description>
+    </item>
+    
+    <item>
+      <title>Custom algorithm declaration</title>
+      <link>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/custom-declaration/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/custom-declaration/</guid>
+      <description>In the previous tutorials we used the standard way of creating algorithms. This might not be sufficient if you want to generate algorithms, for example by importing ImageJ algorithms, loading algorithms from JSON or generate algorithms for an unknown list of data types.
+How algorithms are registered Algorithm instances are created by an ACAQAlgorithmDeclaration. This declaration is the object that is actually registered into ACAQ5. It is able to create new instances of the declared algorithm, or copy it.</description>
+    </item>
+    
+  </channel>
+</rss>
