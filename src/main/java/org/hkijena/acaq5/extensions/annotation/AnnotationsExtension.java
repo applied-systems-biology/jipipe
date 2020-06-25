@@ -1,6 +1,20 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under BSD 2-Clause.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
 package org.hkijena.acaq5.extensions.annotation;
 
 import org.hkijena.acaq5.ACAQJavaExtension;
+import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.extensions.ACAQPrepackagedDefaultJavaExtension;
 import org.hkijena.acaq5.extensions.annotation.algorithms.*;
 import org.hkijena.acaq5.extensions.annotation.datasources.AnnotationTableFromFile;
@@ -32,6 +46,11 @@ public class AnnotationsExtension extends ACAQPrepackagedDefaultJavaExtension {
     }
 
     private void registerDataTypes() {
+        registerDatatype("acaq:data",
+                ACAQData.class,
+                ResourceUtils.getPluginResource("icons/data-types/data-type.png"),
+                null,
+                null);
         registerDatatype("annotation-table",
                 AnnotationTableData.class,
                 ResourceUtils.getPluginResource("icons/data-types/annotation-table.png"),
@@ -41,6 +60,7 @@ public class AnnotationsExtension extends ACAQPrepackagedDefaultJavaExtension {
     }
 
     private void registerAlgorithms() {
+        registerAlgorithm("merge-slots", MergeDataSlots.class);
         registerAlgorithm("annotation-table-from-file", AnnotationTableFromFile.class);
         registerAlgorithm("annotate-all", AnnotateAll.class, UIUtils.getAlgorithmIconURL("tags.png"));
         registerAlgorithm("annotate-remove-by-type", RemoveAnnotationByType.class, UIUtils.getAlgorithmIconURL("trash.png"));

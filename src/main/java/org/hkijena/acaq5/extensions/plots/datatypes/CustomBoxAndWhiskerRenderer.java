@@ -1,93 +1,14 @@
-/* ===========================================================
- * JFreeChart : a free chart library for the Java(tm) platform
- * ===========================================================
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
  *
- * (C) Copyright 2000-2017, by Object Refinery Limited and Contributors.
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
  *
- * Project Info:  http://www.jfree.org/jfreechart/index.html
- *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
- * License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
- * USA.
- *
- * [Oracle and Java are registered trademarks of Oracle and/or its affiliates.
- * Other names may be trademarks of their respective owners.]
- *
- * --------------------------
- * BoxAndWhiskerRenderer.java
- * --------------------------
- * (C) Copyright 2003-2017, by David Browning and Contributors.
- *
- * Original Author:  David Browning (for the Australian Institute of Marine
- *                   Science);
- * Contributor(s):   David Gilbert (for Object Refinery Limited);
- *                   Tim Bardzil;
- *                   Rob Van der Sanden (patches 1866446 and 1888422);
- *                   Peter Becker (patches 2868585 and 2868608);
- *                   Martin Krauskopf (patch 3421088);
- *                   Martin Hoeller;
- *                   John Matthews;
- *
- * Changes
- * -------
- * 21-Aug-2003 : Version 1, contributed by David Browning (for the Australian
- *               Institute of Marine Science);
- * 01-Sep-2003 : Incorporated outlier and farout symbols for low values
- *               also (DG);
- * 08-Sep-2003 : Changed ValueAxis API (DG);
- * 16-Sep-2003 : Changed ChartRenderingInfo --> PlotRenderingInfo (DG);
- * 07-Oct-2003 : Added renderer state (DG);
- * 12-Nov-2003 : Fixed casting bug reported by Tim Bardzil (DG);
- * 13-Nov-2003 : Added drawHorizontalItem() method contributed by Tim
- *               Bardzil (DG);
- * 25-Apr-2004 : Added fillBox attribute, equals() method and added
- *               serialization code (DG);
- * 29-Apr-2004 : Changed drawing of upper and lower shadows - see bug report
- *               944011 (DG);
- * 05-Nov-2004 : Modified drawItem() signature (DG);
- * 09-Mar-2005 : Override getLegendItem() method so that legend item shapes
- *               are shown as blocks (DG);
- * 20-Apr-2005 : Generate legend labels, tooltips and URLs (DG);
- * 09-Jun-2005 : Updated equals() to handle GradientPaint (DG);
- * ------------- JFREECHART 1.0.x ---------------------------------------------
- * 12-Oct-2006 : Source reformatting and API doc updates (DG);
- * 12-Oct-2006 : Fixed bug 1572478, potential NullPointerException (DG);
- * 05-Feb-2006 : Added event notifications to a couple of methods (DG);
- * 20-Apr-2007 : Updated getLegendItem() for renderer change (DG);
- * 11-May-2007 : Added check for visibility in getLegendItem() (DG);
- * 17-May-2007 : Set datasetIndex and seriesIndex in getLegendItem() (DG);
- * 18-May-2007 : Set dataset and seriesKey for LegendItem (DG);
- * 03-Jan-2008 : Check visibility of average marker before drawing it (DG);
- * 15-Jan-2008 : Add getMaximumBarWidth() and setMaximumBarWidth()
- *               methods (RVdS);
- * 14-Feb-2008 : Fix bar position for horizontal chart, see patch
- *               1888422 (RVdS);
- * 27-Mar-2008 : Boxes should use outlinePaint/Stroke settings (DG);
- * 17-Jun-2008 : Apply legend shape, font and paint attributes (DG);
- * 02-Oct-2008 : Check item visibility in drawItem() method (DG);
- * 21-Jan-2009 : Added flags to control visibility of mean and median
- *               indicators (DG);
- * 28-Sep-2009 : Added fireChangeEvent() to setMedianVisible (DG);
- * 28-Sep-2009 : Added useOutlinePaintForWhiskers flag, see patch 2868585
- *               by Peter Becker (DG);
- * 28-Sep-2009 : Added whiskerWidth attribute, see patch 2868608 by Peter
- *               Becker (DG);
- * 11-Oct-2011 : applied patch #3421088 from Martin Krauskopf to fix bug (MH);
- * 03-Jul-2013 : Use ParamChecks (DG);
- * 18-Jul-2016 : Fix drawing issue with horizontal orientation (JM);
- * 15-Apr-2019 : Integration into MISA++ for ImageJ. Changing outline radius.
- *
+ * The project code is licensed under BSD 2-Clause.
+ * See the LICENSE file provided with the code for the full license.
  */
 
 package org.hkijena.acaq5.extensions.plots.datatypes;
