@@ -32,6 +32,9 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
 import java.io.IOException;
 import java.net.URI;
@@ -663,5 +666,30 @@ public class UIUtils {
                 }
             }
         }
+    }
+
+    /**
+     * Returns a string from clipboard or an empty string
+     * @return clipboard string or empty
+     */
+    public static String getStringFromClipboard() {
+        String ret = "";
+        Clipboard sysClip = Toolkit.getDefaultToolkit().getSystemClipboard();
+
+        Transferable clipTf = sysClip.getContents(null);
+
+        if (clipTf != null) {
+
+            if (clipTf.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+                try {
+                    ret = (String) clipTf
+                            .getTransferData(DataFlavor.stringFlavor);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return ret;
     }
 }

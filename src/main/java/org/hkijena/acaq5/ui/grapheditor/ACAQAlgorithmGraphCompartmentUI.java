@@ -28,6 +28,7 @@ import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.events.AlgorithmUIActionRequestedEvent;
 import org.hkijena.acaq5.ui.events.DefaultAlgorithmUIActionRequestedEvent;
 import org.hkijena.acaq5.ui.grapheditor.contextmenu.*;
+import org.hkijena.acaq5.ui.grapheditor.contextmenu.clipboard.*;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQMultiAlgorithmSelectionPanelUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQSingleAlgorithmSelectionPanelUI;
 import org.hkijena.acaq5.ui.grouping.ACAQNodeGroupUI;
@@ -65,27 +66,47 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
 
         // Set D&D and Copy&Paste behavior
         getCanvasUI().setDragAndDropBehavior(new ACAQStandardDragAndDropBehavior());
-        getCanvasUI().setCopyPasteBehavior(new ACAQStandardCopyPasteBehavior(this));
-        updateContextMenu();
-    }
-
-    @Override
-    public void installNodeUIFeatures(ACAQAlgorithmUI ui) {
-        ui.installContextMenu(Arrays.asList(
-                new OpenSettingsAlgorithmContextMenuFeature(),
-                new AddToSelectionAlgorithmContextMenuFeature(),
-                new SeparatorAlgorithmContextMenuFeature(),
-                new RunAndShowResultsAlgorithmContextMenuFeature(),
-                new SeparatorAlgorithmContextMenuFeature(),
-                new CutCopyAlgorithmContextMenuFeature(),
-                new SeparatorAlgorithmContextMenuFeature(),
-                new EnableDisablePassThroughAlgorithmContextMenuFeature(),
-                new SeparatorAlgorithmContextMenuFeature(),
-                new JsonAlgorithmToGroupAlgorithmContextMenuFeature(),
-                new CollapseIOInterfaceAlgorithmContextMenuFeature(),
-                new DeleteAlgorithmContextMenuFeature()
+        getCanvasUI().setContextActions(Arrays.asList(
+                new AlgorithmGraphCutAlgorithmUIAction(),
+                new AlgorithmGraphCopyAlgorithmUIAction(),
+                new AlgorithmGraphPasteAlgorithmUIAction(),
+                AlgorithmUIAction.SEPARATOR,
+                new RunAndShowResultsAlgorithmUIAction(),
+                new UpdateCacheAlgorithmUIAction(),
+                AlgorithmUIAction.SEPARATOR,
+                new ExportAlgorithmUIAction(),
+                AlgorithmUIAction.SEPARATOR,
+                new JsonAlgorithmToGroupAlgorithmUIAction(),
+                new GroupAlgorithmUIAction(),
+                new CollapseIOInterfaceAlgorithmUIAction(),
+                AlgorithmUIAction.SEPARATOR,
+                new EnableAlgorithmUIAction(),
+                new DisableAlgorithmUIAction(),
+                new EnablePassThroughAlgorithmUIAction(),
+                new DisablePassThroughAlgorithmUIAction(),
+                new DeleteAlgorithmUIAction(),
+                AlgorithmUIAction.SEPARATOR,
+                new SelectAndMoveNodeHereAlgorithmUIAction()
         ));
     }
+
+//    @Override
+//    public void installNodeUIFeatures(ACAQAlgorithmUI ui) {
+//        ui.installContextMenu(Arrays.asList(
+//                new OpenSettingsAlgorithmContextMenuFeature(),
+//                new AddToSelectionAlgorithmContextMenuFeature(),
+//                new SeparatorAlgorithmContextMenuFeature(),
+//                new RunAndShowResultsAlgorithmContextMenuFeature(),
+//                new SeparatorAlgorithmContextMenuFeature(),
+//                new CutCopyAlgorithmContextMenuFeature(),
+//                new SeparatorAlgorithmContextMenuFeature(),
+//                new EnableDisablePassThroughAlgorithmContextMenuFeature(),
+//                new SeparatorAlgorithmContextMenuFeature(),
+//                new JsonAlgorithmToGroupAlgorithmContextMenuFeature(),
+//                new CollapseIOInterfaceAlgorithmContextMenuFeature(),
+//                new DeleteAlgorithmContextMenuFeature()
+//        ));
+//    }
 
     @Override
     public void reloadMenuBar() {

@@ -20,6 +20,7 @@ import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphEditorUI;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -73,26 +74,14 @@ public class ACAQMultiCompartmentSelectionPanelUI extends ACAQProjectWorkbenchPa
 
         toolBar.add(Box.createHorizontalGlue());
 
-        if (canvas.getCopyPasteBehavior() != null) {
-            JButton cutButton = new JButton(UIUtils.getIconFromResources("cut.png"));
-            cutButton.setToolTipText("Cut");
-            cutButton.addActionListener(e -> canvas.getCopyPasteBehavior().cut(new HashSet<>(compartments)));
-            toolBar.add(cutButton);
-
-            JButton copyButton = new JButton(UIUtils.getIconFromResources("copy.png"));
-            copyButton.setToolTipText("Copy");
-            copyButton.addActionListener(e -> canvas.getCopyPasteBehavior().copy(new HashSet<>(compartments)));
-            toolBar.add(copyButton);
-        }
+        ACAQAlgorithmGraphEditorUI.installContextActionsInto(toolBar,
+                canvas.getNodeUIsFor(compartments),
+                canvas.getContextActions(),
+                canvas);
 
         JButton openButton = new JButton("Open in editor", UIUtils.getIconFromResources("edit.png"));
         openButton.addActionListener(e -> openInEditor());
         toolBar.add(openButton);
-
-        JButton deleteButton = new JButton(UIUtils.getIconFromResources("delete.png"));
-        deleteButton.setToolTipText("Delete compartments");
-        deleteButton.addActionListener(e -> deleteCompartments());
-        toolBar.add(deleteButton);
 
         add(toolBar, BorderLayout.NORTH);
     }
@@ -100,16 +89,6 @@ public class ACAQMultiCompartmentSelectionPanelUI extends ACAQProjectWorkbenchPa
     private void openInEditor() {
         for (ACAQProjectCompartment compartment : compartments) {
             getProjectWorkbench().openCompartmentGraph(compartment, true);
-        }
-    }
-
-    private void deleteCompartments() {
-        if (JOptionPane.showConfirmDialog(this, "Do you really want to delete the compartments: " +
-                compartments.stream().map(c -> "'" + c.getName() + "'").collect(Collectors.joining(", ")) + "?\n" +
-                "You will lose all nodes stored in those compartments.", "Delete compartments", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-            for (ACAQProjectCompartment compartment : compartments) {
-                compartment.getProject().removeCompartment(compartment);
-            }
         }
     }
 }

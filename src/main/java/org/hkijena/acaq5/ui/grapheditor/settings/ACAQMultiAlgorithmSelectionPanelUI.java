@@ -25,6 +25,7 @@ import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonAlgorithmExporter;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphEditorUI;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -80,79 +81,11 @@ public class ACAQMultiAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPane
 
         toolBar.add(Box.createHorizontalGlue());
 
-        if (canvas.getCopyPasteBehavior() != null) {
-            JButton cutButton = new JButton(UIUtils.getIconFromResources("cut.png"));
-            cutButton.setToolTipText("Cut");
-            cutButton.setEnabled(algorithms.stream().allMatch(algorithm -> graph.canUserDelete(algorithm)));
-            cutButton.addActionListener(e -> canvas.getCopyPasteBehavior().cut(algorithms));
-            toolBar.add(cutButton);
-
-            JButton copyButton = new JButton(UIUtils.getIconFromResources("copy.png"));
-            copyButton.setToolTipText("Copy");
-            copyButton.addActionListener(e -> canvas.getCopyPasteBehavior().copy(algorithms));
-            toolBar.add(copyButton);
-        }
-
-        JButton groupButton = new JButton(UIUtils.getIconFromResources("group.png"));
-        groupButton.setToolTipText("Move into group");
-        groupButton.setEnabled(algorithms.stream().allMatch(algorithm -> algorithm.getCategory() != ACAQAlgorithmCategory.Internal));
-        groupButton.addActionListener(e -> groupAlgorithms());
-        toolBar.add(groupButton);
-
-        JButton exportButton = new JButton(UIUtils.getIconFromResources("export.png"));
-        exportButton.setToolTipText("Export custom algorithm");
-        exportButton.setEnabled(algorithms.stream().allMatch(algorithm -> algorithm.getCategory() != ACAQAlgorithmCategory.Internal));
-        exportButton.addActionListener(e -> exportAlgorithms());
-        toolBar.add(exportButton);
-
-        JButton deleteButton = new JButton(UIUtils.getIconFromResources("delete.png"));
-        deleteButton.setToolTipText("Delete algorithms");
-        deleteButton.setEnabled(algorithms.stream().allMatch(algorithm -> graph.canUserDelete(algorithm)));
-        deleteButton.addActionListener(e -> deleteAlgorithms());
-        toolBar.add(deleteButton);
+        ACAQAlgorithmGraphEditorUI.installContextActionsInto(toolBar,
+                canvas.getNodeUIsFor(algorithms),
+                canvas.getContextActions(),
+                canvas);
 
         add(toolBar, BorderLayout.NORTH);
-    }
-
-    private void groupAlgorithms() {
-        ACAQAlgorithmGraph subGraph = graph.extract(algorithms, false);
-        NodeGroup group = new NodeGroup(subGraph, true);
-        for (ACAQGraphNode algorithm : algorithms) {
-            if (algorithm.getCategory() != ACAQAlgorithmCategory.Internal)
-                graph.removeNode(algorithm);
-        }
-        graph.insertNode(group, canvas.getCompartment());
-    }
-
-    private void exportAlgorithms() {
-        ACAQValidityReport report = new ACAQValidityReport();
-        for (ACAQGraphNode algorithm : algorithms) {
-            algorithm.reportValidity(report.forCategory(algorithm.getName()));
-        }
-        if (!report.isValid()) {
-            UIUtils.openValidityReportDialog(this, report, false);
-            return;
-        }
-
-        ACAQAlgorithmGraph graph = getProject().getGraph().extract(algorithms, true);
-        NodeGroup group = new NodeGroup(graph, true);
-        ACAQJsonAlgorithmExporter exporter = new ACAQJsonAlgorithmExporter(getProjectWorkbench(), group);
-        getProjectWorkbench().getDocumentTabPane().addTab("Export custom algorithm",
-                UIUtils.getIconFromResources("export.png"),
-                exporter,
-                DocumentTabPane.CloseMode.withAskOnCloseButton);
-        getProjectWorkbench().getDocumentTabPane().switchToLastTab();
-    }
-
-    private void deleteAlgorithms() {
-        if (JOptionPane.showConfirmDialog(this,
-                "Do you really want to remove the following algorithms: " +
-                        algorithms.stream().map(a -> "'" + a.getName() + "'").collect(Collectors.joining(", "))
-                        + "?", "Delete algorithm",
-                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            for (ACAQGraphNode algorithm : algorithms) {
-                graph.removeNode(algorithm);
-            }
-        }
     }
 }

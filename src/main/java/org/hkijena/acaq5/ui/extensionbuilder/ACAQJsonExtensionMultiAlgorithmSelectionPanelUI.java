@@ -20,6 +20,7 @@ import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphEditorUI;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -75,37 +76,11 @@ public class ACAQJsonExtensionMultiAlgorithmSelectionPanelUI extends ACAQJsonExt
 
         toolBar.add(Box.createHorizontalGlue());
 
-        if (canvas.getCopyPasteBehavior() != null) {
-            JButton cutButton = new JButton(UIUtils.getIconFromResources("cut.png"));
-            cutButton.setToolTipText("Cut");
-            cutButton.setEnabled(algorithms.stream().allMatch(algorithm -> graph.canUserDelete(algorithm)));
-            cutButton.addActionListener(e -> canvas.getCopyPasteBehavior().cut(algorithms));
-            toolBar.add(cutButton);
-
-            JButton copyButton = new JButton(UIUtils.getIconFromResources("copy.png"));
-            copyButton.setToolTipText("Copy");
-            copyButton.addActionListener(e -> canvas.getCopyPasteBehavior().copy(algorithms));
-            toolBar.add(copyButton);
-        }
-
-        JButton deleteButton = new JButton(UIUtils.getIconFromResources("delete.png"));
-        deleteButton.setToolTipText("Delete algorithms");
-        deleteButton.setEnabled(algorithms.stream().allMatch(algorithm -> graph.canUserDelete(algorithm)));
-        deleteButton.addActionListener(e -> deleteAlgorithms());
-        toolBar.add(deleteButton);
+        ACAQAlgorithmGraphEditorUI.installContextActionsInto(toolBar,
+                canvas.getNodeUIsFor(algorithms),
+                canvas.getContextActions(),
+                canvas);
 
         add(toolBar, BorderLayout.NORTH);
-    }
-
-    private void deleteAlgorithms() {
-        if (JOptionPane.showConfirmDialog(this,
-                "Do you really want to remove the following algorithms: " +
-                        algorithms.stream().map(a -> "'" + a.getName() + "'").collect(Collectors.joining(", "))
-                        + "?", "Delete algorithm",
-                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            for (ACAQGraphNode algorithm : algorithms) {
-                graph.removeNode(algorithm);
-            }
-        }
     }
 }

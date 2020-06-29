@@ -81,7 +81,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements ACAQCustomParame
         // Remove all algorithms with no i/o
         for (ACAQGraphNode node : ImmutableList.copyOf(graph.getAlgorithmNodes().values())) {
             if (node.getInputSlots().isEmpty() && node.getOutputSlots().isEmpty()) {
-                graph.removeNode(node);
+                graph.removeNode(node, false);
             }
         }
 
