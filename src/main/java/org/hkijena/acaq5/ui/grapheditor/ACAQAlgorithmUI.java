@@ -49,6 +49,7 @@ public abstract class ACAQAlgorithmUI extends ACAQWorkbenchPanel {
 
     public static final String REQUEST_RUN_AND_SHOW_RESULTS = "RUN_AND_SHOW_RESULTS";
     public static final String REQUEST_RUN_ONLY = "RUN_ONLY";
+    public static final String REQUEST_OPEN_CONTEXT_MENU = "OPEN_CONTEXT_MENU";
 
     private ACAQAlgorithmGraphCanvasUI graphUI;
     private ACAQGraphNode algorithm;
@@ -57,9 +58,6 @@ public abstract class ACAQAlgorithmUI extends ACAQWorkbenchPanel {
 
     private Color fillColor;
     private Color borderColor;
-
-    private JPopupMenu contextMenu = new JPopupMenu();
-    private List<ACAQAlgorithmUIContextMenuFeature> contextMenuFeatures = new ArrayList<>();
 
     /**
      * Creates a new UI
@@ -77,41 +75,6 @@ public abstract class ACAQAlgorithmUI extends ACAQWorkbenchPanel {
         this.algorithm.getEventBus().register(this);
         this.fillColor = UIUtils.getFillColorFor(algorithm.getDeclaration());
         this.borderColor = UIUtils.getBorderColorFor(algorithm.getDeclaration());
-    }
-
-    public JPopupMenu getContextMenu() {
-        return contextMenu;
-    }
-
-    /**
-     * Changes properties of the context menu.
-     * You should not add new items, unless you always replace them
-     */
-    public void updateContextMenu() {
-        for (ACAQAlgorithmUIContextMenuFeature feature : contextMenuFeatures) {
-            feature.update(this);
-        }
-    }
-
-    /**
-     * Installs context menu actions
-     *
-     * @param featureList features
-     */
-    public void installContextMenu(List<ACAQAlgorithmUIContextMenuFeature> featureList) {
-        this.contextMenuFeatures = new ArrayList<>(featureList);
-        boolean hasSeparator = true;
-        for (ACAQAlgorithmUIContextMenuFeature feature : featureList) {
-            if (feature.withSeparator() && !hasSeparator) {
-                contextMenu.addSeparator();
-                hasSeparator = true;
-            }
-            int countBefore = contextMenu.getComponentCount();
-            feature.install(this, contextMenu);
-            if (countBefore != contextMenu.getComponentCount()) {
-                hasSeparator = false;
-            }
-        }
     }
 
     /**
@@ -236,10 +199,8 @@ public abstract class ACAQAlgorithmUI extends ACAQWorkbenchPanel {
             repaint();
         } else if (event.getSource() == algorithm && "acaq:algorithm:enabled".equals(event.getKey())) {
             updateActivationStatus();
-            updateContextMenu();
         } else if (event.getSource() == algorithm && "acaq:algorithm:pass-through".equals(event.getKey())) {
             updateActivationStatus();
-            updateContextMenu();
         }
     }
 

@@ -22,6 +22,7 @@ import javax.swing.*;
 /**
  * Adds button "add to selection"
  */
+@Deprecated
 public class AddToSelectionAlgorithmContextMenuFeature implements ACAQAlgorithmUIContextMenuFeature {
     @Override
     public void install(ACAQAlgorithmUI ui, JPopupMenu contextMenu) {

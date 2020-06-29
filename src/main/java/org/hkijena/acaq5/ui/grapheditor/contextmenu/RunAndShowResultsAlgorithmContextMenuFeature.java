@@ -28,6 +28,7 @@ import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.REQUEST_RUN_ONLY;
 /**
  * Adds run/update cache
  */
+@Deprecated
 public class RunAndShowResultsAlgorithmContextMenuFeature implements ACAQAlgorithmUIContextMenuFeature {
     @Override
     public void install(ACAQAlgorithmUI ui, JPopupMenu contextMenu) {

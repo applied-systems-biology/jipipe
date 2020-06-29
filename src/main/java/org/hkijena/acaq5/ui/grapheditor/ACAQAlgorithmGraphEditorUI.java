@@ -13,6 +13,7 @@
 
 package org.hkijena.acaq5.ui.grapheditor;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
@@ -29,6 +30,7 @@ import org.hkijena.acaq5.ui.components.SearchBox;
 import org.hkijena.acaq5.ui.events.AlgorithmEvent;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectionChangedEvent;
+import org.hkijena.acaq5.ui.grapheditor.contextmenu.AlgorithmUIAction;
 import org.hkijena.acaq5.ui.registries.ACAQUIAlgorithmRegistry;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -46,6 +48,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.List;
 
 /**
  * A panel around {@link ACAQAlgorithmGraphCanvasUI} that comes with scrolling/panning, properties panel,
@@ -82,31 +85,13 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
         this.compartment = compartment;
         initialize();
         reloadMenuBar();
-        updateContextMenu();
         ACAQAlgorithmRegistry.getInstance().getEventBus().register(this);
         algorithmGraph.getEventBus().register(this);
-    }
-
-    /**
-     * Changes properties of the context menu.
-     * You should not add new items, unless you always replace them
-     */
-    public void updateContextMenu() {
-        cutContextMenuItem.setEnabled(canvasUI.getCopyPasteBehavior() != null && !canvasUI.getSelection().isEmpty());
-        copyContextMenuItem.setEnabled(canvasUI.getCopyPasteBehavior() != null && !canvasUI.getSelection().isEmpty());
-        pasteContextMenuItem.setEnabled(canvasUI.getCopyPasteBehavior() != null);
     }
 
     public ACAQAlgorithmGraphCanvasUI getCanvasUI() {
         return canvasUI;
     }
-
-    /**
-     * Postprocessing for {@link ACAQAlgorithmUI}
-     *
-     * @param ui the ui
-     */
-    public abstract void installNodeUIFeatures(ACAQAlgorithmUI ui);
 
     private void initialize() {
         setLayout(new BorderLayout());
@@ -122,7 +107,6 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
         });
 
         canvasUI = new ACAQAlgorithmGraphCanvasUI(getWorkbench(), algorithmGraph, compartment);
-        canvasUI.setUiPostprocessing(this::installNodeUIFeatures);
         canvasUI.fullRedraw();
         canvasUI.getEventBus().register(this);
         canvasUI.addMouseListener(this);
@@ -145,26 +129,6 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
         navigator.setRenderer(new NavigationRenderer());
         navigator.addItemListener(e -> navigatorNavigate());
         navigator.setFilterFunction(ACAQAlgorithmGraphEditorUI::filterNavigationEntry);
-
-        initializeContextMenu();
-    }
-
-    private void initializeContextMenu() {
-        canvasUI.getContextMenu().addSeparator();
-
-        cutContextMenuItem = new JMenuItem("Cut", UIUtils.getIconFromResources("cut.png"));
-        cutContextMenuItem.addActionListener(e -> canvasUI.getCopyPasteBehavior()
-                .cut(canvasUI.getSelection().stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet())));
-        canvasUI.getContextMenu().add(cutContextMenuItem);
-
-        copyContextMenuItem = new JMenuItem("Copy", UIUtils.getIconFromResources("copy.png"));
-        copyContextMenuItem.addActionListener(e -> canvasUI.getCopyPasteBehavior()
-                .copy(canvasUI.getSelection().stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet())));
-        canvasUI.getContextMenu().add(copyContextMenuItem);
-
-        pasteContextMenuItem = new JMenuItem("Paste", UIUtils.getIconFromResources("paste.png"));
-        pasteContextMenuItem.addActionListener(e -> canvasUI.getCopyPasteBehavior().paste());
-        canvasUI.getContextMenu().add(pasteContextMenuItem);
     }
 
     private void navigatorNavigate() {
@@ -307,6 +271,14 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
         }
     }
 
+    protected void updateSelection() {
+    }
+
+    @Subscribe
+    public void onSelectionChanged(AlgorithmSelectionChangedEvent event) {
+        updateSelection();
+    }
+
     /**
      * Should be triggered when new algorithms are registered.
      * Reloads the menu
@@ -413,13 +385,6 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
     }
 
     /**
-     * Called when the selection was changed and the UI should react
-     */
-    protected void updateSelection() {
-        updateContextMenu();
-    }
-
-    /**
      * Adds an algorithm to the selection
      *
      * @param ui The algorithm UI
@@ -438,14 +403,8 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
         updateNavigation();
     }
 
-    @Subscribe
-    public void onSelectionChanged(AlgorithmSelectionChangedEvent event) {
-        updateSelection();
-    }
-
     @Override
     public void mouseClicked(MouseEvent e) {
-
     }
 
     @Override
@@ -648,6 +607,40 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
                 setBackground(new Color(255, 255, 255));
             }
             return this;
+        }
+    }
+
+    public static void installContextActionsInto(JToolBar toolBar, Set<ACAQAlgorithmUI> selection, List<AlgorithmUIAction> actionList, ACAQAlgorithmGraphCanvasUI canvasUI) {
+        JPopupMenu overhang = new JPopupMenu();
+        boolean scheduledSeparator = false;
+        for (AlgorithmUIAction action : actionList) {
+            if(action == null) {
+                scheduledSeparator = true;
+                continue;
+            }
+            if(action.matches(selection)) {
+                if(!action.isShowingInOverhang()) {
+                    if(scheduledSeparator)
+                        toolBar.add(Box.createHorizontalStrut(4));
+                    JButton button = new JButton(action.getIcon());
+                    button.setToolTipText("<html><strong>" + action.getName() + "</strong><br/>" + action.getDescription() + "</html>");
+                    button.addActionListener(e -> action.run(canvasUI, ImmutableSet.copyOf(selection)));
+                    toolBar.add(button);
+                }
+                else {
+                    JMenuItem item = new JMenuItem(action.getName(), action.getIcon());
+                    item.setToolTipText(action.getDescription());
+                    item.addActionListener(e -> action.run(canvasUI, ImmutableSet.copyOf(selection)));
+                    overhang.add(item);
+                }
+            }
+        }
+
+        if(overhang.getComponentCount() > 0) {
+            toolBar.add(Box.createHorizontalStrut(4));
+            JButton button = new JButton(UIUtils.getIconFromResources("wrench.png"));
+            button.setToolTipText("More actions ...");
+            UIUtils.addPopupMenuToComponent(button, overhang);
         }
     }
 }

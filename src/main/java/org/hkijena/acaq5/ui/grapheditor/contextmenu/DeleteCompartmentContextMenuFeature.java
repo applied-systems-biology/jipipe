@@ -24,6 +24,7 @@ import javax.swing.*;
 /**
  * Adds a delete button
  */
+@Deprecated
 public class DeleteCompartmentContextMenuFeature implements ACAQAlgorithmUIContextMenuFeature {
     @Override
     public void install(ACAQAlgorithmUI ui, JPopupMenu contextMenu) {

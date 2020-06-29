@@ -22,6 +22,7 @@ import javax.swing.*;
 /**
  * Removes an {@link org.hkijena.acaq5.api.compartments.algorithms.IOInterfaceAlgorithm}
  */
+@Deprecated
 public class CollapseIOInterfaceAlgorithmContextMenuFeature implements ACAQAlgorithmUIContextMenuFeature {
     @Override
     public void install(ACAQAlgorithmUI ui, JPopupMenu contextMenu) {

@@ -1053,6 +1053,17 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     }
 
     /**
+     * Removes multiple nodes at once
+     * @param nodes list of nodes
+     */
+    public void removeNodes(Set<ACAQGraphNode> nodes) {
+        // TODO: Performance improvement
+        for (ACAQGraphNode node : nodes) {
+            removeNode(node);
+        }
+    }
+
+    /**
      * Serializes an {@link ACAQAlgorithmGraph}
      */
     public static class Serializer extends JsonSerializer<ACAQAlgorithmGraph> {

@@ -27,6 +27,7 @@ import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonAlgorithmExporter;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphEditorUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQSlotEditorUI;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.utils.TooltipUtils;
@@ -98,17 +99,10 @@ public class ACAQSingleCompartmentSelectionPanelUI extends ACAQProjectWorkbenchP
 
         toolBar.add(Box.createHorizontalGlue());
 
-        if (canvas.getCopyPasteBehavior() != null) {
-            JButton cutButton = new JButton(UIUtils.getIconFromResources("cut.png"));
-            cutButton.setToolTipText("Cut");
-            cutButton.addActionListener(e -> canvas.getCopyPasteBehavior().cut(Collections.singleton(compartment)));
-            toolBar.add(cutButton);
-
-            JButton copyButton = new JButton(UIUtils.getIconFromResources("copy.png"));
-            copyButton.setToolTipText("Copy");
-            copyButton.addActionListener(e -> canvas.getCopyPasteBehavior().copy(Collections.singleton(compartment)));
-            toolBar.add(copyButton);
-        }
+        ACAQAlgorithmGraphEditorUI.installContextActionsInto(toolBar,
+                canvas.getNodeUIsFor(Collections.singleton(compartment)),
+                canvas.getContextActions(),
+                canvas);
 
         JButton openButton = new JButton("Open in editor", UIUtils.getIconFromResources("edit.png"));
         openButton.addActionListener(e -> openInEditor());

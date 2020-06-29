@@ -23,6 +23,7 @@ import javax.swing.*;
 /**
  * Adds "convert to group" for {@link org.hkijena.acaq5.api.grouping.JsonAlgorithm}
  */
+@Deprecated
 public class ConvertToGroupAlgorithmContextMenuFeature implements ACAQAlgorithmUIContextMenuFeature {
     @Override
     public void install(ACAQAlgorithmUI ui, JPopupMenu contextMenu) {

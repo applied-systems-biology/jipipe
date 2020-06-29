@@ -20,6 +20,7 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotType;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
+import org.hkijena.acaq5.ui.events.AlgorithmUIActionRequestedEvent;
 import org.hkijena.acaq5.ui.registries.ACAQUIAlgorithmRegistry;
 import org.hkijena.acaq5.utils.PointRange;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -71,7 +72,7 @@ public class ACAQVerticalAlgorithmUI extends ACAQAlgorithmUI {
         nameLabel.setIcon(ACAQUIAlgorithmRegistry.getInstance().getIconFor(getAlgorithm().getDeclaration()));
         openSettingsButton = new JButton(UIUtils.getIconFromResources("wrench.png"));
         UIUtils.makeFlat25x25(openSettingsButton);
-        UIUtils.addPopupMenuToComponent(openSettingsButton, getContextMenu());
+        openSettingsButton.addActionListener(e -> getEventBus().post(new AlgorithmUIActionRequestedEvent(this, REQUEST_OPEN_CONTEXT_MENU)));
 
 
 //        initializeContextMenu(UIUtils.addContextMenuToComponent(this));

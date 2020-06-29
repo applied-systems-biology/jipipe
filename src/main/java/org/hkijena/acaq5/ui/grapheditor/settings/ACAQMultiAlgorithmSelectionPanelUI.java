@@ -25,6 +25,7 @@ import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonAlgorithmExporter;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphEditorUI;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -80,18 +81,10 @@ public class ACAQMultiAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPane
 
         toolBar.add(Box.createHorizontalGlue());
 
-        if (canvas.getCopyPasteBehavior() != null) {
-            JButton cutButton = new JButton(UIUtils.getIconFromResources("cut.png"));
-            cutButton.setToolTipText("Cut");
-            cutButton.setEnabled(algorithms.stream().allMatch(algorithm -> graph.canUserDelete(algorithm)));
-            cutButton.addActionListener(e -> canvas.getCopyPasteBehavior().cut(algorithms));
-            toolBar.add(cutButton);
-
-            JButton copyButton = new JButton(UIUtils.getIconFromResources("copy.png"));
-            copyButton.setToolTipText("Copy");
-            copyButton.addActionListener(e -> canvas.getCopyPasteBehavior().copy(algorithms));
-            toolBar.add(copyButton);
-        }
+        ACAQAlgorithmGraphEditorUI.installContextActionsInto(toolBar,
+                canvas.getNodeUIsFor(algorithms),
+                canvas.getContextActions(),
+                canvas);
 
         JButton groupButton = new JButton(UIUtils.getIconFromResources("group.png"));
         groupButton.setToolTipText("Move into group");

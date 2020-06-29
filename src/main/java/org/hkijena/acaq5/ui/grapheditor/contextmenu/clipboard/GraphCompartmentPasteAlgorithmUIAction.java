@@ -11,90 +11,43 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.acaq5.ui.compartments;
+package org.hkijena.acaq5.ui.grapheditor.contextmenu.clipboard;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.collect.ImmutableSet;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCopyPasteBehavior;
+import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
+import org.hkijena.acaq5.ui.grapheditor.contextmenu.AlgorithmUIAction;
 import org.hkijena.acaq5.utils.JsonUtils;
+import org.hkijena.acaq5.utils.StringUtils;
+import org.hkijena.acaq5.utils.UIUtils;
 
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
+import javax.swing.*;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Copy & Paste behavior for {@link ACAQCompartmentGraphUI}
- */
-public class ACAQCompartmentGraphCopyPasteBehavior implements ACAQAlgorithmGraphCopyPasteBehavior {
+import static org.hkijena.acaq5.utils.UIUtils.getStringFromClipboard;
 
-    private ACAQCompartmentGraphUI editorUI;
-
-    /**
-     * @param editorUI an editor for compartment graphs
-     */
-    public ACAQCompartmentGraphCopyPasteBehavior(ACAQCompartmentGraphUI editorUI) {
-        this.editorUI = editorUI;
+public class GraphCompartmentPasteAlgorithmUIAction implements AlgorithmUIAction {
+    @Override
+    public boolean matches(Set<ACAQAlgorithmUI> selection) {
+        return !StringUtils.isNullOrEmpty(UIUtils.getStringFromClipboard());
     }
 
     @Override
-    public void copy(Set<ACAQGraphNode> compartmentNodes) {
-        // This copy action converts the selection of ACAQProjectCompartment into one large graph
-        Set<String> compartments = new HashSet<>();
-        for (ACAQGraphNode compartmentNode : compartmentNodes) {
-            compartments.add(((ACAQProjectCompartment) compartmentNode).getProjectCompartmentId());
-        }
-
-        // Create isolated graph
-        Set<ACAQGraphNode> algorithms = new HashSet<>();
-        ACAQAlgorithmGraph sourceGraph = null;
-        for (ACAQGraphNode algorithm : ((ACAQProjectWorkbench) editorUI.getWorkbench()).getProject().getGraph().getAlgorithmNodes().values()) {
-            if (compartments.contains(algorithm.getCompartment())) {
-                algorithms.add(algorithm);
-                sourceGraph = algorithm.getGraph();
-            }
-        }
-
-        if (algorithms.isEmpty())
-            return;
-
-        ACAQAlgorithmGraph graph = sourceGraph.extract(algorithms, false);
-        try {
-            String json = JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(graph);
-            StringSelection selection = new StringSelection(json);
-            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            clipboard.setContents(selection, selection);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void cut(Set<ACAQGraphNode> algorithms) {
-        copy(algorithms);
-        for (ACAQGraphNode algorithm : ImmutableSet.copyOf(algorithms)) {
-            editorUI.getAlgorithmGraph().removeNode(algorithm);
-        }
-    }
-
-    @Override
-    public void paste() {
+    public void run(ACAQAlgorithmGraphCanvasUI canvasUI, Set<ACAQAlgorithmUI> selection) {
         try {
             String json = getStringFromClipboard();
             if (json != null) {
-                ACAQProject project = ((ACAQProjectWorkbench) editorUI.getWorkbench()).getProject();
+                ACAQProject project = ((ACAQProjectWorkbench) canvasUI.getWorkbench()).getProject();
                 ACAQAlgorithmGraph sourceGraph = JsonUtils.getObjectMapper().readValue(json, ACAQAlgorithmGraph.class);
 
                 // Collect all compartments
@@ -144,24 +97,23 @@ public class ACAQCompartmentGraphCopyPasteBehavior implements ACAQAlgorithmGraph
         }
     }
 
-    private static String getStringFromClipboard() {
-        String ret = "";
-        Clipboard sysClip = Toolkit.getDefaultToolkit().getSystemClipboard();
+    @Override
+    public String getName() {
+        return "Paste";
+    }
 
-        Transferable clipTf = sysClip.getContents(null);
+    @Override
+    public String getDescription() {
+        return "Copies compartments from clipboard into the current graph";
+    }
 
-        if (clipTf != null) {
+    @Override
+    public Icon getIcon() {
+        return UIUtils.getIconFromResources("paste.png");
+    }
 
-            if (clipTf.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-                try {
-                    ret = (String) clipTf
-                            .getTransferData(DataFlavor.stringFlavor);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        return ret;
+    @Override
+    public boolean isShowingInOverhang() {
+        return false;
     }
 }

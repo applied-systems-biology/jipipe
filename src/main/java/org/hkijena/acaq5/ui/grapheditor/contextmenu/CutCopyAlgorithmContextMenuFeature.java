@@ -24,30 +24,31 @@ import java.util.Collections;
 /**
  * Implements cut/copy
  */
+@Deprecated
 public class CutCopyAlgorithmContextMenuFeature implements ACAQAlgorithmUIContextMenuFeature {
     private JMenuItem cutContextMenuButton;
     private JMenuItem copyContextMenuButton;
 
     @Override
     public void install(ACAQAlgorithmUI ui, JPopupMenu contextMenu) {
-        ACAQAlgorithmGraphCanvasUI graphUI = ui.getGraphUI();
-        cutContextMenuButton = new JMenuItem("Cut", UIUtils.getIconFromResources("cut.png"));
-        cutContextMenuButton.addActionListener(e -> graphUI.getCopyPasteBehavior().cut(Collections.singleton(ui.getAlgorithm())));
-        contextMenu.add(cutContextMenuButton);
-
-        copyContextMenuButton = new JMenuItem("Copy", UIUtils.getIconFromResources("copy.png"));
-        copyContextMenuButton.addActionListener(e -> graphUI.getCopyPasteBehavior().copy(Collections.singleton(ui.getAlgorithm())));
-        contextMenu.add(copyContextMenuButton);
+//        ACAQAlgorithmGraphCanvasUI graphUI = ui.getGraphUI();
+//        cutContextMenuButton = new JMenuItem("Cut", UIUtils.getIconFromResources("cut.png"));
+//        cutContextMenuButton.addActionListener(e -> graphUI.getCopyPasteBehavior().cut(Collections.singleton(ui.getAlgorithm())));
+//        contextMenu.add(cutContextMenuButton);
+//
+//        copyContextMenuButton = new JMenuItem("Copy", UIUtils.getIconFromResources("copy.png"));
+//        copyContextMenuButton.addActionListener(e -> graphUI.getCopyPasteBehavior().copy(Collections.singleton(ui.getAlgorithm())));
+//        contextMenu.add(copyContextMenuButton);
     }
 
     @Override
     public void update(ACAQAlgorithmUI ui) {
-        ACAQGraphNode algorithm = ui.getAlgorithm();
-        ACAQAlgorithmGraphCanvasUI graphUI = ui.getGraphUI();
-        if (cutContextMenuButton != null)
-            cutContextMenuButton.setEnabled(algorithm.canUserDelete() && graphUI.getCopyPasteBehavior() != null);
-        if (copyContextMenuButton != null)
-            copyContextMenuButton.setEnabled(algorithm.canUserDelete() && graphUI.getCopyPasteBehavior() != null);
+//        ACAQGraphNode algorithm = ui.getAlgorithm();
+//        ACAQAlgorithmGraphCanvasUI graphUI = ui.getGraphUI();
+//        if (cutContextMenuButton != null)
+//            cutContextMenuButton.setEnabled(algorithm.canUserDelete() && graphUI.getCopyPasteBehavior() != null);
+//        if (copyContextMenuButton != null)
+//            copyContextMenuButton.setEnabled(algorithm.canUserDelete() && graphUI.getCopyPasteBehavior() != null);
     }
 
     @Override

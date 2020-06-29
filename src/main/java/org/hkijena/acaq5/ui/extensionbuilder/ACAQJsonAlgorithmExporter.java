@@ -61,15 +61,15 @@ public class ACAQJsonAlgorithmExporter extends ACAQAlgorithmGraphEditorUI {
         updateSelection();
     }
 
-    @Override
-    public void installNodeUIFeatures(ACAQAlgorithmUI ui) {
-        ui.installContextMenu(Arrays.asList(
-                new AddToSelectionAlgorithmContextMenuFeature(),
-                new SeparatorAlgorithmContextMenuFeature(),
-                new CollapseIOInterfaceAlgorithmContextMenuFeature(),
-                new DeleteAlgorithmContextMenuFeature()
-        ));
-    }
+//    @Override
+//    public void installNodeUIFeatures(ACAQAlgorithmUI ui) {
+//        ui.installContextMenu(Arrays.asList(
+//                new AddToSelectionAlgorithmContextMenuFeature(),
+//                new SeparatorAlgorithmContextMenuFeature(),
+//                new CollapseIOInterfaceAlgorithmContextMenuFeature(),
+//                new DeleteAlgorithmContextMenuFeature()
+//        ));
+//    }
 
     private void initialize() {
         exportPanel = new JPanel(new BorderLayout());

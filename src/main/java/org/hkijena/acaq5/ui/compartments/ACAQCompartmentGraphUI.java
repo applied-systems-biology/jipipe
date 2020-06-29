@@ -26,11 +26,9 @@ import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.events.DefaultAlgorithmUIActionRequestedEvent;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphEditorUI;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
-import org.hkijena.acaq5.ui.grapheditor.contextmenu.AddToSelectionAlgorithmContextMenuFeature;
-import org.hkijena.acaq5.ui.grapheditor.contextmenu.CutCopyAlgorithmContextMenuFeature;
-import org.hkijena.acaq5.ui.grapheditor.contextmenu.DeleteCompartmentContextMenuFeature;
-import org.hkijena.acaq5.ui.grapheditor.contextmenu.OpenSettingsAlgorithmContextMenuFeature;
+import org.hkijena.acaq5.ui.grapheditor.contextmenu.clipboard.GraphCompartmentCopyAlgorithmUIAction;
+import org.hkijena.acaq5.ui.grapheditor.contextmenu.clipboard.GraphCompartmentCutAlgorithmUIAction;
+import org.hkijena.acaq5.ui.grapheditor.contextmenu.clipboard.GraphCompartmentPasteAlgorithmUIAction;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -59,8 +57,11 @@ public class ACAQCompartmentGraphUI extends ACAQAlgorithmGraphEditorUI {
         setPropertyPanel(documentationPanel);
 
         // Copy & paste behavior
-        getCanvasUI().setCopyPasteBehavior(new ACAQCompartmentGraphCopyPasteBehavior(this));
-        updateContextMenu();
+        getCanvasUI().setContextActions(Arrays.asList(
+                new GraphCompartmentCutAlgorithmUIAction(),
+                new GraphCompartmentCopyAlgorithmUIAction(),
+                new GraphCompartmentPasteAlgorithmUIAction()
+        ));
     }
 
     @Override
@@ -70,15 +71,15 @@ public class ACAQCompartmentGraphUI extends ACAQAlgorithmGraphEditorUI {
         initializeCommonActions();
     }
 
-    @Override
-    public void installNodeUIFeatures(ACAQAlgorithmUI ui) {
-        ui.installContextMenu(Arrays.asList(
-                new OpenSettingsAlgorithmContextMenuFeature(),
-                new AddToSelectionAlgorithmContextMenuFeature(),
-                new CutCopyAlgorithmContextMenuFeature(),
-                new DeleteCompartmentContextMenuFeature()
-        ));
-    }
+//    @Override
+//    public void installNodeUIFeatures(ACAQAlgorithmUI ui) {
+//        ui.installContextMenu(Arrays.asList(
+//                new OpenSettingsAlgorithmContextMenuFeature(),
+//                new AddToSelectionAlgorithmContextMenuFeature(),
+//                new CutCopyAlgorithmContextMenuFeature(),
+//                new DeleteCompartmentContextMenuFeature()
+//        ));
+//    }
 
     @Override
     protected void updateSelection() {

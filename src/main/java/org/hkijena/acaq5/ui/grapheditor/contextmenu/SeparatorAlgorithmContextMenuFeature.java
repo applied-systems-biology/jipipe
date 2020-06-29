@@ -20,6 +20,7 @@ import javax.swing.*;
 /**
  * Adds a separator
  */
+@Deprecated
 public class SeparatorAlgorithmContextMenuFeature implements ACAQAlgorithmUIContextMenuFeature {
     @Override
     public void install(ACAQAlgorithmUI ui, JPopupMenu contextMenu) {

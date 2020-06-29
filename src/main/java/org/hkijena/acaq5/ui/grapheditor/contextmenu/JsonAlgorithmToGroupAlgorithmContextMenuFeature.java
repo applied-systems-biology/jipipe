@@ -23,6 +23,7 @@ import javax.swing.*;
 /**
  * Allows the user to convert {@link org.hkijena.acaq5.api.grouping.JsonAlgorithm} to {@link org.hkijena.acaq5.api.grouping.NodeGroup}
  */
+@Deprecated
 public class JsonAlgorithmToGroupAlgorithmContextMenuFeature implements ACAQAlgorithmUIContextMenuFeature {
     @Override
     public void install(ACAQAlgorithmUI ui, JPopupMenu contextMenu) {

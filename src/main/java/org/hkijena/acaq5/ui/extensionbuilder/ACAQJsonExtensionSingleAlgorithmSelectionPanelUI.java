@@ -21,6 +21,7 @@ import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphEditorUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQSlotEditorUI;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.utils.TooltipUtils;
@@ -84,19 +85,10 @@ public class ACAQJsonExtensionSingleAlgorithmSelectionPanelUI extends ACAQJsonEx
 
         toolBar.add(Box.createHorizontalGlue());
 
-        if (canvas.getCopyPasteBehavior() != null) {
-            JButton cutButton = new JButton(UIUtils.getIconFromResources("cut.png"));
-            cutButton.setToolTipText("Cut");
-            cutButton.setEnabled(algorithm.getCategory() != ACAQAlgorithmCategory.Internal);
-            cutButton.addActionListener(e -> canvas.getCopyPasteBehavior().cut(Collections.singleton(algorithm)));
-            toolBar.add(cutButton);
-
-            JButton copyButton = new JButton(UIUtils.getIconFromResources("copy.png"));
-            copyButton.setToolTipText("Copy");
-            copyButton.setEnabled(algorithm.getCategory() != ACAQAlgorithmCategory.Internal);
-            copyButton.addActionListener(e -> canvas.getCopyPasteBehavior().copy(Collections.singleton(algorithm)));
-            toolBar.add(copyButton);
-        }
+        ACAQAlgorithmGraphEditorUI.installContextActionsInto(toolBar,
+                canvas.getNodeUIsFor(Collections.singleton(algorithm)),
+                canvas.getContextActions(),
+                canvas);
 
         JButton deleteButton = new JButton(UIUtils.getIconFromResources("delete.png"));
         deleteButton.setToolTipText("Delete algorithm");

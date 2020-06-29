@@ -23,6 +23,7 @@ import javax.swing.*;
 /**
  * Adds enable/disable/pass-through
  */
+@Deprecated
 public class EnableDisablePassThroughAlgorithmContextMenuFeature implements ACAQAlgorithmUIContextMenuFeature {
     private JMenuItem passThroughContextMenuButton;
     private JMenuItem enableDisableContextMenuButton;

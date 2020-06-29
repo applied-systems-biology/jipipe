@@ -22,6 +22,7 @@ import javax.swing.*;
 /**
  * Adds a "Open settings" button
  */
+@Deprecated
 public class OpenSettingsAlgorithmContextMenuFeature implements ACAQAlgorithmUIContextMenuFeature {
     @Override
     public void install(ACAQAlgorithmUI ui, JPopupMenu contextMenu) {
