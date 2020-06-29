@@ -493,13 +493,16 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
                 scheduleSeparator = true;
                 continue;
             }
+            boolean matches = action.matches(selection);
+            if(!matches && !action.disableOnNonMatch())
+                continue;
             if(scheduleSeparator) {
                 scheduleSeparator = false;
                 menu.addSeparator();
             }
             JMenuItem item = new JMenuItem(action.getName(), action.getIcon());
             item.setToolTipText(action.getDescription());
-            if(action.matches(selection))
+            if(matches)
                 item.addActionListener(e -> action.run(this, ImmutableSet.copyOf(selection)));
             else
                 item.setEnabled(false);
@@ -1141,6 +1144,10 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
      * @param ui The algorithm UI
      */
     public void selectOnly(ACAQAlgorithmUI ui) {
+        if(ui == null) {
+            clearSelection();
+            return;
+        }
         if (selection.isEmpty()) {
             addToSelection(ui);
         } else if (selection.size() == 1) {

@@ -66,4 +66,12 @@ public interface AlgorithmUIAction {
      * @return show in toolbar overhang menu
      */
     boolean isShowingInOverhang();
+
+    /**
+     * Determines if an item should be disabled or removed if it does not match
+     * @return if an item should be disabled or removed if it does not match
+     */
+    default boolean disableOnNonMatch() {
+        return true;
+    }
 }

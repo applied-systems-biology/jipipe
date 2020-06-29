@@ -95,7 +95,7 @@ public class JsonAlgorithm extends GraphWrapperAlgorithm implements ACAQCustomPa
             }
         }
 
-        graph.removeNode(algorithm);
+        graph.removeNode(algorithm, false);
         graph.insertNode(group, algorithm.getCompartment());
 
         for (Map.Entry<ACAQDataSlot, ACAQDataSlot> edge : edges) {

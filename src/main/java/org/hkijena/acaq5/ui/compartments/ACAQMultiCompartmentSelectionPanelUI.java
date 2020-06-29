@@ -83,27 +83,12 @@ public class ACAQMultiCompartmentSelectionPanelUI extends ACAQProjectWorkbenchPa
         openButton.addActionListener(e -> openInEditor());
         toolBar.add(openButton);
 
-        JButton deleteButton = new JButton(UIUtils.getIconFromResources("delete.png"));
-        deleteButton.setToolTipText("Delete compartments");
-        deleteButton.addActionListener(e -> deleteCompartments());
-        toolBar.add(deleteButton);
-
         add(toolBar, BorderLayout.NORTH);
     }
 
     private void openInEditor() {
         for (ACAQProjectCompartment compartment : compartments) {
             getProjectWorkbench().openCompartmentGraph(compartment, true);
-        }
-    }
-
-    private void deleteCompartments() {
-        if (JOptionPane.showConfirmDialog(this, "Do you really want to delete the compartments: " +
-                compartments.stream().map(c -> "'" + c.getName() + "'").collect(Collectors.joining(", ")) + "?\n" +
-                "You will lose all nodes stored in those compartments.", "Delete compartments", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-            for (ACAQProjectCompartment compartment : compartments) {
-                compartment.getProject().removeCompartment(compartment);
-            }
         }
     }
 }

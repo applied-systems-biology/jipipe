@@ -269,7 +269,7 @@ public class ACAQProject implements ACAQValidatable {
         graph.removeCompartment(compartment.getProjectCompartmentId());
         compartments.remove(compartment.getProjectCompartmentId());
         updateCompartmentVisibility();
-        compartmentGraph.removeNode(compartment);
+        compartmentGraph.removeNode(compartment, false);
         eventBus.post(new CompartmentRemovedEvent(compartment));
     }
 

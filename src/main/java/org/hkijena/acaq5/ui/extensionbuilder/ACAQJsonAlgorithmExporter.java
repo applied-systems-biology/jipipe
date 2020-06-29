@@ -24,17 +24,12 @@ import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphEditorUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
-import org.hkijena.acaq5.ui.grapheditor.contextmenu.AddToSelectionAlgorithmContextMenuFeature;
-import org.hkijena.acaq5.ui.grapheditor.contextmenu.CollapseIOInterfaceAlgorithmContextMenuFeature;
-import org.hkijena.acaq5.ui.grapheditor.contextmenu.DeleteAlgorithmContextMenuFeature;
-import org.hkijena.acaq5.ui.grapheditor.contextmenu.SeparatorAlgorithmContextMenuFeature;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
 import java.util.stream.Collectors;
 
 /**

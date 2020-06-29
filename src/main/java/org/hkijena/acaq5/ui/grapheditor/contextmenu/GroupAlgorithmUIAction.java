@@ -11,8 +11,12 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.acaq5.ui.grapheditor.contextmenu.clipboard;
+package org.hkijena.acaq5.ui.grapheditor.contextmenu;
 
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
+import org.hkijena.acaq5.api.grouping.NodeGroup;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -21,27 +25,37 @@ import javax.swing.*;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class AlgorithmGraphCutAlgorithmUIAction extends  AlgorithmGraphCopyAlgorithmUIAction {
+public class GroupAlgorithmUIAction implements AlgorithmUIAction {
+    @Override
+    public boolean matches(Set<ACAQAlgorithmUI> selection) {
+        return !selection.isEmpty();
+    }
 
     @Override
     public void run(ACAQAlgorithmGraphCanvasUI canvasUI, Set<ACAQAlgorithmUI> selection) {
-        super.run(canvasUI, selection);
-        canvasUI.getAlgorithmGraph().removeNodes(selection.stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet()), true);
+        Set<ACAQGraphNode> algorithms = selection.stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet());
+        ACAQAlgorithmGraph graph = canvasUI.getAlgorithmGraph();
+        ACAQAlgorithmGraph subGraph = graph.extract(algorithms, false);
+        NodeGroup group = new NodeGroup(subGraph, true);
+        for (ACAQGraphNode algorithm : algorithms) {
+            graph.removeNode(algorithm, true);
+        }
+        graph.insertNode(group, canvasUI.getCompartment());
     }
 
     @Override
     public String getName() {
-        return "Cut";
+        return "Group";
     }
 
     @Override
     public String getDescription() {
-        return "Cuts the selection into the clipboard";
+        return "Moves the selected nodes into a group node.";
     }
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("cut.png");
+        return UIUtils.getIconFromResources("group.png");
     }
 
     @Override

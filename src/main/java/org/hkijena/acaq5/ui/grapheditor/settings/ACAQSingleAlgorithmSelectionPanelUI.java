@@ -134,25 +134,6 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPan
                 canvas.getContextActions(),
                 canvas);
 
-        if (algorithm instanceof JsonAlgorithm) {
-            JButton toGroupButton = new JButton(UIUtils.getIconFromResources("archive-extract.png"));
-            toGroupButton.setToolTipText("Convert into group");
-            toGroupButton.addActionListener(e -> unpackAlgorithm());
-            toolBar.add(toGroupButton);
-        }
-
-        JButton exportButton = new JButton(UIUtils.getIconFromResources("export.png"));
-        exportButton.setToolTipText("Export algorithm");
-        exportButton.setEnabled(algorithm.getCategory() != ACAQAlgorithmCategory.Internal);
-        exportButton.addActionListener(e -> exportAlgorithm());
-        toolBar.add(exportButton);
-
-        JButton deleteButton = new JButton(UIUtils.getIconFromResources("delete.png"));
-        deleteButton.setToolTipText("Delete algorithm");
-        deleteButton.setEnabled(graph.canUserDelete(algorithm));
-        deleteButton.addActionListener(e -> deleteAlgorithm());
-        toolBar.add(deleteButton);
-
         if (ACAQAlgorithmRegistry.getInstance().getRegisteredAlgorithms().containsValue(algorithm.getDeclaration())) {
             JButton openCompendiumButton = new JButton(UIUtils.getIconFromResources("help.png"));
             openCompendiumButton.setToolTipText("Open in algorithm compendium");
@@ -170,40 +151,6 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPan
         }
 
         add(toolBar, BorderLayout.NORTH);
-    }
-
-    private void unpackAlgorithm() {
-        if (algorithm instanceof JsonAlgorithm) {
-            JsonAlgorithm.unpackToNodeGroup((JsonAlgorithm) algorithm);
-        }
-    }
-
-    private void exportAlgorithm() {
-        ACAQValidityReport report = new ACAQValidityReport();
-        algorithm.reportValidity(report);
-        if (!report.isValid()) {
-            UIUtils.openValidityReportDialog(this, report, false);
-            return;
-        }
-
-        NodeGroup group;
-        if (algorithm instanceof NodeGroup) {
-            group = (NodeGroup) algorithm.duplicate();
-        } else {
-            ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
-            graph.insertNode(algorithm.getDeclaration().clone(algorithm), ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
-            group = new NodeGroup(graph, true);
-        }
-
-        ACAQJsonAlgorithmExporter.createExporter(getProjectWorkbench(), group, algorithm.getName(), algorithm.getCustomDescription());
-    }
-
-    private void deleteAlgorithm() {
-        if (JOptionPane.showConfirmDialog(this,
-                "Do you really want to remove the algorithm '" + algorithm.getName() + "'?", "Delete algorithm",
-                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            graph.removeNode(algorithm);
-        }
     }
 
     /**

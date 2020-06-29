@@ -14,49 +14,48 @@
 package org.hkijena.acaq5.ui.grapheditor.contextmenu;
 
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
-import org.hkijena.acaq5.ui.components.PickAlgorithmDialog;
-import org.hkijena.acaq5.ui.events.AlgorithmEvent;
+import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
+import org.hkijena.acaq5.ui.grapheditor.contextmenu.AlgorithmUIAction;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.MouseInfo;
-import java.awt.Point;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-public class SelectAndMoveNodeHereAlgorithmUIAction implements AlgorithmUIAction {
+public class DeleteCompartmentUIAction implements AlgorithmUIAction {
     @Override
     public boolean matches(Set<ACAQAlgorithmUI> selection) {
-        return selection.isEmpty();
+        return !selection.isEmpty();
     }
 
     @Override
     public void run(ACAQAlgorithmGraphCanvasUI canvasUI, Set<ACAQAlgorithmUI> selection) {
-        ACAQGraphNode algorithm = PickAlgorithmDialog.showDialog(canvasUI, canvasUI.getNodeUIs().keySet(), "Move node");
-        if (algorithm != null) {
-            ACAQAlgorithmUI ui = canvasUI.getNodeUIs().getOrDefault(algorithm, null);
-            if (ui != null) {
-                ui.trySetLocationInGrid(canvasUI.getGraphEditorCursor().x, canvasUI.getGraphEditorCursor().y);
-                canvasUI.repaint();
-                canvasUI.getEventBus().post(new AlgorithmEvent(ui));
+        if (JOptionPane.showConfirmDialog(canvasUI,
+                "Do you really want to remove the following compartments: " +
+                        selection.stream().map(ACAQAlgorithmUI::getAlgorithm).map(ACAQGraphNode::getName).collect(Collectors.joining(", ")), "Delete compartments",
+                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            for (ACAQAlgorithmUI ui : selection) {
+                ACAQProjectCompartment compartment = (ACAQProjectCompartment) ui.getAlgorithm();
+                compartment.getProject().removeCompartment(compartment);
             }
         }
     }
 
     @Override
     public String getName() {
-        return "Move node here ...";
+        return "Delete";
     }
 
     @Override
     public String getDescription() {
-        return "Shows a window to select a node and move it to the current cursor.";
+        return "Deletes the selected compartments";
     }
 
     @Override
     public Icon getIcon() {
-        return  UIUtils.getIconFromResources("move.png");
+        return UIUtils.getIconFromResources("delete.png");
     }
 
     @Override

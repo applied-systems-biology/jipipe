@@ -11,41 +11,49 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.acaq5.ui.grapheditor.contextmenu.clipboard;
+package org.hkijena.acaq5.ui.grapheditor.contextmenu;
 
+import org.hkijena.acaq5.ui.events.AlgorithmUIActionRequestedEvent;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
+import org.hkijena.acaq5.ui.grapheditor.contextmenu.AlgorithmUIAction;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-public class AlgorithmGraphCutAlgorithmUIAction extends  AlgorithmGraphCopyAlgorithmUIAction {
+import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.REQUEST_RUN_AND_SHOW_RESULTS;
+import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.REQUEST_RUN_ONLY;
+
+public class UpdateCacheAlgorithmUIAction implements AlgorithmUIAction {
+    @Override
+    public boolean matches(Set<ACAQAlgorithmUI> selection) {
+        return selection.size() == 1;
+    }
 
     @Override
     public void run(ACAQAlgorithmGraphCanvasUI canvasUI, Set<ACAQAlgorithmUI> selection) {
-        super.run(canvasUI, selection);
-        canvasUI.getAlgorithmGraph().removeNodes(selection.stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet()), true);
+        ACAQAlgorithmUI ui = selection.iterator().next();
+        ui.getEventBus().post(new AlgorithmUIActionRequestedEvent(ui, REQUEST_RUN_ONLY));
     }
 
     @Override
     public String getName() {
-        return "Cut";
+        return "Update cache";
     }
 
     @Override
     public String getDescription() {
-        return "Cuts the selection into the clipboard";
+        return "Runs the pipeline up until this algorithm and caches the results. Nothing is written to disk.";
     }
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("cut.png");
+        return UIUtils.getIconFromResources("database.png");
     }
 
     @Override
     public boolean isShowingInOverhang() {
-        return false;
+        return true;
     }
 }

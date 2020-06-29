@@ -26,6 +26,11 @@ import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.events.DefaultAlgorithmUIActionRequestedEvent;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphEditorUI;
+import org.hkijena.acaq5.ui.grapheditor.contextmenu.AlgorithmUIAction;
+import org.hkijena.acaq5.ui.grapheditor.contextmenu.ExportCompartmentAsJsonAlgorithmUIAction;
+import org.hkijena.acaq5.ui.grapheditor.contextmenu.ExportCompartmentToAlgorithmUIAction;
+import org.hkijena.acaq5.ui.grapheditor.contextmenu.SelectAndMoveNodeHereAlgorithmUIAction;
+import org.hkijena.acaq5.ui.grapheditor.contextmenu.DeleteCompartmentUIAction;
 import org.hkijena.acaq5.ui.grapheditor.contextmenu.clipboard.GraphCompartmentCopyAlgorithmUIAction;
 import org.hkijena.acaq5.ui.grapheditor.contextmenu.clipboard.GraphCompartmentCutAlgorithmUIAction;
 import org.hkijena.acaq5.ui.grapheditor.contextmenu.clipboard.GraphCompartmentPasteAlgorithmUIAction;
@@ -60,7 +65,14 @@ public class ACAQCompartmentGraphUI extends ACAQAlgorithmGraphEditorUI {
         getCanvasUI().setContextActions(Arrays.asList(
                 new GraphCompartmentCutAlgorithmUIAction(),
                 new GraphCompartmentCopyAlgorithmUIAction(),
-                new GraphCompartmentPasteAlgorithmUIAction()
+                new GraphCompartmentPasteAlgorithmUIAction(),
+                AlgorithmUIAction.SEPARATOR,
+                new ExportCompartmentAsJsonAlgorithmUIAction(),
+                new ExportCompartmentToAlgorithmUIAction(),
+                AlgorithmUIAction.SEPARATOR,
+                new DeleteCompartmentUIAction(),
+                AlgorithmUIAction.SEPARATOR,
+                new SelectAndMoveNodeHereAlgorithmUIAction()
         ));
     }
 

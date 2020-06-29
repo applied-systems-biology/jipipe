@@ -86,66 +86,6 @@ public class ACAQMultiAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPane
                 canvas.getContextActions(),
                 canvas);
 
-        JButton groupButton = new JButton(UIUtils.getIconFromResources("group.png"));
-        groupButton.setToolTipText("Move into group");
-        groupButton.setEnabled(algorithms.stream().allMatch(algorithm -> algorithm.getCategory() != ACAQAlgorithmCategory.Internal));
-        groupButton.addActionListener(e -> groupAlgorithms());
-        toolBar.add(groupButton);
-
-        JButton exportButton = new JButton(UIUtils.getIconFromResources("export.png"));
-        exportButton.setToolTipText("Export custom algorithm");
-        exportButton.setEnabled(algorithms.stream().allMatch(algorithm -> algorithm.getCategory() != ACAQAlgorithmCategory.Internal));
-        exportButton.addActionListener(e -> exportAlgorithms());
-        toolBar.add(exportButton);
-
-        JButton deleteButton = new JButton(UIUtils.getIconFromResources("delete.png"));
-        deleteButton.setToolTipText("Delete algorithms");
-        deleteButton.setEnabled(algorithms.stream().allMatch(algorithm -> graph.canUserDelete(algorithm)));
-        deleteButton.addActionListener(e -> deleteAlgorithms());
-        toolBar.add(deleteButton);
-
         add(toolBar, BorderLayout.NORTH);
-    }
-
-    private void groupAlgorithms() {
-        ACAQAlgorithmGraph subGraph = graph.extract(algorithms, false);
-        NodeGroup group = new NodeGroup(subGraph, true);
-        for (ACAQGraphNode algorithm : algorithms) {
-            if (algorithm.getCategory() != ACAQAlgorithmCategory.Internal)
-                graph.removeNode(algorithm);
-        }
-        graph.insertNode(group, canvas.getCompartment());
-    }
-
-    private void exportAlgorithms() {
-        ACAQValidityReport report = new ACAQValidityReport();
-        for (ACAQGraphNode algorithm : algorithms) {
-            algorithm.reportValidity(report.forCategory(algorithm.getName()));
-        }
-        if (!report.isValid()) {
-            UIUtils.openValidityReportDialog(this, report, false);
-            return;
-        }
-
-        ACAQAlgorithmGraph graph = getProject().getGraph().extract(algorithms, true);
-        NodeGroup group = new NodeGroup(graph, true);
-        ACAQJsonAlgorithmExporter exporter = new ACAQJsonAlgorithmExporter(getProjectWorkbench(), group);
-        getProjectWorkbench().getDocumentTabPane().addTab("Export custom algorithm",
-                UIUtils.getIconFromResources("export.png"),
-                exporter,
-                DocumentTabPane.CloseMode.withAskOnCloseButton);
-        getProjectWorkbench().getDocumentTabPane().switchToLastTab();
-    }
-
-    private void deleteAlgorithms() {
-        if (JOptionPane.showConfirmDialog(this,
-                "Do you really want to remove the following algorithms: " +
-                        algorithms.stream().map(a -> "'" + a.getName() + "'").collect(Collectors.joining(", "))
-                        + "?", "Delete algorithm",
-                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            for (ACAQGraphNode algorithm : algorithms) {
-                graph.removeNode(algorithm);
-            }
-        }
     }
 }

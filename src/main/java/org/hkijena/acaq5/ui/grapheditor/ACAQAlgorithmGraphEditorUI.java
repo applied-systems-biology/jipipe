@@ -618,29 +618,37 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
                 scheduledSeparator = true;
                 continue;
             }
-            if(action.matches(selection)) {
-                if(!action.isShowingInOverhang()) {
-                    if(scheduledSeparator)
-                        toolBar.add(Box.createHorizontalStrut(4));
-                    JButton button = new JButton(action.getIcon());
-                    button.setToolTipText("<html><strong>" + action.getName() + "</strong><br/>" + action.getDescription() + "</html>");
+            boolean matches = action.matches(selection);
+            if(!matches && !action.disableOnNonMatch())
+                continue;
+            if(!action.isShowingInOverhang()) {
+                if(scheduledSeparator)
+                    toolBar.add(Box.createHorizontalStrut(4));
+                JButton button = new JButton(action.getIcon());
+                button.setToolTipText("<html><strong>" + action.getName() + "</strong><br/>" + action.getDescription() + "</html>");
+                if(matches)
                     button.addActionListener(e -> action.run(canvasUI, ImmutableSet.copyOf(selection)));
-                    toolBar.add(button);
-                }
-                else {
-                    JMenuItem item = new JMenuItem(action.getName(), action.getIcon());
-                    item.setToolTipText(action.getDescription());
+                else
+                    button.setEnabled(false);
+                toolBar.add(button);
+            }
+            else {
+                JMenuItem item = new JMenuItem(action.getName(), action.getIcon());
+                item.setToolTipText(action.getDescription());
+                if(matches)
                     item.addActionListener(e -> action.run(canvasUI, ImmutableSet.copyOf(selection)));
-                    overhang.add(item);
-                }
+                else
+                    item.setEnabled(false);
+                overhang.add(item);
             }
         }
 
         if(overhang.getComponentCount() > 0) {
             toolBar.add(Box.createHorizontalStrut(4));
-            JButton button = new JButton(UIUtils.getIconFromResources("wrench.png"));
+            JButton button = new JButton(UIUtils.getIconFromResources("ellipsis-h.png"));
             button.setToolTipText("More actions ...");
             UIUtils.addPopupMenuToComponent(button, overhang);
+            toolBar.add(button);
         }
     }
 }

@@ -11,41 +11,53 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.acaq5.ui.grapheditor.contextmenu.clipboard;
+package org.hkijena.acaq5.ui.grapheditor.contextmenu;
 
+import org.hkijena.acaq5.api.grouping.JsonAlgorithm;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-public class AlgorithmGraphCutAlgorithmUIAction extends  AlgorithmGraphCopyAlgorithmUIAction {
+public class JsonAlgorithmToGroupAlgorithmUIAction implements AlgorithmUIAction {
+    @Override
+    public boolean matches(Set<ACAQAlgorithmUI> selection) {
+        return selection.stream().map(ACAQAlgorithmUI::getAlgorithm).anyMatch(a -> a instanceof JsonAlgorithm);
+    }
 
     @Override
     public void run(ACAQAlgorithmGraphCanvasUI canvasUI, Set<ACAQAlgorithmUI> selection) {
-        super.run(canvasUI, selection);
-        canvasUI.getAlgorithmGraph().removeNodes(selection.stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet()), true);
+        for (ACAQAlgorithmUI ui : selection) {
+            if(ui.getAlgorithm() instanceof JsonAlgorithm) {
+                JsonAlgorithm.unpackToNodeGroup((JsonAlgorithm) ui.getAlgorithm());
+            }
+        }
     }
 
     @Override
     public String getName() {
-        return "Cut";
+        return "Convert to group";
     }
 
     @Override
     public String getDescription() {
-        return "Cuts the selection into the clipboard";
+        return "Converts selected JSON algorithms into distinct group nodes";
     }
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("cut.png");
+        return UIUtils.getIconFromResources("archive-extract.png");
     }
 
     @Override
     public boolean isShowingInOverhang() {
+        return true;
+    }
+
+    @Override
+    public boolean disableOnNonMatch() {
         return false;
     }
 }

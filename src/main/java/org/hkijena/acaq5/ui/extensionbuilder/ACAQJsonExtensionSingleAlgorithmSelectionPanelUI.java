@@ -13,7 +13,6 @@
 
 package org.hkijena.acaq5.ui.extensionbuilder;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
@@ -90,21 +89,7 @@ public class ACAQJsonExtensionSingleAlgorithmSelectionPanelUI extends ACAQJsonEx
                 canvas.getContextActions(),
                 canvas);
 
-        JButton deleteButton = new JButton(UIUtils.getIconFromResources("delete.png"));
-        deleteButton.setToolTipText("Delete algorithm");
-        deleteButton.setEnabled(graph.canUserDelete(algorithm));
-        deleteButton.addActionListener(e -> deleteAlgorithm());
-        toolBar.add(deleteButton);
-
         add(toolBar, BorderLayout.NORTH);
-    }
-
-    private void deleteAlgorithm() {
-        if (JOptionPane.showConfirmDialog(this,
-                "Do you really want to remove the algorithm '" + algorithm.getName() + "'?", "Delete algorithm",
-                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            graph.removeNode(algorithm);
-        }
     }
 
     /**

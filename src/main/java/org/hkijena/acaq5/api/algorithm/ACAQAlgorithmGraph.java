@@ -43,7 +43,6 @@ import org.jgrapht.traverse.TopologicalOrderIterator;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -200,7 +199,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     public void removeCompartment(String compartment) {
         Set<String> ids = algorithms.keySet().stream().filter(id -> compartment.equals(compartments.get(algorithms.get(id)))).collect(Collectors.toSet());
         for (String id : ids) {
-            removeNode(algorithms.get(id));
+            removeNode(algorithms.get(id), false);
         }
     }
 
@@ -222,8 +221,11 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * The algorithm should exist within the graph.
      *
      * @param algorithm The algorithm
+     * @param user if a user triggered the operation. If true, will not remove internal nodes
      */
-    public void removeNode(ACAQGraphNode algorithm) {
+    public void removeNode(ACAQGraphNode algorithm, boolean user) {
+        if(user && algorithm.getCategory() == ACAQAlgorithmCategory.Internal)
+            return;
         // Do regular disconnect
         for (ACAQDataSlot slot : algorithm.getInputSlots()) {
             disconnectAll(slot, false);
@@ -959,7 +961,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      */
     public void clear() {
         for (ACAQGraphNode algorithm : ImmutableSet.copyOf(algorithms.values())) {
-            removeNode(algorithm);
+            removeNode(algorithm, false);
         }
     }
 
@@ -1055,11 +1057,12 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     /**
      * Removes multiple nodes at once
      * @param nodes list of nodes
+     * @param user if the operation is done by a user
      */
-    public void removeNodes(Set<ACAQGraphNode> nodes) {
+    public void removeNodes(Set<ACAQGraphNode> nodes, boolean user) {
         // TODO: Performance improvement
         for (ACAQGraphNode node : nodes) {
-            removeNode(node);
+            removeNode(node, user);
         }
     }
 

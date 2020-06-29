@@ -11,41 +11,56 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.acaq5.ui.grapheditor.contextmenu.clipboard;
+package org.hkijena.acaq5.ui.grapheditor.contextmenu;
 
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
+import org.hkijena.acaq5.ui.grapheditor.contextmenu.AlgorithmUIAction;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class AlgorithmGraphCutAlgorithmUIAction extends  AlgorithmGraphCopyAlgorithmUIAction {
+public class DeleteAlgorithmUIAction implements AlgorithmUIAction {
+    @Override
+    public boolean matches(Set<ACAQAlgorithmUI> selection) {
+        return !selection.isEmpty();
+    }
 
     @Override
     public void run(ACAQAlgorithmGraphCanvasUI canvasUI, Set<ACAQAlgorithmUI> selection) {
-        super.run(canvasUI, selection);
-        canvasUI.getAlgorithmGraph().removeNodes(selection.stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet()), true);
+        if (JOptionPane.showConfirmDialog(canvasUI,
+                "Do you really want to remove the following algorithms: " +
+                        selection.stream().map(ACAQAlgorithmUI::getAlgorithm).map(ACAQGraphNode::getName).collect(Collectors.joining(", ")), "Delete algorithms",
+                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            canvasUI.getAlgorithmGraph().removeNodes(selection.stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet()), true);
+        }
     }
 
     @Override
     public String getName() {
-        return "Cut";
+        return "Delete";
     }
 
     @Override
     public String getDescription() {
-        return "Cuts the selection into the clipboard";
+        return "Deletes the selected nodes";
     }
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("cut.png");
+        return UIUtils.getIconFromResources("delete.png");
     }
 
     @Override
     public boolean isShowingInOverhang() {
+        return false;
+    }
+
+    @Override
+    public boolean disableOnNonMatch() {
         return false;
     }
 }

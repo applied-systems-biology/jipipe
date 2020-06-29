@@ -81,24 +81,6 @@ public class ACAQJsonExtensionMultiAlgorithmSelectionPanelUI extends ACAQJsonExt
                 canvas.getContextActions(),
                 canvas);
 
-        JButton deleteButton = new JButton(UIUtils.getIconFromResources("delete.png"));
-        deleteButton.setToolTipText("Delete algorithms");
-        deleteButton.setEnabled(algorithms.stream().allMatch(algorithm -> graph.canUserDelete(algorithm)));
-        deleteButton.addActionListener(e -> deleteAlgorithms());
-        toolBar.add(deleteButton);
-
         add(toolBar, BorderLayout.NORTH);
-    }
-
-    private void deleteAlgorithms() {
-        if (JOptionPane.showConfirmDialog(this,
-                "Do you really want to remove the following algorithms: " +
-                        algorithms.stream().map(a -> "'" + a.getName() + "'").collect(Collectors.joining(", "))
-                        + "?", "Delete algorithm",
-                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            for (ACAQGraphNode algorithm : algorithms) {
-                graph.removeNode(algorithm);
-            }
-        }
     }
 }

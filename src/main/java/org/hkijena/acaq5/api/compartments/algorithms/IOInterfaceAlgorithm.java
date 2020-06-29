@@ -85,7 +85,7 @@ public class IOInterfaceAlgorithm extends ACAQAlgorithm {
             outputTargetMap.put(outputSlot.getName(), graph.getTargetSlots(outputSlot));
         }
 
-        graph.removeNode(algorithm);
+        graph.removeNode(algorithm, false);
 
         for (Map.Entry<String, ACAQDataSlot> entry : inputSourceMap.entrySet()) {
             ACAQDataSlot source = entry.getValue();
@@ -120,7 +120,7 @@ public class IOInterfaceAlgorithm extends ACAQAlgorithm {
         for (ACAQDataSlot outputSlot : compartmentOutput.getOutputSlots()) {
             outputTargetMap.put(outputSlot.getName(), graph.getTargetSlots(outputSlot));
         }
-        graph.removeNode(compartmentOutput);
+        graph.removeNode(compartmentOutput, false);
         graph.insertNode(id, ioInterfaceAlgorithm, compartmentOutput.getCompartment());
         for (Map.Entry<String, ACAQDataSlot> entry : inputSourceMap.entrySet()) {
             ACAQDataSlot target = ioInterfaceAlgorithm.getInputSlot(entry.getKey());

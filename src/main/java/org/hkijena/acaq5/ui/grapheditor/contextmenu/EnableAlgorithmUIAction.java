@@ -13,55 +13,57 @@
 
 package org.hkijena.acaq5.ui.grapheditor.contextmenu;
 
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
-import org.hkijena.acaq5.ui.components.PickAlgorithmDialog;
-import org.hkijena.acaq5.ui.events.AlgorithmEvent;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
+import org.hkijena.acaq5.ui.grapheditor.contextmenu.AlgorithmUIAction;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.MouseInfo;
-import java.awt.Point;
 import java.util.Set;
 
-public class SelectAndMoveNodeHereAlgorithmUIAction implements AlgorithmUIAction {
+public class EnableAlgorithmUIAction implements AlgorithmUIAction {
     @Override
     public boolean matches(Set<ACAQAlgorithmUI> selection) {
-        return selection.isEmpty();
+        for (ACAQAlgorithmUI ui : selection) {
+            if(ui.getAlgorithm() instanceof ACAQAlgorithm) {
+                ACAQAlgorithm algorithm = (ACAQAlgorithm) ui.getAlgorithm();
+                if(!algorithm.isEnabled())
+                    return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public void run(ACAQAlgorithmGraphCanvasUI canvasUI, Set<ACAQAlgorithmUI> selection) {
-        ACAQGraphNode algorithm = PickAlgorithmDialog.showDialog(canvasUI, canvasUI.getNodeUIs().keySet(), "Move node");
-        if (algorithm != null) {
-            ACAQAlgorithmUI ui = canvasUI.getNodeUIs().getOrDefault(algorithm, null);
-            if (ui != null) {
-                ui.trySetLocationInGrid(canvasUI.getGraphEditorCursor().x, canvasUI.getGraphEditorCursor().y);
-                canvasUI.repaint();
-                canvasUI.getEventBus().post(new AlgorithmEvent(ui));
+        for (ACAQAlgorithmUI ui : selection) {
+            if(ui.getAlgorithm() instanceof ACAQAlgorithm) {
+                ACAQAlgorithm algorithm = (ACAQAlgorithm) ui.getAlgorithm();
+                algorithm.setEnabled(true);
             }
         }
     }
 
     @Override
     public String getName() {
-        return "Move node here ...";
+        return "Enable";
     }
 
     @Override
     public String getDescription() {
-        return "Shows a window to select a node and move it to the current cursor.";
+        return "Enables the selected algorithms";
     }
 
     @Override
     public Icon getIcon() {
-        return  UIUtils.getIconFromResources("move.png");
+        return  UIUtils.getIconFromResources("block.png");
     }
 
     @Override
     public boolean isShowingInOverhang() {
-        return false;
+        return true;
     }
 
     @Override

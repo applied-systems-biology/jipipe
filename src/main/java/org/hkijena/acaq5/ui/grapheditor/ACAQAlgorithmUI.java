@@ -23,14 +23,11 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.AddAlgorithmSlotPanel;
-import org.hkijena.acaq5.ui.grapheditor.contextmenu.ACAQAlgorithmUIContextMenuFeature;
 import org.hkijena.acaq5.utils.PointRange;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * UI around an {@link ACAQGraphNode} instance
