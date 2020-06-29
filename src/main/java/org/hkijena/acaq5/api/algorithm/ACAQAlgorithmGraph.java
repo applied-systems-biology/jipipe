@@ -41,6 +41,7 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.traverse.GraphIterator;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
+import java.awt.Point;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -58,6 +59,10 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     private BiMap<String, ACAQGraphNode> algorithms = HashBiMap.create();
     private Map<ACAQGraphNode, String> compartments = new HashMap<>();
     private EventBus eventBus = new EventBus();
+    /**
+     * If this value is greater than one, no events are triggered
+     */
+    private int preventTriggerEvents = 0;
 
     /**
      * Creates a new algorithm graph
@@ -113,11 +118,18 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         algorithms.put(key, algorithm);
         compartments.put(algorithm, compartment);
         algorithm.getEventBus().register(this);
+        ++preventTriggerEvents;
         repairGraph();
+        --preventTriggerEvents;
 
         // Sometimes we have algorithms with no slots, so trigger manually
-        if (algorithm.getInputSlots().isEmpty() && algorithm.getOutputSlots().isEmpty()) {
-            getEventBus().post(new AlgorithmGraphChangedEvent(this));
+        postChangedEvent();
+    }
+
+    private void postChangedEvent() {
+        if(preventTriggerEvents <= 0) {
+            preventTriggerEvents = 0;
+            eventBus.post(new AlgorithmGraphChangedEvent(this));
         }
     }
 
@@ -159,7 +171,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
             String oldId = oldIds.inverse().get(algorithm);
             renaming.put(oldId, newId);
         }
-        eventBus.post(new AlgorithmGraphChangedEvent(this));
+        postChangedEvent();
         return renaming;
     }
 
@@ -213,7 +225,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         for (ACAQGraphNode algorithm : algorithms.values().stream().filter(a -> compartment.equals(compartments.get(a))).collect(Collectors.toSet())) {
             compartments.put(algorithm, newCompartment);
         }
-        getEventBus().post(new AlgorithmGraphChangedEvent(this));
+        postChangedEvent();
     }
 
     /**
@@ -226,6 +238,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     public void removeNode(ACAQGraphNode algorithm, boolean user) {
         if(user && algorithm.getCategory() == ACAQAlgorithmCategory.Internal)
             return;
+        ++preventTriggerEvents;
         // Do regular disconnect
         for (ACAQDataSlot slot : algorithm.getInputSlots()) {
             disconnectAll(slot, false);
@@ -245,7 +258,8 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
             graph.removeVertex(slot);
         }
         algorithm.setGraph(null);
-        getEventBus().post(new AlgorithmGraphChangedEvent(this));
+        --preventTriggerEvents;
+        postChangedEvent();
     }
 
     /**
@@ -308,7 +322,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
                     "Algorithm graph", "The connection is invalid, such as one that causes cycles in the graph, or a connection where a slot receives multiple inputs",
                     "Check if your pipeline contains complicated sections prone to cycles. Reorganize the graph by dragging the nodes around.");
         graph.addEdge(source, target, new ACAQAlgorithmGraphEdge(userCanDisconnect));
-        getEventBus().post(new AlgorithmGraphChangedEvent(this));
+        postChangedEvent();
         getEventBus().post(new AlgorithmGraphConnectedEvent(this, source, target));
         source.getAlgorithm().onSlotConnected(new AlgorithmGraphConnectedEvent(this, source, target));
         target.getAlgorithm().onSlotConnected(new AlgorithmGraphConnectedEvent(this, source, target));
@@ -381,7 +395,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         }
 
         if (modified)
-            getEventBus().post(new AlgorithmGraphChangedEvent(this));
+            postChangedEvent();
     }
 
     /**
@@ -489,7 +503,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
                 return false;
             graph.removeEdge(source, target);
             getEventBus().post(new AlgorithmGraphDisconnectedEvent(this, source, target));
-            getEventBus().post(new AlgorithmGraphChangedEvent(this));
+            postChangedEvent();
             source.getAlgorithm().onSlotDisconnected(new AlgorithmGraphDisconnectedEvent(this, source, target));
             target.getAlgorithm().onSlotDisconnected(new AlgorithmGraphDisconnectedEvent(this, source, target));
             return true;
@@ -699,7 +713,13 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
         for (ACAQGraphNode algorithm : nodes) {
             if (!withInternal && algorithm.getCategory() == ACAQAlgorithmCategory.Internal)
                 continue;
-            graph.insertNode(algorithm.getIdInGraph(), algorithm.getDeclaration().clone(algorithm), ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
+            ACAQGraphNode copy = algorithm.getDeclaration().clone(algorithm);
+            if(copy.getCompartment() != null) {
+                Map<String, Point> map = copy.getLocations().get(copy.getCompartment());
+                copy.getLocations().clear();
+                copy.getLocations().put(ACAQAlgorithmGraph.COMPARTMENT_DEFAULT, map);
+            }
+            graph.insertNode(algorithm.getIdInGraph(),copy, ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
         }
         for (Map.Entry<ACAQDataSlot, ACAQDataSlot> edge : getSlotEdges()) {
             ACAQDataSlot source = edge.getKey();
@@ -1060,10 +1080,12 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * @param user if the operation is done by a user
      */
     public void removeNodes(Set<ACAQGraphNode> nodes, boolean user) {
-        // TODO: Performance improvement
+        ++preventTriggerEvents;
         for (ACAQGraphNode node : nodes) {
             removeNode(node, user);
         }
+        --preventTriggerEvents;
+        postChangedEvent();
     }
 
     /**

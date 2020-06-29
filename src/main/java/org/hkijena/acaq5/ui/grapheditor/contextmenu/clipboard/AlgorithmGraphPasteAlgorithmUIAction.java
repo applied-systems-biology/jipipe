@@ -26,9 +26,12 @@ import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -53,16 +56,38 @@ public class AlgorithmGraphPasteAlgorithmUIAction implements AlgorithmUIAction {
                     }
                 }
 
+                // Save the original locations (if available)
+                int minX = Integer.MAX_VALUE;
+                int minY = Integer.MAX_VALUE;
+                Map<ACAQGraphNode, Point> originalLocations = new HashMap<>();
+                for (ACAQGraphNode algorithm : graph.getAlgorithmNodes().values()) {
+                    Point point = algorithm.getLocationWithin(algorithm.getCompartment(), canvasUI.getCurrentViewMode().name());
+                    if(point != null) {
+                        originalLocations.put(algorithm, point);
+                        minX = Math.min(minX, point.x);
+                        minY = Math.min(minY, point.y);
+                    }
+                }
+
+                // Change the compartment
                 String compartment = canvasUI.getCompartment();
                 for (ACAQGraphNode algorithm : graph.getAlgorithmNodes().values()) {
                     algorithm.setCompartment(compartment);
                 }
-                Map<String, ACAQGraphNode> idMap = canvasUI.getAlgorithmGraph().mergeWith(graph);
 
-                // Try to move copied algorithm to the mouse position
-                if (idMap.size() == 1) {
-                    canvasUI.tryMoveNodeToMouse(idMap.values().iterator().next());
+                // Update the location relative to the mouse
+                Point cursor = canvasUI.getGraphEditorCursor();
+                for (ACAQGraphNode algorithm : graph.getAlgorithmNodes().values()) {
+                    Point original = originalLocations.getOrDefault(algorithm, null);
+                    if(original != null) {
+                        original.x = original.x - minX + cursor.x;
+                        original.y = original.y - minY + cursor.y;
+                        algorithm.setLocationWithin(compartment, original, canvasUI.getCurrentViewMode().name());
+                    }
                 }
+
+                // Add to graph
+                canvasUI.getAlgorithmGraph().mergeWith(graph);
             }
         } catch (Exception e) {
             e.printStackTrace();
