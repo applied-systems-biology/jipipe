@@ -13,8 +13,11 @@
 
 package org.hkijena.acaq5.ui.grapheditor.contextmenu;
 
+import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
+import org.hkijena.acaq5.api.history.DeleteCompartmentGraphHistorySnapshot;
+import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
 import org.hkijena.acaq5.ui.grapheditor.contextmenu.AlgorithmUIAction;
@@ -36,8 +39,10 @@ public class DeleteCompartmentUIAction implements AlgorithmUIAction {
                 "Do you really want to remove the following compartments: " +
                         selection.stream().map(ACAQAlgorithmUI::getAlgorithm).map(ACAQGraphNode::getName).collect(Collectors.joining(", ")), "Delete compartments",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            ACAQProject project = ((ACAQProjectWorkbench)canvasUI.getWorkbench()).getProject();
             for (ACAQAlgorithmUI ui : selection) {
                 ACAQProjectCompartment compartment = (ACAQProjectCompartment) ui.getAlgorithm();
+                canvasUI.getGraphHistory().addSnapshotBefore(new DeleteCompartmentGraphHistorySnapshot(project, compartment));
                 compartment.getProject().removeCompartment(compartment);
             }
         }

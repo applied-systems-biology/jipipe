@@ -143,15 +143,27 @@ public class ACAQProject implements ACAQValidatable {
     }
 
     /**
-     * Adds anew project compartment
+     * Adds a new project compartment
      *
-     * @param name Unique compartment ID
+     * @param name Compartment name
      * @return The compartment
      */
     public ACAQProjectCompartment addCompartment(String name) {
         ACAQProjectCompartment compartment = ACAQGraphNode.newInstance("acaq:project-compartment");
         compartment.setProject(this);
         compartment.setCustomName(name);
+        compartmentGraph.insertNode(compartment, ACAQGraph.COMPARTMENT_DEFAULT);
+        return compartment;
+    }
+
+    /**
+     * Adds an existing compartment instance
+     *
+     * @param compartment Compartment
+     * @return The compartment
+     */
+    public ACAQProjectCompartment addCompartment(ACAQProjectCompartment compartment) {
+        compartment.setProject(this);
         compartmentGraph.insertNode(compartment, ACAQGraph.COMPARTMENT_DEFAULT);
         return compartment;
     }

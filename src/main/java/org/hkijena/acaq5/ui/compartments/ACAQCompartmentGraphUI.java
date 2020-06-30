@@ -15,10 +15,13 @@ package org.hkijena.acaq5.ui.compartments;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.Subscribe;
+import ij.IJ;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.compartments.ACAQExportedCompartment;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
+import org.hkijena.acaq5.api.history.AddCompartmentGraphHistorySnapshot;
+import org.hkijena.acaq5.api.history.ImportCompartmentGraphHistorySnapshot;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
@@ -138,9 +141,11 @@ public class ACAQCompartmentGraphUI extends ACAQAlgorithmGraphEditorUI {
                 String name = UIUtils.getUniqueStringByDialog(this, "Please enter the name of the new compartment:",
                         exportedCompartment.getSuggestedName(), s -> getProject().getCompartments().containsKey(s));
                 if (name != null && !name.isEmpty()) {
-                    exportedCompartment.addTo(getProject(), name);
+                    ACAQProjectCompartment compartment = exportedCompartment.addTo(getProject(), name);
+                    getCanvasUI().getGraphHistory().addSnapshotBefore(new ImportCompartmentGraphHistorySnapshot(getProject(), compartment));
                 }
             } catch (IOException e) {
+                IJ.handleException(e);
             }
         }
     }
@@ -157,7 +162,10 @@ public class ACAQCompartmentGraphUI extends ACAQAlgorithmGraphEditorUI {
         String compartmentName = UIUtils.getUniqueStringByDialog(this, "Please enter the name of the compartment",
                 "Compartment", s -> getProject().getCompartments().containsKey(s));
         if (compartmentName != null && !compartmentName.trim().isEmpty()) {
-            getProject().addCompartment(compartmentName);
+            AddCompartmentGraphHistorySnapshot snapshot = new AddCompartmentGraphHistorySnapshot(getProject(), compartmentName);
+            getCanvasUI().getGraphHistory().addSnapshotBefore(snapshot);
+            ACAQProjectCompartment compartment = getProject().addCompartment(compartmentName);
+            snapshot.setCompartmentInstance(compartment);
         }
     }
 

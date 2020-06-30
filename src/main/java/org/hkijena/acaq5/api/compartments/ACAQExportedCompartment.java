@@ -96,8 +96,9 @@ public class ACAQExportedCompartment {
      *
      * @param project         Target project
      * @param compartmentName Target compartment name
+     * @return the compartment instance
      */
-    public void addTo(ACAQProject project, String compartmentName) {
+    public ACAQProjectCompartment addTo(ACAQProject project, String compartmentName) {
         if (project.getCompartments().containsKey(compartmentName))
             throw new UserFriendlyRuntimeException("Compartment " + compartmentName + " already exists!",
                     "Compartment " + compartmentName + " already exists!",
@@ -130,6 +131,7 @@ public class ACAQExportedCompartment {
             project.getGraph().connect(copySource.getOutputSlotMap().get(edge.getKey().getName()),
                     copyTarget.getInputSlotMap().get(edge.getValue().getName()));
         }
+        return compartment;
     }
 
     /**

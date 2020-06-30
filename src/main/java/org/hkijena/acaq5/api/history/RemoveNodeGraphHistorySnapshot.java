@@ -17,7 +17,11 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
+import org.hkijena.acaq5.api.data.ACAQDataSlot;
 
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,11 +29,23 @@ public class RemoveNodeGraphHistorySnapshot implements ACAQAlgorithmGraphHistory
 
     private final ACAQGraph graph;
     private final BiMap<String, ACAQGraphNode> nodes = HashBiMap.create();
+    private final List<Map.Entry<ACAQDataSlot, ACAQDataSlot>> connections = new ArrayList<>();
 
     public RemoveNodeGraphHistorySnapshot(ACAQGraph graph, Set<ACAQGraphNode> nodes) {
         this.graph = graph;
         for (ACAQGraphNode node : nodes) {
             this.nodes.put(node.getIdInGraph(), node);
+            for (ACAQDataSlot target : node.getInputSlots()) {
+                ACAQDataSlot source = graph.getSourceSlot(target);
+                if(source != null) {
+                    connections.add(new AbstractMap.SimpleEntry<>(source, target));
+                }
+            }
+            for (ACAQDataSlot source : node.getOutputSlots()) {
+                for (ACAQDataSlot target : graph.getTargetSlots(source)) {
+                    connections.add(new AbstractMap.SimpleEntry<>(source, target));
+                }
+            }
         }
     }
 
@@ -49,6 +65,9 @@ public class RemoveNodeGraphHistorySnapshot implements ACAQAlgorithmGraphHistory
     public void undo() {
         for (Map.Entry<String, ACAQGraphNode> entry : nodes.entrySet()) {
             graph.insertNode(entry.getKey(), entry.getValue(), entry.getValue().getCompartment());
+        }
+        for (Map.Entry<ACAQDataSlot, ACAQDataSlot> connection : connections) {
+            graph.connect(connection.getKey(), connection.getValue());
         }
     }
 

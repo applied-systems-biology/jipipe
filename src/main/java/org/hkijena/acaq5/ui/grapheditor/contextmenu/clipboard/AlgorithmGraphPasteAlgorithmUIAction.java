@@ -16,6 +16,7 @@ package org.hkijena.acaq5.ui.grapheditor.contextmenu.clipboard;
 import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
+import org.hkijena.acaq5.api.history.PasteNodeGraphHistorySnapshot;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
@@ -27,6 +28,7 @@ import org.hkijena.acaq5.utils.UIUtils;
 import javax.swing.*;
 import java.awt.Point;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -81,6 +83,8 @@ public class AlgorithmGraphPasteAlgorithmUIAction implements AlgorithmUIAction {
                 }
 
                 // Add to graph
+                canvasUI.getGraphHistory().addSnapshotBefore(new PasteNodeGraphHistorySnapshot(canvasUI.getAlgorithmGraph(),
+                        new HashSet<>(graph.getAlgorithmNodes().values())));
                 canvasUI.getAlgorithmGraph().mergeWith(graph);
             }
         } catch (Exception e) {

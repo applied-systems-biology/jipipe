@@ -19,6 +19,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.history.PasteCompartmentGraphHistorySnapshot;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
@@ -59,6 +60,7 @@ public class GraphCompartmentPasteAlgorithmUIAction implements AlgorithmUIAction
                 Map<String, ACAQProjectCompartment> compartmentNodeMap = new HashMap<>();
                 for (String compartment : compartments) {
                     ACAQProjectCompartment compartmentNode = project.addCompartment(compartment);
+                    canvasUI.getGraphHistory().addSnapshotBefore(new PasteCompartmentGraphHistorySnapshot(project, compartmentNode));
                     compartmentNodeMap.put(compartment, compartmentNode);
                 }
 
