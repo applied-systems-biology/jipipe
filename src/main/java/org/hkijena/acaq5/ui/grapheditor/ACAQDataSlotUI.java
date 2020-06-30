@@ -26,6 +26,7 @@ import org.hkijena.acaq5.api.history.EdgeConnectGraphHistorySnapshot;
 import org.hkijena.acaq5.api.history.EdgeDisconnectAllTargetsGraphHistorySnapshot;
 import org.hkijena.acaq5.api.history.EdgeDisconnectGraphHistorySnapshot;
 import org.hkijena.acaq5.api.history.MoveNodesGraphHistorySnapshot;
+import org.hkijena.acaq5.api.history.SlotConfigurationHistorySnapshot;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.EditAlgorithmSlotPanel;
@@ -200,18 +201,20 @@ public abstract class ACAQDataSlotUI extends ACAQWorkbenchPanel {
     }
 
     private void editSlot() {
-        EditAlgorithmSlotPanel.showDialog(this, slot);
+        EditAlgorithmSlotPanel.showDialog(this, getGraphUI().getGraphHistory(), slot);
     }
 
     private void relabelSlot() {
         String newLabel = JOptionPane.showInputDialog(this,
                 "Please enter a new label for the slot.\nLeave the text empty to remove an existing label.",
                 slot.getDefinition().getCustomName());
+        getGraphUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getAlgorithm(), "Relabel slot '" + slot.getNameWithAlgorithmName() + "'"));
         slot.getDefinition().setCustomName(newLabel);
     }
 
     private void deleteSlot() {
         ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) slot.getAlgorithm().getSlotConfiguration();
+        getGraphUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getAlgorithm(), "Remove slot '" + slot.getNameWithAlgorithmName() + "'"));
         if (slot.isInput())
             slotConfiguration.removeInputSlot(slot.getName(), true);
         else if (slot.isOutput())
@@ -219,7 +222,7 @@ public abstract class ACAQDataSlotUI extends ACAQWorkbenchPanel {
     }
 
     private void findAlgorithm(ACAQDataSlot slot) {
-        ACAQAlgorithmFinderUI algorithmFinderUI = new ACAQAlgorithmFinderUI(canvasUI, slot, getGraph());
+        ACAQAlgorithmFinderUI algorithmFinderUI = new ACAQAlgorithmFinderUI(algorithmUI.getGraphUI(), slot);
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Find matching algorithm");
         UIUtils.addEscapeListener(dialog);
         dialog.setModal(true);

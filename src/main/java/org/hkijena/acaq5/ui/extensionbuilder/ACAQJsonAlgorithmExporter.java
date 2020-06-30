@@ -139,8 +139,7 @@ public class ACAQJsonAlgorithmExporter extends ACAQAlgorithmGraphEditorUI {
         if (getSelection().isEmpty()) {
             setPropertyPanel(exportPanel);
         } else if (getSelection().size() == 1) {
-            setPropertyPanel(new ACAQJsonAlgorithmExporterSingleSelectionPanelUI(getWorkbench(),
-                    getCanvasUI(),
+            setPropertyPanel(new ACAQJsonAlgorithmExporterSingleSelectionPanelUI(this,
                     getSelection().iterator().next().getAlgorithm()));
         } else {
             setPropertyPanel(new ACAQJsonAlgorithmExporterMultiSelectionPanelUI(getWorkbench(),

@@ -13,9 +13,7 @@
 
 package org.hkijena.acaq5.ui.extensionbuilder;
 
-import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
-import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
@@ -34,19 +32,18 @@ import java.util.Collections;
  * Shown when one algorithm is selected
  */
 public class ACAQJsonAlgorithmExporterSingleSelectionPanelUI extends ACAQWorkbenchPanel {
-    private ACAQGraph graph;
+    private final ACAQAlgorithmGraphEditorUI graphEditorUI;
     private ACAQAlgorithmGraphCanvasUI canvas;
     private ACAQGraphNode algorithm;
 
     /**
-     * @param workbenchUI The workbench UI
-     * @param canvas      The algorithm graph
+     * @param graphEditorUI the graph editor
      * @param algorithm   The algorithm
      */
-    public ACAQJsonAlgorithmExporterSingleSelectionPanelUI(ACAQWorkbench workbenchUI, ACAQAlgorithmGraphCanvasUI canvas, ACAQGraphNode algorithm) {
-        super(workbenchUI);
-        this.graph = canvas.getAlgorithmGraph();
-        this.canvas = canvas;
+    public ACAQJsonAlgorithmExporterSingleSelectionPanelUI(ACAQAlgorithmGraphEditorUI graphEditorUI, ACAQGraphNode algorithm) {
+        super(graphEditorUI.getWorkbench());
+        this.graphEditorUI = graphEditorUI;
+        this.canvas = graphEditorUI.getCanvasUI();
         this.algorithm = algorithm;
         initialize();
     }
@@ -64,7 +61,7 @@ public class ACAQJsonAlgorithmExporterSingleSelectionPanelUI extends ACAQWorkben
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
 
-        ACAQSlotEditorUI slotEditorUI = new ACAQSlotEditorUI(algorithm);
+        ACAQSlotEditorUI slotEditorUI = new ACAQSlotEditorUI(graphEditorUI, algorithm);
         tabbedPane.addTab("Slots", UIUtils.getIconFromResources("database.png"),
                 slotEditorUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,

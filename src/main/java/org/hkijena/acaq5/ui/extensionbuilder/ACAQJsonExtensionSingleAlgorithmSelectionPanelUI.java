@@ -13,7 +13,6 @@
 
 package org.hkijena.acaq5.ui.extensionbuilder;
 
-import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
@@ -34,19 +33,18 @@ import java.util.Collections;
  * Shown when one algorithm is selected
  */
 public class ACAQJsonExtensionSingleAlgorithmSelectionPanelUI extends ACAQJsonExtensionWorkbenchPanel {
-    private ACAQGraph graph;
-    private ACAQAlgorithmGraphCanvasUI canvas;
-    private ACAQGraphNode algorithm;
+    private final ACAQAlgorithmGraphCanvasUI canvas;
+    private final ACAQAlgorithmGraphEditorUI graphEditorUI;
+    private final ACAQGraphNode algorithm;
 
     /**
-     * @param workbenchUI The workbench UI
-     * @param canvas      The algorithm graph
+     * @param graphEditorUI the graph editor
      * @param algorithm   The algorithm
      */
-    public ACAQJsonExtensionSingleAlgorithmSelectionPanelUI(ACAQJsonExtensionWorkbench workbenchUI, ACAQAlgorithmGraphCanvasUI canvas, ACAQGraphNode algorithm) {
-        super(workbenchUI);
-        this.graph = canvas.getAlgorithmGraph();
-        this.canvas = canvas;
+    public ACAQJsonExtensionSingleAlgorithmSelectionPanelUI(ACAQAlgorithmGraphEditorUI graphEditorUI, ACAQGraphNode algorithm) {
+        super((ACAQJsonExtensionWorkbench) graphEditorUI.getWorkbench());
+        this.graphEditorUI = graphEditorUI;
+        this.canvas = graphEditorUI.getCanvasUI();
         this.algorithm = algorithm;
         initialize();
     }
@@ -64,7 +62,7 @@ public class ACAQJsonExtensionSingleAlgorithmSelectionPanelUI extends ACAQJsonEx
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
 
-        ACAQSlotEditorUI slotEditorUI = new ACAQSlotEditorUI(algorithm);
+        ACAQSlotEditorUI slotEditorUI = new ACAQSlotEditorUI(graphEditorUI, algorithm);
         tabbedPane.addTab("Slots", UIUtils.getIconFromResources("database.png"),
                 slotEditorUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,

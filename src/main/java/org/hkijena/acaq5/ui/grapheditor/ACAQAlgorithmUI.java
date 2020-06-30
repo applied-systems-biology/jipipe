@@ -91,7 +91,7 @@ public abstract class ACAQAlgorithmUI extends ACAQWorkbenchPanel {
         JButton button = new JButton(UIUtils.getIconFromResources("add.png"));
         button.setPreferredSize(new Dimension(25, SLOT_UI_HEIGHT));
         UIUtils.makeFlat(button);
-        button.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, algorithm, slotType));
+        button.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, graphUI.getGraphHistory(), algorithm, slotType));
 
         return button;
     }

@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
  */
 public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI {
 
-    private MarkdownReader documentationPanel;
+    private final MarkdownReader documentationPanel;
     private boolean disableUpdateOnSelection = false;
 
     /**
@@ -129,7 +129,7 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
             setPropertyPanel(documentationPanel);
         } else if (getSelection().size() == 1) {
             ACAQAlgorithmUI ui = getSelection().iterator().next();
-            setPropertyPanel(new ACAQSingleAlgorithmSelectionPanelUI((ACAQProjectWorkbench) getWorkbench(), getCanvasUI(), ui.getAlgorithm()));
+            setPropertyPanel(new ACAQSingleAlgorithmSelectionPanelUI(this, ui.getAlgorithm()));
         } else {
             setPropertyPanel(new ACAQMultiAlgorithmSelectionPanelUI((ACAQProjectWorkbench) getWorkbench(), getCanvasUI(),
                     getSelection().stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet())));
@@ -158,8 +158,7 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
                 Objects.equals(event.getAction(), ACAQAlgorithmUI.REQUEST_RUN_ONLY)) {
             disableUpdateOnSelection = true;
             selectOnly(event.getUi());
-            ACAQSingleAlgorithmSelectionPanelUI panel = new ACAQSingleAlgorithmSelectionPanelUI((ACAQProjectWorkbench) getWorkbench(),
-                    getCanvasUI(),
+            ACAQSingleAlgorithmSelectionPanelUI panel = new ACAQSingleAlgorithmSelectionPanelUI(this,
                     event.getUi().getAlgorithm());
             setPropertyPanel(panel);
             panel.runTestBench(Objects.equals(event.getAction(), ACAQAlgorithmUI.REQUEST_RUN_AND_SHOW_RESULTS),

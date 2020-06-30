@@ -14,7 +14,6 @@
 package org.hkijena.acaq5.ui.grapheditor.settings;
 
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.testbench.ACAQTestBenchSettings;
@@ -38,22 +37,21 @@ import java.util.Collections;
  * UI for a single {@link ACAQGraphNode}
  */
 public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPanel {
-    private ACAQGraph graph;
-    private ACAQAlgorithmGraphCanvasUI canvas;
-    private ACAQGraphNode algorithm;
+    private final ACAQAlgorithmGraphEditorUI graphEditorUI;
+    private final ACAQAlgorithmGraphCanvasUI canvas;
+    private final ACAQGraphNode algorithm;
     private JPanel testBenchTabContent;
     private JPanel cacheBrowserTabContent;
     private DocumentTabPane tabbedPane;
 
     /**
-     * @param workbenchUI the workbench UI
-     * @param canvas      the graph
+     * @param graphEditorUI the graph editor
      * @param algorithm   the algorithm
      */
-    public ACAQSingleAlgorithmSelectionPanelUI(ACAQProjectWorkbench workbenchUI, ACAQAlgorithmGraphCanvasUI canvas, ACAQGraphNode algorithm) {
-        super(workbenchUI);
-        this.graph = canvas.getAlgorithmGraph();
-        this.canvas = canvas;
+    public ACAQSingleAlgorithmSelectionPanelUI(ACAQAlgorithmGraphEditorUI graphEditorUI, ACAQGraphNode algorithm) {
+        super((ACAQProjectWorkbench) graphEditorUI.getWorkbench());
+        this.graphEditorUI = graphEditorUI;
+        this.canvas =graphEditorUI.getCanvasUI();
         this.algorithm = algorithm;
         initialize();
     }
@@ -71,7 +69,7 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPan
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
 
-        ACAQSlotEditorUI slotEditorUI = new ACAQSlotEditorUI(algorithm);
+        ACAQSlotEditorUI slotEditorUI = new ACAQSlotEditorUI(graphEditorUI, algorithm);
         tabbedPane.addTab("Slots", UIUtils.getIconFromResources("plug.png"),
                 slotEditorUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,

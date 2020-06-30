@@ -102,8 +102,8 @@ public class ACAQCompartmentGraphUI extends ACAQAlgorithmGraphEditorUI {
         if (getSelection().isEmpty()) {
             setPropertyPanel(documentationPanel);
         } else if (getSelection().size() == 1) {
-            setPropertyPanel(new ACAQSingleCompartmentSelectionPanelUI((ACAQProjectWorkbench) getWorkbench(),
-                    (ACAQProjectCompartment) getSelection().iterator().next().getAlgorithm(), getCanvasUI()));
+            setPropertyPanel(new ACAQSingleCompartmentSelectionPanelUI(this,
+                    (ACAQProjectCompartment) getSelection().iterator().next().getAlgorithm()));
         } else {
             setPropertyPanel(new ACAQMultiCompartmentSelectionPanelUI((ACAQProjectWorkbench) getWorkbench(),
                     getSelection().stream().map(ui -> (ACAQProjectCompartment) ui.getAlgorithm()).collect(Collectors.toSet()), getCanvasUI()));

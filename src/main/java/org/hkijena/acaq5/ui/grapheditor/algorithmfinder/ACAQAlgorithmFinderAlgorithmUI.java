@@ -169,7 +169,7 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
     private JButton createAddSlotButton(ACAQSlotType slotType) {
         JButton button = new JButton(UIUtils.getIconFromResources("add.png"));
         UIUtils.makeFlat(button);
-        button.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, algorithm, slotType));
+        button.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, canvasUI.getGraphHistory(), algorithm, slotType));
         return button;
     }
 

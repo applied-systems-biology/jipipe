@@ -35,18 +35,19 @@ import java.util.Collections;
  * UI for a single {@link ACAQProjectCompartment}
  */
 public class ACAQSingleCompartmentSelectionPanelUI extends ACAQProjectWorkbenchPanel {
-    private ACAQProjectCompartment compartment;
-    private ACAQAlgorithmGraphCanvasUI canvas;
+    private final ACAQProjectCompartment compartment;
+    private final ACAQAlgorithmGraphCanvasUI canvas;
+    private final ACAQAlgorithmGraphEditorUI graphEditorUI;
 
     /**
-     * @param workbenchUI the workbench
+     * @param graphEditorUI the graph editor
      * @param compartment the compartment
-     * @param canvas      the graph canvas
      */
-    public ACAQSingleCompartmentSelectionPanelUI(ACAQProjectWorkbench workbenchUI, ACAQProjectCompartment compartment, ACAQAlgorithmGraphCanvasUI canvas) {
-        super(workbenchUI);
+    public ACAQSingleCompartmentSelectionPanelUI(ACAQAlgorithmGraphEditorUI graphEditorUI, ACAQProjectCompartment compartment) {
+        super((ACAQProjectWorkbench) graphEditorUI.getWorkbench());
+        this.graphEditorUI = graphEditorUI;
         this.compartment = compartment;
-        this.canvas = canvas;
+        this.canvas = graphEditorUI.getCanvasUI();
         initialize();
     }
 
@@ -63,13 +64,13 @@ public class ACAQSingleCompartmentSelectionPanelUI extends ACAQProjectWorkbenchP
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
 
-        ACAQSlotEditorUI compartmentSlotEditorUI = new ACAQSlotEditorUI(compartment);
+        ACAQSlotEditorUI compartmentSlotEditorUI = new ACAQSlotEditorUI(graphEditorUI, compartment);
         tabbedPane.addTab("Connections", UIUtils.getIconFromResources("graph-compartment.png"),
                 compartmentSlotEditorUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
 
-        ACAQSlotEditorUI slotEditorUI = new ACAQSlotEditorUI(compartment.getOutputNode());
+        ACAQSlotEditorUI slotEditorUI = new ACAQSlotEditorUI(graphEditorUI, compartment.getOutputNode());
         tabbedPane.addTab("Output data", UIUtils.getIconFromResources("database.png"),
                 slotEditorUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,

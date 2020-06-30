@@ -19,6 +19,8 @@ import org.hkijena.acaq5.api.data.ACAQDataDeclaration;
 import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
 import org.hkijena.acaq5.api.data.ACAQSlotType;
+import org.hkijena.acaq5.api.history.ACAQAlgorithmGraphHistory;
+import org.hkijena.acaq5.api.history.SlotConfigurationHistorySnapshot;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -48,6 +50,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
 
     private ACAQGraphNode algorithm;
     private ACAQSlotType slotType;
+    private final ACAQAlgorithmGraphHistory graphHistory;
     private SearchTextField searchField;
     private JList<ACAQDataDeclaration> datatypeList;
     private JComboBox<String> inheritedSlotList;
@@ -62,10 +65,12 @@ public class AddAlgorithmSlotPanel extends JPanel {
     /**
      * @param algorithm the target algorithm
      * @param slotType  the slot type to be created
+     * @param graphHistory the graph history
      */
-    public AddAlgorithmSlotPanel(ACAQGraphNode algorithm, ACAQSlotType slotType) {
+    public AddAlgorithmSlotPanel(ACAQGraphNode algorithm, ACAQSlotType slotType, ACAQAlgorithmGraphHistory graphHistory) {
         this.algorithm = algorithm;
         this.slotType = slotType;
+        this.graphHistory = graphHistory;
         initialize();
         initializeAvailableDeclarations();
         reloadTypeList();
@@ -194,7 +199,10 @@ public class AddAlgorithmSlotPanel extends JPanel {
     private void addSlot() {
         if (!canAddSlot())
             return;
+
         String slotName = nameEditor.getText().trim();
+        graphHistory.addSnapshotBefore(new SlotConfigurationHistorySnapshot(algorithm, "Add slot '" + slotName + "'"));
+
         ACAQDefaultMutableSlotConfiguration slotConfiguration = (ACAQDefaultMutableSlotConfiguration) algorithm.getSlotConfiguration();
         ACAQSlotDefinition slotDefinition;
         if (slotType == ACAQSlotType.Input) {
@@ -338,14 +346,14 @@ public class AddAlgorithmSlotPanel extends JPanel {
 
     /**
      * Shows a dialog for adding slots
-     *
-     * @param parent    parent component
+     *  @param parent    parent component
+     * @param graphHistory the graph history
      * @param algorithm target algorithm
      * @param slotType  slot type to be created
      */
-    public static void showDialog(Component parent, ACAQGraphNode algorithm, ACAQSlotType slotType) {
+    public static void showDialog(Component parent, ACAQAlgorithmGraphHistory graphHistory, ACAQGraphNode algorithm, ACAQSlotType slotType) {
         JDialog dialog = new JDialog();
-        AddAlgorithmSlotPanel panel = new AddAlgorithmSlotPanel(algorithm, slotType);
+        AddAlgorithmSlotPanel panel = new AddAlgorithmSlotPanel(algorithm, slotType, graphHistory);
         panel.setDialog(dialog);
         dialog.setContentPane(panel);
         dialog.setTitle("Add slot");

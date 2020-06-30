@@ -232,6 +232,13 @@ public class ACAQDefaultMutableSlotConfiguration implements ACAQMutableSlotConfi
     }
 
     @Override
+    public ACAQSlotConfiguration duplicate() {
+        ACAQDefaultMutableSlotConfiguration slotConfiguration = new ACAQDefaultMutableSlotConfiguration();
+        slotConfiguration.setTo(this);
+        return slotConfiguration;
+    }
+
+    @Override
     public List<String> getInputSlotOrder() {
         return Collections.unmodifiableList(inputSlotOrder);
     }

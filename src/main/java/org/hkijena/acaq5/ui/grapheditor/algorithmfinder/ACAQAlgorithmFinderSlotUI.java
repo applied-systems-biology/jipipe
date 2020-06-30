@@ -23,6 +23,7 @@ import org.hkijena.acaq5.api.history.AddNodeGraphHistorySnapshot;
 import org.hkijena.acaq5.api.history.CompoundGraphHistorySnapshot;
 import org.hkijena.acaq5.api.history.EdgeConnectGraphHistorySnapshot;
 import org.hkijena.acaq5.api.history.EdgeDisconnectGraphHistorySnapshot;
+import org.hkijena.acaq5.api.history.SlotConfigurationHistorySnapshot;
 import org.hkijena.acaq5.ui.events.AlgorithmFinderSuccessEvent;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
@@ -124,6 +125,8 @@ public class ACAQAlgorithmFinderSlotUI extends JPanel {
 
     private void deleteSlot() {
         ACAQDefaultMutableSlotConfiguration slotConfiguration = (ACAQDefaultMutableSlotConfiguration) inputSlot.getAlgorithm().getSlotConfiguration();
+        canvasUI.getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(inputSlot.getAlgorithm(),
+                "Remove slot '" + inputSlot.getNameWithAlgorithmName() + "'"));
         slotConfiguration.removeInputSlot(inputSlot.getName(), true);
     }
 

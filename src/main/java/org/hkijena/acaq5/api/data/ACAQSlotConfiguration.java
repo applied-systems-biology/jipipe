@@ -33,6 +33,13 @@ import java.util.Map;
  */
 @JsonSerialize(using = ACAQSlotConfiguration.Serializer.class)
 public interface ACAQSlotConfiguration {
+
+    /**
+     * Creates a deep copy
+     * @return a deep copy
+     */
+    ACAQSlotConfiguration duplicate();
+
     /**
      * @return the input slot order
      */

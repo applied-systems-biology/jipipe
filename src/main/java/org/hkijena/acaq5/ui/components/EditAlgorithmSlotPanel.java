@@ -16,6 +16,8 @@ package org.hkijena.acaq5.ui.components;
 import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.*;
+import org.hkijena.acaq5.api.history.ACAQAlgorithmGraphHistory;
+import org.hkijena.acaq5.api.history.SlotConfigurationHistorySnapshot;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -37,6 +39,7 @@ import java.util.stream.Collectors;
 public class EditAlgorithmSlotPanel extends JPanel {
 
     private ACAQDataSlot existingSlot;
+    private final ACAQAlgorithmGraphHistory graphHistory;
     private SearchTextField searchField;
     private JList<ACAQDataDeclaration> datatypeList;
     private JComboBox<String> inheritedSlotList;
@@ -53,9 +56,11 @@ public class EditAlgorithmSlotPanel extends JPanel {
      * Creates a new instance
      *
      * @param existingSlot the existing slot
+     * @param graphHistory
      */
-    public EditAlgorithmSlotPanel(ACAQDataSlot existingSlot) {
+    public EditAlgorithmSlotPanel(ACAQDataSlot existingSlot, ACAQAlgorithmGraphHistory graphHistory) {
         this.existingSlot = existingSlot;
+        this.graphHistory = graphHistory;
         initialize();
         initializeAvailableDeclarations();
         reloadTypeList();
@@ -166,6 +171,10 @@ public class EditAlgorithmSlotPanel extends JPanel {
     private void editSlot() {
         if (!settingsAreValid())
             return;
+
+        // Create a undo snapshot
+        graphHistory.addSnapshotBefore(new SlotConfigurationHistorySnapshot(existingSlot.getAlgorithm(), "Edit slot '" + existingSlot.getNameWithAlgorithmName() + "'"));
+
         String slotName = nameEditor.getText().trim();
         ACAQGraphNode algorithm = existingSlot.getAlgorithm();
         ACAQSlotType slotType = existingSlot.getSlotType();
@@ -351,13 +360,13 @@ public class EditAlgorithmSlotPanel extends JPanel {
 
     /**
      * Shows a dialog for adding slots
-     *
-     * @param parent       parent component
+     *  @param parent       parent component
+     * @param graphHistory the graph history for undo snapshots
      * @param existingSlot the slot to be edited
      */
-    public static void showDialog(Component parent, ACAQDataSlot existingSlot) {
+    public static void showDialog(Component parent, ACAQAlgorithmGraphHistory graphHistory, ACAQDataSlot existingSlot) {
         JDialog dialog = new JDialog();
-        EditAlgorithmSlotPanel panel = new EditAlgorithmSlotPanel(existingSlot);
+        EditAlgorithmSlotPanel panel = new EditAlgorithmSlotPanel(existingSlot, graphHistory);
         panel.setDialog(dialog);
         dialog.setContentPane(panel);
         dialog.setTitle("Edit slot '" + existingSlot.getName() + "'");

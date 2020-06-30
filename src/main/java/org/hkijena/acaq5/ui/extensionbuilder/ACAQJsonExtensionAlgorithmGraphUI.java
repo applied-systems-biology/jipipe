@@ -62,7 +62,7 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQAlgorithmGraphEditorU
     public void reloadMenuBar() {
         menuBar.removeAll();
         getAddableAlgorithms().clear();
-        ACAQAlgorithmGraphCompartmentUI.initializeAddNodesMenus(graphEditorUI, menuBar, getAddableAlgorithms());
+        ACAQAlgorithmGraphCompartmentUI.initializeAddNodesMenus(this, menuBar, getAddableAlgorithms());
         initializeCommonActions();
         updateNavigation();
     }
@@ -87,8 +87,8 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQAlgorithmGraphEditorU
         if (getSelection().isEmpty()) {
             setPropertyPanel(documentationPanel);
         } else if (getSelection().size() == 1) {
-            setPropertyPanel(new ACAQJsonExtensionSingleAlgorithmSelectionPanelUI((ACAQJsonExtensionWorkbench) getWorkbench(),
-                    getCanvasUI(), getSelection().iterator().next().getAlgorithm()));
+            setPropertyPanel(new ACAQJsonExtensionSingleAlgorithmSelectionPanelUI(this,
+                    getSelection().iterator().next().getAlgorithm()));
         } else {
             setPropertyPanel(new ACAQJsonExtensionMultiAlgorithmSelectionPanelUI((ACAQJsonExtensionWorkbench) getWorkbench(), getCanvasUI(),
                     getSelection().stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet())));
