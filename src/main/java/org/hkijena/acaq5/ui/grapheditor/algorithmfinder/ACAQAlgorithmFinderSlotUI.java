@@ -19,12 +19,19 @@ import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.history.AddNodeGraphHistorySnapshot;
+import org.hkijena.acaq5.api.history.CompoundGraphHistorySnapshot;
+import org.hkijena.acaq5.api.history.EdgeConnectGraphHistorySnapshot;
+import org.hkijena.acaq5.api.history.EdgeDisconnectGraphHistorySnapshot;
 import org.hkijena.acaq5.ui.events.AlgorithmFinderSuccessEvent;
+import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_HEIGHT;
 
@@ -33,12 +40,13 @@ import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_HEIGHT;
  */
 public class ACAQAlgorithmFinderSlotUI extends JPanel {
 
-    private ACAQDataSlot outputSlot;
-    private ACAQGraph graph;
-    private String compartment;
-    private ACAQDataSlot inputSlot;
-    private boolean isExistingInstance;
-    private EventBus eventBus = new EventBus();
+    private final ACAQAlgorithmGraphCanvasUI canvasUI;
+    private final ACAQDataSlot outputSlot;
+    private final ACAQGraph graph;
+    private final String compartment;
+    private final ACAQDataSlot inputSlot;
+    private final boolean isExistingInstance;
+    private final EventBus eventBus = new EventBus();
 
     private JButton assignButton;
     private JPopupMenu assignButtonMenu;
@@ -46,16 +54,16 @@ public class ACAQAlgorithmFinderSlotUI extends JPanel {
     /**
      * Creates a slot UI
      *
+     * @param canvasUI the canvas
      * @param outputSlot         The slot
-     * @param graph              The graph
-     * @param compartment        The compartment
      * @param inputSlot          The target slot
      * @param isExistingInstance If true, the algorithm already exists within the graph
      */
-    public ACAQAlgorithmFinderSlotUI(ACAQDataSlot outputSlot, ACAQGraph graph, String compartment, ACAQDataSlot inputSlot, boolean isExistingInstance) {
+    public ACAQAlgorithmFinderSlotUI(ACAQAlgorithmGraphCanvasUI canvasUI, ACAQDataSlot outputSlot, ACAQDataSlot inputSlot, boolean isExistingInstance) {
+        this.canvasUI = canvasUI;
         this.outputSlot = outputSlot;
-        this.graph = graph;
-        this.compartment = compartment;
+        this.graph = canvasUI.getAlgorithmGraph();
+        this.compartment = canvasUI.getCompartment();
         this.inputSlot = inputSlot;
         this.isExistingInstance = isExistingInstance;
         initialize();
@@ -120,18 +128,27 @@ public class ACAQAlgorithmFinderSlotUI extends JPanel {
     }
 
     private void connectToNewInstance() {
+        canvasUI.getGraphHistory().addSnapshotBefore(new CompoundGraphHistorySnapshot(Arrays.asList(
+                new AddNodeGraphHistorySnapshot(graph, Collections.singleton(inputSlot.getAlgorithm())),
+                new EdgeConnectGraphHistorySnapshot(graph, outputSlot, inputSlot)
+        )));
         graph.insertNode(inputSlot.getAlgorithm(), compartment);
         graph.connect(outputSlot, inputSlot);
         eventBus.post(new AlgorithmFinderSuccessEvent(outputSlot, inputSlot));
     }
 
     private void disconnectAllExistingInstance() {
+        ACAQDataSlot sourceSlot = graph.getSourceSlot(inputSlot);
+        if(sourceSlot != null) {
+            canvasUI.getGraphHistory().addSnapshotBefore(new EdgeDisconnectGraphHistorySnapshot(graph, sourceSlot, inputSlot));
+        }
         graph.disconnectAll(inputSlot, true);
         reloadAssignMenu();
     }
 
     private void connectToExistingInstance() {
         if (graph.canConnect(outputSlot, inputSlot, true)) {
+            canvasUI.getGraphHistory().addSnapshotBefore(new EdgeConnectGraphHistorySnapshot(graph, outputSlot, inputSlot));
             graph.connect(outputSlot, inputSlot);
             eventBus.post(new AlgorithmFinderSuccessEvent(outputSlot, inputSlot));
         } else {

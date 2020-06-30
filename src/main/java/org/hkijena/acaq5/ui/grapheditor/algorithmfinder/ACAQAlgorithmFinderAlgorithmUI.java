@@ -24,6 +24,7 @@ import org.hkijena.acaq5.api.data.ACAQSlotType;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.acaq5.ui.events.AlgorithmFinderSuccessEvent;
+import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -36,30 +37,31 @@ import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_HEIGHT;
  * UI for finding algorithms
  */
 public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
-    private ACAQDataSlot outputSlot;
-    private ACAQGraph graph;
-    private ACAQGraphNode algorithm;
-    private int score;
-    private int maxScore;
-    private boolean isExistingInstance;
+    private final ACAQAlgorithmGraphCanvasUI canvasUI;
+    private final ACAQDataSlot outputSlot;
+    private final ACAQGraph graph;
+    private final ACAQGraphNode algorithm;
+    private final int score;
+    private final int maxScore;
+    private final boolean isExistingInstance;
     private JPanel slotPanel;
-    private EventBus eventBus = new EventBus();
-    private String compartment;
+    private final EventBus eventBus = new EventBus();
+    private final String compartment;
 
     /**
      * Creates an algorithm UI for one target algorithm
      *
+     * @param canvasUI the canvas
      * @param outputSlot  The output slot to connect
-     * @param graph       The graph
-     * @param compartment The compartment
      * @param declaration The target algorithm
      * @param score       Score of the target algorithm
      * @param maxScore    Maximum score that was possible
      */
-    public ACAQAlgorithmFinderAlgorithmUI(ACAQDataSlot outputSlot, ACAQGraph graph, String compartment, ACAQAlgorithmDeclaration declaration, int score, int maxScore) {
+    public ACAQAlgorithmFinderAlgorithmUI(ACAQAlgorithmGraphCanvasUI canvasUI, ACAQDataSlot outputSlot, ACAQAlgorithmDeclaration declaration, int score, int maxScore) {
+        this.canvasUI = canvasUI;
         this.outputSlot = outputSlot;
-        this.graph = graph;
-        this.compartment = compartment;
+        this.graph = canvasUI.getAlgorithmGraph();
+        this.compartment = canvasUI.getCompartment();
         this.score = score;
         this.maxScore = maxScore;
         this.algorithm = declaration.newInstance();
@@ -71,17 +73,17 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
     /**
      * Creates an algorithm UI for one target algorithm
      *
+     * @param canvasUI the canvas
      * @param outputSlot  The output slot to connect
-     * @param graph       The graph
-     * @param compartment The compartment
      * @param algorithm   The target algorithm
      * @param score       Score of the target algorithm
      * @param maxScore    Maximum score that was possible
      */
-    public ACAQAlgorithmFinderAlgorithmUI(ACAQDataSlot outputSlot, ACAQGraph graph, String compartment, ACAQGraphNode algorithm, int score, int maxScore) {
+    public ACAQAlgorithmFinderAlgorithmUI(ACAQAlgorithmGraphCanvasUI canvasUI, ACAQDataSlot outputSlot, ACAQGraphNode algorithm, int score, int maxScore) {
+        this.canvasUI = canvasUI;
         this.outputSlot = outputSlot;
-        this.graph = graph;
-        this.compartment = compartment;
+        this.graph = canvasUI.getAlgorithmGraph();
+        this.compartment = canvasUI.getCompartment();
         this.score = score;
         this.maxScore = maxScore;
         this.algorithm = algorithm;
@@ -145,7 +147,7 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
         }
 
         for (ACAQDataSlot slot : algorithm.getInputSlots()) {
-            ACAQAlgorithmFinderSlotUI ui = new ACAQAlgorithmFinderSlotUI(outputSlot, graph, compartment, slot, isExistingInstance);
+            ACAQAlgorithmFinderSlotUI ui = new ACAQAlgorithmFinderSlotUI(canvasUI, outputSlot, slot, isExistingInstance);
             ui.getEventBus().register(this);
             slotPanel.add(ui);
         }

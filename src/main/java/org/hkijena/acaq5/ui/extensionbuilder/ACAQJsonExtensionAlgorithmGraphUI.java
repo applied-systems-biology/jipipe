@@ -62,7 +62,7 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQAlgorithmGraphEditorU
     public void reloadMenuBar() {
         menuBar.removeAll();
         getAddableAlgorithms().clear();
-        ACAQAlgorithmGraphCompartmentUI.initializeAddNodesMenus(menuBar, getAlgorithmGraph(), getCompartment(), getAddableAlgorithms());
+        ACAQAlgorithmGraphCompartmentUI.initializeAddNodesMenus(graphEditorUI, menuBar, getAddableAlgorithms());
         initializeCommonActions();
         updateNavigation();
     }

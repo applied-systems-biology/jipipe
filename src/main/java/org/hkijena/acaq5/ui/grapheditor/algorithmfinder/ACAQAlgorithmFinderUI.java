@@ -25,6 +25,7 @@ import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.components.SearchTextField;
 import org.hkijena.acaq5.ui.events.AlgorithmFinderSuccessEvent;
+import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -40,28 +41,29 @@ import java.util.stream.Collectors;
  * A user interface to find a matching algorithm for the specified target slot
  */
 public class ACAQAlgorithmFinderUI extends JPanel {
-    private ACAQDataSlot outputSlot;
-    private ACAQGraphNode algorithm;
-    private ACAQGraph graph;
-    private String compartment;
+    private final ACAQAlgorithmGraphCanvasUI canvasUI;
+    private final ACAQDataSlot outputSlot;
+    private final ACAQGraphNode algorithm;
+    private final ACAQGraph graph;
+    private final String compartment;
     private SearchTextField searchField;
     private FormPanel formPanel;
-    private EventBus eventBus = new EventBus();
+    private final EventBus eventBus = new EventBus();
 
     /**
      * Creates a new UI
      *
+     * @param canvasUI the canvas
      * @param outputSlot  The target slot
-     * @param graph       The graph
-     * @param compartment The graph compartment. Algorithms outside of the compartment are not detected.
      */
-    public ACAQAlgorithmFinderUI(ACAQDataSlot outputSlot, ACAQGraph graph, String compartment) {
-        this.compartment = compartment;
+    public ACAQAlgorithmFinderUI(ACAQAlgorithmGraphCanvasUI canvasUI, ACAQDataSlot outputSlot) {
+        this.canvasUI = canvasUI;
+        this.compartment = canvasUI.getCompartment();
         if (!outputSlot.isOutput())
             throw new IllegalArgumentException();
         this.outputSlot = outputSlot;
         this.algorithm = outputSlot.getAlgorithm();
-        this.graph = graph;
+        this.graph = canvasUI.getAlgorithmGraph();
         initialize();
         reloadAlgorithmList();
     }
@@ -125,7 +127,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
                 int score = scores.get(targetAlgorithm);
                 // Add a generic one for creating a new instance
                 if (targetAlgorithm.getCategory() != ACAQAlgorithmCategory.Internal && !targetAlgorithm.isHidden()) {
-                    ACAQAlgorithmFinderAlgorithmUI algorithmUI = new ACAQAlgorithmFinderAlgorithmUI(outputSlot, graph, compartment, targetAlgorithm, score, maxScore);
+                    ACAQAlgorithmFinderAlgorithmUI algorithmUI = new ACAQAlgorithmFinderAlgorithmUI(canvasUI, outputSlot, targetAlgorithm, score, maxScore);
                     algorithmUI.getEventBus().register(this);
                     formPanel.addToForm(algorithmUI, null);
                 }
@@ -144,7 +146,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
                             continue;
                         }
                     }
-                    ACAQAlgorithmFinderAlgorithmUI algorithmUI = new ACAQAlgorithmFinderAlgorithmUI(outputSlot, graph, compartment, existing, score, maxScore);
+                    ACAQAlgorithmFinderAlgorithmUI algorithmUI = new ACAQAlgorithmFinderAlgorithmUI(canvasUI, outputSlot, existing, score, maxScore);
                     algorithmUI.getEventBus().register(this);
                     formPanel.addToForm(algorithmUI, null);
                 }

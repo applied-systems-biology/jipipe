@@ -13,24 +13,22 @@
 
 package org.hkijena.acaq5.api.history;
 
-import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class AddNodeGraphHistorySnapshot implements ACAQAlgorithmGraphHistorySnapshot {
 
     private final ACAQGraph graph;
-    private final BiMap<String, ACAQGraphNode> nodes = HashBiMap.create();
+    private final Set<ACAQGraphNode> nodes;
 
     public AddNodeGraphHistorySnapshot(ACAQGraph graph, Set<ACAQGraphNode> nodes) {
         this.graph = graph;
-        for (ACAQGraphNode node : nodes) {
-            this.nodes.put(node.getIdInGraph(), node);
-        }
+        this.nodes = nodes;
     }
 
     @Override
@@ -40,19 +38,20 @@ public class AddNodeGraphHistorySnapshot implements ACAQAlgorithmGraphHistorySna
 
     @Override
     public void undo() {
-        for (ACAQGraphNode node : nodes.values()) {
+        for (ACAQGraphNode node : nodes) {
             graph.removeNode(node, true);
         }
     }
 
     @Override
     public void redo() {
-        for (Map.Entry<String, ACAQGraphNode> entry : nodes.entrySet()) {
-            graph.insertNode(entry.getKey(), entry.getValue(), entry.getValue().getCompartment());
+        for (ACAQGraphNode node : nodes) {
+            graph.insertNode(node, node.getCompartment());
         }
+
     }
 
-    public BiMap<String, ACAQGraphNode> getNodes() {
+    public Set<ACAQGraphNode> getNodes() {
         return nodes;
     }
 

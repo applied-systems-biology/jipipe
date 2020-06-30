@@ -18,8 +18,10 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.AlgorithmRegisteredEvent;
+import org.hkijena.acaq5.api.history.AddNodeGraphHistorySnapshot;
 import org.hkijena.acaq5.api.history.MoveNodesGraphHistorySnapshot;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
@@ -45,6 +47,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
@@ -132,7 +135,9 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
             navigator.setSelectedItem(null);
         } else if (navigator.getSelectedItem() instanceof ACAQAlgorithmDeclaration) {
             ACAQAlgorithmDeclaration declaration = (ACAQAlgorithmDeclaration) navigator.getSelectedItem();
-            algorithmGraph.insertNode(declaration.newInstance(), compartment);
+            ACAQGraphNode node = declaration.newInstance();
+            getCanvasUI().getGraphHistory().addSnapshotBefore(new AddNodeGraphHistorySnapshot(algorithmGraph, Collections.singleton(node)));
+            algorithmGraph.insertNode(node, compartment);
             navigator.setSelectedItem(null);
         }
 
