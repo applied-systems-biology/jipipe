@@ -48,7 +48,7 @@ public class ACAQGraphRunner implements ACAQRunnable {
     public void run(Consumer<ACAQRunnerStatus> onProgress, Supplier<Boolean> isCancelled) {
         Set<ACAQGraphNode> unExecutableAlgorithms = algorithmGraph.getDeactivatedAlgorithms(algorithmsWithExternalInput);
         Set<ACAQGraphNode> executedAlgorithms = new HashSet<>();
-        List<ACAQDataSlot> traversedSlots = algorithmGraph.traverse();
+        List<ACAQDataSlot> traversedSlots = algorithmGraph.traverseSlots();
 
         for (int index = 0; index < traversedSlots.size(); ++index) {
             if (isCancelled.get())

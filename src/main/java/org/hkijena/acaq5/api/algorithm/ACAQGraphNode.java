@@ -148,7 +148,10 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
     public ACAQGraphNode(ACAQGraphNode other) {
         this.declaration = other.declaration;
         this.slotConfiguration = copySlotConfiguration(other);
-        this.locations = new HashMap<>(other.locations);
+        this.locations = new HashMap<>();
+        for (Map.Entry<String, Map<String, Point>> entry : other.locations.entrySet()) {
+            locations.put(entry.getKey(), new HashMap<>(entry.getValue()));
+        }
         this.compartment = other.compartment;
         this.visibleCompartments = new HashSet<>(other.visibleCompartments);
         this.customName = other.customName;

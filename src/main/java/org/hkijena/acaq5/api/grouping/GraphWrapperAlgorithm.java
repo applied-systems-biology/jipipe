@@ -186,7 +186,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm {
     }
 
     private void clearWrappedGraphData() {
-        for (ACAQDataSlot slot : wrappedGraph.traverse()) {
+        for (ACAQDataSlot slot : wrappedGraph.traverseSlots()) {
             slot.clearData();
         }
     }

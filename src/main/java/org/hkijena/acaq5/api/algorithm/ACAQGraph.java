@@ -70,6 +70,8 @@ public class ACAQGraph implements ACAQValidatable {
     private DefaultDirectedGraph<ACAQDataSlot, ACAQAlgorithmGraphEdge> graph = new DefaultDirectedGraph<>(ACAQAlgorithmGraphEdge.class);
     private BiMap<String, ACAQGraphNode> algorithms = HashBiMap.create();
     private Map<ACAQGraphNode, String> compartments = new HashMap<>();
+    private List<ACAQDataSlot> traversedSlots;
+    private List<ACAQGraphNode> traversedAlgorithms;
     private EventBus eventBus = new EventBus();
     /**
      * If this value is greater than one, no events are triggered
@@ -111,12 +113,12 @@ public class ACAQGraph implements ACAQValidatable {
 
     /**
      * Inserts an algorithm into the graph
-     *
-     * @param key         The unique ID
+     *  @param key         The unique ID
      * @param algorithm   The algorithm
      * @param compartment The compartment where the algorithm will be placed
+     * @return the ID of the inserted node
      */
-    public void insertNode(String key, ACAQGraphNode algorithm, String compartment) {
+    public String insertNode(String key, ACAQGraphNode algorithm, String compartment) {
         if (compartment == null)
             throw new NullPointerException("Compartment should not be null!");
         if (algorithms.containsKey(key))
@@ -136,9 +138,13 @@ public class ACAQGraph implements ACAQValidatable {
 
         // Sometimes we have algorithms with no slots, so trigger manually
         postChangedEvent();
+
+        return key;
     }
 
     private void postChangedEvent() {
+        traversedAlgorithms = null;
+        traversedSlots = null;
         if (preventTriggerEvents <= 0) {
             preventTriggerEvents = 0;
             eventBus.post(new AlgorithmGraphChangedEvent(this));
@@ -148,18 +154,18 @@ public class ACAQGraph implements ACAQValidatable {
     /**
      * Inserts an algorithm into the graph.
      * The name is automatically generated
-     *
-     * @param algorithm   The algorithm
+     *  @param algorithm   The algorithm
      * @param compartment The compartment where the algorithm will be placed
+     * @return the ID of the inserted node
      */
-    public void insertNode(ACAQGraphNode algorithm, String compartment) {
+    public String insertNode(ACAQGraphNode algorithm, String compartment) {
         String name;
         if (Objects.equals(compartment, COMPARTMENT_DEFAULT))
             name = algorithm.getName();
         else
             name = compartment + "-" + algorithm.getName();
         String uniqueName = StringUtils.makeUniqueString(StringUtils.jsonify(name), " ", algorithms.keySet());
-        insertNode(uniqueName, algorithm, compartment);
+        return insertNode(uniqueName, algorithm, compartment);
     }
 
     /**
@@ -694,23 +700,23 @@ public class ACAQGraph implements ACAQValidatable {
 
     /**
      * Merges another graph into this graph
+     * The input is not copied!
      *
      * @param otherGraph The other graph
      * @return A map from ID in source graph to algorithm in target graph
      */
     public Map<String, ACAQGraphNode> mergeWith(ACAQGraph otherGraph) {
-        Map<String, ACAQGraphNode> copies = new HashMap<>();
+        Map<String, ACAQGraphNode> insertedNodes = new HashMap<>();
         for (ACAQGraphNode algorithm : otherGraph.getAlgorithmNodes().values()) {
-            ACAQGraphNode copy = algorithm.getDeclaration().clone(algorithm);
-            insertNode(copy, copy.getCompartment());
-            copies.put(algorithm.getIdInGraph(), copy);
+            String newId = insertNode(algorithm, algorithm.getCompartment());
+            insertedNodes.put(newId, algorithm);
         }
         for (Map.Entry<ACAQDataSlot, ACAQDataSlot> edge : otherGraph.getSlotEdges()) {
-            ACAQGraphNode copySource = copies.get(edge.getKey().getAlgorithm().getIdInGraph());
-            ACAQGraphNode copyTarget = copies.get(edge.getValue().getAlgorithm().getIdInGraph());
+            ACAQGraphNode copySource = insertedNodes.get(edge.getKey().getAlgorithm().getIdInGraph());
+            ACAQGraphNode copyTarget = insertedNodes.get(edge.getValue().getAlgorithm().getIdInGraph());
             connect(copySource.getOutputSlotMap().get(edge.getKey().getName()), copyTarget.getInputSlotMap().get(edge.getValue().getName()));
         }
-        return copies;
+        return insertedNodes;
     }
 
     /**
@@ -764,14 +770,17 @@ public class ACAQGraph implements ACAQValidatable {
      *
      * @return Sorted list of data slots
      */
-    public List<ACAQDataSlot> traverse() {
+    public List<ACAQDataSlot> traverseSlots() {
+        if(traversedSlots != null)
+            return Collections.unmodifiableList(traversedSlots);
         GraphIterator<ACAQDataSlot, ACAQAlgorithmGraphEdge> iterator = new TopologicalOrderIterator<>(graph);
         List<ACAQDataSlot> result = new ArrayList<>();
         while (iterator.hasNext()) {
             ACAQDataSlot slot = iterator.next();
             result.add(slot);
         }
-        return result;
+        this.traversedSlots = result;
+        return Collections.unmodifiableList(result);
     }
 
     /**
@@ -869,9 +878,12 @@ public class ACAQGraph implements ACAQValidatable {
      * @return Sorted list of algorithms
      */
     public List<ACAQGraphNode> traverseAlgorithms() {
+        if(traversedAlgorithms != null)
+            return Collections.unmodifiableList(traversedAlgorithms);
+
         Set<ACAQGraphNode> visited = new HashSet<>();
         List<ACAQGraphNode> result = new ArrayList<>();
-        for (ACAQDataSlot slot : traverse()) {
+        for (ACAQDataSlot slot : traverseSlots()) {
             if (slot.isOutput()) {
                 if (!visited.contains(slot.getAlgorithm())) {
                     visited.add(slot.getAlgorithm());
@@ -884,7 +896,8 @@ public class ACAQGraph implements ACAQValidatable {
                 result.add(missing);
             }
         }
-        return result;
+        this.traversedAlgorithms = result;
+        return Collections.unmodifiableList(result);
     }
 
     /**
@@ -1059,7 +1072,7 @@ public class ACAQGraph implements ACAQValidatable {
      */
     public List<ACAQDataSlot> getUnconnectedSlots() {
         List<ACAQDataSlot> result = new ArrayList<>();
-        for (ACAQDataSlot slot : traverse()) {
+        for (ACAQDataSlot slot : traverseSlots()) {
             if (slot.isInput()) {
                 if (getSourceSlot(slot) == null)
                     result.add(slot);

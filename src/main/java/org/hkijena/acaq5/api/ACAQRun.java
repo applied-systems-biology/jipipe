@@ -195,7 +195,7 @@ public class ACAQRun implements ACAQRunnable {
         Set<ACAQGraphNode> unExecutableAlgorithms = algorithmGraph.getDeactivatedAlgorithms();
         Set<ACAQGraphNode> executedAlgorithms = new HashSet<>();
         Set<ACAQDataSlot> flushedSlots = new HashSet<>();
-        List<ACAQDataSlot> traversedSlots = algorithmGraph.traverse();
+        List<ACAQDataSlot> traversedSlots = algorithmGraph.traverseSlots();
         List<ACAQGraphNode> traversedProjectAlgorithms = getProject().getGraph().traverseAlgorithms();
 
         for (int index = 0; index < traversedSlots.size(); ++index) {

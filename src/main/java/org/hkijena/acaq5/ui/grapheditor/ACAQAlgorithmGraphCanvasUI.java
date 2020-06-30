@@ -548,8 +548,8 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
                 ui.setLocation(point);
             }
         }
-        addNewNodes();
         removeOldNodes();
+        addNewNodes();
     }
 
     /**
