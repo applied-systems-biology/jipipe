@@ -26,7 +26,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.acaq5.extensions.parameters.roi.RectangleList;
 
-import java.awt.*;
+import java.awt.Rectangle;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 

@@ -29,7 +29,8 @@ import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Context;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -246,7 +247,7 @@ public class ACAQJsonExtensionWindow extends JFrame {
         for (Path selectedFile : files) {
             installExtensionFromFile(parent, selectedFile, true);
         }
-        if(!files.isEmpty()) {
+        if (!files.isEmpty()) {
             JOptionPane.showMessageDialog(parent, "The extensions were copied into the plugin directory. Please check if any errors occurred. " +
                     "We recommend to restart ImageJ, " +
                     "especially if you updated an existing extension.", "Extensions copied", JOptionPane.INFORMATION_MESSAGE);
@@ -255,7 +256,8 @@ public class ACAQJsonExtensionWindow extends JFrame {
 
     /**
      * Loads a project and installs it
-     *  @param parent   The parent component
+     *
+     * @param parent   The parent component
      * @param filePath The file path
      * @param silent
      */
@@ -272,7 +274,7 @@ public class ACAQJsonExtensionWindow extends JFrame {
             ACAQJsonExtension project = ACAQJsonExtension.loadProject(jsonData);
             installExtension(parent, project, true);
 
-            if(!silent) {
+            if (!silent) {
                 JOptionPane.showMessageDialog(parent, "The extension was installed. We recommend to restart ImageJ, " +
                         "especially if you updated an existing extension.", "Extension installed", JOptionPane.INFORMATION_MESSAGE);
             }
@@ -283,9 +285,10 @@ public class ACAQJsonExtensionWindow extends JFrame {
 
     /**
      * Installs a loaded project
-     *  @param parent    The parent component
+     *
+     * @param parent    The parent component
      * @param extension The extension
-     * @param silent whether to show a dialog confirming the installation
+     * @param silent    whether to show a dialog confirming the installation
      */
     public static void installExtension(Component parent, ACAQJsonExtension extension, boolean silent) {
         boolean alreadyExists = ACAQDefaultRegistry.getInstance().getRegisteredExtensionIds().contains(extension.getDependencyId());
@@ -335,7 +338,7 @@ public class ACAQJsonExtensionWindow extends JFrame {
         try {
             ACAQJsonExtension loadedExtension = JsonUtils.getObjectMapper().readValue(selectedPath.toFile(), ACAQJsonExtension.class);
             ACAQDefaultRegistry.getInstance().register(loadedExtension);
-            if(!silent) {
+            if (!silent) {
                 JOptionPane.showMessageDialog(parent, "The extension was installed. We recommend to restart ImageJ, " +
                         "especially if you updated an existing extension.", "Extension installed", JOptionPane.INFORMATION_MESSAGE);
             }

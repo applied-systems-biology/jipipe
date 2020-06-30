@@ -22,8 +22,6 @@ import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.MouseInfo;
-import java.awt.Point;
 import java.util.Set;
 
 public class SelectAndMoveNodeHereAlgorithmUIAction implements AlgorithmUIAction {
@@ -58,7 +56,7 @@ public class SelectAndMoveNodeHereAlgorithmUIAction implements AlgorithmUIAction
 
     @Override
     public Icon getIcon() {
-        return  UIUtils.getIconFromResources("move.png");
+        return UIUtils.getIconFromResources("move.png");
     }
 
     @Override

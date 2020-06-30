@@ -14,7 +14,9 @@
 package org.hkijena.acaq5.utils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Window;
 
 /**
  * A cursor for a component to indicate that some process is running

@@ -26,7 +26,7 @@ import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.util.Collections;
 
 /**
@@ -39,7 +39,7 @@ public class ACAQJsonExtensionSingleAlgorithmSelectionPanelUI extends ACAQJsonEx
 
     /**
      * @param graphEditorUI the graph editor
-     * @param algorithm   The algorithm
+     * @param algorithm     The algorithm
      */
     public ACAQJsonExtensionSingleAlgorithmSelectionPanelUI(ACAQAlgorithmGraphEditorUI graphEditorUI, ACAQGraphNode algorithm) {
         super((ACAQJsonExtensionWorkbench) graphEditorUI.getWorkbench());

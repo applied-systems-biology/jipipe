@@ -23,7 +23,7 @@ import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.utils.JsonUtils;
 
-import java.awt.*;
+import java.awt.Desktop;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

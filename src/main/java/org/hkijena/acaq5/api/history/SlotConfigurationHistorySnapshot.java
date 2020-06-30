@@ -40,7 +40,7 @@ public class SlotConfigurationHistorySnapshot implements ACAQAlgorithmGraphHisto
 
     @Override
     public void redo() {
-        if(afterSlotConfiguration != null) {
+        if (afterSlotConfiguration != null) {
             node.getSlotConfiguration().setTo(afterSlotConfiguration);
         }
     }

@@ -16,13 +16,11 @@ package org.hkijena.acaq5.ui.grapheditor.contextmenu;
 import org.hkijena.acaq5.ui.events.AlgorithmUIActionRequestedEvent;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
-import org.hkijena.acaq5.ui.grapheditor.contextmenu.AlgorithmUIAction;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.util.Set;
 
-import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.REQUEST_RUN_AND_SHOW_RESULTS;
 import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.REQUEST_RUN_ONLY;
 
 public class UpdateCacheAlgorithmUIAction implements AlgorithmUIAction {

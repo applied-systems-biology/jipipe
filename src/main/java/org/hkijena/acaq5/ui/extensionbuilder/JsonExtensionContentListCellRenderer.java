@@ -18,7 +18,8 @@ import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
 
 /**
  * Renders the contents of a {@link org.hkijena.acaq5.ACAQJsonExtension}

@@ -22,7 +22,11 @@ import org.hkijena.acaq5.api.registries.ACAQSettingsRegistry;
 import org.hkijena.acaq5.ui.components.PathEditor;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.FileDialog;
+import java.awt.Frame;
+import java.awt.Window;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;

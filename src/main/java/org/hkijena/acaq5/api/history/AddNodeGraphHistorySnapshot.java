@@ -13,12 +13,9 @@
 
 package org.hkijena.acaq5.api.history;
 
-import com.google.common.collect.HashBiMap;
 import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public class AddNodeGraphHistorySnapshot implements ACAQAlgorithmGraphHistorySnapshot {

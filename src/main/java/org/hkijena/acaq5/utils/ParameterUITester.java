@@ -21,7 +21,7 @@ import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 
-import java.awt.*;
+import java.awt.BorderLayout;
 
 /**
  * UI that shows all parameter types

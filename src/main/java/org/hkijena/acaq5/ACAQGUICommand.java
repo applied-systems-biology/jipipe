@@ -27,7 +27,8 @@ import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Insets;
 
 /**
  * Command that runs the GUI

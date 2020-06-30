@@ -19,8 +19,8 @@ public class GraphChangedHistorySnapshot implements ACAQAlgorithmGraphHistorySna
 
     private final ACAQGraph targetGraph;
     private final ACAQGraph backupGraph;
-    private ACAQGraph changedGraph;
     private final String name;
+    private ACAQGraph changedGraph;
 
     public GraphChangedHistorySnapshot(ACAQGraph targetGraph, String name) {
         this.targetGraph = targetGraph;
@@ -41,7 +41,7 @@ public class GraphChangedHistorySnapshot implements ACAQAlgorithmGraphHistorySna
 
     @Override
     public void redo() {
-        if(changedGraph != null) {
+        if (changedGraph != null) {
             targetGraph.replaceWith(new ACAQGraph(changedGraph));
         }
     }

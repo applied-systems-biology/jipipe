@@ -23,9 +23,8 @@ import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-public class GraphCompartmentCutAlgorithmUIAction extends  GraphCompartmentCopyAlgorithmUIAction {
+public class GraphCompartmentCutAlgorithmUIAction extends GraphCompartmentCopyAlgorithmUIAction {
 
     @Override
     public void run(ACAQAlgorithmGraphCanvasUI canvasUI, Set<ACAQAlgorithmUI> selection) {

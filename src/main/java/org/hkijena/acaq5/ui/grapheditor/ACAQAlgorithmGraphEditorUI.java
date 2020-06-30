@@ -42,17 +42,27 @@ import org.jfree.graphics2d.svg.SVGUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Point;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.List;
 
 /**
  * A panel around {@link ACAQAlgorithmGraphCanvasUI} that comes with scrolling/panning, properties panel,
@@ -564,6 +574,47 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
         return haystack.toLowerCase().contains(searchString.toLowerCase());
     }
 
+    public static void installContextActionsInto(JToolBar toolBar, Set<ACAQAlgorithmUI> selection, List<AlgorithmUIAction> actionList, ACAQAlgorithmGraphCanvasUI canvasUI) {
+        JPopupMenu overhang = new JPopupMenu();
+        boolean scheduledSeparator = false;
+        for (AlgorithmUIAction action : actionList) {
+            if (action == null) {
+                scheduledSeparator = true;
+                continue;
+            }
+            boolean matches = action.matches(selection);
+            if (!matches && !action.disableOnNonMatch())
+                continue;
+            if (!action.isShowingInOverhang()) {
+                if (scheduledSeparator)
+                    toolBar.add(Box.createHorizontalStrut(4));
+                JButton button = new JButton(action.getIcon());
+                button.setToolTipText("<html><strong>" + action.getName() + "</strong><br/>" + action.getDescription() + "</html>");
+                if (matches)
+                    button.addActionListener(e -> action.run(canvasUI, ImmutableSet.copyOf(selection)));
+                else
+                    button.setEnabled(false);
+                toolBar.add(button);
+            } else {
+                JMenuItem item = new JMenuItem(action.getName(), action.getIcon());
+                item.setToolTipText(action.getDescription());
+                if (matches)
+                    item.addActionListener(e -> action.run(canvasUI, ImmutableSet.copyOf(selection)));
+                else
+                    item.setEnabled(false);
+                overhang.add(item);
+            }
+        }
+
+        if (overhang.getComponentCount() > 0) {
+            toolBar.add(Box.createHorizontalStrut(4));
+            JButton button = new JButton(UIUtils.getIconFromResources("ellipsis-h.png"));
+            button.setToolTipText("More actions ...");
+            UIUtils.addPopupMenuToComponent(button, overhang);
+            toolBar.add(button);
+        }
+    }
+
     /**
      * Renders items in the navigator
      */
@@ -627,48 +678,6 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
                 setBackground(new Color(255, 255, 255));
             }
             return this;
-        }
-    }
-
-    public static void installContextActionsInto(JToolBar toolBar, Set<ACAQAlgorithmUI> selection, List<AlgorithmUIAction> actionList, ACAQAlgorithmGraphCanvasUI canvasUI) {
-        JPopupMenu overhang = new JPopupMenu();
-        boolean scheduledSeparator = false;
-        for (AlgorithmUIAction action : actionList) {
-            if(action == null) {
-                scheduledSeparator = true;
-                continue;
-            }
-            boolean matches = action.matches(selection);
-            if(!matches && !action.disableOnNonMatch())
-                continue;
-            if(!action.isShowingInOverhang()) {
-                if(scheduledSeparator)
-                    toolBar.add(Box.createHorizontalStrut(4));
-                JButton button = new JButton(action.getIcon());
-                button.setToolTipText("<html><strong>" + action.getName() + "</strong><br/>" + action.getDescription() + "</html>");
-                if(matches)
-                    button.addActionListener(e -> action.run(canvasUI, ImmutableSet.copyOf(selection)));
-                else
-                    button.setEnabled(false);
-                toolBar.add(button);
-            }
-            else {
-                JMenuItem item = new JMenuItem(action.getName(), action.getIcon());
-                item.setToolTipText(action.getDescription());
-                if(matches)
-                    item.addActionListener(e -> action.run(canvasUI, ImmutableSet.copyOf(selection)));
-                else
-                    item.setEnabled(false);
-                overhang.add(item);
-            }
-        }
-
-        if(overhang.getComponentCount() > 0) {
-            toolBar.add(Box.createHorizontalStrut(4));
-            JButton button = new JButton(UIUtils.getIconFromResources("ellipsis-h.png"));
-            button.setToolTipText("More actions ...");
-            UIUtils.addPopupMenuToComponent(button, overhang);
-            toolBar.add(button);
         }
     }
 }

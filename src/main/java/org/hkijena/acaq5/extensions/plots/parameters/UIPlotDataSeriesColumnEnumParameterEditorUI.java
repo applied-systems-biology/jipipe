@@ -22,7 +22,7 @@ import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.plotbuilder.PlotDataSeriesColumnListCellRenderer;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 
 /**
  * Works for {@link TableColumn}.

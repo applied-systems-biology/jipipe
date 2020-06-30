@@ -38,9 +38,14 @@ import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -251,13 +256,12 @@ public abstract class ACAQDataSlotUI extends ACAQWorkbenchPanel {
         if (getGraph().canConnect(source, target, true)) {
             ACAQGraph graph = slot.getAlgorithm().getGraph();
             ACAQAlgorithmGraphHistory graphHistory = algorithmUI.getGraphUI().getGraphHistory();
-            if(getGraphUI().isLayoutHelperEnabled()) {
+            if (getGraphUI().isLayoutHelperEnabled()) {
                 graphHistory.addSnapshotBefore(new CompoundGraphHistorySnapshot(Arrays.asList(
                         new EdgeConnectGraphHistorySnapshot(graph, source, target),
                         new MoveNodesGraphHistorySnapshot(graph, "Move to target slot")
                 )));
-            }
-            else {
+            } else {
                 graphHistory.addSnapshotBefore(new EdgeConnectGraphHistorySnapshot(graph, source, target));
             }
             getGraph().connect(source, target);
@@ -270,13 +274,12 @@ public abstract class ACAQDataSlotUI extends ACAQWorkbenchPanel {
     private void disconnectSlot() {
         ACAQGraph graph = slot.getAlgorithm().getGraph();
         ACAQAlgorithmGraphHistory graphHistory = algorithmUI.getGraphUI().getGraphHistory();
-        if(slot.isInput()) {
+        if (slot.isInput()) {
             ACAQDataSlot sourceSlot = graph.getSourceSlot(slot);
-            if(sourceSlot != null) {
+            if (sourceSlot != null) {
                 graphHistory.addSnapshotBefore(new EdgeDisconnectGraphHistorySnapshot(graph, sourceSlot, slot));
             }
-        }
-        else {
+        } else {
             graphHistory.addSnapshotBefore(new EdgeDisconnectAllTargetsGraphHistorySnapshot(graph, slot));
         }
         getGraph().disconnectAll(slot, true);

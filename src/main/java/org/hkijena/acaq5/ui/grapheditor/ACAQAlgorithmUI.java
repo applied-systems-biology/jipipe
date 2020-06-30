@@ -27,7 +27,11 @@ import org.hkijena.acaq5.utils.PointRange;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Rectangle;
 
 /**
  * UI around an {@link ACAQGraphNode} instance
@@ -100,17 +104,6 @@ public abstract class ACAQAlgorithmUI extends ACAQWorkbenchPanel {
      * Updates the slots
      */
     public abstract void updateAlgorithmSlotUIs();
-
-    /**
-     * Rounds the input coordinates, so they fit into the grid
-     * @param point the coordinates
-     * @return rounded coordinates
-     */
-    public static Point toGridLocation(Point point) {
-        int y = (int) Math.rint(point.y * 1.0 / ACAQAlgorithmUI.SLOT_UI_HEIGHT) * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
-        int x = (int) Math.rint(point.x * 1.0 / ACAQAlgorithmUI.SLOT_UI_WIDTH) * ACAQAlgorithmUI.SLOT_UI_WIDTH;
-        return new Point(x, y);
-    }
 
     /**
      * Tries to move the node to the provided location
@@ -268,5 +261,17 @@ public abstract class ACAQAlgorithmUI extends ACAQWorkbenchPanel {
 
     public int getRightX() {
         return getX() + getWidth();
+    }
+
+    /**
+     * Rounds the input coordinates, so they fit into the grid
+     *
+     * @param point the coordinates
+     * @return rounded coordinates
+     */
+    public static Point toGridLocation(Point point) {
+        int y = (int) Math.rint(point.y * 1.0 / ACAQAlgorithmUI.SLOT_UI_HEIGHT) * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+        int x = (int) Math.rint(point.x * 1.0 / ACAQAlgorithmUI.SLOT_UI_WIDTH) * ACAQAlgorithmUI.SLOT_UI_WIDTH;
+        return new Point(x, y);
     }
 }

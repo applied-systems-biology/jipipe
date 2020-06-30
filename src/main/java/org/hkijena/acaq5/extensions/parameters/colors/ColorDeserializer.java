@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.acaq5.utils.StringUtils;
 
-import java.awt.*;
+import java.awt.Color;
 import java.io.IOException;
 
 /**

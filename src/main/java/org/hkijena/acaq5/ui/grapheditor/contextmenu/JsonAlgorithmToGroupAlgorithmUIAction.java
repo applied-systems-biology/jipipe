@@ -32,7 +32,7 @@ public class JsonAlgorithmToGroupAlgorithmUIAction implements AlgorithmUIAction 
     public void run(ACAQAlgorithmGraphCanvasUI canvasUI, Set<ACAQAlgorithmUI> selection) {
         canvasUI.getGraphHistory().addSnapshotBefore(new GraphChangedHistorySnapshot(canvasUI.getAlgorithmGraph(), "Convert to group"));
         for (ACAQAlgorithmUI ui : selection) {
-            if(ui.getAlgorithm() instanceof JsonAlgorithm) {
+            if (ui.getAlgorithm() instanceof JsonAlgorithm) {
                 JsonAlgorithm.unpackToNodeGroup((JsonAlgorithm) ui.getAlgorithm());
             }
         }

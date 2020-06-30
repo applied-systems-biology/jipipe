@@ -31,6 +31,7 @@ public interface AlgorithmUIAction {
 
     /**
      * Returns if the action shows up
+     *
      * @param selection the list of algorithm UIs
      * @return if the action shows up
      */
@@ -38,37 +39,37 @@ public interface AlgorithmUIAction {
 
     /**
      * Runs the workload
-     * @param canvasUI the canvas that contains all algorithm UIs
+     *
+     * @param canvasUI  the canvas that contains all algorithm UIs
      * @param selection the current selection of algorithms
      */
     void run(ACAQAlgorithmGraphCanvasUI canvasUI, Set<ACAQAlgorithmUI> selection);
 
     /**
-     *
      * @return the name
      */
     String getName();
 
     /**
-     *
      * @return the description
      */
     String getDescription();
 
     /**
-     *
      * @return the icon
      */
     Icon getIcon();
 
     /**
      * If true, this item is shown in the toolbar overhang menu instead of the toolbar itself.
+     *
      * @return show in toolbar overhang menu
      */
     boolean isShowingInOverhang();
 
     /**
      * Determines if an item should be disabled or removed if it does not match
+     *
      * @return if an item should be disabled or removed if it does not match
      */
     default boolean disableOnNonMatch() {

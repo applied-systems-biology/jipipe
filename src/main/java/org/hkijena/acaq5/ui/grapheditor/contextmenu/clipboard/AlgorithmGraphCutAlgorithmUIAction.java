@@ -23,7 +23,7 @@ import javax.swing.*;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class AlgorithmGraphCutAlgorithmUIAction extends  AlgorithmGraphCopyAlgorithmUIAction {
+public class AlgorithmGraphCutAlgorithmUIAction extends AlgorithmGraphCopyAlgorithmUIAction {
 
     @Override
     public void run(ACAQAlgorithmGraphCanvasUI canvasUI, Set<ACAQAlgorithmUI> selection) {

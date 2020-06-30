@@ -17,7 +17,8 @@ import org.hkijena.acaq5.api.testbench.ACAQTestbenchSnapshot;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 

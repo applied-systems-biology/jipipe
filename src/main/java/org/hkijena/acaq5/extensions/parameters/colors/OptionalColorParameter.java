@@ -15,7 +15,7 @@ package org.hkijena.acaq5.extensions.parameters.colors;
 
 import org.hkijena.acaq5.extensions.parameters.optional.OptionalParameter;
 
-import java.awt.*;
+import java.awt.Color;
 
 /**
  * Optional {@link Color}

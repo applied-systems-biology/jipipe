@@ -16,10 +16,18 @@ package org.hkijena.acaq5.api.algorithm;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.common.collect.*;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQDependency;
@@ -27,7 +35,11 @@ import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.events.*;
+import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
+import org.hkijena.acaq5.api.events.AlgorithmGraphConnectedEvent;
+import org.hkijena.acaq5.api.events.AlgorithmGraphDisconnectedEvent;
+import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
+import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
@@ -127,7 +139,7 @@ public class ACAQGraph implements ACAQValidatable {
     }
 
     private void postChangedEvent() {
-        if(preventTriggerEvents <= 0) {
+        if (preventTriggerEvents <= 0) {
             preventTriggerEvents = 0;
             eventBus.post(new AlgorithmGraphChangedEvent(this));
         }
@@ -142,7 +154,7 @@ public class ACAQGraph implements ACAQValidatable {
      */
     public void insertNode(ACAQGraphNode algorithm, String compartment) {
         String name;
-        if(Objects.equals(compartment, COMPARTMENT_DEFAULT))
+        if (Objects.equals(compartment, COMPARTMENT_DEFAULT))
             name = algorithm.getName();
         else
             name = compartment + "-" + algorithm.getName();
@@ -152,6 +164,7 @@ public class ACAQGraph implements ACAQValidatable {
 
     /**
      * Re-assigns new Ids to the all nodes
+     *
      * @return how old Ids are assigned to new Ids
      */
     public Map<String, String> cleanupIds() {
@@ -162,7 +175,7 @@ public class ACAQGraph implements ACAQValidatable {
         for (ACAQGraphNode algorithm : traversedAlgorithms) {
             String compartment = algorithm.getCompartment();
             String name;
-            if(Objects.equals(compartment, COMPARTMENT_DEFAULT))
+            if (Objects.equals(compartment, COMPARTMENT_DEFAULT))
                 name = algorithm.getName();
             else
                 name = compartment + "-" + algorithm.getName();
@@ -233,10 +246,10 @@ public class ACAQGraph implements ACAQValidatable {
      * The algorithm should exist within the graph.
      *
      * @param algorithm The algorithm
-     * @param user if a user triggered the operation. If true, will not remove internal nodes
+     * @param user      if a user triggered the operation. If true, will not remove internal nodes
      */
     public void removeNode(ACAQGraphNode algorithm, boolean user) {
-        if(user && algorithm.getCategory() == ACAQAlgorithmCategory.Internal)
+        if (user && algorithm.getCategory() == ACAQAlgorithmCategory.Internal)
             return;
         ++preventTriggerEvents;
         // Do regular disconnect
@@ -714,12 +727,12 @@ public class ACAQGraph implements ACAQValidatable {
             if (!withInternal && algorithm.getCategory() == ACAQAlgorithmCategory.Internal)
                 continue;
             ACAQGraphNode copy = algorithm.getDeclaration().clone(algorithm);
-            if(copy.getCompartment() != null) {
+            if (copy.getCompartment() != null) {
                 Map<String, Point> map = copy.getLocations().get(copy.getCompartment());
                 copy.getLocations().clear();
                 copy.getLocations().put(ACAQGraph.COMPARTMENT_DEFAULT, map);
             }
-            graph.insertNode(algorithm.getIdInGraph(),copy, ACAQGraph.COMPARTMENT_DEFAULT);
+            graph.insertNode(algorithm.getIdInGraph(), copy, ACAQGraph.COMPARTMENT_DEFAULT);
         }
         for (Map.Entry<ACAQDataSlot, ACAQDataSlot> edge : getSlotEdges()) {
             ACAQDataSlot source = edge.getKey();
@@ -1076,8 +1089,9 @@ public class ACAQGraph implements ACAQValidatable {
 
     /**
      * Removes multiple nodes at once
+     *
      * @param nodes list of nodes
-     * @param user if the operation is done by a user
+     * @param user  if the operation is done by a user
      */
     public void removeNodes(Set<ACAQGraphNode> nodes, boolean user) {
         ++preventTriggerEvents;
@@ -1091,6 +1105,7 @@ public class ACAQGraph implements ACAQValidatable {
     /**
      * Replaces all contents with the ones in the other graph
      * Does not apply copying!
+     *
      * @param other the other graph
      */
     public void replaceWith(ACAQGraph other) {

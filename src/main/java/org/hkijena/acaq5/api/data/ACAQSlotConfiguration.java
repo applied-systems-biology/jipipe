@@ -36,6 +36,7 @@ public interface ACAQSlotConfiguration {
 
     /**
      * Creates a deep copy
+     *
      * @return a deep copy
      */
     ACAQSlotConfiguration duplicate();

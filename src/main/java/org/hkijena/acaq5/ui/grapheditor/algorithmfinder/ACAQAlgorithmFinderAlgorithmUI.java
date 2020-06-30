@@ -29,7 +29,9 @@ import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 
 import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_HEIGHT;
 
@@ -44,14 +46,14 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
     private final int score;
     private final int maxScore;
     private final boolean isExistingInstance;
-    private JPanel slotPanel;
     private final EventBus eventBus = new EventBus();
     private final String compartment;
+    private JPanel slotPanel;
 
     /**
      * Creates an algorithm UI for one target algorithm
      *
-     * @param canvasUI the canvas
+     * @param canvasUI    the canvas
      * @param outputSlot  The output slot to connect
      * @param declaration The target algorithm
      * @param score       Score of the target algorithm
@@ -73,11 +75,11 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
     /**
      * Creates an algorithm UI for one target algorithm
      *
-     * @param canvasUI the canvas
-     * @param outputSlot  The output slot to connect
-     * @param algorithm   The target algorithm
-     * @param score       Score of the target algorithm
-     * @param maxScore    Maximum score that was possible
+     * @param canvasUI   the canvas
+     * @param outputSlot The output slot to connect
+     * @param algorithm  The target algorithm
+     * @param score      Score of the target algorithm
+     * @param maxScore   Maximum score that was possible
      */
     public ACAQAlgorithmFinderAlgorithmUI(ACAQAlgorithmGraphCanvasUI canvasUI, ACAQDataSlot outputSlot, ACAQGraphNode algorithm, int score, int maxScore) {
         this.canvasUI = canvasUI;

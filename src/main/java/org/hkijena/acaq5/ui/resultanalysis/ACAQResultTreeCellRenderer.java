@@ -23,7 +23,8 @@ import org.hkijena.acaq5.utils.UIUtils;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
 
 /**
  * Renders the tree in {@link ACAQResultAlgorithmTree}

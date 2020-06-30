@@ -16,7 +16,6 @@ package org.hkijena.acaq5.ui.grapheditor.contextmenu;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
-import org.hkijena.acaq5.ui.grapheditor.contextmenu.AlgorithmUIAction;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -26,9 +25,9 @@ public class EnablePassThroughAlgorithmUIAction implements AlgorithmUIAction {
     @Override
     public boolean matches(Set<ACAQAlgorithmUI> selection) {
         for (ACAQAlgorithmUI ui : selection) {
-            if(ui.getAlgorithm() instanceof ACAQAlgorithm) {
+            if (ui.getAlgorithm() instanceof ACAQAlgorithm) {
                 ACAQAlgorithm algorithm = (ACAQAlgorithm) ui.getAlgorithm();
-                if(!algorithm.isPassThrough())
+                if (!algorithm.isPassThrough())
                     return true;
             }
         }
@@ -38,7 +37,7 @@ public class EnablePassThroughAlgorithmUIAction implements AlgorithmUIAction {
     @Override
     public void run(ACAQAlgorithmGraphCanvasUI canvasUI, Set<ACAQAlgorithmUI> selection) {
         for (ACAQAlgorithmUI ui : selection) {
-            if(ui.getAlgorithm() instanceof ACAQAlgorithm) {
+            if (ui.getAlgorithm() instanceof ACAQAlgorithm) {
                 ACAQAlgorithm algorithm = (ACAQAlgorithm) ui.getAlgorithm();
                 algorithm.setPassThrough(true);
             }
@@ -57,7 +56,7 @@ public class EnablePassThroughAlgorithmUIAction implements AlgorithmUIAction {
 
     @Override
     public Icon getIcon() {
-        return  UIUtils.getIconFromResources("pass-through.png");
+        return UIUtils.getIconFromResources("pass-through.png");
     }
 
     @Override

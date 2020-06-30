@@ -18,7 +18,7 @@ import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCompartmentUI;
 
-import java.awt.*;
+import java.awt.BorderLayout;
 
 /**
  * Editor for one project compartment graph

@@ -28,7 +28,10 @@ import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
@@ -47,10 +50,9 @@ public class AddAlgorithmSlotPanel extends JPanel {
      * Remember the type selected last for increased usability
      */
     private static ACAQDataDeclaration lastSelectedType = null;
-
+    private final ACAQAlgorithmGraphHistory graphHistory;
     private ACAQGraphNode algorithm;
     private ACAQSlotType slotType;
-    private final ACAQAlgorithmGraphHistory graphHistory;
     private SearchTextField searchField;
     private JList<ACAQDataDeclaration> datatypeList;
     private JComboBox<String> inheritedSlotList;
@@ -63,8 +65,8 @@ public class AddAlgorithmSlotPanel extends JPanel {
     private Map<ACAQDataDeclaration, ACAQDataDeclaration> inheritanceConversions = new HashMap<>();
 
     /**
-     * @param algorithm the target algorithm
-     * @param slotType  the slot type to be created
+     * @param algorithm    the target algorithm
+     * @param slotType     the slot type to be created
      * @param graphHistory the graph history
      */
     public AddAlgorithmSlotPanel(ACAQGraphNode algorithm, ACAQSlotType slotType, ACAQAlgorithmGraphHistory graphHistory) {
@@ -346,10 +348,11 @@ public class AddAlgorithmSlotPanel extends JPanel {
 
     /**
      * Shows a dialog for adding slots
-     *  @param parent    parent component
+     *
+     * @param parent       parent component
      * @param graphHistory the graph history
-     * @param algorithm target algorithm
-     * @param slotType  slot type to be created
+     * @param algorithm    target algorithm
+     * @param slotType     slot type to be created
      */
     public static void showDialog(Component parent, ACAQAlgorithmGraphHistory graphHistory, ACAQGraphNode algorithm, ACAQSlotType slotType) {
         JDialog dialog = new JDialog();

@@ -15,7 +15,11 @@ package org.hkijena.acaq5.ui.grapheditor.algorithmfinder;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.api.algorithm.*;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.api.algorithm.ACAQGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
+import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
@@ -31,9 +35,12 @@ import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -46,15 +53,15 @@ public class ACAQAlgorithmFinderUI extends JPanel {
     private final ACAQGraphNode algorithm;
     private final ACAQGraph graph;
     private final String compartment;
+    private final EventBus eventBus = new EventBus();
     private SearchTextField searchField;
     private FormPanel formPanel;
-    private final EventBus eventBus = new EventBus();
 
     /**
      * Creates a new UI
      *
-     * @param canvasUI the canvas
-     * @param outputSlot  The target slot
+     * @param canvasUI   the canvas
+     * @param outputSlot The target slot
      */
     public ACAQAlgorithmFinderUI(ACAQAlgorithmGraphCanvasUI canvasUI, ACAQDataSlot outputSlot) {
         this.canvasUI = canvasUI;

@@ -17,7 +17,8 @@ import org.hkijena.acaq5.utils.ResourceUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 

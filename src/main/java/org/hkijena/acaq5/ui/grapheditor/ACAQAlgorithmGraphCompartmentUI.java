@@ -30,7 +30,9 @@ import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.events.AlgorithmUIActionRequestedEvent;
 import org.hkijena.acaq5.ui.events.DefaultAlgorithmUIActionRequestedEvent;
 import org.hkijena.acaq5.ui.grapheditor.contextmenu.*;
-import org.hkijena.acaq5.ui.grapheditor.contextmenu.clipboard.*;
+import org.hkijena.acaq5.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCopyAlgorithmUIAction;
+import org.hkijena.acaq5.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCutAlgorithmUIAction;
+import org.hkijena.acaq5.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphPasteAlgorithmUIAction;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQMultiAlgorithmSelectionPanelUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQSingleAlgorithmSelectionPanelUI;
 import org.hkijena.acaq5.ui.grouping.ACAQNodeGroupUI;
@@ -170,7 +172,7 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
     /**
      * Initializes the "Add nodes" menus
      *
-     * @param graphEditorUI the graph editor
+     * @param graphEditorUI   the graph editor
      * @param menuBar         The menu bar where the items are created
      * @param addedAlgorithms added algorithm types are added to this list
      */
@@ -214,7 +216,7 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
     /**
      * Initializes a menu for one algorithm category
      *
-     * @param graphEditorUI the graph editor
+     * @param graphEditorUI   the graph editor
      * @param menu            The menu
      * @param category        The algorithm category
      * @param addedAlgorithms added algorithm types are added to this list
@@ -253,7 +255,7 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
     /**
      * Initializes a menu that adds data sources
      *
-     * @param graphEditorUI the editor
+     * @param graphEditorUI   the editor
      * @param menu            the target menu
      * @param addedAlgorithms added algorithm types are added to this list
      */

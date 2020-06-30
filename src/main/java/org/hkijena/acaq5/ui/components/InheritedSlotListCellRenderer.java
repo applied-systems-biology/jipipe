@@ -19,7 +19,8 @@ import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
 
 /**
  * Renders an available entry for inherited slot in {@link org.hkijena.acaq5.api.data.ACAQSlotDefinition}

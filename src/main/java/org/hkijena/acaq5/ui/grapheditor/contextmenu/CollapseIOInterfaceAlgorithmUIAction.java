@@ -14,7 +14,6 @@
 package org.hkijena.acaq5.ui.grapheditor.contextmenu;
 
 import org.hkijena.acaq5.api.compartments.algorithms.IOInterfaceAlgorithm;
-import org.hkijena.acaq5.api.grouping.JsonAlgorithm;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -31,7 +30,7 @@ public class CollapseIOInterfaceAlgorithmUIAction implements AlgorithmUIAction {
     @Override
     public void run(ACAQAlgorithmGraphCanvasUI canvasUI, Set<ACAQAlgorithmUI> selection) {
         for (ACAQAlgorithmUI ui : selection) {
-            if(ui.getAlgorithm() instanceof IOInterfaceAlgorithm) {
+            if (ui.getAlgorithm() instanceof IOInterfaceAlgorithm) {
                 IOInterfaceAlgorithm.collapse((IOInterfaceAlgorithm) ui.getAlgorithm());
             }
         }

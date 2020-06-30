@@ -23,7 +23,7 @@ import org.scijava.ui.swing.script.EditorPane;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import java.awt.*;
+import java.awt.BorderLayout;
 
 /**
  * Parameter editor for {@link MacroCode}

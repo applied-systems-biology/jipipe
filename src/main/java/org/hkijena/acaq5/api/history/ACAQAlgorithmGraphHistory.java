@@ -29,11 +29,12 @@ public class ACAQAlgorithmGraphHistory {
 
     /**
      * Adds a snapshot into the stack
+     *
      * @param snapshot the snapshot that was created before applying the operation
      */
     public void addSnapshotBefore(ACAQAlgorithmGraphHistorySnapshot snapshot) {
-        while(cursor < snapshots.size() - 1) {
-           snapshots.pop();
+        while (cursor < snapshots.size() - 1) {
+            snapshots.pop();
         }
 
         snapshots.push(snapshot);
@@ -44,11 +45,12 @@ public class ACAQAlgorithmGraphHistory {
     /**
      * Removes a snapshot.
      * This will automatically remove all following snapshots
+     *
      * @param snapshot the snapshot
      */
     public void removeSnapshot(ACAQAlgorithmGraphHistorySnapshot snapshot) {
         int index = snapshots.indexOf(snapshot);
-        if(index >= 0) {
+        if (index >= 0) {
             if (snapshots.size() > index) {
                 snapshots.subList(index, snapshots.size()).clear();
             }
@@ -59,30 +61,30 @@ public class ACAQAlgorithmGraphHistory {
 
     /**
      * Reverts the last operation
+     *
      * @return if successful
      */
     public boolean undo() {
-        if(cursor >= 0) {
+        if (cursor >= 0) {
             snapshots.get(cursor).undo();
             --cursor;
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
 
     /**
      * Repeats the last reverted operation
+     *
      * @return if successful
      */
     public boolean redo() {
-        if(cursor < snapshots.size() - 1) {
+        if (cursor < snapshots.size() - 1) {
             snapshots.get(cursor + 1).redo();
             ++cursor;
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }

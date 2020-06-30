@@ -22,8 +22,18 @@ import org.hkijena.acaq5.api.events.ExtensionRegisteredEvent;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
-import org.hkijena.acaq5.api.registries.*;
-import org.hkijena.acaq5.ui.registries.*;
+import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistrationTask;
+import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
+import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
+import org.hkijena.acaq5.api.registries.ACAQImageJAdapterRegistry;
+import org.hkijena.acaq5.api.registries.ACAQParameterTypeRegistry;
+import org.hkijena.acaq5.api.registries.ACAQSettingsRegistry;
+import org.hkijena.acaq5.api.registries.ACAQTableRegistry;
+import org.hkijena.acaq5.ui.registries.ACAQUIAlgorithmRegistry;
+import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
+import org.hkijena.acaq5.ui.registries.ACAQUIImageJDatatypeAdapterRegistry;
+import org.hkijena.acaq5.ui.registries.ACAQUIMenuServiceRegistry;
+import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
 import org.scijava.plugin.Parameter;
@@ -32,7 +42,13 @@ import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**

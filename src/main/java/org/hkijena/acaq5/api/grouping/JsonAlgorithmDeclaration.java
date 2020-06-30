@@ -40,7 +40,13 @@ import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSetting
 import org.hkijena.acaq5.extensions.parameters.references.ACAQAlgorithmIconRef;
 import org.hkijena.acaq5.utils.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Declaration of a {@link GraphWrapperAlgorithm}

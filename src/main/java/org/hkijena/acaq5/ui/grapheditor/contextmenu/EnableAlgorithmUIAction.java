@@ -14,10 +14,8 @@
 package org.hkijena.acaq5.ui.grapheditor.contextmenu;
 
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
-import org.hkijena.acaq5.ui.grapheditor.contextmenu.AlgorithmUIAction;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -27,9 +25,9 @@ public class EnableAlgorithmUIAction implements AlgorithmUIAction {
     @Override
     public boolean matches(Set<ACAQAlgorithmUI> selection) {
         for (ACAQAlgorithmUI ui : selection) {
-            if(ui.getAlgorithm() instanceof ACAQAlgorithm) {
+            if (ui.getAlgorithm() instanceof ACAQAlgorithm) {
                 ACAQAlgorithm algorithm = (ACAQAlgorithm) ui.getAlgorithm();
-                if(!algorithm.isEnabled())
+                if (!algorithm.isEnabled())
                     return true;
             }
         }
@@ -39,7 +37,7 @@ public class EnableAlgorithmUIAction implements AlgorithmUIAction {
     @Override
     public void run(ACAQAlgorithmGraphCanvasUI canvasUI, Set<ACAQAlgorithmUI> selection) {
         for (ACAQAlgorithmUI ui : selection) {
-            if(ui.getAlgorithm() instanceof ACAQAlgorithm) {
+            if (ui.getAlgorithm() instanceof ACAQAlgorithm) {
                 ACAQAlgorithm algorithm = (ACAQAlgorithm) ui.getAlgorithm();
                 algorithm.setEnabled(true);
             }
@@ -58,7 +56,7 @@ public class EnableAlgorithmUIAction implements AlgorithmUIAction {
 
     @Override
     public Icon getIcon() {
-        return  UIUtils.getIconFromResources("block.png");
+        return UIUtils.getIconFromResources("block.png");
     }
 
     @Override

@@ -37,7 +37,7 @@ public class RemoveNodeGraphHistorySnapshot implements ACAQAlgorithmGraphHistory
             this.nodes.put(node.getIdInGraph(), node);
             for (ACAQDataSlot target : node.getInputSlots()) {
                 ACAQDataSlot source = graph.getSourceSlot(target);
-                if(source != null) {
+                if (source != null) {
                     connections.add(new AbstractMap.SimpleEntry<>(source, target));
                 }
             }

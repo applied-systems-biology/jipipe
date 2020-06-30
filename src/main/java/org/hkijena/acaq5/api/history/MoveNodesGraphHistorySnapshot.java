@@ -25,13 +25,14 @@ public class MoveNodesGraphHistorySnapshot implements ACAQAlgorithmGraphHistoryS
 
     private final ACAQGraph graph;
     private final Map<ACAQGraphNode, Map<String, Map<String, Point>>> locations;
-    private Map<ACAQGraphNode, Map<String, Map<String, Point>>> redoLocation;
     private final String name;
+    private Map<ACAQGraphNode, Map<String, Map<String, Point>>> redoLocation;
 
     /**
      * Creates a snapshot of all node locations
+     *
      * @param graph the graph
-     * @param name the name
+     * @param name  the name
      */
     public MoveNodesGraphHistorySnapshot(ACAQGraph graph, String name) {
         this.graph = graph;
@@ -52,7 +53,7 @@ public class MoveNodesGraphHistorySnapshot implements ACAQAlgorithmGraphHistoryS
 
     @Override
     public void redo() {
-        if(redoLocation != null) {
+        if (redoLocation != null) {
             restoreLocations(redoLocation);
         }
     }

@@ -30,7 +30,8 @@ import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -55,7 +56,7 @@ public class ACAQAlgorithmFinderSlotUI extends JPanel {
     /**
      * Creates a slot UI
      *
-     * @param canvasUI the canvas
+     * @param canvasUI           the canvas
      * @param outputSlot         The slot
      * @param inputSlot          The target slot
      * @param isExistingInstance If true, the algorithm already exists within the graph
@@ -142,7 +143,7 @@ public class ACAQAlgorithmFinderSlotUI extends JPanel {
 
     private void disconnectAllExistingInstance() {
         ACAQDataSlot sourceSlot = graph.getSourceSlot(inputSlot);
-        if(sourceSlot != null) {
+        if (sourceSlot != null) {
             canvasUI.getGraphHistory().addSnapshotBefore(new EdgeDisconnectGraphHistorySnapshot(graph, sourceSlot, inputSlot));
         }
         graph.disconnectAll(inputSlot, true);

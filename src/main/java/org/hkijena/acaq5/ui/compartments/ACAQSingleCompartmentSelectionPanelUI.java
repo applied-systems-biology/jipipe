@@ -28,7 +28,7 @@ import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.util.Collections;
 
 /**
@@ -41,7 +41,7 @@ public class ACAQSingleCompartmentSelectionPanelUI extends ACAQProjectWorkbenchP
 
     /**
      * @param graphEditorUI the graph editor
-     * @param compartment the compartment
+     * @param compartment   the compartment
      */
     public ACAQSingleCompartmentSelectionPanelUI(ACAQAlgorithmGraphEditorUI graphEditorUI, ACAQProjectCompartment compartment) {
         super((ACAQProjectWorkbench) graphEditorUI.getWorkbench());

@@ -76,12 +76,12 @@ public class ACAQRunCommand implements Command {
         ACAQRun run = new ACAQRun(project, configuration);
         run.run(this::onProgress, () -> false);
         System.out.println("ACAQ5 run finished. Outputs are stored in: " + outputDirectory);
-        status.showProgress(0,0);
+        status.showProgress(0, 0);
     }
 
     private void onProgress(ACAQRunnerStatus runStatus) {
         status.showProgress(runStatus.getProgress(), runStatus.getMaxProgress());
         status.showStatus("ACAQ5: " + runStatus.getMessage());
-        System.out.println("[" + runStatus.getProgress() + "/" +runStatus.getMaxProgress() + "] " + runStatus.getMessage());
+        System.out.println("[" + runStatus.getProgress() + "/" + runStatus.getMaxProgress() + "] " + runStatus.getMessage());
     }
 }

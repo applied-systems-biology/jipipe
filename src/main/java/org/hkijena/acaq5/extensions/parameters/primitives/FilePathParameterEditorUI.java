@@ -18,7 +18,7 @@ import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.components.PathEditor;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.nio.file.Path;
 
 /**

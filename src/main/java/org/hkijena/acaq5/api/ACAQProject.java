@@ -17,7 +17,12 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.BiMap;
@@ -29,8 +34,8 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.ACAQMutableDependency;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraphEdge;
+import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
@@ -325,6 +330,40 @@ public class ACAQProject implements ACAQValidatable {
     }
 
     /**
+     * Re-assigns graph node Ids based on their name
+     */
+    public void cleanupGraph() {
+        Map<String, String> compartmentRenames = compartmentGraph.cleanupIds();
+        Map<String, Set<ACAQGraphNode>> compartmentNodes = new HashMap<>();
+        for (Map.Entry<String, String> entry : compartmentRenames.entrySet()) {
+            Set<ACAQGraphNode> nodes = graph.getAlgorithmNodes().values().stream().filter(node -> Objects.equals(node.getCompartment(), entry.getKey())).collect(Collectors.toSet());
+            compartmentNodes.put(entry.getKey(), nodes);
+        }
+        for (Map.Entry<String, Set<ACAQGraphNode>> entry : compartmentNodes.entrySet()) {
+            String newCompartment = compartmentRenames.get(entry.getKey());
+            for (ACAQGraphNode node : entry.getValue()) {
+
+                // Rename own compartment
+                node.setCompartment(newCompartment);
+            }
+        }
+        for (ACAQGraphNode node : graph.getAlgorithmNodes().values()) {
+            // Rename visible compartments
+            node.setVisibleCompartments(node.getVisibleCompartments().stream().map(compartmentRenames::get).collect(Collectors.toSet()));
+
+            // Rename locations
+            ImmutableList<Map.Entry<String, Map<String, Point>>> locationEntries = ImmutableList.copyOf(node.getLocations().entrySet());
+            node.getLocations().clear();
+            for (Map.Entry<String, Map<String, Point>> entry : locationEntries) {
+                String newId = compartmentRenames.get(entry.getKey());
+                node.getLocations().put(newId, entry.getValue());
+            }
+        }
+
+        graph.cleanupIds();
+    }
+
+    /**
      * Loads a project from a file
      *
      * @param fileName JSON file
@@ -388,40 +427,6 @@ public class ACAQProject implements ACAQValidatable {
             jsonGenerator.writeEndObject();
             jsonGenerator.writeEndObject();
         }
-    }
-
-    /**
-     * Re-assigns graph node Ids based on their name
-     */
-    public void cleanupGraph() {
-        Map<String, String> compartmentRenames = compartmentGraph.cleanupIds();
-        Map<String, Set<ACAQGraphNode>> compartmentNodes = new HashMap<>();
-        for (Map.Entry<String, String> entry : compartmentRenames.entrySet()) {
-            Set<ACAQGraphNode> nodes = graph.getAlgorithmNodes().values().stream().filter(node -> Objects.equals(node.getCompartment(), entry.getKey())).collect(Collectors.toSet());
-            compartmentNodes.put(entry.getKey(), nodes);
-        }
-        for (Map.Entry<String, Set<ACAQGraphNode>> entry : compartmentNodes.entrySet()) {
-            String newCompartment = compartmentRenames.get(entry.getKey());
-            for (ACAQGraphNode node : entry.getValue()) {
-                
-                // Rename own compartment
-                node.setCompartment(newCompartment);
-            }
-        }
-        for (ACAQGraphNode node : graph.getAlgorithmNodes().values()) {
-            // Rename visible compartments
-            node.setVisibleCompartments(node.getVisibleCompartments().stream().map(compartmentRenames::get).collect(Collectors.toSet()));
-
-            // Rename locations
-            ImmutableList<Map.Entry<String, Map<String, Point>>> locationEntries = ImmutableList.copyOf(node.getLocations().entrySet());
-            node.getLocations().clear();
-            for (Map.Entry<String, Map<String, Point>> entry : locationEntries) {
-                String newId = compartmentRenames.get(entry.getKey());
-                node.getLocations().put(newId, entry.getValue());
-            }
-        }
-
-        graph.cleanupIds();
     }
 
     /**

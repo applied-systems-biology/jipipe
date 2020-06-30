@@ -15,7 +15,11 @@ package org.hkijena.acaq5.api.algorithm;
 
 import org.hkijena.acaq5.api.data.ACAQData;
 
-import java.lang.annotation.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * Annotates an {@link ACAQGraphNode} with an output slot.

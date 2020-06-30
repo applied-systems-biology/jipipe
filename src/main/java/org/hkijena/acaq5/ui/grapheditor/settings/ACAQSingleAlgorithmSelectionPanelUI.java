@@ -13,7 +13,6 @@
 
 package org.hkijena.acaq5.ui.grapheditor.settings;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.testbench.ACAQTestBenchSettings;
@@ -30,7 +29,7 @@ import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.util.Collections;
 
 /**
@@ -46,12 +45,12 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPan
 
     /**
      * @param graphEditorUI the graph editor
-     * @param algorithm   the algorithm
+     * @param algorithm     the algorithm
      */
     public ACAQSingleAlgorithmSelectionPanelUI(ACAQAlgorithmGraphEditorUI graphEditorUI, ACAQGraphNode algorithm) {
         super((ACAQProjectWorkbench) graphEditorUI.getWorkbench());
         this.graphEditorUI = graphEditorUI;
-        this.canvas =graphEditorUI.getCanvasUI();
+        this.canvas = graphEditorUI.getCanvasUI();
         this.algorithm = algorithm;
         initialize();
     }

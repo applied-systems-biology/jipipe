@@ -58,7 +58,7 @@ public class AlgorithmGraphPasteAlgorithmUIAction implements AlgorithmUIAction {
                 Map<ACAQGraphNode, Point> originalLocations = new HashMap<>();
                 for (ACAQGraphNode algorithm : graph.getAlgorithmNodes().values()) {
                     Point point = algorithm.getLocationWithin(algorithm.getCompartment(), canvasUI.getCurrentViewMode().name());
-                    if(point != null) {
+                    if (point != null) {
                         originalLocations.put(algorithm, point);
                         minX = Math.min(minX, point.x);
                         minY = Math.min(minY, point.y);
@@ -75,7 +75,7 @@ public class AlgorithmGraphPasteAlgorithmUIAction implements AlgorithmUIAction {
                 Point cursor = canvasUI.getGraphEditorCursor();
                 for (ACAQGraphNode algorithm : graph.getAlgorithmNodes().values()) {
                     Point original = originalLocations.getOrDefault(algorithm, null);
-                    if(original != null) {
+                    if (original != null) {
                         original.x = original.x - minX + cursor.x;
                         original.y = original.y - minY + cursor.y;
                         algorithm.setLocationWithin(compartment, original, canvasUI.getCurrentViewMode().name());
