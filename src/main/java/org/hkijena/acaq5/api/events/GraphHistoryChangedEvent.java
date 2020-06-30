@@ -13,22 +13,19 @@
 
 package org.hkijena.acaq5.api.events;
 
-import org.hkijena.acaq5.api.algorithm.ACAQGraph;
+import org.hkijena.acaq5.api.history.ACAQAlgorithmGraphHistory;
 
 /**
- * Event is triggered when algorithm graph is changed
+ * Triggered when an {@link org.hkijena.acaq5.api.history.ACAQAlgorithmGraphHistory} was changed
  */
-public class AlgorithmGraphChangedEvent {
-    private ACAQGraph algorithmGraph;
+public class GraphHistoryChangedEvent {
+    private final ACAQAlgorithmGraphHistory graphHistory;
 
-    /**
-     * @param algorithmGraph the graph
-     */
-    public AlgorithmGraphChangedEvent(ACAQGraph algorithmGraph) {
-        this.algorithmGraph = algorithmGraph;
+    public GraphHistoryChangedEvent(ACAQAlgorithmGraphHistory graphHistory) {
+        this.graphHistory = graphHistory;
     }
 
-    public ACAQGraph getAlgorithmGraph() {
-        return algorithmGraph;
+    public ACAQAlgorithmGraphHistory getGraphHistory() {
+        return graphHistory;
     }
 }

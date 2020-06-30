@@ -17,9 +17,10 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.AlgorithmRegisteredEvent;
+import org.hkijena.acaq5.api.history.MoveNodesGraphHistorySnapshot;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
 import org.hkijena.acaq5.extensions.settings.GraphEditorUISettings;
@@ -58,7 +59,7 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
 
     protected JMenuBar menuBar = new JMenuBar();
     private ACAQAlgorithmGraphCanvasUI canvasUI;
-    private ACAQAlgorithmGraph algorithmGraph;
+    private ACAQGraph algorithmGraph;
     private String compartment;
 
     private JSplitPane splitPane;
@@ -79,7 +80,7 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
      * @param algorithmGraph the algorithm graph
      * @param compartment    the graph compartment to display. Set to null to display all compartments
      */
-    public ACAQAlgorithmGraphEditorUI(ACAQWorkbench workbenchUI, ACAQAlgorithmGraph algorithmGraph, String compartment) {
+    public ACAQAlgorithmGraphEditorUI(ACAQWorkbench workbenchUI, ACAQGraph algorithmGraph, String compartment) {
         super(workbenchUI);
         this.algorithmGraph = algorithmGraph;
         this.compartment = compartment;
@@ -114,12 +115,6 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
         scrollPane = new JScrollPane(canvasUI);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPane.getHorizontalScrollBar().addAdjustmentListener(e -> {
-            canvasUI.setNewEntryLocationX(scrollPane.getHorizontalScrollBar().getValue());
-        });
-        scrollPane.getVerticalScrollBar().addAdjustmentListener(e -> {
-            canvasUI.setNewEntryLocationY(scrollPane.getVerticalScrollBar().getValue());
-        });
         splitPane.setLeftComponent(scrollPane);
         splitPane.setRightComponent(new JPanel());
         add(splitPane, BorderLayout.CENTER);
@@ -166,6 +161,20 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
         menuBar.add(navigator);
         menuBar.add(Box.createHorizontalStrut(8));
 
+        JButton undoButton = new JButton(UIUtils.getIconFromResources("undo.png"));
+        undoButton.setToolTipText("Undo");
+        UIUtils.makeFlat25x25(undoButton);
+        undoButton.addActionListener(e -> canvasUI.getGraphHistory().undo());
+        menuBar.add(undoButton);
+
+        JButton redoButton = new JButton(UIUtils.getIconFromResources("redo.png"));
+        redoButton.setToolTipText("Redo");
+        UIUtils.makeFlat25x25(redoButton);
+        redoButton.addActionListener(e -> canvasUI.getGraphHistory().redo());
+        menuBar.add(redoButton);
+
+        menuBar.add(Box.createHorizontalStrut(8));
+
         ButtonGroup viewModeGroup = new ButtonGroup();
 
         JToggleButton viewModeHorizontalButton = new JToggleButton(UIUtils.getIconFromResources("view-horizontal.png"));
@@ -189,13 +198,19 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
         JButton autoLayoutButton = new JButton(UIUtils.getIconFromResources("auto-layout-all.png"));
         autoLayoutButton.setToolTipText("Auto-layout all nodes");
         UIUtils.makeFlat25x25(autoLayoutButton);
-        autoLayoutButton.addActionListener(e -> canvasUI.autoLayoutAll());
+        autoLayoutButton.addActionListener(e -> {
+            canvasUI.getGraphHistory().addSnapshotBefore(new MoveNodesGraphHistorySnapshot(canvasUI.getAlgorithmGraph(), "Auto-layout all nodes"));
+            canvasUI.autoLayoutAll();
+        });
         menuBar.add(autoLayoutButton);
 
         JButton centerViewButton = new JButton(UIUtils.getIconFromResources("algorithms/view-restore.png"));
         centerViewButton.setToolTipText("Center view to nodes");
         UIUtils.makeFlat25x25(centerViewButton);
-        centerViewButton.addActionListener(e -> canvasUI.crop());
+        centerViewButton.addActionListener(e -> {
+            canvasUI.getGraphHistory().addSnapshotBefore(new MoveNodesGraphHistorySnapshot(canvasUI.getAlgorithmGraph(), "Center view to nodes"));
+            canvasUI.crop();
+        });
         menuBar.add(centerViewButton);
 
         menuBar.add(Box.createHorizontalStrut(8));
@@ -241,7 +256,7 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
     /**
      * @return The edited graph
      */
-    public ACAQAlgorithmGraph getAlgorithmGraph() {
+    public ACAQGraph getAlgorithmGraph() {
         return algorithmGraph;
     }
 

@@ -11,28 +11,40 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.acaq5.api.events;
+package org.hkijena.acaq5.api.history;
 
 import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 
-/**
- * Generated when slots are disconnected
- */
-public class AlgorithmGraphDisconnectedEvent {
-    private ACAQGraph graph;
-    private ACAQDataSlot source;
-    private ACAQDataSlot target;
+import java.util.Set;
 
-    /**
-     * @param graph  the graph
-     * @param source the source slot
-     * @param target the target slot
-     */
-    public AlgorithmGraphDisconnectedEvent(ACAQGraph graph, ACAQDataSlot source, ACAQDataSlot target) {
+public class EdgeDisconnectAllTargetsGraphHistorySnapshot implements ACAQAlgorithmGraphHistorySnapshot {
+
+    private final ACAQGraph graph;
+    private final ACAQDataSlot source;
+    private final Set<ACAQDataSlot> targets;
+
+    public EdgeDisconnectAllTargetsGraphHistorySnapshot(ACAQGraph graph, ACAQDataSlot source) {
         this.graph = graph;
         this.source = source;
-        this.target = target;
+        this.targets = graph.getTargetSlots(source);
+    }
+
+    @Override
+    public String getName() {
+        return "Disconnect all targets of " + source.getNameWithAlgorithmName();
+    }
+
+    @Override
+    public void undo() {
+        for (ACAQDataSlot target : targets) {
+            graph.connect(source, target, true);
+        }
+    }
+
+    @Override
+    public void redo() {
+        graph.disconnectAll(source, false);
     }
 
     public ACAQGraph getGraph() {
@@ -41,9 +53,5 @@ public class AlgorithmGraphDisconnectedEvent {
 
     public ACAQDataSlot getSource() {
         return source;
-    }
-
-    public ACAQDataSlot getTarget() {
-        return target;
     }
 }

@@ -13,7 +13,7 @@
 
 package org.hkijena.acaq5.ui.components;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.*;
 import org.hkijena.acaq5.utils.StringUtils;
@@ -188,7 +188,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
 
         // Remember connections to the existing slot
         // Remember the slot order
-        ACAQAlgorithmGraph graph = algorithm.getGraph();
+        ACAQGraph graph = algorithm.getGraph();
         ACAQDataSlot sourceSlot = null;
         Set<ACAQDataSlot> targetSlots = null;
         List<String> slotOrder;

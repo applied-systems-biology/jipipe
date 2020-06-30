@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.acaq5.api.ACAQMetadata;
 import org.hkijena.acaq5.api.ACAQProject;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
@@ -41,7 +41,7 @@ import java.util.Map;
 @JsonDeserialize(using = ACAQExportedCompartment.Deserializer.class)
 public class ACAQExportedCompartment {
     private ACAQMetadata metadata = new ACAQMetadata();
-    private ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
+    private ACAQGraph graph = new ACAQGraph();
 
     /**
      * Creates a new instance
@@ -59,7 +59,7 @@ public class ACAQExportedCompartment {
     }
 
     private void initializeGraphFromProject(ACAQProjectCompartment compartment) {
-        ACAQAlgorithmGraph sourceGraph = compartment.getProject().getGraph();
+        ACAQGraph sourceGraph = compartment.getProject().getGraph();
         Map<String, ACAQGraphNode> copies = new HashMap<>();
         String compartmentId = compartment.getProjectCompartmentId();
         for (ACAQGraphNode algorithm : sourceGraph.getAlgorithmNodes().values()) {

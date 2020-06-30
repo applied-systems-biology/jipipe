@@ -72,7 +72,7 @@ public class IOInterfaceAlgorithm extends ACAQAlgorithm {
      * @param algorithm the algorithm
      */
     public static void collapse(IOInterfaceAlgorithm algorithm) {
-        ACAQAlgorithmGraph graph = algorithm.getGraph();
+        ACAQGraph graph = algorithm.getGraph();
         Map<String, ACAQDataSlot> inputSourceMap = new HashMap<>();
         Map<String, Set<ACAQDataSlot>> outputTargetMap = new HashMap<>();
         for (ACAQDataSlot inputSlot : algorithm.getInputSlots()) {
@@ -102,7 +102,7 @@ public class IOInterfaceAlgorithm extends ACAQAlgorithm {
      * @param compartmentOutput the output to be replaced
      */
     public static void replaceCompartmentOutput(ACAQCompartmentOutput compartmentOutput) {
-        ACAQAlgorithmGraph graph = compartmentOutput.getGraph();
+        ACAQGraph graph = compartmentOutput.getGraph();
         String id = compartmentOutput.getIdInGraph();
         IOInterfaceAlgorithm ioInterfaceAlgorithm = ACAQAlgorithm.newInstance("io-interface");
         ioInterfaceAlgorithm.setCustomName(compartmentOutput.getName());

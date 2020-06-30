@@ -13,17 +13,12 @@
 
 package org.hkijena.acaq5.ui.grapheditor.settings;
 
-import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
-import org.hkijena.acaq5.api.grouping.NodeGroup;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
-import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
-import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonAlgorithmExporter;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphEditorUI;
 import org.hkijena.acaq5.utils.TooltipUtils;
@@ -39,7 +34,7 @@ import java.util.stream.Collectors;
  * UI when multiple algorithms are selected
  */
 public class ACAQMultiAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPanel {
-    private ACAQAlgorithmGraph graph;
+    private ACAQGraph graph;
     private ACAQAlgorithmGraphCanvasUI canvas;
     private Set<ACAQGraphNode> algorithms;
 

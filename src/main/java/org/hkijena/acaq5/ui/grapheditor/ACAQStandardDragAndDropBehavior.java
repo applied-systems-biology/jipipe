@@ -13,7 +13,7 @@
 
 package org.hkijena.acaq5.ui.grapheditor;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.extensions.filesystem.datasources.FileDataSource;
 import org.hkijena.acaq5.extensions.filesystem.datasources.FileListDataSource;
@@ -83,7 +83,7 @@ public class ACAQStandardDragAndDropBehavior implements ACAQAlgorithmGraphDragAn
 
     private void processDrop(List<File> files) {
         String compartment = canvas.getCompartment();
-        ACAQAlgorithmGraph graph = canvas.getAlgorithmGraph();
+        ACAQGraph graph = canvas.getAlgorithmGraph();
         if (files.size() == 1) {
             File selected = files.get(0);
             if (selected.isDirectory()) {

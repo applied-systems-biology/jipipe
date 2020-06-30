@@ -102,6 +102,17 @@ public abstract class ACAQAlgorithmUI extends ACAQWorkbenchPanel {
     public abstract void updateAlgorithmSlotUIs();
 
     /**
+     * Rounds the input coordinates, so they fit into the grid
+     * @param point the coordinates
+     * @return rounded coordinates
+     */
+    public static Point toGridLocation(Point point) {
+        int y = (int) Math.rint(point.y * 1.0 / ACAQAlgorithmUI.SLOT_UI_HEIGHT) * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+        int x = (int) Math.rint(point.x * 1.0 / ACAQAlgorithmUI.SLOT_UI_WIDTH) * ACAQAlgorithmUI.SLOT_UI_WIDTH;
+        return new Point(x, y);
+    }
+
+    /**
      * Tries to move the node to the provided location
      * A grid is applied to the input coordinates
      *

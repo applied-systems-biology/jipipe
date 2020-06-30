@@ -54,7 +54,7 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
     private ACAQAlgorithmCategory category = ACAQAlgorithmCategory.Miscellaneous;
     private List<AlgorithmInputSlot> inputSlots = new ArrayList<>();
     private List<AlgorithmOutputSlot> outputSlots = new ArrayList<>();
-    private ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
+    private ACAQGraph graph = new ACAQGraph();
     private Map<ACAQDataSlot, String> exportedSlotNames = new HashMap<>();
     private StringList menuPath = new StringList();
     private boolean hidden = false;
@@ -79,7 +79,7 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
      * @param group the node group. The graph will NOT be copied.
      */
     public JsonAlgorithmDeclaration(NodeGroup group) {
-        graph = new ACAQAlgorithmGraph(group.getWrappedGraph());
+        graph = new ACAQGraph(group.getWrappedGraph());
         exportedParameters = new GraphNodeParameters();
         exportedParameters.setGraph(getGraph());
         graph.getEventBus().register(this);
@@ -187,12 +187,12 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
     }
 
     @JsonGetter("graph")
-    public ACAQAlgorithmGraph getGraph() {
+    public ACAQGraph getGraph() {
         return graph;
     }
 
     @JsonSetter("graph")
-    public void setGraph(ACAQAlgorithmGraph graph) {
+    public void setGraph(ACAQGraph graph) {
         if (graph != this.graph) {
             if (this.graph != null) {
                 this.graph.getEventBus().unregister(this);
@@ -280,7 +280,7 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
         if (algorithmInput == null) {
             // Create if it doesn't exist
             algorithmInput = ACAQAlgorithm.newInstance("graph-wrapper:input");
-            graph.insertNode(algorithmInput, ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
+            graph.insertNode(algorithmInput, ACAQGraph.COMPARTMENT_DEFAULT);
         }
         return algorithmInput;
     }
@@ -302,7 +302,7 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
         if (algorithmOutput == null) {
             // Create if it doesn't exist
             algorithmOutput = ACAQAlgorithm.newInstance("graph-wrapper:output");
-            graph.insertNode(algorithmOutput, ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
+            graph.insertNode(algorithmOutput, ACAQGraph.COMPARTMENT_DEFAULT);
         }
         return algorithmOutput;
     }

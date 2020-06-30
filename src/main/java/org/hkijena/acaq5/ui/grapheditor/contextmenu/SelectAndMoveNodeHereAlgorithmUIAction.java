@@ -14,6 +14,7 @@
 package org.hkijena.acaq5.ui.grapheditor.contextmenu;
 
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
+import org.hkijena.acaq5.api.history.MoveNodesGraphHistorySnapshot;
 import org.hkijena.acaq5.ui.components.PickAlgorithmDialog;
 import org.hkijena.acaq5.ui.events.AlgorithmEvent;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
@@ -37,6 +38,7 @@ public class SelectAndMoveNodeHereAlgorithmUIAction implements AlgorithmUIAction
         if (algorithm != null) {
             ACAQAlgorithmUI ui = canvasUI.getNodeUIs().getOrDefault(algorithm, null);
             if (ui != null) {
+                canvasUI.getGraphHistory().addSnapshotBefore(new MoveNodesGraphHistorySnapshot(canvasUI.getAlgorithmGraph(), "Move node here ..."));
                 ui.trySetLocationInGrid(canvasUI.getGraphEditorCursor().x, canvasUI.getGraphEditorCursor().y);
                 canvasUI.repaint();
                 canvasUI.getEventBus().post(new AlgorithmEvent(ui));

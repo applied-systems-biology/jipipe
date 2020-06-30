@@ -14,12 +14,11 @@
 package org.hkijena.acaq5.ui.extensionbuilder;
 
 import org.hkijena.acaq5.ACAQJsonExtension;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.grapheditor.*;
-import org.hkijena.acaq5.ui.grapheditor.contextmenu.*;
 import org.hkijena.acaq5.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCopyAlgorithmUIAction;
 import org.hkijena.acaq5.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCutAlgorithmUIAction;
 import org.hkijena.acaq5.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphPasteAlgorithmUIAction;
@@ -41,7 +40,7 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQAlgorithmGraphEditorU
      * @param algorithmGraph The algorithm graph
      * @param compartment    The compartment
      */
-    public ACAQJsonExtensionAlgorithmGraphUI(ACAQJsonExtensionWorkbench workbenchUI, ACAQAlgorithmGraph algorithmGraph, String compartment) {
+    public ACAQJsonExtensionAlgorithmGraphUI(ACAQJsonExtensionWorkbench workbenchUI, ACAQGraph algorithmGraph, String compartment) {
         super(workbenchUI, algorithmGraph, compartment);
         documentationPanel = new MarkdownReader(false);
         documentationPanel.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md"));

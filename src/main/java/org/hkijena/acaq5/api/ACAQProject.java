@@ -29,7 +29,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.ACAQMutableDependency;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraphEdge;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
@@ -68,8 +68,8 @@ import java.util.stream.Collectors;
 public class ACAQProject implements ACAQValidatable {
     private EventBus eventBus = new EventBus();
 
-    private ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
-    private ACAQAlgorithmGraph compartmentGraph = new ACAQAlgorithmGraph();
+    private ACAQGraph graph = new ACAQGraph();
+    private ACAQGraph compartmentGraph = new ACAQGraph();
     private BiMap<String, ACAQProjectCompartment> compartments = HashBiMap.create();
     private ACAQMetadata metadata = new ACAQMetadata();
     private Path workDirectory;
@@ -89,7 +89,7 @@ public class ACAQProject implements ACAQValidatable {
      * This is used by the data cache.
      *
      * @param node      the target algorithm
-     * @param traversed traversed graph. should be {@link ACAQAlgorithmGraph}.traverseAlgorithms(). This parameter is here for performance reasons.
+     * @param traversed traversed graph. should be {@link ACAQGraph}.traverseAlgorithms(). This parameter is here for performance reasons.
      * @return unique representation of how the algorithm's output was generated.
      */
     public ACAQProjectCache.State getStateIdOf(ACAQAlgorithm node, List<ACAQGraphNode> traversed) {
@@ -116,7 +116,7 @@ public class ACAQProject implements ACAQValidatable {
     /**
      * @return The algorithm graph
      */
-    public ACAQAlgorithmGraph getGraph() {
+    public ACAQGraph getGraph() {
         return graph;
     }
 
@@ -152,7 +152,7 @@ public class ACAQProject implements ACAQValidatable {
         ACAQProjectCompartment compartment = ACAQGraphNode.newInstance("acaq:project-compartment");
         compartment.setProject(this);
         compartment.setCustomName(name);
-        compartmentGraph.insertNode(compartment, ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
+        compartmentGraph.insertNode(compartment, ACAQGraph.COMPARTMENT_DEFAULT);
         return compartment;
     }
 
@@ -256,7 +256,7 @@ public class ACAQProject implements ACAQValidatable {
     /**
      * @return The compartment graph. Contains only {@link ACAQProjectCompartment} nodes.
      */
-    public ACAQAlgorithmGraph getCompartmentGraph() {
+    public ACAQGraph getCompartmentGraph() {
         return compartmentGraph;
     }
 

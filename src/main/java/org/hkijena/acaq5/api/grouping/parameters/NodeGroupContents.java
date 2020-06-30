@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.grouping.NodeGroup;
 import org.hkijena.acaq5.utils.JsonUtils;
 
@@ -32,7 +32,7 @@ import java.io.IOException;
 @JsonDeserialize(using = NodeGroupContents.Deserializer.class)
 public class NodeGroupContents {
     private NodeGroup parent;
-    private ACAQAlgorithmGraph wrappedGraph;
+    private ACAQGraph wrappedGraph;
 
     /**
      * Creates a new empty instance
@@ -48,7 +48,7 @@ public class NodeGroupContents {
      */
     public NodeGroupContents(NodeGroupContents other) {
         if (other.wrappedGraph != null)
-            this.wrappedGraph = new ACAQAlgorithmGraph(other.wrappedGraph);
+            this.wrappedGraph = new ACAQGraph(other.wrappedGraph);
     }
 
     public NodeGroup getParent() {
@@ -59,11 +59,11 @@ public class NodeGroupContents {
         this.parent = parent;
     }
 
-    public ACAQAlgorithmGraph getWrappedGraph() {
+    public ACAQGraph getWrappedGraph() {
         return wrappedGraph;
     }
 
-    public void setWrappedGraph(ACAQAlgorithmGraph wrappedGraph) {
+    public void setWrappedGraph(ACAQGraph wrappedGraph) {
         this.wrappedGraph = wrappedGraph;
     }
 
@@ -80,7 +80,7 @@ public class NodeGroupContents {
     public static class Deserializer extends JsonDeserializer<NodeGroupContents> {
         @Override
         public NodeGroupContents deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
-            ACAQAlgorithmGraph graph = JsonUtils.getObjectMapper().readerFor(ACAQAlgorithmGraph.class).readValue(jsonParser);
+            ACAQGraph graph = JsonUtils.getObjectMapper().readerFor(ACAQGraph.class).readValue(jsonParser);
             NodeGroupContents contents = new NodeGroupContents();
             contents.wrappedGraph = graph;
             return contents;

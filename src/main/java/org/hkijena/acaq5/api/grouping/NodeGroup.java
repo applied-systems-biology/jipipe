@@ -22,7 +22,7 @@ import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.compartments.algorithms.IOInterfaceAlgorithm;
@@ -54,7 +54,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements ACAQCustomParame
      * @param declaration the declaration
      */
     public NodeGroup(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, new ACAQAlgorithmGraph());
+        super(declaration, new ACAQGraph());
         initializeContents();
     }
 
@@ -75,8 +75,8 @@ public class NodeGroup extends GraphWrapperAlgorithm implements ACAQCustomParame
      * @param graph           algorithms to be added
      * @param autoCreateSlots automatically create input and output slots
      */
-    public NodeGroup(ACAQAlgorithmGraph graph, boolean autoCreateSlots) {
-        super(ACAQAlgorithmRegistry.getInstance().getDeclarationById("node-group"), new ACAQAlgorithmGraph());
+    public NodeGroup(ACAQGraph graph, boolean autoCreateSlots) {
+        super(ACAQAlgorithmRegistry.getInstance().getDeclarationById("node-group"), new ACAQGraph());
 
         // Remove all algorithms with no i/o
         for (ACAQGraphNode node : ImmutableList.copyOf(graph.getAlgorithmNodes().values())) {

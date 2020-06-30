@@ -14,7 +14,7 @@
 package org.hkijena.acaq5.ui.extensionbuilder;
 
 import org.hkijena.acaq5.ACAQJsonExtension;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.grouping.JsonAlgorithmDeclaration;
 import org.hkijena.acaq5.api.grouping.NodeGroup;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
@@ -48,7 +48,7 @@ public class ACAQJsonAlgorithmExporter extends ACAQAlgorithmGraphEditorUI {
      * @param group       the node group that will be converted into an algorithm
      */
     public ACAQJsonAlgorithmExporter(ACAQProjectWorkbench workbenchUI, NodeGroup group) {
-        super(workbenchUI, group.getWrappedGraph(), ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
+        super(workbenchUI, group.getWrappedGraph(), ACAQGraph.COMPARTMENT_DEFAULT);
         algorithmDeclaration = new JsonAlgorithmDeclaration(group);
         algorithmDeclaration.setName(group.getName());
         algorithmDeclaration.setDescription(group.getCustomDescription());

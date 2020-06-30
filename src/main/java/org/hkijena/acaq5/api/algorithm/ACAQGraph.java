@@ -49,9 +49,9 @@ import java.util.stream.Collectors;
 /**
  * Manages multiple {@link ACAQGraphNode} instances as graph
  */
-@JsonSerialize(using = ACAQAlgorithmGraph.Serializer.class)
-@JsonDeserialize(using = ACAQAlgorithmGraph.Deserializer.class)
-public class ACAQAlgorithmGraph implements ACAQValidatable {
+@JsonSerialize(using = ACAQGraph.Serializer.class)
+@JsonDeserialize(using = ACAQGraph.Deserializer.class)
+public class ACAQGraph implements ACAQValidatable {
 
     public static final String COMPARTMENT_DEFAULT = "DEFAULT";
 
@@ -67,7 +67,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     /**
      * Creates a new algorithm graph
      */
-    public ACAQAlgorithmGraph() {
+    public ACAQGraph() {
 
     }
 
@@ -76,7 +76,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      *
      * @param other The original graph
      */
-    public ACAQAlgorithmGraph(ACAQAlgorithmGraph other) {
+    public ACAQGraph(ACAQGraph other) {
         // Copy nodes
         for (Map.Entry<String, ACAQGraphNode> kv : other.algorithms.entrySet()) {
             ACAQGraphNode algorithm = kv.getValue().getDeclaration().clone(kv.getValue());
@@ -685,7 +685,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * @param otherGraph The other graph
      * @return A map from ID in source graph to algorithm in target graph
      */
-    public Map<String, ACAQGraphNode> mergeWith(ACAQAlgorithmGraph otherGraph) {
+    public Map<String, ACAQGraphNode> mergeWith(ACAQGraph otherGraph) {
         Map<String, ACAQGraphNode> copies = new HashMap<>();
         for (ACAQGraphNode algorithm : otherGraph.getAlgorithmNodes().values()) {
             ACAQGraphNode copy = algorithm.getDeclaration().clone(algorithm);
@@ -708,8 +708,8 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * @param withInternal also copy internal algorithms
      * @return graph that only contains the selected algorithms
      */
-    public ACAQAlgorithmGraph extract(Collection<ACAQGraphNode> nodes, boolean withInternal) {
-        ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
+    public ACAQGraph extract(Collection<ACAQGraphNode> nodes, boolean withInternal) {
+        ACAQGraph graph = new ACAQGraph();
         for (ACAQGraphNode algorithm : nodes) {
             if (!withInternal && algorithm.getCategory() == ACAQAlgorithmCategory.Internal)
                 continue;
@@ -717,9 +717,9 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
             if(copy.getCompartment() != null) {
                 Map<String, Point> map = copy.getLocations().get(copy.getCompartment());
                 copy.getLocations().clear();
-                copy.getLocations().put(ACAQAlgorithmGraph.COMPARTMENT_DEFAULT, map);
+                copy.getLocations().put(ACAQGraph.COMPARTMENT_DEFAULT, map);
             }
-            graph.insertNode(algorithm.getIdInGraph(),copy, ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
+            graph.insertNode(algorithm.getIdInGraph(),copy, ACAQGraph.COMPARTMENT_DEFAULT);
         }
         for (Map.Entry<ACAQDataSlot, ACAQDataSlot> edge : getSlotEdges()) {
             ACAQDataSlot source = edge.getKey();
@@ -1003,7 +1003,7 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
      * @param foreignGraph Graph that contains the foreign algorithm
      * @return True if this graph contains an equivalent algorithm (with the same ID)
      */
-    public boolean containsEquivalentOf(ACAQGraphNode foreign, ACAQAlgorithmGraph foreignGraph) {
+    public boolean containsEquivalentOf(ACAQGraphNode foreign, ACAQGraph foreignGraph) {
         return getAlgorithmNodes().containsKey(foreignGraph.getIdOf(foreign));
     }
 
@@ -1089,11 +1089,11 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     }
 
     /**
-     * Serializes an {@link ACAQAlgorithmGraph}
+     * Serializes an {@link ACAQGraph}
      */
-    public static class Serializer extends JsonSerializer<ACAQAlgorithmGraph> {
+    public static class Serializer extends JsonSerializer<ACAQGraph> {
         @Override
-        public void serialize(ACAQAlgorithmGraph algorithmGraph, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+        public void serialize(ACAQGraph algorithmGraph, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             jsonGenerator.writeStartObject();
 
             jsonGenerator.writeFieldName("nodes");
@@ -1109,13 +1109,13 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
             jsonGenerator.writeEndObject();
         }
 
-        private void serializeNodes(ACAQAlgorithmGraph algorithmGraph, JsonGenerator jsonGenerator) throws IOException {
+        private void serializeNodes(ACAQGraph algorithmGraph, JsonGenerator jsonGenerator) throws IOException {
             for (Map.Entry<String, ACAQGraphNode> kv : algorithmGraph.algorithms.entrySet()) {
                 jsonGenerator.writeObjectField(StringUtils.jsonify(kv.getKey()), kv.getValue());
             }
         }
 
-        private void serializeEdges(ACAQAlgorithmGraph graph, JsonGenerator jsonGenerator) throws IOException {
+        private void serializeEdges(ACAQGraph graph, JsonGenerator jsonGenerator) throws IOException {
             for (Map.Entry<ACAQDataSlot, ACAQDataSlot> edge : graph.getSlotEdges()) {
                 jsonGenerator.writeStartObject();
                 jsonGenerator.writeStringField("source-algorithm", StringUtils.jsonify(graph.getIdOf(edge.getKey().getAlgorithm())));
@@ -1128,12 +1128,12 @@ public class ACAQAlgorithmGraph implements ACAQValidatable {
     }
 
     /**
-     * Deserializes an {@link ACAQAlgorithmGraph}
+     * Deserializes an {@link ACAQGraph}
      */
-    public static class Deserializer extends JsonDeserializer<ACAQAlgorithmGraph> {
+    public static class Deserializer extends JsonDeserializer<ACAQGraph> {
         @Override
-        public ACAQAlgorithmGraph deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
-            ACAQAlgorithmGraph graph = new ACAQAlgorithmGraph();
+        public ACAQGraph deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+            ACAQGraph graph = new ACAQGraph();
             graph.fromJson(jsonParser.readValueAsTree());
             return graph;
         }

@@ -15,7 +15,7 @@ package org.hkijena.acaq5.ui.grapheditor.contextmenu;
 
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.grouping.NodeGroup;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
@@ -49,7 +49,7 @@ public class ExportAlgorithmUIAction implements AlgorithmUIAction {
 
         ACAQProjectWorkbench projectWorkbench = (ACAQProjectWorkbench) canvasUI.getWorkbench();
         ACAQProject project = projectWorkbench.getProject();
-        ACAQAlgorithmGraph graph = project.getGraph().extract(algorithms, true);
+        ACAQGraph graph = project.getGraph().extract(algorithms, true);
         NodeGroup group = new NodeGroup(graph, true);
         ACAQJsonAlgorithmExporter exporter = new ACAQJsonAlgorithmExporter(projectWorkbench, group);
         projectWorkbench.getDocumentTabPane().addTab("Export custom algorithm",

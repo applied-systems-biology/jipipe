@@ -13,7 +13,7 @@
 
 package org.hkijena.acaq5.api;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
@@ -25,14 +25,14 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
- * Executes an {@link org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph}.
+ * Executes an {@link ACAQGraph}.
  * This does not do any data storage or caching.
  * Use this class for nested algorithm graph runs (like {@link org.hkijena.acaq5.api.grouping.GraphWrapperAlgorithm})
  * Use {@link ACAQRun} for full project runs.
  */
 public class ACAQGraphRunner implements ACAQRunnable {
 
-    private final ACAQAlgorithmGraph algorithmGraph;
+    private final ACAQGraph algorithmGraph;
     private Set<ACAQGraphNode> algorithmsWithExternalInput = new HashSet<>();
 
     /**
@@ -40,7 +40,7 @@ public class ACAQGraphRunner implements ACAQRunnable {
      *
      * @param algorithmGraph the algorithm graph to run
      */
-    public ACAQGraphRunner(ACAQAlgorithmGraph algorithmGraph) {
+    public ACAQGraphRunner(ACAQGraph algorithmGraph) {
         this.algorithmGraph = algorithmGraph;
     }
 
@@ -101,7 +101,7 @@ public class ACAQGraphRunner implements ACAQRunnable {
         onProgress.accept(status);
     }
 
-    public ACAQAlgorithmGraph getAlgorithmGraph() {
+    public ACAQGraph getAlgorithmGraph() {
         return algorithmGraph;
     }
 

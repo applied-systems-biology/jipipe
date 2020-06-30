@@ -13,7 +13,7 @@
 
 package org.hkijena.acaq5.ui.grouping;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.grouping.NodeGroup;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
@@ -49,7 +49,7 @@ public class ACAQNodeGroupUI extends ACAQWorkbenchPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        graphUI = new ACAQAlgorithmGraphCompartmentUI(getWorkbench(), nodeGroup.getWrappedGraph(), ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
+        graphUI = new ACAQAlgorithmGraphCompartmentUI(getWorkbench(), nodeGroup.getWrappedGraph(), ACAQGraph.COMPARTMENT_DEFAULT);
         add(graphUI, BorderLayout.CENTER);
     }
 

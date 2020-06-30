@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 public class ACAQAlgorithmFinderUI extends JPanel {
     private ACAQDataSlot outputSlot;
     private ACAQGraphNode algorithm;
-    private ACAQAlgorithmGraph graph;
+    private ACAQGraph graph;
     private String compartment;
     private SearchTextField searchField;
     private FormPanel formPanel;
@@ -55,7 +55,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
      * @param graph       The graph
      * @param compartment The graph compartment. Algorithms outside of the compartment are not detected.
      */
-    public ACAQAlgorithmFinderUI(ACAQDataSlot outputSlot, ACAQAlgorithmGraph graph, String compartment) {
+    public ACAQAlgorithmFinderUI(ACAQDataSlot outputSlot, ACAQGraph graph, String compartment) {
         this.compartment = compartment;
         if (!outputSlot.isOutput())
             throw new IllegalArgumentException();
@@ -216,7 +216,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
      * @param graph       The algorithm graph
      * @return Non-normalized score
      */
-    public static int scoreAlgorithmForOutputSlot(ACAQAlgorithmDeclaration declaration, ACAQDataSlot slot, ACAQAlgorithmGraph graph) {
+    public static int scoreAlgorithmForOutputSlot(ACAQAlgorithmDeclaration declaration, ACAQDataSlot slot, ACAQGraph graph) {
         int score = 0;
         return score;
     }

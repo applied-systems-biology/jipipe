@@ -13,14 +13,14 @@
 
 package org.hkijena.acaq5.api.events;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 
 /**
- * Generated when a connection was made in {@link ACAQAlgorithmGraph}
+ * Generated when a connection was made in {@link ACAQGraph}
  */
 public class AlgorithmGraphConnectedEvent {
-    private ACAQAlgorithmGraph graph;
+    private ACAQGraph graph;
     private ACAQDataSlot source;
     private ACAQDataSlot target;
 
@@ -29,13 +29,13 @@ public class AlgorithmGraphConnectedEvent {
      * @param source the source slot
      * @param target the target slot
      */
-    public AlgorithmGraphConnectedEvent(ACAQAlgorithmGraph graph, ACAQDataSlot source, ACAQDataSlot target) {
+    public AlgorithmGraphConnectedEvent(ACAQGraph graph, ACAQDataSlot source, ACAQDataSlot target) {
         this.graph = graph;
         this.source = source;
         this.target = target;
     }
 
-    public ACAQAlgorithmGraph getGraph() {
+    public ACAQGraph getGraph() {
         return graph;
     }
 

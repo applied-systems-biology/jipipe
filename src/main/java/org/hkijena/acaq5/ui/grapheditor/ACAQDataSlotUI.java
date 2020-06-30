@@ -14,12 +14,18 @@
 package org.hkijena.acaq5.ui.grapheditor;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
+import org.hkijena.acaq5.api.history.ACAQAlgorithmGraphHistory;
+import org.hkijena.acaq5.api.history.CompoundGraphHistorySnapshot;
+import org.hkijena.acaq5.api.history.EdgeConnectGraphHistorySnapshot;
+import org.hkijena.acaq5.api.history.EdgeDisconnectAllTargetsGraphHistorySnapshot;
+import org.hkijena.acaq5.api.history.EdgeDisconnectGraphHistorySnapshot;
+import org.hkijena.acaq5.api.history.MoveNodesGraphHistorySnapshot;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.EditAlgorithmSlotPanel;
@@ -64,7 +70,7 @@ public abstract class ACAQDataSlotUI extends ACAQWorkbenchPanel {
         slot.getDefinition().getEventBus().register(this);
     }
 
-    public ACAQAlgorithmGraph getGraph() {
+    public ACAQGraph getGraph() {
         return getGraphUI().getAlgorithmGraph();
     }
 
@@ -240,6 +246,17 @@ public abstract class ACAQDataSlotUI extends ACAQWorkbenchPanel {
 
     private void connectSlot(ACAQDataSlot source, ACAQDataSlot target) {
         if (getGraph().canConnect(source, target, true)) {
+            ACAQGraph graph = slot.getAlgorithm().getGraph();
+            ACAQAlgorithmGraphHistory graphHistory = algorithmUI.getGraphUI().getGraphHistory();
+            if(getGraphUI().isLayoutHelperEnabled()) {
+                graphHistory.addSnapshotBefore(new CompoundGraphHistorySnapshot(Arrays.asList(
+                        new EdgeConnectGraphHistorySnapshot(graph, source, target),
+                        new MoveNodesGraphHistorySnapshot(graph, "Move to target slot")
+                )));
+            }
+            else {
+                graphHistory.addSnapshotBefore(new EdgeConnectGraphHistorySnapshot(graph, source, target));
+            }
             getGraph().connect(source, target);
         } else {
             JOptionPane.showMessageDialog(this, "The data slots could not be connected. Is this connection causing loops?",
@@ -248,6 +265,17 @@ public abstract class ACAQDataSlotUI extends ACAQWorkbenchPanel {
     }
 
     private void disconnectSlot() {
+        ACAQGraph graph = slot.getAlgorithm().getGraph();
+        ACAQAlgorithmGraphHistory graphHistory = algorithmUI.getGraphUI().getGraphHistory();
+        if(slot.isInput()) {
+            ACAQDataSlot sourceSlot = graph.getSourceSlot(slot);
+            if(sourceSlot != null) {
+                graphHistory.addSnapshotBefore(new EdgeDisconnectGraphHistorySnapshot(graph, sourceSlot, slot));
+            }
+        }
+        else {
+            graphHistory.addSnapshotBefore(new EdgeDisconnectAllTargetsGraphHistorySnapshot(graph, slot));
+        }
         getGraph().disconnectAll(slot, true);
     }
 

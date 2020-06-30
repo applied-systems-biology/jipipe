@@ -14,12 +14,11 @@
 package org.hkijena.acaq5.ui.grapheditor.contextmenu.clipboard;
 
 import org.hkijena.acaq5.api.ACAQProject;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
@@ -48,7 +47,7 @@ public class GraphCompartmentPasteAlgorithmUIAction implements AlgorithmUIAction
             String json = getStringFromClipboard();
             if (json != null) {
                 ACAQProject project = ((ACAQProjectWorkbench) canvasUI.getWorkbench()).getProject();
-                ACAQAlgorithmGraph sourceGraph = JsonUtils.getObjectMapper().readValue(json, ACAQAlgorithmGraph.class);
+                ACAQGraph sourceGraph = JsonUtils.getObjectMapper().readValue(json, ACAQGraph.class);
 
                 // Collect all compartments
                 Set<String> compartments = new HashSet<>();
@@ -64,7 +63,7 @@ public class GraphCompartmentPasteAlgorithmUIAction implements AlgorithmUIAction
                 }
 
                 // Add nodes
-                ACAQAlgorithmGraph targetGraph = project.getGraph();
+                ACAQGraph targetGraph = project.getGraph();
                 for (ACAQGraphNode algorithm : sourceGraph.getAlgorithmNodes().values()) {
                     String sourceCompartment = algorithm.getCompartment();
                     String targetCompartment = compartmentNodeMap.get(sourceCompartment).getProjectCompartmentId();

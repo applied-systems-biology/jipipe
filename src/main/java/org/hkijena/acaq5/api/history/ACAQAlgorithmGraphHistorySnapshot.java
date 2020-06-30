@@ -11,24 +11,21 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.acaq5.api.events;
+package org.hkijena.acaq5.api.history;
 
-import org.hkijena.acaq5.api.algorithm.ACAQGraph;
-
-/**
- * Event is triggered when algorithm graph is changed
- */
-public class AlgorithmGraphChangedEvent {
-    private ACAQGraph algorithmGraph;
+public interface ACAQAlgorithmGraphHistorySnapshot {
+    /**
+     * @return The name of this snapshot
+     */
+    String getName();
 
     /**
-     * @param algorithmGraph the graph
+     * Reverts the operation
      */
-    public AlgorithmGraphChangedEvent(ACAQGraph algorithmGraph) {
-        this.algorithmGraph = algorithmGraph;
-    }
+    void undo();
 
-    public ACAQGraph getAlgorithmGraph() {
-        return algorithmGraph;
-    }
+    /**
+     * Repeats the operation
+     */
+    void redo();
 }

@@ -21,7 +21,7 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
@@ -40,7 +40,7 @@ import java.util.function.Supplier;
  */
 public class GraphWrapperAlgorithm extends ACAQAlgorithm {
 
-    private ACAQAlgorithmGraph wrappedGraph;
+    private ACAQGraph wrappedGraph;
     private GraphWrapperAlgorithmInput algorithmInput;
     private GraphWrapperAlgorithmOutput algorithmOutput;
     private IOSlotWatcher ioSlotWatcher;
@@ -51,7 +51,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm {
      * @param declaration  the declaration
      * @param wrappedGraph the graph wrapper
      */
-    public GraphWrapperAlgorithm(ACAQAlgorithmDeclaration declaration, ACAQAlgorithmGraph wrappedGraph) {
+    public GraphWrapperAlgorithm(ACAQAlgorithmDeclaration declaration, ACAQGraph wrappedGraph) {
         super(declaration, new ACAQDefaultMutableSlotConfiguration());
         this.setWrappedGraph(wrappedGraph);
     }
@@ -63,7 +63,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm {
      */
     public GraphWrapperAlgorithm(GraphWrapperAlgorithm other) {
         super(other);
-        setWrappedGraph(new ACAQAlgorithmGraph(other.wrappedGraph));
+        setWrappedGraph(new ACAQGraph(other.wrappedGraph));
     }
 
     /**
@@ -118,7 +118,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm {
         if (algorithmInput == null) {
             // Create if it doesn't exist
             algorithmInput = ACAQAlgorithm.newInstance("graph-wrapper:input");
-            wrappedGraph.insertNode(algorithmInput, ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
+            wrappedGraph.insertNode(algorithmInput, ACAQGraph.COMPARTMENT_DEFAULT);
         }
         return algorithmInput;
     }
@@ -140,7 +140,7 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm {
         if (algorithmOutput == null) {
             // Create if it doesn't exist
             algorithmOutput = ACAQAlgorithm.newInstance("graph-wrapper:output");
-            wrappedGraph.insertNode(algorithmOutput, ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
+            wrappedGraph.insertNode(algorithmOutput, ACAQGraph.COMPARTMENT_DEFAULT);
         }
         return algorithmOutput;
     }
@@ -210,14 +210,14 @@ public class GraphWrapperAlgorithm extends ACAQAlgorithm {
         return result;
     }
 
-    public ACAQAlgorithmGraph getWrappedGraph() {
+    public ACAQGraph getWrappedGraph() {
         return wrappedGraph;
     }
 
-    public void setWrappedGraph(ACAQAlgorithmGraph wrappedGraph) {
+    public void setWrappedGraph(ACAQGraph wrappedGraph) {
         if (this.wrappedGraph != wrappedGraph) {
             for (ACAQGraphNode value : wrappedGraph.getAlgorithmNodes().values()) {
-                value.setCompartment(ACAQAlgorithmGraph.COMPARTMENT_DEFAULT);
+                value.setCompartment(ACAQGraph.COMPARTMENT_DEFAULT);
             }
             this.wrappedGraph = wrappedGraph;
             this.algorithmInput = null;

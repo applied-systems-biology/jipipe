@@ -13,12 +13,9 @@
 
 package org.hkijena.acaq5.ui.grapheditor.settings;
 
-import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
-import org.hkijena.acaq5.api.grouping.JsonAlgorithm;
-import org.hkijena.acaq5.api.grouping.NodeGroup;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.testbench.ACAQTestBenchSettings;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
@@ -27,7 +24,6 @@ import org.hkijena.acaq5.ui.cache.ACAQAlgorithmCacheBrowserUI;
 import org.hkijena.acaq5.ui.compendium.ACAQAlgorithmCompendiumUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
-import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonAlgorithmExporter;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphEditorUI;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
@@ -42,7 +38,7 @@ import java.util.Collections;
  * UI for a single {@link ACAQGraphNode}
  */
 public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPanel {
-    private ACAQAlgorithmGraph graph;
+    private ACAQGraph graph;
     private ACAQAlgorithmGraphCanvasUI canvas;
     private ACAQGraphNode algorithm;
     private JPanel testBenchTabContent;

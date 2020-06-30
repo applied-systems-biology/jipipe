@@ -14,7 +14,7 @@
 package org.hkijena.acaq5.ui.grapheditor.algorithmfinder;
 
 import com.google.common.eventbus.EventBus;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
@@ -34,7 +34,7 @@ import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_HEIGHT;
 public class ACAQAlgorithmFinderSlotUI extends JPanel {
 
     private ACAQDataSlot outputSlot;
-    private ACAQAlgorithmGraph graph;
+    private ACAQGraph graph;
     private String compartment;
     private ACAQDataSlot inputSlot;
     private boolean isExistingInstance;
@@ -52,7 +52,7 @@ public class ACAQAlgorithmFinderSlotUI extends JPanel {
      * @param inputSlot          The target slot
      * @param isExistingInstance If true, the algorithm already exists within the graph
      */
-    public ACAQAlgorithmFinderSlotUI(ACAQDataSlot outputSlot, ACAQAlgorithmGraph graph, String compartment, ACAQDataSlot inputSlot, boolean isExistingInstance) {
+    public ACAQAlgorithmFinderSlotUI(ACAQDataSlot outputSlot, ACAQGraph graph, String compartment, ACAQDataSlot inputSlot, boolean isExistingInstance) {
         this.outputSlot = outputSlot;
         this.graph = graph;
         this.compartment = compartment;

@@ -16,7 +16,7 @@ package org.hkijena.acaq5.ui.extensionbuilder;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.events.ExtensionContentAddedEvent;
 import org.hkijena.acaq5.api.events.ExtensionContentRemovedEvent;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
@@ -114,7 +114,7 @@ public class ACAQJsonExtensionContentListUI extends ACAQJsonExtensionWorkbenchPa
     private void addAlgorithm() {
         JsonAlgorithmDeclaration declaration = new JsonAlgorithmDeclaration();
         declaration.setName("");
-        declaration.setGraph(new ACAQAlgorithmGraph());
+        declaration.setGraph(new ACAQGraph());
         getProject().addAlgorithm(declaration);
         declaration.getEventBus().register(this);
     }

@@ -19,7 +19,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.grouping.events.ParameterReferencesChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 
@@ -30,11 +30,11 @@ import java.util.List;
 
 /**
  * Contains a list of {@link GraphNodeParameterReferenceGroup} and {@link GraphNodeParameterCollectionReference}
- * Stores references to parameters within an {@link org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph}
+ * Stores references to parameters within an {@link ACAQGraph}
  */
 public class GraphNodeParameters implements ACAQValidatable {
     private final EventBus eventBus = new EventBus();
-    private ACAQAlgorithmGraph graph;
+    private ACAQGraph graph;
     private List<GraphNodeParameterReferenceGroup> parameterReferenceGroups = new ArrayList<>();
 
     /**
@@ -62,11 +62,11 @@ public class GraphNodeParameters implements ACAQValidatable {
      *
      * @return reference to the graph if available
      */
-    public ACAQAlgorithmGraph getGraph() {
+    public ACAQGraph getGraph() {
         return graph;
     }
 
-    public void setGraph(ACAQAlgorithmGraph graph) {
+    public void setGraph(ACAQGraph graph) {
         this.graph = graph;
     }
 

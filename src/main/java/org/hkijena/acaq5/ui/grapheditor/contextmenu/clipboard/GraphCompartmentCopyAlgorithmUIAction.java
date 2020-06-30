@@ -14,7 +14,7 @@
 package org.hkijena.acaq5.ui.grapheditor.contextmenu.clipboard;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
 import org.hkijena.acaq5.ui.grapheditor.contextmenu.AlgorithmUIAction;
@@ -36,7 +36,7 @@ public class GraphCompartmentCopyAlgorithmUIAction implements AlgorithmUIAction 
 
     @Override
     public void run(ACAQAlgorithmGraphCanvasUI canvasUI, Set<ACAQAlgorithmUI> selection) {
-        ACAQAlgorithmGraph graph = canvasUI.getAlgorithmGraph()
+        ACAQGraph graph = canvasUI.getAlgorithmGraph()
                 .extract(selection.stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet()), true);
         try {
             String json = JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(graph);

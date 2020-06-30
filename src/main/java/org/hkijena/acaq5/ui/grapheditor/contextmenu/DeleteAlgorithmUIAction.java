@@ -14,6 +14,7 @@
 package org.hkijena.acaq5.ui.grapheditor.contextmenu;
 
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
+import org.hkijena.acaq5.api.history.RemoveNodeGraphHistorySnapshot;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
 import org.hkijena.acaq5.ui.grapheditor.contextmenu.AlgorithmUIAction;
@@ -35,7 +36,9 @@ public class DeleteAlgorithmUIAction implements AlgorithmUIAction {
                 "Do you really want to remove the following algorithms: " +
                         selection.stream().map(ACAQAlgorithmUI::getAlgorithm).map(ACAQGraphNode::getName).collect(Collectors.joining(", ")), "Delete algorithms",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            canvasUI.getAlgorithmGraph().removeNodes(selection.stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet()), true);
+            Set<ACAQGraphNode> nodes = selection.stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet());
+            canvasUI.getGraphHistory().addSnapshotBefore(new RemoveNodeGraphHistorySnapshot(canvasUI.getAlgorithmGraph(), nodes));
+            canvasUI.getAlgorithmGraph().removeNodes(nodes, true);
         }
     }
 

@@ -18,7 +18,7 @@ import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.events.CompartmentRemovedEvent;
 import org.hkijena.acaq5.api.events.ExtensionRegisteredEvent;
@@ -427,7 +427,7 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
             UIUtils.openValidityReportDialog(this, report, false);
             return;
         }
-        NodeGroup nodeGroup = new NodeGroup(new ACAQAlgorithmGraph(getProject().getGraph()), true);
+        NodeGroup nodeGroup = new NodeGroup(new ACAQGraph(getProject().getGraph()), true);
         ACAQJsonAlgorithmExporter exporter = new ACAQJsonAlgorithmExporter(this, nodeGroup);
         exporter.getAlgorithmDeclaration().setName("Custom algorithm");
         exporter.getAlgorithmDeclaration().setDescription("A custom algorithm");

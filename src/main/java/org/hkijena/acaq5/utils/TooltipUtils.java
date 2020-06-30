@@ -44,7 +44,7 @@ public class TooltipUtils {
      * @param projectGraph the project graph
      * @return tooltip
      */
-    public static String getProjectCompartmentTooltip(ACAQProjectCompartment compartment, ACAQAlgorithmGraph projectGraph) {
+    public static String getProjectCompartmentTooltip(ACAQProjectCompartment compartment, ACAQGraph projectGraph) {
         StringBuilder builder = new StringBuilder();
         builder.append("<html>");
         builder.append("<u><strong>").append(compartment.getName()).append("</strong></u><br/>");

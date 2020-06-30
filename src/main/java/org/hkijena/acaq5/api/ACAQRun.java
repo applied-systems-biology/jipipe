@@ -16,7 +16,7 @@ package org.hkijena.acaq5.api;
 import com.google.common.base.Charsets;
 import ij.IJ;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
@@ -39,7 +39,7 @@ import java.util.function.Supplier;
  * Runnable instance of an {@link ACAQProject}
  */
 public class ACAQRun implements ACAQRunnable {
-    ACAQAlgorithmGraph algorithmGraph;
+    ACAQGraph algorithmGraph;
     private ACAQProject project;
     private ACAQRunSettings configuration;
     private StringBuilder log = new StringBuilder();
@@ -52,7 +52,7 @@ public class ACAQRun implements ACAQRunnable {
     public ACAQRun(ACAQProject project, ACAQRunSettings configuration) {
         this.project = project;
         this.configuration = configuration;
-        this.algorithmGraph = new ACAQAlgorithmGraph(project.getGraph());
+        this.algorithmGraph = new ACAQGraph(project.getGraph());
         initializeRelativeDirectories();
         initializeInternalStoragePaths();
     }
@@ -329,7 +329,7 @@ public class ACAQRun implements ACAQRunnable {
     /**
      * @return The graph used within this run. A copy of the project graph.
      */
-    public ACAQAlgorithmGraph getGraph() {
+    public ACAQGraph getGraph() {
         return algorithmGraph;
     }
 

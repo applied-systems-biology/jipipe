@@ -44,7 +44,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import static org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph.COMPARTMENT_DEFAULT;
+import static org.hkijena.acaq5.api.algorithm.ACAQGraph.COMPARTMENT_DEFAULT;
 
 /**
  * Graph editor UI for a project compartment graph

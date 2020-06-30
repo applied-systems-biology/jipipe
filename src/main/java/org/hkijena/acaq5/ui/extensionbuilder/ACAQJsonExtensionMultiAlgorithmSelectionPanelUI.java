@@ -13,7 +13,7 @@
 
 package org.hkijena.acaq5.ui.extensionbuilder;
 
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  * Panel shown when multiple algorithms are selected
  */
 public class ACAQJsonExtensionMultiAlgorithmSelectionPanelUI extends ACAQJsonExtensionWorkbenchPanel {
-    private ACAQAlgorithmGraph graph;
+    private ACAQGraph graph;
     private ACAQAlgorithmGraphCanvasUI canvas;
     private Set<ACAQGraphNode> algorithms;
 

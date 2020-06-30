@@ -17,7 +17,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.grouping.NodeGroup;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
@@ -58,7 +58,7 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
      * @param algorithmGraph The graph
      * @param compartment    The compartment
      */
-    public ACAQAlgorithmGraphCompartmentUI(ACAQWorkbench workbenchUI, ACAQAlgorithmGraph algorithmGraph, String compartment) {
+    public ACAQAlgorithmGraphCompartmentUI(ACAQWorkbench workbenchUI, ACAQGraph algorithmGraph, String compartment) {
         super(workbenchUI, algorithmGraph, compartment);
         documentationPanel = new MarkdownReader(false);
         documentationPanel.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md"));
@@ -173,7 +173,7 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
      * @param compartment     the graph compartment where nodes are put
      * @param addedAlgorithms added algorithm types are added to this list
      */
-    public static void initializeAddNodesMenus(JMenuBar menuBar, ACAQAlgorithmGraph algorithmGraph, String compartment, Set<ACAQAlgorithmDeclaration> addedAlgorithms) {
+    public static void initializeAddNodesMenus(JMenuBar menuBar, ACAQGraph algorithmGraph, String compartment, Set<ACAQAlgorithmDeclaration> addedAlgorithms) {
         JMenu addDataSourceMenu = new JMenu("Add data");
         addDataSourceMenu.setIcon(UIUtils.getIconFromResources("database.png"));
         initializeAddDataSourceMenu(addDataSourceMenu, algorithmGraph, compartment, addedAlgorithms);
@@ -219,7 +219,7 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
      * @param compartment     the graph compartment where nodes are put
      * @param addedAlgorithms added algorithm types are added to this list
      */
-    public static void initializeMenuForCategory(JMenu menu, ACAQAlgorithmCategory category, ACAQAlgorithmGraph algorithmGraph, String compartment, Set<ACAQAlgorithmDeclaration> addedAlgorithms) {
+    public static void initializeMenuForCategory(JMenu menu, ACAQAlgorithmCategory category, ACAQGraph algorithmGraph, String compartment, Set<ACAQAlgorithmDeclaration> addedAlgorithms) {
         ACAQDefaultRegistry registryService = ACAQDefaultRegistry.getInstance();
         Set<ACAQAlgorithmDeclaration> algorithmsOfCategory = registryService.getAlgorithmRegistry().getAlgorithmsOfCategory(category);
         if (algorithmsOfCategory.isEmpty()) {
@@ -252,7 +252,7 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
      * @param compartment     the compartment where nodes are put
      * @param addedAlgorithms added algorithm types are added to this list
      */
-    public static void initializeAddDataSourceMenu(JMenu menu, ACAQAlgorithmGraph algorithmGraph, String compartment, Set<ACAQAlgorithmDeclaration> addedAlgorithms) {
+    public static void initializeAddDataSourceMenu(JMenu menu, ACAQGraph algorithmGraph, String compartment, Set<ACAQAlgorithmDeclaration> addedAlgorithms) {
         ACAQDefaultRegistry registryService = ACAQDefaultRegistry.getInstance();
         Map<String, Set<Class<? extends ACAQData>>> dataTypesByMenuPaths = ACAQDatatypeRegistry.getInstance().getDataTypesByMenuPaths();
         Map<String, JMenu> menuTree = UIUtils.createMenuTree(menu, dataTypesByMenuPaths.keySet());
