@@ -14,6 +14,7 @@
 package org.hkijena.acaq5.ui.grapheditor.contextmenu;
 
 import org.hkijena.acaq5.api.grouping.JsonAlgorithm;
+import org.hkijena.acaq5.api.history.GraphChangedHistorySnapshot;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -29,6 +30,7 @@ public class JsonAlgorithmToGroupAlgorithmUIAction implements AlgorithmUIAction 
 
     @Override
     public void run(ACAQAlgorithmGraphCanvasUI canvasUI, Set<ACAQAlgorithmUI> selection) {
+        canvasUI.getGraphHistory().addSnapshotBefore(new GraphChangedHistorySnapshot(canvasUI.getAlgorithmGraph(), "Convert to group"));
         for (ACAQAlgorithmUI ui : selection) {
             if(ui.getAlgorithm() instanceof JsonAlgorithm) {
                 JsonAlgorithm.unpackToNodeGroup((JsonAlgorithm) ui.getAlgorithm());

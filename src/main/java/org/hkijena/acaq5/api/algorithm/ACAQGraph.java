@@ -1089,6 +1089,25 @@ public class ACAQGraph implements ACAQValidatable {
     }
 
     /**
+     * Replaces all contents with the ones in the other graph
+     * Does not apply copying!
+     * @param other the other graph
+     */
+    public void replaceWith(ACAQGraph other) {
+        ++preventTriggerEvents;
+        this.algorithms.clear();
+        this.compartments.clear();
+        this.algorithms.putAll(other.algorithms);
+        this.compartments.putAll(other.compartments);
+        for (ACAQGraphNode node : this.algorithms.values()) {
+            node.getEventBus().register(this);
+        }
+        this.graph = other.graph;
+        --preventTriggerEvents;
+        postChangedEvent();
+    }
+
+    /**
      * Serializes an {@link ACAQGraph}
      */
     public static class Serializer extends JsonSerializer<ACAQGraph> {

@@ -16,6 +16,7 @@ package org.hkijena.acaq5.ui.grapheditor.contextmenu;
 import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.grouping.NodeGroup;
+import org.hkijena.acaq5.api.history.GraphChangedHistorySnapshot;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -32,6 +33,7 @@ public class GroupAlgorithmUIAction implements AlgorithmUIAction {
 
     @Override
     public void run(ACAQAlgorithmGraphCanvasUI canvasUI, Set<ACAQAlgorithmUI> selection) {
+        canvasUI.getGraphHistory().addSnapshotBefore(new GraphChangedHistorySnapshot(canvasUI.getAlgorithmGraph(), "Group"));
         Set<ACAQGraphNode> algorithms = selection.stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet());
         ACAQGraph graph = canvasUI.getAlgorithmGraph();
         ACAQGraph subGraph = graph.extract(algorithms, false);

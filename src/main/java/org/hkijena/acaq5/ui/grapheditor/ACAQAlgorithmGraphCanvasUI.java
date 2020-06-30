@@ -349,7 +349,6 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
             if(currentlyDraggedSnapshot != null) {
                 // Check if something would change
                 if(!Objects.equals(currentlyDragged.getLocation(), ACAQAlgorithmUI.toGridLocation(new Point(x,y)))) {
-                    System.out.println("snapshot");
                     graphHistory.addSnapshotBefore(currentlyDraggedSnapshot);
                     currentlyDraggedSnapshot = null;
                 }

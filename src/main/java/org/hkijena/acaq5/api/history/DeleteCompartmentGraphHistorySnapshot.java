@@ -16,12 +16,13 @@ package org.hkijena.acaq5.api.history;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 
-public class DeleteCompartmentGraphHistorySnapshot implements ACAQAlgorithmGraphHistorySnapshot {
+public class DeleteCompartmentGraphHistorySnapshot extends GraphChangedHistorySnapshot {
 
     private final ACAQProject project;
     private ACAQProjectCompartment compartmentInstance;
 
     public DeleteCompartmentGraphHistorySnapshot(ACAQProject project, ACAQProjectCompartment compartmentInstance) {
+        super(project.getGraph(), "");
         this.project = project;
         this.compartmentInstance = compartmentInstance;
     }
@@ -33,12 +34,14 @@ public class DeleteCompartmentGraphHistorySnapshot implements ACAQAlgorithmGraph
 
     @Override
     public void redo() {
+        super.redo();
         project.removeCompartment(compartmentInstance);
     }
 
     @Override
     public void undo() {
         compartmentInstance = project.addCompartment(compartmentInstance);
+        super.undo();
     }
 
     public ACAQProjectCompartment getCompartmentInstance() {

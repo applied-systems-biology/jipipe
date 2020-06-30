@@ -75,21 +75,17 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPan
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
 
-        {
-            cacheBrowserTabContent = new JPanel(new BorderLayout());
-            tabbedPane.addTab("Cache browser", UIUtils.getIconFromResources("database.png"),
-                    cacheBrowserTabContent,
-                    DocumentTabPane.CloseMode.withoutCloseButton,
-                    false);
-        }
+        cacheBrowserTabContent = new JPanel(new BorderLayout());
+        tabbedPane.addTab("Cache browser", UIUtils.getIconFromResources("database.png"),
+                cacheBrowserTabContent,
+                DocumentTabPane.CloseMode.withoutCloseButton,
+                false);
 
-        if (algorithm.getCategory() != ACAQAlgorithmCategory.Internal) {
-            testBenchTabContent = new JPanel(new BorderLayout());
-            tabbedPane.addTab("Quick run", UIUtils.getIconFromResources("play.png"),
-                    testBenchTabContent,
-                    DocumentTabPane.CloseMode.withoutCloseButton,
-                    false);
-        }
+        testBenchTabContent = new JPanel(new BorderLayout());
+        tabbedPane.addTab("Quick run", UIUtils.getIconFromResources("play.png"),
+                testBenchTabContent,
+                DocumentTabPane.CloseMode.withoutCloseButton,
+                false);
 
 
         add(tabbedPane, BorderLayout.CENTER);
