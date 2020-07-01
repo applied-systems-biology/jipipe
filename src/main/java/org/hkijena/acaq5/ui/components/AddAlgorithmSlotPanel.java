@@ -58,7 +58,6 @@ public class AddAlgorithmSlotPanel extends JPanel {
     private JComboBox<String> inheritedSlotList;
     private JTextField nameEditor;
     private ACAQDataDeclaration selectedDeclaration;
-    private FormPanel formPanel;
     private JButton confirmButton;
     private JDialog dialog;
     private Set<ACAQDataDeclaration> availableTypes;
@@ -109,8 +108,6 @@ public class AddAlgorithmSlotPanel extends JPanel {
         setLayout(new BorderLayout());
         initializeToolBar();
 
-        formPanel = new FormPanel(null, FormPanel.NONE);
-
         datatypeList = new JList<>();
         datatypeList.setCellRenderer(new ACAQDataDeclarationListCellRenderer());
         datatypeList.addListSelectionListener(e -> {
@@ -119,8 +116,10 @@ public class AddAlgorithmSlotPanel extends JPanel {
             }
         });
         JScrollPane scrollPane = new JScrollPane(datatypeList);
-        formPanel.addVerticalGlue(scrollPane, null);
+        add(scrollPane, BorderLayout.CENTER);
 
+        // Create form located at the bottom
+        FormPanel formPanel = new FormPanel(null, FormPanel.NONE);
         nameEditor = new JXTextField();
         nameEditor.addKeyListener(new KeyAdapter() {
             @Override
@@ -159,9 +158,11 @@ public class AddAlgorithmSlotPanel extends JPanel {
             formPanel.addToForm(inheritanceConversionEditorUI, new JLabel("Inheritance conversions"), null);
         }
 
-        formPanel.addVerticalGlue();
-        add(formPanel, BorderLayout.CENTER);
-        initializeButtonPanel();
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.Y_AXIS));
+        bottomPanel.add(formPanel);
+        bottomPanel.add(initializeButtonPanel());
+        add(bottomPanel, BorderLayout.SOUTH);
     }
 
     private void checkNameEditor() {
@@ -172,7 +173,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
         }
     }
 
-    private void initializeButtonPanel() {
+    private JPanel initializeButtonPanel() {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
@@ -195,7 +196,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
         });
         buttonPanel.add(confirmButton);
 
-        add(buttonPanel, BorderLayout.SOUTH);
+        return buttonPanel;
     }
 
     private void addSlot() {

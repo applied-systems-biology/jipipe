@@ -35,6 +35,7 @@ public class SlotConfigurationHistorySnapshot implements ACAQAlgorithmGraphHisto
 
     @Override
     public void undo() {
+        afterSlotConfiguration = node.getSlotConfiguration().duplicate();
         node.getSlotConfiguration().setTo(slotConfiguration);
     }
 

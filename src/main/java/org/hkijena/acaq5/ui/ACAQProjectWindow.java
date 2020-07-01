@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.ACAQRun;
+import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
 import org.hkijena.acaq5.extensions.settings.ProjectsSettings;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
@@ -198,14 +199,30 @@ public class ACAQProjectWindow extends JFrame {
         }
 
         try {
+            Path tempFile = Files.createTempFile("acaq5_save_" + savePath.getFileName(), ".json");
             getProject().setWorkDirectory(savePath.getParent());
-            getProject().saveProject(savePath);
+            getProject().saveProject(tempFile);
+
+            // Check if the saved project can be loaded
+            ACAQProject.loadProject(tempFile);
+
+            // Overwrite the target file
+            if(Files.exists(savePath))
+                Files.delete(savePath);
+            Files.copy(tempFile, savePath);
+
+            // Everything OK, now set the title
             setTitle(savePath.toString());
             projectSavePath = savePath;
             projectUI.sendStatusBarText("Saved project to " + savePath);
             ProjectsSettings.getInstance().addRecentProject(savePath);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            UIUtils.openErrorDialog(this, new UserFriendlyRuntimeException(e,
+                    "Error during saving!",
+                    "While saving the project into '" + savePath + "'. Any existing file was not changed or overwritten.",
+                    "The issue cannot be determined. Please contact the ACAQ5 authors.",
+                    "Please check if you have write access to the temporary directory and the target directory. " +
+                            "If this is the case, please contact the ACAQ5 authors."));
         }
     }
 

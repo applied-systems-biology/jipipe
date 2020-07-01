@@ -310,7 +310,8 @@ public class FormPanel extends JXPanel {
                 gridx = 0;
                 gridy = numRows;
                 fill = GridBagConstraints.VERTICAL;
-                weightx = 0;
+                gridwidth = 2;
+                weightx = 1;
                 weighty = 1;
             }
         });
