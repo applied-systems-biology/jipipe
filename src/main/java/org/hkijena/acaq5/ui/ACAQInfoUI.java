@@ -21,6 +21,7 @@ import org.hkijena.acaq5.extensions.settings.ProjectsSettings;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
+import org.hkijena.acaq5.utils.ReflectionUtils;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -39,6 +40,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
+import java.util.jar.Attributes;
 
 /**
  * UI that shows some introduction
@@ -127,6 +130,11 @@ public class ACAQInfoUI extends ACAQProjectWorkbenchPanel {
         technicalInfo.getContentPanel().setOpaque(false);
 
         technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(getClass().getPackage().getImplementationVersion(), "Development")), new JLabel("Version"), null);
+        Attributes manifestAttributes = ReflectionUtils.getManifestAttributes();
+        if(manifestAttributes != null) {
+            String implementationDateString = manifestAttributes.getValue("Implementation-Date");
+            technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(implementationDateString, "NA")), new JLabel("Build time"), null);
+        }
         technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(IJ.getVersion(), "NA")), new JLabel("ImageJ"), null);
         technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(System.getProperty("java.version"), "NA")), new JLabel("Java"), null);
         technicalInfo.addVerticalGlue();

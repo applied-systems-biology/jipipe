@@ -13,14 +13,21 @@
 
 package org.hkijena.acaq5.utils;
 
+import com.google.common.base.Charsets;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.reflect.ConstructorUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URL;
+import java.nio.file.Files;
+import java.sql.Ref;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 /**
  * Utilities around reflection
@@ -31,6 +38,21 @@ public class ReflectionUtils {
 
     private ReflectionUtils() {
 
+    }
+
+    public static Attributes getManifestAttributes() {
+        try {
+            String clz = ReflectionUtils.class.getSimpleName() + ".class";
+            String pth = ReflectionUtils.class.getResource(clz).toString();
+            String mnf = pth.substring(0, pth.lastIndexOf("!") + 1) + "/META-INF/MANIFEST.MF";
+            URL url = new URL(mnf);
+            Manifest manifest = new Manifest(url.openStream());
+            return manifest.getMainAttributes();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private static Map<Class<?>, Class<?>> createPrimitveWrapperMap() {
