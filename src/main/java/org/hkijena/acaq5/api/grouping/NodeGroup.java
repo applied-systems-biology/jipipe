@@ -83,11 +83,11 @@ public class NodeGroup extends GraphWrapperAlgorithm implements ACAQCustomParame
         super(ACAQAlgorithmRegistry.getInstance().getDeclarationById("node-group"), new ACAQGraph());
 
         // Remove all algorithms with no i/o
-        for (ACAQGraphNode node : ImmutableList.copyOf(graph.getAlgorithmNodes().values())) {
-            if (node.getInputSlots().isEmpty() && node.getOutputSlots().isEmpty()) {
-                graph.removeNode(node, false);
-            }
-        }
+//        for (ACAQGraphNode node : ImmutableList.copyOf(graph.getAlgorithmNodes().values())) {
+//            if (node.getInputSlots().isEmpty() && node.getOutputSlots().isEmpty()) {
+//                graph.removeNode(node, false);
+//            }
+//        }
 
         // Clear locations
         for (ACAQGraphNode node : graph.getAlgorithmNodes().values()) {
