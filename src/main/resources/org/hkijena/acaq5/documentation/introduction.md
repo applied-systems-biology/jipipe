@@ -1,12 +1,36 @@
-<p style="text-align:center;"><img src="image://logo-400.png" width="400" height="146"/></p>
+ACAQ5 is a graphical batch processing programming language for *ImageJ*. It comes with an easy-to-use graphical macro editor that requires no programming knowledge. 
+Image processing steps can be added to the user interface and connected to form powerful and complex pipelines that can be easily scaled up and down.
 
-# Automated Confrontation Assay Quantification Version 5 (ACAQ5)
+To create a pipeline, switch to one of the already open tabs at the top. If you create a new project, there is
+always one tab to manage <img src="image://icons/connect.png/"/> <strong>Graph compartments</strong> and multiple 
+<img src="image://icons/graph-compartment.png/"/> <strong>Compartment</strong> items.
+Compartments are a way to organize large pipelines into smaller sub-graphs. You can create as many compartments as you want 
+and pass data between them. Please take a look at out online tutorials for step-by-step explanations.
 
-Website: https://applied-systems-biology.github.io/acaq5/
+On switching to a <img src="image://icons/graph-compartment.png/"/> <strong>Compartment</strong>, you can add algorithms 
+into the pipeline. You can find them in the menu or via the <i>Search ...</i> bar. Each algorithm has a set of input and
+output <i>slots</i>. Inputs must always have a connection, while outputs can be left alone. ACAQ5 will automatically save all
+generated outputs. 
 
-Source code: https://github.com/applied-systems-biology/acaq5/
+If you select an algorithm, you can find its parameters on the right-hand side. They allow you to set the name, give a description,
+and control the algorithm behavior.
 
-# Copyright
+ACAQ5 is a batch-processing language, meaning that algorithms always work on multiple data items at once. At the beginning, 
+we recommend to import your input files or folders by dragging them into a compartment area or by adding file/folder
+lists manually via their respective algorithms. You can find all kind of input algorithms in the <img src="image://icons/database.png/"/> <strong>Add data</strong> 
+menu.
+
+To run a pipeline, click the <img src="image://icons/run.png/"/> <strong>Run</strong> button at the top-right corner.
+You can also run only a part of the pipeline via the <img src="image://icons/play.png/"/> <strong>Quick Run</strong>
+feature that can be set up via right-clicking an algorithm node or selecting it.
+
+You can find more detailed descriptions and written/video tutorials, as well as examples online on our website.
+
+**Thank you for using ACAQ5!**
+
+<p style="margin-top: 40px;"></p>
+<h1>Copyright</h1>
+<hr/>
 
 Copyright by Zoltán Cseresnyés, Ruman Gerst
 
@@ -20,7 +44,10 @@ Leibniz Institute for Natural Product Research and Infection Biology - Hans Knö
 
 Adolf-Reichwein-Straße 23, 07745 Jena, Germany
 
-# License
+
+<p style="margin-top: 40px;"></p>
+<h1>License</h1>
+<hr/>
 
 BSD 2-Clause License
 

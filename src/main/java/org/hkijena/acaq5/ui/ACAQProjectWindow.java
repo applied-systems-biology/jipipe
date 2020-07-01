@@ -199,7 +199,7 @@ public class ACAQProjectWindow extends JFrame {
         }
 
         try {
-            Path tempFile = Files.createTempFile("acaq5_save_" + savePath.getFileName(), ".json");
+            Path tempFile = Files.createTempFile(savePath.getParent(), savePath.getFileName().toString(), ".part");
             getProject().setWorkDirectory(savePath.getParent());
             getProject().saveProject(tempFile);
 

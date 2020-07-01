@@ -93,6 +93,6 @@ public class ListParameterEditorUI extends ACAQParameterEditorUI {
     private void removeEntry(Object entry) {
         ListParameter<?> parameter = getParameter(ListParameter.class);
         parameter.remove(entry);
-        reload();
+        setParameter(parameter, true);
     }
 }

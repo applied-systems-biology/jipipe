@@ -960,7 +960,7 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
                 }
                 y += rowHeights.getOrDefault(row, 0);
             }
-            x += columnWidths.get(column);
+            x += columnWidths.getOrDefault(column, 0);
         }
 
         repaint();

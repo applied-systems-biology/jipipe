@@ -69,7 +69,7 @@ public class FormPanel extends JXPanel {
 
     private final EventBus eventBus = new EventBus();
     private int numRows = 0;
-    private JPanel forms = new JPanel();
+    private JPanel contentPanel = new JPanel();
     private MarkdownReader parameterHelp;
     private JScrollPane scrollPane;
 
@@ -81,7 +81,7 @@ public class FormPanel extends JXPanel {
      */
     public FormPanel(MarkdownDocument document, int flags) {
         setLayout(new BorderLayout());
-        forms.setLayout(new GridBagLayout());
+        contentPanel.setLayout(new GridBagLayout());
 
         JPanel helpPanel = new JPanel(new BorderLayout());
         parameterHelp = new MarkdownReader(false);
@@ -93,10 +93,10 @@ public class FormPanel extends JXPanel {
 
         Component content;
         if ((flags & WITH_SCROLLING) == WITH_SCROLLING) {
-            scrollPane = new JScrollPane(forms);
+            scrollPane = new JScrollPane(contentPanel);
             content = scrollPane;
         } else
-            content = forms;
+            content = contentPanel;
 
         if ((flags & WITH_DOCUMENTATION) == WITH_DOCUMENTATION) {
             boolean documentationBelow = (flags & DOCUMENTATION_BELOW) == DOCUMENTATION_BELOW;
@@ -114,6 +114,15 @@ public class FormPanel extends JXPanel {
         } else {
             add(content, BorderLayout.CENTER);
         }
+    }
+
+    @Override
+    public void setOpaque(boolean isOpaque) {
+        super.setOpaque(isOpaque);
+    }
+
+    public JPanel getContentPanel() {
+        return contentPanel;
     }
 
     public JScrollPane getScrollPane() {
@@ -158,7 +167,7 @@ public class FormPanel extends JXPanel {
      * @return The component
      */
     public <T extends Component> T addToForm(T component, MarkdownDocument documentation) {
-        forms.add(component, new GridBagConstraints() {
+        contentPanel.add(component, new GridBagConstraints() {
             {
                 anchor = GridBagConstraints.WEST;
                 gridx = 0;
@@ -185,7 +194,7 @@ public class FormPanel extends JXPanel {
      * @return The component
      */
     public <T extends Component> T addToForm(T component, Component description, MarkdownDocument documentation) {
-        forms.add(component, new GridBagConstraints() {
+        contentPanel.add(component, new GridBagConstraints() {
             {
                 anchor = GridBagConstraints.WEST;
                 gridx = 1;
@@ -196,7 +205,7 @@ public class FormPanel extends JXPanel {
                 weightx = 1;
             }
         });
-        forms.add(description, new GridBagConstraints() {
+        contentPanel.add(description, new GridBagConstraints() {
             {
                 anchor = GridBagConstraints.WEST;
                 gridx = 0;
@@ -222,7 +231,7 @@ public class FormPanel extends JXPanel {
      * @return The component
      */
     public <T extends Component> T addWideToForm(T component, MarkdownDocument documentation) {
-        forms.add(component, new GridBagConstraints() {
+        contentPanel.add(component, new GridBagConstraints() {
             {
                 anchor = GridBagConstraints.WEST;
                 gridx = 0;
@@ -256,7 +265,9 @@ public class FormPanel extends JXPanel {
      * Adds a component that acts as Box.verticalGlue()
      */
     public void addVerticalGlue() {
-        forms.add(new JPanel(), new GridBagConstraints() {
+        JPanel glue = new JPanel();
+        glue.setOpaque(contentPanel.isOpaque());
+        contentPanel.add(glue, new GridBagConstraints() {
             {
                 anchor = GridBagConstraints.WEST;
                 gridx = 0;
@@ -273,8 +284,8 @@ public class FormPanel extends JXPanel {
      * Removes the last row. Silently fails if there are no rows.
      */
     public void removeLastRow() {
-        if (forms.getComponentCount() > 0) {
-            forms.remove(forms.getComponentCount() - 1);
+        if (contentPanel.getComponentCount() > 0) {
+            contentPanel.remove(contentPanel.getComponentCount() - 1);
             --numRows;
         }
     }
@@ -283,7 +294,7 @@ public class FormPanel extends JXPanel {
      * Removes all components
      */
     public void clear() {
-        forms.removeAll();
+        contentPanel.removeAll();
         numRows = 0;
         revalidate();
         repaint();
@@ -304,7 +315,7 @@ public class FormPanel extends JXPanel {
      * @param document  optional documentation
      */
     public void addVerticalGlue(Component component, MarkdownDocument document) {
-        forms.add(component, new GridBagConstraints() {
+        contentPanel.add(component, new GridBagConstraints() {
             {
                 anchor = GridBagConstraints.WEST;
                 gridx = 0;

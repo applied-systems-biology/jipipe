@@ -87,7 +87,8 @@ public class PathListParameterEditorUI extends ACAQParameterEditorUI {
             int index = indicies[i];
             parameter.remove(index);
         }
-        reload();
+
+        setParameter(parameter, true);
     }
 
     private void addEntry() {

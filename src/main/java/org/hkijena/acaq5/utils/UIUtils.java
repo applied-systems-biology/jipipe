@@ -13,6 +13,7 @@
 
 package org.hkijena.acaq5.utils;
 
+import ij.IJ;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
@@ -700,5 +701,17 @@ public class UIUtils {
         }
 
         return ret;
+    }
+
+    /**
+     * Opens a website with given URL
+     * @param url the URL
+     */
+    public static void openWebsite(String url) {
+        try {
+            Desktop.getDesktop().browse(new URI(url));
+        } catch (IOException | URISyntaxException e) {
+            IJ.handleException(e);
+        }
     }
 }

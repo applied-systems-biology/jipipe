@@ -121,7 +121,7 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
 
         documentTabPane = new DocumentTabPane();
         documentTabPane.addSingletonTab("INTRODUCTION",
-                "Introduction",
+                "Getting started",
                 UIUtils.getIconFromResources("info.png"),
                 new ACAQInfoUI(this),
                 !GeneralUISettings.getInstance().isShowIntroduction());

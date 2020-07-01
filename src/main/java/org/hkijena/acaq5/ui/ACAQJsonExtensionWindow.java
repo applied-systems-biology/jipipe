@@ -19,6 +19,7 @@ import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.ACAQJsonExtension;
 import org.hkijena.acaq5.api.ACAQProject;
+import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.extensions.jsonextensionloader.JsonExtensionLoaderExtension;
 import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
 import org.hkijena.acaq5.extensions.settings.ProjectsSettings;
@@ -165,13 +166,31 @@ public class ACAQJsonExtensionWindow extends JFrame {
         }
 
         try {
+
+            Path tempFile = Files.createTempFile(savePath.getParent(), savePath.getFileName().toString(), ".part");
+            getProject().saveProject(tempFile);
+
+            // Check if the saved project can be loaded
+            ACAQProject.loadProject(tempFile);
+
+            // Overwrite the target file
+            if(Files.exists(savePath))
+                Files.delete(savePath);
+            Files.copy(tempFile, savePath);
+
+            // Everything OK, now set the title
             getProject().saveProject(savePath);
             setTitle(savePath.toString());
             projectSavePath = savePath;
             projectUI.sendStatusBarText("Saved ACAQ5 JSON extension to " + savePath);
             ProjectsSettings.getInstance().addRecentJsonExtension(savePath);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            UIUtils.openErrorDialog(this, new UserFriendlyRuntimeException(e,
+                    "Error during saving!",
+                    "While saving the project into '" + savePath + "'. Any existing file was not changed or overwritten.",
+                    "The issue cannot be determined. Please contact the ACAQ5 authors.",
+                    "Please check if you have write access to the temporary directory and the target directory. " +
+                            "If this is the case, please contact the ACAQ5 authors."));
         }
     }
 
