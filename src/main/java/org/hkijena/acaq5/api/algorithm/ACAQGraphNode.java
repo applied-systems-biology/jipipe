@@ -427,9 +427,13 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
         jsonGenerator.writeFieldName("acaq:algorithm-ui-location");
         jsonGenerator.writeStartObject();
         for (Map.Entry<String, Map<String, Point>> visualModeEntry : locations.entrySet()) {
+            if(visualModeEntry.getKey() == null)
+                continue;
             jsonGenerator.writeFieldName(visualModeEntry.getKey());
             jsonGenerator.writeStartObject();
             for (Map.Entry<String, Point> entry : visualModeEntry.getValue().entrySet()) {
+                if(entry.getKey() == null)
+                    continue;
                 jsonGenerator.writeFieldName(entry.getKey());
                 jsonGenerator.writeStartObject();
                 jsonGenerator.writeNumberField("x", entry.getValue().x);
