@@ -13,8 +13,6 @@
 
 package org.hkijena.acaq5.utils;
 
-import com.google.common.base.Charsets;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.reflect.ConstructorUtils;
 
 import java.lang.reflect.Constructor;
@@ -22,8 +20,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.nio.file.Files;
-import java.sql.Ref;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.Attributes;
@@ -48,8 +44,7 @@ public class ReflectionUtils {
             URL url = new URL(mnf);
             Manifest manifest = new Manifest(url.openStream());
             return manifest.getMainAttributes();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }

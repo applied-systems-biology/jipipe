@@ -705,6 +705,7 @@ public class UIUtils {
 
     /**
      * Opens a website with given URL
+     *
      * @param url the URL
      */
     public static void openWebsite(String url) {

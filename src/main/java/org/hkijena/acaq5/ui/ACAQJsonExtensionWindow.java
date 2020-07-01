@@ -174,7 +174,7 @@ public class ACAQJsonExtensionWindow extends JFrame {
             ACAQProject.loadProject(tempFile);
 
             // Overwrite the target file
-            if(Files.exists(savePath))
+            if (Files.exists(savePath))
                 Files.delete(savePath);
             Files.copy(tempFile, savePath);
 
@@ -184,6 +184,10 @@ public class ACAQJsonExtensionWindow extends JFrame {
             projectSavePath = savePath;
             projectUI.sendStatusBarText("Saved ACAQ5 JSON extension to " + savePath);
             ProjectsSettings.getInstance().addRecentJsonExtension(savePath);
+
+            // Remove tmp file
+            Files.delete(tempFile);
+
         } catch (IOException e) {
             UIUtils.openErrorDialog(this, new UserFriendlyRuntimeException(e,
                     "Error during saving!",

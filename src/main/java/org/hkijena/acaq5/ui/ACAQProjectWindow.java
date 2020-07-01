@@ -207,7 +207,7 @@ public class ACAQProjectWindow extends JFrame {
             ACAQProject.loadProject(tempFile);
 
             // Overwrite the target file
-            if(Files.exists(savePath))
+            if (Files.exists(savePath))
                 Files.delete(savePath);
             Files.copy(tempFile, savePath);
 
@@ -216,6 +216,9 @@ public class ACAQProjectWindow extends JFrame {
             projectSavePath = savePath;
             projectUI.sendStatusBarText("Saved project to " + savePath);
             ProjectsSettings.getInstance().addRecentProject(savePath);
+
+            // Remove tmp file
+            Files.delete(tempFile);
         } catch (IOException e) {
             UIUtils.openErrorDialog(this, new UserFriendlyRuntimeException(e,
                     "Error during saving!",

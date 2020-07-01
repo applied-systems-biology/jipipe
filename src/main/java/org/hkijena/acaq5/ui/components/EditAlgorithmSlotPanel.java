@@ -89,7 +89,6 @@ public class EditAlgorithmSlotPanel extends JPanel {
         initializeToolBar();
 
 
-
         datatypeList = new JList<>();
         datatypeList.setCellRenderer(new ACAQDataDeclarationListCellRenderer());
         datatypeList.addListSelectionListener(e -> {

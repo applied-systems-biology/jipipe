@@ -113,7 +113,8 @@ public class ACAQGraph implements ACAQValidatable {
 
     /**
      * Inserts an algorithm into the graph
-     *  @param key         The unique ID
+     *
+     * @param key         The unique ID
      * @param algorithm   The algorithm
      * @param compartment The compartment where the algorithm will be placed
      * @return the ID of the inserted node
@@ -154,7 +155,8 @@ public class ACAQGraph implements ACAQValidatable {
     /**
      * Inserts an algorithm into the graph.
      * The name is automatically generated
-     *  @param algorithm   The algorithm
+     *
+     * @param algorithm   The algorithm
      * @param compartment The compartment where the algorithm will be placed
      * @return the ID of the inserted node
      */
@@ -771,7 +773,7 @@ public class ACAQGraph implements ACAQValidatable {
      * @return Sorted list of data slots
      */
     public List<ACAQDataSlot> traverseSlots() {
-        if(traversedSlots != null)
+        if (traversedSlots != null)
             return Collections.unmodifiableList(traversedSlots);
         GraphIterator<ACAQDataSlot, ACAQAlgorithmGraphEdge> iterator = new TopologicalOrderIterator<>(graph);
         List<ACAQDataSlot> result = new ArrayList<>();
@@ -878,7 +880,7 @@ public class ACAQGraph implements ACAQValidatable {
      * @return Sorted list of algorithms
      */
     public List<ACAQGraphNode> traverseAlgorithms() {
-        if(traversedAlgorithms != null)
+        if (traversedAlgorithms != null)
             return Collections.unmodifiableList(traversedAlgorithms);
 
         Set<ACAQGraphNode> visited = new HashSet<>();

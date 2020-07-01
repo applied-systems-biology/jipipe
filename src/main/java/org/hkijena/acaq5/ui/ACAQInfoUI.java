@@ -25,7 +25,6 @@ import org.hkijena.acaq5.utils.ReflectionUtils;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
-import org.mozilla.javascript.TopLevel;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -40,7 +39,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Map;
 import java.util.jar.Attributes;
 
 /**
@@ -65,11 +63,11 @@ public class ACAQInfoUI extends ACAQProjectWorkbenchPanel {
     private void refreshRecentProjects() {
         DefaultListModel<Path> model = new DefaultListModel<>();
         for (Path path : ProjectsSettings.getInstance().getRecentProjects()) {
-            if(Files.exists(path)) {
+            if (Files.exists(path)) {
                 model.addElement(path);
             }
         }
-        if(model.getSize() == 0) {
+        if (model.getSize() == 0) {
             model.addElement(null);
         }
         recentProjectsList.setModel(model);
@@ -93,15 +91,15 @@ public class ACAQInfoUI extends ACAQProjectWorkbenchPanel {
     private void initRecentProjects() {
         recentProjectsList.setCellRenderer(new RecentProjectListCellRenderer());
         JScrollPane pane = new JScrollPane(recentProjectsList);
-        pane.setBorder(BorderFactory.createMatteBorder(0,0, 0, 1, Color.DARK_GRAY));
+        pane.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.DARK_GRAY));
         add(pane, BorderLayout.WEST);
 
         recentProjectsList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(e.getClickCount() == 2) {
+                if (e.getClickCount() == 2) {
                     Path value = recentProjectsList.getSelectedValue();
-                    if(value != null) {
+                    if (value != null) {
                         getProjectWorkbench().getWindow().openProject(value);
                     }
                 }
@@ -111,7 +109,7 @@ public class ACAQInfoUI extends ACAQProjectWorkbenchPanel {
 
     @Subscribe
     public void onRecentProjectsChanged(ParameterChangedEvent event) {
-        if("recent-projects".equals(event.getKey())) {
+        if ("recent-projects".equals(event.getKey())) {
             refreshRecentProjects();
         }
     }
@@ -119,10 +117,10 @@ public class ACAQInfoUI extends ACAQProjectWorkbenchPanel {
     private void initializeHeaderPanel() {
         JPanel headerPanel = new BackgroundPanel();
         headerPanel.setLayout(new BorderLayout());
-        headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0,1,0, Color.DARK_GRAY));
+        headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.DARK_GRAY));
         headerPanel.setPreferredSize(new Dimension(headerPanel.getPreferredSize().width, 200));
         JLabel logo = new JLabel(new ImageIcon(ResourceUtils.getPluginResource("logo-400.png")));
-        logo.setBorder(BorderFactory.createEmptyBorder(0,32,0,0));
+        logo.setBorder(BorderFactory.createEmptyBorder(0, 32, 0, 0));
         headerPanel.add(logo, BorderLayout.WEST);
 
         FormPanel technicalInfo = new FormPanel(null, FormPanel.NONE);
@@ -131,7 +129,7 @@ public class ACAQInfoUI extends ACAQProjectWorkbenchPanel {
 
         technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(getClass().getPackage().getImplementationVersion(), "Development")), new JLabel("Version"), null);
         Attributes manifestAttributes = ReflectionUtils.getManifestAttributes();
-        if(manifestAttributes != null) {
+        if (manifestAttributes != null) {
             String implementationDateString = manifestAttributes.getValue("Implementation-Date");
             technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(implementationDateString, "NA")), new JLabel("Build time"), null);
         }
@@ -148,7 +146,7 @@ public class ACAQInfoUI extends ACAQProjectWorkbenchPanel {
 
     private void initializeToolbar(JPanel topPanel) {
         JPanel toolBar = new JPanel();
-        toolBar.setBorder(BorderFactory.createEmptyBorder(0,32,8,0));
+        toolBar.setBorder(BorderFactory.createEmptyBorder(0, 32, 8, 0));
         toolBar.setLayout(new BoxLayout(toolBar, BoxLayout.X_AXIS));
         toolBar.setOpaque(false);
 
@@ -156,7 +154,7 @@ public class ACAQInfoUI extends ACAQProjectWorkbenchPanel {
         openWebsiteButton.setToolTipText("https://applied-systems-biology.github.io/acaq5");
         openWebsiteButton.addActionListener(e -> UIUtils.openWebsite("https://applied-systems-biology.github.io/acaq5"));
         openWebsiteButton.setOpaque(false);
-        openWebsiteButton.setBackground(new Color(0,0,0,0));
+        openWebsiteButton.setBackground(new Color(0, 0, 0, 0));
         toolBar.add(openWebsiteButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
@@ -164,7 +162,7 @@ public class ACAQInfoUI extends ACAQProjectWorkbenchPanel {
         openTutorialsButton.setToolTipText("https://applied-systems-biology.github.io/acaq5/tutorials");
         openTutorialsButton.addActionListener(e -> UIUtils.openWebsite("https://applied-systems-biology.github.io/acaq5/tutorials"));
         openTutorialsButton.setOpaque(false);
-        openTutorialsButton.setBackground(new Color(0,0,0,0));
+        openTutorialsButton.setBackground(new Color(0, 0, 0, 0));
         toolBar.add(openTutorialsButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
@@ -172,7 +170,7 @@ public class ACAQInfoUI extends ACAQProjectWorkbenchPanel {
         openExamplesButton.setToolTipText("https://applied-systems-biology.github.io/acaq5/examples");
         openExamplesButton.addActionListener(e -> UIUtils.openWebsite("https://applied-systems-biology.github.io/acaq5/examples"));
         openExamplesButton.setOpaque(false);
-        openExamplesButton.setBackground(new Color(0,0,0,0));
+        openExamplesButton.setBackground(new Color(0, 0, 0, 0));
         toolBar.add(openExamplesButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
@@ -180,7 +178,7 @@ public class ACAQInfoUI extends ACAQProjectWorkbenchPanel {
         openDocumentationButton.setToolTipText("https://applied-systems-biology.github.io/acaq5/documentation");
         openDocumentationButton.addActionListener(e -> UIUtils.openWebsite("https://applied-systems-biology.github.io/acaq5/documentation"));
         openDocumentationButton.setOpaque(false);
-        openDocumentationButton.setBackground(new Color(0,0,0,0));
+        openDocumentationButton.setBackground(new Color(0, 0, 0, 0));
         toolBar.add(openDocumentationButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
@@ -188,7 +186,7 @@ public class ACAQInfoUI extends ACAQProjectWorkbenchPanel {
         openSourceCodeButton.setToolTipText("https://github.com/applied-systems-biology/acaq5/");
         openSourceCodeButton.addActionListener(e -> UIUtils.openWebsite("https://github.com/applied-systems-biology/acaq5/"));
         openSourceCodeButton.setOpaque(false);
-        openSourceCodeButton.setBackground(new Color(0,0,0,0));
+        openSourceCodeButton.setBackground(new Color(0, 0, 0, 0));
         toolBar.add(openSourceCodeButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
@@ -211,7 +209,7 @@ public class ACAQInfoUI extends ACAQProjectWorkbenchPanel {
         @Override
         public void paint(Graphics g) {
             double factor = 1.0 * getHeight() / backgroundImage.getHeight();
-            g.drawImage(backgroundImage, 0,0, (int)(backgroundImage.getWidth() * factor), getHeight(), null);
+            g.drawImage(backgroundImage, 0, 0, (int) (backgroundImage.getWidth() * factor), getHeight(), null);
             super.paint(g);
         }
     }
@@ -231,12 +229,11 @@ public class ACAQInfoUI extends ACAQProjectWorkbenchPanel {
         @Override
         public Component getListCellRendererComponent(JList<? extends Path> list, Path value, int index, boolean isSelected, boolean cellHasFocus) {
 
-            if(value != null) {
+            if (value != null) {
                 setText(String.format("<html>%s<br/><span style=\"color: gray;\">%s</span></html>",
                         HtmlEscapers.htmlEscaper().escape(value.getFileName().toString()),
                         value.getParent().toString()));
-            }
-            else {
+            } else {
                 setIcon(UIUtils.getIconFromResources("acaq5-file-32-disabled.png"));
                 setText(String.format("<html>%s<br/><span style=\"color: gray;\">%s</span></html>",
                         "No recent projects",
