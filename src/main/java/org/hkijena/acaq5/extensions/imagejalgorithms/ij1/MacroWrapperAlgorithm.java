@@ -98,7 +98,17 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
                 .allowOutputSlotInheritance(true)
                 .restrictInputTo(getCompatibleTypes())
                 .restrictOutputTo(getCompatibleTypes())
+                .addInputSlot("Input", ImagePlusData.class)
+                .addOutputSlot("Output", ImagePlusData.class, null)
                 .build());
+        this.code.setCode("// To add variables, click the [+] button below.\n" +
+                "// They will be created automatically before this code fragment.\n\n" +
+                "// Each input image slot creates a window with its name.\n" +
+                "// You have to select it, first\n" +
+                "selectWindow(\"Input\");\n\n" +
+                "// Apply your operations here\n\n" +
+                "// ACAQ5 extracts output images based on their window name\n" +
+                "rename(\"Output\");\n");
         this.macroParameters.getEventBus().register(this);
     }
 
