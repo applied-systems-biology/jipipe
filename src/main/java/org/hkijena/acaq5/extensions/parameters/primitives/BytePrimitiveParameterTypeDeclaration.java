@@ -41,7 +41,7 @@ public class BytePrimitiveParameterTypeDeclaration implements ACAQParameterTypeD
 
     @Override
     public String getName() {
-        return "8-bit integral number";
+        return "Byte";
     }
 
     @Override

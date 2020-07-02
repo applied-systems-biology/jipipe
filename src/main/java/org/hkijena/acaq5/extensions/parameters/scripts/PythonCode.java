@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.acaq5.extensions.imagejalgorithms.parameters;
+package org.hkijena.acaq5.extensions.parameters.scripts;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
@@ -19,13 +19,13 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 /**
  * Encapsulates ImageJ macro code to be detected by the parameter system
  */
-public class MacroCode {
+public class PythonCode {
     private String code = "";
 
     /**
      * Creates a new empty code
      */
-    public MacroCode() {
+    public PythonCode() {
     }
 
     /**
@@ -33,7 +33,7 @@ public class MacroCode {
      *
      * @param other the original
      */
-    public MacroCode(MacroCode other) {
+    public PythonCode(PythonCode other) {
         this.code = other.code;
     }
 

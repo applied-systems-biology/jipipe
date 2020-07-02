@@ -38,7 +38,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.registries.ACAQImageJAdapterRegistry;
 import org.hkijena.acaq5.extensions.filesystem.dataypes.PathData;
-import org.hkijena.acaq5.extensions.imagejalgorithms.parameters.MacroCode;
+import org.hkijena.acaq5.extensions.parameters.scripts.MacroCode;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
@@ -79,7 +79,8 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
             Integer.class,
             Double.class,
             Float.class,
-            Path.class
+            Path.class,
+            Boolean.class
     };
 
     private MacroCode code = new MacroCode();
@@ -149,6 +150,11 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
                 float value = 0;
                 if (entry.getValue().get(Float.class) != null)
                     value = entry.getValue().get(Float.class);
+                finalCode.append(value);
+            } else if (entry.getValue().getFieldClass() == Boolean.class) {
+                boolean value = false;
+                if (entry.getValue().get(Boolean.class) != null)
+                    value = entry.getValue().get(Boolean.class);
                 finalCode.append(value);
             } else {
                 String value = "";

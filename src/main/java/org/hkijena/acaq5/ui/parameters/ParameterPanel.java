@@ -26,6 +26,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterTypeDeclaration;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
 import org.hkijena.acaq5.api.registries.ACAQParameterTypeRegistry;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
+import org.hkijena.acaq5.ui.components.AddDynamicParameterPanel;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.SearchTextField;
@@ -182,10 +183,10 @@ public class ParameterPanel extends FormPanel implements Contextual {
                 }
 
                 if (isModifiable) {
-                    JButton addButton = new JButton(UIUtils.getIconFromResources("add.png"));
-                    initializeAddDynamicParameterButton(addButton, (ACAQDynamicParameterCollection) parameterHolder);
+                    JButton addButton = new JButton("Add parameter", UIUtils.getIconFromResources("add.png"));
+                    addButton.addActionListener(e -> addDynamicParameter((ACAQDynamicParameterCollection) parameterHolder));
                     addButton.setToolTipText("Add new parameter");
-                    UIUtils.makeFlat25x25(addButton);
+                    UIUtils.makeFlat(addButton);
                     groupHeaderPanel.addColumn(addButton);
                 }
             }
@@ -217,11 +218,14 @@ public class ParameterPanel extends FormPanel implements Contextual {
         for (ACAQParameterEditorUI ui : uiList.stream().sorted(comparator).collect(Collectors.toList())) {
             ACAQParameterAccess parameterAccess = ui.getParameterAccess();
             JPanel labelPanel = new JPanel(new BorderLayout());
-            if (ui.isUILabelEnabled())
-                labelPanel.add(new JLabel(parameterAccess.getName()), BorderLayout.CENTER);
+            if (ui.isUILabelEnabled()) {
+                JLabel label = new JLabel(parameterAccess.getName());
+                label.setToolTipText("<html>Parameter ID: <code>" + parameterAccess.getKey() + "</code></code>");
+                labelPanel.add(label, BorderLayout.CENTER);
+            }
             if (isModifiable) {
                 JButton removeButton = new JButton(UIUtils.getIconFromResources("close-tab.png"));
-                removeButton.setToolTipText("Remove this parameter");
+                removeButton.setToolTipText("<html>Remove this parameter<br/>Parameter ID: <code>" + parameterAccess.getKey() + "</code></html>");
                 UIUtils.makeBorderlessWithoutMargin(removeButton);
                 removeButton.addActionListener(e -> removeDynamicParameter(parameterAccess.getKey(), (ACAQDynamicParameterCollection) parameterHolder));
                 labelPanel.add(removeButton, BorderLayout.WEST);
@@ -274,32 +278,9 @@ public class ParameterPanel extends FormPanel implements Contextual {
         }
     }
 
-    private void initializeAddDynamicParameterButton(JButton addButton, ACAQDynamicParameterCollection parameterHolder) {
-        JPopupMenu menu = UIUtils.addPopupMenuToComponent(addButton);
-        for (Class<?> allowedType : parameterHolder.getAllowedTypes()) {
-            ACAQParameterTypeDeclaration declaration = ACAQParameterTypeRegistry.getInstance().getDeclarationByFieldClass(allowedType);
-            String name = allowedType.getSimpleName();
-            String description = "Inserts a new parameter";
-            if (declaration != null) {
-                name = declaration.getName();
-                description = declaration.getDescription();
-            }
-
-            JMenuItem addItem = new JMenuItem(name, UIUtils.getIconFromResources("add.png"));
-            addItem.setToolTipText(description);
-            addItem.addActionListener(e -> addDynamicParameter(parameterHolder, allowedType));
-            menu.add(addItem);
-        }
-    }
-
-    private void addDynamicParameter(ACAQDynamicParameterCollection parameterHolder, Class<?> fieldType) {
-        String name = UIUtils.getUniqueStringByDialog(this, "Please set the parameter name: ", fieldType.getSimpleName(),
-                s -> parameterHolder.getParameters().values().stream().anyMatch(p -> Objects.equals(p.getName(), s)));
-        if (name != null) {
-            ACAQMutableParameterAccess parameterAccess = parameterHolder.addParameter(name, fieldType);
-            parameterAccess.setName(name);
-            reloadForm();
-        }
+    private void addDynamicParameter(ACAQDynamicParameterCollection parameterHolder) {
+        AddDynamicParameterPanel.showDialog(this, parameterHolder);
+        reloadForm();
     }
 
     /**

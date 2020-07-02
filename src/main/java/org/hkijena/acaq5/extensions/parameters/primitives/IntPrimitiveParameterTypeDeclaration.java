@@ -41,7 +41,7 @@ public class IntPrimitiveParameterTypeDeclaration implements ACAQParameterTypeDe
 
     @Override
     public String getName() {
-        return "32-bit integral number";
+        return "Integer";
     }
 
     @Override

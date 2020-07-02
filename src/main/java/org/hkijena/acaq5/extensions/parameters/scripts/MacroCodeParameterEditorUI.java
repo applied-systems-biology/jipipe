@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.acaq5.extensions.imagejalgorithms.parameters;
+package org.hkijena.acaq5.extensions.parameters.scripts;
 
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
@@ -28,7 +28,7 @@ import java.awt.BorderLayout;
 /**
  * Parameter editor for {@link MacroCode}
  */
-public class MacroParameterEditorUI extends ACAQParameterEditorUI {
+public class MacroCodeParameterEditorUI extends ACAQParameterEditorUI {
 
     private boolean isReloading = false;
     private EditorPane textArea;
@@ -37,7 +37,7 @@ public class MacroParameterEditorUI extends ACAQParameterEditorUI {
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public MacroParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {
+    public MacroCodeParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {
         super(workbench, parameterAccess);
         registerIJMacroLanguage();
         initialize();

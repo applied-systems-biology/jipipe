@@ -41,7 +41,7 @@ public class BooleanParameterTypeDeclaration implements ACAQParameterTypeDeclara
 
     @Override
     public String getName() {
-        return "Boolean value";
+        return "Boolean";
     }
 
     @Override

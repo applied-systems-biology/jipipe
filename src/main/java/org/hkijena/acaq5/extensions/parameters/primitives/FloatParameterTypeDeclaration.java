@@ -41,7 +41,7 @@ public class FloatParameterTypeDeclaration implements ACAQParameterTypeDeclarati
 
     @Override
     public String getName() {
-        return "Floating point number (single precision)";
+        return "Float";
     }
 
     @Override

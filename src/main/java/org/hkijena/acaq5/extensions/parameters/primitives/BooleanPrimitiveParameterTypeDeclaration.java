@@ -41,7 +41,7 @@ public class BooleanPrimitiveParameterTypeDeclaration implements ACAQParameterTy
 
     @Override
     public String getName() {
-        return "Boolean value";
+        return "Boolean";
     }
 
     @Override

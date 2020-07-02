@@ -50,12 +50,13 @@ public class ACAQProjectWindow extends JFrame {
     /**
      * @param context context
      * @param project The project
+     * @param showIntroduction whether to show the introduction
      */
-    public ACAQProjectWindow(Context context, ACAQProject project) {
+    public ACAQProjectWindow(Context context, ACAQProject project, boolean showIntroduction) {
         this.context = context;
         OPEN_WINDOWS.add(this);
         initialize();
-        loadProject(project);
+        loadProject(project, showIntroduction);
     }
 
     private void initialize() {
@@ -80,10 +81,11 @@ public class ACAQProjectWindow extends JFrame {
      * Loads a project into the window
      *
      * @param project The project
+     * @param showIntroduction whether to show the introduction
      */
-    public void loadProject(ACAQProject project) {
+    public void loadProject(ACAQProject project, boolean showIntroduction) {
         this.project = project;
-        this.projectUI = new ACAQProjectWorkbench(this, context, project);
+        this.projectUI = new ACAQProjectWorkbench(this, context, project, showIntroduction);
         setContentPane(projectUI);
     }
 
@@ -237,7 +239,7 @@ public class ACAQProjectWindow extends JFrame {
     private ACAQProjectWindow openProjectInThisOrNewWindow(String messageTitle, ACAQProject project) {
         switch (UIUtils.askOpenInCurrentWindow(this, messageTitle)) {
             case JOptionPane.YES_OPTION:
-                loadProject(project);
+                loadProject(project, false);
                 return this;
             case JOptionPane.NO_OPTION:
                 return newWindow(context, project);
@@ -281,7 +283,7 @@ public class ACAQProjectWindow extends JFrame {
      * @return The window
      */
     public static ACAQProjectWindow newWindow(Context context, ACAQProject project) {
-        ACAQProjectWindow frame = new ACAQProjectWindow(context, project);
+        ACAQProjectWindow frame = new ACAQProjectWindow(context, project, true);
         frame.pack();
         frame.setSize(1024, 768);
         frame.setVisible(true);

@@ -16,7 +16,7 @@ package org.hkijena.acaq5.api.parameters;
 /**
  * A type that describes an ACAQ parameter type
  */
-public interface ACAQParameterTypeDeclaration {
+public interface ACAQParameterTypeDeclaration extends Comparable<ACAQParameterTypeDeclaration> {
 
     /**
      * Creates a new non-null instance of the parameter type
@@ -52,4 +52,9 @@ public interface ACAQParameterTypeDeclaration {
      * @return a description
      */
     String getDescription();
+
+    @Override
+    default int compareTo(ACAQParameterTypeDeclaration o) {
+        return getName().compareTo(o.getName());
+    }
 }

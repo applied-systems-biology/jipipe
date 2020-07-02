@@ -47,14 +47,7 @@ import org.hkijena.acaq5.extensions.parameters.matrix.Matrix2DFloat;
 import org.hkijena.acaq5.extensions.parameters.matrix.Matrix2DParameterEditorUI;
 import org.hkijena.acaq5.extensions.parameters.optional.OptionalParameter;
 import org.hkijena.acaq5.extensions.parameters.optional.OptionalParameterEditorUI;
-import org.hkijena.acaq5.extensions.parameters.pairs.IntegerAndIntegerPair;
-import org.hkijena.acaq5.extensions.parameters.pairs.Pair;
-import org.hkijena.acaq5.extensions.parameters.pairs.PairParameterEditorUI;
-import org.hkijena.acaq5.extensions.parameters.pairs.StringAndStringPair;
-import org.hkijena.acaq5.extensions.parameters.pairs.StringAndStringPredicatePair;
-import org.hkijena.acaq5.extensions.parameters.pairs.StringFilterAndSortOrderPair;
-import org.hkijena.acaq5.extensions.parameters.pairs.StringFilterAndStringOrDoubleFilterPair;
-import org.hkijena.acaq5.extensions.parameters.pairs.StringFilterAndStringPair;
+import org.hkijena.acaq5.extensions.parameters.pairs.*;
 import org.hkijena.acaq5.extensions.parameters.patterns.StringPatternExtraction;
 import org.hkijena.acaq5.extensions.parameters.patterns.StringPatternExtractionParameterEditorUI;
 import org.hkijena.acaq5.extensions.parameters.predicates.DoublePredicate;
@@ -77,6 +70,10 @@ import org.hkijena.acaq5.extensions.parameters.roi.RectangleDeserializer;
 import org.hkijena.acaq5.extensions.parameters.roi.RectangleList;
 import org.hkijena.acaq5.extensions.parameters.roi.RectangleParameterEditorUI;
 import org.hkijena.acaq5.extensions.parameters.roi.RectangleSerializer;
+import org.hkijena.acaq5.extensions.parameters.scripts.MacroCode;
+import org.hkijena.acaq5.extensions.parameters.scripts.MacroCodeParameterEditorUI;
+import org.hkijena.acaq5.extensions.parameters.scripts.PythonCode;
+import org.hkijena.acaq5.extensions.parameters.scripts.PythonCodeParameterEditorUI;
 import org.hkijena.acaq5.extensions.parameters.table.ParameterTable;
 import org.hkijena.acaq5.extensions.parameters.table.ParameterTableEditorUI;
 import org.hkijena.acaq5.extensions.parameters.util.ACAQAuthorMetadataParameterEditorUI;
@@ -133,8 +130,26 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
         registerMatrixParameters();
         registerParameterGenerators();
         registerPatternParameters();
+        registerScriptParameters();
 
         registerMenuExtension(ParameterTesterMenuExtension.class);
+    }
+
+    private void registerScriptParameters() {
+        registerParameterType("ij-macro-code",
+                MacroCode.class,
+                MacroCode::new,
+                m -> new MacroCode((MacroCode) m),
+                "ImageJ macro",
+                "An ImageJ macro code",
+                MacroCodeParameterEditorUI.class);
+        registerParameterType("python-code",
+                PythonCode.class,
+                null,
+                null,
+                "Python script",
+                "A Python script",
+                PythonCodeParameterEditorUI.class);
     }
 
     private void registerPatternParameters() {
@@ -332,21 +347,29 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
     private void registerPairParameters() {
         // Pair-like parameters
         registerParameterEditor(Pair.class, PairParameterEditorUI.class);
-        registerParameterType("string-renaming",
+        registerParameterType("string-filter:string:pair",
                 StringFilterAndStringPair.class,
                 StringFilterAndStringPair.List.class,
                 StringFilterAndStringPair::new,
                 r -> new StringFilterAndStringPair((StringFilterAndStringPair) r),
-                "Text replacement",
-                "Replaces a matched string by the target string",
+                "String pair",
+                "A pair of a string predicate and a string",
                 null);
-        registerParameterType("integer-integer-pair",
+        registerParameterType("integer:integer:pair",
                 IntegerAndIntegerPair.class,
                 IntegerAndIntegerPair.List.class,
                 IntegerAndIntegerPair::new,
                 r -> new IntegerAndIntegerPair((IntegerAndIntegerPair) r),
-                "Integer replacement",
-                "Replaces a number with another number",
+                "Integer pair",
+                "A pair of integers",
+                null);
+        registerParameterType("double:double:pair",
+                DoubleAndDoublePair.class,
+                DoubleAndDoublePair.List.class,
+                null,
+                null,
+                "Double pair",
+                "A pair of 64-bit floating point numbers",
                 null);
         registerParameterType("string-filter:string-or-double-filter:pair",
                 StringFilterAndStringOrDoubleFilterPair.class,
@@ -377,8 +400,8 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
                 StringAndStringPair.List.class,
                 null,
                 null,
-                "String to string",
-                "Mapping from a string to a string",
+                "String pair",
+                "A pair of strings",
                 null);
     }
 

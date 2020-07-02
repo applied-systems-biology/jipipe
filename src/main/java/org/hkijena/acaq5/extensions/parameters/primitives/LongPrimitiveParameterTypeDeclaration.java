@@ -41,7 +41,7 @@ public class LongPrimitiveParameterTypeDeclaration implements ACAQParameterTypeD
 
     @Override
     public String getName() {
-        return "64-bit integral number";
+        return "Long";
     }
 
     @Override

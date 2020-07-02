@@ -13,9 +13,7 @@
 
 package org.hkijena.acaq5.extensions.imagejalgorithms;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import ij.Menus;
 import ij.process.AutoThresholder;
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.api.data.ACAQData;
@@ -87,8 +85,6 @@ import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.transform.TransformFlip
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.transform.TransformRotate2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.transform.TransformScale2DAlgorithm;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.transform.TransformScale3DAlgorithm;
-import org.hkijena.acaq5.extensions.imagejalgorithms.parameters.MacroCode;
-import org.hkijena.acaq5.extensions.imagejalgorithms.parameters.MacroParameterEditorUI;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColor8UData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
@@ -135,16 +131,10 @@ import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlu
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.acaq5.utils.UIUtils;
-import org.scijava.command.CommandInfo;
-import org.scijava.command.CommandService;
-import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.script.ScriptInfo;
-import org.scijava.script.ScriptService;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Extension that adds ImageJ2 algorithms
@@ -198,9 +188,6 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
      * Conversion rules convert data to their 3D counterparts
      */
     public static final Map<Class<? extends ACAQData>, Class<? extends ACAQData>> TO_3D_CONVERSION = get3DConversion();
-
-    @Parameter
-    private CommandService commandService;
 
     @Override
     public String getName() {
@@ -273,13 +260,6 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
                 "Measurement column sort order list",
                 "List of measurement column sort orders",
                 null);
-        registerParameterType("ij-macro-code",
-                MacroCode.class,
-                MacroCode::new,
-                m -> new MacroCode((MacroCode) m),
-                "ImageJ macro",
-                "An ImageJ macro code",
-                MacroParameterEditorUI.class);
     }
 
     private void registerGlobalEnums() {
@@ -483,27 +463,6 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerAlgorithm("ij1-blur-median2d-rgb", MedianBlurRGB2DAlgorithm.class, UIUtils.getAlgorithmIconURL("insert-math-expression.png"));
         registerAlgorithm("ij1-blur-median2d", MedianBlurFilter2DAlgorithm.class, UIUtils.getAlgorithmIconURL("insert-math-expression.png"));
         registerAlgorithm("ij1-blur-median3d", MedianBlurFilter3DAlgorithm.class, UIUtils.getAlgorithmIconURL("insert-math-expression.png"));
-    }
-
-    private void registerIJ2Algorithms() {
-        for (Object entry : Menus.getCommands().entrySet()) {
-            System.out.println("IJ1_Command: " + entry);
-        }
-        ScriptService scriptService = getContext().getService(ScriptService.class);
-        for (ScriptInfo script : scriptService.getScripts()) {
-            System.out.println("IJ2_Script: " + script + " || Params: " + ImmutableList.copyOf(script.inputs()).stream().map(Object::toString).collect(Collectors.joining("; ")));
-        }
-        for (CommandInfo command : commandService.getCommands()) {
-            System.out.println("IJ2_Command: " + command);
-//            if(ImageJ2AlgorithmWrapper.isCompatible(command, getContext())) {
-//                try {
-//                    ImageJ2AlgorithmWrapperDeclaration declaration = new ImageJ2AlgorithmWrapperDeclaration(command, getContext());
-//                    registerAlgorithm(new ImageJ2AlgorithmWrapperRegistrationTask(this, declaration));
-//                } catch (ModuleException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-        }
     }
 
     @Override

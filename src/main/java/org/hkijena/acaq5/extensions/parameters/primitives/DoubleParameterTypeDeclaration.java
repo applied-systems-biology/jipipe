@@ -41,7 +41,7 @@ public class DoubleParameterTypeDeclaration implements ACAQParameterTypeDeclarat
 
     @Override
     public String getName() {
-        return "Floating point number (double precision)";
+        return "Double";
     }
 
     @Override

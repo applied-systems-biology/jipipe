@@ -74,12 +74,13 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
      * @param window  Parent window
      * @param context SciJava context
      * @param project The project
+     * @param showIntroduction
      */
-    public ACAQProjectWorkbench(ACAQProjectWindow window, Context context, ACAQProject project) {
+    public ACAQProjectWorkbench(ACAQProjectWindow window, Context context, ACAQProject project, boolean showIntroduction) {
         this.window = window;
         this.project = project;
         this.context = context;
-        initialize();
+        initialize(showIntroduction);
         initializeDefaultProject();
         project.getEventBus().register(this);
         ACAQDefaultRegistry.getInstance().getEventBus().register(this);
@@ -116,7 +117,7 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
         }
     }
 
-    private void initialize() {
+    private void initialize(boolean showIntroduction) {
         setLayout(new BorderLayout());
 
         documentTabPane = new DocumentTabPane();
@@ -124,7 +125,7 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
                 "Getting started",
                 UIUtils.getIconFromResources("info.png"),
                 new ACAQInfoUI(this),
-                !GeneralUISettings.getInstance().isShowIntroduction());
+                !GeneralUISettings.getInstance().isShowIntroduction() || !showIntroduction);
         documentTabPane.addSingletonTab("COMPARTMENT_EDITOR",
                 "Compartments",
                 UIUtils.getIconFromResources("connect.png"),
@@ -157,7 +158,7 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
                 UIUtils.getIconFromResources("module.png"),
                 pluginValidityCheckerPanel,
                 true);
-        if (GeneralUISettings.getInstance().isShowIntroduction())
+        if (GeneralUISettings.getInstance().isShowIntroduction() && showIntroduction)
             documentTabPane.selectSingletonTab("INTRODUCTION");
         else
             documentTabPane.selectSingletonTab("COMPARTMENT_EDITOR");
