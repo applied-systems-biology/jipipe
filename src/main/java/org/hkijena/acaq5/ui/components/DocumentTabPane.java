@@ -124,12 +124,13 @@ public class DocumentTabPane extends JPanel {
 
         tabPanel.setOpaque(false);
 
-        if (GeneralUISettings.getInstance().getLookAndFeel() == GeneralUISettings.LookAndFeel.FlatIntelliJLaf) {
-            tabPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1, 1, 0, 1, Color.GRAY),
-                    BorderFactory.createEmptyBorder(4, 4, 2, 4)));
-        } else {
-            tabPanel.setBorder(BorderFactory.createEmptyBorder(4, 0, 4, 0));
-        }
+//        if (GeneralUISettings.getInstance().getLookAndFeel() == GeneralUISettings.LookAndFeel.FlatIntelliJLaf) {
+//            tabPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1, 1, 0, 1, Color.GRAY),
+//                    BorderFactory.createEmptyBorder(4, 4, 2, 4)));
+//        } else {
+//            tabPanel.setBorder(BorderFactory.createEmptyBorder(4, 0, 4, 0));
+//        }
+        tabPanel.setBorder(BorderFactory.createEmptyBorder(4, 0, 4, 0));
 
         tabPanel.setLayout(new BoxLayout(tabPanel, BoxLayout.LINE_AXIS));
         JLabel titleLabel = new JLabel(title, icon, JLabel.LEFT);
@@ -156,11 +157,12 @@ public class DocumentTabPane extends JPanel {
             JButton closeButton = new JButton(UIUtils.getIconFromResources("close-tab.png"));
             closeButton.setToolTipText("Close tab");
             closeButton.setBorder(null);
-            if (GeneralUISettings.getInstance().getLookAndFeel() == GeneralUISettings.LookAndFeel.FlatIntelliJLaf) {
-                closeButton.setBackground(new Color(242, 242, 242));
-            } else {
-                closeButton.setBackground(Color.WHITE);
-            }
+//            if (GeneralUISettings.getInstance().getLookAndFeel() == GeneralUISettings.LookAndFeel.FlatIntelliJLaf) {
+//                closeButton.setBackground(new Color(242, 242, 242));
+//            } else {
+//                closeButton.setBackground(Color.WHITE);
+//            }
+            closeButton.setBackground(Color.WHITE);
 
             closeButton.setOpaque(false);
             closeButton.setEnabled(closeMode != CloseMode.withDisabledCloseButton);

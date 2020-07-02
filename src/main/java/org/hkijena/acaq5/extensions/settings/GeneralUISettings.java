@@ -108,7 +108,6 @@ public class GeneralUISettings implements ACAQParameterCollection {
      * Available designs
      */
     public enum LookAndFeel {
-        Metal,
-        FlatIntelliJLaf
+        Metal
     }
 }
