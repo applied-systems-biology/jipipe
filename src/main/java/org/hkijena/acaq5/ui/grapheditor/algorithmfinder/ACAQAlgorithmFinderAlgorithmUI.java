@@ -109,9 +109,9 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
 
         StringBuilder title = new StringBuilder();
         if (isExistingInstance)
-            title.append("<span style=\"color: red;\">Existing </span>");
+            title.append("<span style=\"color: blue;\">Existing </span>");
         else
-            title.append("<span style=\"color: grey;\">Create </span>");
+            title.append("<span style=\"color: green;\">Create </span>");
         title.append("<span style=\"font-size: 16pt;\">").append(algorithm.getName()).append("</font>");
 
         double stars = (maxScore > 0 ? (Math.max(0, score) * 1.0 / maxScore) : 1.0) * 5.0;

@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.acaq5.extensions.annotation.algorithms;
+package org.hkijena.acaq5.extensions.tables.algorithms;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
@@ -25,31 +25,32 @@ import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.api.data.ACAQData;
-import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.extensions.parameters.pairs.IntegerAndIntegerPair;
-import org.hkijena.acaq5.extensions.parameters.pairs.PairParameterSettings;
 import org.hkijena.acaq5.extensions.parameters.pairs.StringAndStringPair;
 import org.hkijena.acaq5.extensions.parameters.primitives.DoubleList;
-import org.hkijena.acaq5.extensions.parameters.primitives.FloatList;
 import org.hkijena.acaq5.extensions.parameters.primitives.IntegerList;
 import org.hkijena.acaq5.extensions.parameters.primitives.PathList;
 import org.hkijena.acaq5.extensions.parameters.primitives.StringList;
-import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.acaq5.extensions.parameters.scripts.PythonCode;
+import org.hkijena.acaq5.extensions.tables.datatypes.DoubleArrayTableColumn;
+import org.hkijena.acaq5.extensions.tables.datatypes.StringArrayTableColumn;
+import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
 import org.hkijena.acaq5.utils.MacroUtils;
 import org.hkijena.acaq5.utils.PythonUtils;
-import org.python.core.PyArray;
-import org.python.core.PyBoolean;
+import org.python.antlr.ast.Num;
 import org.python.core.PyDictionary;
-import org.python.core.PyInteger;
+import org.python.core.PyList;
 import org.python.core.PyString;
-import org.python.core.PyType;
 import org.python.util.PythonInterpreter;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -59,13 +60,12 @@ import static org.hkijena.acaq5.utils.PythonUtils.ALLOWED_PARAMETER_CLASSES;
 /**
  * Algorithm that annotates all data with the same annotation
  */
-@ACAQDocumentation(name = "Modify annotation rows (Script)", description = "Executes a Python-script for each annotation row. " +
-        "All annotations are passed as dictionary 'annotations' that can be modified using Python functions. The values are then extracted and " +
-        "converted into their respective ACAQ5 types.")
-@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Annotation, menuPath = "Modify")
-@AlgorithmInputSlot(value = ACAQData.class, slotName = "Input", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
-public class ModifyAnnotationScript extends ACAQSimpleIteratingAlgorithm {
+@ACAQDocumentation(name = "Modify tables (Script)", description = "Executes a Python-script for each table. " +
+        "Each table is passed as dictionary 'table' with the column name as key and values being an array of strings or doubles. The number of input rows can be accessed via the 'nrow' variable.")
+@ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Processor, menuPath = "Tables")
+@AlgorithmInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
+@AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+public class ModifyTablesScript extends ACAQSimpleIteratingAlgorithm {
 
     private PythonInterpreter pythonInterpreter;
     private PythonCode code = new PythonCode();
@@ -74,11 +74,12 @@ public class ModifyAnnotationScript extends ACAQSimpleIteratingAlgorithm {
     /**
      * @param declaration the declaration
      */
-    public ModifyAnnotationScript(ACAQAlgorithmDeclaration declaration) {
+    public ModifyTablesScript(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
-        code.setCode("# This script is executed for each row\n" +
-                "# Annotations are passed as dictionary 'annotations'\n" +
-                "# Modifications are copied into ACAQ5\n\n");
+        code.setCode("# This script is executed for each table\n" +
+                "# Tables are passed as dictionary 'table'\n" +
+                "# Key are the column names\n" +
+                "# Values are string/double arrays\n\n");
         registerSubParameter(scriptParameters);
     }
 
@@ -87,7 +88,7 @@ public class ModifyAnnotationScript extends ACAQSimpleIteratingAlgorithm {
      *
      * @param other the original
      */
-    public ModifyAnnotationScript(ModifyAnnotationScript other) {
+    public ModifyTablesScript(ModifyTablesScript other) {
         super(other);
         this.code = new PythonCode(other.code);
         this.scriptParameters = new ACAQDynamicParameterCollection(other.scriptParameters);
@@ -98,7 +99,7 @@ public class ModifyAnnotationScript extends ACAQSimpleIteratingAlgorithm {
     public void reportValidity(ACAQValidityReport report) {
         try {
             this.pythonInterpreter = new PythonInterpreter();
-            pythonInterpreter.set("annotations", new PyDictionary());
+            pythonInterpreter.set("table", new PyDictionary());
             PythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
             if(pythonInterpreter.compile(code.getCode()) == null) {
                 report.forCategory("Script").reportIsInvalid("The script is invalid!",
@@ -134,26 +135,60 @@ public class ModifyAnnotationScript extends ACAQSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        PyDictionary annotationDict = new PyDictionary();
-        for (Map.Entry<String, ACAQAnnotation> entry : dataInterface.getAnnotations().entrySet()) {
-            annotationDict.put(new PyString(entry.getKey()), new PyString(entry.getValue().getValue()));
+        PyDictionary tableDict = new PyDictionary();
+        ResultsTableData inputData = dataInterface.getInputData(getFirstInputSlot(), ResultsTableData.class);
+        for (int col = 0; col < inputData.getColumnCount(); col++) {
+            String colName = inputData.getColumnName(col);
+            List<Object> copy = new ArrayList<>();
+
+            if(inputData.isNumeric(col)) {
+                for (int row = 0; row < inputData.getRowCount(); row++) {
+                    copy.add(inputData.getValueAsDouble(row, col));
+                }
+            }
+            else {
+                for (int row = 0; row < inputData.getRowCount(); row++) {
+                    copy.add(inputData.getValueAsString(row, col));
+                }
+            }
+
+            tableDict.put(colName, copy);
         }
-        pythonInterpreter.set("annotations", annotationDict);
+
+        pythonInterpreter.set("table", tableDict);
+        pythonInterpreter.set("nrow", inputData.getRowCount());
         pythonInterpreter.exec(code.getCode());
 
-        // Convert the results back into ACAQ5
-        dataInterface.getAnnotations().clear();
-        for (Object key : annotationDict.keys()) {
-            String keyString = "" + key;
-            String valueString = "" + annotationDict.get(key);
-            dataInterface.getAnnotations().put(keyString, new ACAQAnnotation(keyString, valueString));
+        Map<String, TableColumn> columns = new HashMap<>();
+        for (Object key : tableDict.keys()) {
+            String columnKey = "" + key;
+            List<Object> rows = (List<Object>) tableDict.get(key);
+            boolean isNumeric = true;
+            for (Object row : rows) {
+                isNumeric &= row instanceof Number;
+            }
+            if(isNumeric) {
+                double[] data = new double[rows.size()];
+                for (int i = 0; i < rows.size(); i++) {
+                    data[i] = ((Number)rows.get(i)).doubleValue();
+                }
+                columns.put(columnKey, new DoubleArrayTableColumn(data, columnKey));
+            }
+            else {
+                String[] data = new String[rows.size()];
+                for (int i = 0; i < rows.size(); i++) {
+                    data[i] = "" + rows.get(i);
+                }
+                columns.put(columnKey, new StringArrayTableColumn(data, columnKey));
+            }
         }
 
-        dataInterface.addOutputData(getFirstOutputSlot(), dataInterface.getInputData(getFirstInputSlot(), ACAQData.class));
+        dataInterface.addOutputData(getFirstOutputSlot(), new ResultsTableData(columns));
     }
 
-    @ACAQDocumentation(name = "Script", description = "All annotations are passed as dictionary 'annotations' that can be modified using Python functions. The values are then extracted and " +
-            "converted into their respective ACAQ5 types.")
+    @ACAQDocumentation(name = "Script", description = "Each table is passed as dictionary 'table' " +
+            "with the column name as key and values being an array of strings or doubles. " +
+            "The number of input rows can be accessed via the 'nrow' variable.")
     @ACAQParameter("code")
     public PythonCode getCode() {
         return code;
