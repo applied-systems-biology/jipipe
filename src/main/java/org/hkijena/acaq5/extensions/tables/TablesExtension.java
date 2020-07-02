@@ -130,6 +130,8 @@ public class TablesExtension extends ACAQPrepackagedDefaultJavaExtension {
         registerAlgorithm("table-add-annotation-columns", AddAnnotationColumnsAlgorithm.class, UIUtils.getAlgorithmIconURL("edit-table-insert-column-right.png"));
         registerAlgorithm("convert-annotation-table-to-annotated-tables", ConvertAnnotationTableToAnnotatedTables.class, UIUtils.getAlgorithmIconURL("annotation-table.png"));
         registerAlgorithm("modify-tables", ModifyTablesScript.class, UIUtils.getAlgorithmIconURL("python.png"));
+        registerAlgorithm("modify-and-merge-tables", ModifyAndMergeTablesScript.class, UIUtils.getAlgorithmIconURL("python.png"));
+        registerAlgorithm("tables-from-script", TablesFromScript.class, UIUtils.getAlgorithmIconURL("python.png"));
     }
 
     private void registerParameters() {

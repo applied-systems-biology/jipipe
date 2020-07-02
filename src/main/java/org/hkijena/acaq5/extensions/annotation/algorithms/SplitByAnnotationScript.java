@@ -25,31 +25,18 @@ import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.api.data.ACAQData;
-import org.hkijena.acaq5.api.events.ParameterChangedEvent;
+import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.extensions.parameters.pairs.IntegerAndIntegerPair;
-import org.hkijena.acaq5.extensions.parameters.pairs.PairParameterSettings;
-import org.hkijena.acaq5.extensions.parameters.pairs.StringAndStringPair;
-import org.hkijena.acaq5.extensions.parameters.primitives.DoubleList;
-import org.hkijena.acaq5.extensions.parameters.primitives.FloatList;
-import org.hkijena.acaq5.extensions.parameters.primitives.IntegerList;
-import org.hkijena.acaq5.extensions.parameters.primitives.PathList;
-import org.hkijena.acaq5.extensions.parameters.primitives.StringList;
-import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.acaq5.extensions.parameters.scripts.PythonCode;
 import org.hkijena.acaq5.utils.MacroUtils;
 import org.hkijena.acaq5.utils.PythonUtils;
-import org.python.core.PyArray;
-import org.python.core.PyBoolean;
+import org.hkijena.acaq5.utils.StringUtils;
 import org.python.core.PyDictionary;
-import org.python.core.PyInteger;
+import org.python.core.PyObject;
 import org.python.core.PyString;
-import org.python.core.PyType;
 import org.python.util.PythonInterpreter;
 
-import java.nio.file.Path;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -59,13 +46,14 @@ import static org.hkijena.acaq5.utils.PythonUtils.ALLOWED_PARAMETER_CLASSES;
 /**
  * Algorithm that annotates all data with the same annotation
  */
-@ACAQDocumentation(name = "Modify annotation rows (Script)", description = "Executes a Python-script for each annotation row. " +
+@ACAQDocumentation(name = "Split & filter by annotation (Script)", description = "Executes a Python-script for each annotation row that allows redirection to a specified output slot (or to remove it). " +
         "All annotations are passed as dictionary 'annotations' that can be modified using Python functions. The values are then extracted and " +
-        "converted into their respective ACAQ5 types.")
+        "converted into their respective ACAQ5 types. The target slot is extracted from a variable 'output_slot' that should be present within the script." +
+        " If the variable is set to null or empty, the data is discarded.")
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Annotation, menuPath = "Modify")
-@AlgorithmInputSlot(value = ACAQData.class, slotName = "Input", autoCreate = true)
-@AlgorithmOutputSlot(value = ACAQData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
-public class ModifyAnnotationScript extends ACAQSimpleIteratingAlgorithm {
+@AlgorithmInputSlot(value = ACAQData.class, slotName = "Input")
+@AlgorithmOutputSlot(value = ACAQData.class, slotName = "Output")
+public class SplitByAnnotationScript extends ACAQSimpleIteratingAlgorithm {
 
     private PythonInterpreter pythonInterpreter;
     private PythonCode code = new PythonCode();
@@ -74,12 +62,18 @@ public class ModifyAnnotationScript extends ACAQSimpleIteratingAlgorithm {
     /**
      * @param declaration the declaration
      */
-    public ModifyAnnotationScript(ACAQAlgorithmDeclaration declaration) {
-        super(declaration);
+    public SplitByAnnotationScript(ACAQAlgorithmDeclaration declaration) {
+        super(declaration, ACAQDefaultMutableSlotConfiguration.builder()
+                .addInputSlot("Input", ACAQData.class)
+                .addOutputSlot("Output", ACAQData.class, "Input")
+                .sealInput()
+                .build());
         code.setCode("# This script is executed for each row\n" +
                 "# Annotations are passed as dictionary 'annotations'\n" +
-                "# Modifications are copied into ACAQ5\n\n" +
-                "annotations[\"condition\"] = \"example\"");
+                "# Modifications are copied into ACAQ5\n" +
+                "# The output slot is determined by a variable 'output_slot'" +
+                "\n\n" +
+                "output_slot = \"lhs\" if \"condition\" in annotation[\"sample\"] else \"rhs\"");
         registerSubParameter(scriptParameters);
     }
 
@@ -88,7 +82,7 @@ public class ModifyAnnotationScript extends ACAQSimpleIteratingAlgorithm {
      *
      * @param other the original
      */
-    public ModifyAnnotationScript(ModifyAnnotationScript other) {
+    public SplitByAnnotationScript(SplitByAnnotationScript other) {
         super(other);
         this.code = new PythonCode(other.code);
         this.scriptParameters = new ACAQDynamicParameterCollection(other.scriptParameters);
@@ -144,11 +138,21 @@ public class ModifyAnnotationScript extends ACAQSimpleIteratingAlgorithm {
         dataInterface.getAnnotations().clear();
         ACAQAnnotation.setAnnotationsFromPython(annotationDict, dataInterface.getAnnotations());
 
-        dataInterface.addOutputData(getFirstOutputSlot(), dataInterface.getInputData(getFirstInputSlot(), ACAQData.class));
+        // Get the output slot
+        PyObject outputSlotPy = pythonInterpreter.get("output_slot");
+        String outputSlotName = null;
+        if(outputSlotPy != null) {
+            outputSlotName = "" + outputSlotPy;
+        }
+
+        if(!StringUtils.isNullOrEmpty(outputSlotName)) {
+            dataInterface.addOutputData(getOutputSlot(outputSlotName), dataInterface.getInputData(getFirstInputSlot(), ACAQData.class));
+        }
     }
 
     @ACAQDocumentation(name = "Script", description = "All annotations are passed as dictionary 'annotations' that can be modified using Python functions. The values are then extracted and " +
-            "converted into their respective ACAQ5 types.")
+            "converted into their respective ACAQ5 types. The target slot is extracted from a variable 'output_slot' that should be present within the script." +
+            " If the variable is set to null or empty, the data is discarded.")
     @ACAQParameter("code")
     public PythonCode getCode() {
         return code;

@@ -52,6 +52,7 @@ public class PythonCodeParameterEditorUI extends ACAQParameterEditorUI {
         setLayout(new BorderLayout());
         PythonCode code = getParameter(PythonCode.class);
         textArea = new EditorPane();
+        textArea.setTabSize(4);
         textArea.setBorder(BorderFactory.createEtchedBorder());
         getContext().inject(textArea);
         textArea.setText(code.getCode());

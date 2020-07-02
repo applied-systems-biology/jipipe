@@ -52,6 +52,7 @@ public class MacroCodeParameterEditorUI extends ACAQParameterEditorUI {
         setLayout(new BorderLayout());
         MacroCode code = getParameter(MacroCode.class);
         textArea = new EditorPane();
+        textArea.setTabSize(4);
         textArea.setBorder(BorderFactory.createEtchedBorder());
         getContext().inject(textArea);
         textArea.setText(code.getCode());

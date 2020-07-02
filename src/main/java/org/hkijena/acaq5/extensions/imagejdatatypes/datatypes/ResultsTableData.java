@@ -32,6 +32,7 @@ import org.hkijena.acaq5.ui.tableanalyzer.ACAQTableEditor;
 import org.hkijena.acaq5.utils.PathUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
+import org.python.core.PyDictionary;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -138,6 +139,64 @@ public class ResultsTableData implements ACAQData, TableModel {
                 }
             }
         }
+    }
+
+    /**
+     * Converts this table into its equivalent Python form (as dictionary of columns)
+     * @return a dictionary of column name to list of row data
+     */
+    public PyDictionary toPython() {
+        PyDictionary tableDict = new PyDictionary();
+        for (int col = 0; col < getColumnCount(); col++) {
+            String colName = getColumnName(col);
+            List<Object> copy = new ArrayList<>();
+
+            if(isNumeric(col)) {
+                for (int row = 0; row < getRowCount(); row++) {
+                    copy.add(getValueAsDouble(row, col));
+                }
+            }
+            else {
+                for (int row = 0; row < getRowCount(); row++) {
+                    copy.add(getValueAsString(row, col));
+                }
+            }
+
+            tableDict.put(colName, copy);
+        }
+        return tableDict;
+    }
+
+    /**
+     * Converts a Python dictionary of column name to row data list to a results table
+     * @param tableDict the dictionary
+     * @return equivalent results table
+     */
+    public static ResultsTableData fromPython(PyDictionary tableDict) {
+        Map<String, TableColumn> columns = new HashMap<>();
+        for (Object key : tableDict.keys()) {
+            String columnKey = "" + key;
+            List<Object> rows = (List<Object>) tableDict.get(key);
+            boolean isNumeric = true;
+            for (Object row : rows) {
+                isNumeric &= row instanceof Number;
+            }
+            if(isNumeric) {
+                double[] data = new double[rows.size()];
+                for (int i = 0; i < rows.size(); i++) {
+                    data[i] = ((Number)rows.get(i)).doubleValue();
+                }
+                columns.put(columnKey, new DoubleArrayTableColumn(data, columnKey));
+            }
+            else {
+                String[] data = new String[rows.size()];
+                for (int i = 0; i < rows.size(); i++) {
+                    data[i] = "" + rows.get(i);
+                }
+                columns.put(columnKey, new StringArrayTableColumn(data, columnKey));
+            }
+        }
+        return new ResultsTableData(columns);
     }
 
     /**

@@ -20,6 +20,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
@@ -44,8 +45,7 @@ import java.util.stream.Collectors;
 // Algorithm metadata
 @ACAQDocumentation(name = "Split & filter by annotation", description = "Splits the input data by a specified annotation or filters data based on the annotation value.")
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Annotation)
-
-// Algorithm traits
+@AlgorithmInputSlot(value = ACAQData.class, slotName = "Input")
 public class SplitByAnnotation extends ACAQAlgorithm {
 
     private String annotationType = "";

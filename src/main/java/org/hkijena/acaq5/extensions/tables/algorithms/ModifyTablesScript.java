@@ -79,7 +79,11 @@ public class ModifyTablesScript extends ACAQSimpleIteratingAlgorithm {
         code.setCode("# This script is executed for each table\n" +
                 "# Tables are passed as dictionary 'table'\n" +
                 "# Key are the column names\n" +
-                "# Values are string/double arrays\n\n");
+                "# Values are string/double arrays\n" +
+                "# Annotations can be modified via a dict 'annotations'\n\n" +
+                "areas = table[\"Area\"]\n" +
+                "areas_sq = [ x * x for x in areas ]\n" +
+                "table[\"Area2\"] = areas_sq");
         registerSubParameter(scriptParameters);
     }
 
@@ -135,55 +139,21 @@ public class ModifyTablesScript extends ACAQSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        PyDictionary tableDict = new PyDictionary();
         ResultsTableData inputData = dataInterface.getInputData(getFirstInputSlot(), ResultsTableData.class);
-        for (int col = 0; col < inputData.getColumnCount(); col++) {
-            String colName = inputData.getColumnName(col);
-            List<Object> copy = new ArrayList<>();
+        PyDictionary tableDict = inputData.toPython();
 
-            if(inputData.isNumeric(col)) {
-                for (int row = 0; row < inputData.getRowCount(); row++) {
-                    copy.add(inputData.getValueAsDouble(row, col));
-                }
-            }
-            else {
-                for (int row = 0; row < inputData.getRowCount(); row++) {
-                    copy.add(inputData.getValueAsString(row, col));
-                }
-            }
-
-            tableDict.put(colName, copy);
-        }
-
+        PyDictionary annotationDict = ACAQAnnotation.annotationMapToPython(dataInterface.getAnnotations());
+        pythonInterpreter.set("annotations", annotationDict);
         pythonInterpreter.set("table", tableDict);
         pythonInterpreter.set("nrow", inputData.getRowCount());
         pythonInterpreter.exec(code.getCode());
+        tableDict = (PyDictionary) pythonInterpreter.get("table");
+        annotationDict = (PyDictionary) pythonInterpreter.get("annotations");
 
-        Map<String, TableColumn> columns = new HashMap<>();
-        for (Object key : tableDict.keys()) {
-            String columnKey = "" + key;
-            List<Object> rows = (List<Object>) tableDict.get(key);
-            boolean isNumeric = true;
-            for (Object row : rows) {
-                isNumeric &= row instanceof Number;
-            }
-            if(isNumeric) {
-                double[] data = new double[rows.size()];
-                for (int i = 0; i < rows.size(); i++) {
-                    data[i] = ((Number)rows.get(i)).doubleValue();
-                }
-                columns.put(columnKey, new DoubleArrayTableColumn(data, columnKey));
-            }
-            else {
-                String[] data = new String[rows.size()];
-                for (int i = 0; i < rows.size(); i++) {
-                    data[i] = "" + rows.get(i);
-                }
-                columns.put(columnKey, new StringArrayTableColumn(data, columnKey));
-            }
-        }
+        dataInterface.getAnnotations().clear();
+        ACAQAnnotation.setAnnotationsFromPython(annotationDict, dataInterface.getAnnotations());
 
-        dataInterface.addOutputData(getFirstOutputSlot(), new ResultsTableData(columns));
+        dataInterface.addOutputData(getFirstOutputSlot(), ResultsTableData.fromPython(tableDict));
     }
 
     @ACAQDocumentation(name = "Script", description = "Each table is passed as dictionary 'table' " +

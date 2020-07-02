@@ -15,7 +15,12 @@ package org.hkijena.acaq5.api.data;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.python.core.PyDictionary;
+import org.python.core.PyString;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -129,5 +134,58 @@ public class ACAQAnnotation implements Comparable<ACAQAnnotation> {
         if (lhs == null || rhs == null)
             return false;
         return lhs.nameEquals(rhs);
+    }
+
+    /**
+     * Converts a map of annotations into a Python dictionary
+     * @param annotationMap the annotations
+     * @return the Python dictionary
+     */
+    public static PyDictionary annotationMapToPython(Map<String, ACAQAnnotation> annotationMap) {
+        PyDictionary annotationDict = new PyDictionary();
+        for (Map.Entry<String, ACAQAnnotation> entry : annotationMap.entrySet()) {
+            annotationDict.put(new PyString(entry.getKey()), new PyString(entry.getValue().getValue()));
+        }
+        return annotationDict;
+    }
+
+    /**
+     * Sets annotations from a Python dictionary
+     * @param annotationDict the dictionary
+     * @param target the target map
+     */
+    public static void setAnnotationsFromPython(PyDictionary annotationDict, Map<String, ACAQAnnotation> target) {
+        for (Object key : annotationDict.keys()) {
+            String keyString = "" + key;
+            String valueString = "" + annotationDict.get(key);
+            target.put(keyString, new ACAQAnnotation(keyString, valueString));
+        }
+    }
+
+    /**
+     * Sets annotations from a Python dictionary
+     * @param annotationDict the dictionary
+     */
+    public static List<ACAQAnnotation> extractAnnotationsFromPython(PyDictionary annotationDict) {
+        List<ACAQAnnotation> result = new ArrayList<>();
+        for (Object key : annotationDict.keys()) {
+            String keyString = "" + key;
+            String valueString = "" + annotationDict.get(key);
+            result.add(new ACAQAnnotation(keyString, valueString));
+        }
+        return result;
+    }
+
+    /**
+     * Converts a list of annotations into a Python dictionary
+     * @param annotations the annotations
+     * @return the Python dictionary
+     */
+    public static PyDictionary annotationListToPython(List<ACAQAnnotation> annotations) {
+        PyDictionary annotationDict = new PyDictionary();
+        for (ACAQAnnotation annotation : annotations) {
+            annotationDict.put(new PyString(annotation.getName()), new PyString(annotation.getValue()));
+        }
+        return annotationDict;
     }
 }

@@ -295,6 +295,8 @@ public class ImageJAlgorithmsExtension extends ACAQPrepackagedDefaultJavaExtensi
         registerAlgorithm("ij1-roi-set-properties", ChangeRoiPropertiesAlgorithm.class, UIUtils.getAlgorithmIconURL("edit.png"));
         registerAlgorithm("ij1-roi-to-rgb-unreferenced", UnreferencedRoiToRGBAlgorithm.class, UIUtils.getAlgorithmIconURL("color-management.png"));
         registerAlgorithm("ij1-roi-to-rgb", RoiToRGBAlgorithm.class, UIUtils.getAlgorithmIconURL("color-management.png"));
+        registerAlgorithm("ij1-roi-filter-statistics-script", FilterRoiByStatisticsScriptAlgorithm.class, UIUtils.getAlgorithmIconURL("python.png"));
+        registerAlgorithm("ij1-roi-filter-and-merge-statistics-script", FilterAndMergeRoiByStatisticsScriptAlgorithm.class, UIUtils.getAlgorithmIconURL("python.png"));
     }
 
     private void registerConvolutionAlgorithms() {

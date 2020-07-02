@@ -70,6 +70,7 @@ public class AnnotationsExtension extends ACAQPrepackagedDefaultJavaExtension {
         registerAlgorithm("annotate-with-data", AnnotateWithDataString.class, UIUtils.getAlgorithmIconURL("data-type.png"));
         registerAlgorithm("extract-and-replace-annotation", ExtractAndReplaceAnnotation.class, UIUtils.getAlgorithmIconURL("edit-find-replace.png"));
         registerAlgorithm("modify-annotation-script", ModifyAnnotationScript.class, UIUtils.getAlgorithmIconURL("python.png"));
+        registerAlgorithm("annotate-split-by-annotation-script", SplitByAnnotationScript.class, UIUtils.getAlgorithmIconURL("python.png"));
     }
 
     @Override
