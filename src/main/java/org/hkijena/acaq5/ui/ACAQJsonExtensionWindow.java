@@ -160,7 +160,7 @@ public class ACAQJsonExtensionWindow extends JFrame {
         if (avoidDialog && projectSavePath != null)
             savePath = projectSavePath;
         if (savePath == null) {
-            savePath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save ACAQ5 JSON extension (*.json)");
+            savePath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save ACAQ5 JSON extension (*.json)", ".json");
             if (savePath == null)
                 return;
         }

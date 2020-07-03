@@ -15,7 +15,6 @@ package org.hkijena.acaq5.extensions.settings;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.ACAQDocumentation;
-import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.api.registries.ACAQSettingsRegistry;
@@ -57,6 +56,7 @@ public class FileChooserSettings implements ACAQParameterCollection {
     private boolean useNativeChooser = false;
     private Path lastProjectsDirectory;
     private Path lastParametersDirectory;
+    private boolean addFileExtension = true;
 
     @Override
     public EventBus getEventBus() {
@@ -132,6 +132,17 @@ public class FileChooserSettings implements ACAQParameterCollection {
 
     }
 
+    @ACAQDocumentation(name = "Automatically add file extensions", description = "If enabled, appropriate file extensions are automatically added (e.g. .json for projects) on saving a file if they are not present.")
+    @ACAQParameter("add-file-extension")
+    public boolean isAddFileExtension() {
+        return addFileExtension;
+    }
+
+    @ACAQParameter("add-file-extension")
+    public void setAddFileExtension(boolean addFileExtension) {
+        this.addFileExtension = addFileExtension;
+    }
+
     private static FileDialog createFileDialog(Component parent, String title, int mode) {
         Window windowAncestor = SwingUtilities.getWindowAncestor(parent);
         if (windowAncestor instanceof Frame) {
@@ -188,9 +199,10 @@ public class FileChooserSettings implements ACAQParameterCollection {
      * @param parent parent component
      * @param key    location where the dialog is opened
      * @param title  dialog title
+     * @param extension The extension to add. Includes a period. Example: ".json"
      * @return selected file or null if dialog was cancelled
      */
-    public static Path saveFile(Component parent, String key, String title) {
+    public static Path saveFile(Component parent, String key, String title, String extension) {
         FileChooserSettings instance = getInstance();
         Path currentPath = instance.getLastDirectoryBy(key);
         if (instance.useNativeChooser) {
@@ -203,6 +215,11 @@ public class FileChooserSettings implements ACAQParameterCollection {
             if (fileName != null) {
                 Path path = Paths.get(fileName);
                 instance.setLastDirectoryBy(key, path.getParent());
+                if(getInstance().isAddFileExtension() &&
+                        extension != null &&
+                        !path.toString().toLowerCase().endsWith(extension.toLowerCase())) {
+                    path = path.getParent().resolve(path.getFileName() + extension);
+                }
                 return path;
             } else {
                 return null;
@@ -214,6 +231,11 @@ public class FileChooserSettings implements ACAQParameterCollection {
             if (fileChooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION) {
                 Path path = fileChooser.getSelectedFile().toPath();
                 instance.setLastDirectoryBy(key, path.getParent());
+                if(getInstance().isAddFileExtension() &&
+                        extension != null &&
+                        !path.toString().toLowerCase().endsWith(extension.toLowerCase())) {
+                    path = path.getParent().resolve(path.getFileName() + extension);
+                }
                 return path;
             } else {
                 return null;
@@ -429,7 +451,7 @@ public class FileChooserSettings implements ACAQParameterCollection {
         } else {
             switch (pathMode) {
                 case FilesOnly:
-                    selected = FileChooserSettings.saveFile(parent, key, title);
+                    selected = FileChooserSettings.saveFile(parent, key, title, null);
                     break;
                 case DirectoriesOnly:
                     selected = FileChooserSettings.saveDirectory(parent, key, title);
@@ -476,7 +498,7 @@ public class FileChooserSettings implements ACAQParameterCollection {
             Path saveSelection;
             switch (pathMode) {
                 case FilesOnly:
-                    saveSelection = FileChooserSettings.saveFile(parent, key, title);
+                    saveSelection = FileChooserSettings.saveFile(parent, key, title, null);
                     break;
                 case DirectoriesOnly:
                     saveSelection = FileChooserSettings.saveDirectory(parent, key, title);

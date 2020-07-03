@@ -44,7 +44,7 @@ public class ExportCompartmentAsJsonAlgorithmUIAction implements AlgorithmUIActi
 
         if (JOptionPane.showConfirmDialog(canvasUI, metadataEditor, "Export compartment",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION) {
-            Path selectedPath = FileChooserSettings.saveFile(canvasUI, FileChooserSettings.KEY_PROJECT, "Save ACAQ5 graph compartment (*.json)");
+            Path selectedPath = FileChooserSettings.saveFile(canvasUI, FileChooserSettings.KEY_PROJECT, "Save ACAQ5 graph compartment (*.json)", null);
             if (selectedPath != null) {
                 try {
                     exportedCompartment.saveToJson(selectedPath);

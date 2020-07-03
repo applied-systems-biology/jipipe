@@ -48,7 +48,7 @@ public class ScreenshotWholeGraphToolSVG extends MenuExtension {
         ACAQAlgorithmGraphCanvasUI canvasUI = new ACAQAlgorithmGraphCanvasUI(workbench, workbench.getProject().getGraph(), null);
         canvasUI.autoLayoutAll();
         SVGGraphics2D screenshot = canvasUI.createScreenshotSVG();
-        Path file = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PARAMETER, "Export full graph as *.png");
+        Path file = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PARAMETER, "Export full graph as *.svg", ".svg");
         if (file != null) {
             try {
                 SVGUtils.writeToSVG(file.toFile(), screenshot.getSVGElement());

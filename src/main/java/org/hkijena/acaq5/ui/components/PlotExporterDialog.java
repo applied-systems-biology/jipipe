@@ -13,6 +13,7 @@
 
 package org.hkijena.acaq5.ui.components;
 
+import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
@@ -24,6 +25,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Rectangle;
 import java.io.IOException;
+import java.nio.file.Path;
 
 /**
  * Dialog that exports plots as image
@@ -158,10 +160,15 @@ public class PlotExporterDialog extends JDialog {
     private void exportPlot() {
         if (pathEditor.getPath() == null)
             return;
+        Path path = pathEditor.getPath();
+
         switch ((FileFormat) plotExportFormat.getSelectedItem()) {
             case PNG:
+                if(FileChooserSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase().endsWith(".png")) {
+                    path = path.getParent().resolve(path.getFileName() + ".png");
+                }
                 try {
-                    ChartUtils.saveChartAsPNG(pathEditor.getPath().toFile(),
+                    ChartUtils.saveChartAsPNG(path.toFile(),
                             chart,
                             ((Number) plotWidth.getValue()).intValue(),
                             ((Number) plotHeight.getValue()).intValue());
@@ -170,8 +177,11 @@ public class PlotExporterDialog extends JDialog {
                 }
                 break;
             case JPEG:
+                if(FileChooserSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase().endsWith(".jpg")) {
+                    path = path.getParent().resolve(path.getFileName() + ".jpg");
+                }
                 try {
-                    ChartUtils.saveChartAsJPEG(pathEditor.getPath().toFile(),
+                    ChartUtils.saveChartAsJPEG(path.toFile(),
                             chart,
                             ((Number) plotWidth.getValue()).intValue(),
                             ((Number) plotHeight.getValue()).intValue());
@@ -180,13 +190,16 @@ public class PlotExporterDialog extends JDialog {
                 }
                 break;
             case SVG: {
+                if(FileChooserSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase().endsWith(".svg")) {
+                    path = path.getParent().resolve(path.getFileName() + ".svg");
+                }
                 int w = ((Number) plotWidth.getValue()).intValue();
                 int h = ((Number) plotHeight.getValue()).intValue();
                 SVGGraphics2D g2 = new SVGGraphics2D(w, h);
                 Rectangle r = new Rectangle(0, 0, w, h);
                 chart.draw(g2, r);
                 try {
-                    SVGUtils.writeToSVG(pathEditor.getPath().toFile(), g2.getSVGElement());
+                    SVGUtils.writeToSVG(path.toFile(), g2.getSVGElement());
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

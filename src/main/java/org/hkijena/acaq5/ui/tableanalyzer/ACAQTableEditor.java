@@ -642,7 +642,7 @@ public class ACAQTableEditor extends ACAQProjectWorkbenchPanel {
     }
 
     private void exportTableAsCSV() {
-        Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Export CSV table (*.csv)");
+        Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Export CSV table (*.csv)", ".csv");
         if (selectedPath != null) {
             try (BufferedOutputStream writer = new BufferedOutputStream(new FileOutputStream(selectedPath.toFile()))) {
                 String[] rowBuffer = new String[tableModel.getColumnCount()];

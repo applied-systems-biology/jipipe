@@ -116,7 +116,7 @@ public class MarkdownReader extends JPanel {
 
             JMenuItem saveMarkdown = new JMenuItem("as Markdown (*.md)", UIUtils.getIconFromResources("filetype-markdown.png"));
             saveMarkdown.addActionListener(e -> {
-                Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as Markdown (*.md)");
+                Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as Markdown (*.md)", ".md");
                 if (selectedPath != null) {
                     try {
                         Files.write(selectedPath, document.getMarkdown().getBytes(Charsets.UTF_8));
@@ -129,7 +129,7 @@ public class MarkdownReader extends JPanel {
 
             JMenuItem saveHTML = new JMenuItem("as HTML (*.html)", UIUtils.getIconFromResources("filetype-html.png"));
             saveHTML.addActionListener(e -> {
-                Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as HTML (*.html)");
+                Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as HTML (*.html)", ".html");
                 if (selectedPath != null) {
                     try {
                         Files.write(selectedPath, toHTML().getBytes(Charsets.UTF_8));
@@ -142,7 +142,7 @@ public class MarkdownReader extends JPanel {
 
             JMenuItem savePDF = new JMenuItem("as PDF (*.pdf)", UIUtils.getIconFromResources("filetype-pdf.png"));
             savePDF.addActionListener(e -> {
-                Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as Portable Document Format (*.pdf)");
+                Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as Portable Document Format (*.pdf)", ".pdf");
                 if (selectedPath != null) {
                     PdfConverterExtension.exportToPdf(selectedPath.toString(), toHTML(), "", OPTIONS);
                 }

@@ -93,7 +93,7 @@ public abstract class ACAQCompendiumUI<T> extends JPanel {
         JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportButton);
         JMenuItem saveMarkdown = new JMenuItem("as Markdown (*.md)", UIUtils.getIconFromResources("filetype-markdown.png"));
         saveMarkdown.addActionListener(e -> {
-            Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as Markdown (*.md)");
+            Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as Markdown (*.md)", null);
             if (selectedPath != null) {
                 try (BusyCursor cursor = new BusyCursor(this)) {
                     MarkdownDocument wholeCompendium = generateWholeCompendium();
@@ -109,7 +109,7 @@ public abstract class ACAQCompendiumUI<T> extends JPanel {
 
         JMenuItem saveHTML = new JMenuItem("as HTML (*.html)", UIUtils.getIconFromResources("filetype-html.png"));
         saveHTML.addActionListener(e -> {
-            Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as HTML (*.html)");
+            Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as HTML (*.html)", null);
             if (selectedPath != null) {
                 try (BusyCursor cursor = new BusyCursor(this)) {
                     try {
@@ -125,7 +125,7 @@ public abstract class ACAQCompendiumUI<T> extends JPanel {
 
         JMenuItem savePDF = new JMenuItem("as PDF (*.pdf)", UIUtils.getIconFromResources("filetype-pdf.png"));
         savePDF.addActionListener(e -> {
-            Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as Portable Document Format (*.pdf)");
+            Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as Portable Document Format (*.pdf)", null);
             if (selectedPath != null) {
                 try (BusyCursor cursor = new BusyCursor(this)) {
                     MarkdownDocument wholeCompendium = generateWholeCompendium();
