@@ -17,6 +17,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
+import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQValidityReport;
@@ -28,6 +29,8 @@ import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
+import org.hkijena.acaq5.api.grouping.events.ParameterReferencesChangedEvent;
 import org.hkijena.acaq5.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
 import org.hkijena.acaq5.api.grouping.parameters.GraphNodeParameters;
 import org.hkijena.acaq5.api.grouping.parameters.NodeGroupContents;
@@ -60,6 +63,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements ACAQCustomParame
     public NodeGroup(ACAQAlgorithmDeclaration declaration) {
         super(declaration, new ACAQGraph());
         initializeContents();
+        this.exportedParameters.getEventBus().register(this);
     }
 
     /**
@@ -70,6 +74,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements ACAQCustomParame
     public NodeGroup(NodeGroup other) {
         super(other);
         this.exportedParameters = new GraphNodeParameters(other.exportedParameters);
+        this.exportedParameters.getEventBus().register(this);
         initializeContents();
     }
 
@@ -140,6 +145,8 @@ public class NodeGroup extends GraphWrapperAlgorithm implements ACAQCustomParame
                 getWrappedGraph().connect(internalSlot, target);
             }
         }
+
+        this.exportedParameters.getEventBus().register(this);
     }
 
     private void initializeContents() {
@@ -173,6 +180,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements ACAQCustomParame
     public void setExportedParameters(GraphNodeParameters exportedParameters) {
         this.exportedParameters = exportedParameters;
         this.exportedParameters.setGraph(getWrappedGraph());
+        this.exportedParameters.getEventBus().register(this);
     }
 
     @Override
@@ -197,5 +205,10 @@ public class NodeGroup extends GraphWrapperAlgorithm implements ACAQCustomParame
         Map<String, ACAQParameterCollection> result = new HashMap<>();
         result.put("exported", new GraphNodeParameterReferenceAccessGroupList(exportedParameters, getWrappedGraph().getParameterTree(), false));
         return result;
+    }
+
+    @Subscribe
+    public void onParameterReferencesChanged(ParameterReferencesChangedEvent event) {
+        getEventBus().post(new ParameterStructureChangedEvent(this));
     }
 }
