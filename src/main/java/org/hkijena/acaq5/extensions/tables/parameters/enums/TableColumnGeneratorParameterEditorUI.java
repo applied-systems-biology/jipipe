@@ -91,7 +91,7 @@ public class TableColumnGeneratorParameterEditorUI extends ACAQParameterEditorUI
             parameter.setGeneratedType(ColumnContentType.NumericColumn);
         else
             parameter.setGeneratedType(ColumnContentType.StringColumn);
-        getParameterAccess().set(parameter);
+        setParameter(parameter, false);
         isProcessing = false;
     }
 

@@ -162,6 +162,6 @@ public class FilterTableAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("invert")
     public void setInvert(boolean invert) {
         this.invert = invert;
-        getEventBus().post(new ParameterChangedEvent(this, "invert"));
+
     }
 }

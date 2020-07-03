@@ -121,7 +121,7 @@ public class MorphologyBinary2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("operation")
     public void setOperation(Operation operation) {
         this.operation = operation;
-        getEventBus().post(new ParameterChangedEvent(this, "operation"));
+
     }
 
     @ACAQDocumentation(name = "Iterations", description = "How many times the operation is applied")
@@ -133,7 +133,7 @@ public class MorphologyBinary2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("iterations")
     public void setIterations(int iterations) {
         this.iterations = iterations;
-        getEventBus().post(new ParameterChangedEvent(this, "iterations"));
+
     }
 
     /**

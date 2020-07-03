@@ -26,8 +26,6 @@ import java.awt.Dimension;
  */
 public class NumberParameterEditorUI extends ACAQParameterEditorUI {
     private JSpinner spinner;
-    private boolean skipNextReload = false;
-    private boolean isReloading = false;
 
     /**
      * @param workbench       workbench
@@ -46,13 +44,7 @@ public class NumberParameterEditorUI extends ACAQParameterEditorUI {
 
     @Override
     public void reload() {
-        if (skipNextReload) {
-            skipNextReload = false;
-            return;
-        }
-        isReloading = true;
         spinner.setValue(getCurrentValue());
-        isReloading = false;
     }
 
     private Number getCurrentValue() {
@@ -130,17 +122,17 @@ public class NumberParameterEditorUI extends ACAQParameterEditorUI {
 
     private boolean setCurrentValue(Number number) {
         if (getParameterAccess().getFieldClass() == byte.class || getParameterAccess().getFieldClass() == Byte.class) {
-            return getParameterAccess().set(number.byteValue());
+            return setParameter(number.byteValue(), false);
         } else if (getParameterAccess().getFieldClass() == short.class || getParameterAccess().getFieldClass() == Short.class) {
-            return getParameterAccess().set(number.shortValue());
+            return setParameter(number.shortValue(), false);
         } else if (getParameterAccess().getFieldClass() == int.class || getParameterAccess().getFieldClass() == Integer.class) {
-            return getParameterAccess().set(number.intValue());
+            return setParameter(number.intValue(), false);
         } else if (getParameterAccess().getFieldClass() == long.class || getParameterAccess().getFieldClass() == Long.class) {
-            return getParameterAccess().set(number.longValue());
+            return setParameter(number.longValue(), false);
         } else if (getParameterAccess().getFieldClass() == float.class || getParameterAccess().getFieldClass() == Float.class) {
-            return getParameterAccess().set(number.floatValue());
+            return setParameter(number.floatValue(), false);
         } else if (getParameterAccess().getFieldClass() == double.class || getParameterAccess().getFieldClass() == Double.class) {
-            return getParameterAccess().set(number.doubleValue());
+            return setParameter(number.doubleValue(), false);
         } else {
             throw new IllegalArgumentException("Unsupported numeric type: " + getParameterAccess().getFieldClass());
         }
@@ -150,15 +142,7 @@ public class NumberParameterEditorUI extends ACAQParameterEditorUI {
         setLayout(new BorderLayout());
         SpinnerNumberModel model = new SpinnerNumberModel(getCurrentValue(), getMinimumValue(), getMaximumValue(), getStep());
         spinner = new JSpinner(model);
-        spinner.addChangeListener(e -> {
-            if (!isReloading) {
-                skipNextReload = true;
-                if (!setCurrentValue(model.getNumber())) {
-                    skipNextReload = false;
-                    reload();
-                }
-            }
-        });
+        spinner.addChangeListener(e -> setCurrentValue(model.getNumber()));
         spinner.setPreferredSize(new Dimension(100, spinner.getPreferredSize().height));
         add(spinner, BorderLayout.CENTER);
     }

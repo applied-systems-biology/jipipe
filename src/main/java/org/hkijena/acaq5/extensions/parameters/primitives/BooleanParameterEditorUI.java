@@ -70,7 +70,7 @@ public class BooleanParameterEditorUI extends ACAQParameterEditorUI {
         checkBox.addActionListener(e -> {
             if (!isReloading) {
                 skipNextReload = true;
-                getParameterAccess().set(checkBox.isSelected());
+                setParameter(checkBox.isSelected(), false);
             }
         });
     }

@@ -24,6 +24,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -31,8 +32,6 @@ import java.util.function.Supplier;
  */
 public class DynamicEnumParameterEditorUI extends ACAQParameterEditorUI {
 
-    private boolean skipNextReload = false;
-    private boolean isReloading = false;
     private JComboBox<Object> comboBox;
 
     /**
@@ -52,14 +51,10 @@ public class DynamicEnumParameterEditorUI extends ACAQParameterEditorUI {
 
     @Override
     public void reload() {
-        if (skipNextReload) {
-            skipNextReload = false;
-            return;
-        }
-        isReloading = true;
         DynamicEnumParameter parameter = getParameter(DynamicEnumParameter.class);
-        comboBox.setSelectedItem(parameter.getValue());
-        isReloading = false;
+        if(!Objects.equals(parameter.getValue(), comboBox.getSelectedItem())) {
+            comboBox.setSelectedItem(parameter.getValue());
+        }
     }
 
     private void initialize() {
@@ -82,14 +77,7 @@ public class DynamicEnumParameterEditorUI extends ACAQParameterEditorUI {
         comboBox = new JComboBox<>(values);
         comboBox.setSelectedItem(parameter.getValue());
         comboBox.addActionListener(e -> {
-            if (!isReloading) {
-                skipNextReload = true;
-                parameter.setValue(comboBox.getSelectedItem());
-                if (!getParameterAccess().set(parameter)) {
-                    skipNextReload = false;
-                    reload();
-                }
-            }
+            setParameter(parameter, false);
         });
         comboBox.setRenderer(new Renderer(parameter));
         add(comboBox, BorderLayout.CENTER);

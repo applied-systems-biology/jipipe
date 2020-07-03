@@ -152,7 +152,7 @@ public class ACAQPlotSeriesBuilder implements ACAQParameterCollection, ACAQValid
     @ACAQParameter("name")
     public void setName(String name) {
         this.name = name;
-        getEventBus().post(new ParameterChangedEvent(this, "name"));
+
     }
 
     public ACAQPlotBuilderUI getPlotBuilderUI() {
@@ -165,7 +165,7 @@ public class ACAQPlotSeriesBuilder implements ACAQParameterCollection, ACAQValid
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-        getEventBus().post(new ParameterChangedEvent(this, "enabled"));
+
     }
 
     @Override

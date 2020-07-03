@@ -38,7 +38,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.registries.ACAQImageJAdapterRegistry;
 import org.hkijena.acaq5.extensions.filesystem.dataypes.PathData;
-import org.hkijena.acaq5.extensions.parameters.scripts.MacroCode;
+import org.hkijena.acaq5.extensions.parameters.scripts.ImageJMacro;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
@@ -83,7 +83,7 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
             Boolean.class
     };
 
-    private MacroCode code = new MacroCode();
+    private ImageJMacro code = new ImageJMacro();
     private boolean strictMode = true;
     private boolean batchMode = false;
     private ACAQDynamicParameterCollection macroParameters = new ACAQDynamicParameterCollection(ALLOWED_PARAMETER_CLASSES);
@@ -120,7 +120,7 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
      */
     public MacroWrapperAlgorithm(MacroWrapperAlgorithm other) {
         super(other);
-        this.code = new MacroCode(other.code);
+        this.code = new ImageJMacro(other.code);
         this.macroParameters = new ACAQDynamicParameterCollection(other.macroParameters);
         this.macroParameters.getEventBus().register(this);
     }
@@ -337,12 +337,12 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
 
     @ACAQDocumentation(name = "Code")
     @ACAQParameter("code")
-    public MacroCode getCode() {
+    public ImageJMacro getCode() {
         return code;
     }
 
     @ACAQParameter("code")
-    public void setCode(MacroCode code) {
+    public void setCode(ImageJMacro code) {
         this.code = code;
     }
 

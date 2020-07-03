@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * A mutable implementation of {@link ACAQParameterAccess}
@@ -212,11 +213,16 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
     @Override
     @JsonSetter("value")
     public <T> boolean set(T value) {
+
+        // Ignore non-changes
+        if(this.value != value && Objects.equals(value, this.value))
+            return true;
+
         this.value = value;
 
         // Trigger change in parent parameter holder
         if (parameterHolder != null)
-            parameterHolder.getEventBus().post(new ParameterChangedEvent(this, getKey()));
+            parameterHolder.getEventBus().post(new ParameterChangedEvent(parameterHolder, key));
         return true;
     }
 

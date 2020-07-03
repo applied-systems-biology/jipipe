@@ -64,7 +64,7 @@ public class StringOrDoublePredicate implements ACAQParameterCollection, ACAQVal
     @JsonSetter("mode")
     public void setFilterMode(FilterMode filterMode) {
         this.filterMode = filterMode;
-        getEventBus().post(new ParameterChangedEvent(this, "mode"));
+
     }
 
     @ACAQDocumentation(name = "String filter", description = "The string filter")
@@ -78,7 +78,7 @@ public class StringOrDoublePredicate implements ACAQParameterCollection, ACAQVal
     @JsonSetter("string-filter")
     public void setStringPredicate(StringPredicate stringPredicate) {
         this.stringPredicate = stringPredicate;
-        getEventBus().post(new ParameterChangedEvent(this, "string-filter"));
+
     }
 
     @ACAQDocumentation(name = "Number filter", description = "The number filter")
@@ -92,7 +92,7 @@ public class StringOrDoublePredicate implements ACAQParameterCollection, ACAQVal
     @JsonSetter("number-filter")
     public void setDoublePredicate(DoublePredicate doublePredicate) {
         this.doublePredicate = doublePredicate;
-        getEventBus().post(new ParameterChangedEvent(this, "number-filter"));
+
     }
 
     @Override

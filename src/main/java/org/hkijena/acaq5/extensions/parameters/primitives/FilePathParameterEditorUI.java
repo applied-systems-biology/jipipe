@@ -26,8 +26,6 @@ import java.nio.file.Path;
  */
 public class FilePathParameterEditorUI extends ACAQParameterEditorUI {
 
-    private boolean skipNextReload = false;
-    private boolean isReloading = false;
     private PathEditor pathEditor;
 
     /**
@@ -47,13 +45,7 @@ public class FilePathParameterEditorUI extends ACAQParameterEditorUI {
 
     @Override
     public void reload() {
-        if (skipNextReload) {
-            skipNextReload = false;
-            return;
-        }
-        isReloading = true;
         pathEditor.setPath(getParameterAccess().get(Path.class));
-        isReloading = false;
     }
 
     private void initialize() {
@@ -68,13 +60,7 @@ public class FilePathParameterEditorUI extends ACAQParameterEditorUI {
         pathEditor.setPath(getParameterAccess().get(Path.class));
         add(pathEditor, BorderLayout.CENTER);
         pathEditor.addActionListener(e -> {
-            if (!isReloading) {
-                skipNextReload = true;
-                if (!getParameterAccess().set(pathEditor.getPath())) {
-                    skipNextReload = false;
-                    reload();
-                }
-            }
+            setParameter(pathEditor.getPath(), false);
         });
     }
 

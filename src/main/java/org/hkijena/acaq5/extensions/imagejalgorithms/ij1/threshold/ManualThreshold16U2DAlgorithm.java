@@ -101,6 +101,6 @@ public class ManualThreshold16U2DAlgorithm extends ACAQSimpleIteratingAlgorithm 
     @ACAQParameter("threshold")
     public void setThreshold(int threshold) {
         this.threshold = threshold;
-        getEventBus().post(new ParameterChangedEvent(this, "threshold"));
+
     }
 }

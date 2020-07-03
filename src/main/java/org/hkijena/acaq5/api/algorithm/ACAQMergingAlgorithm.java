@@ -307,7 +307,7 @@ public abstract class ACAQMergingAlgorithm extends ACAQAlgorithm implements ACAQ
     @ACAQParameter("acaq:iterating-algorithm:column-matching")
     public void setDataSetMatching(ACAQIteratingAlgorithm.ColumnMatching dataSetMatching) {
         this.dataSetMatching = dataSetMatching;
-        getEventBus().post(new ParameterChangedEvent(this, "acaq:iterating-algorithm:column-matching"));
+
     }
 
     @ACAQDocumentation(name = "Data set matching annotations", description = "Only used if 'Data set matching strategy' is set to 'Custom'. " +
@@ -323,7 +323,7 @@ public abstract class ACAQMergingAlgorithm extends ACAQAlgorithm implements ACAQ
     @ACAQParameter(value = "acaq:iterating-algorithm:custom-matched-columns", visibility = ACAQParameterVisibility.Visible)
     public void setCustomColumns(StringList customColumns) {
         this.customColumns = customColumns;
-        getEventBus().post(new ParameterChangedEvent(this, "acaq:iterating-algorithm:custom-matched-columns"));
+
     }
 
     @ACAQDocumentation(name = "Skip incomplete data sets", description = "If enabled, incomplete data sets are silently skipped. " +
@@ -336,7 +336,7 @@ public abstract class ACAQMergingAlgorithm extends ACAQAlgorithm implements ACAQ
     @ACAQParameter("acaq:iterating-algorithm:skip-incomplete")
     public void setSkipIncompleteDataSets(boolean skipIncompleteDataSets) {
         this.skipIncompleteDataSets = skipIncompleteDataSets;
-        getEventBus().post(new ParameterChangedEvent(this, "acaq:iterating-algorithm:skip-incomplete"));
+
     }
 
     @Override

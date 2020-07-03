@@ -41,7 +41,7 @@ public class ShortPrimitiveParameterTypeDeclaration implements ACAQParameterType
 
     @Override
     public String getName() {
-        return "16-bit integral number";
+        return "Short";
     }
 
     @Override

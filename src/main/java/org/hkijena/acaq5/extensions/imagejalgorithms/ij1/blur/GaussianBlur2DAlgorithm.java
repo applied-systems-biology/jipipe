@@ -106,7 +106,7 @@ public class GaussianBlur2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("sigma-x")
     public void setSigmaX(double sigmaX) {
         this.sigmaX = sigmaX;
-        getEventBus().post(new ParameterChangedEvent(this, "sigma-x"));
+
     }
 
     @ACAQDocumentation(name = "Sigma (Y)", description = "Standard deviation of the Gaussian (pixels) in Y direction." +
@@ -119,6 +119,6 @@ public class GaussianBlur2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("sigma-y")
     public void setSigmaY(double sigmaY) {
         this.sigmaY = sigmaY;
-        getEventBus().post(new ParameterChangedEvent(this, "sigma-y"));
+
     }
 }

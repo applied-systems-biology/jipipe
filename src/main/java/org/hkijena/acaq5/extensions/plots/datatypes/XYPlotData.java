@@ -86,7 +86,7 @@ public abstract class XYPlotData extends PlotData {
     @ACAQParameter("x-axis-label")
     public void setxAxisLabel(String xAxisLabel) {
         this.xAxisLabel = xAxisLabel;
-        getEventBus().post(new ParameterChangedEvent(this, "x-axis-label"));
+
     }
 
     @ACAQDocumentation(name = "Y axis label", description = "Label of the Y-axis")
@@ -98,6 +98,6 @@ public abstract class XYPlotData extends PlotData {
     @ACAQParameter("y-axis-label")
     public void setyAxisLabel(String yAxisLabel) {
         this.yAxisLabel = yAxisLabel;
-        getEventBus().post(new ParameterChangedEvent(this, "y-axis-label"));
+
     }
 }

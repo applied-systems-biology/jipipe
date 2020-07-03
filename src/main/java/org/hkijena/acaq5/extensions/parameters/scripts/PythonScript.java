@@ -13,37 +13,32 @@
 
 package org.hkijena.acaq5.extensions.parameters.scripts;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonSetter;
+import org.scijava.script.ScriptLanguage;
 
 /**
  * Encapsulates ImageJ macro code to be detected by the parameter system
  */
-public class MacroCode {
-    private String code = "";
-
-    /**
-     * Creates a new empty code
-     */
-    public MacroCode() {
+public class PythonScript extends ScriptParameter {
+    public PythonScript() {
+        super();
     }
 
-    /**
-     * Copies the code
-     *
-     * @param other the original
-     */
-    public MacroCode(MacroCode other) {
-        this.code = other.code;
+    @Override
+    public String getMimeType() {
+        return "text/x-python";
     }
 
-    @JsonGetter("code")
-    public String getCode() {
-        return code;
+    @Override
+    public String getLanguageName() {
+        return "Python script";
     }
 
-    @JsonSetter("code")
-    public void setCode(String code) {
-        this.code = code;
+    @Override
+    public ScriptLanguage getLanguage() {
+        return null;
+    }
+
+    public PythonScript(PythonScript other) {
+        super(other);
     }
 }

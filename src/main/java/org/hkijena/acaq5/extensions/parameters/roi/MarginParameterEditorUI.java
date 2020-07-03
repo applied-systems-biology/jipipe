@@ -137,8 +137,7 @@ public class MarginParameterEditorUI extends ACAQParameterEditorUI {
                 if (entry.getValue().isSelected()) {
                     Margin roi = getParameter(Margin.class);
                     roi.setAnchor(entry.getKey());
-                    getParameterAccess().set(roi);
-                    reload();
+                    setParameter(roi, true);
                 }
             });
         }

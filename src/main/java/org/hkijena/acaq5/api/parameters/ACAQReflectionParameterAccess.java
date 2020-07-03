@@ -14,12 +14,14 @@
 package org.hkijena.acaq5.api.parameters;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Objects;
 
 /**
  * {@link ACAQParameterAccess} generated from reflection
@@ -97,7 +99,16 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
     @Override
     public <T> boolean set(T value) {
         try {
+            Object existing = get(Object.class);
+            if(existing != value && Objects.equals(existing, value)) {
+                return true;
+            }
             Object result = setter.invoke(source, value);
+
+            // Trigger change in parent parameter holder
+            if (source != null)
+                source.getEventBus().post(new ParameterChangedEvent(source, key));
+
             if (result instanceof Boolean) {
                 return (boolean) result;
             } else {

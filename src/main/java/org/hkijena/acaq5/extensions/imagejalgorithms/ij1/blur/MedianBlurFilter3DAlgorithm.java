@@ -105,7 +105,7 @@ public class MedianBlurFilter3DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("radius-x")
     public void setRadiusX(float radiusX) {
         this.radiusX = radiusX;
-        getEventBus().post(new ParameterChangedEvent(this, "radius-x"));
+
     }
 
     @ACAQDocumentation(name = "Radius (Y)", description = "Filter radius (pixels) in Y direction." +
@@ -118,7 +118,7 @@ public class MedianBlurFilter3DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("radius-y")
     public void setRadiusY(float radiusY) {
         this.radiusY = radiusY;
-        getEventBus().post(new ParameterChangedEvent(this, "radius-y"));
+
     }
 
     @ACAQDocumentation(name = "Radius (Z)", description = "Filter radius (pixels) in Z direction." +
@@ -131,6 +131,6 @@ public class MedianBlurFilter3DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("radius-z")
     public void setRadiusZ(float radiusZ) {
         this.radiusZ = radiusZ;
-        getEventBus().post(new ParameterChangedEvent(this, "radius-z"));
+
     }
 }

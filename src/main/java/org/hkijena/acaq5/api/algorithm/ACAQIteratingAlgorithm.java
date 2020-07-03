@@ -327,7 +327,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm implements AC
     @ACAQParameter("acaq:iterating-algorithm:column-matching")
     public void setDataSetMatching(ColumnMatching dataSetMatching) {
         this.dataSetMatching = dataSetMatching;
-        getEventBus().post(new ParameterChangedEvent(this, "acaq:iterating-algorithm:column-matching"));
+
     }
 
     @ACAQDocumentation(name = "Allow duplicate data sets", description = "If disabled, there will be an error if duplicate data sets are detected. " +
@@ -340,7 +340,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm implements AC
     @ACAQParameter("acaq:iterating-algorithm:allow-duplicates")
     public void setAllowDuplicateDataSets(boolean allowDuplicateDataSets) {
         this.allowDuplicateDataSets = allowDuplicateDataSets;
-        getEventBus().post(new ParameterChangedEvent(this, "acaq:iterating-algorithm:allow-duplicates"));
+
     }
 
     @ACAQDocumentation(name = "Data set matching annotations", description = "Only used if 'Data set matching strategy' is set to 'Custom'. " +
@@ -356,7 +356,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm implements AC
     @ACAQParameter(value = "acaq:iterating-algorithm:custom-matched-columns", visibility = ACAQParameterVisibility.Visible)
     public void setCustomColumns(StringList customColumns) {
         this.customColumns = customColumns;
-        getEventBus().post(new ParameterChangedEvent(this, "acaq:iterating-algorithm:custom-matched-columns"));
+
     }
 
     @ACAQDocumentation(name = "Skip incomplete data sets", description = "If enabled, incomplete data sets are silently skipped. " +
@@ -369,7 +369,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm implements AC
     @ACAQParameter("acaq:iterating-algorithm:skip-incomplete")
     public void setSkipIncompleteDataSets(boolean skipIncompleteDataSets) {
         this.skipIncompleteDataSets = skipIncompleteDataSets;
-        getEventBus().post(new ParameterChangedEvent(this, "acaq:iterating-algorithm:skip-incomplete"));
+
     }
 
     @Override

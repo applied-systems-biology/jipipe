@@ -14,6 +14,8 @@
 package org.hkijena.acaq5.extensions.parameters;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
+import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.hkijena.acaq5.ACAQJavaExtension;
 import org.hkijena.acaq5.api.ACAQAuthorMetadata;
 import org.hkijena.acaq5.api.algorithm.ACAQIteratingAlgorithm;
@@ -70,10 +72,10 @@ import org.hkijena.acaq5.extensions.parameters.roi.RectangleDeserializer;
 import org.hkijena.acaq5.extensions.parameters.roi.RectangleList;
 import org.hkijena.acaq5.extensions.parameters.roi.RectangleParameterEditorUI;
 import org.hkijena.acaq5.extensions.parameters.roi.RectangleSerializer;
-import org.hkijena.acaq5.extensions.parameters.scripts.MacroCode;
-import org.hkijena.acaq5.extensions.parameters.scripts.MacroCodeParameterEditorUI;
-import org.hkijena.acaq5.extensions.parameters.scripts.PythonCode;
-import org.hkijena.acaq5.extensions.parameters.scripts.PythonCodeParameterEditorUI;
+import org.hkijena.acaq5.extensions.parameters.scripts.ImageJMacro;
+import org.hkijena.acaq5.extensions.parameters.scripts.ScriptParameterEditorUI;
+import org.hkijena.acaq5.extensions.parameters.scripts.PythonScript;
+import org.hkijena.acaq5.extensions.parameters.scripts.ScriptParameter;
 import org.hkijena.acaq5.extensions.parameters.table.ParameterTable;
 import org.hkijena.acaq5.extensions.parameters.table.ParameterTableEditorUI;
 import org.hkijena.acaq5.extensions.parameters.util.ACAQAuthorMetadataParameterEditorUI;
@@ -136,20 +138,26 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
     }
 
     private void registerScriptParameters() {
+        // Register types for the editor
+        AbstractTokenMakerFactory atmf = (AbstractTokenMakerFactory) TokenMakerFactory.getDefaultInstance();
+        atmf.putMapping("text/ijm", "org.scijava.ui.swing.script.highliters.ImageJMacroTokenMaker");
+        atmf.putMapping("text/x-python", "org.fife.ui.rsyntaxtextarea.modes.PythonTokenMaker");
+
+        registerParameterEditor(ScriptParameter.class, ScriptParameterEditorUI.class);
         registerParameterType("ij-macro-code",
-                MacroCode.class,
-                MacroCode::new,
-                m -> new MacroCode((MacroCode) m),
+                ImageJMacro.class,
+                null,
+                null,
                 "ImageJ macro",
                 "An ImageJ macro code",
-                MacroCodeParameterEditorUI.class);
+                null);
         registerParameterType("python-code",
-                PythonCode.class,
+                PythonScript.class,
                 null,
                 null,
                 "Python script",
                 "A Python script",
-                PythonCodeParameterEditorUI.class);
+                null);
     }
 
     private void registerPatternParameters() {

@@ -86,7 +86,7 @@ public class FileDataSource extends ACAQAlgorithm {
     @ACAQParameter("file-name")
     public void setFileName(Path fileName) {
         this.fileName = fileName;
-        getEventBus().post(new ParameterChangedEvent(this, "file-name"));
+
     }
 
     /**

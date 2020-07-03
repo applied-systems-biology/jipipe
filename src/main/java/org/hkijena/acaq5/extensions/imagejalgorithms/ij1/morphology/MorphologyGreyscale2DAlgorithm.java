@@ -117,7 +117,7 @@ public class MorphologyGreyscale2DAlgorithm extends ACAQSimpleIteratingAlgorithm
     @ACAQParameter("operation")
     public void setOperation(Operation operation) {
         this.operation = operation;
-        getEventBus().post(new ParameterChangedEvent(this, "operation"));
+
     }
 
     @ACAQDocumentation(name = "Radius", description = "Radius of the filter kernel. See ImageJ>Process>Filters>Show Circular Masks for a reference.")
@@ -129,7 +129,7 @@ public class MorphologyGreyscale2DAlgorithm extends ACAQSimpleIteratingAlgorithm
     @ACAQParameter("radius")
     public void setRadius(int radius) {
         this.radius = radius;
-        getEventBus().post(new ParameterChangedEvent(this, "radius"));
+
     }
 
     /**

@@ -109,7 +109,7 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
     @JsonSetter("id")
     public void setId(String id) {
         this.id = id;
-        getEventBus().post(new ParameterChangedEvent(this, "id"));
+
     }
 
     @Override
@@ -174,7 +174,7 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
     @JsonSetter("category")
     public void setCategory(ACAQAlgorithmCategory category) {
         this.category = category;
-        getEventBus().post(new ParameterChangedEvent(this, "category"));
+
     }
 
     @Override
@@ -384,7 +384,7 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
     @ACAQParameter("menu-path")
     public void setMenuPathList(StringList value) {
         this.menuPath = value;
-        getEventBus().post(new ParameterChangedEvent(this, "menu-path"));
+
     }
 
     @ACAQParameter(value = "hidden", uiOrder = 40)
@@ -397,7 +397,7 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
     @ACAQParameter("hidden")
     public void setHidden(boolean hidden) {
         this.hidden = hidden;
-        getEventBus().post(new ParameterChangedEvent(this, "hidden"));
+
     }
 
     @ACAQDocumentation(name = "Icon", description = "A custom algorithm icon")
@@ -410,6 +410,6 @@ public class JsonAlgorithmDeclaration implements ACAQAlgorithmDeclaration, ACAQV
     @ACAQParameter("icon")
     public void setIcon(ACAQAlgorithmIconRef icon) {
         this.icon = icon;
-        getEventBus().post(new ParameterChangedEvent(this, "icon"));
+
     }
 }

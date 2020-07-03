@@ -89,7 +89,7 @@ public class FileListDataSource extends ACAQAlgorithm {
     @ACAQParameter("file-names")
     public void setFileNames(PathList fileNames) {
         this.fileNames = fileNames;
-        getEventBus().post(new ParameterChangedEvent(this, "file-names"));
+
     }
 
     /**
@@ -157,7 +157,7 @@ public class FileListDataSource extends ACAQAlgorithm {
         }
         currentWorkingDirectory = workDirectory;
         if (modified) {
-            getEventBus().post(new ParameterChangedEvent(this, "file-names"));
+
         }
     }
 }

@@ -209,7 +209,7 @@ public class HoughSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("min-radius")
     public void setMinRadius(int minRadius) {
         this.minRadius = minRadius;
-        getEventBus().post(new ParameterChangedEvent(this, "min-radius"));
+
     }
 
     @ACAQParameter("max-radius")
@@ -221,7 +221,7 @@ public class HoughSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("max-radius")
     public void setMaxRadius(int maxRadius) {
         this.maxRadius = maxRadius;
-        getEventBus().post(new ParameterChangedEvent(this, "max-radius"));
+
     }
 
     @ACAQParameter("radius-increment")
@@ -233,7 +233,7 @@ public class HoughSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("radius-increment")
     public void setRadiusIncrement(int radiusIncrement) {
         this.radiusIncrement = radiusIncrement;
-        getEventBus().post(new ParameterChangedEvent(this, "radius-increment"));
+
     }
 
     @ACAQParameter("min-num-circles")
@@ -245,7 +245,7 @@ public class HoughSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("min-num-circles")
     public void setMinNumCircles(int minNumCircles) {
         this.minNumCircles = minNumCircles;
-        getEventBus().post(new ParameterChangedEvent(this, "min-num-circles"));
+
     }
 
     @ACAQParameter("max-num-circles")
@@ -257,7 +257,7 @@ public class HoughSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("max-num-circles")
     public void setMaxNumCircles(int maxNumCircles) {
         this.maxNumCircles = maxNumCircles;
-        getEventBus().post(new ParameterChangedEvent(this, "max-num-circles"));
+
     }
 
     @ACAQParameter("threshold")
@@ -269,7 +269,7 @@ public class HoughSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("threshold")
     public void setThreshold(double threshold) {
         this.threshold = threshold;
-        getEventBus().post(new ParameterChangedEvent(this, "threshold"));
+
     }
 
     @ACAQParameter("resolution")
@@ -281,7 +281,7 @@ public class HoughSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("resolution")
     public void setResolution(int resolution) {
         this.resolution = resolution;
-        getEventBus().post(new ParameterChangedEvent(this, "resolution"));
+
     }
 
     @ACAQParameter("ratio")
@@ -293,7 +293,7 @@ public class HoughSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("ratio")
     public void setRatio(double ratio) {
         this.ratio = ratio;
-        getEventBus().post(new ParameterChangedEvent(this, "ratio"));
+
     }
 
     @ACAQParameter("bandwidth")
@@ -305,7 +305,7 @@ public class HoughSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("bandwidth")
     public void setBandwidth(int bandwidth) {
         this.bandwidth = bandwidth;
-        getEventBus().post(new ParameterChangedEvent(this, "bandwidth"));
+
     }
 
     @ACAQParameter("local-radius")
@@ -317,7 +317,7 @@ public class HoughSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("local-radius")
     public void setLocalRadius(int localRadius) {
         this.localRadius = localRadius;
-        getEventBus().post(new ParameterChangedEvent(this, "local-radius"));
+
     }
 
     @Override
@@ -334,6 +334,6 @@ public class HoughSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("local")
     public void setLocal(boolean local) {
         this.local = local;
-        getEventBus().post(new ParameterChangedEvent(this, "local"));
+
     }
 }

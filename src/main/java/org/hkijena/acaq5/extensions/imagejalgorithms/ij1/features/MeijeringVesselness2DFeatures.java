@@ -197,7 +197,7 @@ public class MeijeringVesselness2DFeatures extends ACAQSimpleIteratingAlgorithm 
     @ACAQParameter("invert")
     public void setInvert(boolean invert) {
         this.invert = invert;
-        getEventBus().post(new ParameterChangedEvent(this, "invert"));
+
     }
 
     @NumberParameterSettings(step = 0.1)
@@ -210,7 +210,7 @@ public class MeijeringVesselness2DFeatures extends ACAQSimpleIteratingAlgorithm 
     @ACAQParameter("alpha")
     public void setAlpha(double alpha) {
         this.alpha = alpha;
-        getEventBus().post(new ParameterChangedEvent(this, "alpha"));
+
     }
 
     @ACAQDocumentation(name = "Scales", description = "List of scales to test. They are also referenced as 'Sigmas'.")

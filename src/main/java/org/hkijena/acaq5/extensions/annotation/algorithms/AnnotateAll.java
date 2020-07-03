@@ -91,7 +91,7 @@ public class AnnotateAll extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("generated-annotation")
     public void setAnnotations(StringAndStringPair.List annotations) {
         this.annotations = annotations;
-        getEventBus().post(new ParameterChangedEvent(this, "generated-annotation"));
+
     }
 
     @ACAQDocumentation(name = "Overwrite existing annotations", description = "If disabled, any existing annotation of the same type (not value) is not replaced")
@@ -103,6 +103,6 @@ public class AnnotateAll extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("overwrite")
     public void setOverwrite(boolean overwrite) {
         this.overwrite = overwrite;
-        getEventBus().post(new ParameterChangedEvent(this, "overwrite"));
+
     }
 }

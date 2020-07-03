@@ -23,14 +23,13 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.util.Objects;
 
 /**
  * A parameter editor UI that works for all enumerations
  */
 public class EnumParameterEditorUI extends ACAQParameterEditorUI {
 
-    private boolean skipNextReload = false;
-    private boolean isReloading = false;
     private JComboBox<Object> comboBox;
 
     /**
@@ -50,13 +49,10 @@ public class EnumParameterEditorUI extends ACAQParameterEditorUI {
 
     @Override
     public void reload() {
-        if (skipNextReload) {
-            skipNextReload = false;
-            return;
+        Object target = getParameterAccess().get(Object.class);
+        if(!Objects.equals(target, comboBox.getSelectedItem())) {
+            comboBox.setSelectedItem(target);
         }
-        isReloading = true;
-        comboBox.setSelectedItem(getParameterAccess().get(Object.class));
-        isReloading = false;
     }
 
     private void initialize() {
@@ -65,13 +61,7 @@ public class EnumParameterEditorUI extends ACAQParameterEditorUI {
         comboBox = new JComboBox<>(values);
         comboBox.setSelectedItem(getParameterAccess().get(Object.class));
         comboBox.addActionListener(e -> {
-            if (!isReloading) {
-                skipNextReload = true;
-                if (!getParameterAccess().set(comboBox.getSelectedItem())) {
-                    skipNextReload = false;
-                    reload();
-                }
-            }
+            setParameter(comboBox.getSelectedItem(), false);
         });
         EnumParameterSettings settings = getParameterAccess().getAnnotationOfType(EnumParameterSettings.class);
         EnumItemInfo info;

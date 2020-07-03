@@ -142,7 +142,7 @@ public class RollingBallBackgroundEstimator2DAlgorithm extends ACAQSimpleIterati
     @ACAQParameter("subtract")
     public void setSubtract(boolean subtract) {
         this.subtract = subtract;
-        getEventBus().post(new ParameterChangedEvent(this, "subtract"));
+
     }
 
     @ACAQDocumentation(name = "Background type", description = "Determines whether the background is dark or light.")
@@ -154,7 +154,7 @@ public class RollingBallBackgroundEstimator2DAlgorithm extends ACAQSimpleIterati
     @ACAQParameter("background-type")
     public void setBackgroundType(BackgroundType backgroundType) {
         this.backgroundType = backgroundType;
-        getEventBus().post(new ParameterChangedEvent(this, "background-type"));
+
     }
 
     @ACAQDocumentation(name = "Method", description = "The method to estimate the background")
@@ -178,7 +178,7 @@ public class RollingBallBackgroundEstimator2DAlgorithm extends ACAQSimpleIterati
     @ACAQParameter("apply-pre-smoothing")
     public void setPreSmoothing(boolean preSmoothing) {
         this.preSmoothing = preSmoothing;
-        getEventBus().post(new ParameterChangedEvent(this, "apply-pre-smoothing"));
+
     }
 
     @ACAQDocumentation(name = "Apply corner-correction", description = "If enabled, the algorithm attempts to avoid recognizing corners as background.")
@@ -190,7 +190,7 @@ public class RollingBallBackgroundEstimator2DAlgorithm extends ACAQSimpleIterati
     @ACAQParameter("apply-corner-correction")
     public void setCorrectCorners(boolean correctCorners) {
         this.correctCorners = correctCorners;
-        getEventBus().post(new ParameterChangedEvent(this, "apply-corner-correction"));
+
     }
 
     @ACAQDocumentation(name = "Separate channels", description = "Only valid for multi-channel images. If enabled, the algorithm is applied to each channel individually. " +
@@ -203,7 +203,7 @@ public class RollingBallBackgroundEstimator2DAlgorithm extends ACAQSimpleIterati
     @ACAQParameter("separate-channels")
     public void setSeparateChannels(boolean separateChannels) {
         this.separateChannels = separateChannels;
-        getEventBus().post(new ParameterChangedEvent(this, "separate-channels"));
+
     }
 
     /**

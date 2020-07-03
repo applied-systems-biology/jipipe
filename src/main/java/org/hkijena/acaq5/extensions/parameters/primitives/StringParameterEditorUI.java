@@ -25,6 +25,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.text.JTextComponent;
 import java.awt.BorderLayout;
 import java.awt.Font;
+import java.util.Objects;
 
 /**
  * Parameter editor for {@link String}
@@ -32,8 +33,6 @@ import java.awt.Font;
 public class StringParameterEditorUI extends ACAQParameterEditorUI {
 
     private JTextComponent textComponent;
-    private boolean skipNextReload = false;
-    private boolean isReloading = false;
 
     /**
      * @param workbench       workbench
@@ -88,10 +87,7 @@ public class StringParameterEditorUI extends ACAQParameterEditorUI {
         textComponent.getDocument().addDocumentListener(new DocumentChangeListener() {
             @Override
             public void changed(DocumentEvent documentEvent) {
-                if (!isReloading) {
-                    skipNextReload = true;
-                    getParameterAccess().set(textComponent.getText());
-                }
+                setParameter(textComponent.getText(), false);
             }
         });
     }
@@ -103,17 +99,12 @@ public class StringParameterEditorUI extends ACAQParameterEditorUI {
 
     @Override
     public void reload() {
-        if (skipNextReload) {
-            skipNextReload = false;
-            return;
-        }
-        isReloading = true;
         Object value = getParameterAccess().get(Object.class);
         String stringValue = "";
         if (value != null) {
             stringValue = "" + value;
         }
-        textComponent.setText(stringValue);
-        isReloading = false;
+        if(!Objects.equals(stringValue, textComponent.getText()))
+            textComponent.setText(stringValue);
     }
 }

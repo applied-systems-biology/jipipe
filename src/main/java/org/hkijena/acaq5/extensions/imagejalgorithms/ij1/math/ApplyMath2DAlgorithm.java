@@ -134,7 +134,7 @@ public class ApplyMath2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("transformation-function")
     public void setTransformation(Transformation transformation) {
         this.transformation = transformation;
-        getEventBus().post(new ParameterChangedEvent(this, "transformation"));
+
     }
 
     @ACAQDocumentation(name = "Value", description = "The second operand")
@@ -146,7 +146,7 @@ public class ApplyMath2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("value")
     public void setValue(double value) {
         this.value = value;
-        getEventBus().post(new ParameterChangedEvent(this, "value"));
+
     }
 
     /**

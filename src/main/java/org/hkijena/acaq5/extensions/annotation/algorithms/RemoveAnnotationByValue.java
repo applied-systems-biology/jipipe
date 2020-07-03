@@ -89,7 +89,7 @@ public class RemoveAnnotationByValue extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("filters")
     public void setFilters(StringAndStringPredicatePair.List annotationTypes) {
         this.filters = annotationTypes;
-        getEventBus().post(new ParameterChangedEvent(this, "filters"));
+
     }
 
 }

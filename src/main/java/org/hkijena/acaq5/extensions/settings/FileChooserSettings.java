@@ -115,7 +115,7 @@ public class FileChooserSettings implements ACAQParameterCollection {
     @ACAQParameter("last-projects-directory")
     public void setLastProjectsDirectory(Path lastProjectsDirectory) {
         this.lastProjectsDirectory = lastProjectsDirectory;
-        getEventBus().post(new ParameterChangedEvent(this, "last-projects-directory"));
+
     }
 
     @ACAQDocumentation(name = "Last directory", description = "The file chooser will open in this folder when changing a parameter.")
@@ -129,7 +129,7 @@ public class FileChooserSettings implements ACAQParameterCollection {
     @ACAQParameter("last-parameters-directory")
     public void setLastParametersDirectory(Path lastParametersDirectory) {
         this.lastParametersDirectory = lastParametersDirectory;
-        getEventBus().post(new ParameterChangedEvent(this, "last-parameters-directory"));
+
     }
 
     private static FileDialog createFileDialog(Component parent, String title, int mode) {

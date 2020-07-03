@@ -159,7 +159,7 @@ public class FrangiVesselnessFeatures extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("num-scales")
     public void setNumScales(int numScales) {
         this.numScales = numScales;
-        getEventBus().post(new ParameterChangedEvent(this, "num-scales"));
+
     }
 
     @ACAQParameter("min-scale")
@@ -171,7 +171,7 @@ public class FrangiVesselnessFeatures extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("min-scale")
     public void setMinimumScale(double minimumScale) {
         this.minimumScale = minimumScale;
-        getEventBus().post(new ParameterChangedEvent(this, "min-scale"));
+
     }
 
     @ACAQParameter("max-scale")
@@ -183,7 +183,7 @@ public class FrangiVesselnessFeatures extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("max-scale")
     public void setMaximumScale(double maximumScale) {
         this.maximumScale = maximumScale;
-        getEventBus().post(new ParameterChangedEvent(this, "max-scale"));
+
     }
 
     @Override

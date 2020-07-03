@@ -128,7 +128,7 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
                 availableData.put(dataSource.getLabel(), dataSource);
             }
         }
-        getEventBus().post(new ParameterChangedEvent(this, "available-data"));
+
     }
 
     @Override
@@ -161,7 +161,7 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
     @ACAQParameter("plot-type")
     public void setPlotType(ACAQDataDeclarationRef plotType) {
         this.plotType = plotType;
-        getEventBus().post(new ParameterChangedEvent(this, "plot-type"));
+
         updatePlotTypeParameters();
     }
 
@@ -180,7 +180,7 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
         }
         if (changedPlot) {
             seriesBuilders.clear();
-            getEventBus().post(new ParameterChangedEvent(this, "series"));
+
             getEventBus().post(new ParameterStructureChangedEvent(this));
             if (currentPlot != null) {
                 PlotMetadata metadata = currentPlot.getClass().getAnnotation(PlotMetadata.class);
@@ -220,9 +220,9 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
             builder.getColumnAssignments().getEventBus().register(this);
             builder.getEventBus().register(this);
         }
-        getEventBus().post(new ParameterChangedEvent(this, "plot-type"));
-        getEventBus().post(new ParameterChangedEvent(this, "plot"));
-        getEventBus().post(new ParameterChangedEvent(this, "series"));
+
+
+
         getEventBus().post(new ParameterStructureChangedEvent(this));
         currentPlot.getEventBus().register(this);
     }
@@ -316,7 +316,7 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
             availableData.put(name, dataSource);
             columnMapping.put(table.getColumnHeading(col), name);
         }
-        getEventBus().post(new ParameterChangedEvent(this, "available-data"));
+
         return columnMapping;
     }
 
@@ -351,7 +351,7 @@ public class ACAQPlotBuilderUI extends ACAQWorkbenchPanel implements ACAQParamet
             availableData.put(name, dataSource);
             columnMapping.put(model.getColumnName(col), name);
         }
-        getEventBus().post(new ParameterChangedEvent(this, "available-data"));
+
         return columnMapping;
     }
 

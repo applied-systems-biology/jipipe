@@ -126,7 +126,7 @@ public class SplitByAnnotation extends ACAQAlgorithm {
     @ACAQParameter("annotation-type")
     public void setAnnotationType(String annotationType) {
         this.annotationType = annotationType;
-        getEventBus().post(new ParameterChangedEvent(this, "annotation-type"));
+
     }
 
     @ACAQParameter("target-slots")
@@ -145,6 +145,6 @@ public class SplitByAnnotation extends ACAQAlgorithm {
     @ACAQParameter("enable-fallthrough")
     public void setEnableFallthrough(boolean enableFallthrough) {
         this.enableFallthrough = enableFallthrough;
-        getEventBus().post(new ParameterChangedEvent(this, "enable-fallthrough"));
+
     }
 }

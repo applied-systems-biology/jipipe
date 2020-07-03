@@ -128,7 +128,7 @@ public class Hessian2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("eigenvalue-selection")
     public void setEigenvalueSelection2D(EigenvalueSelection2D eigenvalueSelection2D) {
         this.eigenvalueSelection = eigenvalueSelection2D;
-        getEventBus().post(new ParameterChangedEvent(this, "eigenvalue-selection"));
+
     }
 
     @ACAQParameter("smoothing")
@@ -142,7 +142,7 @@ public class Hessian2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("smoothing")
     public void setSmoothing(double smoothing) {
         this.smoothing = smoothing;
-        getEventBus().post(new ParameterChangedEvent(this, "smoothing"));
+
     }
 
     @ACAQDocumentation(name = "Compare absolute", description = "Determines whether eigenvalues are compared in absolute sense")
@@ -154,6 +154,6 @@ public class Hessian2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("compare-absolute")
     public void setCompareAbsolute(boolean compareAbsolute) {
         this.compareAbsolute = compareAbsolute;
-        getEventBus().post(new ParameterChangedEvent(this, "compare-absolute"));
+
     }
 }

@@ -84,6 +84,6 @@ public class RemoveAnnotationByType extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("annotation-type")
     public void setAnnotationTypes(StringList annotationTypes) {
         this.annotationTypes = annotationTypes;
-        getEventBus().post(new ParameterChangedEvent(this, "annotation-type"));
+
     }
 }

@@ -175,7 +175,7 @@ public class HessianSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgorithm
     @ACAQParameter("smoothing")
     public void setSmoothing(double smoothing) {
         this.smoothing = smoothing;
-        getEventBus().post(new ParameterChangedEvent(this, "smoothing"));
+
     }
 
     @ACAQParameter("gradient-radius")
@@ -187,7 +187,7 @@ public class HessianSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgorithm
     @ACAQParameter("gradient-radius")
     public void setGradientRadius(double gradientRadius) {
         this.gradientRadius = gradientRadius;
-        getEventBus().post(new ParameterChangedEvent(this, "gradient-radius"));
+
     }
 
     @ACAQParameter("auto-thresholding")
@@ -212,7 +212,7 @@ public class HessianSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgorithm
     @ACAQParameter("compare-absolute")
     public void setCompareAbsolute(boolean compareAbsolute) {
         this.compareAbsolute = compareAbsolute;
-        getEventBus().post(new ParameterChangedEvent(this, "compare-absolute"));
+
     }
 
     @ACAQDocumentation(name = "Eigenvalue", description = "Allows you to choose whether the largest or smallest Eigenvalues are chosen")
@@ -224,7 +224,7 @@ public class HessianSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgorithm
     @ACAQParameter("eigenvalue-selection")
     public void setEigenvalueSelection(EigenvalueSelection2D eigenvalueSelection) {
         this.eigenvalueSelection = eigenvalueSelection;
-        getEventBus().post(new ParameterChangedEvent(this, "eigenvalue-selection"));
+
     }
 
     @ACAQDocumentation(name = "Apply internal gradient filter", description = "If enabled, an internal gradient filter is applied to the hessian image.")

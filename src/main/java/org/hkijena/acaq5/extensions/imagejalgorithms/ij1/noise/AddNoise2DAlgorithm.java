@@ -98,6 +98,6 @@ public class AddNoise2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("sigma")
     public void setSigma(double sigma) {
         this.sigma = sigma;
-        getEventBus().post(new ParameterChangedEvent(this, "sigma"));
+
     }
 }

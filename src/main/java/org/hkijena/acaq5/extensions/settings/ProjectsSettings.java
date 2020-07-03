@@ -49,7 +49,7 @@ public class ProjectsSettings implements ACAQParameterCollection {
     @ACAQParameter("recent-projects")
     public void setRecentProjects(PathList recentProjects) {
         this.recentProjects = recentProjects;
-        getEventBus().post(new ParameterChangedEvent(this, "recent-projects"));
+
     }
 
     @ACAQDocumentation(name = "Recent JSON extension projects", description = "List of recent JSON extension projects")
@@ -61,7 +61,7 @@ public class ProjectsSettings implements ACAQParameterCollection {
     @ACAQParameter("recent-json-extension-projects")
     public void setRecentJsonExtensionProjects(PathList recentJsonExtensionProjects) {
         this.recentJsonExtensionProjects = recentJsonExtensionProjects;
-        getEventBus().post(new ParameterChangedEvent(this, "recent-json-extension-projects"));
+
     }
 
     /**

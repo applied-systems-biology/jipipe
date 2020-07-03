@@ -497,7 +497,7 @@ public class ACAQDefaultMutableSlotConfiguration implements ACAQMutableSlotConfi
 
     public void setAllowedInputSlotTypes(Set<Class<? extends ACAQData>> allowedInputSlotTypes) {
         this.allowedInputSlotTypes = allowedInputSlotTypes;
-        getEventBus().post(new ParameterChangedEvent(this, "allowed-input-slot-types"));
+
     }
 
     /**
@@ -509,7 +509,7 @@ public class ACAQDefaultMutableSlotConfiguration implements ACAQMutableSlotConfi
 
     public void setAllowedOutputSlotTypes(Set<Class<? extends ACAQData>> allowedOutputSlotTypes) {
         this.allowedOutputSlotTypes = allowedOutputSlotTypes;
-        getEventBus().post(new ParameterChangedEvent(this, "allowed-output-slot-types"));
+
     }
 
     /**
@@ -519,7 +519,7 @@ public class ACAQDefaultMutableSlotConfiguration implements ACAQMutableSlotConfi
      */
     public void setInputSealed(boolean b) {
         this.inputSlotsSealed = b;
-        getEventBus().post(new ParameterChangedEvent(this, "input-sealed"));
+
     }
 
     /**
@@ -529,7 +529,7 @@ public class ACAQDefaultMutableSlotConfiguration implements ACAQMutableSlotConfi
      */
     public void setOutputSealed(boolean b) {
         this.outputSlotsSealed = b;
-        getEventBus().post(new ParameterChangedEvent(this, "output-sealed"));
+
     }
 
     /**
@@ -562,7 +562,7 @@ public class ACAQDefaultMutableSlotConfiguration implements ACAQMutableSlotConfi
      */
     public void setMaxInputSlots(int maxInputSlots) {
         this.maxInputSlots = maxInputSlots;
-        getEventBus().post(new ParameterChangedEvent(this, "max-input-slots"));
+
     }
 
     /**
@@ -579,7 +579,7 @@ public class ACAQDefaultMutableSlotConfiguration implements ACAQMutableSlotConfi
      */
     public void setMaxOutputSlots(int maxOutputSlots) {
         this.maxOutputSlots = maxOutputSlots;
-        getEventBus().post(new ParameterChangedEvent(this, "max-output-slots"));
+
     }
 
     /**

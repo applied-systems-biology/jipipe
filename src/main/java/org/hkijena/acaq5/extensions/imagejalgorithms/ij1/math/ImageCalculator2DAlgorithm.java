@@ -163,7 +163,7 @@ public class ImageCalculator2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("operation")
     public void setOperation(Operation operation) {
         this.operation = operation;
-        getEventBus().post(new ParameterChangedEvent(this, "operation"));
+
     }
 
     @ACAQDocumentation(name = "Operands", description = "Determines which input image is which operand.")
@@ -181,7 +181,7 @@ public class ImageCalculator2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("floating-point-output")
     public void setFloatingPointOutput(boolean floatingPointOutput) {
         this.floatingPointOutput = floatingPointOutput;
-        getEventBus().post(new ParameterChangedEvent(this, "floating-point-output"));
+
         ACAQSlotDefinition definition = getFirstOutputSlot().getDefinition();
         if (floatingPointOutput) {
             getFirstOutputSlot().setAcceptedDataType(ImagePlusGreyscale32FData.class);

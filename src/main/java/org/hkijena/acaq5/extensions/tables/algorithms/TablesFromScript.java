@@ -20,19 +20,16 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
-import org.hkijena.acaq5.extensions.parameters.scripts.PythonCode;
-import org.hkijena.acaq5.utils.MacroUtils;
+import org.hkijena.acaq5.extensions.parameters.scripts.PythonScript;
 import org.hkijena.acaq5.utils.PythonUtils;
 import org.python.core.PyDictionary;
 import org.python.util.PythonInterpreter;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -52,7 +49,7 @@ import static org.hkijena.acaq5.utils.PythonUtils.ALLOWED_PARAMETER_CLASSES;
 public class TablesFromScript extends ACAQAlgorithm {
 
     private PythonInterpreter pythonInterpreter;
-    private PythonCode code = new PythonCode();
+    private PythonScript code = new PythonScript();
     private ACAQDynamicParameterCollection scriptParameters = new ACAQDynamicParameterCollection(ALLOWED_PARAMETER_CLASSES);
 
     /**
@@ -81,39 +78,15 @@ public class TablesFromScript extends ACAQAlgorithm {
      */
     public TablesFromScript(TablesFromScript other) {
         super(other);
-        this.code = new PythonCode(other.code);
+        this.code = new PythonScript(other.code);
         this.scriptParameters = new ACAQDynamicParameterCollection(other.scriptParameters);
         registerSubParameter(scriptParameters);
     }
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        try {
-            this.pythonInterpreter = new PythonInterpreter();
-            pythonInterpreter.set("tables", new PyDictionary());
-            PythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
-            if(pythonInterpreter.compile(code.getCode()) == null) {
-                report.forCategory("Script").reportIsInvalid("The script is invalid!",
-                        "The script could not be compiled.",
-                        "Please check if your Python script is correct.",
-                        this);
-            }
-            this.pythonInterpreter = null;
-        }
-        catch (Exception e) {
-            report.forCategory("Script").reportIsInvalid("The script is invalid!",
-                    "The script could not be compiled.",
-                    "Please check if your Python script is correct.",
-                    e);
-        }
-        for (String key : scriptParameters.getParameters().keySet()) {
-            if (!MacroUtils.isValidVariableName(key)) {
-                report.forCategory("Script Parameters").forCategory(key).reportIsInvalid("Invalid name!",
-                        "'" + key + "' is an invalid Python variable name!",
-                        "Please ensure that script variables are compatible with the Python language.",
-                        this);
-            }
-        }
+        PythonUtils.checkScriptValidity(code.getCode(), scriptParameters, report.forCategory("Script"));
+        PythonUtils.checkScriptParametersValidity(scriptParameters, report.forCategory("Script parameters"));
     }
 
     @Override
@@ -138,16 +111,16 @@ public class TablesFromScript extends ACAQAlgorithm {
             "<li>'nrow' is an integer that contains the number of rows.</li>" +
             "<li>'annotations' is a dictionary from string to string containing all annotations</li></ul>")
     @ACAQParameter("code")
-    public PythonCode getCode() {
+    public PythonScript getCode() {
         return code;
     }
 
     @ACAQParameter("code")
-    public void setCode(PythonCode code) {
+    public void setCode(PythonScript code) {
         this.code = code;
     }
 
-     @ACAQDocumentation(name = "Script parameters", description = "The following parameters are prepended to the script code:")
+     @ACAQDocumentation(name = "Script parameters", description = "The following parameters will be passed to the Python script. The variable name is equal to the unique parameter identifier.")
      @ACAQParameter("script-parameters")
     public ACAQDynamicParameterCollection getScriptParameters() {
         return scriptParameters;

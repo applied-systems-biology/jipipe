@@ -49,7 +49,7 @@ public class GeneralUISettings implements ACAQParameterCollection {
     @ACAQParameter("show-introduction")
     public void setShowIntroduction(boolean showIntroduction) {
         this.showIntroduction = showIntroduction;
-        getEventBus().post(new ParameterChangedEvent(this, "show-introduction"));
+
     }
 
     @ACAQDocumentation(name = "Theme", description = "Allows you to select a theme (Restart ImageJ to apply changes)")
@@ -61,7 +61,7 @@ public class GeneralUISettings implements ACAQParameterCollection {
     @ACAQParameter("look-and-feel")
     public void setLookAndFeel(LookAndFeel lookAndFeel) {
         this.lookAndFeel = lookAndFeel;
-        getEventBus().post(new ParameterChangedEvent(this, "look-and-feel"));
+
     }
 
     @ACAQDocumentation(name = "Show parameter search bar", description = "If enabled, you can search parameters (Re-open parameters to apply changes)")
@@ -73,7 +73,7 @@ public class GeneralUISettings implements ACAQParameterCollection {
     @ACAQParameter("show-parameter-search-bar")
     public void setShowParameterSearchBar(boolean showParameterSearchBar) {
         this.showParameterSearchBar = showParameterSearchBar;
-        getEventBus().post(new ParameterChangedEvent(this, "show-parameter-search-bar"));
+
     }
 
     @ACAQDocumentation(name = "Never ask on closing tabs", description = "If enabled, you do not need to confirm when closing tabs like the quick run, plots, and results.")
@@ -85,7 +85,7 @@ public class GeneralUISettings implements ACAQParameterCollection {
     @ACAQParameter("never-ask-on-closing-tabs")
     public void setNeverAskOnClosingTabs(boolean neverAskOnClosingTabs) {
         this.neverAskOnClosingTabs = neverAskOnClosingTabs;
-        getEventBus().post(new ParameterChangedEvent(this, "never-ask-on-closing-tabs"));
+
     }
 
     @ACAQDocumentation(name = "Validate project on save", description = "If enabled, the whole project is validated on saving and a report is shown if an issue was found.")
@@ -97,7 +97,7 @@ public class GeneralUISettings implements ACAQParameterCollection {
     @ACAQParameter("validate-on-save")
     public void setValidateOnSave(boolean validateOnSave) {
         this.validateOnSave = validateOnSave;
-        getEventBus().post(new ParameterChangedEvent(this, "validate-on-save"));
+
     }
 
     public static GeneralUISettings getInstance() {

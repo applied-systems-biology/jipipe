@@ -134,6 +134,6 @@ public class TransformCrop2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("roi")
     public void setRoi(Margin roi) {
         this.roi = roi;
-        getEventBus().post(new ParameterChangedEvent(this, "roi"));
+
     }
 }

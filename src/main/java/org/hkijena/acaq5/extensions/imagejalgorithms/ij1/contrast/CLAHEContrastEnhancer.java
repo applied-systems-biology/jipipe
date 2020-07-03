@@ -103,7 +103,7 @@ public class CLAHEContrastEnhancer extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("block-radius")
     public void setBlockRadius(int blockRadius) {
         this.blockRadius = blockRadius;
-        getEventBus().post(new ParameterChangedEvent(this, "block-radius"));
+
     }
 
     @ACAQParameter("bins")
@@ -115,7 +115,7 @@ public class CLAHEContrastEnhancer extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("bins")
     public void setBins(int bins) {
         this.bins = bins;
-        getEventBus().post(new ParameterChangedEvent(this, "bins"));
+
     }
 
     @ACAQParameter("max-slope")
@@ -127,7 +127,7 @@ public class CLAHEContrastEnhancer extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("max-slope")
     public void setMaxSlope(float maxSlope) {
         this.maxSlope = maxSlope;
-        getEventBus().post(new ParameterChangedEvent(this, "max-slope"));
+
     }
 
     @ACAQParameter("fast-mode")
@@ -139,7 +139,7 @@ public class CLAHEContrastEnhancer extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("fast-mode")
     public void setFastMode(boolean fastMode) {
         this.fastMode = fastMode;
-        getEventBus().post(new ParameterChangedEvent(this, "fast-mode"));
+
     }
 
     @Override

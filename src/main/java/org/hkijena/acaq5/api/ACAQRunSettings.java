@@ -48,7 +48,7 @@ public class ACAQRunSettings implements ACAQParameterCollection {
     @ACAQParameter("output-path")
     public void setOutputPath(Path outputPath) {
         this.outputPath = outputPath;
-        getEventBus().post(new ParameterChangedEvent(this, "output-path"));
+
     }
 
     @ACAQDocumentation(name = "Load from cache", description = "If enabled, the results are automatically loaded from a cache if possible.")

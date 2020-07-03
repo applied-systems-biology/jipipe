@@ -280,7 +280,7 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
     @ACAQParameter("acaq:node:name")
     public void setCustomName(String customName) {
         this.customName = customName;
-        getEventBus().post(new ParameterChangedEvent(this, "acaq:node:name"));
+
     }
 
     /**

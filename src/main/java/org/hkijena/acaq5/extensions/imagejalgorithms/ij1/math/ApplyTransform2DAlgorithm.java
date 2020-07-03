@@ -112,7 +112,7 @@ public class ApplyTransform2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("transformation-function")
     public void setTransformation(Transformation transformation) {
         this.transformation = transformation;
-        getEventBus().post(new ParameterChangedEvent(this, "transformation-function"));
+
     }
 
     /**

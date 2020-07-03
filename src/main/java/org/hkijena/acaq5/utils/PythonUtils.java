@@ -13,6 +13,7 @@
 
 package org.hkijena.acaq5.utils;
 
+import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.parameters.ACAQCustomParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.extensions.parameters.pairs.IntegerAndIntegerPair;
@@ -21,6 +22,7 @@ import org.hkijena.acaq5.extensions.parameters.primitives.DoubleList;
 import org.hkijena.acaq5.extensions.parameters.primitives.IntegerList;
 import org.hkijena.acaq5.extensions.parameters.primitives.PathList;
 import org.hkijena.acaq5.extensions.parameters.primitives.StringList;
+import org.python.core.PyCode;
 import org.python.core.PyDictionary;
 import org.python.util.PythonInterpreter;
 
@@ -68,6 +70,37 @@ public class PythonUtils {
             }
             else {
                 pythonInterpreter.set(entry.getKey(), entry.getValue().get(Object.class));
+            }
+        }
+    }
+
+    public static void checkScriptValidity(String code, ACAQCustomParameterCollection scriptParameters, ACAQValidityReport report) {
+        try {
+            PythonInterpreter pythonInterpreter = new PythonInterpreter();
+            PythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
+            PyCode compile = pythonInterpreter.compile(code);
+            if(compile == null) {
+                report.reportIsInvalid("The script is invalid!",
+                        "The script could not be compiled.",
+                        "Please check if your Python script is correct.",
+                        code);
+            }
+        }
+        catch (Exception e) {
+            report.reportIsInvalid("The script is invalid!",
+                    "The script could not be compiled.",
+                    "Please check if your Python script is correct.",
+                    e);
+        }
+    }
+
+    public static void checkScriptParametersValidity(ACAQCustomParameterCollection scriptParameters, ACAQValidityReport report) {
+        for (String key : scriptParameters.getParameters().keySet()) {
+            if (!MacroUtils.isValidVariableName(key)) {
+                report.forCategory(key).reportIsInvalid("Invalid name!",
+                        "'" + key + "' is an invalid Python variable name!",
+                        "Please ensure that script variables are compatible with the Python language.",
+                        scriptParameters);
             }
         }
     }

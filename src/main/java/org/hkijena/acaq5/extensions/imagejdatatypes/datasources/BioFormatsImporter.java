@@ -166,7 +166,7 @@ public class BioFormatsImporter extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("color-mode")
     public void setColorMode(ColorMode colorMode) {
         this.colorMode = colorMode;
-        getEventBus().post(new ParameterChangedEvent(this, "color-mode"));
+
     }
 
     @ACAQDocumentation(name = "Stack order")
@@ -178,7 +178,7 @@ public class BioFormatsImporter extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("stack-order")
     public void setStackOrder(Order stackOrder) {
         this.stackOrder = stackOrder;
-        getEventBus().post(new ParameterChangedEvent(this, "stack-order"));
+
     }
 
     @ACAQDocumentation(name = "Split channels")
@@ -190,7 +190,7 @@ public class BioFormatsImporter extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("split-channels")
     public void setSplitChannels(boolean splitChannels) {
         this.splitChannels = splitChannels;
-        getEventBus().post(new ParameterChangedEvent(this, "split-channels"));
+
     }
 
     @ACAQDocumentation(name = "Split focal planes")
@@ -202,7 +202,7 @@ public class BioFormatsImporter extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("split-focal-planes")
     public void setSplitFocalPlanes(boolean splitFocalPlanes) {
         this.splitFocalPlanes = splitFocalPlanes;
-        getEventBus().post(new ParameterChangedEvent(this, "split-focal-planes"));
+
     }
 
     @ACAQDocumentation(name = "Split time points")
@@ -214,7 +214,7 @@ public class BioFormatsImporter extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("split-time-points")
     public void setSplitTimePoints(boolean splitTimePoints) {
         this.splitTimePoints = splitTimePoints;
-        getEventBus().post(new ParameterChangedEvent(this, "split-time-points"));
+
     }
 
     @ACAQDocumentation(name = "Swap dimensions")
@@ -226,7 +226,7 @@ public class BioFormatsImporter extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("swap-dimensions")
     public void setSwapDimensions(boolean swapDimensions) {
         this.swapDimensions = swapDimensions;
-        getEventBus().post(new ParameterChangedEvent(this, "swap-dimensions"));
+
     }
 
     @ACAQDocumentation(name = "Concatenate compatible series")
@@ -238,7 +238,7 @@ public class BioFormatsImporter extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("concatenate")
     public void setConcatenate(boolean concatenate) {
         this.concatenate = concatenate;
-        getEventBus().post(new ParameterChangedEvent(this, "concatenate"));
+
     }
 
     @ACAQDocumentation(name = "Crop images")
@@ -250,7 +250,7 @@ public class BioFormatsImporter extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("crop")
     public void setCrop(boolean crop) {
         this.crop = crop;
-        getEventBus().post(new ParameterChangedEvent(this, "crop"));
+
     }
 
     @ACAQDocumentation(name = "Stitch tiles")
@@ -262,7 +262,7 @@ public class BioFormatsImporter extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("stitch-tiles")
     public void setStitchTiles(boolean stitchTiles) {
         this.stitchTiles = stitchTiles;
-        getEventBus().post(new ParameterChangedEvent(this, "stitch-tiles"));
+
     }
 
     @ACAQDocumentation(name = "Title annotation", description = "Optional annotation type where the image title is written.")

@@ -147,7 +147,7 @@ public abstract class ACAQAlgorithm extends ACAQGraphNode {
     @ACAQParameter("acaq:algorithm:enabled")
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-        getEventBus().post(new ParameterChangedEvent(this, "acaq:algorithm:enabled"));
+
     }
 
     @ACAQDocumentation(name = "Pass through", description = "If enabled, the algorithm will pass the input data directly to the output data without any processing. " +
@@ -160,7 +160,7 @@ public abstract class ACAQAlgorithm extends ACAQGraphNode {
     @ACAQParameter("acaq:algorithm:pass-through")
     public void setPassThrough(boolean passThrough) {
         this.passThrough = passThrough;
-        getEventBus().post(new ParameterChangedEvent(this, "acaq:algorithm:pass-through"));
+
     }
 
     /**

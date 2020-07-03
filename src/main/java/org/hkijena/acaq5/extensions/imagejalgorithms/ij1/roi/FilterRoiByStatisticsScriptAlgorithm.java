@@ -13,8 +13,6 @@
 
 package org.hkijena.acaq5.extensions.imagejalgorithms.ij1.roi;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import ij.gui.Roi;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
@@ -27,17 +25,12 @@ import org.hkijena.acaq5.api.algorithm.ACAQDataInterface;
 import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQAnnotation;
-import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.LogicalOperation;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure.MeasurementColumn;
-import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.measure.MeasurementFilter;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
-import org.hkijena.acaq5.extensions.parameters.scripts.PythonCode;
-import org.hkijena.acaq5.utils.MacroUtils;
+import org.hkijena.acaq5.extensions.parameters.scripts.PythonScript;
 import org.hkijena.acaq5.utils.PythonUtils;
 import org.python.core.PyDictionary;
 import org.python.util.PythonInterpreter;
@@ -63,7 +56,7 @@ public class FilterRoiByStatisticsScriptAlgorithm extends ImageRoiProcessorAlgor
 
     private RoiStatisticsAlgorithm roiStatisticsAlgorithm = ACAQAlgorithm.newInstance("ij1-roi-statistics");
     private PythonInterpreter pythonInterpreter;
-    private PythonCode code = new PythonCode();
+    private PythonScript code = new PythonScript();
     private ACAQDynamicParameterCollection scriptParameters = new ACAQDynamicParameterCollection(ALLOWED_PARAMETER_CLASSES);
 
     /**
@@ -94,7 +87,7 @@ public class FilterRoiByStatisticsScriptAlgorithm extends ImageRoiProcessorAlgor
      */
     public FilterRoiByStatisticsScriptAlgorithm(FilterRoiByStatisticsScriptAlgorithm other) {
         super(other);
-        this.code = new PythonCode(other.code);
+        this.code = new PythonScript(other.code);
         this.scriptParameters = new ACAQDynamicParameterCollection(other.scriptParameters);
         registerSubParameter(scriptParameters);
     }
@@ -151,47 +144,23 @@ public class FilterRoiByStatisticsScriptAlgorithm extends ImageRoiProcessorAlgor
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        try {
-            this.pythonInterpreter = new PythonInterpreter();
-            pythonInterpreter.set("roi_list", new PyDictionary());
-            PythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
-            if(pythonInterpreter.compile(code.getCode()) == null) {
-                report.forCategory("Script").reportIsInvalid("The script is invalid!",
-                        "The script could not be compiled.",
-                        "Please check if your Python script is correct.",
-                        this);
-            }
-            this.pythonInterpreter = null;
-        }
-        catch (Exception e) {
-            report.forCategory("Script").reportIsInvalid("The script is invalid!",
-                    "The script could not be compiled.",
-                    "Please check if your Python script is correct.",
-                    e);
-        }
-        for (String key : scriptParameters.getParameters().keySet()) {
-            if (!MacroUtils.isValidVariableName(key)) {
-                report.forCategory("Script Parameters").forCategory(key).reportIsInvalid("Invalid name!",
-                        "'" + key + "' is an invalid Python variable name!",
-                        "Please ensure that script variables are compatible with the Python language.",
-                        this);
-            }
-        }
+        PythonUtils.checkScriptValidity(code.getCode(), scriptParameters, report.forCategory("Script"));
+        PythonUtils.checkScriptParametersValidity(scriptParameters, report.forCategory("Script parameters"));
     }
 
     @ACAQDocumentation(name = "Script", description = " The Python script contains a variable 'roi_list' " +
             "that contains dictionaries. Each one has an item 'data' containing the ImageJ ROI, and a dictionary 'stats' containing the statistics.")
     @ACAQParameter("code")
-    public PythonCode getCode() {
+    public PythonScript getCode() {
         return code;
     }
 
     @ACAQParameter("code")
-    public void setCode(PythonCode code) {
+    public void setCode(PythonScript code) {
         this.code = code;
     }
 
-    @ACAQDocumentation(name = "Script parameters", description = "The following parameters are prepended to the script code:")
+    @ACAQDocumentation(name = "Script parameters", description = "The following parameters will be passed to the Python script. The variable name is equal to the unique parameter identifier.")
     @ACAQParameter("script-parameters")
     public ACAQDynamicParameterCollection getScriptParameters() {
         return scriptParameters;

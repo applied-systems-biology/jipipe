@@ -112,7 +112,7 @@ public class RemoveOutliersFilter2DAlgorithm extends ACAQSimpleIteratingAlgorith
             return false;
         }
         this.radius = radius;
-        getEventBus().post(new ParameterChangedEvent(this, "radius"));
+
         return true;
     }
 
@@ -125,7 +125,7 @@ public class RemoveOutliersFilter2DAlgorithm extends ACAQSimpleIteratingAlgorith
     @ACAQParameter("mode")
     public void setMode(Mode mode) {
         this.mode = mode;
-        getEventBus().post(new ParameterChangedEvent(this, "mode"));
+
     }
 
     @ACAQDocumentation(name = "Threshold", description = "Determines by how much a pixel has to deviate from the local median to be replaced by it.")
@@ -140,7 +140,7 @@ public class RemoveOutliersFilter2DAlgorithm extends ACAQSimpleIteratingAlgorith
             return false;
         }
         this.threshold = threshold;
-        getEventBus().post(new ParameterChangedEvent(this, "threshold"));
+
         return true;
     }
 

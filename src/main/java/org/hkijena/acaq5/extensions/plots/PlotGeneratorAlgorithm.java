@@ -211,7 +211,7 @@ public class PlotGeneratorAlgorithm extends ACAQAlgorithm {
     @ACAQParameter("plot-type")
     public void setPlotType(ACAQDataDeclarationRef plotType) {
         this.plotType = plotType;
-        getEventBus().post(new ParameterChangedEvent(this, "plot-type"));
+
 
         updateOutputSlotType();
         updatePlotTypeParameters();

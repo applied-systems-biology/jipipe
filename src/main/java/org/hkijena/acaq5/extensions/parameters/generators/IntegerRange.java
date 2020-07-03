@@ -88,7 +88,7 @@ public class IntegerRange {
      * @throws NumberFormatException if the format is wrong
      */
     public List<Integer> getIntegers() throws NumberFormatException {
-        String string = value.replace(" ", "");
+        String string = StringUtils.orElse(value, "").replace(" ", "");
         List<Integer> integers = new ArrayList<>();
         for (String range : string.split(";")) {
             if (StringUtils.isNullOrEmpty(range))

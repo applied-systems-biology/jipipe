@@ -76,7 +76,7 @@ public class ACAQMetadata implements ACAQParameterCollection {
     @JsonSetter("name")
     public void setName(String name) {
         this.name = name;
-        getEventBus().post(new ParameterChangedEvent(this, "name"));
+
     }
 
     /**
@@ -99,7 +99,7 @@ public class ACAQMetadata implements ACAQParameterCollection {
     @JsonSetter("description")
     public void setDescription(String description) {
         this.description = description;
-        getEventBus().post(new ParameterChangedEvent(this, "description"));
+
     }
 
     /**
@@ -121,7 +121,7 @@ public class ACAQMetadata implements ACAQParameterCollection {
     @JsonSetter("authors")
     public void setAuthors(ACAQAuthorMetadata.List authors) {
         this.authors = authors;
-        getEventBus().post(new ParameterChangedEvent(this, "authors"));
+
     }
 
     /**
@@ -144,7 +144,7 @@ public class ACAQMetadata implements ACAQParameterCollection {
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/filetype-html.png")
     public void setWebsite(String website) {
         this.website = website;
-        getEventBus().post(new ParameterChangedEvent(this, "website"));
+
     }
 
     /**
@@ -166,7 +166,7 @@ public class ACAQMetadata implements ACAQParameterCollection {
     @JsonSetter("license")
     public void setLicense(String license) {
         this.license = license;
-        getEventBus().post(new ParameterChangedEvent(this, "license"));
+
     }
 
     /**
@@ -189,7 +189,7 @@ public class ACAQMetadata implements ACAQParameterCollection {
     @JsonSetter("citation")
     public void setCitation(String citation) {
         this.citation = citation;
-        getEventBus().post(new ParameterChangedEvent(this, "citation"));
+
     }
 
     @Override
@@ -207,6 +207,6 @@ public class ACAQMetadata implements ACAQParameterCollection {
     @ACAQParameter("dependency-citations")
     public void setDependencyCitations(StringList dependencyCitations) {
         this.dependencyCitations = dependencyCitations;
-        getEventBus().post(new ParameterChangedEvent(this, "dependency-citations"));
+
     }
 }

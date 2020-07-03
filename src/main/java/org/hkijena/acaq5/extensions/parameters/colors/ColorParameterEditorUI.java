@@ -62,8 +62,7 @@ public class ColorParameterEditorUI extends ACAQParameterEditorUI {
         Color value = getParameter(Color.class);
         value = JColorChooser.showDialog(this, "Select color", value);
         if (value != null) {
-            getParameterAccess().set(value);
-            reload();
+            setParameter(value, true);
         }
     }
 

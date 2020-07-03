@@ -164,7 +164,7 @@ public class BrightSpotsSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgor
     @ACAQParameter("rolling-ball-radius")
     public void setRollingBallRadius(int rollingBallRadius) {
         this.rollingBallRadius = rollingBallRadius;
-        getEventBus().post(new ParameterChangedEvent(this, "rolling-ball-radius"));
+
     }
 
     @ACAQParameter("dilation-erode-steps")
@@ -176,7 +176,7 @@ public class BrightSpotsSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgor
     @ACAQParameter("dilation-erode-steps")
     public void setDilationErodeSteps(int dilationErodeSteps) {
         this.dilationErodeSteps = dilationErodeSteps;
-        getEventBus().post(new ParameterChangedEvent(this, "dilation-erode-steps"));
+
     }
 
     @ACAQParameter("gaussian-sigma")
@@ -188,7 +188,7 @@ public class BrightSpotsSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgor
     @ACAQParameter("gaussian-sigma")
     public void setGaussianSigma(double gaussianSigma) {
         this.gaussianSigma = gaussianSigma;
-        getEventBus().post(new ParameterChangedEvent(this, "gaussian-sigma"));
+
     }
 
     @ACAQParameter("auto-thresholding")

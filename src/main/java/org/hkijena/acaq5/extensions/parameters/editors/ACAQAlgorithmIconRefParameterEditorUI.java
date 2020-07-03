@@ -66,8 +66,7 @@ public class ACAQAlgorithmIconRefParameterEditorUI extends ACAQParameterEditorUI
         String picked = ACAQIconPickerDialog.showDialog(this, ResourceUtils.getResourcePath("icons/algorithms"), getAvailableAlgorithmIcons());
         ACAQAlgorithmIconRef ref = getParameter(ACAQAlgorithmIconRef.class);
         ref.setIconName(picked);
-        getParameterAccess().set(ref);
-        reload();
+        setParameter(ref, true);
     }
 
     @Override

@@ -101,7 +101,7 @@ public class AutoThreshold2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("method")
     public void setMethod(AutoThresholder.Method method) {
         this.method = method;
-        getEventBus().post(new ParameterChangedEvent(this, "method"));
+
     }
 
     @Override
@@ -118,6 +118,6 @@ public class AutoThreshold2DAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("dark-background")
     public void setDarkBackground(boolean darkBackground) {
         this.darkBackground = darkBackground;
-        getEventBus().post(new ParameterChangedEvent(this, "dark-background"));
+
     }
 }

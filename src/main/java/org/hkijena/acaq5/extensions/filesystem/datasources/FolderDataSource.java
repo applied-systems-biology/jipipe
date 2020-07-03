@@ -86,7 +86,7 @@ public class FolderDataSource extends ACAQAlgorithm {
     @ACAQParameter("folder-path")
     public void setFolderPath(Path folderPath) {
         this.folderPath = folderPath;
-        getEventBus().post(new ParameterChangedEvent(this, "folder-path"));
+
     }
 
     /**

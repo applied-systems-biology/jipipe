@@ -30,8 +30,6 @@ import java.awt.BorderLayout;
  */
 public class UIPlotDataSeriesColumnEnumParameterEditorUI extends ACAQParameterEditorUI {
 
-    private boolean skipNextReload = false;
-    private boolean isReloading = false;
     private JComboBox<TableColumn> comboBox;
 
     /**
@@ -51,14 +49,8 @@ public class UIPlotDataSeriesColumnEnumParameterEditorUI extends ACAQParameterEd
 
     @Override
     public void reload() {
-        if (skipNextReload) {
-            skipNextReload = false;
-            return;
-        }
-        isReloading = true;
         DynamicEnumParameter parameter = getParameter(DynamicEnumParameter.class);
         comboBox.setSelectedItem(parameter.getValue());
-        isReloading = false;
     }
 
     private void initialize() {
@@ -69,16 +61,7 @@ public class UIPlotDataSeriesColumnEnumParameterEditorUI extends ACAQParameterEd
         comboBox = new JComboBox<>(new DefaultComboBoxModel<>(values));
         comboBox.setRenderer(new PlotDataSeriesColumnListCellRenderer());
         comboBox.setSelectedItem(parameter.getValue());
-        comboBox.addActionListener(e -> {
-            if (!isReloading) {
-                skipNextReload = true;
-                parameter.setValue(comboBox.getSelectedItem());
-                if (!getParameterAccess().set(parameter)) {
-                    skipNextReload = false;
-                    reload();
-                }
-            }
-        });
+        comboBox.addActionListener(e -> setParameter(parameter, false));
         add(comboBox, BorderLayout.CENTER);
     }
 

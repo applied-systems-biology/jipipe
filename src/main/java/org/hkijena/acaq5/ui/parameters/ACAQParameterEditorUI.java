@@ -31,7 +31,8 @@ import java.util.Objects;
 public abstract class ACAQParameterEditorUI extends ACAQWorkbenchPanel implements Contextual {
     private Context context;
     private ACAQParameterAccess parameterAccess;
-    private boolean preventReload = false;
+    private int preventReload = 0;
+    private boolean reloadScheduled = false;
 
     /**
      * Creates new instance
@@ -66,10 +67,10 @@ public abstract class ACAQParameterEditorUI extends ACAQWorkbenchPanel implement
     public <T> T getParameter(Class<T> klass) {
         T value = (T) getParameterAccess().get(getParameterAccess().getFieldClass());
         if (value == null) {
-            preventReload = true;
+            ++preventReload;
             value = (T) ACAQParameterTypeRegistry.getInstance().getDeclarationByFieldClass(getParameterAccess().getFieldClass()).newInstance();
             getParameterAccess().set(value);
-            preventReload = false;
+            --preventReload;
         }
         return value;
     }
@@ -77,14 +78,25 @@ public abstract class ACAQParameterEditorUI extends ACAQWorkbenchPanel implement
     /**
      * Sets the parameter value.
      * Can prevent reload()
-     *
-     * @param parameter the value
+     *  @param parameter the value
      * @param reload    if enabled, a reload can happen.
+     * @return if the parameter was set
      */
-    public void setParameter(Object parameter, boolean reload) {
-        preventReload = !reload;
-        getParameterAccess().set(parameter);
-        preventReload = false;
+    public boolean setParameter(Object parameter, boolean reload) {
+        if(!reload)
+            ++preventReload;
+        reloadScheduled = reload;
+        boolean success = getParameterAccess().set(parameter);
+        if(!reload)
+            --preventReload;
+        if(!success)
+            reloadScheduled = true;
+        if(reloadScheduled) {
+            ++preventReload;
+            reload();
+            --preventReload;
+        }
+        return success;
     }
 
     /**
@@ -117,8 +129,13 @@ public abstract class ACAQParameterEditorUI extends ACAQWorkbenchPanel implement
     @Subscribe
     public void onParameterChanged(ParameterChangedEvent event) {
         if (Objects.equals(event.getKey(), parameterAccess.getKey())) {
-            if (!preventReload)
+            System.out.println(this + ": " + preventReload + " " + reloadScheduled);
+            if (preventReload == 0) {
+                reloadScheduled = false;
+                ++preventReload;
                 reload();
+                --preventReload;
+            }
         }
     }
 

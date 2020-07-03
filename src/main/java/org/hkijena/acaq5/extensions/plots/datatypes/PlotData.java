@@ -221,7 +221,7 @@ public abstract class PlotData implements ACAQData, ACAQParameterCollection, ACA
      */
     public void addSeries(PlotDataSeries series) {
         this.series.add(series);
-        getEventBus().post(new ParameterChangedEvent(this, "series"));
+
     }
 
     /**
@@ -231,7 +231,7 @@ public abstract class PlotData implements ACAQData, ACAQParameterCollection, ACA
      */
     public void removeSeries(PlotDataSeries series) {
         this.series.remove(series);
-        getEventBus().post(new ParameterChangedEvent(this, "series"));
+
     }
 
     /**
@@ -239,7 +239,7 @@ public abstract class PlotData implements ACAQData, ACAQParameterCollection, ACA
      */
     public void clearSeries() {
         this.series.clear();
-        getEventBus().post(new ParameterChangedEvent(this, "series"));
+
     }
 
     @Override

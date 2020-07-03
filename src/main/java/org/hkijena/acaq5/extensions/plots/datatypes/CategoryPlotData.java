@@ -77,7 +77,7 @@ public abstract class CategoryPlotData extends PlotData {
     @ACAQParameter("category-axis-label")
     public void setCategoryAxisLabel(String categoryAxisLabel) {
         this.categoryAxisLabel = categoryAxisLabel;
-        getEventBus().post(new ParameterChangedEvent(this, "category-axis-label"));
+
     }
 
     @ACAQDocumentation(name = "Value axis label", description = "Label of the Y-axis")
@@ -89,6 +89,6 @@ public abstract class CategoryPlotData extends PlotData {
     @ACAQParameter("value-axis-label")
     public void setValueAxisLabel(String valueAxisLabel) {
         this.valueAxisLabel = valueAxisLabel;
-        getEventBus().post(new ParameterChangedEvent(this, "value-axis-label"));
+
     }
 }

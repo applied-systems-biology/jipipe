@@ -95,7 +95,7 @@ public class StringOrDoublePredicateParameterEditorUI extends ACAQParameterEdito
             parameter.setFilterMode(StringOrDoublePredicate.FilterMode.Double);
         else if (stringToggle.isSelected())
             parameter.setFilterMode(StringOrDoublePredicate.FilterMode.String);
-        getParameterAccess().set(parameter);
+        setParameter(parameter, true);
         isProcessing = false;
     }
 

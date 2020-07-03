@@ -47,7 +47,7 @@ public class GraphEditorUISettings implements ACAQParameterCollection {
     @ACAQParameter("default-view-mode")
     public void setDefaultViewMode(ACAQAlgorithmGraphCanvasUI.ViewMode defaultViewMode) {
         this.defaultViewMode = defaultViewMode;
-        getEventBus().post(new ParameterChangedEvent(this, "default-view-mode"));
+
     }
 
     @ACAQDocumentation(name = "Switch panning direction by default",
@@ -60,7 +60,7 @@ public class GraphEditorUISettings implements ACAQParameterCollection {
     @ACAQParameter("switch-panning-direction")
     public void setSwitchPanningDirection(boolean switchPanningDirection) {
         this.switchPanningDirection = switchPanningDirection;
-        getEventBus().post(new ParameterChangedEvent(this, "switch-panning-direction"));
+
     }
 
     @ACAQDocumentation(name = "Enable layout helper by default",
@@ -73,7 +73,7 @@ public class GraphEditorUISettings implements ACAQParameterCollection {
     @ACAQParameter("enable-layout-helper")
     public void setEnableLayoutHelper(boolean enableLayoutHelper) {
         this.enableLayoutHelper = enableLayoutHelper;
-        getEventBus().post(new ParameterChangedEvent(this, "enable-layout-helper"));
+
     }
 
     public static GraphEditorUISettings getInstance() {

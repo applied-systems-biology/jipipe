@@ -84,7 +84,7 @@ public class TableColumnSourceParameterEditorUI extends ACAQParameterEditorUI {
             parameter.setMode(TableColumnSourceParameter.Mode.PickColumn);
         else if (generateColumnToggle.isSelected())
             parameter.setMode(TableColumnSourceParameter.Mode.GenerateColumn);
-        getParameterAccess().set(parameter);
+        setParameter(parameter, false);
         isProcessing = false;
     }
 

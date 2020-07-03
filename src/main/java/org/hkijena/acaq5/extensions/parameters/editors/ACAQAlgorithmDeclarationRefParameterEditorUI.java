@@ -115,8 +115,7 @@ public class ACAQAlgorithmDeclarationRefParameterEditorUI extends ACAQParameterE
         if (pickerDialog.isVisible()) {
             ACAQAlgorithmDeclarationRef declarationRef = getParameter(ACAQAlgorithmDeclarationRef.class);
             declarationRef.setDeclaration(event.getDeclaration());
-            getParameterAccess().set(declarationRef);
-            reload();
+            setParameter(declarationRef, true);
         }
     }
 

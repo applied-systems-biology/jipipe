@@ -121,7 +121,7 @@ public class ParametersDataTableDefinition extends ACAQAlgorithm {
         if (parameterTable.getRowGenerator() == null) {
             buildRowGenerator();
         }
-        getEventBus().post(new ParameterChangedEvent(this, "parameter-table"));
+
     }
 
     private void buildRowGenerator() {
@@ -169,6 +169,6 @@ public class ParametersDataTableDefinition extends ACAQAlgorithm {
             buildRowGenerator();
             parameterTable.addRow();
         }
-        getEventBus().post(new ParameterChangedEvent(this, "parameter-table"));
+
     }
 }

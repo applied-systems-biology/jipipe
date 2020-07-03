@@ -140,8 +140,7 @@ public class ACAQDataDeclarationRefParameterEditorUI extends ACAQParameterEditor
         if (pickerDialog.isVisible()) {
             ACAQDataDeclarationRef declarationRef = getParameter(ACAQDataDeclarationRef.class);
             declarationRef.setDeclaration(picker.getSelectedDataTypes().isEmpty() ? null : picker.getSelectedDataTypes().iterator().next());
-            getParameterAccess().set(declarationRef);
-            reload();
+            setParameter(declarationRef, true);
         }
     }
 

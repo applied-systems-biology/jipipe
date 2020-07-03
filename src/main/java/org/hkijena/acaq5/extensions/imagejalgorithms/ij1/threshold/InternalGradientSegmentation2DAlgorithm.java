@@ -197,7 +197,7 @@ public class InternalGradientSegmentation2DAlgorithm extends ACAQSimpleIterating
     @ACAQParameter("gauss-sigma")
     public void setGaussSigma(double gaussSigma) {
         this.gaussSigma = gaussSigma;
-        getEventBus().post(new ParameterChangedEvent(this, "gauss-sigma"));
+
     }
 
     @ACAQParameter("internal-gradient-radius")
@@ -209,7 +209,7 @@ public class InternalGradientSegmentation2DAlgorithm extends ACAQSimpleIterating
     @ACAQParameter("internal-gradient-radius")
     public void setInternalGradientRadius(int internalGradientRadius) {
         this.internalGradientRadius = internalGradientRadius;
-        getEventBus().post(new ParameterChangedEvent(this, "internal-gradient-radius"));
+
     }
 
     @ACAQParameter("dilation-iterations")
@@ -221,7 +221,7 @@ public class InternalGradientSegmentation2DAlgorithm extends ACAQSimpleIterating
     @ACAQParameter("dilation-iterations")
     public void setDilationIterations(int dilationIterations) {
         this.dilationIterations = dilationIterations;
-        getEventBus().post(new ParameterChangedEvent(this, "dilation-iterations"));
+
     }
 
     @ACAQParameter("erosion-iterations")
@@ -234,7 +234,7 @@ public class InternalGradientSegmentation2DAlgorithm extends ACAQSimpleIterating
     @ACAQParameter("erosion-iterations")
     public void setErosionIterations(int erosionIterations) {
         this.erosionIterations = erosionIterations;
-        getEventBus().post(new ParameterChangedEvent(this, "erosion-iterations"));
+
     }
 
     @ACAQParameter("auto-thresholding")

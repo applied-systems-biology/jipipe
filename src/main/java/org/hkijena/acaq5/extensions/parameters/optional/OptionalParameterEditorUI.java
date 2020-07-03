@@ -62,7 +62,7 @@ public class OptionalParameterEditorUI extends ACAQParameterEditorUI {
                 UIUtils.getIconFromResources("empty-square.png"));
         toggle.addActionListener(e -> {
             parameter.setEnabled(toggle.isSelected());
-            reload();
+            setParameter(parameter, true);
         });
         add(toggle, BorderLayout.WEST);
 

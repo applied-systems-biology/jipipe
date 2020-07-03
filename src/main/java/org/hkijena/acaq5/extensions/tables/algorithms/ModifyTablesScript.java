@@ -24,34 +24,14 @@ import org.hkijena.acaq5.api.algorithm.ACAQSimpleIteratingAlgorithm;
 import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQAnnotation;
-import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
-import org.hkijena.acaq5.extensions.parameters.pairs.IntegerAndIntegerPair;
-import org.hkijena.acaq5.extensions.parameters.pairs.StringAndStringPair;
-import org.hkijena.acaq5.extensions.parameters.primitives.DoubleList;
-import org.hkijena.acaq5.extensions.parameters.primitives.IntegerList;
-import org.hkijena.acaq5.extensions.parameters.primitives.PathList;
-import org.hkijena.acaq5.extensions.parameters.primitives.StringList;
-import org.hkijena.acaq5.extensions.parameters.scripts.PythonCode;
-import org.hkijena.acaq5.extensions.tables.datatypes.DoubleArrayTableColumn;
-import org.hkijena.acaq5.extensions.tables.datatypes.StringArrayTableColumn;
-import org.hkijena.acaq5.extensions.tables.datatypes.TableColumn;
-import org.hkijena.acaq5.utils.MacroUtils;
+import org.hkijena.acaq5.extensions.parameters.scripts.PythonScript;
 import org.hkijena.acaq5.utils.PythonUtils;
-import org.python.antlr.ast.Num;
 import org.python.core.PyDictionary;
-import org.python.core.PyList;
-import org.python.core.PyString;
 import org.python.util.PythonInterpreter;
 
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -68,7 +48,7 @@ import static org.hkijena.acaq5.utils.PythonUtils.ALLOWED_PARAMETER_CLASSES;
 public class ModifyTablesScript extends ACAQSimpleIteratingAlgorithm {
 
     private PythonInterpreter pythonInterpreter;
-    private PythonCode code = new PythonCode();
+    private PythonScript code = new PythonScript();
     private ACAQDynamicParameterCollection scriptParameters = new ACAQDynamicParameterCollection(ALLOWED_PARAMETER_CLASSES);
 
     /**
@@ -94,39 +74,15 @@ public class ModifyTablesScript extends ACAQSimpleIteratingAlgorithm {
      */
     public ModifyTablesScript(ModifyTablesScript other) {
         super(other);
-        this.code = new PythonCode(other.code);
+        this.code = new PythonScript(other.code);
         this.scriptParameters = new ACAQDynamicParameterCollection(other.scriptParameters);
         registerSubParameter(scriptParameters);
     }
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        try {
-            this.pythonInterpreter = new PythonInterpreter();
-            pythonInterpreter.set("table", new PyDictionary());
-            PythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
-            if(pythonInterpreter.compile(code.getCode()) == null) {
-                report.forCategory("Script").reportIsInvalid("The script is invalid!",
-                        "The script could not be compiled.",
-                        "Please check if your Python script is correct.",
-                        this);
-            }
-            this.pythonInterpreter = null;
-        }
-        catch (Exception e) {
-            report.forCategory("Script").reportIsInvalid("The script is invalid!",
-                    "The script could not be compiled.",
-                    "Please check if your Python script is correct.",
-                    e);
-        }
-        for (String key : scriptParameters.getParameters().keySet()) {
-            if (!MacroUtils.isValidVariableName(key)) {
-                report.forCategory("Script Parameters").forCategory(key).reportIsInvalid("Invalid name!",
-                        "'" + key + "' is an invalid Python variable name!",
-                        "Please ensure that script variables are compatible with the Python language.",
-                        this);
-            }
-        }
+        PythonUtils.checkScriptValidity(code.getCode(), scriptParameters, report.forCategory("Script"));
+        PythonUtils.checkScriptParametersValidity(scriptParameters, report.forCategory("Script parameters"));
     }
 
     @Override
@@ -160,16 +116,16 @@ public class ModifyTablesScript extends ACAQSimpleIteratingAlgorithm {
             "with the column name as key and values being an array of strings or doubles. " +
             "The number of input rows can be accessed via the 'nrow' variable.")
     @ACAQParameter("code")
-    public PythonCode getCode() {
+    public PythonScript getCode() {
         return code;
     }
 
     @ACAQParameter("code")
-    public void setCode(PythonCode code) {
+    public void setCode(PythonScript code) {
         this.code = code;
     }
 
-     @ACAQDocumentation(name = "Script parameters", description = "The following parameters are prepended to the script code:")
+     @ACAQDocumentation(name = "Script parameters", description = "The following parameters will be passed to the Python script. The variable name is equal to the unique parameter identifier.")
      @ACAQParameter("script-parameters")
     public ACAQDynamicParameterCollection getScriptParameters() {
         return scriptParameters;

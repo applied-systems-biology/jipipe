@@ -129,7 +129,7 @@ public class FilterPaths extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("filters")
     public void setFilters(PathPredicate.List filters) {
         this.filters = filters;
-        getEventBus().post(new ParameterChangedEvent(this, "filters"));
+
     }
 
     @ACAQDocumentation(name = "Filter only names", description = "If enabled, the filter is only applied for the path name (file or directory name). If disabled, the filter is " +
@@ -142,7 +142,7 @@ public class FilterPaths extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("only-names")
     public void setFilterOnlyNames(boolean filterOnlyNames) {
         this.filterOnlyNames = filterOnlyNames;
-        getEventBus().post(new ParameterChangedEvent(this, "only-names"));
+
     }
 
     @ACAQParameter("invert")
@@ -154,6 +154,6 @@ public class FilterPaths extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("invert")
     public void setInvert(boolean invert) {
         this.invert = invert;
-        getEventBus().post(new ParameterChangedEvent(this, "invert"));
+
     }
 }

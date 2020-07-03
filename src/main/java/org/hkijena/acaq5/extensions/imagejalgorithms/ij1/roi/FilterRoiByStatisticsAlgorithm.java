@@ -141,7 +141,7 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     @ACAQParameter("invert")
     public void setInvert(boolean invert) {
         this.invert = invert;
-        getEventBus().post(new ParameterChangedEvent(this, "invert"));
+
     }
 
     @ACAQParameter("filter")

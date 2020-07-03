@@ -104,7 +104,7 @@ public class LocalMinimumFilter2DAlgorithm extends ACAQSimpleIteratingAlgorithm 
             return false;
         }
         this.radius = radius;
-        getEventBus().post(new ParameterChangedEvent(this, "radius"));
+
         return true;
     }
 }

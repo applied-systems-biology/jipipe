@@ -17,6 +17,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.components.PathEditor;
+import org.hkijena.acaq5.ui.components.PathListCellRenderer;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -25,13 +26,14 @@ import java.awt.BorderLayout;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeMap;
 
 /**
  * Editor for {@link PathList}
  */
 public class PathListParameterEditorUI extends ACAQParameterEditorUI {
 
-    private JList<String> listPanel;
+    private JList<Path> listPanel;
     private PathEditor.IOMode ioMode = PathEditor.IOMode.Open;
     private PathEditor.PathMode pathMode = PathEditor.PathMode.FilesOnly;
 
@@ -58,6 +60,7 @@ public class PathListParameterEditorUI extends ACAQParameterEditorUI {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEtchedBorder());
         listPanel = new JList<>();
+        listPanel.setCellRenderer(new PathListCellRenderer());
         listPanel.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         add(listPanel, BorderLayout.CENTER);
 
@@ -95,7 +98,7 @@ public class PathListParameterEditorUI extends ACAQParameterEditorUI {
         PathList parameter = getParameter(PathList.class);
         List<Path> paths = FileChooserSettings.selectMulti(this, FileChooserSettings.KEY_PARAMETER, "Add path", ioMode, pathMode);
         parameter.addAll(paths);
-        getParameterAccess().set(parameter);
+        setParameter(parameter, true);
     }
 
 
@@ -106,10 +109,10 @@ public class PathListParameterEditorUI extends ACAQParameterEditorUI {
 
     @Override
     public void reload() {
-        DefaultListModel<String> listModel = new DefaultListModel<>();
+        DefaultListModel<Path> listModel = new DefaultListModel<>();
         PathList parameter = getParameter(PathList.class);
         for (Path path : parameter) {
-            listModel.addElement(path.toString());
+            listModel.addElement(path);
         }
         listPanel.setModel(listModel);
     }

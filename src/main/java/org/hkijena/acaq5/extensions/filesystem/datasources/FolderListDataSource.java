@@ -89,7 +89,7 @@ public class FolderListDataSource extends ACAQAlgorithm {
     @ACAQParameter("folder-paths")
     public void setFolderPaths(PathList folderPaths) {
         this.folderPaths = folderPaths;
-        getEventBus().post(new ParameterChangedEvent(this, "folder-paths"));
+
     }
 
     /**
@@ -157,7 +157,7 @@ public class FolderListDataSource extends ACAQAlgorithm {
         }
         currentWorkingDirectory = workDirectory;
         if (modified) {
-            getEventBus().post(new ParameterChangedEvent(this, "folder-paths"));
+
         }
     }
 }

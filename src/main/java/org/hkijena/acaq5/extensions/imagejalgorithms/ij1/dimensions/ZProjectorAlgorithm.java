@@ -118,7 +118,7 @@ public class ZProjectorAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("method")
     public void setMethod(Method method) {
         this.method = method;
-        getEventBus().post(new ParameterChangedEvent(this, "method"));
+
     }
 
     @ACAQParameter("start-slice")
@@ -134,7 +134,7 @@ public class ZProjectorAlgorithm extends ACAQSimpleIteratingAlgorithm {
             return false;
         }
         this.startSlice = startSlice;
-        getEventBus().post(new ParameterChangedEvent(this, "start-slice"));
+
         return true;
     }
 
@@ -151,7 +151,7 @@ public class ZProjectorAlgorithm extends ACAQSimpleIteratingAlgorithm {
             return false;
         }
         this.stopSlice = stopSlice;
-        getEventBus().post(new ParameterChangedEvent(this, "stop-slice"));
+
         return true;
     }
 
@@ -164,7 +164,7 @@ public class ZProjectorAlgorithm extends ACAQSimpleIteratingAlgorithm {
     @ACAQParameter("all-hyperstack-timepoints")
     public void setProjectAllHyperstackTimePoints(boolean projectAllHyperstackTimePoints) {
         this.projectAllHyperstackTimePoints = projectAllHyperstackTimePoints;
-        getEventBus().post(new ParameterChangedEvent(this, "all-hyperstack-timepoints"));
+
     }
 
     /**

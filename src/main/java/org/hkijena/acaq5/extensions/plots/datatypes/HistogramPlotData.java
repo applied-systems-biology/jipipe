@@ -94,7 +94,7 @@ public class HistogramPlotData extends PlotData {
     @ACAQParameter("bin-axis-label")
     public void setBinAxisLabel(String binAxisLabel) {
         this.binAxisLabel = binAxisLabel;
-        getEventBus().post(new ParameterChangedEvent(this, "bin-axis-label"));
+
     }
 
     @ACAQDocumentation(name = "Value axis label", description = "Label of the Y-axis")
@@ -106,7 +106,7 @@ public class HistogramPlotData extends PlotData {
     @ACAQParameter("value-axis-label")
     public void setValueAxisLabel(String valueAxisLabel) {
         this.valueAxisLabel = valueAxisLabel;
-        getEventBus().post(new ParameterChangedEvent(this, "value-axis-label"));
+
     }
 
     @ACAQDocumentation(name = "Bins", description = "Number of bins")
@@ -118,7 +118,7 @@ public class HistogramPlotData extends PlotData {
     @ACAQParameter("bins")
     public void setBins(int bins) {
         this.bins = bins;
-        getEventBus().post(new ParameterChangedEvent(this, "bins"));
+
     }
 
     @ACAQDocumentation(name = "Histogram type", description = "Type of histogram to generate")
@@ -130,7 +130,7 @@ public class HistogramPlotData extends PlotData {
     @ACAQParameter("histogram-type")
     public void setHistogramType(HistogramType_ histogramType) {
         this.histogramType = histogramType;
-        getEventBus().post(new ParameterChangedEvent(this, "histogram-type"));
+
     }
 
     /**

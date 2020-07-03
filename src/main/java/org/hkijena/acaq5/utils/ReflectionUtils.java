@@ -14,6 +14,7 @@
 package org.hkijena.acaq5.utils;
 
 import org.apache.commons.lang.reflect.ConstructorUtils;
+import org.apache.commons.lang.reflect.MethodUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -163,11 +164,9 @@ public class ReflectionUtils {
      * @param functionName the function
      * @return the output
      */
-    public static Object invokeMethod(Object target, String functionName) {
+    public static Object invokeMethod(Object target, String functionName, Object... args) {
         try {
-            Method declaredMethod = target.getClass().getDeclaredMethod(functionName);
-            declaredMethod.setAccessible(true);
-            return declaredMethod.invoke(target);
+            return MethodUtils.invokeMethod(target, functionName, args);
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
