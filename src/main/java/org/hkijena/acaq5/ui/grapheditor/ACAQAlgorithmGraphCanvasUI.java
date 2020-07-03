@@ -565,7 +565,11 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
         if (sourceNode != null && targetNode != null && layoutHelperEnabled) {
             Point cursorBackup = cursor;
             try {
-                this.cursor = null;
+                if(currentViewMode == ViewMode.Horizontal)
+                    this.cursor = new Point(targetNode.getRightX() + 4 * ACAQAlgorithmUI.SLOT_UI_WIDTH,
+                            targetNode.getY());
+                else
+                    this.cursor = new Point(targetNode.getX(), targetNode.getBottomY() + 4 * ACAQAlgorithmUI.SLOT_UI_HEIGHT);
                 autoPlaceTargetAdjacent(sourceNode, event.getSource(), targetNode, event.getTarget());
             } finally {
                 this.cursor = cursorBackup;
