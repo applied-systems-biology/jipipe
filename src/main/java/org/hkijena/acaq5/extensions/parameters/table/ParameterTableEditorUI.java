@@ -13,6 +13,7 @@
 
 package org.hkijena.acaq5.extensions.parameters.table;
 
+import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
@@ -23,7 +24,9 @@ import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import java.awt.BorderLayout;
 import java.awt.Point;
 import java.util.Arrays;
@@ -247,6 +250,13 @@ public class ParameterTableEditorUI extends ACAQParameterEditorUI {
         }
     }
 
+    @Subscribe
+    public void onTableStructureChangedEvent(TableModelEvent event) {
+        TableModel model = table.getModel();
+        table.setModel(new DefaultTableModel());
+        table.setModel(model);
+    }
+
     @Override
     public boolean isUILabelEnabled() {
         return true;
@@ -254,11 +264,16 @@ public class ParameterTableEditorUI extends ACAQParameterEditorUI {
 
     @Override
     public void reload() {
+        if(table.getModel() instanceof ParameterTable) {
+            ((ParameterTable) table.getModel()).getEventBus().unregister(this);
+        }
+
         ParameterTable parameterTable = getParameter(ParameterTable.class);
         if (parameterTable == null) {
             table.setModel(new DefaultTableModel());
         } else {
             table.setModel(parameterTable);
+            parameterTable.getEventBus().register(this);
         }
         reloadGeneratePopupMenu();
         reloadReplacePopupMenu();

@@ -39,6 +39,7 @@ import org.scijava.Contextual;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
+import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -170,10 +171,12 @@ public class ParameterPanel extends FormPanel implements Contextual {
             return;
 
         if (!noGroupHeaders) {
+            ACAQParameterTree.Node node = traversed.getSourceNode(parameterHolder);
             ACAQDocumentation documentation = traversed.getSourceDocumentation(parameterHolder);
             boolean documentationIsEmpty = documentation == null || (StringUtils.isNullOrEmpty(documentation.name()) && StringUtils.isNullOrEmpty(documentation.description()));
+            boolean groupHeaderIsEmpty = documentationIsEmpty && !isModifiable && node.getActions().isEmpty();
 
-            if (!noEmptyGroupHeaders || (!documentationIsEmpty && !isModifiable)) {
+            if (!noEmptyGroupHeaders || !groupHeaderIsEmpty) {
                 GroupHeaderPanel groupHeaderPanel = addGroupHeader(traversed.getSourceDocumentationName(parameterHolder),
                         UIUtils.getIconFromResources("cog.png"));
 
@@ -181,6 +184,16 @@ public class ParameterPanel extends FormPanel implements Contextual {
                     groupHeaderPanel.getDescriptionArea().setVisible(true);
                     groupHeaderPanel.getDescriptionArea().setText(documentation.description());
                 }
+
+                for (ACAQParameterTree.ContextAction action : node.getActions()) {
+                    Icon icon = action.getIconURL() != null ? new ImageIcon(action.getIconURL()) : null;
+                    JButton actionButton = new JButton(action.getDocumentation().name(), icon);
+                    actionButton.setToolTipText(action.getDocumentation().description());
+                    actionButton.addActionListener(e -> action.accept(workbench));
+                    UIUtils.makeFlat(actionButton);
+                    groupHeaderPanel.addColumn(actionButton);
+                }
+
 
                 if (isModifiable) {
                     JButton addButton = new JButton("Add parameter", UIUtils.getIconFromResources("add.png"));

@@ -21,11 +21,14 @@ import org.hkijena.acaq5.api.ACAQDefaultDocumentation;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
+import org.hkijena.acaq5.ui.ACAQWorkbench;
+import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.scijava.Priority;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,6 +37,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.Stack;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -173,12 +177,31 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
 
                 merge(child, childNode);
             }
+            addContextActions(source, target);
         } else {
             if (ignoreReflectionParameters)
                 return;
             addReflectionParameters(source, target);
+            addContextActions(source, target);
         }
         source.getEventBus().register(this);
+    }
+
+    private void addContextActions(ACAQParameterCollection source, Node target) {
+        for (Method method : source.getClass().getMethods()) {
+            ACAQContextAction actionAnnotation = method.getAnnotation(ACAQContextAction.class);
+            if(actionAnnotation == null)
+                continue;
+            ACAQDocumentation documentationAnnotation = method.getAnnotation(ACAQDocumentation.class);
+            if(documentationAnnotation == null) {
+                documentationAnnotation = new ACAQDefaultDocumentation(method.getName(), "");
+            }
+            URL iconURL = null;
+            if(!StringUtils.isNullOrEmpty(actionAnnotation.iconURL())) {
+                iconURL = ResourceUtils.class.getResource(actionAnnotation.iconURL());
+            }
+            target.actions.add(new ContextAction(source, method, iconURL, documentationAnnotation));
+        }
     }
 
     private void addParameter(String initialKey, ACAQParameterAccess parameterAccess, Node parent) {
@@ -516,6 +539,45 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
         }
     }
 
+    public static class ContextAction implements Consumer<ACAQWorkbench> {
+        private Object target;
+        private Method function;
+        private URL iconURL;
+        private ACAQDocumentation documentation;
+
+        public ContextAction(Object target, Method function, URL iconURL, ACAQDocumentation documentation) {
+            this.target = target;
+            this.function = function;
+            this.iconURL = iconURL;
+            this.documentation = documentation;
+        }
+
+        public Object getTarget() {
+            return target;
+        }
+
+        public Method getFunction() {
+            return function;
+        }
+
+        public ACAQDocumentation getDocumentation() {
+            return documentation;
+        }
+
+        public URL getIconURL() {
+            return iconURL;
+        }
+
+        @Override
+        public void accept(ACAQWorkbench workbench) {
+            try {
+                function.invoke(target, workbench);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
     /**
      * A node
      */
@@ -530,6 +592,7 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
         private int uiOrder;
         private BiMap<String, ACAQParameterAccess> parameters = HashBiMap.create();
         private BiMap<String, Node> children = HashBiMap.create();
+        private List<ContextAction> actions = new ArrayList<>();
 
         /**
          * Creates a node
@@ -639,6 +702,14 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
 
         public void setUiOrder(int uiOrder) {
             this.uiOrder = uiOrder;
+        }
+
+        public List<ContextAction> getActions() {
+            return actions;
+        }
+
+        public void setActions(List<ContextAction> actions) {
+            this.actions = actions;
         }
     }
 }

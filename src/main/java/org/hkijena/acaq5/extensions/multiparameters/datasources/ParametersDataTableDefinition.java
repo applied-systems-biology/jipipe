@@ -20,25 +20,20 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
-import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
 import org.hkijena.acaq5.api.registries.ACAQParameterTypeRegistry;
 import org.hkijena.acaq5.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.acaq5.extensions.parameters.table.ParameterTable;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -50,7 +45,7 @@ import java.util.function.Supplier;
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.DataSource)
 public class ParametersDataTableDefinition extends ACAQAlgorithm {
 
-    private ACAQDynamicParameterCollection parameters;
+    private GeneratedParameters parameters;
     private ParameterTable parameterTable = new ParameterTable();
 
     /**
@@ -60,7 +55,7 @@ public class ParametersDataTableDefinition extends ACAQAlgorithm {
      */
     public ParametersDataTableDefinition(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
-        this.parameters = new ACAQDynamicParameterCollection(true, ACAQParameterTypeRegistry.getInstance().getRegisteredParameters().values());
+        this.parameters = new GeneratedParameters(this);
         registerSubParameter(parameters);
         parameterTable.setRowGenerator(this::generateRow);
     }
@@ -72,7 +67,8 @@ public class ParametersDataTableDefinition extends ACAQAlgorithm {
      */
     public ParametersDataTableDefinition(ParametersDataTableDefinition other) {
         super(other);
-        this.parameters = new ACAQDynamicParameterCollection(other.parameters);
+        this.parameters = new GeneratedParameters(other.parameters);
+        this.parameters.setParent(this);
         registerSubParameter(parameters);
         this.parameterTable = new ParameterTable(other.parameterTable);
         parameterTable.setRowGenerator(this::generateRow);
@@ -110,7 +106,7 @@ public class ParametersDataTableDefinition extends ACAQAlgorithm {
 
     @ACAQDocumentation(name = "Parameters", description = "Following parameters are generated:")
     @ACAQParameter("parameters")
-    public ACAQDynamicParameterCollection getParameters() {
+    public GeneratedParameters getParameters() {
         return parameters;
     }
 

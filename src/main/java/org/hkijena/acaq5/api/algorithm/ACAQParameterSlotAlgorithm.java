@@ -24,6 +24,7 @@ import org.hkijena.acaq5.api.data.ACAQSlotType;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
+import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
 import org.hkijena.acaq5.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
 
@@ -70,7 +71,7 @@ public abstract class ACAQParameterSlotAlgorithm extends ACAQAlgorithm {
 
     @ACAQDocumentation(name = "Multiple parameters", description = "If enabled, there will be an additional slot that consumes " +
             "parameter data sets. The algorithm then will be applied for each of this parameter sets.")
-    @ACAQParameter("has-parameter-slot")
+    @ACAQParameter(value = "has-parameter-slot", visibility = ACAQParameterVisibility.Visible)
     public boolean isHasParameterSlot() {
         return hasParameterSlot;
     }
@@ -82,7 +83,7 @@ public abstract class ACAQParameterSlotAlgorithm extends ACAQAlgorithm {
     }
 
     @ACAQDocumentation(name = "Attach parameter annotations", description = "If multiple parameters are allowed, attach the parameter values as annotations.")
-    @ACAQParameter("attach-parameter-annotations")
+    @ACAQParameter(value = "attach-parameter-annotations", visibility = ACAQParameterVisibility.Visible)
     public boolean isAttachParameterAnnotations() {
         return attachParameterAnnotations;
     }
@@ -94,7 +95,7 @@ public abstract class ACAQParameterSlotAlgorithm extends ACAQAlgorithm {
 
     @ACAQDocumentation(name = "Attach only non-default parameter annotations", description = "If multiple parameters are allowed, " +
             "attach only parameter annotations that have different values from the current settings. Requries 'Attach parameter annotations' to be enabled.")
-    @ACAQParameter("attach-only-non-default-parameter-annotations")
+    @ACAQParameter(value = "attach-only-non-default-parameter-annotations", visibility = ACAQParameterVisibility.Visible)
     public boolean isAttachOnlyNonDefaultParameterAnnotations() {
         return attachOnlyNonDefaultParameterAnnotations;
     }
@@ -105,7 +106,7 @@ public abstract class ACAQParameterSlotAlgorithm extends ACAQAlgorithm {
     }
 
     @ACAQDocumentation(name = "Parameter annotations use internal names", description = "Generated parameter annotations use their internal unique names.")
-    @ACAQParameter("parameter-annotations-use-internal-names")
+    @ACAQParameter(value = "parameter-annotations-use-internal-names", visibility = ACAQParameterVisibility.Visible)
     public boolean isParameterAnnotationsUseInternalNames() {
         return parameterAnnotationsUseInternalNames;
     }
@@ -116,7 +117,7 @@ public abstract class ACAQParameterSlotAlgorithm extends ACAQAlgorithm {
     }
 
     @ACAQDocumentation(name = "Parameter annotation prefix", description = "Text prefixed to generated parameter annotations.")
-    @ACAQParameter("parameter-annotations-prefix")
+    @ACAQParameter(value = "parameter-annotations-prefix", visibility = ACAQParameterVisibility.Visible)
     @StringParameterSettings(monospace = true)
     public String getParameterAnnotationsPrefix() {
         return parameterAnnotationsPrefix;

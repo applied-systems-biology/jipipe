@@ -50,6 +50,7 @@ import org.scijava.Context;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
+import java.awt.Window;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.time.LocalDateTime;
@@ -259,7 +260,7 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
         projectMenu.add(openProjectOutputButton);
 
         // Recent projects entry
-        projectMenu.add(new RecentProjectsMenu("Recent projects", UIUtils.getIconFromResources("clock.png"), getWindow()));
+        projectMenu.add(new RecentProjectsMenu("Recent projects", UIUtils.getIconFromResources("clock.png"), (ACAQProjectWindow) getWindow()));
 
         projectMenu.addSeparator();
 
@@ -511,7 +512,7 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
     /**
      * @return The parent window
      */
-    public ACAQProjectWindow getWindow() {
+    public Window getWindow() {
         return window;
     }
 

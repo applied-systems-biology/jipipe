@@ -100,7 +100,7 @@ public class ACAQInfoUI extends ACAQProjectWorkbenchPanel {
                 if (e.getClickCount() == 2) {
                     Path value = recentProjectsList.getSelectedValue();
                     if (value != null) {
-                        getProjectWorkbench().getWindow().openProject(value);
+                        ((ACAQProjectWindow)getProjectWorkbench().getWindow()).openProject(value);
                     }
                 }
             }

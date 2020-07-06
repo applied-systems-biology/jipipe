@@ -47,6 +47,7 @@ import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ComponentAdapter;
@@ -395,6 +396,11 @@ public class RunSingleAlgorithmDialog extends JDialog implements ACAQWorkbench {
 
     public void setNumThreads(int numThreads) {
         this.numThreads = numThreads;
+    }
+
+    @Override
+    public Window getWindow() {
+        return this;
     }
 
     @Override

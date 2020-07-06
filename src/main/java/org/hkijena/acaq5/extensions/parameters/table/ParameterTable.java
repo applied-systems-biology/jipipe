@@ -27,6 +27,8 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
+import com.google.common.eventbus.EventBus;
+import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameterTypeDeclaration;
 import org.hkijena.acaq5.api.registries.ACAQParameterTypeRegistry;
 import org.hkijena.acaq5.utils.JsonUtils;
@@ -48,6 +50,7 @@ import java.util.function.Supplier;
 @JsonDeserialize(using = ParameterTable.Deserializer.class)
 public class ParameterTable implements TableModel {
 
+    private final  EventBus eventBus = new EventBus();
     private List<ParameterColumn> columns = new ArrayList<>();
     private List<List<Object>> rows = new ArrayList<>();
     private List<TableModelListener> listeners = new ArrayList<>();
@@ -146,9 +149,11 @@ public class ParameterTable implements TableModel {
     }
 
     private void postTableModelChangedEvent() {
-        for (TableModelListener listener : listeners) {
-            listener.tableChanged(new TableModelEvent(this));
-        }
+        // Breaks JXTable for some reason. Use workaround via event bus
+//        for (TableModelListener listener : listeners) {
+//            listener.tableChanged(new TableModelEvent(this));
+//        }
+        eventBus.post(new TableModelEvent(this));
     }
 
     /**
@@ -224,6 +229,10 @@ public class ParameterTable implements TableModel {
             row.remove(col);
         }
         postTableModelChangedEvent();
+    }
+
+    public EventBus getEventBus() {
+        return eventBus;
     }
 
     /**

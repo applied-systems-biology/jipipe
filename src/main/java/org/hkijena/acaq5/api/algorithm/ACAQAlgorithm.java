@@ -152,7 +152,7 @@ public abstract class ACAQAlgorithm extends ACAQGraphNode {
 
     @ACAQDocumentation(name = "Pass through", description = "If enabled, the algorithm will pass the input data directly to the output data without any processing. " +
             "This is different from enabling/disabling the algorithm as this will not disable dependent algorithms.")
-    @ACAQParameter("acaq:algorithm:pass-through")
+    @ACAQParameter(value = "acaq:algorithm:pass-through", visibility = ACAQParameterVisibility.Visible)
     public boolean isPassThrough() {
         return passThrough;
     }

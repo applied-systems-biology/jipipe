@@ -36,6 +36,7 @@ import org.scijava.Context;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
+import java.awt.Window;
 import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -159,7 +160,7 @@ public class ACAQJsonExtensionWorkbench extends JPanel implements ACAQWorkbench 
         projectMenu.add(openProjectButton);
 
         // Recent projects entry
-        projectMenu.add(new RecentJsonExtensionsMenu("Recent extensions", UIUtils.getIconFromResources("clock.png"), getWindow()));
+        projectMenu.add(new RecentJsonExtensionsMenu("Recent extensions", UIUtils.getIconFromResources("clock.png"), (ACAQJsonExtensionWindow) getWindow()));
 
         projectMenu.addSeparator();
 
@@ -248,7 +249,7 @@ public class ACAQJsonExtensionWorkbench extends JPanel implements ACAQWorkbench 
     /**
      * @return The window that contains the UI
      */
-    public ACAQJsonExtensionWindow getWindow() {
+    public Window getWindow() {
         return window;
     }
 

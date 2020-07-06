@@ -20,18 +20,11 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
-import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
-import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
-import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
-import org.hkijena.acaq5.api.registries.ACAQParameterTypeRegistry;
 import org.hkijena.acaq5.extensions.multiparameters.datatypes.ParametersData;
-import org.hkijena.acaq5.extensions.parameters.references.ACAQAlgorithmDeclarationRef;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -45,7 +38,7 @@ import java.util.function.Supplier;
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.DataSource)
 public class ParametersDataDefinition extends ACAQAlgorithm {
 
-    private ACAQDynamicParameterCollection parameters;
+    private GeneratedParameters parameters;
 
     /**
      * Creates a new instance
@@ -54,7 +47,7 @@ public class ParametersDataDefinition extends ACAQAlgorithm {
      */
     public ParametersDataDefinition(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
-        this.parameters = new ACAQDynamicParameterCollection(true, ACAQParameterTypeRegistry.getInstance().getRegisteredParameters().values());
+        this.parameters = new GeneratedParameters(this);
         registerSubParameter(parameters);
     }
 
@@ -65,7 +58,8 @@ public class ParametersDataDefinition extends ACAQAlgorithm {
      */
     public ParametersDataDefinition(ParametersDataDefinition other) {
         super(other);
-        this.parameters = new ACAQDynamicParameterCollection(other.parameters);
+        this.parameters = new GeneratedParameters(other.parameters);
+        this.parameters.setParent(this);
         registerSubParameter(parameters);
     }
 
@@ -87,7 +81,7 @@ public class ParametersDataDefinition extends ACAQAlgorithm {
 
     @ACAQDocumentation(name = "Parameters", description = "Following parameters are generated:")
     @ACAQParameter("parameters")
-    public ACAQDynamicParameterCollection getParameters() {
+    public GeneratedParameters getParameters() {
         return parameters;
     }
 }

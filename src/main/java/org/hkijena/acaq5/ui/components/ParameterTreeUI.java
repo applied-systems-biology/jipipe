@@ -94,7 +94,7 @@ public class ParameterTreeUI extends JTree {
      * @param parent the parent component
      * @param tree   the tree
      * @param title  the title
-     * @return selected object or null if not was selected
+     * @return list of selected objects. Either {@link ACAQParameterAccess} or {@link ACAQParameterTree.Node}
      */
     public static List<Object> showPickerDialog(Component parent, ACAQParameterTree tree, String title) {
         ParameterTreeUI ui = new ParameterTreeUI(tree);

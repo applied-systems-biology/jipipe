@@ -16,10 +16,19 @@ package org.hkijena.acaq5.ui;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.scijava.Context;
 
+import java.awt.Window;
+
 /**
  * Interface shared by all workbench UIs
  */
 public interface ACAQWorkbench {
+
+    /**
+     * Returns the window
+     * @return the window
+     */
+    Window getWindow();
+
     /**
      * Sends a text to the status bar
      *
