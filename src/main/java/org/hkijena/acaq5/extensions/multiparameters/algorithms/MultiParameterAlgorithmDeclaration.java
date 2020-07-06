@@ -99,6 +99,6 @@ public class MultiParameterAlgorithmDeclaration implements ACAQAlgorithmDeclarat
 
     @Override
     public boolean isHidden() {
-        return false;
+        return true;
     }
 }

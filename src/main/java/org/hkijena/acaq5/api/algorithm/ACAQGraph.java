@@ -794,12 +794,8 @@ public class ACAQGraph implements ACAQValidatable {
      */
     public List<ACAQGraphNode> getPredecessorAlgorithms(ACAQGraphNode target, List<ACAQGraphNode> traversed) {
         Set<ACAQGraphNode> predecessors = new HashSet<>();
-        ACAQDataSlot startingSlot = null;
-        if (!target.getInputSlots().isEmpty()) {
-            startingSlot = target.getFirstInputSlot();
-        }
-        if (startingSlot != null) {
-            for (ACAQDataSlot predecessor : GraphUtils.getAllPredecessors(graph, startingSlot)) {
+        for (ACAQDataSlot inputSlot : target.getInputSlots()) {
+            for (ACAQDataSlot predecessor : GraphUtils.getAllPredecessors(graph, inputSlot)) {
                 predecessors.add(predecessor.getAlgorithm());
             }
         }

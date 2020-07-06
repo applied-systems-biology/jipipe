@@ -22,7 +22,6 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
-import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
@@ -48,7 +47,7 @@ import java.util.function.Supplier;
  * If your algorithm only has one input and will never have more than one input slot, we recommend using {@link ACAQSimpleIteratingAlgorithm}
  * instead that comes without the additional data set matching strategies
  */
-public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm implements ACAQParallelizedAlgorithm {
+public abstract class ACAQIteratingAlgorithm extends ACAQParameterSlotAlgorithm implements ACAQParallelizedAlgorithm {
 
     public static final String ITERATING_ALGORITHM_DESCRIPTION = "This algorithm groups the incoming data based on the annotations. " +
             "Those groups can consist of one data item per slot.";
@@ -93,7 +92,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm implements AC
     }
 
     @Override
-    public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    public void runParameterSet(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled, List<ACAQAnnotation> parameterAnnotations) {
 
         if (isPassThrough() && canPassThrough()) {
             algorithmProgress.accept(subProgress.resolve("Data passed through to output"));
@@ -109,6 +108,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm implements AC
             ACAQRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (row + 1) + " / " + 1);
             algorithmProgress.accept(slotProgress);
             ACAQDataInterface dataInterface = new ACAQDataInterface(this);
+            dataInterface.addGlobalAnnotations(parameterAnnotations, true);
             runIteration(dataInterface, slotProgress, algorithmProgress, isCancelled);
             return;
         }
@@ -131,10 +131,10 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm implements AC
         }
 
         // Organize the input data by Dataset -> Slot -> Data row
-        Map<ACAQDataSetKey, Map<String, TIntSet>> dataSets = new HashMap<>();
+        Map<ACAQUniqueDataBatch, Map<String, TIntSet>> dataSets = new HashMap<>();
         for (ACAQDataSlot inputSlot : getInputSlots()) {
             for (int row = 0; row < inputSlot.getRowCount(); row++) {
-                ACAQDataSetKey key = new ACAQDataSetKey();
+                ACAQUniqueDataBatch key = new ACAQUniqueDataBatch();
                 for (String referenceTraitColumn : referenceTraitColumns) {
                     key.getEntries().put(referenceTraitColumn, null);
                 }
@@ -159,7 +159,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm implements AC
 
         // Check for duplicates
         if (!allowDuplicateDataSets) {
-            for (Map.Entry<ACAQDataSetKey, Map<String, TIntSet>> dataSetEntry : dataSets.entrySet()) {
+            for (Map.Entry<ACAQUniqueDataBatch, Map<String, TIntSet>> dataSetEntry : dataSets.entrySet()) {
                 for (Map.Entry<String, TIntSet> slotEntry : dataSetEntry.getValue().entrySet()) {
                     if (slotEntry.getValue().size() > 1) {
                         throw new UserFriendlyRuntimeException("Duplicate data set found!",
@@ -176,7 +176,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm implements AC
         }
 
         // Check for missing data sets
-        for (Map.Entry<ACAQDataSetKey, Map<String, TIntSet>> dataSetEntry : ImmutableList.copyOf(dataSets.entrySet())) {
+        for (Map.Entry<ACAQUniqueDataBatch, Map<String, TIntSet>> dataSetEntry : ImmutableList.copyOf(dataSets.entrySet())) {
             boolean incomplete = false;
             for (ACAQDataSlot inputSlot : getInputSlots()) {
                 TIntSet slotEntry = dataSetEntry.getValue().getOrDefault(inputSlot.getName(), null);
@@ -201,7 +201,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm implements AC
 
         // Generate data interfaces
         List<ACAQDataInterface> dataInterfaces = new ArrayList<>();
-        for (Map.Entry<ACAQDataSetKey, Map<String, TIntSet>> dataSetEntry : ImmutableList.copyOf(dataSets.entrySet())) {
+        for (Map.Entry<ACAQUniqueDataBatch, Map<String, TIntSet>> dataSetEntry : ImmutableList.copyOf(dataSets.entrySet())) {
             List<ACAQDataInterface> dataInterfacesForDataSet = new ArrayList<>();
             // Create the first batch
             {
@@ -244,8 +244,13 @@ public abstract class ACAQIteratingAlgorithm extends ACAQAlgorithm implements AC
 
                     ++rowIndex;
                 }
-
             }
+
+            // Add parameter annotations
+            for (ACAQDataInterface dataInterface : dataInterfacesForDataSet) {
+                dataInterface.addGlobalAnnotations(parameterAnnotations, true);
+            }
+
 
             dataInterfaces.addAll(dataInterfacesForDataSet);
         }

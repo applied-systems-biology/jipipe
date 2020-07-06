@@ -22,6 +22,7 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.utils.JsonUtils;
+import org.hkijena.acaq5.utils.StringUtils;
 
 import java.awt.Desktop;
 import java.io.IOException;
@@ -59,7 +60,7 @@ public class ParametersData implements ACAQData {
     @Override
     public void display(String displayName, ACAQWorkbench workbench) {
         try {
-            Path outputFile = Files.createTempFile("ACAQTempParameters-" + displayName, ".json");
+            Path outputFile = Files.createTempFile("ACAQTempParameters-" + StringUtils.makeFilesystemCompatible(displayName), ".json");
             JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter()
                     .writeValue(outputFile.toFile(), this);
             Desktop.getDesktop().open(outputFile.toFile());

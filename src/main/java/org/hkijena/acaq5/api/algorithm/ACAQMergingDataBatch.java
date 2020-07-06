@@ -29,7 +29,7 @@ import java.util.Set;
  * Wraps a set of input and output slots that belong together.
  * This is a less restricted variant of {@link ACAQDataInterface} used by {@link ACAQMergingAlgorithm}
  */
-public class ACAQMultiDataInterface {
+public class ACAQMergingDataBatch {
     private ACAQGraphNode algorithm;
     private Map<ACAQDataSlot, Set<Integer>> inputSlotRows;
     private Map<String, ACAQAnnotation> annotations = new HashMap<>();
@@ -39,7 +39,7 @@ public class ACAQMultiDataInterface {
      *
      * @param algorithm The algorithm
      */
-    public ACAQMultiDataInterface(ACAQGraphNode algorithm) {
+    public ACAQMergingDataBatch(ACAQGraphNode algorithm) {
         this.algorithm = algorithm;
         this.inputSlotRows = new HashMap<>();
 //        initialize(inputSlots, row);
@@ -50,7 +50,7 @@ public class ACAQMultiDataInterface {
      *
      * @param other the original
      */
-    public ACAQMultiDataInterface(ACAQMultiDataInterface other) {
+    public ACAQMergingDataBatch(ACAQMergingDataBatch other) {
         this.algorithm = other.algorithm;
         this.inputSlotRows = new HashMap<>(other.inputSlotRows);
         this.annotations = new HashMap<>(other.annotations);

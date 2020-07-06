@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 /**
  * Structure that can hold multiple {@link ACAQAnnotation} instances to make a set of traits a key
  */
-public class ACAQDataSetKey {
+public class ACAQUniqueDataBatch {
     private Map<String, ACAQAnnotation> entries = new HashMap<>();
 
     public Map<String, ACAQAnnotation> getEntries() {
@@ -38,7 +38,7 @@ public class ACAQDataSetKey {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ACAQDataSetKey that = (ACAQDataSetKey) o;
+        ACAQUniqueDataBatch that = (ACAQUniqueDataBatch) o;
         return entries.equals(that.entries);
     }
 

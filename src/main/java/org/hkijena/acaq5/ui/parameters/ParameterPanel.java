@@ -220,12 +220,10 @@ public class ParameterPanel extends FormPanel implements Contextual {
             JPanel labelPanel = new JPanel(new BorderLayout());
             if (ui.isUILabelEnabled()) {
                 JLabel label = new JLabel(parameterAccess.getName());
-                label.setToolTipText("<html>Parameter ID: <code>" + parameterAccess.getKey() + "</code></code>");
                 labelPanel.add(label, BorderLayout.CENTER);
             }
             if (isModifiable) {
                 JButton removeButton = new JButton(UIUtils.getIconFromResources("close-tab.png"));
-                removeButton.setToolTipText("<html>Remove this parameter<br/>Parameter ID: <code>" + parameterAccess.getKey() + "</code></html>");
                 UIUtils.makeBorderlessWithoutMargin(removeButton);
                 removeButton.addActionListener(e -> removeDynamicParameter(parameterAccess.getKey(), (ACAQDynamicParameterCollection) parameterHolder));
                 labelPanel.add(removeButton, BorderLayout.WEST);
@@ -241,13 +239,19 @@ public class ParameterPanel extends FormPanel implements Contextual {
     private MarkdownDocument generateParameterDocumentation(ACAQParameterAccess access) {
         StringBuilder markdownString = new StringBuilder();
         markdownString.append("# Parameter '").append(access.getName()).append("'\n\n");
+        markdownString.append("<table><tr>");
+        markdownString.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/algorithms/dialog-xml-editor.png")).append("\" /></td>");
+        markdownString.append("<td><strong>Unique identifier</strong>: <code>");
+        markdownString.append(HtmlEscapers.htmlEscaper().escape(access.getKey())).append("</code></td></tr>\n\n");
+
         ACAQParameterTypeDeclaration declaration = ACAQParameterTypeRegistry.getInstance().getDeclarationByFieldClass(access.getFieldClass());
         if (declaration != null) {
-            markdownString.append("<table><tr>");
             markdownString.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/wrench.png")).append("\" /></td>");
             markdownString.append("<td><strong>").append(HtmlEscapers.htmlEscaper().escape(declaration.getName())).append("</strong>: ");
-            markdownString.append(HtmlEscapers.htmlEscaper().escape(declaration.getDescription())).append("</td></tr></table>\n\n");
+            markdownString.append(HtmlEscapers.htmlEscaper().escape(declaration.getDescription())).append("</td></tr>");
         }
+        markdownString.append("</table>\n\n");
+
         if (access.getDescription() != null && !access.getDescription().isEmpty()) {
             markdownString.append(access.getDescription());
         } else {

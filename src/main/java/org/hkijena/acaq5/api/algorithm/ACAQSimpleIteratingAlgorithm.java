@@ -16,6 +16,7 @@ package org.hkijena.acaq5.api.algorithm;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
+import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
@@ -33,7 +34,7 @@ import java.util.function.Supplier;
  * This is a simplified version of {@link ACAQIteratingAlgorithm} that assumes that there is only one or zero input slots.
  * An error is thrown if there are more than one input slots.
  */
-public abstract class ACAQSimpleIteratingAlgorithm extends ACAQAlgorithm implements ACAQParallelizedAlgorithm {
+public abstract class ACAQSimpleIteratingAlgorithm extends ACAQParameterSlotAlgorithm implements ACAQParallelizedAlgorithm {
 
     private boolean parallelizationEnabled = true;
 
@@ -67,7 +68,7 @@ public abstract class ACAQSimpleIteratingAlgorithm extends ACAQAlgorithm impleme
     }
 
     @Override
-    public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    public void runParameterSet(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled, List<ACAQAnnotation> parameterAnnotations) {
         if (getInputSlots().size() > 1)
             throw new UserFriendlyRuntimeException("Too many input slots for ACAQSimpleIteratingAlgorithm!",
                     "Error in source code detected!",
@@ -85,6 +86,7 @@ public abstract class ACAQSimpleIteratingAlgorithm extends ACAQAlgorithm impleme
             ACAQRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (row + 1) + " / " + 1);
             algorithmProgress.accept(slotProgress);
             ACAQDataInterface dataInterface = new ACAQDataInterface(this);
+            dataInterface.addGlobalAnnotations(parameterAnnotations, true);
             runIteration(dataInterface, slotProgress, algorithmProgress, isCancelled);
         } else {
             if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1) {
@@ -96,6 +98,7 @@ public abstract class ACAQSimpleIteratingAlgorithm extends ACAQAlgorithm impleme
                     ACAQDataInterface dataInterface = new ACAQDataInterface(this);
                     dataInterface.setData(getFirstInputSlot(), i);
                     dataInterface.addGlobalAnnotations(getFirstInputSlot().getAnnotations(i), true);
+                    dataInterface.addGlobalAnnotations(parameterAnnotations, true);
                     runIteration(dataInterface, slotProgress, algorithmProgress, isCancelled);
                 }
             } else {
@@ -110,6 +113,7 @@ public abstract class ACAQSimpleIteratingAlgorithm extends ACAQAlgorithm impleme
                         ACAQDataInterface dataInterface = new ACAQDataInterface(this);
                         dataInterface.setData(getFirstInputSlot(), rowIndex);
                         dataInterface.addGlobalAnnotations(getFirstInputSlot().getAnnotations(rowIndex), true);
+                        dataInterface.addGlobalAnnotations(parameterAnnotations, true);
                         runIteration(dataInterface, slotProgress, algorithmProgress, isCancelled);
                     });
                 }

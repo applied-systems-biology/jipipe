@@ -25,7 +25,6 @@ import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
-import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
@@ -48,12 +47,12 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
- * An {@link ACAQAlgorithm} that applies a similar algorithm to {@link ACAQIteratingAlgorithm}, but does create {@link ACAQMultiDataInterface} instead.
+ * An {@link ACAQAlgorithm} that applies a similar algorithm to {@link ACAQIteratingAlgorithm}, but does create {@link ACAQMergingDataBatch} instead.
  * This algorithm instead just groups the data based on the annotations and passes those groups to
  * the runIteration() function. This is useful for merging algorithms.
  * Please note that the single-input case will still group the data into multiple groups, or just one group if no grouping could be acquired.
  */
-public abstract class ACAQMergingAlgorithm extends ACAQAlgorithm implements ACAQParallelizedAlgorithm {
+public abstract class ACAQMergingAlgorithm extends ACAQParameterSlotAlgorithm implements ACAQParallelizedAlgorithm {
 
     public static final String MERGING_ALGORITHM_DESCRIPTION = "This algorithm groups the incoming data based on the annotations. " +
             "Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and " +
@@ -108,7 +107,7 @@ public abstract class ACAQMergingAlgorithm extends ACAQAlgorithm implements ACAQ
     }
 
     @Override
-    public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    public void runParameterSet(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled, List<ACAQAnnotation> parameterAnnotations) {
         // Special case: No input slots
         if (getInputSlots().isEmpty()) {
             if (isCancelled.get())
@@ -116,7 +115,8 @@ public abstract class ACAQMergingAlgorithm extends ACAQAlgorithm implements ACAQ
             final int row = 0;
             ACAQRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (row + 1) + " / " + 1);
             algorithmProgress.accept(slotProgress);
-            ACAQMultiDataInterface dataInterface = new ACAQMultiDataInterface(this);
+            ACAQMergingDataBatch dataInterface = new ACAQMergingDataBatch(this);
+            dataInterface.addGlobalAnnotations(parameterAnnotations, true);
             runIteration(dataInterface, slotProgress, algorithmProgress, isCancelled);
             return;
         }
@@ -142,10 +142,10 @@ public abstract class ACAQMergingAlgorithm extends ACAQAlgorithm implements ACAQ
         referenceTraitColumns.removeAll(getIgnoredTraitColumns());
 
         // Organize the input data by Dataset -> Slot -> Data row
-        Map<ACAQDataSetKey, Map<String, TIntSet>> dataSets = new HashMap<>();
+        Map<ACAQUniqueDataBatch, Map<String, TIntSet>> dataSets = new HashMap<>();
         for (ACAQDataSlot inputSlot : getInputSlots()) {
             for (int row = 0; row < inputSlot.getRowCount(); row++) {
-                ACAQDataSetKey key = new ACAQDataSetKey();
+                ACAQUniqueDataBatch key = new ACAQUniqueDataBatch();
                 for (String referenceTraitColumn : referenceTraitColumns) {
                     key.getEntries().put(referenceTraitColumn, null);
                 }
@@ -169,7 +169,7 @@ public abstract class ACAQMergingAlgorithm extends ACAQAlgorithm implements ACAQ
         }
 
         // Check for missing data sets
-        for (Map.Entry<ACAQDataSetKey, Map<String, TIntSet>> dataSetEntry : ImmutableList.copyOf(dataSets.entrySet())) {
+        for (Map.Entry<ACAQUniqueDataBatch, Map<String, TIntSet>> dataSetEntry : ImmutableList.copyOf(dataSets.entrySet())) {
             boolean incomplete = false;
             for (ACAQDataSlot inputSlot : getInputSlots()) {
                 TIntSet slotEntry = dataSetEntry.getValue().getOrDefault(inputSlot.getName(), null);
@@ -193,10 +193,10 @@ public abstract class ACAQMergingAlgorithm extends ACAQAlgorithm implements ACAQ
         }
 
         // Generate data interfaces
-        List<ACAQMultiDataInterface> dataInterfaces = new ArrayList<>();
-        for (Map.Entry<ACAQDataSetKey, Map<String, TIntSet>> dataSetEntry : ImmutableList.copyOf(dataSets.entrySet())) {
+        List<ACAQMergingDataBatch> dataInterfaces = new ArrayList<>();
+        for (Map.Entry<ACAQUniqueDataBatch, Map<String, TIntSet>> dataSetEntry : ImmutableList.copyOf(dataSets.entrySet())) {
 
-            ACAQMultiDataInterface dataInterface = new ACAQMultiDataInterface(this);
+            ACAQMergingDataBatch dataInterface = new ACAQMergingDataBatch(this);
             Multimap<String, String> compoundTraits = HashMultimap.create();
             for (Map.Entry<String, TIntSet> dataSlotEntry : dataSetEntry.getValue().entrySet()) {
                 ACAQDataSlot inputSlot = getInputSlot(dataSlotEntry.getKey());
@@ -226,6 +226,9 @@ public abstract class ACAQMergingAlgorithm extends ACAQAlgorithm implements ACAQ
                 dataInterface.addGlobalAnnotation(new ACAQAnnotation(declaration, value));
             }
 
+            // Add parameter annotations
+            dataInterface.addGlobalAnnotations(parameterAnnotations, true);
+
             dataInterfaces.add(dataInterface);
         }
 
@@ -246,7 +249,7 @@ public abstract class ACAQMergingAlgorithm extends ACAQAlgorithm implements ACAQ
                         return;
                     ACAQRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (rowIndex + 1) + " / " + getFirstInputSlot().getRowCount());
                     algorithmProgress.accept(slotProgress);
-                    ACAQMultiDataInterface dataInterface = dataInterfaces.get(rowIndex);
+                    ACAQMergingDataBatch dataInterface = dataInterfaces.get(rowIndex);
                     runIteration(dataInterface, slotProgress, algorithmProgress, isCancelled);
                 });
             }
@@ -293,7 +296,7 @@ public abstract class ACAQMergingAlgorithm extends ACAQAlgorithm implements ACAQ
      * @param algorithmProgress Consumer to publish a new sub-progress
      * @param isCancelled       Supplier that informs if the current task was canceled
      */
-    protected abstract void runIteration(ACAQMultiDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled);
+    protected abstract void runIteration(ACAQMergingDataBatch dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled);
 
     @ACAQDocumentation(name = "Data set matching strategy", description = "Algorithms with multiple inputs require to match the incoming data " +
             "to data sets. This allows you to determine how interesting data annotation columns are extracted from the incoming data. " +

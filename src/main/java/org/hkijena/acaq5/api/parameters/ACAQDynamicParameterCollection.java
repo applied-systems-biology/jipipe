@@ -82,6 +82,18 @@ public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollec
         }
     }
 
+    /**
+     * Creates a new instance
+     * @param allowUserModification let user modify this collection
+     * @param allowedTypes  The parameter types that can be added by the user (ignored if user cannot add)
+     */
+    public ACAQDynamicParameterCollection(boolean allowUserModification, Set<ACAQParameterTypeDeclaration> allowedTypes) {
+        this.allowUserModification = allowUserModification;
+        for (ACAQParameterTypeDeclaration allowedType : allowedTypes) {
+            this.allowedTypes.add(allowedType.getFieldClass());
+        }
+    }
+
     @Override
     public Map<String, ACAQParameterAccess> getParameters() {
         return Collections.unmodifiableMap(dynamicParameters);

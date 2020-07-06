@@ -1,0 +1,238 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under BSD 2-Clause.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.acaq5.api.algorithm;
+
+import org.hkijena.acaq5.api.ACAQDocumentation;
+import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
+import org.hkijena.acaq5.api.data.ACAQAnnotation;
+import org.hkijena.acaq5.api.data.ACAQDataSlot;
+import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
+import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
+import org.hkijena.acaq5.api.data.ACAQSlotType;
+import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
+import org.hkijena.acaq5.extensions.multiparameters.datatypes.ParametersData;
+import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+/**
+ * An {@link ACAQAlgorithm} that has an optional slot that allows to supply parameter data sets.
+ */
+public abstract class ACAQParameterSlotAlgorithm extends ACAQAlgorithm {
+
+    public static final String SLOT_PARAMETERS = "Parameters";
+
+    private boolean hasParameterSlot = false;
+    private boolean attachParameterAnnotations = true;
+    private boolean attachOnlyNonDefaultParameterAnnotations = true;
+    private boolean parameterAnnotationsUseInternalNames = false;
+    private String parameterAnnotationsPrefix = "";
+
+    public ACAQParameterSlotAlgorithm(ACAQAlgorithmDeclaration declaration, ACAQSlotConfiguration slotConfiguration) {
+        super(declaration, slotConfiguration);
+    }
+
+    public ACAQParameterSlotAlgorithm(ACAQAlgorithmDeclaration declaration) {
+        super(declaration);
+    }
+
+    public ACAQParameterSlotAlgorithm(ACAQParameterSlotAlgorithm other) {
+        super(other);
+        this.attachParameterAnnotations = other.attachParameterAnnotations;
+        this.attachOnlyNonDefaultParameterAnnotations = other.attachOnlyNonDefaultParameterAnnotations;
+        this.parameterAnnotationsUseInternalNames = other.parameterAnnotationsUseInternalNames;
+        this.parameterAnnotationsPrefix = other.parameterAnnotationsPrefix;
+        setHasParameterSlot(other.hasParameterSlot);
+    }
+
+    @ACAQDocumentation(name = "Multiple parameters", description = "If enabled, there will be an additional slot that consumes " +
+            "parameter data sets. The algorithm then will be applied for each of this parameter sets.")
+    @ACAQParameter("has-parameter-slot")
+    public boolean isHasParameterSlot() {
+        return hasParameterSlot;
+    }
+
+    @ACAQParameter("has-parameter-slot")
+    public void setHasParameterSlot(boolean hasParameterSlot) {
+        this.hasParameterSlot = hasParameterSlot;
+        updateParameterSlot();
+    }
+
+    @ACAQDocumentation(name = "Attach parameter annotations", description = "If multiple parameters are allowed, attach the parameter values as annotations.")
+    @ACAQParameter("attach-parameter-annotations")
+    public boolean isAttachParameterAnnotations() {
+        return attachParameterAnnotations;
+    }
+
+    @ACAQParameter("attach-parameter-annotations")
+    public void setAttachParameterAnnotations(boolean attachParameterAnnotations) {
+        this.attachParameterAnnotations = attachParameterAnnotations;
+    }
+
+    @ACAQDocumentation(name = "Attach only non-default parameter annotations", description = "If multiple parameters are allowed, " +
+            "attach only parameter annotations that have different values from the current settings. Requries 'Attach parameter annotations' to be enabled.")
+    @ACAQParameter("attach-only-non-default-parameter-annotations")
+    public boolean isAttachOnlyNonDefaultParameterAnnotations() {
+        return attachOnlyNonDefaultParameterAnnotations;
+    }
+
+    @ACAQParameter("attach-only-non-default-parameter-annotations")
+    public void setAttachOnlyNonDefaultParameterAnnotations(boolean attachOnlyNonDefaultParameterAnnotations) {
+        this.attachOnlyNonDefaultParameterAnnotations = attachOnlyNonDefaultParameterAnnotations;
+    }
+
+    @ACAQDocumentation(name = "Parameter annotations use internal names", description = "Generated parameter annotations use their internal unique names.")
+    @ACAQParameter("parameter-annotations-use-internal-names")
+    public boolean isParameterAnnotationsUseInternalNames() {
+        return parameterAnnotationsUseInternalNames;
+    }
+
+    @ACAQParameter("parameter-annotations-use-internal-names")
+    public void setParameterAnnotationsUseInternalNames(boolean parameterAnnotationsUseInternalNames) {
+        this.parameterAnnotationsUseInternalNames = parameterAnnotationsUseInternalNames;
+    }
+
+    @ACAQDocumentation(name = "Parameter annotation prefix", description = "Text prefixed to generated parameter annotations.")
+    @ACAQParameter("parameter-annotations-prefix")
+    @StringParameterSettings(monospace = true)
+    public String getParameterAnnotationsPrefix() {
+        return parameterAnnotationsPrefix;
+    }
+
+    @ACAQParameter("parameter-annotations-prefix")
+    public void setParameterAnnotationsPrefix(String parameterAnnotationsPrefix) {
+        this.parameterAnnotationsPrefix = parameterAnnotationsPrefix;
+    }
+
+    @Override
+    public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        if (isPassThrough() && canPassThrough()) {
+            algorithmProgress.accept(subProgress.resolve("Data passed through to output"));
+            runPassThrough();
+            return;
+        }
+        if(hasParameterSlot) {
+            ACAQDataSlot parameterSlot = getInputSlot(SLOT_PARAMETERS);
+            if(parameterSlot.getRowCount() == 0) {
+                algorithmProgress.accept(subProgress.resolve("No parameters were passed with enabled parameter slot. Applying default parameters, only."));
+                runParameterSet(subProgress, algorithmProgress, isCancelled, Collections.emptyList());
+            }
+            else {
+                // Create backups
+                Map<String, Object> parameterBackups = new HashMap<>();
+                ACAQParameterTree tree = new ACAQParameterTree(this);
+                for (Map.Entry<String, ACAQParameterAccess> entry : tree.getParameters().entrySet()) {
+                    parameterBackups.put(entry.getKey(), entry.getValue().get(Object.class));
+                }
+
+                // Collect different parameters
+                Set<String> nonDefaultParameters = new HashSet<>();
+                for (int row = 0; row < parameterSlot.getRowCount(); row++) {
+                    ParametersData data = parameterSlot.getData(row, ParametersData.class);
+                    for (Map.Entry<String, Object> entry : data.getParameterData().entrySet()) {
+                        ACAQParameterAccess target = tree.getParameters().getOrDefault(entry.getKey(), null);
+                        if(target != null) {
+                            Object existing = target.get(Object.class);
+                            Object newValue = entry.getValue();
+                            if(!Objects.equals(existing, newValue)) {
+                                nonDefaultParameters.add(entry.getKey());
+                            }
+                        }
+                    }
+                }
+
+                // Create run
+                for (int row = 0; row < parameterSlot.getRowCount(); row++) {
+                    ParametersData data = parameterSlot.getData(row, ParametersData.class);
+                    List<ACAQAnnotation> annotations = new ArrayList<>();
+                    for (Map.Entry<String, Object> entry : data.getParameterData().entrySet()) {
+                        ACAQParameterAccess target = tree.getParameters().getOrDefault(entry.getKey(), null);
+                        if(target == null) {
+                            algorithmProgress.accept(subProgress.resolve("Unable to find parameter '" + entry.getKey() + "' in " + getName() + "! Ignoring."));
+                            continue;
+                        }
+                        target.set(entry.getValue());
+                    }
+                    if(attachParameterAnnotations) {
+                        for (String key : nonDefaultParameters) {
+                            ACAQParameterAccess target = tree.getParameters().get(key);
+                            String annotationName;
+                            if(parameterAnnotationsUseInternalNames) {
+                                annotationName = key;
+                            }
+                            else {
+                                annotationName = target.getName();
+                            }
+                            annotationName = parameterAnnotationsPrefix + annotationName;
+                            annotations.add(new ACAQAnnotation(annotationName, "" + target.get(Object.class)));
+                        }
+                    }
+
+
+                    runParameterSet(subProgress, algorithmProgress, isCancelled, annotations);
+                }
+
+                // Restore backup
+                for (Map.Entry<String, ACAQParameterAccess> entry : tree.getParameters().entrySet()) {
+                    entry.getValue().set(parameterBackups.get(entry.getKey()));
+                }
+            }
+        }
+        else {
+            runParameterSet(subProgress, algorithmProgress, isCancelled, Collections.emptyList());
+        }
+    }
+
+    /**
+     * Runs a parameter set iteration
+     * @param subProgress the progress
+     * @param algorithmProgress the progress consumer
+     * @param isCancelled if the user requested cancellation
+     * @param annotations parameter annotations
+     */
+    public abstract void runParameterSet(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled, List<ACAQAnnotation> parameterAnnotations);
+
+    private void updateParameterSlot() {
+        if(getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
+            ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) getSlotConfiguration();
+            if(hasParameterSlot) {
+                ACAQSlotDefinition existing = slotConfiguration.getInputSlots().getOrDefault(SLOT_PARAMETERS, null);
+                if(existing != null && existing.getDataClass() != ParametersData.class) {
+                    slotConfiguration.removeInputSlot(SLOT_PARAMETERS, false);
+                    existing = null;
+                }
+                if(existing == null) {
+                    slotConfiguration.addSlot(SLOT_PARAMETERS,
+                            new ACAQSlotDefinition(ParametersData.class, ACAQSlotType.Input, null),
+                            false);
+                }
+            }
+            else {
+                slotConfiguration.removeInputSlot(SLOT_PARAMETERS, false);
+            }
+        }
+    }
+}

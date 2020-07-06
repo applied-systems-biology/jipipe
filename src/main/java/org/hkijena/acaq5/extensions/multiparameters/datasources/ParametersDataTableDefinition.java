@@ -23,19 +23,22 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.events.ParameterChangedEvent;
+import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
+import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
+import org.hkijena.acaq5.api.registries.ACAQParameterTypeRegistry;
 import org.hkijena.acaq5.extensions.multiparameters.datatypes.ParametersData;
-import org.hkijena.acaq5.extensions.parameters.references.ACAQAlgorithmDeclarationRef;
 import org.hkijena.acaq5.extensions.parameters.table.ParameterTable;
-import org.scijava.Priority;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -47,8 +50,8 @@ import java.util.function.Supplier;
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.DataSource)
 public class ParametersDataTableDefinition extends ACAQAlgorithm {
 
-    private ACAQAlgorithmDeclarationRef targetAlgorithm = new ACAQAlgorithmDeclarationRef();
-    private ParameterTable parameterTable;
+    private ACAQDynamicParameterCollection parameters;
+    private ParameterTable parameterTable = new ParameterTable();
 
     /**
      * Creates a new instance
@@ -57,6 +60,9 @@ public class ParametersDataTableDefinition extends ACAQAlgorithm {
      */
     public ParametersDataTableDefinition(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
+        this.parameters = new ACAQDynamicParameterCollection(true, ACAQParameterTypeRegistry.getInstance().getRegisteredParameters().values());
+        registerSubParameter(parameters);
+        parameterTable.setRowGenerator(this::generateRow);
     }
 
     /**
@@ -66,9 +72,10 @@ public class ParametersDataTableDefinition extends ACAQAlgorithm {
      */
     public ParametersDataTableDefinition(ParametersDataTableDefinition other) {
         super(other);
-        if (other.targetAlgorithm != null)
-            this.targetAlgorithm = new ACAQAlgorithmDeclarationRef(other.targetAlgorithm.getDeclaration());
+        this.parameters = new ACAQDynamicParameterCollection(other.parameters);
+        registerSubParameter(parameters);
         this.parameterTable = new ParameterTable(other.parameterTable);
+        parameterTable.setRowGenerator(this::generateRow);
     }
 
     @Override
@@ -86,27 +93,7 @@ public class ParametersDataTableDefinition extends ACAQAlgorithm {
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        if (targetAlgorithm == null || targetAlgorithm.getDeclaration() == null) {
-            report.reportIsInvalid("No algorithm selected!",
-                    "Parameters are defined based on an algorithm.",
-                    "Please select an algorithm.",
-                    this);
-        } else {
-            for (int row = 0; row < parameterTable.getRowCount(); ++row) {
-                ParametersData data = new ParametersData();
-                for (int col = 0; col < parameterTable.getColumnCount(); ++col) {
-                    ParameterTable.ParameterColumn column = parameterTable.getColumn(col);
-                    data.getParameterData().put(column.getKey(), parameterTable.getValueAt(row, col));
-                }
-
-                ACAQGraphNode algorithm = targetAlgorithm.getDeclaration().newInstance();
-                Map<String, ACAQParameterAccess> parameters = ACAQParameterTree.getParameters(algorithm);
-                for (Map.Entry<String, Object> entry : data.getParameterData().entrySet()) {
-                    parameters.get(entry.getKey()).set(entry.getValue());
-                }
-                report.forCategory("Parameter row " + (row + 1)).report(algorithm);
-            }
-        }
+        report.forCategory("Parameters").report(parameters);
     }
 
     @ACAQParameter("parameter-table")
@@ -118,57 +105,60 @@ public class ParametersDataTableDefinition extends ACAQAlgorithm {
     @ACAQParameter("parameter-table")
     public void setParameterTable(ParameterTable parameterTable) {
         this.parameterTable = parameterTable;
-        if (parameterTable.getRowGenerator() == null) {
-            buildRowGenerator();
-        }
-
+        parameterTable.setRowGenerator(this::generateRow);
     }
 
-    private void buildRowGenerator() {
-        if (parameterTable == null || targetAlgorithm == null || targetAlgorithm.getDeclaration() == null)
+    @ACAQDocumentation(name = "Parameters", description = "Following parameters are generated:")
+    @ACAQParameter("parameters")
+    public ACAQDynamicParameterCollection getParameters() {
+        return parameters;
+    }
+
+    @Override
+    public void onParameterStructureChanged(ParameterStructureChangedEvent event) {
+        super.onParameterStructureChanged(event);
+        updateParameterTable();
+    }
+
+    private List<Object> generateRow() {
+        List<Object> row = new ArrayList<>();
+        for (int col = 0; col < parameterTable.getColumnCount(); ++col) {
+            String key = parameterTable.getColumn(col).getKey();
+            ACAQParameterAccess access = parameters.get(key);
+            if(access != null)
+                row.add(access.get(Object.class));
+        }
+        return row;
+    }
+
+    private void updateParameterTable() {
+        if(parameterTable == null)
             return;
-        parameterTable.setRowGenerator(() -> {
-            ACAQGraphNode instance = targetAlgorithm.getDeclaration().newInstance();
-            Map<String, ACAQParameterAccess> parameters = ACAQParameterTree.getParameters(instance);
-            List<Object> row = new ArrayList<>();
-            for (int col = 0; col < parameterTable.getColumnCount(); ++col) {
-                String key = parameterTable.getColumn(col).getKey();
-                row.add(parameters.get(key).get(Object.class));
+
+        for (int col = parameterTable.getColumnCount() - 1; col >= 0; col--) {
+            ParameterTable.ParameterColumn column = parameterTable.getColumn(col);
+            ACAQParameterAccess existing = parameters.getParameters().getOrDefault(column.getKey(), null);
+            if(existing == null || existing.getFieldClass() != column.getFieldClass()) {
+                parameterTable.removeColumn(col);
             }
-            return row;
-        });
-    }
-
-    @ACAQParameter(value = "target-algorithm", priority = Priority.HIGH)
-    @ACAQDocumentation(name = "Algorithm", description = "The algorithm the parameters are created for")
-    public ACAQAlgorithmDeclarationRef getTargetAlgorithm() {
-        return targetAlgorithm;
-    }
-
-    @ACAQParameter("target-algorithm")
-    public void setTargetAlgorithm(ACAQAlgorithmDeclarationRef targetAlgorithm) {
-        this.targetAlgorithm = targetAlgorithm;
-        recreateParameterTable();
-    }
-
-    private void recreateParameterTable() {
-        this.parameterTable = new ParameterTable();
-        if (targetAlgorithm != null && targetAlgorithm.getDeclaration() != null) {
-            ACAQGraphNode instance = targetAlgorithm.getDeclaration().newInstance();
-            Map<String, ACAQParameterAccess> parameters = ACAQParameterTree.getParameters(instance);
-            for (Map.Entry<String, ACAQParameterAccess> entry : parameters.entrySet()) {
-                ACAQParameterAccess access = entry.getValue();
-                if (!access.getVisibility().isVisibleIn(ACAQParameterVisibility.TransitiveVisible))
-                    continue;
-                parameterTable.addColumn(new ParameterTable.ParameterColumn(
-                        access.getName(),
-                        entry.getKey(),
-                        access.getFieldClass()
-                ), null);
-            }
-            buildRowGenerator();
-            parameterTable.addRow();
         }
 
+        outer: for (Map.Entry<String, ACAQParameterAccess> entry : parameters.getParameters().entrySet()) {
+            ACAQParameterAccess access = entry.getValue();
+            for (int col = 0; col < parameterTable.getColumnCount(); col++) {
+                ParameterTable.ParameterColumn column = parameterTable.getColumn(col);
+                if(column.getFieldClass() == entry.getValue().getFieldClass()
+                && Objects.equals(entry.getKey(), column.getKey())) {
+                    continue outer;
+                }
+            }
+            if (!access.getVisibility().isVisibleIn(ACAQParameterVisibility.TransitiveVisible))
+                continue;
+            parameterTable.addColumn(new ParameterTable.ParameterColumn(
+                    access.getName(),
+                    entry.getKey(),
+                    access.getFieldClass()
+            ), ACAQParameterTypeRegistry.getInstance().getDeclarationByFieldClass(access.getFieldClass()).newInstance());
+        }
     }
 }

@@ -68,8 +68,8 @@ public class ParameterTable implements TableModel {
         for (ParameterColumn column : other.columns) {
             this.columns.add(new ParameterColumn(column));
         }
-        int columnIndex = 0;
         for (List<Object> row : other.rows) {
+            int columnIndex = 0;
             ACAQParameterTypeDeclaration declaration = ACAQParameterTypeRegistry.getInstance().
                     getDeclarationByFieldClass(columns.get(columnIndex).fieldClass);
             List<Object> thisRow = new ArrayList<>();
@@ -212,6 +212,18 @@ public class ParameterTable implements TableModel {
      */
     public ParameterColumn getColumn(int col) {
         return columns.get(col);
+    }
+
+    /**
+     * Removes the specified column
+     * @param col the column index
+     */
+    public void removeColumn(int col) {
+        columns.remove(col);
+        for (List<Object> row : rows) {
+            row.remove(col);
+        }
+        postTableModelChangedEvent();
     }
 
     /**

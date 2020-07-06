@@ -23,11 +23,13 @@ import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
+import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
+import org.hkijena.acaq5.api.registries.ACAQParameterTypeRegistry;
 import org.hkijena.acaq5.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.acaq5.extensions.parameters.references.ACAQAlgorithmDeclarationRef;
 
@@ -43,7 +45,7 @@ import java.util.function.Supplier;
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.DataSource)
 public class ParametersDataDefinition extends ACAQAlgorithm {
 
-    private ACAQGraphNode algorithmInstance;
+    private ACAQDynamicParameterCollection parameters;
 
     /**
      * Creates a new instance
@@ -52,6 +54,8 @@ public class ParametersDataDefinition extends ACAQAlgorithm {
      */
     public ParametersDataDefinition(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
+        this.parameters = new ACAQDynamicParameterCollection(true, ACAQParameterTypeRegistry.getInstance().getRegisteredParameters().values());
+        registerSubParameter(parameters);
     }
 
     /**
@@ -61,13 +65,14 @@ public class ParametersDataDefinition extends ACAQAlgorithm {
      */
     public ParametersDataDefinition(ParametersDataDefinition other) {
         super(other);
-        this.algorithmInstance = other.algorithmInstance;
+        this.parameters = new ACAQDynamicParameterCollection(other.parameters);
+        registerSubParameter(parameters);
     }
 
     @Override
     public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ParametersData result = new ParametersData();
-        for (Map.Entry<String, ACAQParameterAccess> entry : ACAQParameterTree.getParameters(algorithmInstance).entrySet()) {
+        for (Map.Entry<String, ACAQParameterAccess> entry : parameters.getParameters().entrySet()) {
             if (entry.getValue().getVisibility().isVisibleIn(ACAQParameterVisibility.TransitiveVisible)) {
                 result.getParameterData().put(entry.getKey(), entry.getValue().get(Object.class));
             }
@@ -77,39 +82,12 @@ public class ParametersDataDefinition extends ACAQAlgorithm {
 
     @Override
     public void reportValidity(ACAQValidityReport report) {
-        if (algorithmInstance == null) {
-            report.reportIsInvalid("No algorithm selected!",
-                    "Parameters are defined based on an algorithm.",
-                    "Please select an algorithm.",
-                    this);
-        } else {
-            report.report(algorithmInstance);
-        }
+        report.forCategory("Parameters").report(parameters);
     }
 
-    @ACAQParameter("algorithm-type")
-    @ACAQDocumentation(name = "Algorithm", description = "The algorithm the parameters are created for")
-    public ACAQAlgorithmDeclarationRef getAlgorithmDeclaration() {
-        if (algorithmInstance != null) {
-            return new ACAQAlgorithmDeclarationRef(algorithmInstance.getDeclaration());
-        } else {
-            return new ACAQAlgorithmDeclarationRef();
-        }
-    }
-
-    @ACAQParameter("algorithm-type")
-    public void setAlgorithmDeclaration(ACAQAlgorithmDeclarationRef algorithmDeclaration) {
-        if (algorithmDeclaration == null || algorithmDeclaration.getDeclaration() == null) {
-            algorithmInstance = null;
-        } else {
-            algorithmInstance = algorithmDeclaration.getDeclaration().newInstance();
-        }
-        getEventBus().post(new ParameterStructureChangedEvent(this));
-    }
-
-    @ACAQParameter("algorithm-parameters")
-    @ACAQDocumentation(name = "Algorithm parameters", description = "Contains the parameters of the selected algorithm")
-    public ACAQParameterCollection getAlgorithmParameters() {
-        return algorithmInstance;
+    @ACAQDocumentation(name = "Parameters", description = "Following parameters are generated:")
+    @ACAQParameter("parameters")
+    public ACAQDynamicParameterCollection getParameters() {
+        return parameters;
     }
 }

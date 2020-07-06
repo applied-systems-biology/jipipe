@@ -23,7 +23,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQMergingAlgorithm;
-import org.hkijena.acaq5.api.algorithm.ACAQMultiDataInterface;
+import org.hkijena.acaq5.api.algorithm.ACAQMergingDataBatch;
 import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQAnnotation;
@@ -98,7 +98,7 @@ public class StackMergerAlgorithm extends ACAQMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(ACAQMultiDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(ACAQMergingDataBatch dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         Set<Integer> inputRows = dataInterface.getInputRows(getFirstInputSlot());
         List<Integer> sortedInputRows;
         if (!StringUtils.isNullOrEmpty(counterAnnotation)) {

@@ -20,7 +20,7 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
 import org.hkijena.acaq5.api.algorithm.ACAQMergingAlgorithm;
-import org.hkijena.acaq5.api.algorithm.ACAQMultiDataInterface;
+import org.hkijena.acaq5.api.algorithm.ACAQMergingDataBatch;
 import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
@@ -59,7 +59,7 @@ public class MergeTablesAlgorithm extends ACAQMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(ACAQMultiDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(ACAQMergingDataBatch dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ResultsTableData resultsTableData = new ResultsTableData();
         for (ResultsTableData tableData : dataInterface.getInputData(getFirstInputSlot(), ResultsTableData.class)) {
             resultsTableData.mergeWith(tableData);

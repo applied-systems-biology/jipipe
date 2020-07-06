@@ -162,6 +162,11 @@ public abstract class Matrix2D<T> implements TableModel {
         }
     }
 
+    @Override
+    public String toString() {
+        return "Matrix (" + getRowCount() + " x " + getColumnCount() + ")";
+    }
+
     public Class<T> getEntryClass() {
         return entryClass;
     }
