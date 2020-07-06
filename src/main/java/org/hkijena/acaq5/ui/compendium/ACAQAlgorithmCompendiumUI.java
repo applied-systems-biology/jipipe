@@ -178,13 +178,18 @@ public class ACAQAlgorithmCompendiumUI extends ACAQCompendiumUI<ACAQAlgorithmDec
 
     private void generateParameterDocumentation(ACAQParameterAccess access, StringBuilder builder) {
         builder.append("### ").append(access.getName()).append("\n\n");
+        builder.append("<table><tr>");
+        builder.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/algorithms/dialog-xml-editor.png")).append("\" /></td>");
+        builder.append("<td><strong>Unique identifier</strong>: <code>");
+        builder.append(HtmlEscapers.htmlEscaper().escape(access.getKey())).append("</code></td></tr>\n\n");
+
         ACAQParameterTypeDeclaration declaration = ACAQParameterTypeRegistry.getInstance().getDeclarationByFieldClass(access.getFieldClass());
         if (declaration != null) {
-            builder.append("<table><tr>");
-            builder.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/wrench.png")).append("\" /></td>");
+            builder.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/data-types/data-type.png")).append("\" /></td>");
             builder.append("<td><strong>").append(HtmlEscapers.htmlEscaper().escape(declaration.getName())).append("</strong>: ");
-            builder.append(HtmlEscapers.htmlEscaper().escape(declaration.getDescription())).append("</td></tr></table>\n\n");
+            builder.append(HtmlEscapers.htmlEscaper().escape(declaration.getDescription())).append("</td></tr>");
         }
+        builder.append("</table>\n\n");
         if (access.getDescription() != null && !access.getDescription().isEmpty()) {
             builder.append(access.getDescription());
         } else {

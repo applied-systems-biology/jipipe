@@ -26,6 +26,6 @@ public class DoubleRangeParameterGenerator extends NumberRangeParameterGenerator
      * @param workbench the SciJava context
      */
     public DoubleRangeParameterGenerator(ACAQWorkbench workbench) {
-        super(workbench, Byte.class);
+        super(workbench, Double.class);
     }
 }

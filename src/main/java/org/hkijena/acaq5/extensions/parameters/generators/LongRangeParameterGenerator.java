@@ -26,6 +26,6 @@ public class LongRangeParameterGenerator extends NumberRangeParameterGenerator<L
      * @param workbench the SciJava context
      */
     public LongRangeParameterGenerator(ACAQWorkbench workbench) {
-        super(workbench, Byte.class);
+        super(workbench, Long.class);
     }
 }

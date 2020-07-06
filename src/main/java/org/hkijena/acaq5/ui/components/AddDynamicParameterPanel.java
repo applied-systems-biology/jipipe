@@ -27,6 +27,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.List;
@@ -96,6 +97,7 @@ public class AddDynamicParameterPanel extends JPanel {
         // Create form located at the bottom
         FormPanel formPanel = new FormPanel(null, FormPanel.NONE);
         keyEditor = new JXTextField("Identifier");
+        keyEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         keyEditor.setToolTipText("A unique identifier for the parameter");
         keyEditor.addKeyListener(new KeyAdapter() {
             @Override

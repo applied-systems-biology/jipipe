@@ -185,18 +185,18 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
 
     private void registerParameterGenerators() {
         // Register generators
-        registerParameterGenerator(byte.class, ByteRangeParameterGenerator.class, "Generate 8-bit integral number sequence", "Generates 8-bit integral numbers");
-        registerParameterGenerator(short.class, ShortRangeParameterGenerator.class, "Generate 16-bit integral number sequence", "Generates 16-bit integral numbers");
-        registerParameterGenerator(int.class, IntegerRangeParameterGenerator.class, "Generate 32-bit integral number sequence", "Generates 32-bit integral numbers");
-        registerParameterGenerator(long.class, LongRangeParameterGenerator.class, "Generate 64-bit integral number sequence", "Generates 64-bit integral numbers");
-        registerParameterGenerator(float.class, FloatRangeParameterGenerator.class, "Generate single precision floating point number sequence", "Generates 32-bit floating point numbers");
-        registerParameterGenerator(double.class, DoubleRangeParameterGenerator.class, "Generate double precision floating point number sequence", "Generates 64-bit floating point numbers");
-        registerParameterGenerator(Byte.class, ByteRangeParameterGenerator.class, "Generate 8-bit integral number sequence", "Generates 8-bit integral numbers");
-        registerParameterGenerator(Short.class, ShortRangeParameterGenerator.class, "Generate 16-bit integral number sequence", "Generates 16-bit integral numbers");
-        registerParameterGenerator(Integer.class, IntegerRangeParameterGenerator.class, "Generate 32-bit integral number sequence", "Generates 32-bit integral numbers");
-        registerParameterGenerator(Long.class, LongRangeParameterGenerator.class, "Generate 64-bit integral number sequence", "Generates 64-bit integral numbers");
-        registerParameterGenerator(Float.class, FloatRangeParameterGenerator.class, "Generate single precision floating point number sequence", "Generates 32-bit floating point numbers");
-        registerParameterGenerator(Double.class, DoubleRangeParameterGenerator.class, "Generate double precision floating point number sequence", "Generates 64-bit floating point numbers");
+        registerParameterGenerator(byte.class, ByteRangeParameterGenerator.class, "Generate Byte sequence", "Generates numbers between " + Byte.MIN_VALUE + " and " + Byte.MAX_VALUE);
+        registerParameterGenerator(short.class, ShortRangeParameterGenerator.class, "Generate Short sequence", "Generates numbers between " + Short.MIN_VALUE + " and " + Short.MAX_VALUE);
+        registerParameterGenerator(int.class, IntegerRangeParameterGenerator.class, "Generate Integer sequence", "Generates numbers between " + Integer.MIN_VALUE + " and " + Integer.MAX_VALUE);
+        registerParameterGenerator(long.class, LongRangeParameterGenerator.class, "Generate Long sequence", "Generates numbers between " + Long.MIN_VALUE + " and " + Long.MAX_VALUE);
+        registerParameterGenerator(float.class, FloatRangeParameterGenerator.class, "Generate Float sequence", "Generates floating point numbers (single precision)");
+        registerParameterGenerator(double.class, DoubleRangeParameterGenerator.class, "Generate Double sequence", "Generates floating point numbers (double precision)");
+        registerParameterGenerator(Byte.class, ByteRangeParameterGenerator.class, "Generate Byte sequence", "Generates numbers between " + Byte.MIN_VALUE + " and " + Byte.MAX_VALUE);
+        registerParameterGenerator(Short.class, ShortRangeParameterGenerator.class, "Generate Short sequence", "Generates numbers between " + Short.MIN_VALUE + " and " + Short.MAX_VALUE);
+        registerParameterGenerator(Integer.class, IntegerRangeParameterGenerator.class, "Generate Integer sequence", "Generates numbers between " + Integer.MIN_VALUE + " and " + Integer.MAX_VALUE);
+        registerParameterGenerator(Long.class, LongRangeParameterGenerator.class, "Generate Long sequence", "Generates numbers between " + Long.MIN_VALUE + " and " + Long.MAX_VALUE);
+        registerParameterGenerator(Float.class, FloatRangeParameterGenerator.class, "Generate Float sequence", "Generates floating point numbers (single precision)");
+        registerParameterGenerator(Double.class, DoubleRangeParameterGenerator.class, "Generate Double sequence", "Generates floating point numbers (double precision)");
     }
 
     private void registerMatrixParameters() {

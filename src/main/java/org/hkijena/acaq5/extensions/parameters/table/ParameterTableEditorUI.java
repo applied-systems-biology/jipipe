@@ -138,7 +138,7 @@ public class ParameterTableEditorUI extends ACAQParameterEditorUI {
             return;
         }
 
-        List<Object> generatedObjects = ACAQParameterGeneratorUI.showDialog(this, getContext(), generator);
+        List<Object> generatedObjects = ACAQParameterGeneratorUI.showDialog(this, getWorkbench(), generator);
         if (generatedObjects == null)
             return;
 
@@ -186,7 +186,7 @@ public class ParameterTableEditorUI extends ACAQParameterEditorUI {
     }
 
     private void generateRow(int columnIndex, Class<? extends ACAQParameterGeneratorUI> generator) {
-        List<Object> generatedObjects = ACAQParameterGeneratorUI.showDialog(this, getContext(), generator);
+        List<Object> generatedObjects = ACAQParameterGeneratorUI.showDialog(this, getWorkbench(), generator);
         if (generatedObjects != null) {
             ParameterTable parameterTable = getParameter(ParameterTable.class);
             for (Object generatedObject : generatedObjects) {
@@ -236,7 +236,7 @@ public class ParameterTableEditorUI extends ACAQParameterEditorUI {
         int[] selectedRows = getSelectedRows(true);
         ParameterTable parameterTable = getParameter(ParameterTable.class);
         for (int i = selectedRows.length - 1; i >= 0; --i) {
-            parameterTable.removeRow(i);
+            parameterTable.removeRow(selectedRows[i]);
         }
     }
 

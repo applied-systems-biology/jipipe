@@ -17,6 +17,7 @@ import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
+import org.hkijena.acaq5.utils.ReflectionUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Context;
 
@@ -47,12 +48,12 @@ public abstract class ACAQParameterGeneratorUI extends ACAQWorkbenchPanel implem
      * Shows a dialog that allows the user to setup the generator
      *
      * @param parent  The parent component
-     * @param context The SciJava context
+     * @param workbench The workbench
      * @param uiClass The generator UI class
      * @return the generated values or null if the user cancelled
      */
-    public static List<Object> showDialog(Component parent, Context context, Class<? extends ACAQParameterGeneratorUI> uiClass) {
-        Dialog dialog = new Dialog(SwingUtilities.getWindowAncestor(parent), context, uiClass);
+    public static List<Object> showDialog(Component parent, ACAQWorkbench workbench, Class<? extends ACAQParameterGeneratorUI> uiClass) {
+        Dialog dialog = new Dialog(SwingUtilities.getWindowAncestor(parent), workbench, uiClass);
         dialog.setTitle("");
         dialog.setModal(true);
         dialog.pack();
@@ -75,13 +76,9 @@ public abstract class ACAQParameterGeneratorUI extends ACAQWorkbenchPanel implem
         private boolean cancelled = true;
         private ACAQParameterGeneratorUI generatorUI;
 
-        public Dialog(Window windowAncestor, Context context, Class<? extends ACAQParameterGeneratorUI> uiClass) {
+        public Dialog(Window windowAncestor, ACAQWorkbench workbench, Class<? extends ACAQParameterGeneratorUI> uiClass) {
             super(windowAncestor);
-            try {
-                this.generatorUI = uiClass.getConstructor(Context.class).newInstance(context);
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                throw new RuntimeException(e);
-            }
+            this.generatorUI = (ACAQParameterGeneratorUI) ReflectionUtils.newInstance(uiClass, workbench);
             initialize();
         }
 

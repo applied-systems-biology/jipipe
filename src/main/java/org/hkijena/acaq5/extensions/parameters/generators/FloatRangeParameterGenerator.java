@@ -26,6 +26,6 @@ public class FloatRangeParameterGenerator extends NumberRangeParameterGenerator<
      * @param workbench the SciJava context
      */
     public FloatRangeParameterGenerator(ACAQWorkbench workbench) {
-        super(workbench, Byte.class);
+        super(workbench, Float.class);
     }
 }

@@ -34,7 +34,7 @@ import java.util.Map;
  * This cannot be used directly in {@link ACAQUIParameterTypeRegistry}, as the constructor does
  * not match. You have to inherit from this type and define the number type.
  */
-public class NumberRangeParameterGenerator<T extends Number & Comparable<T>> extends ACAQParameterGeneratorUI implements ACAQCustomParameterCollection {
+public class NumberRangeParameterGenerator<T extends Number & Comparable<T>> extends ACAQParameterGeneratorUI {
 
     private EventBus eventBus = new EventBus();
     private Class<? extends Number> numberClass;
@@ -56,7 +56,7 @@ public class NumberRangeParameterGenerator<T extends Number & Comparable<T>> ext
     private void initialize() {
         setLayout(new BorderLayout());
         add(new ParameterPanel(getWorkbench(),
-                this,
+                parameters,
                 null,
                 ParameterPanel.WITH_SCROLLING));
     }
@@ -195,15 +195,5 @@ public class NumberRangeParameterGenerator<T extends Number & Comparable<T>> ext
             current = getIncremented(current);
         }
         return result;
-    }
-
-    @Override
-    public Map<String, ACAQParameterAccess> getParameters() {
-        return parameters.getParameters();
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 }

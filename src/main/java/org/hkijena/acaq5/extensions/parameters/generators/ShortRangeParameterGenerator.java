@@ -26,6 +26,6 @@ public class ShortRangeParameterGenerator extends NumberRangeParameterGenerator<
      * @param workbench the SciJava context
      */
     public ShortRangeParameterGenerator(ACAQWorkbench workbench) {
-        super(workbench, Byte.class);
+        super(workbench, Short.class);
     }
 }

@@ -26,6 +26,6 @@ public class IntegerRangeParameterGenerator extends NumberRangeParameterGenerato
      * @param workbench the SciJava context
      */
     public IntegerRangeParameterGenerator(ACAQWorkbench workbench) {
-        super(workbench, Byte.class);
+        super(workbench, Integer.class);
     }
 }
