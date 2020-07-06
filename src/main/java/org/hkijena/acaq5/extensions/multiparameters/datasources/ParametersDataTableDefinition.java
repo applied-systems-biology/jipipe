@@ -25,6 +25,7 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.api.parameters.ACAQParameterTypeDeclaration;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
 import org.hkijena.acaq5.api.registries.ACAQParameterTypeRegistry;
 import org.hkijena.acaq5.extensions.multiparameters.datatypes.ParametersData;
@@ -77,11 +78,22 @@ public class ParametersDataTableDefinition extends ACAQAlgorithm {
     @Override
     public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ACAQDataSlot outputSlot = getFirstOutputSlot();
-        for (int row = 0; row < parameterTable.getRowCount(); ++row) {
+        if(parameterTable.getRowCount() > 0) {
+            for (int row = 0; row < parameterTable.getRowCount(); ++row) {
+                ParametersData data = new ParametersData();
+                for (int col = 0; col < parameterTable.getColumnCount(); ++col) {
+                    ParameterTable.ParameterColumn column = parameterTable.getColumn(col);
+                    data.getParameterData().put(column.getKey(), parameterTable.getValueAt(row, col));
+                }
+                outputSlot.addData(data);
+            }
+        }
+        else {
+            algorithmProgress.accept(subProgress.resolve("Info: Please add rows to '" + getName() + "'. Falling back to adding the default parameters."));
             ParametersData data = new ParametersData();
-            for (int col = 0; col < parameterTable.getColumnCount(); ++col) {
-                ParameterTable.ParameterColumn column = parameterTable.getColumn(col);
-                data.getParameterData().put(column.getKey(), parameterTable.getValueAt(row, col));
+            for (Map.Entry<String, ACAQParameterAccess> entry : parameters.getParameters().entrySet()) {
+                ACAQParameterTypeDeclaration declaration = ACAQParameterTypeRegistry.getInstance().getDeclarationByFieldClass(entry.getValue().getFieldClass());
+                data.getParameterData().put(entry.getKey(), declaration.duplicate(entry.getValue().get(Object.class)));
             }
             outputSlot.addData(data);
         }
