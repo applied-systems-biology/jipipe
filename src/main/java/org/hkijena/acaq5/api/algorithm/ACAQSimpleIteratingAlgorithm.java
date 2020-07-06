@@ -69,7 +69,7 @@ public abstract class ACAQSimpleIteratingAlgorithm extends ACAQParameterSlotAlgo
 
     @Override
     public void runParameterSet(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled, List<ACAQAnnotation> parameterAnnotations) {
-        if (getInputSlots().size() > 1)
+        if (getEffectiveInputSlotCount() > 1)
             throw new UserFriendlyRuntimeException("Too many input slots for ACAQSimpleIteratingAlgorithm!",
                     "Error in source code detected!",
                     "Algorithm '" + getName() + "'",

@@ -101,7 +101,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQParameterSlotAlgorithm 
         }
 
         // Special case: No input slots
-        if (getInputSlots().isEmpty()) {
+        if (getEffectiveInputSlotCount() == 0) {
             if (isCancelled.get())
                 return;
             final int row = 0;
@@ -133,6 +133,8 @@ public abstract class ACAQIteratingAlgorithm extends ACAQParameterSlotAlgorithm 
         // Organize the input data by Dataset -> Slot -> Data row
         Map<ACAQUniqueDataBatch, Map<String, TIntSet>> dataSets = new HashMap<>();
         for (ACAQDataSlot inputSlot : getInputSlots()) {
+            if(inputSlot == getParameterSlot())
+                continue;
             for (int row = 0; row < inputSlot.getRowCount(); row++) {
                 ACAQUniqueDataBatch key = new ACAQUniqueDataBatch();
                 for (String referenceTraitColumn : referenceTraitColumns) {
@@ -179,6 +181,8 @@ public abstract class ACAQIteratingAlgorithm extends ACAQParameterSlotAlgorithm 
         for (Map.Entry<ACAQUniqueDataBatch, Map<String, TIntSet>> dataSetEntry : ImmutableList.copyOf(dataSets.entrySet())) {
             boolean incomplete = false;
             for (ACAQDataSlot inputSlot : getInputSlots()) {
+                if(getParameterSlot() == inputSlot)
+                    continue;
                 TIntSet slotEntry = dataSetEntry.getValue().getOrDefault(inputSlot.getName(), null);
                 if (slotEntry == null) {
                     incomplete = true;
@@ -218,6 +222,8 @@ public abstract class ACAQIteratingAlgorithm extends ACAQParameterSlotAlgorithm 
             // Create subsequent batches
             for (int slotIndex = 1; slotIndex < getInputSlots().size(); slotIndex++) {
                 ACAQDataSlot inputSlot = getInputSlots().get(slotIndex);
+                if(getParameterSlot() == inputSlot)
+                    continue;
                 TIntSet rows = dataSetEntry.getValue().get(inputSlot.getName());
 
                 List<ACAQDataInterface> backup = ImmutableList.copyOf(dataInterfacesForDataSet);
@@ -291,6 +297,8 @@ public abstract class ACAQIteratingAlgorithm extends ACAQParameterSlotAlgorithm 
     private Set<String> getInputTraitColumnIntersection() {
         Set<String> result = null;
         for (ACAQDataSlot inputSlot : getInputSlots()) {
+            if(getParameterSlot() == inputSlot)
+                continue;
             if (result == null) {
                 result = new HashSet<>(inputSlot.getAnnotationColumns());
             } else {
@@ -305,6 +313,8 @@ public abstract class ACAQIteratingAlgorithm extends ACAQParameterSlotAlgorithm 
     private Set<String> getInputTraitColumnUnion() {
         Set<String> result = new HashSet<>();
         for (ACAQDataSlot inputSlot : getInputSlots()) {
+            if(getParameterSlot() == inputSlot)
+                continue;
             result.addAll(inputSlot.getAnnotationColumns());
         }
         return result;

@@ -127,6 +127,39 @@ public abstract class ACAQParameterSlotAlgorithm extends ACAQAlgorithm {
         this.parameterAnnotationsPrefix = parameterAnnotationsPrefix;
     }
 
+    /**
+     * Returns the number of input slots that are not parameter slots.
+     * @return the number of input slots that are not parameter slots.
+     */
+    public int getEffectiveInputSlotCount() {
+        int effectiveSlotSize = getInputSlots().size();
+        if(isHasParameterSlot())
+            --effectiveSlotSize;
+        return effectiveSlotSize;
+    }
+
+    @Override
+    public ACAQDataSlot getFirstInputSlot() {
+        ACAQDataSlot firstInputSlot = super.getFirstInputSlot();
+        if(Objects.equals(firstInputSlot.getName(), SLOT_PARAMETERS)) {
+            return getInputSlots().get(1);
+        }
+        else {
+            return firstInputSlot;
+        }
+    }
+
+    /**
+     * Returns the parameter slot if enabled
+     * @return the parameter slot
+     */
+    public ACAQDataSlot getParameterSlot() {
+        if(hasParameterSlot)
+            return getInputSlot(SLOT_PARAMETERS);
+        else
+            return null;
+    }
+
     @Override
     public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         if (isPassThrough() && canPassThrough()) {
@@ -192,7 +225,7 @@ public abstract class ACAQParameterSlotAlgorithm extends ACAQAlgorithm {
                     }
 
 
-                    runParameterSet(subProgress, algorithmProgress, isCancelled, annotations);
+                    runParameterSet(subProgress.resolve("Parameter set " + (row + 1) + " / " + parameterSlot.getRowCount()), algorithmProgress, isCancelled, annotations);
                 }
 
                 // Restore backup
@@ -211,7 +244,7 @@ public abstract class ACAQParameterSlotAlgorithm extends ACAQAlgorithm {
      * @param subProgress the progress
      * @param algorithmProgress the progress consumer
      * @param isCancelled if the user requested cancellation
-     * @param annotations parameter annotations
+     * @param parameterAnnotations parameter annotations
      */
     public abstract void runParameterSet(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled, List<ACAQAnnotation> parameterAnnotations);
 

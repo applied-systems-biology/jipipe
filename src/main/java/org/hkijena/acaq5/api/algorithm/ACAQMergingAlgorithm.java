@@ -109,7 +109,7 @@ public abstract class ACAQMergingAlgorithm extends ACAQParameterSlotAlgorithm im
     @Override
     public void runParameterSet(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled, List<ACAQAnnotation> parameterAnnotations) {
         // Special case: No input slots
-        if (getInputSlots().isEmpty()) {
+        if (getEffectiveInputSlotCount() == 0) {
             if (isCancelled.get())
                 return;
             final int row = 0;
@@ -144,6 +144,8 @@ public abstract class ACAQMergingAlgorithm extends ACAQParameterSlotAlgorithm im
         // Organize the input data by Dataset -> Slot -> Data row
         Map<ACAQUniqueDataBatch, Map<String, TIntSet>> dataSets = new HashMap<>();
         for (ACAQDataSlot inputSlot : getInputSlots()) {
+            if(getParameterSlot() == inputSlot)
+                continue;
             for (int row = 0; row < inputSlot.getRowCount(); row++) {
                 ACAQUniqueDataBatch key = new ACAQUniqueDataBatch();
                 for (String referenceTraitColumn : referenceTraitColumns) {
@@ -172,6 +174,8 @@ public abstract class ACAQMergingAlgorithm extends ACAQParameterSlotAlgorithm im
         for (Map.Entry<ACAQUniqueDataBatch, Map<String, TIntSet>> dataSetEntry : ImmutableList.copyOf(dataSets.entrySet())) {
             boolean incomplete = false;
             for (ACAQDataSlot inputSlot : getInputSlots()) {
+                if(getParameterSlot() == inputSlot)
+                    continue;
                 TIntSet slotEntry = dataSetEntry.getValue().getOrDefault(inputSlot.getName(), null);
                 if (slotEntry == null) {
                     incomplete = true;
@@ -200,6 +204,8 @@ public abstract class ACAQMergingAlgorithm extends ACAQParameterSlotAlgorithm im
             Multimap<String, String> compoundTraits = HashMultimap.create();
             for (Map.Entry<String, TIntSet> dataSlotEntry : dataSetEntry.getValue().entrySet()) {
                 ACAQDataSlot inputSlot = getInputSlot(dataSlotEntry.getKey());
+                if(getParameterSlot() == inputSlot)
+                    continue;
                 TIntSet rows = dataSetEntry.getValue().get(inputSlot.getName());
                 for (TIntIterator it = rows.iterator(); it.hasNext(); ) {
                     int row = it.next();
@@ -269,6 +275,8 @@ public abstract class ACAQMergingAlgorithm extends ACAQParameterSlotAlgorithm im
     private Set<String> getInputTraitColumnIntersection() {
         Set<String> result = null;
         for (ACAQDataSlot inputSlot : getInputSlots()) {
+            if(getParameterSlot() == inputSlot)
+                continue;
             if (result == null) {
                 result = new HashSet<>(inputSlot.getAnnotationColumns());
             } else {
@@ -283,6 +291,8 @@ public abstract class ACAQMergingAlgorithm extends ACAQParameterSlotAlgorithm im
     private Set<String> getInputTraitColumnUnion() {
         Set<String> result = new HashSet<>();
         for (ACAQDataSlot inputSlot : getInputSlots()) {
+            if(getParameterSlot() == inputSlot)
+                continue;
             result.addAll(inputSlot.getAnnotationColumns());
         }
         return result;
