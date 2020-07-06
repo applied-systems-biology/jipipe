@@ -42,7 +42,6 @@ import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.events.SlotsChangedEvent;
 import org.hkijena.acaq5.api.events.WorkDirectoryChangedEvent;
-import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
@@ -52,7 +51,6 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
-import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.awt.Point;
@@ -66,7 +64,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -509,44 +506,7 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
         }
 
         // Deserialize algorithm-specific parameters
-        AtomicBoolean changedStructure = new AtomicBoolean();
-        changedStructure.set(true);
-        getEventBus().register(new Object() {
-            @Subscribe
-            public void onParametersChanged(ParameterStructureChangedEvent event) {
-                changedStructure.set(true);
-            }
-        });
-        Set<String> loadedParameters = new HashSet<>();
-        while (changedStructure.get()) {
-            changedStructure.set(false);
-            ACAQParameterTree parameterCollection = new ACAQParameterTree(this);
-            for (ACAQParameterAccess parameterAccess : parameterCollection.getParametersByPriority()) {
-                if (!parameterAccess.isPersistent())
-                    continue;
-                String key = parameterCollection.getUniqueKey(parameterAccess);
-                if (loadedParameters.contains(key))
-                    continue;
-                loadedParameters.add(key);
-                if (node.has(key)) {
-                    Object v;
-                    try {
-                        v = JsonUtils.getObjectMapper().readerFor(parameterAccess.getFieldClass()).readValue(node.get(key));
-                    } catch (IOException e) {
-                        throw new UserFriendlyRuntimeException(e, "Could not load parameter '" + key + "'!",
-                                "Algorithm '" + getName() + "'", "Either the data was corrupted, or your ACAQ5 or plugin version is too new or too old.",
-                                "Check the 'dependencies' section of the project file and compare the plugin versions. Try " +
-                                        "to update ACAQ5. Compare the project file with a valid one. Contact the ACAQ5 or plugin " +
-                                        "authors if you cannot resolve the issue by yourself.");
-                    }
-                    parameterAccess.set(v);
-
-                    // Stop loading here to prevent already traversed parameters from being not loaded
-                    if (changedStructure.get())
-                        break;
-                }
-            }
-        }
+        ACAQParameterCollection.deserializeParametersFromJson(this, node);
     }
 
     /**

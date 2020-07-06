@@ -48,7 +48,11 @@ import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.CompartmentRemovedEvent;
 import org.hkijena.acaq5.api.events.WorkDirectoryChangedEvent;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
+import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 import org.hkijena.acaq5.utils.JsonUtils;
+import org.hkijena.acaq5.utils.ReflectionUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 
 import java.awt.Point;
@@ -77,6 +81,7 @@ public class ACAQProject implements ACAQValidatable {
     private ACAQGraph compartmentGraph = new ACAQGraph();
     private BiMap<String, ACAQProjectCompartment> compartments = HashBiMap.create();
     private ACAQMetadata metadata = new ACAQMetadata();
+    private Map<String, ACAQParameterCollection> additionalMetadata = new HashMap<>();
     private Path workDirectory;
     private ACAQProjectCache cache;
 
@@ -363,6 +368,14 @@ public class ACAQProject implements ACAQValidatable {
         graph.cleanupIds();
     }
 
+    public Map<String, ACAQParameterCollection> getAdditionalMetadata() {
+        return additionalMetadata;
+    }
+
+    public void setAdditionalMetadata(Map<String, ACAQParameterCollection> additionalMetadata) {
+        this.additionalMetadata = additionalMetadata;
+    }
+
     /**
      * Loads a project from a file
      *
@@ -420,6 +433,19 @@ public class ACAQProject implements ACAQValidatable {
             jsonGenerator.writeStringField("acaq:project-type", "project");
             jsonGenerator.writeObjectField("metadata", project.metadata);
             jsonGenerator.writeObjectField("dependencies", project.getDependencies().stream().map(ACAQMutableDependency::new).collect(Collectors.toList()));
+            if(!project.getAdditionalMetadata().isEmpty()) {
+                jsonGenerator.writeObjectFieldStart("additional-metadata");
+                for (Map.Entry<String, ACAQParameterCollection> entry : project.getAdditionalMetadata().entrySet()) {
+                    ACAQParameterTree tree = new ACAQParameterTree(entry.getValue());
+                    jsonGenerator.writeObjectFieldStart(entry.getKey());
+                    jsonGenerator.writeObjectField("acaq:type", entry.getValue().getClass());
+                    for (Map.Entry<String, ACAQParameterAccess> parameterEntry : tree.getParameters().entrySet()) {
+                        jsonGenerator.writeObjectField(parameterEntry.getKey(), parameterEntry.getValue());
+                    }
+                    jsonGenerator.writeEndObject();
+                }
+                jsonGenerator.writeEndObject();
+            }
             jsonGenerator.writeObjectField("algorithm-graph", project.graph);
             jsonGenerator.writeFieldName("compartments");
             jsonGenerator.writeStartObject();
@@ -442,6 +468,19 @@ public class ACAQProject implements ACAQValidatable {
 
             if (node.has("metadata")) {
                 project.metadata = JsonUtils.getObjectMapper().readerFor(ACAQMetadata.class).readValue(node.get("metadata"));
+            }
+
+            // Deserialize additional metadata
+            JsonNode additionalMetadataNode = node.path("additional-metadata");
+            for (Map.Entry<String, JsonNode> metadataEntry : ImmutableList.copyOf(additionalMetadataNode.fields())) {
+                try {
+                    Class<?> metadataClass = JsonUtils.getObjectMapper().readerFor(Class.class).readValue(metadataEntry.getValue());
+                    ACAQParameterCollection metadata = (ACAQParameterCollection) ReflectionUtils.newInstance(metadataClass);
+                    ACAQParameterCollection.deserializeParametersFromJson(metadata, metadataEntry.getValue());
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             // We must first load the graph, as we can infer compartments later
