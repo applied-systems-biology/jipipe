@@ -51,12 +51,13 @@ public class ACAQProjectWindow extends JFrame {
      * @param context context
      * @param project The project
      * @param showIntroduction whether to show the introduction
+     * @param isNewProject if the project is an empty project
      */
-    public ACAQProjectWindow(Context context, ACAQProject project, boolean showIntroduction) {
+    public ACAQProjectWindow(Context context, ACAQProject project, boolean showIntroduction, boolean isNewProject) {
         this.context = context;
         OPEN_WINDOWS.add(this);
         initialize();
-        loadProject(project, showIntroduction);
+        loadProject(project, showIntroduction, isNewProject);
     }
 
     private void initialize() {
@@ -79,13 +80,13 @@ public class ACAQProjectWindow extends JFrame {
 
     /**
      * Loads a project into the window
-     *
-     * @param project The project
+     *  @param project The project
      * @param showIntroduction whether to show the introduction
+     * @param isNewProject if the project is an empty project
      */
-    public void loadProject(ACAQProject project, boolean showIntroduction) {
+    public void loadProject(ACAQProject project, boolean showIntroduction, boolean isNewProject) {
         this.project = project;
-        this.projectUI = new ACAQProjectWorkbench(this, context, project, showIntroduction);
+        this.projectUI = new ACAQProjectWorkbench(this, context, project, showIntroduction, isNewProject);
         setContentPane(projectUI);
     }
 
@@ -95,7 +96,7 @@ public class ACAQProjectWindow extends JFrame {
      */
     public void newProject() {
         ACAQProject project = new ACAQProject();
-        ACAQProjectWindow window = openProjectInThisOrNewWindow("New project", project);
+        ACAQProjectWindow window = openProjectInThisOrNewWindow("New project", project, true);
         if (window == null)
             return;
         window.projectSavePath = null;
@@ -122,7 +123,7 @@ public class ACAQProjectWindow extends JFrame {
 
                 ACAQProject project = ACAQProject.loadProject(jsonData);
                 project.setWorkDirectory(path.getParent());
-                ACAQProjectWindow window = openProjectInThisOrNewWindow("Open project", project);
+                ACAQProjectWindow window = openProjectInThisOrNewWindow("Open project", project, false);
                 if (window == null)
                     return;
                 window.projectSavePath = path;
@@ -145,7 +146,7 @@ public class ACAQProjectWindow extends JFrame {
 
                 ACAQRun run = ACAQRun.loadFromFolder(path);
                 run.getProject().setWorkDirectory(path);
-                ACAQProjectWindow window = openProjectInThisOrNewWindow("Open ACAQ output", run.getProject());
+                ACAQProjectWindow window = openProjectInThisOrNewWindow("Open ACAQ output", run.getProject(), false);
                 if (window == null)
                     return;
                 window.projectSavePath = path.resolve("parameters.json");
@@ -234,15 +235,16 @@ public class ACAQProjectWindow extends JFrame {
     /**
      * @param messageTitle Description of the project source
      * @param project      The project
+     * @param isNewProject if the project is an empty project
      * @return The window that holds the project
      */
-    private ACAQProjectWindow openProjectInThisOrNewWindow(String messageTitle, ACAQProject project) {
+    private ACAQProjectWindow openProjectInThisOrNewWindow(String messageTitle, ACAQProject project, boolean isNewProject) {
         switch (UIUtils.askOpenInCurrentWindow(this, messageTitle)) {
             case JOptionPane.YES_OPTION:
-                loadProject(project, false);
+                loadProject(project, false, isNewProject);
                 return this;
             case JOptionPane.NO_OPTION:
-                return newWindow(context, project);
+                return newWindow(context, project, isNewProject);
         }
         return null;
     }
@@ -280,10 +282,11 @@ public class ACAQProjectWindow extends JFrame {
      *
      * @param context context
      * @param project The project
+     * @param isNewProject
      * @return The window
      */
-    public static ACAQProjectWindow newWindow(Context context, ACAQProject project) {
-        ACAQProjectWindow frame = new ACAQProjectWindow(context, project, true);
+    public static ACAQProjectWindow newWindow(Context context, ACAQProject project, boolean isNewProject) {
+        ACAQProjectWindow frame = new ACAQProjectWindow(context, project, true, isNewProject);
         frame.pack();
         frame.setSize(1024, 768);
         frame.setVisible(true);

@@ -51,6 +51,7 @@ import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
+import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.ReflectionUtils;
 import org.hkijena.acaq5.utils.StringUtils;
@@ -81,7 +82,7 @@ public class ACAQProject implements ACAQValidatable {
     private ACAQGraph compartmentGraph = new ACAQGraph();
     private BiMap<String, ACAQProjectCompartment> compartments = HashBiMap.create();
     private ACAQMetadata metadata = new ACAQMetadata();
-    private Map<String, ACAQParameterCollection> additionalMetadata = new HashMap<>();
+    private Map<String, Object> additionalMetadata = new HashMap<String, Object>();
     private Path workDirectory;
     private ACAQProjectCache cache;
 
@@ -90,6 +91,7 @@ public class ACAQProject implements ACAQValidatable {
      */
     public ACAQProject() {
         this.cache = new ACAQProjectCache(this);
+        this.metadata.setDescription(MarkdownDocument.fromPluginResource("documentation/new-project-template.md").getMarkdown());
         compartmentGraph.getEventBus().register(this);
     }
 
@@ -368,11 +370,11 @@ public class ACAQProject implements ACAQValidatable {
         graph.cleanupIds();
     }
 
-    public Map<String, ACAQParameterCollection> getAdditionalMetadata() {
+    public Map<String, Object> getAdditionalMetadata() {
         return additionalMetadata;
     }
 
-    public void setAdditionalMetadata(Map<String, ACAQParameterCollection> additionalMetadata) {
+    public void setAdditionalMetadata(Map<String, Object> additionalMetadata) {
         this.additionalMetadata = additionalMetadata;
     }
 
@@ -435,14 +437,22 @@ public class ACAQProject implements ACAQValidatable {
             jsonGenerator.writeObjectField("dependencies", project.getDependencies().stream().map(ACAQMutableDependency::new).collect(Collectors.toList()));
             if(!project.getAdditionalMetadata().isEmpty()) {
                 jsonGenerator.writeObjectFieldStart("additional-metadata");
-                for (Map.Entry<String, ACAQParameterCollection> entry : project.getAdditionalMetadata().entrySet()) {
-                    ACAQParameterTree tree = new ACAQParameterTree(entry.getValue());
-                    jsonGenerator.writeObjectFieldStart(entry.getKey());
-                    jsonGenerator.writeObjectField("acaq:type", entry.getValue().getClass());
-                    for (Map.Entry<String, ACAQParameterAccess> parameterEntry : tree.getParameters().entrySet()) {
-                        jsonGenerator.writeObjectField(parameterEntry.getKey(), parameterEntry.getValue());
+                for (Map.Entry<String, Object> entry : project.getAdditionalMetadata().entrySet()) {
+                    if(entry.getValue() instanceof ACAQParameterCollection) {
+                        ACAQParameterTree tree = new ACAQParameterTree((ACAQParameterCollection) entry.getValue());
+                        jsonGenerator.writeObjectFieldStart(entry.getKey());
+                        jsonGenerator.writeObjectField("acaq:type", entry.getValue().getClass());
+                        for (Map.Entry<String, ACAQParameterAccess> parameterEntry : tree.getParameters().entrySet()) {
+                            jsonGenerator.writeObjectField(parameterEntry.getKey(), parameterEntry.getValue().get(Object.class));
+                        }
+                        jsonGenerator.writeEndObject();
                     }
-                    jsonGenerator.writeEndObject();
+                    else {
+                        jsonGenerator.writeObjectFieldStart(entry.getKey());
+                        jsonGenerator.writeObjectField("acaq:type", entry.getValue().getClass());
+                        jsonGenerator.writeObjectField("data", entry.getValue());
+                        jsonGenerator.writeEndObject();
+                    }
                 }
                 jsonGenerator.writeEndObject();
             }
@@ -474,9 +484,18 @@ public class ACAQProject implements ACAQValidatable {
             JsonNode additionalMetadataNode = node.path("additional-metadata");
             for (Map.Entry<String, JsonNode> metadataEntry : ImmutableList.copyOf(additionalMetadataNode.fields())) {
                 try {
-                    Class<?> metadataClass = JsonUtils.getObjectMapper().readerFor(Class.class).readValue(metadataEntry.getValue());
-                    ACAQParameterCollection metadata = (ACAQParameterCollection) ReflectionUtils.newInstance(metadataClass);
-                    ACAQParameterCollection.deserializeParametersFromJson(metadata, metadataEntry.getValue());
+                    Class<?> metadataClass = JsonUtils.getObjectMapper().readerFor(Class.class).readValue(metadataEntry.getValue().get("acaq:type"));
+                    if(ACAQParameterCollection.class.isAssignableFrom(metadataClass)) {
+                        ACAQParameterCollection metadata = (ACAQParameterCollection) ReflectionUtils.newInstance(metadataClass);
+                        ACAQParameterCollection.deserializeParametersFromJson(metadata, metadataEntry.getValue());
+                        project.additionalMetadata.put(metadataEntry.getKey(), metadata);
+                    }
+                    else {
+                        Object data = JsonUtils.getObjectMapper().readerFor(metadataClass).readValue(metadataEntry.getValue().get("data"));
+                        if(data != null) {
+                            project.additionalMetadata.put(metadataEntry.getKey(), data);
+                        }
+                    }
                 }
                 catch (Exception e) {
                     e.printStackTrace();

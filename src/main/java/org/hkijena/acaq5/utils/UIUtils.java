@@ -504,6 +504,22 @@ public class UIUtils {
     }
 
     /**
+     * Creates a readonly text pane (that can do HTML)
+     *
+     * @param text text
+     * @return text area
+     */
+    public static JTextPane makeBorderlessReadonlyTextPane(String text) {
+        JTextPane textPane = new JTextPane();
+        textPane.setBorder(BorderFactory.createEtchedBorder());
+        textPane.setEditable(false);
+        textPane.setContentType("text/html");
+        textPane.setText(text);
+        textPane.setBorder(null);
+        return textPane;
+    }
+
+    /**
      * Creates a readonly text field
      *
      * @param value text

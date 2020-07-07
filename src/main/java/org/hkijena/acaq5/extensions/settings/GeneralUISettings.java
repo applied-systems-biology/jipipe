@@ -29,6 +29,7 @@ public class GeneralUISettings implements ACAQParameterCollection {
 
     private EventBus eventBus = new EventBus();
     private boolean showIntroduction = true;
+    private boolean showProjectInfo = true;
     private LookAndFeel lookAndFeel = LookAndFeel.Metal;
     private boolean showParameterSearchBar = true;
     private boolean neverAskOnClosingTabs = false;
@@ -98,6 +99,17 @@ public class GeneralUISettings implements ACAQParameterCollection {
     public void setValidateOnSave(boolean validateOnSave) {
         this.validateOnSave = validateOnSave;
 
+    }
+
+    @ACAQDocumentation(name = "Show info on opening a project", description = "If enabled, show the project info screen on opening a project.")
+    @ACAQParameter("show-project-info")
+    public boolean isShowProjectInfo() {
+        return showProjectInfo;
+    }
+
+    @ACAQParameter("show-project-info")
+    public void setShowProjectInfo(boolean showProjectInfo) {
+        this.showProjectInfo = showProjectInfo;
     }
 
     public static GeneralUISettings getInstance() {

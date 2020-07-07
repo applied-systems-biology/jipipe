@@ -63,6 +63,14 @@ import java.util.List;
  */
 public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
 
+    public static final String TAB_INTRODUCTION = "INTRODUCTION";
+    public static final String TAB_COMPARTMENT_EDITOR = "COMPARTMENT_EDITOR";
+    public static final String TAB_PROJECT_SETTINGS = "PROJECT_SETTINGS";
+    public static final String TAB_APPLICATION_SETTINGS = "APPLICATION_SETTINGS";
+    public static final String TAB_PLUGIN_MANAGER = "PLUGIN_MANAGER";
+    public static final String TAB_VALIDITY_CHECK = "VALIDITY_CHECK";
+    public static final String TAB_PLUGIN_VALIDITY_CHECK = "PLUGIN_VALIDITY_CHECK";
+    private static final String TAB_PROJECT_OVERVIEW = "PROJECT_OVERVIEW";
     public DocumentTabPane documentTabPane;
     private ACAQProjectWindow window;
     private ACAQProject project;
@@ -75,13 +83,14 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
      * @param window  Parent window
      * @param context SciJava context
      * @param project The project
-     * @param showIntroduction
+     * @param showIntroduction whether to show the introduction
+     * @param isNewProject if the project is an empty project
      */
-    public ACAQProjectWorkbench(ACAQProjectWindow window, Context context, ACAQProject project, boolean showIntroduction) {
+    public ACAQProjectWorkbench(ACAQProjectWindow window, Context context, ACAQProject project, boolean showIntroduction, boolean isNewProject) {
         this.window = window;
         this.project = project;
         this.context = context;
-        initialize(showIntroduction);
+        initialize(showIntroduction, isNewProject);
         initializeDefaultProject();
         project.getEventBus().register(this);
         ACAQDefaultRegistry.getInstance().getEventBus().register(this);
@@ -118,51 +127,62 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
         }
     }
 
-    private void initialize(boolean showIntroduction) {
+    private void initialize(boolean showIntroduction, boolean isNewProject) {
         setLayout(new BorderLayout());
 
         documentTabPane = new DocumentTabPane();
-        documentTabPane.addSingletonTab("INTRODUCTION",
+        documentTabPane.addSingletonTab(TAB_INTRODUCTION,
                 "Getting started",
                 UIUtils.getIconFromResources("info.png"),
                 new ACAQInfoUI(this),
                 !GeneralUISettings.getInstance().isShowIntroduction() || !showIntroduction);
-        documentTabPane.addSingletonTab("COMPARTMENT_EDITOR",
+        documentTabPane.addSingletonTab(TAB_PROJECT_OVERVIEW,
+                "Project overview",
+                UIUtils.getIconFromResources("info.png"),
+                new ACAQProjectInfoUI(this),
+                !GeneralUISettings.getInstance().isShowProjectInfo() || isNewProject);
+        documentTabPane.addSingletonTab(TAB_COMPARTMENT_EDITOR,
                 "Compartments",
                 UIUtils.getIconFromResources("connect.png"),
                 new ACAQCompartmentGraphUI(this),
                 false);
-        documentTabPane.addSingletonTab("PROJECT_SETTINGS",
+        documentTabPane.addSingletonTab(TAB_PROJECT_SETTINGS,
                 "Project settings",
                 UIUtils.getIconFromResources("wrench.png"),
                 new ACAQProjectSettingsUI(this),
                 true);
-        documentTabPane.addSingletonTab("APPLICATION_SETTINGS",
+        documentTabPane.addSingletonTab(TAB_APPLICATION_SETTINGS,
                 "Application settings",
                 UIUtils.getIconFromResources("acaq5.png"),
                 new ACAQApplicationSettingsUI(this),
                 true);
-        documentTabPane.addSingletonTab("PLUGIN_MANAGER",
+        documentTabPane.addSingletonTab(TAB_PLUGIN_MANAGER,
                 "Plugin manager",
                 UIUtils.getIconFromResources("module.png"),
                 new ACAQPluginManagerUIPanel(this),
                 true);
         validityCheckerPanel = new ReloadableValidityChecker(project);
-        documentTabPane.addSingletonTab("VALIDITY_CHECK",
+        documentTabPane.addSingletonTab(TAB_VALIDITY_CHECK,
                 "Project validation",
                 UIUtils.getIconFromResources("checkmark.png"),
                 validityCheckerPanel,
                 true);
         pluginValidityCheckerPanel = new ACAQPluginValidityCheckerPanel();
-        documentTabPane.addSingletonTab("PLUGIN_VALIDITY_CHECK",
+        documentTabPane.addSingletonTab(TAB_PLUGIN_VALIDITY_CHECK,
                 "Plugin validation",
                 UIUtils.getIconFromResources("module.png"),
                 pluginValidityCheckerPanel,
                 true);
         if (GeneralUISettings.getInstance().isShowIntroduction() && showIntroduction)
-            documentTabPane.selectSingletonTab("INTRODUCTION");
-        else
-            documentTabPane.selectSingletonTab("COMPARTMENT_EDITOR");
+            documentTabPane.selectSingletonTab(TAB_INTRODUCTION);
+        else {
+            if(GeneralUISettings.getInstance().isShowProjectInfo() && !isNewProject) {
+                documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW);
+            }
+            else {
+                documentTabPane.selectSingletonTab(TAB_COMPARTMENT_EDITOR);
+            }
+        }
         add(documentTabPane, BorderLayout.CENTER);
 
         initializeMenu();
@@ -295,16 +315,24 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
         JMenuItem openProjectSettingsButton = new JMenuItem("Project settings", UIUtils.getIconFromResources("wrench.png"));
         openProjectSettingsButton.setToolTipText("Opens the project settings");
         openProjectSettingsButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK + KeyEvent.ALT_DOWN_MASK));
-        openProjectSettingsButton.addActionListener(e -> documentTabPane.selectSingletonTab("PROJECT_SETTINGS"));
+        openProjectSettingsButton.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_PROJECT_SETTINGS));
         projectMenu.add(openProjectSettingsButton);
 
         JMenuItem openApplicationSettingsButton = new JMenuItem("Application settings", UIUtils.getIconFromResources("acaq5.png"));
         openApplicationSettingsButton.setToolTipText("Opens the application settings");
         openApplicationSettingsButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.CTRL_DOWN_MASK + KeyEvent.ALT_DOWN_MASK));
-        openApplicationSettingsButton.addActionListener(e -> documentTabPane.selectSingletonTab("APPLICATION_SETTINGS"));
+        openApplicationSettingsButton.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_APPLICATION_SETTINGS));
         projectMenu.add(openApplicationSettingsButton);
 
         projectMenu.addSeparator();
+
+        JMenuItem projectInfo = new JMenuItem("Project overview", UIUtils.getIconFromResources("info.png"));
+        projectInfo.setToolTipText("Opens the project overview");
+        projectInfo.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW));
+        projectMenu.add(projectInfo);
+
+        projectMenu.addSeparator();
+
         JMenuItem exitButton = new JMenuItem("Exit", UIUtils.getIconFromResources("remove.png"));
         exitButton.addActionListener(e -> getWindow().dispatchEvent(new WindowEvent(getWindow(), WindowEvent.WINDOW_CLOSING)));
         projectMenu.add(exitButton);
@@ -393,8 +421,12 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
         helpMenu.setIcon(UIUtils.getIconFromResources("help.png"));
 
         JMenuItem quickHelp = new JMenuItem("Quick introduction", UIUtils.getIconFromResources("quickload.png"));
-        quickHelp.addActionListener(e -> documentTabPane.selectSingletonTab("INTRODUCTION"));
+        quickHelp.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_INTRODUCTION));
         helpMenu.add(quickHelp);
+
+        JMenuItem projectInfo2 = new JMenuItem("Project overview", UIUtils.getIconFromResources("info.png"));
+        projectInfo2.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW));
+        helpMenu.add(projectInfo2);
 
         JMenuItem algorithmCompendiumButton = new JMenuItem("Open algorithm compendium", UIUtils.getIconFromResources("cog.png"));
         algorithmCompendiumButton.addActionListener(e -> {
@@ -451,7 +483,7 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
     public void validateProject(boolean avoidSwitching) {
         validityCheckerPanel.recheckValidity();
         if (!avoidSwitching || !validityCheckerPanel.getReport().isValid())
-            documentTabPane.selectSingletonTab("VALIDITY_CHECK");
+            documentTabPane.selectSingletonTab(TAB_VALIDITY_CHECK);
     }
 
     /**
@@ -462,11 +494,11 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
     public void validatePlugins(boolean avoidSwitching) {
         pluginValidityCheckerPanel.recheckValidity();
         if (!avoidSwitching || !pluginValidityCheckerPanel.getReport().isValid())
-            documentTabPane.selectSingletonTab("PLUGIN_VALIDITY_CHECK");
+            documentTabPane.selectSingletonTab(TAB_PLUGIN_VALIDITY_CHECK);
     }
 
     private void managePlugins() {
-        documentTabPane.selectSingletonTab("PLUGIN_MANAGER");
+        documentTabPane.selectSingletonTab(TAB_PLUGIN_MANAGER);
     }
 
     private void openCompartmentEditor() {

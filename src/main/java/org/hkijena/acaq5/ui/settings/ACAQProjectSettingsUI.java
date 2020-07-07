@@ -13,12 +13,18 @@
 
 package org.hkijena.acaq5.ui.settings;
 
+import org.hkijena.acaq5.api.grouping.parameters.GraphNodeParametersUI;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
+import org.hkijena.acaq5.ui.components.DocumentTabPane;
+import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
+import org.hkijena.acaq5.utils.UIUtils;
 
+import javax.swing.*;
 import java.awt.BorderLayout;
+import java.awt.Color;
 
 /**
  * UI around the metadata of an {@link org.hkijena.acaq5.api.ACAQProject}
@@ -34,10 +40,45 @@ public class ACAQProjectSettingsUI extends ACAQProjectWorkbenchPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
+
+        DocumentTabPane tabPane = new DocumentTabPane();
+
         ParameterPanel metadataUI = new ParameterPanel(getProjectWorkbench(),
                 getProject().getMetadata(),
                 MarkdownDocument.fromPluginResource("documentation/project-settings.md"),
                 ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING);
-        add(metadataUI, BorderLayout.CENTER);
+        tabPane.addTab("General",
+                UIUtils.getIconFromResources("cog.png"),
+                metadataUI,
+                DocumentTabPane.CloseMode.withoutCloseButton,
+                false);
+
+        FormPanel parameterUI = new FormPanel(MarkdownDocument.fromPluginResource("documentation/project-settings-parameters.md"),
+                FormPanel.WITH_SCROLLING | FormPanel.WITH_DOCUMENTATION);
+        GraphNodeParametersUI graphNodeParametersUI = new GraphNodeParametersUI(getWorkbench(), getPipelineParameters().getExportedParameters());
+        graphNodeParametersUI.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+        parameterUI.addWideToForm(graphNodeParametersUI, null);
+        parameterUI.addVerticalGlue();
+        tabPane.addTab("Parameters",
+                UIUtils.getIconFromResources("data-types/data-type-parameters.png"),
+                parameterUI,
+                DocumentTabPane.CloseMode.withoutCloseButton,
+                false);
+
+        add(tabPane, BorderLayout.CENTER);
+    }
+
+    private ACAQProjectInfoParameters getPipelineParameters() {
+        Object existing = getProject().getAdditionalMetadata().getOrDefault(ACAQProjectInfoParameters.METADATA_KEY, null);
+        ACAQProjectInfoParameters result;
+        if(existing instanceof ACAQProjectInfoParameters) {
+            result = (ACAQProjectInfoParameters) existing;
+        }
+        else {
+            result = new ACAQProjectInfoParameters();
+            getProject().getAdditionalMetadata().put(ACAQProjectInfoParameters.METADATA_KEY, result);
+        }
+        result.setProject(getProject());
+        return result;
     }
 }

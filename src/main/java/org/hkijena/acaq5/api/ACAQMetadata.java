@@ -76,7 +76,6 @@ public class ACAQMetadata implements ACAQParameterCollection {
     @JsonSetter("name")
     public void setName(String name) {
         this.name = name;
-
     }
 
     /**
@@ -84,7 +83,7 @@ public class ACAQMetadata implements ACAQParameterCollection {
      */
     @ACAQDocumentation(name = "Description", description = "A description")
     @ACAQParameter(value = "description", uiOrder = 1)
-    @StringParameterSettings(multiline = true)
+    @StringParameterSettings(multiline = true, monospace = true)
     @JsonGetter("description")
     public String getDescription() {
         return description;
